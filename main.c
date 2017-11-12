@@ -1330,8 +1330,8 @@ again3:
 		tv.tv_usec = 0;
 		tv.tv_sec  = 3;
 		setsockopt(conn_s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
-		tv.tv_sec  = 8;
-		setsockopt(conn_s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+		//tv.tv_sec  = 8;
+		//setsockopt(conn_s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
 
 		int optval = HTML_RECV_SIZE;
 		setsockopt(conn_s, SOL_SOCKET, SO_RCVBUF, &optval, sizeof(optval));
@@ -3116,14 +3116,16 @@ parse_request:
 						refresh_xml(templn);
 
  #ifndef ENGLISH_ONLY
-						char STR_XMLRF[280];
+						sprintf(templn, "<br>");
+
+						char *STR_XMLRF = templn + 4;
 
 						sprintf(STR_XMLRF, "Game list refreshed (<a href=\"%s\">mygames.xml</a>).%s", MY_GAMES_XML, "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
 
 						language("STR_XMLRF", STR_XMLRF, STR_XMLRF);
 						close_language();
 
-						sprintf(templn,  "<br>%s", STR_XMLRF); strcat(pbuffer, templn);
+						strcat(pbuffer, templn);
  #else
 						sprintf(templn,  "<br>%s", STR_XMLRF); strcat(pbuffer, templn);
  #endif
