@@ -41,6 +41,8 @@
 #define HVSC_SYSCALL_ADDR_480D		0x80000000002BC1C8ULL	// where above syscall is in lv2 4.80 DEX <- peek( SYSCALL_TABLE_480D + HVSC_SYSCALL*8)
 #define HVSC_SYSCALL_ADDR_481		0x80000000002A0F58ULL	// where above syscall is in lv2 4.81     <- peek( SYSCALL_TABLE_481  + HVSC_SYSCALL*8)
 #define HVSC_SYSCALL_ADDR_481D		0x80000000002BC1D4ULL	// where above syscall is in lv2 4.81 DEX <- peek( SYSCALL_TABLE_481D + HVSC_SYSCALL*8)
+#define HVSC_SYSCALL_ADDR_482		0x80000000002A0F58ULL	// where above syscall is in lv2 4.82     <- peek( SYSCALL_TABLE_482  + HVSC_SYSCALL*8)
+
 
 #define NEW_POKE_SYSCALL			813                  	// which syscall to overwrite with new poke
 #define NEW_POKE_SYSCALL_ADDR_341	0x80000000001BB93CULL	// where above syscall is in lv2 3.41
@@ -75,6 +77,7 @@
 #define NEW_POKE_SYSCALL_ADDR_480D	0x80000000002BC6F0ULL	// where above syscall is in lv2 4.80     <- peek( SYSCALL_TABLE_480D + NEW_POKE_SYSCALL*8)
 #define NEW_POKE_SYSCALL_ADDR_481	0x80000000002A1480ULL	// where above syscall is in lv2 4.81     <- peek( SYSCALL_TABLE_481  + NEW_POKE_SYSCALL*8)
 #define NEW_POKE_SYSCALL_ADDR_481D	0x80000000002BC6FCULL	// where above syscall is in lv2 4.81 DEX <- peek( SYSCALL_TABLE_481D + NEW_POKE_SYSCALL*8)
+#define NEW_POKE_SYSCALL_ADDR_482	0x80000000002A1480ULL	// where above syscall is in lv2 4.82     <- peek( SYSCALL_TABLE_482  + NEW_POKE_SYSCALL*8)
 */
 
 #define SYSCALL_TABLE_341			0x80000000002EB128ULL	// 3.41
@@ -115,6 +118,7 @@
 #define SYSCALL_TABLE_480H			0x80000000003B28F8ULL	// 4.80 DEH
 #define SYSCALL_TABLE_481			0x8000000000363BE0ULL	// 4.81
 #define SYSCALL_TABLE_481D			0x800000000038A4E8ULL	// 4.81 DEX
+#define SYSCALL_TABLE_482			0x8000000000363BE0ULL	// 4.82
 
 #define SYSCALL_PTR(n)				( (SYSCALL_TABLE) + ( 8 * (n) ) )
 
