@@ -1,5 +1,9 @@
 #define _IS_ON_XMB_		((sec & 1) && (gTick.tick == rTick.tick))
 
+#ifdef COBRA_ONLY
+static bool toggle_snd0 = false;
+#endif
+
 static void poll_start_play_time(void)
 {
 	#ifdef OFFLINE_INGAME
@@ -21,10 +25,18 @@ static void poll_start_play_time(void)
 			cellFsUnlink(WMNET_DISABLED);
 		}
 	#endif
+	#ifdef COBRA_ONLY
+		if(toggle_snd0 && webman_config->nosnd0 && !syscalls_removed) { toggle_snd0 = false; sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", (char*)SYSMAP_PS3_UPDATE); } /* disable SND0.AT3 on XMB */
+	#endif
+
 	}
 	else if(gTick.tick == rTick.tick) /* the game started a moment ago */
 	{
 		cellRtcGetCurrentTick(&gTick);
+
+	#ifdef COBRA_ONLY
+		if(!toggle_snd0 && webman_config->nosnd0 && !syscalls_removed) { toggle_snd0 = true; sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", NULL); } /* re-enable SND0.AT3 in-game */
+	#endif
 
 	#ifdef OFFLINE_INGAME
 		if((webman_config->spp & 4) || (net_status >= 0))

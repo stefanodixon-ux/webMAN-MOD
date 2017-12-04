@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.05 MOD"
+#define WM_VERSION			"1.47.06 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -545,7 +545,7 @@ typedef struct
 	u8 blind;
 	u8 spp;    //disable syscalls, offline: lock PSN, offline ingame
 	u8 noss;   //no singstar
-	u8 nosnd0; //no snd0.at3
+	u8 nosnd0; //mute snd0.at3
 	u8 dsc;    //disable syscalls if physical disc is inserted
 
 	u8 padding3[4];

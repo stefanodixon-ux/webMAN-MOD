@@ -2314,6 +2314,10 @@ mounting_done:
 
 finish:
 
+#ifdef VIRTUAL_PAD
+	unregister_ldd_controller();
+#endif
+
 	led(GREEN, ON);
 	max_mapped = 0;
 	mount_ret = ret;

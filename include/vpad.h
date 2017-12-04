@@ -34,7 +34,7 @@ static inline void sys_pad_dbg_ldd_set_data_insert_mode(s32 handle, u16 addr, u3
 static s32 register_ldd_controller(void)
 {
 	// register ldd controller with custom device capability
-	if (vpad_handle < 0)
+	if (vpad_handle <= NONE)
 	{
 		u8 data[0x114];
 		s32 port;
@@ -194,10 +194,12 @@ static void press_cancel_button(void)
 		parse_pad_command("circle", 0);
 	else
 		parse_pad_command("cross", 0);
+
+	unregister_ldd_controller();
 }
 #endif
 
-#endif
+#endif // #ifdef VIRTUAL_PAD
 
 static CellPadData pad_read(void)
 {

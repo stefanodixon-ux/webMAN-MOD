@@ -7,9 +7,9 @@ We would like to integrate all existing features available on the PS3 Scene like
 
 ## Current functionality
 ### General
-- Support on custom firmware with cobra feature enabled (ver 4.46-4.81 CEX & DEX)
-- Support on classic custom firmware with PRXLoader (ver 3.41-4.81 CEX & DEX) *https://github.com/NzV/PRX_Loader*
-- Support on classic custom firmware with Mamba PRXLoader (ver 3.41-4.81 CEX & DEX) *https://github.com/NzV/MAMBA_PRX_Loader*
+- Support on custom firmware with cobra feature enabled (ver 4.46-4.82 CEX & DEX)
+- Support on classic custom firmware with PRXLoader (ver 3.41-4.82 CEX & DEX) *https://github.com/NzV/PRX_Loader*
+- Support on classic custom firmware with Mamba PRXLoader (ver 3.41-4.82 CEX & DEX) *https://github.com/NzV/MAMBA_PRX_Loader*
 - All PS3 Models with downgrade compatibility is supported, see *http://www.psdevwiki.com/ps3/SKU_Models*
 
 ### webMAN vanilla features
