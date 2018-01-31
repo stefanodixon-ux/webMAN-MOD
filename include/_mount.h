@@ -125,7 +125,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// ---------------------
 	// unmount current game
 	// ---------------------
-	if(strstr(param, "ps3/unmount") || strstr(param, "ps3/dev_bdvd") || strstr(param, "ps3/app_home"))
+	if(islike(param, "/mount") && (strstr(param, "ps3/unmount") != NULL || strstr(param, "ps3/dev_bdvd") != NULL || strstr(param, "ps3/app_home") != NULL))
 	{
 		do_umount(true);
 
@@ -136,7 +136,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// unmount ps2_disc
 	// -----------------
 #ifdef PS2_DISC
-	else if(strstr(param, "ps2/unmount"))
+	else if(islike(param, "/mount") && (strstr(param, "ps2/unmount") != NULL))
 	{
 		do_umount_ps2disc(false);
 
@@ -1315,7 +1315,7 @@ static void mount_thread(u64 action)
 				size_t len = sprintf(temp, "%s.png", _path);
 				if(file_exists(temp) == false) sprintf(temp, "%s.PNG", _path);
 				if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".png"); // remove .BIN.ENC
-				if(file_exists(temp) == false && len > 12) sprintf(temp + len - 4,  ".PNG");
+				if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".PNG");
 
 				cellFsUnlink(PS2_CLASSIC_ISO_ICON);
 				if(file_exists(temp))
