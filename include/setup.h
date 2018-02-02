@@ -523,9 +523,9 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("u6", false, drives[5], _BR_, (webman_config->usb6), buffer);
 	add_check_box("u7", false, drives[6], _BR_, (webman_config->usb7), buffer);
 
-	if(isDir(drives[11])) add_check_box("x0", false, drives[11], _BR_, (webman_config->dev_sd), buffer);
-	if(isDir(drives[12])) add_check_box("x1", false, drives[12], _BR_, (webman_config->dev_ms), buffer);
-	if(isDir(drives[13])) add_check_box("x2", false, drives[13], _BR_, (webman_config->dev_cf), buffer);
+	if(isDir(drives[13])) add_check_box("x0", false, drives[13], _BR_, (webman_config->dev_sd), buffer);
+	if(isDir(drives[14])) add_check_box("x1", false, drives[14], _BR_, (webman_config->dev_ms), buffer);
+	if(isDir(drives[15])) add_check_box("x2", false, drives[15], _BR_, (webman_config->dev_cf), buffer);
 
 #ifdef USE_NTFS
 	add_check_box("xn", false, "/dev_ntfs", _BR_, (webman_config->ntfs), buffer);
