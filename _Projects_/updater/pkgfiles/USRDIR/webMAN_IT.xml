@@ -41,6 +41,7 @@
 			<Query class="type:x-xmb/folder-pixmap" key="webman_insert_link" src="#seg_webman_insert"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_webman_unload" src="#seg_webman_unload"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_wm_vsh_menu" src="#seg_wm_vsh_menu"/>
+			<Query class="type:x-xmb/folder-pixmap" key="webman_wm_slaunch" src="#seg_wm_slaunch"/>
 
 			<Query class="type:x-xmb/folder-pixmap" key="webman_webman_restart" src="#seg_webman_restart"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_webman_shutdown" src="#seg_webman_shutdown"/>
@@ -930,7 +931,7 @@
 				<Pair key="info"><String></String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
-				<Pair key="module_action"><String>/mount_ps3/insert.ps3</String></Pair>
+				<Pair key="module_action"><String>/insert.ps3</String></Pair>
 			</Table>
 		</Attributes>
 		<Items><Item class="type:x-xmb/module-action" key="webman_insert" attr="webman_insert"/></Items>
@@ -959,10 +960,24 @@
 				<Pair key="title"><String>Carica VSH Menu</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
-				<Pair key="module_action"><String>/loadprx.ps3?slot=5&prx=/dev_hdd0/plugins/wm_vsh_menu.sprx</String></Pair>
+				<Pair key="module_action"><String>/browser.ps3$vsh_menu</String></Pair>
 			</Table>
 		</Attributes>
 		<Items><Item class="type:x-xmb/module-action" key="wm_vsh_menu_load" attr="wm_vsh_menu_load"/></Items>
+	</View>
+
+	<!-- Main > webMAN > Load sLaunch Menu -->
+	<View id="seg_wm_slaunch">
+		<Attributes>
+			<Table key="wm_slaunch_load">
+				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/slaunch.png</String></Pair>
+				<Pair key="title"><String>Carica sLaunch Menu</String></Pair>
+				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="bar_action"><String>none</String></Pair>
+				<Pair key="module_action"><String>/browser.ps3$slaunch</String></Pair>
+			</Table>
+		</Attributes>
+		<Items><Item class="type:x-xmb/module-action" key="wm_slaunch_load" attr="wm_slaunch_load"/></Items>
 	</View>
 
 	<!-- Main > webMAN > Restart PS3 -->

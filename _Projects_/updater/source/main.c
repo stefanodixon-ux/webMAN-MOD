@@ -564,6 +564,7 @@ int main()
 	CopyFile(APP_USRDIR "/unload.png"  		, XMLMANPLS_IMAGES_DIR "/unload.png");
 	CopyFile(APP_USRDIR "/usbredirect.png" 	, XMLMANPLS_IMAGES_DIR "/usbredirect.png");
 	CopyFile(APP_USRDIR "/vshmenu.png"   	, XMLMANPLS_IMAGES_DIR "/vshmenu.png");
+	CopyFile(APP_USRDIR "/slaunch.png"   	, XMLMANPLS_IMAGES_DIR "/slaunch.png");
 	CopyFile(APP_USRDIR "/webman.png"  		, XMLMANPLS_IMAGES_DIR "/webman.png");
 
 	CopyFile(APP_USRDIR "/icon_wm_eject.png",  XMLMANPLS_IMAGES_DIR "/icon_wm_eject.png");

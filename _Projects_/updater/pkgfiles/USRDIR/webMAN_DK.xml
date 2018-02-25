@@ -959,7 +959,7 @@
 				<Pair key="info"><String></String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
-				<Pair key="module_action"><String>/mount_ps3/insert.ps3</String></Pair>
+				<Pair key="module_action"><String>/insert.ps3</String></Pair>
 			</Table>
 		</Attributes>
 		<Items><Item class="type:x-xmb/module-action" key="webman_insert" attr="webman_insert"/></Items>
@@ -988,7 +988,7 @@
 				<Pair key="title"><String>Load VSH Menu</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
-				<Pair key="module_action"><String>/loadprx.ps3?slot=5&prx=/dev_hdd0/plugins/wm_vsh_menu.sprx</String></Pair>
+				<Pair key="module_action"><String>/browser.ps3$vsh_menu</String></Pair>
 			</Table>
 		</Attributes>
 		<Items><Item class="type:x-xmb/module-action" key="wm_vsh_menu_load" attr="wm_vsh_menu_load"/></Items>
