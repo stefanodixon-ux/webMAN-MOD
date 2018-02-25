@@ -68,8 +68,6 @@ static void setup_parse_settings(char *param)
 
 #ifdef COBRA_ONLY
 	if(strstr(param, "sn=1")) webman_config->nosnd0 = 1;
-
-	sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? (char*)SYSMAP_PS3_UPDATE : NULL);
 #endif
 
 	//Wait for any USB device to be ready
@@ -1107,6 +1105,10 @@ static void setup_form(char *buffer, char *templn)
 
 static int save_settings(void)
 {
+#ifdef COBRA_ONLY
+	{ DISABLE_SND0_AT3 } // enable/disable SND0.AT3 on startup / save settngs
+#endif
+
 	return save_file(WMCONFIG, (char*)wmconfig, sizeof(WebmanCfg));
 }
 
@@ -1221,11 +1223,11 @@ static void read_settings(void)
 		sys_ppu_thread_usleep(500000);
 	}
 
-	#ifndef COBRA_ONLY
+#ifndef COBRA_ONLY
 	webman_config->spp = 0; //disable removal of syscalls on nonCobra
-	#else
+#else
 	if(webman_config->sc8mode < 1 || webman_config->sc8mode > 4) webman_config->sc8mode = 4; // default: disable all syscalls (including sc8)
-	#endif
+#endif
 
 	// set default autoboot path
 	if((webman_config->autoboot_path[0] != '/') && !islike(webman_config->autoboot_path, "http")) sprintf(webman_config->autoboot_path, "%s", DEFAULT_AUTOBOOT_PATH);

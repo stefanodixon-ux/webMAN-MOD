@@ -51,7 +51,6 @@
 
 #define XMB_CATEGORY_GAME_XML "/vsh/resource/explore/xmb/category_game.xml"
 
-
 bool full = false;
 bool lite = false;
 

@@ -1012,6 +1012,7 @@ static void mount_autoboot(void)
 #ifndef COBRA_ONLY
 		if((!islike(path, "/net")) && (!strstr(path, ".ntfs[")))
 #endif
+
 		if(is_last_game)
 		{
 			// prevent auto-launch game on boot (last game only). AUTOBOOT.ISO is allowed to auto-launch on boot
@@ -1044,7 +1045,6 @@ static void mount_thread(u64 action)
 	// show message if syscalls are fully disabled
 	// --------------------------------------------
 #ifdef COBRA_ONLY
-
 	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE)
 	{
 		syscalls_removed = true;
@@ -2301,8 +2301,7 @@ mounting_done:
 
 		{sys_map_path("/dev_bdvd/PS3_UPDATE", (char*)SYSMAP_PS3_UPDATE);} // redirect firmware update on BD disc to empty folder
 
-		if(webman_config->nosnd0) {sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", (char*)SYSMAP_PS3_UPDATE);} // disable SND0.AT3 on startup
-
+		{ DISABLE_SND0_AT3 } // enable/disable SND0.AT3 on mount
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}

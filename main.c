@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.06 MOD"
+#define WM_VERSION			"1.47.07 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -237,7 +237,6 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define THREAD_STACK_SIZE_UPDATE_XML	THREAD_STACK_SIZE_128KB
 #define THREAD_STACK_SIZE_MOUNT_GAME	THREAD_STACK_SIZE_48KB
 
-
 #define SYS_PPU_THREAD_CREATE_NORMAL	0x000
 
 ///////////// PS3MAPI BEGIN //////////////
@@ -313,6 +312,8 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define BEEP1 { system_call_3(SC_RING_BUZZER, 0x1004, 0x4,   0x6); }
 #define BEEP2 { system_call_3(SC_RING_BUZZER, 0x1004, 0x7,  0x36); }
 #define BEEP3 { system_call_3(SC_RING_BUZZER, 0x1004, 0xa, 0x1b6); }
+
+#define DISABLE_SND0_AT3 { sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? (char*)SYSMAP_PS3_UPDATE : NULL); }
 
 ////////////
 
@@ -1222,7 +1223,6 @@ static void handleclient_www(u64 conn_s_p)
 				cobra_config->ps2softemu =  1;
 
 			cobra_write_config(cobra_config);
-
  #endif
  #ifdef SPOOF_CONSOLEID
 			spoof_idps_psid();
