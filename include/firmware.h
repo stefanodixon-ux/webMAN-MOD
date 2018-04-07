@@ -76,7 +76,7 @@ static void detect_firmware(void)
 #endif  // #ifndef LAST_FIRMWARE_ONLY
 
 #ifdef DEX_SUPPORT
-		if(peekq(0x800000000030F3B0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = 4.81f; dex_mode = 2;}	else
+		if(peekq(0x800000000030F3B0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peekq(0x800000000031F028ULL) == 0x323031362F31302FULL) ? 4.81f : 4.82f; dex_mode = 2;}	else
 		if(peekq(0x800000000030F3A0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_480D; c_firmware = 4.80f; dex_mode = 2;}	else
  #ifndef LAST_FIRMWARE_ONLY
 		if(peekq(0x800000000030F2D0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_475D; c_firmware = (peekq(0x800000000031EF48ULL) == 0x323031352F31322FULL) ? 4.78f : (peekq(0x800000000031EF48ULL) == 0x323031352F30382FULL) ? 4.76f : 4.75f; dex_mode = 2;}	else
@@ -102,7 +102,7 @@ static void detect_firmware(void)
 	  //if(peekq(0x800000000032B270ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_450H; c_firmware = 4.50f; dex_mode = 1;}	else
 		if(peekq(0x800000000032EDC8ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_460H; c_firmware = 4.60f; dex_mode = 1;}	else
  #endif // #ifndef LAST_FIRMWARE_ONLY
-		if(peekq(0x800000000032EB60ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peekq(0x8000000000344B70ULL) == 0x323031362F31302FULL) ? 4.81f : (peekq(0x8000000000344B70ULL) == 0x323031352F31322FULL)? 4.78f : (peekq(0x8000000000344B70ULL) == 0x323031352F30382FULL) ? 4.76f : 4.75f; dex_mode = 1;}	else
+		if(peekq(0x800000000032EB60ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peekq(0x8000000000344B70ULL) == 0x323031372F30382FULL) ? 4.82f : (peekq(0x8000000000344B70ULL) == 0x323031362F31302FULL) ? 4.81f : (peekq(0x8000000000344B70ULL) == 0x323031352F31322FULL)? 4.78f : (peekq(0x8000000000344B70ULL) == 0x323031352F30382FULL) ? 4.76f : 4.75f; dex_mode = 1;}	else
 		if(peekq(0x800000000032EB60ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_480H; c_firmware = 4.80f; dex_mode = 1;}	else
 #endif
 
@@ -198,7 +198,7 @@ static void detect_firmware(void)
 	  //if(c_firmware == 4.50f) {base_addr = 0x30D2C0, open_hook = 0x2CEF08;} else
 		if(c_firmware == 4.60f) {base_addr = 0x310EE0, open_hook = 0x2D1464;} else
 		if(c_firmware == 4.80f) {base_addr = 0x3110F0, open_hook = 0x2C87D4;} else
-		if(c_firmware >= 4.75f && c_firmware <= 4.81f)
+		if(c_firmware >= 4.75f && c_firmware <= 4.82f)
 								{base_addr = 0x3110F0, open_hook = 0x2C87E0;}
 	}
  #endif
@@ -225,7 +225,8 @@ static void detect_firmware(void)
 								{base_addr = 0x2FA5B0, open_hook = 0x2B24F8;} else
   #endif // #ifndef LAST_FIRMWARE_ONLY
 		if(c_firmware == 4.80f) {base_addr = 0x2FA680, open_hook = 0x2B25C4;} else
-		if(c_firmware == 4.81f) {base_addr = 0x2FA690, open_hook = 0x2B25D0;}
+		if(c_firmware >= 4.81f /*&& c_firmware <= 4.82f*/)
+								{base_addr = 0x2FA690, open_hook = 0x2B25D0;}
 	}
  #endif //#ifdef DEX_SUPPORT
 
@@ -293,9 +294,9 @@ static void detect_firmware(void)
 #if defined(DEX_SUPPORT) || defined(DECR_SUPPORT)
 	else if(dex_mode)
 	{ // DEX & DEH
-		if(c_firmware >= 4.55f /*&& c_firmware <= 4.80f*/)
+		if(c_firmware >= 4.55f /*&& c_firmware <= 4.82f*/)
 		{
-				get_fan_policy_offset = 0x8000000000009EB8ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80/4.81
+				get_fan_policy_offset = 0x8000000000009EB8ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80/4.81/4.82
 				set_fan_policy_offset = 0x800000000000A3B4ULL; // sys 389 set_fan_policy
 
  #ifdef SPOOF_CONSOLEID
@@ -308,7 +309,7 @@ static void detect_firmware(void)
 					idps_offset1 = 0x8000000000432430ULL;
 					idps_offset2 = 0x80000000004C4F1CULL;
 				}
-				else if(c_firmware >= 4.75f && c_firmware <= 4.81f)
+				else if(c_firmware >= 4.75f && c_firmware <= 4.82f)
 				{
 					idps_offset1 = 0x80000000004326B0ULL;
 					idps_offset2 = 0x80000000004C4AF4ULL;
@@ -334,7 +335,7 @@ static void detect_firmware(void)
 			}
 			else
   #endif //#ifndef LAST_FIRMWARE_ONLY
-			if(c_firmware >= 4.80f && c_firmware <= 4.81f)
+			if(c_firmware >= 4.80f && c_firmware <= 4.82f)
 			{
 				idps_offset1 = 0x8000000000409A30ULL;
 				idps_offset2 = 0x800000000049CAF4ULL;
@@ -664,9 +665,9 @@ static void patch_lv2(void)
  #endif
 		}
 		else
-		if(c_firmware >= 4.75f && c_firmware <= 4.81f)
+		if(c_firmware >= 4.75f && c_firmware <= 4.82f)
 		{
-			apply_lv2_patches_new(0x800000000026E530ULL, (c_firmware == 4.81f) ? 0x800000000005A584ULL : 0x800000000005A344ULL, 0x800000000005A408ULL,
+			apply_lv2_patches_new(0x800000000026E530ULL, (c_firmware >= 4.81f) ? 0x800000000005A584ULL : 0x800000000005A344ULL, 0x800000000005A408ULL,
 								  0x800000000005A3B4ULL, 0x800000000005E498ULL,
 								  0x8000000000059FE8ULL, 0x800000000022E718ULL, 0, 0);
  #ifndef COBRA_ONLY
@@ -838,21 +839,21 @@ static void patch_lv2(void)
 								  0x8000000000059FC8ULL, 0x800000000005E0ACULL,
 								  0x8000000000059BFCULL, 0x800000000022DAC8ULL,
 								  0x8000000000059628ULL, 0x800000000005C7E8ULL);
-#ifndef COBRA_ONLY
+ #ifndef COBRA_ONLY
 			sc_600 = 0x364918; //0x38A4E8 + 600*8 = 0038B7A8 -> 80 00 00 00 00 36 49 18
 			sc_604 = 0x3649F0; //0x38A4E8 + 604*8 = 0038B7C8 -> 80 00 00 00 00 36 49 F0
 			sc_142 = 0x3292F0; //0x38A4E8 + 142*8 = 0038A958 -> 80 00 00 00 00 32 92 F0
-#endif
+ #endif
 		}
 		else
-		if(c_firmware >= 4.75f && c_firmware <= 4.81f)
+		if(c_firmware >= 4.75f && c_firmware <= 4.82f)
 		{
 			apply_lv2_patches_new(0x800000000026D868ULL, 0x8000000000059F5CULL, 0x800000000005A020ULL,
 								  0x8000000000059FCCULL, 0x800000000005E0B0ULL,
 								  0x8000000000059C00ULL, 0x800000000022DAD0ULL,
 								  0x800000000005962CULL, 0x800000000005C7ECULL);
-  #ifndef COBRA_ONLY
-			if(c_firmware == 4.81f)
+ #ifndef COBRA_ONLY
+			if(c_firmware >= 4.81f /*&& c_firmware <= 4.82f*/)
 			{
 				sc_600 = 0x364928;
 				sc_604 = 0x364A00;
@@ -864,10 +865,10 @@ static void patch_lv2(void)
 				sc_604 = 0x364920; //0x38A3E8 + 604*8 = 0038B6C8 -> 80 00 00 00 00 36 49 20
 				sc_142 = 0x329220; //0x38A3E8 + 142*8 = 0038A858 -> 80 00 00 00 00 32 92 20
 			}
-  #endif
+ #endif
 		}
 	}
-#endif
+#endif //#ifdef DEX_SUPPORT
 }
 
 #ifndef LITE_EDITION

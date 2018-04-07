@@ -33,6 +33,7 @@ static void detect_firmware(void)
 	if(peekq(0x80000000002E8610ULL)==CEX) {c_firmware=4.21f;}				else
 	if(peekq(0x80000000002D83D0ULL)==CEX) {c_firmware=3.55f;}				else
 
+	if(peekq(0x800000000030F3B0ULL)==DEX) {c_firmware=(peekq(0x800000000031F028ULL)==0x323031362F31302FULL)?4.81f:4.82f; dex_mode=2;} else
 	if(peekq(0x800000000030F3A0ULL)==DEX) {c_firmware=4.80f; dex_mode=2;}	else
 	if(peekq(0x800000000030F2D0ULL)==DEX) {c_firmware=(peekq(0x800000000031EF48ULL)==0x323031352F31322FULL)?4.78f:(peekq(0x800000000031EF48ULL)==0x323031352F30382FULL)?4.76f:4.75f; dex_mode=2;}	else
 	if(peekq(0x800000000030F240ULL)==DEX) {c_firmware=4.70f; dex_mode=2;}	else

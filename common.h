@@ -78,6 +78,7 @@
 #define NEW_POKE_SYSCALL_ADDR_481	0x80000000002A1480ULL	// where above syscall is in lv2 4.81     <- peek( SYSCALL_TABLE_481  + NEW_POKE_SYSCALL*8)
 #define NEW_POKE_SYSCALL_ADDR_481D	0x80000000002BC6FCULL	// where above syscall is in lv2 4.81 DEX <- peek( SYSCALL_TABLE_481D + NEW_POKE_SYSCALL*8)
 #define NEW_POKE_SYSCALL_ADDR_482	0x80000000002A1480ULL	// where above syscall is in lv2 4.82     <- peek( SYSCALL_TABLE_482  + NEW_POKE_SYSCALL*8)
+#define NEW_POKE_SYSCALL_ADDR_482D	0x80000000002BC6FCULL	// where above syscall is in lv2 4.82 DEX <- peek( SYSCALL_TABLE_481D + NEW_POKE_SYSCALL*8)
 */
 
 #define SYSCALL_TABLE_341			0x80000000002EB128ULL	// 3.41
@@ -110,15 +111,16 @@
 #define SYSCALL_TABLE_465D			0x800000000038A120ULL	// 4.65 DEX
 #define SYSCALL_TABLE_470			0x8000000000363B60ULL	// 4.70
 #define SYSCALL_TABLE_470D			0x800000000038A368ULL	// 4.70 DEX
-#define SYSCALL_TABLE_475			0x8000000000363BE0ULL	// 4.75
-#define SYSCALL_TABLE_475D			0x800000000038A3E8ULL	// 4.75 DEX
-#define SYSCALL_TABLE_475H			0x80000000003B28F8ULL	// 4.75 DEH
+#define SYSCALL_TABLE_475			0x8000000000363BE0ULL	// 4.75 - 4.78
+#define SYSCALL_TABLE_475D			0x800000000038A3E8ULL	// 4.75 DEX - 4.78 DEX
+#define SYSCALL_TABLE_475H			0x80000000003B28F8ULL	// 4.75 DEH - 4.78 DEH
 #define SYSCALL_TABLE_480			0x8000000000363BE0ULL	// 4.80
 #define SYSCALL_TABLE_480D			0x800000000038A4E8ULL	// 4.80 DEX
 #define SYSCALL_TABLE_480H			0x80000000003B28F8ULL	// 4.80 DEH
 #define SYSCALL_TABLE_481			0x8000000000363BE0ULL	// 4.81
 #define SYSCALL_TABLE_481D			0x800000000038A4E8ULL	// 4.81 DEX
 #define SYSCALL_TABLE_482			0x8000000000363BE0ULL	// 4.82
+#define SYSCALL_TABLE_482D			0x800000000038A4E8ULL	// 4.82 DEX
 
 #define SYSCALL_PTR(n)				( (SYSCALL_TABLE) + ( 8 * (n) ) )
 
@@ -139,6 +141,7 @@
 #define HV_START_OFFSET_475			0x370F28				// 4.75 lv2 protection
 #define HV_START_OFFSET_480			0x370F28				// 4.80 lv2 protection
 #define HV_START_OFFSET_481			0x370F28				// 4.81 lv2 protection
+#define HV_START_OFFSET_482			0x370F28				// 4.82 lv2 protection
 
 /*
 #define	HV_START_OFFSET2			0x16f000				// set lv2 access rights for sys_storage
@@ -169,13 +172,13 @@
 															// at address 0x16FA60 (4.70)
 
 #define	HV_START_OFFSET2_475		0x16FA60				// set lv2 access rights for sys_storage
-															// at address 0x16FA60 (4.75)
+															// at address 0x16FA60 (4.75-4.78)
 
 #define	HV_START_OFFSET2_480		0x16FA60				// set lv2 access rights for sys_storage
 															// at address 0x16FA60 (4.80)
 
 #define	HV_START_OFFSET2_481		0x16FA60				// set lv2 access rights for sys_storage
-															// at address 0x16FA60 (4.81)
+															// at address 0x16FA60 (4.81-4.82)
 
 #define HTAB_BASE					0x800000000f000000ULL
 
@@ -209,6 +212,8 @@
 #define HTAB_LV2_START_480D			(0x08000000ULL)
 #define HTAB_LV2_START_481			(0x01000000ULL)
 #define HTAB_LV2_START_481D			(0x08000000ULL)
+#define HTAB_LV2_START_482			(0x01000000ULL)
+#define HTAB_LV2_START_482D			(0x08000000ULL)
 */
 #define MAP_BASE (0x80000000007FAE00ULL)		// lv2 memory area to store path redirections table
 #define	MAP_ADDR (0xE8)							// address in lv2 to store MAP_BASE address (0x0000 ---> 0xFFFF)

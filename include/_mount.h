@@ -1086,6 +1086,7 @@ static void mount_thread(u64 action)
 	// init variables
 	// ---------------
 
+	char netid = NULL;
 	char _path[STD_PATH_LEN], titleID[10];
 
 	ret = true;
@@ -1126,21 +1127,6 @@ static void mount_thread(u64 action)
 	{
 		char *p = strstr(_path, "/PS3_"); if(p) *p = NULL;
 	}
-
-
-	// ------------
-	// get /net id
-	// ------------
-
-	char netid = NULL;
-
-#ifdef NET_SUPPORT
-	if(islike(_path, "/net"))
-	{
-		netid = _path[4];
-		if((netid >= '0' && netid <= '4') && _path[5] == NULL) strcat(_path, "/.");
-	}
-#endif
 
 	// ---------------------------------------------
 	// skip last game if mounting /GAMEI (nonCobra)
@@ -1221,7 +1207,6 @@ static void mount_thread(u64 action)
 	{
 		save_file(LAST_GAME_TXT, _path, SAVE_ALL);
 	}
-
 
 	// ----------------------------------------
 	// show start mounting message (game path)
@@ -1392,6 +1377,12 @@ static void mount_thread(u64 action)
 				set_gamedata_status(0, false);
 		}
 		 #endif //#ifdef EXT_GDATA
+
+		// ------------
+		// get /net id
+		// ------------
+
+		if(islike(_path, "/net")) netid = _path[4];
 
 	mount_again:
 
@@ -1579,6 +1570,8 @@ static void mount_thread(u64 action)
 					ret = false;
 					goto exit_mount;
 				}
+
+				if(_path[5] == NULL) strcat(_path, "/.");
 
 				char *netpath = _path + 5;
 

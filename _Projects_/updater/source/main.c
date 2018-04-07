@@ -12,14 +12,14 @@
 #define SC_SYS_POWER 					(379)
 #define SYS_REBOOT				 		0x8201
 
-#define BUTTON_SQUARE        128
-#define BUTTON_CROSS         64
-#define BUTTON_CIRCLE        32
-#define BUTTON_TRIANGLE      16
-#define BUTTON_R1            8
-#define BUTTON_L1            4
-#define BUTTON_R2            2
-#define BUTTON_L2            1
+#define BUTTON_SQUARE        0x80
+#define BUTTON_CROSS         0x40
+#define BUTTON_CIRCLE        0x20
+#define BUTTON_TRIANGLE      0x10
+#define BUTTON_R1            0x08
+#define BUTTON_L1            0x04
+#define BUTTON_R2            0x02
+#define BUTTON_L2            0x01
 
 #define APP_DIR              "/dev_hdd0/game/UPDWEBMOD"
 #define APP_USRDIR           APP_DIR "/USRDIR"
@@ -347,8 +347,9 @@ int main()
 	}
 	ioPadEnd();
 
-	if(button & 0x04) full=true; else
-	if(button & 0x60) lite=true;  // circle / cross
+	if(button & (BUTTON_L1)) full=true; else
+	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite=true; else
+	if(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 250000)) full=true;
 //---
 
 	sysLv2FsMkdir(TMP_DIR,   0777);
