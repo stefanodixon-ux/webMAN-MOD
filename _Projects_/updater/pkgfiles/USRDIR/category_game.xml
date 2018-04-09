@@ -819,7 +819,8 @@
 			<Query class="type:x-xmb/folder-pixmap" key="alldev_install" attr="alldev_install" src="#seg_install_files_alldev"/>
 			<Query class="type:x-xmb/folder-pixmap" key="hdd0_install" attr="hdd0_install" src="#seg_install_files_hdd0"/>
 			<Query class="type:x-xmb/folder-pixmap" key="og_install" attr="og_install" src="#seg_install_files_og"/>
-			<Query class="type:x-xmb/folder-pixmap" key="usb_install" attr="usb_install" src="#seg_install_files_usb"/>
+			<Query class="type:x-xmb/folder-pixmap" key="usb_install" attr="usb_install" src="#seg_install_files_usb"/>			
+			<Query class="type:x-xmb/folder-pixmap" key="web_install" attr="web_install" src="#seg_install_files_web"/>
 		</Items>
 	</View>
 
@@ -887,6 +888,11 @@
 			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_cf" 	src="host://localhost/q?path=/dev_cf&suffix=.pkg&subclass=x-host/package"/>
 			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_cf_pkg1" 	src="host://localhost/q?path=/dev_cf/packages&suffix=.pkg&subclass=x-host/package"/>
 			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_cf_pkg2" src="host://localhost/q?path=/dev_cf/PKG&suffix=.pkg&subclass=x-host/package"/>
+			<Query 
+				class="type:x-xmb/folder-pixmap" 
+				key="pkg_links" 
+				src="xmb://localhost/dev_hdd0/game/PKGLINKER/USRDIR/package_link.xml#pkg_items"
+				/>
 		</Items>
 	</View>
 
@@ -994,6 +1000,37 @@
 			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_ms"    src="host://localhost/q?path=/dev_ms&suffix=.pkg&subclass=x-host/package"/>
 			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_sd"    src="host://localhost/q?path=/dev_sd&suffix=.pkg&subclass=x-host/package"/>
 			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_cf"    src="host://localhost/q?path=/dev_cf&suffix=.pkg&subclass=x-host/package"/>
+		</Items>
+	</View>
+
+	<!-- Main > Package Manager > INSTALL Package Files > Remote Packages -->
+	<View id="seg_install_files_web">
+		<Attributes>
+			<Table key="host_device">
+				<Pair key="icon_rsc"><String>tex_album_icon</String></Pair>
+				<Pair key="icon_notation"><String>WNT_XmbItemAlbum</String></Pair>
+				<Pair key="title"><String>Remote Packages</String></Pair>
+				<Pair key="info"><String>Download and install packages from your PC via PKG Linker</String></Pair>
+				<Pair key="str_noitem"><String>msg_error_no_content</String></Pair>
+				<Pair key="child"><String>segment</String></Pair>
+				<Pair key="ingame"><String>disable</String></Pair>
+			</Table>
+		</Attributes>
+		<Items>
+			<Query
+				class="type:x-xmb/xmlpackagefolder"
+				key="host_device" attr="host_device"
+				src="#seg_install_files_web_path"
+				/>
+		</Items>
+	</View>
+	<View id="seg_install_files_web_path">
+		<Items>
+			<Query 
+				class="type:x-xmb/folder-pixmap" 
+				key="pkg_links" 
+				src="xmb://localhost/dev_hdd0/game/PKGLINKER/USRDIR/package_link.xml#pkg_items"
+				/>
 		</Items>
 	</View>
 
