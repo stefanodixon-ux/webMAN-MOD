@@ -261,7 +261,9 @@ static void poll_thread(u64 poll)
 #endif
 
 		// Auto-mount JB game found on root of USB device
-		if((_IS_ON_XMB_) && (!is_mounting))
+		if(is_mounting) ;
+
+		else if(_IS_ON_XMB_)
 		{
 			if(!isDir("/dev_bdvd"))
 			{
@@ -287,22 +289,32 @@ static void poll_thread(u64 poll)
 							else if(!isDir(drives[f0])) automount = 0;
 						}
 					}
-				else automount = 0;
+				else {automount = 0; if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF, msg);}
 			}
-#ifdef REMOVE_SYSCALLS
-			else if(!syscalls_removed && webman_config->dsc && (automount == 0))
+			else if((automount == 0) && IS_ON_XMB)
 			{
 				unsigned int real_disctype, effective_disctype, iso_disctype;
 				cobra_get_disc_type(&real_disctype, &effective_disctype, &iso_disctype);
 
-				if(real_disctype == DISC_TYPE_PS3_BD && iso_disctype == DISC_TYPE_NONE)
+#ifdef REMOVE_SYSCALLS
+				if((iso_disctype == DISC_TYPE_NONE) && (real_disctype == DISC_TYPE_PS3_BD))
 				{
-					disable_cfw_syscalls(webman_config->keep_ccapi);
+					if(!syscalls_removed && webman_config->dsc) disable_cfw_syscalls(webman_config->keep_ccapi);
 				}
+#endif
+				if((effective_disctype == DISC_TYPE_PS2_DVD) || (effective_disctype == DISC_TYPE_PS2_CD) || (real_disctype == DISC_TYPE_PS2_DVD) || (real_disctype == DISC_TYPE_PS2_CD) || (iso_disctype == DISC_TYPE_PS2_DVD) || (iso_disctype == DISC_TYPE_PS2_CD))
+				{
+					if(webman_config->fanc) restore_fan(SET_PS2_MODE); //fan_control( ((webman_config->ps2temp*255)/100), 0);
+
+					// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
+					save_file(WMNOSCAN, NULL, 0);
+				}
+				else if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF, msg);
+
 				automount = 99;
 			}
-#endif
 		}
+		else if(fan_ps2_mode && IS_INGAME) {automount = 0; enable_fan_control(PS2_MODE_OFF, msg);}
 
 #ifdef DO_WM_REQUEST_POLLING
 		// Poll requests via local file

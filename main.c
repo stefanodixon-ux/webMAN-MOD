@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.08 MOD"
+#define WM_VERSION			"1.47.09 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -529,7 +529,7 @@ typedef struct
 	u8 ps3l;
 	u8 roms;
 	u8 mc_app; // allow allocation from app memory container
-	u8 info;
+	u8 info;   // info level: 0=Path, 1=Path + ID, 2=ID, 3=None
 
 	u8 padding2[15];
 
@@ -988,7 +988,7 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 		read_file(HTML_BASE_PATH "/sman.htm", pbuffer, _12KB_, 0);
 
 		if(is_cpursx)
-			strcat(pbuffer, "<meta http-equiv=\"refresh\" content=\"6;URL=/cpursx.ps3?/sman.ps3\">");
+			strcat(pbuffer, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3?/sman.ps3\">");
 
 		if(param[1] != NULL && !strstr(param, ".ps3")) {strcat(pbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); strcat(pbuffer, templn);}
 
@@ -998,7 +998,7 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 	sprintf(pbuffer, HTML_HEADER); char *buffer = pbuffer + HTML_HEADER_SIZE;
 
 	if(is_cpursx)
-		buffer += concat(buffer, "<meta http-equiv=\"refresh\" content=\"6;URL=/cpursx.ps3\">");
+		buffer += concat(buffer, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3\">");
 
 	if(mount_ps3) {strcat(buffer, HTML_BODY); return  buffer;}
 
@@ -1508,6 +1508,7 @@ parse_request:
 				// /combo.ps3                    simulates a combo without actually send the buttons
 				// /play.ps3                     start game from disc icon
 				// /play.ps3?col=<col>&seg=<seg>  click item on XMB
+				// /play.ps3<path>               mount <path> and start game from disc icon
 
 				u8 ret = 0, is_combo = (param[2] == 'a') ? 0 : (param[1] == 'c') ? 2 : 1; // 0 = /pad.ps3   1 = /play.ps3   2 = /combo.ps3
 
@@ -1515,7 +1516,10 @@ parse_request:
 
 				if(is_combo != 1) {if(!webman_config->nopad) ret = parse_pad_command(buttons, is_combo);}
 				else
-				{   // default: play.ps3?col=game&seg=seg_device
+				{
+					if(file_exists(param + 9)) mount_game(param + 9, EXPLORE_CLOSE_ALL);
+
+					// default: play.ps3?col=game&seg=seg_device
 					char *pos, col[16], seg[80], *param2 = buttons; *col = *seg = NULL;
 					pos = strstr(param2, "col="); if(pos) get_value(col, pos + 4, 16); // game / video / friend / psn / network / music / photo / tv
 					pos = strstr(param2, "seg="); if(pos) get_value(seg, pos + 4, 80);
@@ -3752,7 +3756,7 @@ relisten:
 			while((loading_html > MAX_WWW_THREADS) && working)
 			{
 				sys_ppu_thread_usleep(40000);
-				if(++timeout > 250) {loading_html = 0; sclose(&conn_s); goto relisten;} // continue after 10 seconds
+				if(++timeout > 250) {loading_html = 0; sclose(&list_s); goto relisten;} // continue after 10 seconds
 			}
 
 			if(!working) goto end;

@@ -274,7 +274,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/refreshxml.png</String></Pair>
 				<Pair key="title"><String>Rafraîchir mes jeux XML</String></Pair>
 				<Pair key="info"><String>La liste des jeux sera affichée au prochain chargement du XMB</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/refresh.ps3</String></Pair>
 			</Table>
@@ -374,7 +374,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter net0</String></Pair>
 				<Pair key="info"><String>Monter /net0 -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net0/.</String></Pair>
 			</Table>
@@ -389,7 +389,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter PKG</String></Pair>
 				<Pair key="info"><String>Monter /net0/PKG -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net0/PKG</String></Pair>
 			</Table>
@@ -404,7 +404,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter VIDEO</String></Pair>
 				<Pair key="info"><String>Monter /net0/VIDEO -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net0/VIDEO</String></Pair>
 			</Table>
@@ -419,7 +419,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter MUSIC</String></Pair>
 				<Pair key="info"><String>Monter /net0/MUSIC -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net0/MUSIC</String></Pair>
 			</Table>
@@ -434,7 +434,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter PICTURE</String></Pair>
 				<Pair key="info"><String>Monter /net0/PICTURE -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net0/PICTURE</String></Pair>
 			</Table>
@@ -449,7 +449,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter ROMS</String></Pair>
 				<Pair key="info"><String>Monter /net0/ROMS -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net0/ROMS</String></Pair>
 			</Table>
@@ -464,7 +464,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter FIRMWARE</String></Pair>
 				<Pair key="info"><String>Monter /net0/FIRMWARE -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net0/FIRMWARE</String></Pair>
 			</Table>
@@ -479,7 +479,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter net1</String></Pair>
 				<Pair key="info"><String>Monter /net1 -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net1/.</String></Pair>
 			</Table>
@@ -494,7 +494,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter PKG</String></Pair>
 				<Pair key="info"><String>Monter /net1/PKG -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net1/PKG</String></Pair>
 			</Table>
@@ -509,7 +509,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter VIDEO</String></Pair>
 				<Pair key="info"><String>Monter /net1/VIDEO -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net1/VIDEO</String></Pair>
 			</Table>
@@ -524,7 +524,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter MUSIC</String></Pair>
 				<Pair key="info"><String>Monter /net1/MUSIC -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net1/MUSIC</String></Pair>
 			</Table>
@@ -539,7 +539,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter PICTURE</String></Pair>
 				<Pair key="info"><String>Monter /net1/PICTURE -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net1/PICTURE</String></Pair>
 			</Table>
@@ -554,7 +554,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter ROMS</String></Pair>
 				<Pair key="info"><String>Monter /net1/ROMS -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net1/ROMS</String></Pair>
 			</Table>
@@ -569,7 +569,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter FIRMWARE</String></Pair>
 				<Pair key="info"><String>Monter /net1/FIRMWARE -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net1/FIRMWARE</String></Pair>
 			</Table>
@@ -584,7 +584,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter net2</String></Pair>
 				<Pair key="info"><String>Monter /net2 -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net2/.</String></Pair>
 			</Table>
@@ -599,7 +599,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter PKG</String></Pair>
 				<Pair key="info"><String>Monter /net2/PKG -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net2/PKG</String></Pair>
 			</Table>
@@ -614,7 +614,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter VIDEO</String></Pair>
 				<Pair key="info"><String>Monter /net2/VIDEO -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net2/VIDEO</String></Pair>
 			</Table>
@@ -629,7 +629,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter MUSIC</String></Pair>
 				<Pair key="info"><String>Monter /net2/MUSIC -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net2/MUSIC</String></Pair>
 			</Table>
@@ -644,7 +644,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter PICTURE</String></Pair>
 				<Pair key="info"><String>Monter /net2/PICTURE -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net2/PICTURE</String></Pair>
 			</Table>
@@ -659,7 +659,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter ROMS</String></Pair>
 				<Pair key="info"><String>Monter /net2/ROMS -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net2/ROMS</String></Pair>
 			</Table>
@@ -674,7 +674,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter FIRMWARE</String></Pair>
 				<Pair key="info"><String>Monter /net2/FIRMWARE -> /dev_bdvd</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net2/FIRMWARE</String></Pair>
 			</Table>
@@ -689,7 +689,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net3/PKG -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net3/PKG</String></Pair>
 			</Table>
@@ -704,7 +704,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net3/VIDEO -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net3/VIDEO</String></Pair>
 			</Table>
@@ -719,7 +719,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net3/MUSIC -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net3/MUSIC</String></Pair>
 			</Table>
@@ -734,7 +734,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net3/PICTURE -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net3/PICTURE</String></Pair>
 			</Table>
@@ -749,7 +749,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net3/ROMS -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net3/ROMS</String></Pair>
 			</Table>
@@ -764,7 +764,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net3/FIRMWARE -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net3/FIRMWARE</String></Pair>
 			</Table>
@@ -779,7 +779,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net4/PKG -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net4/PKG</String></Pair>
 			</Table>
@@ -794,7 +794,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net4/VIDEO -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net4/VIDEO</String></Pair>
 			</Table>
@@ -809,7 +809,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net4/MUSIC -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net4/MUSIC</String></Pair>
 			</Table>
@@ -824,7 +824,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net4/PICTURE -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net4/PICTURE</String></Pair>
 			</Table>
@@ -839,7 +839,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net4/ROMS -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net4/ROMS</String></Pair>
 			</Table>
@@ -854,7 +854,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Monter /net4/FIRMWARE -> /dev_bdvd</String></Pair>
 				<Pair key="info"><String></String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/net4/FIRMWARE</String></Pair>
 			</Table>
@@ -869,7 +869,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/blockpsn.png</String></Pair>
 				<Pair key="title"><String>Bloquer les serveurs PSN</String></Pair>
 				<Pair key="info"><String>Bloquer l'accès aux serveurs PSN dans le LV1 / LV2</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/browser.ps3$block_servers</String></Pair>
 			</Table>
@@ -884,7 +884,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</String></Pair>
 				<Pair key="title"><String>Configurer le gameDATA externe</String></Pair>
 				<Pair key="info"><String>Active/Désactive l'installation des données de jeu sur un dispositif USB</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/extgd.ps3</String></Pair>
 			</Table>
@@ -913,7 +913,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/icon_wm_eject.png</String></Pair>
 				<Pair key="title"><String>Démonter le disque</String></Pair>
 				<Pair key="info"><String>[Select+O]</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/mount_ps3/unmount</String></Pair>
 			</Table>
@@ -928,7 +928,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/icon_wm_insert.png</String></Pair>
 				<Pair key="title"><String>Insérer le disque</String></Pair>
 				<Pair key="info"><String/></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/insert.ps3</String></Pair>
 			</Table>
@@ -943,7 +943,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/unload.png</String></Pair>
 				<Pair key="title"><String>Décharger webMAN</String></Pair>
 				<Pair key="info"><String>Décharge webMAN de la mémoire [R2+L3+R3]</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/quit.ps3</String></Pair>
 			</Table>
@@ -958,7 +958,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/vshmenu.png</String></Pair>
 				<Pair key="title"><String>Charger le VSH Menu</String></Pair>
 				<Pair key="info"><String>Charge le VSH Menu en mémoire</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/browser.ps3$vsh_menu</String></Pair>
 			</Table>
@@ -972,7 +972,7 @@
 			<Table key="wm_slaunch_load">
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/slaunch.png</String></Pair>
 				<Pair key="title"><String>Charger le sLaunch Menu</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/browser.ps3$slaunch</String></Pair>
 			</Table>
@@ -987,7 +987,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/restartps3.png</String></Pair>
 				<Pair key="title"><String>Redémarrer la PS3</String></Pair>
 				<Pair key="info"><String>[L3+R2+O]</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/restart.ps3</String></Pair>
 			</Table>
@@ -1002,7 +1002,7 @@
 				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/shutdownps3.png</String></Pair>
 				<Pair key="title"><String>Eteindre la PS3</String></Pair>
 				<Pair key="info"><String>[L3+R2+X]</String></Pair>
-				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="module_name"><String>bdp_disccheck_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
 				<Pair key="module_action"><String>/shutdown.ps3</String></Pair>
 			</Table>

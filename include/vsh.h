@@ -214,7 +214,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 			char explore_command[128]; // info: http://www.psdevwiki.com/ps3/explore_plugin
 
-			if(!webman_config->autoplay) execute = false;
+			//if(!webman_config->autoplay) execute = false;
 
 			for(n = 0; n < timeout; n++)
 			{

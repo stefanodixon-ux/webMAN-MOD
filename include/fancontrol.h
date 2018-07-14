@@ -6,10 +6,11 @@
 
 #define FAN_AUTO 				(0)
 
-#define ENABLED			(1)
 #define DISABLED		(0)
+#define ENABLED			(1)
 #define TOGGLE_MODE		(2)
 #define ENABLE_SC8		(3)
+#define PS2_MODE_OFF	(4)
 
 #define SET_PS2_MODE	(1)
 #define SYSCON_MODE		(0)
@@ -126,7 +127,8 @@ static void restore_fan(u8 set_ps2_temp)
 
 static void enable_fan_control(u8 enable, char *msg)
 {
-	if(enable == ENABLE_SC8) webman_config->fanc = 1;		else
+	if(enable == PS2_MODE_OFF) fan_ps2_mode = false;		else
+	if(enable == ENABLE_SC8) webman_config->fanc = ENABLED;	else
 	if(enable <= ENABLED)	 webman_config->fanc = enable;	else
 							 webman_config->fanc = (webman_config->fanc ? DISABLED : ENABLED);
 
@@ -143,7 +145,7 @@ static void enable_fan_control(u8 enable, char *msg)
 		sprintf(msg, "%s %s", STR_FANCTRL3, STR_DISABLED);
 	}
 	save_settings();
-	show_msg(msg);
+	if(enable != PS2_MODE_OFF) show_msg(msg);
 
 	if(enable == ENABLE_SC8) { PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 }

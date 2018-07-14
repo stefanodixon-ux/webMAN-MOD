@@ -270,15 +270,19 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		char net_type[8] = "", ip[ip_size] = "-";
 		get_net_info(net_type, ip);
 
-		sprintf( templn, "<hr></font><h2><a class=\"s\" href=\"/setup.ps3\">"
-							"Firmware : %s %s<br>"
-							"%s<br>"
+		sprintf(templn, "<hr></font><h2>"
+						"<input type=button onclick=\"document.getElementById('ht').style.display='block';\" value='&#x25BC;'> "
+						"<a class=\"s\" href=\"/setup.ps3\">"
+						"Firmware : %s %s<br>"
+						"%s<br>"
+						"<span id='ht' style='display:none;'>"
 #ifdef SPOOF_CONSOLEID
 						"PSID LV2 : %016llX%016llX<hr>"
 						"IDPS EID0: %016llX%016llX<br>"
 						"IDPS LV2 : %016llX%016llX<br>"
 #endif
-						"MAC Addr : %02X:%02X:%02X:%02X:%02X:%02X - %s %s</h2></a></b>",
+						"MAC Addr : %02X:%02X:%02X:%02X:%02X:%02X - %s %s"
+						"</span></h2></a></b>",
 						fw_version, cfw_info,
 						(syscalls_removed) ? STR_CFWSYSALRD : "",
 #ifdef SPOOF_CONSOLEID

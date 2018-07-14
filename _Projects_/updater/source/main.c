@@ -169,9 +169,9 @@ bool is_cobra(void)
 {
 	sysFSStat stat; bool ret = false;
 
-	if(is_disabled("/dev_blind/habib/cobra/stage2_disabled.cex", "/dev_blind/habib/cobra/stage2.cex")) return true;
 	if(is_disabled("/dev_blind/sys/stage2_disabled.bin", "/dev_blind/sys/stage2.bin")) return true;
 	if(is_disabled("/dev_blind/sys/stage2.bin.bak", "/dev_blind/sys/stage2.bin")) return true;
+	if(is_disabled("/dev_blind/habib/cobra/stage2_disabled.cex", "/dev_blind/habib/cobra/stage2.cex")) return true;
 
 	if(is_disabled("/dev_blind/rebug/cobra/stage2.cex.bak", "/dev_blind/rebug/cobra/stage2.cex")) ret = true;
 	if(is_disabled("/dev_blind/rebug/cobra/stage2.dex.bak", "/dev_blind/rebug/cobra/stage2.dex")) ret = true;
@@ -561,6 +561,7 @@ int main()
 	CopyFile(APP_USRDIR "/settings.png"  	, XMLMANPLS_IMAGES_DIR "/settings.png");
 	CopyFile(APP_USRDIR "/shutdownps3.png"	, XMLMANPLS_IMAGES_DIR "/shutdownps3.png");
 	CopyFile(APP_USRDIR "/sysinfo.png"   	, XMLMANPLS_IMAGES_DIR "/sysinfo.png");
+	CopyFile(APP_USRDIR "/sysfiles.png"   	, XMLMANPLS_IMAGES_DIR "/sysfiles.png");
 	CopyFile(APP_USRDIR "/tools.png"  		, XMLMANPLS_IMAGES_DIR "/tools.png");
 	CopyFile(APP_USRDIR "/unload.png"  		, XMLMANPLS_IMAGES_DIR "/unload.png");
 	CopyFile(APP_USRDIR "/usbredirect.png" 	, XMLMANPLS_IMAGES_DIR "/usbredirect.png");
@@ -731,12 +732,11 @@ int main()
 	}
 
 cont:
+	is_cobra(); // re-enable cobra if it's disabled
 
 	// update dev_flash (rebug)
 	if(sysLv2FsStat(FLASH_VSH_MODULE_DIR "/webftp_server.sprx", &stat) == SUCCESS)
 	{
-		is_cobra(); // re-enable cobra if it's disabled
-
 		if(sysLv2FsStat("/dev_blind", &stat) != SUCCESS)
 			sys_fs_mount("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_blind", 0);
 

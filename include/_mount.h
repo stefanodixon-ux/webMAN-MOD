@@ -1024,7 +1024,9 @@ static void mount_autoboot(void)
 			if(discboot) xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(1); // restore Disc Boot setting
 		}
 		else
-			mount_game(path, MOUNT_NORMAL);
+		{
+			if(mount_game(path, MOUNT_NORMAL)) auto_play(path);
+		}
 	}
 }
 
