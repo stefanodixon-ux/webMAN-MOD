@@ -47,10 +47,10 @@ root@NetGear:/opt/bin# ldd ps3netsrv_arm
 
 Luckily, to keep things nice and easy, all the required libraries are automatically installed when executing the scripts that install Entware on the router. You can find instructions on how to run these Entware installation scripts here: [DD-WRT](https://wiki.dd-wrt.com/wiki/index.php/Installing_Entware) or [Asuswrt-Merlin](https://github.com/RMerl/asuswrt-merlin/wiki/Entware). It's reasonable to believe that these will work well also on Tomato, AdvancedTomato, OpenWRT, etc. Both of my routers are running the required entware installation and ps3netsrv_arm from the jffs2 partition, so no external drive is involved, everything is on-board (minus the content served, of course).
 
-In order to use it, copy the binary of your choice in the folder /opt/bin (make sure once the file is in the destination folder that the permission on it are set to 0755: on WinSCP right click on the file, chose "properties" and set it like that in there; if you prefer using telnet commands, use "chmod +x ps3netsrv_arm" (or "chmod +x ps3netsrv_arm_debug") when in /opt/bin folder.
+In order to use it, copy the binary of your choice in the folder "/opt/bin" (make sure once the file is in the destination folder that the permission on it are set to 0755: on WinSCP right click on the file, chose "properties" and set it like that in there; if you prefer using telnet commands, use "chmod +x ps3netsrv_arm" (or "chmod +x ps3netsrv_arm_debug") when in "/opt/bin" folder.
 
-The debug version will diplay a lot more information when running than the release one. Use the release version if you have no use for said information.
-To go together with the binaries there is also a helper file (S99ps3netsrv) that you can place in /opt/etc/init.d/ to automate the start of the service. Remember to open it first and edit to your specific share path the 5th line (ARGS=). If you are using the debug version ALSO change the 4th line to reflect that (PROCS=).
+The debug version will display a lot more information when running than the release one. Use the release version if you have no use for said information.
+To go together with the binaries there is also a helper file (S99ps3netsrv) that you can place in "/opt/etc/init.d/" to automate the start of the service. Remember to open it first and edit to your specific share path the 5th line (ARGS=). If you are using the debug version ALSO change the 4th line to reflect that (PROCS=).
 
 The usage for this build are:
 (null) [rootdirectory] [port] [whitelist]
