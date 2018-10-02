@@ -1,6 +1,6 @@
 OpenWRT binary build webMAN-MOD 1.47.03
 
-Here are a RELEASE and a DEBUG build of the most current ps3netsrv source code (1.47.03).
+Here are a RELEASE and a DEBUG build of the most current ps3netsrv source code (1.47.03) for ARMv7 rev 0 (v71).
 
 They have been dinamically compiled, natively on the router (static compilation is only possible when cross-compiling, from what I can tell).
 
