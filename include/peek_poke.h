@@ -59,7 +59,7 @@ static void remove_lv2_memory_protection(void)
 		HV_START_OFFSET = HV_START_OFFSET_430;
 	}
 	else
-	if(c_firmware>=4.55f /*&& c_firmware<=4.82f*/)
+	if(c_firmware>=4.55f /*&& c_firmware<=4.83f*/)
 	{
 		HV_START_OFFSET = HV_START_OFFSET_460;
 	}
@@ -76,7 +76,7 @@ static void install_peek_poke(void)
 {
 	remove_lv2_memory_protection();
 
-	if(c_firmware>=4.30f /*&& c_firmware<=4.82f*/)
+	if(c_firmware>=4.30f /*&& c_firmware<=4.83f*/)
 	{	// add lv2 peek/poke + lv1 peek/poke
 		pokeq(0x800000000000171CULL + 0x00, 0x7C0802A6F8010010ULL);
 		pokeq(0x800000000000171CULL + 0x08, 0x396000B644000022ULL);
