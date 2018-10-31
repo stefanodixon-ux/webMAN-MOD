@@ -55,7 +55,7 @@ static void detect_firmware(void)
 		if(SYSCALL_TABLE) break;
 
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
-		if(peekq(0x80000000002ED818ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peekq(0x80000000002FCB68ULL) == 0x323031372F30382FULL) ? 4.82f : (peekq(0x80000000002FCB68ULL) == 0x323031362F31302FULL) ? 4.81f : (peekq(0x80000000002FCB68ULL) == 0x323031352F31322FULL) ? 4.78f : (peekq(0x80000000002FCB68ULL) == 0x323031352F30382FULL) ? 4.76f : 4.75f;} else
+		if(peekq(0x80000000002ED818ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peekq(0x80000000002FCB68ULL) == 0x323031382F30392FULL) ? 4.83f : (peekq(0x80000000002FCB68ULL) == 0x323031372F30382FULL) ? 4.82f : (peekq(0x80000000002FCB68ULL) == 0x323031362F31302FULL) ? 4.81f : (peekq(0x80000000002FCB68ULL) == 0x323031352F31322FULL) ? 4.78f : (peekq(0x80000000002FCB68ULL) == 0x323031352F30382FULL) ? 4.76f : 4.75f;} else
 		if(peekq(0x80000000002ED808ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_480;  c_firmware = 4.80f;}				else
 #ifndef LAST_FIRMWARE_ONLY
 		if(peekq(0x80000000002ED778ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_470;  c_firmware = 4.70f;}				else
@@ -122,7 +122,7 @@ static void detect_firmware(void)
 
 		if(IS_CEX)
 		{
-			if(c_firmware >= 4.75f) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80, 4.81, 4.82
+			if(c_firmware >= 4.75f) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80, 4.81, 4.82, 4.83
 #ifndef LAST_FIRMWARE_ONLY
 			if(c_firmware == 4.70f) SYSCALL_TABLE = SYSCALL_TABLE_470;
 			if(c_firmware >= 4.60f && c_firmware <= 4.66f) SYSCALL_TABLE = SYSCALL_TABLE_460; // same for 4.60, 4.65, 4.66
@@ -186,7 +186,7 @@ static void detect_firmware(void)
 		if(c_firmware == 4.70f) {base_addr = 0x2D8A70, open_hook = 0x2975C0;} else
  #endif  // #ifndef LAST_FIRMWARE_ONLY
 		if(c_firmware == 4.80f) {base_addr = 0x2D8AE0, open_hook = 0x29762C;} else
-		if(c_firmware >= 4.75f && c_firmware <= 4.82f)
+		if(c_firmware >= 4.75f && c_firmware <= 4.83f)
 								{base_addr = 0x2D8AF0, open_hook = 0x297638;}
 	}
 
@@ -235,9 +235,9 @@ static void detect_firmware(void)
 
 	if(IS_CEX)
 	{ // CEX
-		if(c_firmware >= 4.55f /*&& c_firmware <= 4.82f*/)
+		if(c_firmware >= 4.55f /*&& c_firmware <= 4.83f*/)
 		{
-			get_fan_policy_offset = 0x8000000000009E38ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80/4.81/4.82
+			get_fan_policy_offset = 0x8000000000009E38ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80/4.81/4.82/4.83
 			set_fan_policy_offset = 0x800000000000A334ULL; // sys 389 set_fan_policy
 
 #ifdef SPOOF_CONSOLEID
@@ -260,7 +260,7 @@ static void detect_firmware(void)
 			}
 			else
  #endif //#ifndef LAST_FIRMWARE_ONLY
-			if(c_firmware >= 4.75f && c_firmware <= 4.82f)
+			if(c_firmware >= 4.75f && c_firmware <= 4.83f)
 			{
 				idps_offset1 = 0x80000000003E2E30ULL;
 				idps_offset2 = 0x8000000000474AF4ULL;
@@ -598,7 +598,7 @@ static void patch_lv2(void)
 #endif
 		}
 		else
-		if(c_firmware >= 4.75f && c_firmware <= 4.82f)
+		if(c_firmware >= 4.75f && c_firmware <= 4.83f)
 		{
 			apply_lv2_patches_new(0x800000000026714CULL, 0x800000000005658CULL, 0x8000000000056650ULL,
 								  0x80000000000565FCULL, 0x800000000005A6E0ULL,
