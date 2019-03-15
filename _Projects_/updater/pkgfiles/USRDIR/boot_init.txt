@@ -1,0 +1,2 @@
+map /dev_flash/vsh/resource/coldboot_stereo.ac3=/dev_flash/vsh/resource/AAA
+map /dev_flash/vsh/resource/coldboot_multi.ac3=/dev_flash/vsh/resource/AAA

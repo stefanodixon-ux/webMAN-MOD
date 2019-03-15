@@ -550,7 +550,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					bool is_MLST = _IS(cmd, "MLST");
 					bool is_MLSx = is_MLSD || is_MLST;
 
-					if(IS(param, "-l") || IS(param, "-la") || IS(param, "-al")) {*param = NULL, nolist = false;}
+					if(_IS(param, "-l") || _IS(param, "-a") || _IS(param, "-la") || _IS(param, "-al")) {*param = NULL, nolist = false;}
 
 					if((data_s < 0) && (pasv_s >= 0) && !is_MLST) data_s = accept(pasv_s, NULL, NULL);
 

@@ -30,6 +30,15 @@ copy /y pkgfiles\USRDIR\images\*.jpg pkgfiles-metalification_theme\USRDIR\images
 mkdir pkgfiles-metalification_theme\USRDIR\official>>nul
 copy /y pkgfiles\USRDIR\official\*.sprx pkgfiles-metalification_theme\USRDIR\official>>nul
 
+mkdir pkgfiles-metalification_theme\USRDIR\CONFIG\CUSTOM
+copy /y pkgfiles\USRDIR\CONFIG\CUSTOM\*.CONFIG pkgfiles-metalification_theme\USRDIR\CONFIG\CUSTOM>>nul
+mkdir pkgfiles-metalification_theme\USRDIR\CONFIG\GX
+copy /y pkgfiles\USRDIR\CONFIG\GX\*.CONFIG pkgfiles-metalification_theme\USRDIR\CONFIG\GX>>nul
+mkdir pkgfiles-metalification_theme\USRDIR\CONFIG\NET
+copy /y pkgfiles\USRDIR\CONFIG\NET\*.CONFIG pkgfiles-metalification_theme\USRDIR\CONFIG\NET>>nul
+mkdir pkgfiles-metalification_theme\USRDIR\CONFIG\SOFT
+copy /y pkgfiles\USRDIR\CONFIG\SOFT\*.CONFIG pkgfiles-metalification_theme\USRDIR\CONFIG\SOFT>>nul
+
 cls
 
 ren pkgfiles pkgfiles-normal_theme
@@ -91,6 +100,9 @@ del /s/q pkgfiles-metalification_theme\USRDIR\images\*.jpg>>nul
 del /s/q pkgfiles-metalification_theme\USRDIR\official\*.sprx>>nul
 del /s/q pkgfiles-metalification_theme\ICON0.PNG>>nul
 del /s/q pkgfiles-metalification_theme\PARAM.SFO>>nul
+
+del /s/q pkgfiles-metalification_theme\USRDIR\CONFIG\*.*>>nul
+rmdir /s/q pkgfiles-metalification_theme\USRDIR\CONFIG>>nul
 
 rd pkgfiles-metalification_theme\USRDIR\images>>nul
 rd pkgfiles-metalification_theme\USRDIR\official>>nul

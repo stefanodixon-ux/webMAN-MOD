@@ -1010,7 +1010,7 @@ static void mount_autoboot(void)
 	{   // add some delay
 		if(webman_config->delay)      {sys_ppu_thread_sleep(3); wait_for(path, 2 * (webman_config->boots + webman_config->bootd));}
 #ifndef COBRA_ONLY
-		if((!islike(path, "/net")) && (!strstr(path, ".ntfs[")))
+		if(islike(path, "/net") || (strstr(path, ".ntfs[") != NULL)) return;
 #endif
 
 		if(is_last_game)
@@ -1768,10 +1768,73 @@ static void mount_thread(u64 action)
 
 					if(file_exists(iso_list[0]))
 					{
+						cellFsUnlink(TMP_DIR "loadoptical"); //Cobra 8.x
+
 						TrackDef tracks[1];
 						tracks[0].lba = 0;
 						tracks[0].is_audio = 0;
-						cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
+
+						#ifndef LITE_EDITION
+						// Auto-copy CONFIG from ManaGunZ
+						sprintf(_path, "%s.CONFIG", iso_list[0]);
+						if(!webman_config->ps2config && (file_exists(_path) == false))
+						{
+							cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
+							sys_ppu_thread_usleep(2500);
+							cobra_send_fake_disc_insert_event();
+
+							wait_for("/dev_bdvd", 2);
+
+							CellFsDirent dir; u64 read_e; int fd;
+							if(cellFsOpendir("/dev_bdvd", &fd) == CELL_FS_SUCCEEDED)
+							{
+								while(!cellFsReaddir(fd, &dir, &read_e) && read_e)
+								{
+									if(strlen(dir.d_name) == 11)
+									{
+										char *tempID = dir.d_name; to_upper(tempID);
+										if ((tempID[0] == 'S' && 
+											(tempID[1] == 'L' || tempID[1] == 'C') &&
+											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'K') && 
+											(tempID[3] == 'S' || tempID[1] == 'M' || tempID[1] == 'J' || tempID[1] == 'A') && 
+											(tempID[4] == '_' && tempID[8] == '.') &&
+											(tempID[5] >= '0' && tempID[5] <= '9') &&
+											(tempID[6] >= '0' && tempID[6] <= '9') &&
+											(tempID[7] >= '0' && tempID[7] <= '9') &&
+											(tempID[9] >= '0' && tempID[9] <= '9')
+										   ))
+										{
+											char temp[STD_PATH_LEN], config_path[4][8] = {"CUSTOM", "NET", "GX", "SOFT"};
+
+											sprintf(temp, "%sPS2CONFIG/USRDIR/%s.CONFIG", HDD0_GAME_DIR, tempID);
+											if(file_exists(temp))
+												file_copy(temp, _path, COPY_WHOLE_FILE);
+											else
+												for(u8 i = 0; i < 4; i++)
+												{
+													sprintf(temp, "%sPS2CONFIG/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
+													if(file_exists(temp)) {file_copy(temp, _path, COPY_WHOLE_FILE); break;}
+													sprintf(temp, "%sMANAGUNZ0/USRDIR/sys/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
+													if(file_exists(temp)) {file_copy(temp, _path, COPY_WHOLE_FILE); break;}
+													sprintf(temp, "%sUPDWEBMOD/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
+													if(file_exists(temp)) {file_copy(temp, _path, COPY_WHOLE_FILE); break;}
+												}
+											break;
+										}
+									}
+								}
+								cellFsClosedir(fd);
+							}
+
+							if(file_exists(_path)) do_umount(false); else mount_unk = EMU_PS2_CD; // prevent mount ISO again
+						}
+						#endif
+
+						// mount PS2 ISO
+						if(mount_unk == EMU_PS2_DVD)
+							cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
+
+						// set fan to PS2 mode (constant fan speed)
 						if(webman_config->fanc) restore_fan(SET_PS2_MODE); //fan_control( ((webman_config->ps2temp*255)/100), 0);
 
 						// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2

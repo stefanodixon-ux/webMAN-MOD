@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.09 MOD"
+#define WM_VERSION			"1.47.12 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -313,7 +313,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define BEEP2 { system_call_3(SC_RING_BUZZER, 0x1004, 0x7,  0x36); }
 #define BEEP3 { system_call_3(SC_RING_BUZZER, 0x1004, 0xa, 0x1b6); }
 
-#define DISABLE_SND0_AT3 { sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? (char*)SYSMAP_PS3_UPDATE : NULL); }
+#define DISABLE_SND0_AT3 { sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? (char*)SYSMAP_PS3_UPDATE : NULL);}
 
 ////////////
 
@@ -493,7 +493,7 @@ typedef struct
 
 	u8 padding0[14];
 
-	u8 lang;
+	u8 lang; //0=EN, 1=FR, 2=IT, 3=ES, 4=DE, 5=NL, 6=PT, 7=RU, 8=HU, 9=PL, 10=GR, 11=HR, 12=BG, 13=IN, 14=TR, 15=AR, 16=CN, 17=KR, 18=JP, 19=ZH, 20=DK, 21=CZ, 22=SK, 99=XX
 
 	// scan devices settings
 
@@ -512,8 +512,8 @@ typedef struct
 
 	// scan content settings
 
-	u8 refr;
-	u8 foot;
+	u8 refr; // 1=disable content scan on startup
+	u8 foot; // buffer size during content scanning : 0=896KB,1=320KB,2=1280KB,3=512KB,4 to 7=1280KB
 	u8 cmask;
 
 	u8 nogrp;
@@ -535,7 +535,7 @@ typedef struct
 
 	// start up settings
 
-	u8 wmstart;
+	u8 wmstart; // 1=disable start up message (webMAN Loaded!)
 	u8 lastp;
 	u8 autob;
 	char    autoboot_path[256];
@@ -569,7 +569,7 @@ typedef struct
 	u8  keep_ccapi;
 	u32 combo;
 	u32 combo2;
-	u8  sc8mode;
+	u8  sc8mode; // 0/4=Remove cfw syscall disables syscall8 / PS3MAPI=disabled, 1=Keep syscall8 / PS3MAPI=enabled
 
 	u8 padding5[21];
 
@@ -606,8 +606,9 @@ typedef struct
 	u8 ps1emu;
 	u8 autoplay;
 	u8 ps2emu;
+	u8 ps2config;
 
-	u8 padding9[11];
+	u8 padding9[10];
 
 	// profile settings
 
@@ -1205,18 +1206,16 @@ static void handleclient_www(u64 conn_s_p)
 			memset(cobra_config, 0, 15);
 			cobra_read_config(cobra_config);
 
-			if(webman_config->nospoof)
+			// cobra spoofer not working since 4.53
+			if(webman_config->nospoof || (c_firmware >= 4.53f))
 			{
 				cobra_config->spoof_version  = 0;
 				cobra_config->spoof_revision = 0;
 			}
 			else
-			{   // cobra spoofer not working on 4.53
-				if(c_firmware != 4.53f)
-				{
-					cobra_config->spoof_version = 0x0481;
-					cobra_config->spoof_revision = 66786;
-				}
+			{
+				cobra_config->spoof_version = 0x0484;
+				cobra_config->spoof_revision = 67805;
 			}
 
 			if( cobra_config->ps2softemu == 0 && cobra_get_ps2_emu_type() == PS2_EMU_SW )
@@ -3681,6 +3680,66 @@ static void wwwd_thread(u64 arg)
 
 	if(webman_config->blind) enable_dev_blind(NO_MSG);
 
+#ifdef COBRA_ONLY
+ #ifndef LITE_EDITION
+	if(file_exists("/dev_hdd0/boot_init.txt"))
+	{
+		sys_addr_t sysmem = NULL;
+		sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem); 
+		char *buffer = (char*)sysmem, *pos, *dest = NULL; u16 l = 0;
+		size_t buffer_size = read_file("/dev_hdd0/boot_init.txt", buffer, _64KB_, 0); buffer[buffer_size] = 0;
+		while(*buffer)
+		{
+			if(++l > 999) break;
+
+			pos = strstr(buffer, "\n");
+			if(pos)
+			{
+				if(pos) *pos = 0; //EOL
+
+				dest = strstr(buffer, "=/");
+				if(dest)
+				{
+					*dest = 0, dest++; //split parameters
+					if(_islike(buffer, "map /"))  {buffer += 4;}
+					if(*buffer == '/')            {sys_map_path(buffer, dest);} else
+					if(_islike(buffer, "ren /"))  {buffer += 4; cellFsRename(buffer, dest);} else
+					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else file_copy(buffer, dest, COPY_WHOLE_FILE);}
+				}
+				else if(*buffer == '#' || *buffer == ';' || *buffer == '*') ; // remark
+				else
+				{
+					if(_islike(buffer, "del /"))   {buffer += 4; del(buffer, RECURSIVE_DELETE);} else
+					if(_islike(buffer, "md /"))    {buffer += 3; mkdir_tree(buffer);} else
+					if(_islike(buffer, "unmap /")) {buffer += 6; sys_map_path(buffer, NULL);} else
+					if(_islike(buffer, "wait /"))  {buffer += 5; wait_for(buffer, 15);} else
+					if(_islike(buffer, "abort if "))
+					{
+						buffer += 9;
+						if(_islike(buffer, "exist /")) {buffer += 6; if(file_exists(buffer)) break;} else
+						if(_islike(buffer, "not exist /")) {buffer += 10; if(!file_exists(buffer)) break;} else
+						{
+							CellPadData pad_data = pad_read();
+							if(pad_data.len > 0)
+							{
+								if(_islike(buffer, "L1") && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1)) break;
+								if(_islike(buffer, "R1") && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1)) break;
+							}
+						}
+					}
+				}
+
+				buffer = pos + 1, dest = NULL;
+				while((*buffer == '\n') || (*buffer == '\r')) buffer++;
+			}
+			else
+				break;
+		}
+		sys_memory_free(sysmem);
+	}
+ #endif
+#endif
+
 	set_buffer_sizes(webman_config->foot);
 
 	#ifdef AUTO_POWER_OFF
@@ -3696,13 +3755,13 @@ static void wwwd_thread(u64 arg)
 	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 
 #ifdef PS3NET_SERVER
-	if(!webman_config->netsrvd)
+	if(!webman_config->netsrvd && (webman_config->ftp_port != NETPORT))
 		sys_ppu_thread_create(&thread_id_netsvr, netsvrd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_NET_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVR);
 #endif
 
 #ifdef PS3MAPI
-	///////////// PS3MAPI BEGIN ////////////
-	if(!webman_config->ftpd)
+	///////////// PS3MAPI BEGIN //////////// [requires PS3MAPI enabled in /setup.ps3, the option is found in "XMB/In-Game PAD SHORTCUTS", next to DEL CFW SYSCALLS]
+	if(!webman_config->ftpd && (webman_config->ftp_port != PS3MAPIPORT) && (webman_config->sc8mode != 4))
 		sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);
 	///////////// PS3MAPI END //////////////
 #endif
@@ -3785,6 +3844,15 @@ relisten:
 
 	}
 end:
+
+#ifdef COBRA_ONLY
+	//if(webman_config->nosnd0)
+	{
+		sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);
+		sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL); 
+	}
+#endif
+
 	sclose(&list_s);
 	sys_ppu_thread_exit(0);
 }

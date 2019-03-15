@@ -188,7 +188,7 @@ static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s --> %s --> %s</b>"
 						HTML_BLU_SEPARATOR,
-						"PS3MAPI", "PS3 Commands", "Buzzer");
+						"<a href='/home.ps3mapi'>PS3MAPI</a>", "PS3 Commands", "Buzzer");
 	else
 		sprintf(templn, "<td width=\"260\" class=\"la\"><u>%s:</u><br>", "Buzzer");
 	strcat(buffer, templn);
@@ -232,7 +232,7 @@ static void ps3mapi_led(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s --> %s --> %s</b>"
 						HTML_BLU_SEPARATOR,
-						"PS3MAPI", "PS3 Commands", "Led");
+						"<a href='/home.ps3mapi'>PS3MAPI</a>", "PS3 Commands", "Led");
 	else
 		sprintf(templn, "<td width=\"260\" class=\"la\"><u>%s:</u><br>", "Led");
 
@@ -270,7 +270,7 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s --> %s --> %s</b>"
 						HTML_BLU_SEPARATOR,
-						"PS3MAPI", "PS3 Commands", "Notify");
+						"<a href='/home.ps3mapi'>PS3MAPI</a>", "PS3 Commands", "Notify");
 	else
 		sprintf(templn, "<tr><td class=\"la\"><br><u>%s:</u><br><br>", "Notify");
 
@@ -309,7 +309,7 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s --> %s --> %s</b>"
 						HTML_BLU_SEPARATOR
-						"<table width=\"800\">", "PS3MAPI", "PS3 Commands", "CFW syscall");
+						"<table width=\"800\">", "<a href='/home.ps3mapi'>PS3MAPI</a>", "PS3 Commands", "CFW syscall");
 	else
 		sprintf(templn, "<table width=\"800\">"
 						"<tr><td class=\"la\"><u>%s:</u><br><br></td></tr>", "CFW syscall");
@@ -377,7 +377,7 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 
 #ifdef REMOVE_SYSCALLS
 	strcat(buffer, "<br>");
-	if(sc_count) add_check_box("sce", false, "Re-Enable Syscalls & Unlock syscall 8\" onclick=\"b.value=(this.checked)?' Enable ':'Disable';", _BR_, false, buffer);
+	if(sc_count) add_check_box("sce\" onclick=\"b.value=(this.checked)?' Enable ':'Disable';", false, "Re-Enable Syscalls & Unlock syscall 8", _BR_, false, buffer);
 	else		 add_check_box("scd", false, "Disable Syscalls & Lock syscall 8"  , _BR_, false, buffer);
 #endif
 
@@ -521,7 +521,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s --> %s --> %s</b>"
 						HTML_BLU_SEPARATOR,
-						"PS3MAPI", "Processes Commands", "Get process memory");
+						"<a href='/home.ps3mapi'>PS3MAPI</a>", "Processes Commands", "Get process memory");
 	else
 		sprintf(templn, "<b>%s</b>"
 						HTML_BLU_SEPARATOR,
@@ -652,7 +652,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s --> %s --> %s</b>"
 						HTML_BLU_SEPARATOR,
-						"PS3MAPI", "Processes Commands", "Set process memory");
+						"<a href='/home.ps3mapi'>PS3MAPI</a>", "Processes Commands", "Set process memory");
 	else
 		sprintf(templn, "<u>%s:</u>", "Set process memory");
 
@@ -956,7 +956,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s --> %s</b>"
 						HTML_BLU_SEPARATOR,
-						"PS3MAPI", "Game Plugins");
+						"<a href='/home.ps3mapi'>PS3MAPI</a>", "Game Plugins");
 	else
 		sprintf(templn, "<b>%s</b>"
 						HTML_BLU_SEPARATOR,

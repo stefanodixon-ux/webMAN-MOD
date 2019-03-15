@@ -1045,9 +1045,10 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		// filter html content
 		char filter_name[STD_PATH_LEN]; *filter_name = NULL;
 		u8 filter0, filter1, b0, b1; filter0 = filter1 = b0 = b1 = 0;
-		u8 clear_ntfs = 0;
-
 		u8 div_size = mobile_mode ? 0 : GAME_DIV_SIZE;
+#ifdef COBRA_ONLY
+		u8 clear_ntfs = 0;
+#endif
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
 		f1_len = (webman_config->roms ? id_ROMS : webman_config->ps3l ? id_GAMEI : id_VIDEO) + 1;

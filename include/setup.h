@@ -136,6 +136,7 @@ static void setup_parse_settings(char *param)
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
 	if(!strstr(param, "pdc=1")) webman_config->combo|=DISACOBRA;
+	if(!strstr(param, "cf2=1")) webman_config->ps2config = true;
  #endif
 
 	if(strstr(param, "sc8=0")) webman_config->sc8mode = 4; else webman_config->sc8mode = 1;
@@ -208,7 +209,7 @@ static void setup_parse_settings(char *param)
 #endif
 
 	if(strstr(param, "nsp=1")) webman_config->nospoof = 1; //don't spoof fw version
-	if(c_firmware==4.53f) webman_config->nospoof = 1;
+	if(c_firmware >= 4.53f) webman_config->nospoof = 1;
 
 	if(strstr(param, "fc=1") && !strstr(param, "temp=2")) webman_config->fanc = ENABLED;
 
@@ -542,8 +543,9 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 	b = isDir(PS2_CLASSIC_PLACEHOLDER);
-	add_check_box("ps2", false, "PLAYSTATION\xC2\xAE\x32"    , b ? " (" : _BR_, !(webman_config->cmask & PS2), buffer);
-	if(b) add_check_box("p2l", false, STR_PS2L               ,     ")<br>"    ,  (webman_config->ps2l)       , buffer);
+	add_check_box("ps2", false, "PLAYSTATION\xC2\xAE\x32", " (" ,   !(webman_config->cmask & PS2), buffer);
+	if(b) add_check_box("p2l", false, STR_PS2L           , ", " ,    (webman_config->ps2l)       , buffer);
+	add_check_box("cf2", false, "Auto CONFIG"            , ")<br>", !(webman_config->ps2config)  , buffer);
 
 #ifdef COBRA_ONLY
 	add_check_box("ps1", false, "PLAYSTATION\xC2\xAE&nbsp;"  ,     " ("       , !(webman_config->cmask & PS1), buffer);
@@ -654,7 +656,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef COBRA_ONLY
-	if(c_firmware != 4.53f)
+	if(c_firmware < 4.53f)
 		add_check_box("nsp", false, STR_NOSPOOF, _BR_, (webman_config->nospoof), buffer);
 #endif
 
@@ -1004,7 +1006,7 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("pr1", false, STR_RBGNORM, 	" : <b>L3+L2+O</b><br>"            , !(webman_config->combo2 & NORMAMODE), buffer);
 	add_check_box("pr2", false, STR_RBGMENU, 	" : <b>L3+L2+X</b><br>"            , !(webman_config->combo2 & DEBUGMENU), buffer);
 
-	if(c_firmware>=4.65f)
+	if(c_firmware >= 4.65f)
 	add_check_box("p2c", false, "PS2 CLASSIC",  " : <b>SELECT+L2+&#8710;</b><br>", !(webman_config->combo2 & PS2TOGGLE), buffer);
 #endif
 
@@ -1190,6 +1192,8 @@ static void read_settings(void)
 
 	webman_config->pspl = 1;          //Show PSP Launcher
 	webman_config->ps2l = 1;          //Show PS2 Classic Launcher
+
+	//webman_config->ps2config = 0;   //enable auto lookup for PS2 CONFIG
 
 	//webman_config->spp   = 0;       //disable removal of syscalls
 	//webman_config->fixgame = FIX_GAME_AUTO;

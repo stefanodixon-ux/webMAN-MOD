@@ -30,6 +30,15 @@ copy /y pkgfiles\USRDIR\images\*.jpg pkgfiles-rebugification_theme\USRDIR\images
 mkdir pkgfiles-rebugification_theme\USRDIR\official>>nul
 copy /y pkgfiles\USRDIR\official\*.sprx pkgfiles-rebugification_theme\USRDIR\official>>nul
 
+mkdir pkgfiles-rebugification_theme\USRDIR\CONFIG\CUSTOM
+copy /y pkgfiles\USRDIR\CONFIG\CUSTOM\*.CONFIG pkgfiles-rebugification_theme\USRDIR\CONFIG\CUSTOM>>nul
+mkdir pkgfiles-rebugification_theme\USRDIR\CONFIG\GX
+copy /y pkgfiles\USRDIR\CONFIG\GX\*.CONFIG pkgfiles-rebugification_theme\USRDIR\CONFIG\GX>>nul
+mkdir pkgfiles-rebugification_theme\USRDIR\CONFIG\NET
+copy /y pkgfiles\USRDIR\CONFIG\NET\*.CONFIG pkgfiles-rebugification_theme\USRDIR\CONFIG\NET>>nul
+mkdir pkgfiles-rebugification_theme\USRDIR\CONFIG\SOFT
+copy /y pkgfiles\USRDIR\CONFIG\SOFT\*.CONFIG pkgfiles-rebugification_theme\USRDIR\CONFIG\SOFT>>nul
+
 cls
 
 ren pkgfiles pkgfiles-normal_theme
@@ -91,6 +100,9 @@ del /s/q pkgfiles-rebugification_theme\USRDIR\images\*.jpg>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\official\*.sprx>>nul
 del /s/q pkgfiles-rebugification_theme\ICON0.PNG>>nul
 del /s/q pkgfiles-rebugification_theme\PARAM.SFO>>nul
+
+del /s/q pkgfiles-rebugification_theme\USRDIR\CONFIG\*.*>>nul
+rmdir /s/q pkgfiles-rebugification_theme\USRDIR\CONFIG>>nul
 
 rd pkgfiles-rebugification_theme\USRDIR\images>>nul
 rd pkgfiles-rebugification_theme\USRDIR\official>>nul

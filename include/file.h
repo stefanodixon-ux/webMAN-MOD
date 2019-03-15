@@ -98,10 +98,20 @@ static u64 get_free_space(const char *dev_name)
 		return ((u64)vbuf.f_bfree * (u64)vbuf.f_bsize);
 	}
 #endif
+	if(!islike(dev_name, "/dev_")) return 0;
+
+	u64 freeSize = 0, devSize = 0;
+
+    #define SC_FS_DISK_FREE		840
+	{system_call_3(SC_FS_DISK_FREE, (u64)(u32)(dev_name), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
+	return freeSize;
+/*
 	u32 blockSize;
 	u64 freeSize;
+
 	if(cellFsGetFreeSize(dev_name, &blockSize, &freeSize)  == CELL_FS_SUCCEEDED) return (freeSize * blockSize);
 	return 0;
+*/
 }
 
 static bool isDir(const char* path)

@@ -106,6 +106,14 @@ static char *to_upper(char *text)
 	return upper;
 }
 
+#ifdef COBRA_ONLY
+ #ifndef LITE_EDITION
+static bool _islike(const char *param, const char *text)
+{
+	return strncasecmp(param, text, strlen(text)) == 0;
+}
+ #endif
+#endif
 static bool islike(const char *param, const char *text)
 {
 	while(*text && (*text == *param)) text++, param++;
