@@ -385,7 +385,7 @@ static void add_breadcrumb_trail(char *pbuffer, char *param)
 	while((slash = strchr(templn + 1, '/')))
 	{
 		*slash = NULL;
-		tlen+=strlen(templn) + 1;
+		tlen+=(slash - templn) + 1; //strlen(templn) + 1;
 
 		strcpy(swap, param);
 		swap[tlen] = NULL;
@@ -536,15 +536,15 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 #endif
 		tlen = strlen(buffer);
 
-		tlen += concat(buffer,  "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}</style>"
-								"<table id=\"files\" class=\"propfont\">");
+		tlen += concat(buffer + tlen, "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}</style>"
+									  "<table id=\"files\" class=\"propfont\">");
 /*
 		if(file_exists("/dev_hdd0/xmlhost/game_plugin/sort.js"))
 			buffer += concat(buffer, "<script src=\"/dev_hdd0/xmlhost/game_plugin/sort.js\"></script>"
 									 "<thead><tr><th align=left>Name</th><th>Size</th><th>Date</th></tr></thead>");
 		else
 */
-			tlen += concat(buffer,  "<tr><td colspan=3><col width=\"220\"><col width=\"98\">");
+			tlen += concat(buffer + tlen, "<tr><td colspan=3><col width=\"220\"><col width=\"98\">");
 
 		buf_len = tlen;
 

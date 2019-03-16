@@ -166,7 +166,8 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define HDD0_GAME_DIR		"/dev_hdd0/game/"
 #define PKGLAUNCH_DIR		"/dev_hdd0/game/PKGLAUNCH"
 
-#define SYSMAP_PS3_UPDATE	"/dev_flash/vsh/resource/AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
+#define VSH_RESOURCE_DIR	"/dev_flash/vsh/resource/"
+#define SYSMAP_PS3_UPDATE	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
 
 #define PS2_CLASSIC_TOGGLER "/dev_hdd0/classic_ps2"
 
@@ -1173,7 +1174,7 @@ static void handleclient_www(u64 conn_s_p)
 		{
 			if(file_exists(wm_icons[i]) == false)
 			{
-				sprintf(param, "/dev_flash/vsh/resource/explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], param);
+				sprintf(param, VSH_RESOURCE_DIR "explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], param);
 				if(file_exists(param)) continue;
 
 				char *icon = wm_icons[i] + 32;
@@ -3686,7 +3687,7 @@ static void wwwd_thread(u64 arg)
 	{
 		sys_addr_t sysmem = NULL;
 		sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem); 
-		char *buffer = (char*)sysmem, *pos, *dest = NULL; u16 l = 0;
+		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0;
 		size_t buffer_size = read_file("/dev_hdd0/boot_init.txt", buffer, _64KB_, 0); buffer[buffer_size] = 0;
 		while(*buffer)
 		{
@@ -3695,16 +3696,18 @@ static void wwwd_thread(u64 arg)
 			pos = strstr(buffer, "\n");
 			if(pos)
 			{
-				if(pos) *pos = 0; //EOL
+				if(pos) *pos = NULL; //EOL
+				cr = strstr(buffer, "\r"); if(cr) *cr = NULL;
 
 				dest = strstr(buffer, "=/");
 				if(dest)
 				{
-					*dest = 0, dest++; //split parameters
+					*dest = NULL, dest++; //split parameters
 					if(_islike(buffer, "map /"))  {buffer += 4;}
 					if(*buffer == '/')            {sys_map_path(buffer, dest);} else
 					if(_islike(buffer, "ren /"))  {buffer += 4; cellFsRename(buffer, dest);} else
-					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else file_copy(buffer, dest, COPY_WHOLE_FILE);}
+					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else file_copy(buffer, dest, COPY_WHOLE_FILE);} else
+					if(_islike(buffer, "swap /")) {buffer += 5; strcpy(cp_path, buffer); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(buffer, cp_path); cellFsRename(dest, buffer); cellFsRename(cp_path, dest); *cp_path = NULL;}
 				}
 				else if(*buffer == '#' || *buffer == ';' || *buffer == '*') ; // remark
 				else
@@ -3713,6 +3716,12 @@ static void wwwd_thread(u64 arg)
 					if(_islike(buffer, "md /"))    {buffer += 3; mkdir_tree(buffer);} else
 					if(_islike(buffer, "unmap /")) {buffer += 6; sys_map_path(buffer, NULL);} else
 					if(_islike(buffer, "wait /"))  {buffer += 5; wait_for(buffer, 15);} else
+					if(_islike(buffer, "mute coldboot"))
+					{
+						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), SYSMAP_PS3_UPDATE);
+						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"), SYSMAP_PS3_UPDATE);
+					}
+					else
 					if(_islike(buffer, "abort if "))
 					{
 						buffer += 9;
@@ -3846,11 +3855,8 @@ relisten:
 end:
 
 #ifdef COBRA_ONLY
-	//if(webman_config->nosnd0)
-	{
-		sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);
-		sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL); 
-	}
+	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), NULL);
+	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"),  NULL); 
 #endif
 
 	sclose(&list_s);

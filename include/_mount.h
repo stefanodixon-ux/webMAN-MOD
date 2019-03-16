@@ -599,6 +599,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// show mounted game
 			// ------------------
 			{
+				size_t mlen;
 				bool is_gamei = false;
 				bool is_movie = strstr(param, "/BDISO") || strstr(param, "/DVDISO") || !extcmp(param, ".ntfs[BDISO]", 12) || !extcmp(param, ".ntfs[DVDISO]", 13);
 
@@ -625,8 +626,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 											 "loaded successfully. Start the ", "movie from the disc icon<br>under the Video column"                , ".</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the ");
 					language("STR_MOVIELOADED", STR_MOVIELOADED, STR_MOVIELOADED);
 #endif
-					sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
-									 "<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[strstr(param,"BDISO") ? iBDVD : iDVD], mounted ? STR_MOVIELOADED : STR_ERROR);
+					mlen = sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
+											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[strstr(param,"BDISO") ? iBDVD : iDVD], mounted ? STR_MOVIELOADED : STR_ERROR);
 				}
 				else if(!extcmp(param, ".BIN.ENC", 8))
 				{
@@ -636,8 +637,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 											 "loaded successfully. Start the ", "game using <b>", "PS2 Classic Launcher");
 					language("STR_PS2LOADED", STR_PS2LOADED, STR_PS2LOADED);
 #endif
-					sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
-									 "<hr>%s", enc_dir_name, wm_icons[iPS2], 300, mounted ? STR_PS2LOADED : STR_ERROR);
+					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
+											"<hr>%s", enc_dir_name, wm_icons[iPS2], 300, mounted ? STR_PS2LOADED : STR_ERROR);
 				}
 				else if(((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && !extcasecmp(param, ".iso", 4)) || is_gamei)
 				{
@@ -654,8 +655,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						char *pos = strstr(STR_PSPLOADED, "PSP Launcher"); if(pos) strcpy(pos, "PKG Launcher");
 					}
 #endif
-					sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
-									 "<hr>%s", enc_dir_name, wm_icons[iPSP], strcasestr(enc_dir_name,".png") ? 200 : 300, mounted ? STR_PSPLOADED : STR_ERROR);
+					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
+											"<hr>%s", enc_dir_name, wm_icons[iPSP], strcasestr(enc_dir_name,".png") ? 200 : 300, mounted ? STR_PSPLOADED : STR_ERROR);
 				}
 				else
 				{
@@ -665,11 +666,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 											 "loaded successfully. Start the ", "game from the disc icon<br>or from <b>/app_home</b>&nbsp;XMB entry", ".</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the ");
 					language("STR_GAMELOADED", STR_GAMELOADED, STR_GAMELOADED);
 #endif
-					sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
-									 "<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[default_icon], mounted ? STR_GAMELOADED : STR_ERROR);
+					mlen = sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
+											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[default_icon], mounted ? STR_GAMELOADED : STR_ERROR);
 				}
 
-				if(!mounted && !forced_mount && IS_INGAME) sprintf(tempstr + strlen(tempstr), " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + 10, param + 10);
+				if(!mounted && !forced_mount && IS_INGAME) sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + 10, param + 10);
 
 #ifndef ENGLISH_ONLY
 				close_language();
@@ -1790,10 +1791,10 @@ static void mount_thread(u64 action)
 							{
 								while(!cellFsReaddir(fd, &dir, &read_e) && read_e)
 								{
-									if(strlen(dir.d_name) == 11)
+									if( ((dir.d_name[0] | 0x20) == 's') && (dir.d_namlen == 11) )
 									{
-										char *tempID = dir.d_name; to_upper(tempID);
-										if ((tempID[0] == 'S' && 
+										char *tempID = to_upper(dir.d_name);
+										if (
 											(tempID[1] == 'L' || tempID[1] == 'C') &&
 											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'K') && 
 											(tempID[3] == 'S' || tempID[1] == 'M' || tempID[1] == 'J' || tempID[1] == 'A') && 
@@ -1802,14 +1803,15 @@ static void mount_thread(u64 action)
 											(tempID[6] >= '0' && tempID[6] <= '9') &&
 											(tempID[7] >= '0' && tempID[7] <= '9') &&
 											(tempID[9] >= '0' && tempID[9] <= '9')
-										   ))
+										   )
 										{
-											char temp[STD_PATH_LEN], config_path[4][8] = {"CUSTOM", "NET", "GX", "SOFT"};
-
+											char temp[STD_PATH_LEN];
 											sprintf(temp, "%sPS2CONFIG/USRDIR/%s.CONFIG", HDD0_GAME_DIR, tempID);
 											if(file_exists(temp))
 												file_copy(temp, _path, COPY_WHOLE_FILE);
 											else
+											{
+												char config_path[4][8] = {"CUSTOM", "NET", "GX", "SOFT"};
 												for(u8 i = 0; i < 4; i++)
 												{
 													sprintf(temp, "%sPS2CONFIG/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
@@ -1819,6 +1821,7 @@ static void mount_thread(u64 action)
 													sprintf(temp, "%sUPDWEBMOD/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
 													if(file_exists(temp)) {file_copy(temp, _path, COPY_WHOLE_FILE); break;}
 												}
+											}
 											break;
 										}
 									}
@@ -1826,7 +1829,7 @@ static void mount_thread(u64 action)
 								cellFsClosedir(fd);
 							}
 
-							if(file_exists(_path)) do_umount(false); else mount_unk = EMU_PS2_CD; // prevent mount ISO again
+							if(file_exists(_path)) do_umount(false); else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
 						}
 						#endif
 
@@ -1839,6 +1842,8 @@ static void mount_thread(u64 action)
 
 						// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 						save_file(WMNOSCAN, NULL, 0);
+
+						if(mount_unk == EMU_PS2_CD) goto exit_mount; // don't call cobra_send_fake_disc_insert_event again
 					}
 					else
 						ret = false;

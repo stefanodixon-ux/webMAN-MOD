@@ -492,6 +492,57 @@ int main()
 	sysLv2FsUnlink(TMP_DIR "/wm_online_ids.txt");
 	file_copy(APP_USRDIR "/wm_online_ids.txt"	, RES_DIR "/wm_online_ids.txt");
 
+/*
+	{
+		// copy PS2 CONFIG files
+		char path1[80], path2[80];
+		int fd; sysFSDirent dir; u64 read_e;
+
+		sysLv2FsMkdir("/dev_hdd0/game/PS2CONFIG", 0777);
+		sysLv2FsMkdir("/dev_hdd0/game/PS2CONFIG/USRDIR", 0777);
+
+		if(sysLv2FsOpenDir("/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/CUSTOM", &fd) == 0)
+		{
+			while((sysLv2FsReadDir(fd, &dir, &read_e) == 0) && (read_e > 0))
+			{
+				sprintf(path1, "%s/%s", "/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/CUSTOM", dir.d_name);
+				sprintf(path2, "%s/%s", "/dev_hdd0/game/PS2CONFIG/USRDIR", dir.d_name);
+				sysLv2FsLink(path1, path2);
+			}
+			sysLv2FsCloseDir(fd);
+		}
+		if(sysLv2FsOpenDir("/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/NET", &fd) == 0)
+		{
+			while((sysLv2FsReadDir(fd, &dir, &read_e) == 0) && (read_e > 0))
+			{
+				sprintf(path1, "%s/%s", "/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/NET", dir.d_name);
+				sprintf(path2, "%s/%s", "/dev_hdd0/game/PS2CONFIG/USRDIR", dir.d_name);
+				sysLv2FsLink(path1, path2);
+			}
+			sysLv2FsCloseDir(fd);
+		}
+		if(sysLv2FsOpenDir("/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/GX", &fd) == 0)
+		{
+			while((sysLv2FsReadDir(fd, &dir, &read_e) == 0) && (read_e > 0))
+			{
+				sprintf(path1, "%s/%s", "/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/GX", dir.d_name);
+				sprintf(path2, "%s/%s", "/dev_hdd0/game/PS2CONFIG/USRDIR", dir.d_name);
+				sysLv2FsLink(path1, path2);
+			}
+			sysLv2FsCloseDir(fd);
+		}
+		if(sysLv2FsOpenDir("/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/SOFT", &fd) == 0)
+		{
+			while((sysLv2FsReadDir(fd, &dir, &read_e) == 0) && (read_e > 0))
+			{
+				sprintf(path1, "%s/%s", "/dev_hdd0/game/UPDWEBMOD/USRDIR/CONFIG/SOFT", dir.d_name);
+				sprintf(path2, "%s/%s", "/dev_hdd0/game/PS2CONFIG/USRDIR", dir.d_name);
+				sysLv2FsLink(path1, path2);
+			}
+			sysLv2FsCloseDir(fd);
+		}
+	}
+*/
 	// webMAN LaunchPad icons
 	file_copy(APP_USRDIR "/icon_lp_ps3.png"      , ICONS_DIR "/icon_lp_ps3.png");
 	file_copy(APP_USRDIR "/icon_lp_psx.png"      , ICONS_DIR "/icon_lp_psx.png");

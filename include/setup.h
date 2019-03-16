@@ -785,13 +785,13 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("id1", false, "IDPS", " : ", (webman_config->sidps), buffer);
 	sprintf(templn, HTML_INPUT("vID1", "%s", "16", "22"), webman_config->vIDPS1); strcat(buffer, templn);
 	sprintf(templn, HTML_INPUT("vID2", "%s", "16", "22"), webman_config->vIDPS2); strcat(buffer, templn);
-	sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"vID2.value=", "1000000000000000"); strcat(buffer, templn);
+	sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID2.value=", "1000000000000000"); strcat(buffer, templn);
 
 	add_check_box("id2", false, "PSID", " : ", (webman_config->spsid), buffer);
 	sprintf(templn, HTML_INPUT("vPS1", "%s", "16", "22"), webman_config->vPSID1); strcat(buffer, templn);
 	sprintf(templn, HTML_INPUT("vPS2", "%s", "16", "22"), webman_config->vPSID2); strcat(buffer, templn);
 	//sprintf(templn, HTML_BUTTON_FMT "<br><br>", HTML_BUTTON, " ", "onclick=\"vPS1.value=vPS2.value=", "0000000000000000"); strcat(buffer, templn);
-	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"vPS1.value=vPS2.value=", "0000000000000000"); strcat(buffer, templn);
+	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); strcat(buffer, templn);
 
 	strcat(buffer, "</span><style>.ht{-webkit-text-security:disc}</style><script>var t='th';function h(){var e=document.getElementById('ht').getElementsByTagName('INPUT');t=t.split('').reverse().join('');for(var n=0;n<e.length;n++)e[n].className=t;}h();</script> <input type=button onclick='h();return false;' value='&#x1F453;'><br><br>");
 #endif

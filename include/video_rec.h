@@ -87,7 +87,7 @@ static u32 rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_64K;
 
 bool recording = false;
 
-u32 *recOpt = NULL;              // recording utility vsh options struct
+u32 *recOpt = NULL;           // recording utility vsh options struct
 s32 (*reco_open)(s32) = NULL; // base pointer
 
 static void set_setting_to_change(char *msg, const char *text)
