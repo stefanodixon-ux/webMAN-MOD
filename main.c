@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.12 MOD"
+#define WM_VERSION			"1.47.13 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -700,8 +700,10 @@ static char drives[16][12] = {"/dev_hdd0", "/dev_usb000", "/dev_usb001", "/dev_u
 static char paths [13][12] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
 
 #ifdef COPY_PS3
-static char    cp_path[STD_PATH_LEN+1];   // cut/copy/paste buffer
-static u8 cp_mode = CP_MODE_NONE;  // 0 = none / 1 = copy / 2 = cut/move
+static char current_file[STD_PATH_LEN + 1];
+static char cp_path[STD_PATH_LEN + 1];  // cut/copy/paste buffer
+static u8 cp_mode = CP_MODE_NONE;       // 0 = none / 1 = copy / 2 = cut/move
+static void parse_script(const char *script_file);
 #endif
 
 #define ONLINE_TAG		"[online]"
@@ -808,10 +810,6 @@ static bool from_reboot = false;
 static bool is_busy = false;
 static u8 mount_unk = EMU_OFF;
 
-#ifdef COPY_PS3
-static char current_file[STD_PATH_LEN+1];
-#endif
-
 #include "include/eject_insert.h"
 
 #ifdef COBRA_ONLY
@@ -858,6 +856,7 @@ static char current_file[STD_PATH_LEN+1];
 #include "include/pkg_handler.h"
 #include "include/fancontrol2.h"
 #include "include/md5.h"
+#include "include/script.h"
 
 static inline void _sys_ppu_thread_exit(u64 val)
 {
@@ -3366,6 +3365,7 @@ parse_request:
 							cellFsUnlink(WMNET_DISABLED);
 							cellFsUnlink(WMONLINE_GAMES);
 							cellFsUnlink(WMOFFLINE_GAMES);
+							cellFsUnlink("/dev_hdd0/boot_init.txt");
 
 							// delete folders & subfolders
 							del(WMTMP, RECURSIVE_DELETE);
@@ -3681,79 +3681,20 @@ static void wwwd_thread(u64 arg)
 
 	if(webman_config->blind) enable_dev_blind(NO_MSG);
 
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
-	if(file_exists("/dev_hdd0/boot_init.txt"))
-	{
-		sys_addr_t sysmem = NULL;
-		sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem); 
-		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0;
-		size_t buffer_size = read_file("/dev_hdd0/boot_init.txt", buffer, _64KB_, 0); buffer[buffer_size] = 0;
-		while(*buffer)
-		{
-			if(++l > 999) break;
-
-			pos = strstr(buffer, "\n");
-			if(pos)
-			{
-				if(pos) *pos = NULL; //EOL
-				cr = strstr(buffer, "\r"); if(cr) *cr = NULL;
-
-				dest = strstr(buffer, "=/");
-				if(dest)
-				{
-					*dest = NULL, dest++; //split parameters
-					if(_islike(buffer, "map /"))  {buffer += 4;}
-					if(*buffer == '/')            {sys_map_path(buffer, dest);} else
-					if(_islike(buffer, "ren /"))  {buffer += 4; cellFsRename(buffer, dest);} else
-					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else file_copy(buffer, dest, COPY_WHOLE_FILE);} else
-					if(_islike(buffer, "swap /")) {buffer += 5; strcpy(cp_path, buffer); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(buffer, cp_path); cellFsRename(dest, buffer); cellFsRename(cp_path, dest); *cp_path = NULL;}
-				}
-				else if(*buffer == '#' || *buffer == ';' || *buffer == '*') ; // remark
-				else
-				{
-					if(_islike(buffer, "del /"))   {buffer += 4; del(buffer, RECURSIVE_DELETE);} else
-					if(_islike(buffer, "md /"))    {buffer += 3; mkdir_tree(buffer);} else
-					if(_islike(buffer, "unmap /")) {buffer += 6; sys_map_path(buffer, NULL);} else
-					if(_islike(buffer, "wait /"))  {buffer += 5; wait_for(buffer, 15);} else
-					if(_islike(buffer, "mute coldboot"))
-					{
-						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), SYSMAP_PS3_UPDATE);
-						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"), SYSMAP_PS3_UPDATE);
-					}
-					else
-					if(_islike(buffer, "abort if "))
-					{
-						buffer += 9;
-						if(_islike(buffer, "exist /")) {buffer += 6; if(file_exists(buffer)) break;} else
-						if(_islike(buffer, "not exist /")) {buffer += 10; if(!file_exists(buffer)) break;} else
-						{
-							CellPadData pad_data = pad_read();
-							if(pad_data.len > 0)
-							{
-								if(_islike(buffer, "L1") && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1)) break;
-								if(_islike(buffer, "R1") && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1)) break;
-							}
-						}
-					}
-				}
-
-				buffer = pos + 1, dest = NULL;
-				while((*buffer == '\n') || (*buffer == '\r')) buffer++;
-			}
-			else
-				break;
-		}
-		sys_memory_free(sysmem);
-	}
+#ifdef COPY_PS3
+ #ifdef COBRA_ONLY
+  #ifndef LITE_EDITION
+	parse_script("/dev_hdd0/boot_init.txt");
+  #endif
  #endif
 #endif
-
 	set_buffer_sizes(webman_config->foot);
 
 	#ifdef AUTO_POWER_OFF
 	restoreAutoPowerOff();
 	#endif
+
+	if(cobra_version >= 0x0800) sys_ppu_thread_sleep(2); // wait 2 seconds on cobra 8.x for network
 
 	if(!webman_config->ftpd)
 		sys_ppu_thread_create(&thread_id_ftpd, ftpd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_FTP_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_FTP); // start ftp daemon immediately
