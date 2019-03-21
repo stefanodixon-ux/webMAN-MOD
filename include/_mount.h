@@ -1119,12 +1119,14 @@ static void mount_thread(u64 action)
 
 		goto finish;
 	}
+#ifdef COPY_PS3
 	else if(!extcmp(_path0, ".txt", 4) || !extcmp(_path0, ".bat", 4))
 	{
 		parse_script(_path0);
 		ret = false;
 		goto finish;
 	}
+#endif
 
 	// -----------------
 	// remove /PS3_GAME

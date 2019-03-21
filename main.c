@@ -3036,7 +3036,11 @@ parse_request:
 
 						// show filename link
 						char *p = strrchr(filename, '/');
-						if(p) {strcpy(txt, p); *p = NULL; sprintf(tempstr," &nbsp; " HTML_URL HTML_URL2 "</form>", filename, filename, filename, txt, txt); strcat(pbuffer, tempstr);}
+						if(p)
+						{
+							if(!extcmp(p, ".bat", 4)) {sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); strcat(pbuffer, tempstr);}
+							strcpy(txt, p); *p = NULL; sprintf(tempstr," &nbsp; " HTML_URL HTML_URL2 "</form>", filename, filename, filename, txt, txt); strcat(pbuffer, tempstr);
+						}
 
 						is_popup = 0; goto send_response;
 					}
@@ -3366,6 +3370,7 @@ parse_request:
 							cellFsUnlink(WMONLINE_GAMES);
 							cellFsUnlink(WMOFFLINE_GAMES);
 							cellFsUnlink("/dev_hdd0/boot_init.txt");
+							cellFsUnlink("/dev_hdd0/autoexec.bat");
 
 							// delete folders & subfolders
 							del(WMTMP, RECURSIVE_DELETE);
@@ -3682,12 +3687,9 @@ static void wwwd_thread(u64 arg)
 	if(webman_config->blind) enable_dev_blind(NO_MSG);
 
 #ifdef COPY_PS3
- #ifdef COBRA_ONLY
-  #ifndef LITE_EDITION
 	parse_script("/dev_hdd0/boot_init.txt");
-  #endif
- #endif
 #endif
+
 	set_buffer_sizes(webman_config->foot);
 
 	#ifdef AUTO_POWER_OFF
@@ -3729,6 +3731,10 @@ again_debug:
 	sys_ppu_thread_sleep(2);
 
 	led(YELLOW, OFF);
+
+#ifdef COPY_PS3
+	parse_script("/dev_hdd0/autoexec.bat");
+#endif
 
 	////////////////////////////////////////
 

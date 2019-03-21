@@ -14,6 +14,7 @@
 // swap <path>=<path>
 // ren <path>=<path>
 
+// wait <1-9 secs>
 // wait <path>
 // lwait <path>
 
@@ -23,9 +24,9 @@
 // beep1 / beep2 / beep3
 // mute coldboot
 
+// <webman_cmd> e.g. /mount.ps3<path>
+
 #ifdef COPY_PS3
- #ifdef COBRA_ONLY
-  #ifndef LITE_EDITION
 static void parse_script(const char *script_file)
 {
 	if(file_exists(script_file))
@@ -39,7 +40,7 @@ static void parse_script(const char *script_file)
 		while(*buffer)
 		{
 			parse_cmd:
-			if(++l > 999) break;
+			if(++l > 999 || !working) break;
 			while( (*buffer == '\n') || (*buffer == '\r') || (*buffer == ' ') || (*buffer == '\t')) buffer++; if(*buffer == 0) break;
 
 			pos = strstr(buffer, "\n");
@@ -52,8 +53,16 @@ static void parse_script(const char *script_file)
 				if(dest)
 				{
 					*dest = NULL, dest++; //split parameters
+	#ifdef COBRA_ONLY
 					if(_islike(buffer, "map /"))  {buffer += 4;}
+		#ifndef WM_REQUEST
 					if(*buffer == '/')            {sys_map_path(buffer, dest);} else
+		#else
+					if(*buffer == '/')            {if(islike(buffer, "/mount") || strstr(buffer, ".ps3") != NULL || strstr(buffer, "_ps3") != NULL) handle_file_request(buffer); else sys_map_path(buffer, dest);} else
+		#endif
+	#elif defined(WM_REQUEST)
+					if(*buffer == '/')            {if(islike(buffer, "/mount") || strstr(buffer, ".ps3") != NULL || strstr(buffer, "_ps3") != NULL) handle_file_request(buffer);} else
+	#endif
 					if(_islike(buffer, "ren /"))  {buffer += 4; cellFsRename(buffer, dest);} else
 					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else file_copy(buffer, dest, COPY_WHOLE_FILE);} else
 					if(_islike(buffer, "swap /")) {buffer += 5; sprintf(cp_path, "%s", buffer); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(buffer, cp_path); cellFsRename(dest, buffer); cellFsRename(cp_path, dest);}
@@ -63,21 +72,27 @@ static void parse_script(const char *script_file)
 				else if(_islike(buffer, "end"))  exec_mode = true;
 				else if(exec_mode)
 				{
+	#ifdef WM_REQUEST
+					if(*buffer == '/')               {if(islike(buffer, "/mount") || strstr(buffer, ".ps3") != NULL || strstr(buffer, "_ps3") != NULL) handle_file_request(buffer);} else
+	#endif
 					if(_islike(buffer, "del /"))     {buffer += 4; del(buffer, RECURSIVE_DELETE);} else
 					if(_islike(buffer, "md /"))      {buffer += 3; mkdir_tree(buffer);} else
-					if(_islike(buffer, "unmap /"))   {buffer += 6; sys_map_path(buffer, NULL);} else
 					if(_islike(buffer, "wait /"))    {buffer += 5; wait_for(buffer, 5);} else
 					if(_islike(buffer, "lwait /"))   {buffer += 6; wait_for(buffer, 10);} else
+					if(_islike(buffer, "wait "))     {buffer += 5; wait_path("/dev_hdd0", (u8)(*buffer-'0'), false);} else
 					if(_islike(buffer, "beep"))      {if(buffer[4] == '3') {BEEP3;} else if(buffer[4] == '2') {BEEP2;} else {BEEP1;}} else
 					if(_islike(buffer, "popup "))    {buffer += 6; show_msg(buffer);} else
 					if(_islike(buffer, "log "))      {buffer += 4; save_file(log_file, buffer, APPEND_TEXT); save_file(log_file, "\r\n", APPEND_TEXT);} else
 					if(_islike(buffer, "logfile /")) {buffer += 8; sprintf(log_file, "%s", buffer);} else
+	#ifdef COBRA_ONLY
+					if(_islike(buffer, "unmap /"))   {buffer += 6; sys_map_path(buffer, NULL);} else
 					if(_islike(buffer, "mute coldboot"))
 					{
 						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), SYSMAP_PS3_UPDATE);
 						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"), SYSMAP_PS3_UPDATE);
 					}
 					else
+	#endif
 					if(_islike(buffer, "if ") || _islike(buffer, "abort if "))
 					{
 						bool ret = false; u8 ifmode = (_islike(buffer, "if ")) ? 3 : 9; buffer += ifmode;
@@ -106,6 +121,4 @@ static void parse_script(const char *script_file)
 		sys_memory_free(sysmem);
 	}
 }
-  #endif
- #endif
-#endif
+#endif // #ifdef COPY_PS3

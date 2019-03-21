@@ -700,17 +700,22 @@ static int del(const char *path, u8 recursive)
 }
 #endif
 
-int wait_for(const char *path, u8 timeout)
+static int wait_path(const char *path, u8 timeout, bool found)
 {
-	if(!path[0]) return FAILED;
+	if(*path!='/') return FAILED;
 
 	for(u8 n = 0; n < (timeout * 20); n++)
 	{
-		if(file_exists(path)) return CELL_FS_SUCCEEDED;
+		if(file_exists(path) == found) return CELL_FS_SUCCEEDED;
 		if(!working) break;
 		sys_ppu_thread_usleep(50000);
 	}
 	return FAILED;
+}
+
+int wait_for(const char *path, u8 timeout)
+{
+	return wait_path(path, timeout, true);
 }
 
 static void enable_dev_blind(const char *msg)
@@ -738,6 +743,20 @@ static void unlink_file(const char *drive, const char *path, const char *file)
 }
 
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
+static void handle_file_request(const char *url)
+{
+	if(url) save_file(WMREQUEST_FILE, url, SAVE_ALL);
+
+	if(file_exists(WMREQUEST_FILE))
+	{
+		loading_html++;
+		sys_ppu_thread_t t_id;
+		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
+	}
+
+	if(url) wait_path(WMREQUEST_FILE, 3, false);
+}
+
 static bool do_custom_combo(const char *filename)
 {
  #if defined(WM_CUSTOM_COMBO)
@@ -755,10 +774,7 @@ static bool do_custom_combo(const char *filename)
 	{
 		file_copy(combo_file, (char*)WMREQUEST_FILE, COPY_WHOLE_FILE);
 
-		loading_html++;
-		sys_ppu_thread_t t_id;
-		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
-
+		handle_file_request(NULL);
 		return true;
 	}
 	return false;
