@@ -2143,7 +2143,7 @@ function mousedownEvent(e)
 	//if(target.nodeName=='DIV') mouseY=0;
 	//if(target.nodeName=='IMG') mouseY=0;
 
-	if(target.nodeName=='A' && mouseY>80 && target.href.substring(0,4)=='java') {mountGame(); return false;}
+	if(target.nodeName=='A' && mouseY>80 && target.href.substring(0,4)=='java') {mouseY=0; mountGame(); return false;}
 }
 
 function mouseupEvent(e)
