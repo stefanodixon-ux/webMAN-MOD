@@ -12,7 +12,7 @@ Installation:
 ------------
  - Remove .sprx, .png files of previous version from your PS3 if any.
  - Copy "wm_vsh_menu.sprx" and the folder "images" to /dev_hdd0/plugins  (create the folder in lower case if you don't have it)
- - Create or edit your "boot_plugins.txt" (cobra), "mamba_plugins.txt" (mamba) or "prx_plugins.txt" (PRX loader)
+ - Create or edit your "boot_plugins.txt" (cobra), "boot_plugins_nocobra.txt" (4.84.3+), "mamba_plugins.txt" (mamba) or "prx_plugins.txt" (PRX loader)
    and add the line "/dev_hdd0/plugins/wm_vsh_menu.sprx" if it does not exist yet.
  - Reboot your PS3.
 

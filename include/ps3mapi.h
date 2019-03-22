@@ -814,6 +814,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 				case '1': sprintf(tmp_filename, "/dev_hdd0/mamba_plugins.txt"); break;
 				case '2': sprintf(tmp_filename, "/dev_hdd0/prx_plugins.txt");   break;
 				case '3': sprintf(tmp_filename, "/dev_hdd0/game/PRXLOADER/USRDIR/plugins.txt"); break;
+				case '4': sprintf(tmp_filename, "/dev_hdd0/game/PRXLOADER/USRDIR/boot_plugins_nocobra.txt"); break;
 				default : sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt");
 			}
 
@@ -904,11 +905,13 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 	sprintf(templn, "<tr><td colspan=4><p>%s > "	HTML_BUTTON_FMT
 													HTML_BUTTON_FMT
 													HTML_BUTTON_FMT
+													HTML_BUTTON_FMT
 													HTML_BUTTON_FMT "</td></tr>", STR_SAVE,
-		HTML_BUTTON, "boot_plugins.txt" , HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
-		HTML_BUTTON, "mamba_plugins.txt", HTML_ONCLICK, "/vshplugin.ps3mapi?s=1",
-		HTML_BUTTON, "prx_plugins.txt"  , HTML_ONCLICK, "/vshplugin.ps3mapi?s=2",
-		HTML_BUTTON, "plugins.txt"      , HTML_ONCLICK, "/vshplugin.ps3mapi?s=3"); strcat(buffer, templn);
+		HTML_BUTTON, "boot_plugins.txt",			HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
+		HTML_BUTTON, "boot_plugins_nocobra.txt",	HTML_ONCLICK, "/vshplugin.ps3mapi?s=4",
+		HTML_BUTTON, "mamba_plugins.txt",			HTML_ONCLICK, "/vshplugin.ps3mapi?s=1",
+		HTML_BUTTON, "prx_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=2",
+		HTML_BUTTON, "plugins.txt",					HTML_ONCLICK, "/vshplugin.ps3mapi?s=3"); strcat(buffer, templn);
 
 	add_plugins_list(buffer, templn);
 

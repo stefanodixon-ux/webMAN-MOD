@@ -918,34 +918,41 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								}
 								else
 #endif
-								if(cellFsOpen(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | ((rest | is_append) ? CELL_FS_O_APPEND : CELL_FS_O_TRUNC), &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 								{
-									u64 pos = 0;
+									if(islike(filename, "/dev_blind") && file_exists(filename)) {sprintf(source, "%s.~bak", filename); cellFsRename(filename, source);} else *source = NULL;
 
-									cellFsLseek(fd, rest, CELL_FS_SEEK_SET, &pos);
+									err = FAILED;
 
-									rest = 0;
-									err = CELL_FS_OK;
-
-									ssend(conn_s_ftp, FTP_OK_150); // File status okay; about to open data connection.
-
-									//int optval = BUFFER_SIZE_FTP;
-									//setsockopt(data_s, SOL_SOCKET, SO_RCVBUF, &optval, sizeof(optval));
-
-									while(working)
+									if(cellFsOpen(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | ((rest | is_append) ? CELL_FS_O_APPEND : CELL_FS_O_TRUNC), &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 									{
-										if((read_e = (u64)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL)) > 0)
+										u64 pos = 0;
+
+										cellFsLseek(fd, rest, CELL_FS_SEEK_SET, &pos);
+
+										rest = 0;
+
+										ssend(conn_s_ftp, FTP_OK_150); // File status okay; about to open data connection.
+
+										//int optval = BUFFER_SIZE_FTP;
+										//setsockopt(data_s, SOL_SOCKET, SO_RCVBUF, &optval, sizeof(optval));
+
+										while(working)
 										{
-											if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) {err = FAILED; break;}
+											if((read_e = (u64)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL)) > 0)
+											{
+												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break;
+											}
+											else
+												{err = CELL_FS_OK; break;}
 										}
-										else
-											break;
+
+										cellFsClose(fd);
+										cellFsChmod(filename, islike(filename, "/dev_blind") ? 0644 : MODE);
+
+										if(!working || (err != CELL_FS_OK)) cellFsUnlink(filename);
 									}
 
-									cellFsClose(fd);
-									cellFsChmod(filename, MODE);
-
-									if(!working || err != CELL_FS_OK) cellFsUnlink(filename);
+									if(islike(source, "/dev_blind")) {if(err == CELL_FS_OK) cellFsUnlink(source); else cellFsRename(source, filename); *source = NULL;}
 								}
 							}
 

@@ -268,7 +268,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			|| IS(ext,  ".rco") ||  IS(ext, ".qrc")
 			|| _IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi")
 			|| _IS(ext, ".mp3")
-			|| !memcmp(name, "webftp_server", 13) || !memcmp(name, "boot_plugins_", 13) || !memcmp(name, "coldboot", 8)
+			|| !memcmp(name, "webftp_server", 13) || !memcmp(name, "boot_plugins", 12) || !memcmp(name, "coldboot", 8)
  #ifdef SWAP_KERNEL
 			|| !memcmp(name, "lv2_kernel", 10)
  #endif

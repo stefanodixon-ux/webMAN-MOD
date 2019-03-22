@@ -526,8 +526,13 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						sprintf(target, "%s/webftp_server.sprx",         "/dev_hdd0");         if(file_exists(target) == false)
 						sprintf(target, "%s/webftp_server_ps3mapi.sprx", "/dev_hdd0");
 					}
-					else if(strstr(source, "/boot_plugins_"))
-						sprintf(target, "/dev_hdd0/boot_plugins.txt");
+					else if(strstr(source, "/boot_plugins"))
+					{
+						if(cobra_version == 0)
+							sprintf(target, "/dev_hdd0/boot_plugins_nocobra.txt");
+						else
+							sprintf(target, "/dev_hdd0/boot_plugins.txt");
+					}
 					else if(is_copying_from_hdd)
 						sprintf(target, "%s%s", drives[usb], source + 9);
 					else if(islike(source, "/dev_usb"))

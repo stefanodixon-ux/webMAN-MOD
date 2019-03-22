@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.13 MOD"
+#define WM_VERSION			"1.47.14 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -360,7 +360,7 @@ int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MAPI, 3=P
 static u32 BUFFER_SIZE_FTP;
 static u32 BUFFER_SIZE_ALL;
 
-static u32 BUFFER_SIZE;//
+static u32 BUFFER_SIZE;
 static u32 BUFFER_SIZE_PSX;
 static u32 BUFFER_SIZE_PSP;
 static u32 BUFFER_SIZE_PS2;
@@ -3345,7 +3345,8 @@ parse_request:
 						else if(islike(param2 , "?uninstall"))
 						{
 							struct CellFsStat buf;
-							if(cellFsStat("/dev_hdd0/boot_plugins.txt", &buf) == CELL_FS_SUCCEEDED && buf.st_size < 40) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
+							if(cellFsStat("/dev_hdd0/boot_plugins.txt", &buf)         == CELL_FS_SUCCEEDED && buf.st_size < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
+							if(cellFsStat("/dev_hdd0/boot_plugins_nocobra.txt", &buf) == CELL_FS_SUCCEEDED && buf.st_size < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
 
 							// delete files
 							sprintf(param, "plugins/");

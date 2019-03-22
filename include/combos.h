@@ -161,6 +161,7 @@
 							if((!sys_admin && (ss > 60)) || IS_INGAME) continue;
 
 							cellFsUnlink("/dev_hdd0/boot_plugins.txt");
+							cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
 							goto reboot; // vsh reboot
 						}
 						else
