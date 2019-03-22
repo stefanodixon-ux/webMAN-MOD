@@ -1782,7 +1782,7 @@ static void mount_thread(u64 action)
 
 					if(file_exists(iso_list[0]))
 					{
-						cellFsUnlink(TMP_DIR "loadoptical"); //Cobra 8.x
+						cellFsUnlink(TMP_DIR "/loadoptical"); //Cobra 8.x
 
 						TrackDef tracks[1];
 						tracks[0].lba = 0;
