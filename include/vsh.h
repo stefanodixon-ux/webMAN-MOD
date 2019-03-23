@@ -236,7 +236,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 			if(execute) explore_exec_push(0, false);
 		}
-		else {BEEP3}
+		else if(!webman_config->nobeep) {BEEP3}
 	}
 }
 

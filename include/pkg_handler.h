@@ -392,7 +392,7 @@ static void installPKG_combo_thread(u64 arg)
 			if(!extcasecmp(dir.d_name, ".pkg", 4))
 			{
 				char pkgfile[MAX_PKGPATH_LEN];
-				sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, dir.d_name); ret = CELL_OK; { BEEP1 }
+				sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, dir.d_name); ret = CELL_OK; if(!webman_config->nobeep) { BEEP1 }
 
 				installPKG(pkgfile, msg); show_msg(msg);
 				wait_for_pkg_install();

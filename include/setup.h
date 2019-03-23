@@ -70,6 +70,8 @@ static void setup_parse_settings(char *param)
 	if(strstr(param, "sn=1")) webman_config->nosnd0 = 1;
 #endif
 
+	if(!strstr(param, "nb=1")) webman_config->nobeep = 1;
+
 	//Wait for any USB device to be ready
 	webman_config->bootd=get_valuen(param, "&b=", 0, 30);
 
@@ -602,11 +604,12 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(templn,	HTML_BLU_SEPARATOR
 					"<b><a class=\"tg\" href=\"javascript:tgl(cfg);\"> webMAN MOD %s </a></b><br><div id=\"cfg\">", STR_SETUP); strcat(buffer, templn);
 
-#ifdef COBRA_ONLY
 	add_check_box("lp", false, STR_LPG   , " • ",   (webman_config->lastp),  buffer);
+#ifdef COBRA_ONLY
+	add_check_box("nb", false, "BEEP", " • ",      !(webman_config->nobeep), buffer);
 	add_check_box("sn", false, "No SND0.AT3", _BR_, (webman_config->nosnd0), buffer);
 #else
-	add_check_box("lp", false, STR_LPG, _BR_,       (webman_config->lastp),  buffer);
+	add_check_box("nb", false, "BEEP", _BR_,       !(webman_config->nobeep), buffer);
 #endif
 
 	add_check_box("ab", false, STR_AUTOB  , _BR_, (webman_config->autob), buffer);
@@ -1168,6 +1171,7 @@ static void read_settings(void)
 
 	//webman_config->nopad = 0;       //enable all PAD shortcuts
 	//webman_config->nocov = 0;       //enable multiMAN covers    (0 = Use MM covers, 1 = Use ICON0.PNG, 2 = No game icons, 3 = Online Covers)
+	//webman_config->nobeep = 0;      //enable beep on reboot / shutdown / disable syscall
 
 	webman_config->fanc    = ENABLED; //fan control enabled
 	//webman_config->temp0 = 0;       //0=dynamic fan control mode, >0 set manual fan speed

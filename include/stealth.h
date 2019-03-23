@@ -108,7 +108,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 
 	if(syscalls_removed)
 	{
-		{ BEEP2 }
+		if(!webman_config->nobeep) { BEEP2 }
 		show_msg((char*)STR_CFWSYSALRD);
 	}
 	else
@@ -130,12 +130,12 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 
 		if(syscalls_removed)
 		{
-			{ BEEP1 }
+			if(!webman_config->nobeep) { BEEP1 }
 			show_msg((char*)STR_RMVCFWSYS);
 		}
 		else
 		{
-			{ BEEP2 }
+			if(!webman_config->nobeep) { BEEP2 }
 			show_msg((char*)STR_RMVCFWSYSF);
 		}
 	}

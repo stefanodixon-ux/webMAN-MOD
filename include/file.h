@@ -824,8 +824,11 @@ static void del_turnoff(u8 beeps)
 	cellFsUnlink(WMCHATFILE);
 #endif
 
-	if(beeps == 1) { BEEP1 }
-	if(beeps == 2) { BEEP2 }
+	if(!webman_config->nobeep)
+	{
+		if(beeps == 1) { BEEP1 }
+		if(beeps == 2) { BEEP2 }
+	}
 }
 
 #ifdef COPY_PS3

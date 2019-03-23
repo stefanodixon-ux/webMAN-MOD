@@ -571,8 +571,9 @@ typedef struct
 	u32 combo;
 	u32 combo2;
 	u8  sc8mode; // 0/4=Remove cfw syscall disables syscall8 / PS3MAPI=disabled, 1=Keep syscall8 / PS3MAPI=enabled
+	u8  nobeep;
 
-	u8 padding5[21];
+	u8 padding5[20];
 
 	// ftp server settings
 
