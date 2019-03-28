@@ -198,6 +198,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// mount game
 		// -----------
 #ifdef COPY_PS3
+		if(script_running) forced_mount = true;
+
 		if(!is_copy)
 #endif
 		{

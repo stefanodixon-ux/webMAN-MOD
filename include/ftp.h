@@ -29,6 +29,7 @@ static u8 ftp_working = 0;
 #define FTP_RECV_SIZE  (STD_PATH_LEN + 20)
 
 #define FTP_FILE_UNAVAILABLE    -4
+#define FTP_DEVICE_IS_FULL      -8
 
 static void absPath(char* absPath_s, const char* path, const char* cwd)
 {
@@ -919,7 +920,14 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								else
 #endif
 								{
-									if(islike(filename, "/dev_blind") && file_exists(filename)) {sprintf(source, "%s.~bak", filename); cellFsRename(filename, source);} else *source = NULL;
+									if(islike(filename, "/dev_blind") && file_exists(filename))
+									{
+										strcpy(source, filename);
+										sprintf(filename, "%s.~", source);
+										if(file_exists(filename)) {strcpy(filename, source); *source = NULL;} // overwrite if the temp file exists
+									}
+									else
+										*source = NULL;
 
 									err = FAILED;
 
@@ -947,18 +955,32 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										}
 
 										cellFsClose(fd);
-										cellFsChmod(filename, islike(filename, "/dev_blind") ? 0644 : MODE);
 
-										if(!working || (err != CELL_FS_OK)) cellFsUnlink(filename);
+										if(err != CELL_FS_OK)
+										{
+											for(u8 n = 0; n < 17; n++)
+											{
+												if(islike(filename, drives[n]) && (get_free_space(drives[n]) < BUFFER_SIZE_FTP))
+													{ err = FTP_DEVICE_IS_FULL; break; }
+											}
+											cellFsUnlink(filename);
+										}
+										else
+											cellFsChmod(filename, islike(filename, "/dev_blind") ? 0644 : MODE);
 									}
 
-									if(islike(source, "/dev_blind")) {if(err == CELL_FS_OK) cellFsUnlink(source); else cellFsRename(source, filename); *source = NULL;}
+									if((err == CELL_FS_OK) && (*source == '/')) {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
+									*source = NULL;
 								}
 							}
 
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
+							}
+							else if(err == FTP_DEVICE_IS_FULL)
+							{
+								ssend(conn_s_ftp, "451 ERR, Device is full\r\n");		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
 							}
 							else
 							{

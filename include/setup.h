@@ -1048,6 +1048,8 @@ static void setup_form(char *buffer, char *templn)
  #ifdef GET_KLICENSEE
 					"<option>GET /klic.ps3?log"
  #endif
+					"<option>GET /play.ps3?col=tv&seg=HTSS00003"
+					"<option>GET /play.ps3?col=network&seg=seg_premo"
 					"</datalist></div>");
 #endif // #ifdef WM_REQUEST
 

@@ -37,6 +37,8 @@ static void parse_script(const char *script_file)
 		size_t buffer_size = read_file(script_file, buffer, _64KB_, 0); buffer[buffer_size] = 0;
 		char log_file[STD_PATH_LEN + 1] = TMP_DIR "/log.txt";
 
+		script_running = true;
+
 		while(*buffer)
 		{
 			parse_cmd:
@@ -119,6 +121,8 @@ static void parse_script(const char *script_file)
 				break;
 		}
 		sys_memory_free(sysmem);
+
+		script_running = false;
 	}
 }
 #endif // #ifdef COPY_PS3
