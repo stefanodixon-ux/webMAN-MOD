@@ -1,21 +1,12 @@
 #ifdef COBRA_ONLY
-static void select_ps1emu(char *path)
+static void select_ps1emu(const char *path)
 {
-	CellPadData pad_data = pad_read();
-
-	if(strstr(path, "[netemu]")) webman_config->ps1emu = 1;
-
-	if(pad_data.len > 0)
-	{
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2) webman_config->ps1emu = 0; else
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->ps1emu = 1; else
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1) webman_config->ps1emu = !webman_config->ps1emu;
-	}
-
-	char msg[100];
+	webman_config->ps1emu = pad_select_netemu(path, webman_config->ps1emu);
 
 	sys_map_path("/dev_flash/ps1emu/ps1_netemu.self", NULL);
 	sys_map_path("/dev_flash/ps1emu/ps1_emu.self"   , NULL);
+
+	char msg[100];
 
 	if(webman_config->ps1emu)
 	{

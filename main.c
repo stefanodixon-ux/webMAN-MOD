@@ -2317,7 +2317,7 @@ parse_request:
 					sprintf(source, "/copy.ps3%s", cp_path);
 					sprintf(target, "%s", param + 10);
 					sprintf(param, "%s", source); strcat(target, strrchr(param, '/'));
-					is_binary = FOLDER_LISTING;
+					is_binary = WEB_COMMAND;
 					goto html_response;
 				}
 				else
@@ -3538,7 +3538,6 @@ parse_request:
 						// /mount.ps2/unmount
 						// /copy.ps3/<path>[&to=<destination>]
 						// /copy.ps3/<path>[&to=<destination>]?restart.ps3
-
 						game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
 					}
 

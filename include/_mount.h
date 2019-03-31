@@ -1778,7 +1778,9 @@ static void mount_thread(u64 action)
 						cache_file_to_hdd(_path, iso_list[0], "/PS2ISO", templn);
 					}
 
-					if(webman_config->ps2emu || strstr(_path, "[netemu]")) enable_ps2netemu_cobra(1); else enable_ps2netemu_cobra(0);
+					webman_config->ps2emu = pad_select_netemu(_path, webman_config->ps2emu);
+
+					enable_ps2netemu_cobra(webman_config->ps2emu);
 
 					mount_unk = EMU_PS2_DVD;
 
@@ -1811,8 +1813,8 @@ static void mount_thread(u64 action)
 										char *tempID = to_upper(dir.d_name);
 										if (
 											(tempID[1] == 'L' || tempID[1] == 'C') &&
-											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'K') && 
-											(tempID[3] == 'S' || tempID[1] == 'M' || tempID[1] == 'J' || tempID[1] == 'A') && 
+											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') && 
+											(tempID[3] == 'S' || tempID[3] == 'M' || tempID[3] == 'J' || tempID[3] == 'A') && 
 											(tempID[4] == '_' && tempID[8] == '.') &&
 											(tempID[5] >= '0' && tempID[5] <= '9') &&
 											(tempID[6] >= '0' && tempID[6] <= '9') &&
@@ -1844,7 +1846,7 @@ static void mount_thread(u64 action)
 								cellFsClosedir(fd);
 							}
 
-							if(file_exists(_path)) do_umount(false); else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
+							if(file_exists(_path)) {do_umount(false); wait_path("/dev_bdvd", 5, false);} else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
 						}
 						#endif
 
@@ -2342,7 +2344,7 @@ exit_mount:
 	// -------------------------------------------------------------------------------------
 
 #ifdef REMOVE_SYSCALLS
-	else if(mount_unk != EMU_PSX)
+	else if(mount_unk == EMU_PS3)
 	{
 		CellPadData pad_data = pad_read();
 		bool otag = (strcasestr(_path, ONLINE_TAG)!=NULL);

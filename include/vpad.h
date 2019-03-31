@@ -201,11 +201,13 @@ static void press_cancel_button(void)
 
 #endif // #ifdef VIRTUAL_PAD
 
+static CellPadData pad_data;
+
 static CellPadData pad_read(void)
 {
-	CellPadInfo2 padinfo;
-	CellPadData pad_data; pad_data.len = 0;
+	pad_data.len = 0;
 
+	CellPadInfo2 padinfo;
 	if(cellPadGetInfo2(&padinfo) == CELL_OK)
 		for(u8 n = 0; n < 4; n++)
 		{
@@ -218,3 +220,21 @@ static CellPadData pad_read(void)
 	pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] = pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] = 0;
 	return pad_data;
 }
+
+
+#ifdef COBRA_ONLY
+static u8 pad_select_netemu(const char *path, u8 value)
+{
+	if(strstr(path, "[netemu]")) value = 1;
+
+	pad_data = pad_read();
+	if(pad_data.len > 0)
+	{
+		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2) return 0; // emu
+		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) return 1; // net_emu
+		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1) value^=1; // toggle
+	}
+
+	return value;
+}
+#endif

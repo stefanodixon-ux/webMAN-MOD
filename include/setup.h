@@ -109,6 +109,7 @@ static void setup_parse_settings(char *param)
 	if(strstr(param, "p2l=1")) webman_config->ps2l   = 1;
 	if(strstr(param, "rxv=1")) webman_config->rxvid  = 1;
 	if(strstr(param, "pse=1")) webman_config->ps1emu = 1;
+	if(strstr(param, "b2n=1")) webman_config->ps2emu = 1;
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
 	if(strstr(param, "p3l=1")) webman_config->ps3l   = 1;
@@ -547,6 +548,11 @@ static void setup_form(char *buffer, char *templn)
 	b = isDir(PS2_CLASSIC_PLACEHOLDER);
 	add_check_box("ps2", false, "PLAYSTATION\xC2\xAE\x32", " (" ,   !(webman_config->cmask & PS2), buffer);
 	if(b) add_check_box("p2l", false, STR_PS2L           , ", " ,    (webman_config->ps2l)       , buffer);
+#ifdef SPOOF_CONSOLEID
+	get_eid0_idps();
+	b = ((eid0_idps[0] & 0x00000000000000FF) <= 0x04); // 0x01 = CECH-A*, 0x02 = CECH-B, 0x03 = CECH-C, 0x04 = CECH-E
+	if(b) add_check_box("b2n", false, "ps2_netemu"       , ", " ,    (webman_config->ps2emu)     , buffer);
+#endif
 	add_check_box("cf2", false, "Auto CONFIG"            , ")<br>", !(webman_config->ps2config)  , buffer);
 
 #ifdef COBRA_ONLY
@@ -1199,6 +1205,7 @@ static void read_settings(void)
 	webman_config->pspl = 1;          //Show PSP Launcher
 	webman_config->ps2l = 1;          //Show PS2 Classic Launcher
 
+	//webman_config->ps2emu = 0;      //default PS2 emulator on B/C consoles: 0 = ps2_emu, 1 = ps2_netemu
 	//webman_config->ps2config = 0;   //enable auto lookup for PS2 CONFIG
 
 	//webman_config->spp   = 0;       //disable removal of syscalls
