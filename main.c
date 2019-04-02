@@ -507,7 +507,7 @@ typedef struct
 	u8 dev_sd;
 	u8 dev_ms;
 	u8 dev_cf;
-	u8 ntfs;
+	u8 ntfs; // 1=enable internal prepNTFS to scan content
 
 	u8 padding1[5];
 
@@ -771,6 +771,7 @@ static s64 val(const char *c);
 
 static ntfs_md *mounts = NULL;
 static int mountCount = NTFS_UNMOUNTED;
+static bool skip_prepntfs = false;
 
 static int prepNTFS(u8 clear);
 #endif
@@ -1349,6 +1350,10 @@ parse_request:
 	u8 is_popup = 0, auto_mount = 0;
 	u8 is_ps3_http = 0;
 
+	#ifdef USE_NTFS
+	skip_prepntfs = false;
+	#endif
+
 //// process commands ////
 
 	while(!served && working)
@@ -1402,14 +1407,25 @@ parse_request:
 			if(wm_request) { for(size_t n = 0; param[n]; n++) {if(param[n] == 9) param[n] = ' ';} } wm_request = 0;
  #endif
 
-			if(islike(param, "/refresh_ps3") && refreshing_xml == 0)
+			if((refreshing_xml == 0) && islike(param, "/refresh"))
 			{
-				refresh_xml(param);
-				#ifdef WM_REQUEST
-				if(!wm_request)
+				if(islike(param + 8, "_ps3"))
+				{
+					refresh_xml(param);
+					#ifdef WM_REQUEST
+					if(!wm_request)
+					#endif
+					http_response(conn_s, header, param, CODE_HTTP_OK, param); keep_alive = 0;
+					goto exit_handleclient_www;
+				}
+
+				#ifdef USE_NTFS
+				if(webman_config->ntfs)
+				{
+					get_game_info();
+					skip_prepntfs = (strcmp(_game_TitleID, "BLES80616") == 0); // /refresh.ps3 called from prepNTFS application
+				}
 				#endif
-				http_response(conn_s, header, param, CODE_HTTP_OK, param); keep_alive = 0;
-				goto exit_handleclient_www;
 			}
 
 			bool is_setup = islike(param, "/setup.ps3?");
@@ -3105,16 +3121,21 @@ parse_request:
 					{
 						// /refresh.ps3               refresh XML
 						// /refresh.ps3?cover=<mode>  refresh XML using cover type (icon0, mm, disc, online)
-						// /refresh.ps3?ntfs          refresh NTFS volumes
-						// /refresh.ps3?prepntfs      refresh NTFS volumes & scan ntfs ISOs
-						// /refresh.ps3?prepntfs(0)   refresh NTFS volumes & scan ntfs ISOs
+						// /refresh.ps3?ntfs          refresh NTFS volumes and show NTFS volumes
+						// /refresh.ps3?prepntfs      refresh NTFS volumes & scan ntfs ISOs (clear cached .ntfs[PS*ISO] files in /dev_hdd0/tmp/wmtmp)
+						// /refresh.ps3?prepntfs(0)   refresh NTFS volumes & scan ntfs ISOs (keep cached files)
 #ifdef USE_NTFS
 						if(islike(param + 12, "?ntfs") || islike(param + 12, "?prepntfs"))
 						{
 							check_ntfs_volumes();
 
 							int ngames = 0; *header = NULL;
-							if(islike(param + 12, "?prepntfs")) {ngames = prepNTFS(strchr(param, '0')!=NULL); sprintf(header, " • <a href=\"%s\">%i</a> <a href=\"/index.ps3?ntfs\">%s</a>", WMTMP, ngames, STR_GAMES);}
+							if(islike(param + 12, "?prepntfs"))
+							{
+								bool clear_ntfs = (strstr(param + 12, "ntfs(0)") != NULL);
+								ngames = prepNTFS(clear_ntfs);
+								sprintf(header, " • <a href=\"%s\">%i</a> <a href=\"/index.ps3?ntfs\">%s</a>", WMTMP, ngames, STR_GAMES);
+							}
 
 							sprintf(param, "NTFS VOLUMES: %i%s", mountCount, header); is_busy = false;
 

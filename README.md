@@ -8,8 +8,10 @@ We would like to integrate all existing features available on the PS3 Scene like
 ## Current functionality
 ### General
 - Support on custom firmware with cobra feature enabled (ver 4.46-4.84 CEX, DEX & DECR)
+- Support on REBUG firmware with cobra feature disabled (ver 4.84.2 CEX & DEX)
+- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.84 CEX & DEX) *https://github.com/aldostools/MAMBA_PRX_Loader*
+- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.84 CEX & DEX) *https://github.com/aldostools/IRISMAN*
 - Support on classic custom firmware with PRXLoader (ver 3.41-4.84 CEX & DEX) *https://github.com/NzV/PRX_Loader*
-- Support on classic custom firmware with Mamba PRXLoader (ver 3.41-4.84 CEX & DEX) *https://github.com/NzV/MAMBA_PRX_Loader*
 - All PS3 Models with downgrade compatibility is supported, see *http://www.psdevwiki.com/ps3/SKU_Models*
 
 ### webMAN vanilla features
@@ -37,9 +39,11 @@ We would like to integrate all existing features available on the PS3 Scene like
 - It can auto-mount any custom folder or ISO. Official only can mount AUTOBOOT.ISO
 - Title ID can be displayed on XMB menu
 - Covers are shown using the Title ID on the file name of the ISO. Official needs to mount the game to show the covers.
+- Option for online covers display.
 - It can rip a game from disc to hdd0 or copy from hdd0 to usb000 or from usb00x to hdd0.
 - FTP server includes new SITE commands to allow copy/paste files locally, unmount game, toggle external gamedata, turn on/off dev_blind, change file attributes
-- Safe upload mode prevents a brick/semi-brick if power fails during ftp uploads to /dev_blind 
+- Safe upload mode prevents a brick/semi-brick if power fails during ftp uploads to /dev_blind.
+- Increased security: ADMIN mode blocks access to critical functions like /setup.ps3, /delete.ps3; Password for FTP server access; limit remote access to specific IP
 - Integrated external gameDATA allows installation of packages & game data on external USB drives
 - Web Debugger (remote peek/poke/find bytes)
 - Support for automatic or manual removal of CFW syscalls and spoof console id (IDPS/PSID)
@@ -48,6 +52,7 @@ We would like to integrate all existing features available on the PS3 Scene like
 - Several shortcuts to toggle Cobra, swap Rebug files, mount net0/ or net1/, show IDPS/PSID, etc.
 - Support for user defined combos (pad shortcuts)
 - Enable screen capture on CFW that don't has the feature.
+- Enable selection of emulator for PS1 and PS2 on B/C consoles
 - Various improvements on File Manager (links to navigate faster, mount ISO, mount net0/ or net1/, preview images, copy/paste/delete files & folders)
 - MIN+ memory profile (same as MIN but uses 512K and 2.5X more buffer for PS3 games)
 - MAX+ memory profile (same as MAX 1280K for PS3 games, others buffer is reduced, eg: 2X less buffer for ftp and 4X for DVD etc...)

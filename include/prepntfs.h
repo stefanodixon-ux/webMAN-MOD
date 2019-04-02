@@ -17,7 +17,7 @@ static u8 prepntfs_working = false;
 
 static int prepNTFS(u8 clear)
 {
-	if(prepntfs_working) return 0;
+	if(prepntfs_working || skip_prepntfs) {skip_prepntfs = false; return 0;}
 	prepntfs_working = true;
 
 	int i, parts, dlen, count = 0;

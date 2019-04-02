@@ -530,7 +530,8 @@ static void setup_form(char *buffer, char *templn)
 	if(isDir(drives[15])) add_check_box("x2", false, drives[15], _BR_, (webman_config->dev_cf), buffer);
 
 #ifdef USE_NTFS
-	add_check_box("xn", false, "/dev_ntfs", _BR_, (webman_config->ntfs), buffer);
+	strcat(buffer, "<label title=\"internal prepNTFS\">");
+	add_check_box("xn", false, "/dev_ntfs", "</label><br>", (webman_config->ntfs), buffer);
 #endif
 
 	//Scan for content
@@ -1148,7 +1149,7 @@ static void read_settings(void)
 	//webman_config->dev_cf = 0;
 
 #ifdef USE_NTFS
-	webman_config->ntfs = 1;
+	webman_config->ntfs = 1; // use internal prepNTFS to scan content
 #endif
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
