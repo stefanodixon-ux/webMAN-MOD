@@ -268,7 +268,11 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define HTML_BASE_PATH			"/dev_hdd0/xmlhost/game_plugin"
 
 #define FB_XML					HTML_BASE_PATH "/fb.xml"
+#ifdef COBRA_ONLY
 #define MY_GAMES_XML			HTML_BASE_PATH "/mygames.xml"
+#else
+#define MY_GAMES_XML			HTML_BASE_PATH "/jbgames.xml"
+#endif
 #define MOBILE_HTML				HTML_BASE_PATH "/mobile.html"
 #define GAMELIST_JS				HTML_BASE_PATH "/gamelist.js"
 

@@ -64,12 +64,12 @@ static bool add_xmb_entry(u8 f0, u8 f1, int plen, char *tempstr, char *templn, c
 		{xml_len[gROM] += concat(myxml_roms + xml_len[gROM], tempstr); *skey=DVD, ++item_count[gROM];}
 		else
  #endif
+#ifdef COBRA_ONLY
 		if(((IS_PS3_TYPE)   || ((IS_NTFS) && !extcmp(entry_name + plen, ".ntfs[PS3ISO]", 13))) && xml_len[gPS3] < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3)))
 		{xml_len[gPS3] += concat(myxml_ps3 + xml_len[gPS3], tempstr); *skey=PS3_, ++item_count[gPS3];}
 		else
 		if(((IS_PS2_FOLDER) || ((IS_NTFS) && !extcmp(entry_name + plen, ".ntfs[PS2ISO]", 13))) && xml_len[gPS2] < (BUFFER_SIZE_PS2 - ITEMS_BUFFER(gPS2)))
 		{xml_len[gPS2] += concat(myxml_ps2 + xml_len[gPS2], tempstr); *skey=PS2, ++item_count[gPS2];}
-#ifdef COBRA_ONLY
 		else
 		if(((IS_PSX_FOLDER) || ((IS_NTFS) && !extcmp(entry_name + plen, ".ntfs[PSXISO]", 13))) && xml_len[gPSX] < (BUFFER_SIZE_PSX - ITEMS_BUFFER(gPSX)))
 		{xml_len[gPSX] += concat(myxml_psx + xml_len[gPSX], tempstr); *skey=PS1, ++item_count[gPSX];}
@@ -79,6 +79,12 @@ static bool add_xmb_entry(u8 f0, u8 f1, int plen, char *tempstr, char *templn, c
 		else
 		if(((IS_BLU_FOLDER) || (IS_DVD_FOLDER) || ((IS_NTFS) && (!extcmp(entry_name + plen, ".ntfs[DVDISO]", 13) || !extcmp(entry_name + plen, ".ntfs[BDISO]", 12) || !extcmp(entry_name + plen, ".ntfs[BDFILE]", 13)))) && xml_len[gDVD] < (BUFFER_SIZE_DVD - ITEMS_BUFFER(gDVD)))
 		{xml_len[gDVD] += concat(myxml_dvd + xml_len[gDVD], tempstr); *skey=BLU, ++item_count[gDVD];}
+#else
+		if((IS_PS3_TYPE) && xml_len[gPS3] < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3)))
+		{xml_len[gPS3] += concat(myxml_ps3 + xml_len[gPS3], tempstr); *skey=PS3_, ++item_count[gPS3];}
+		else
+		if((IS_PS2_FOLDER) && xml_len[gPS2] < (BUFFER_SIZE_PS2 - ITEMS_BUFFER(gPS2)))
+		{xml_len[gPS2] += concat(myxml_ps2 + xml_len[gPS2], tempstr); *skey=PS2, ++item_count[gPS2];}
 #endif
 		else
 			return (false);
@@ -261,7 +267,9 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 			if(file_exists(MY_GAMES_XML))
 			{
-				if(file_exists(FB_XML)) return true; // skip refresh xml & mount autoboot
+				char tmpxml[0x320];
+				make_fb_xml(tmpxml);
+				return true; // skip refresh xml & mount autoboot
 			}
 		}
 
