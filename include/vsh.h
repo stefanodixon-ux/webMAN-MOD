@@ -103,13 +103,28 @@ static void enable_ingame_screenshot(void)
 
 static bool abort_autoplay(void)
 {
-	if(webman_config->autoplay)
+	CellPadData pad_data = pad_read(); // abort auto-play holding L2 or pressing arrow keys
+	if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & (CELL_PAD_CTRL_DOWN | CELL_PAD_CTRL_UP | CELL_PAD_CTRL_LEFT | CELL_PAD_CTRL_RIGHT)) ||
+		(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CIRCLE)))
 	{
-		CellPadData pad_data = pad_read();
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2) {BEEP2; return true;} // abort auto-play holding L2
+		if(webman_config->autoplay && !webman_config->nobeep) BEEP2;
+		return true;
 	}
 	return false;
 }
+
+static bool wait_for_abort(u32 usecs)
+{
+	if(IS_INGAME) return true;
+
+	for(u32 s = 0; s <= usecs; s+=200000)
+	{
+		if(abort_autoplay()) return true; //200ms
+	}
+
+	return false;
+}
+
 
 #ifdef PKG_HANDLER
 static void unload_web_plugins(void);
@@ -143,29 +158,33 @@ static void focus_first_item(void)
 	}
 }
 
-static void explore_exec_push(u32 usecs, u8 focus_first)
+static bool explore_exec_push(u32 usecs, u8 focus_first)
 {
-	if(IS_INGAME) return;
+	if(IS_INGAME) return false;
 
 	if(explore_interface)
 	{
-		sys_ppu_thread_usleep(usecs);
+		if(wait_for_abort(usecs)) return false;
 
 		if(focus_first)
 		{
 			focus_first_item();
 		}
 
-		if(abort_autoplay() || IS_INGAME) return;
-
-		explore_interface->ExecXMBcommand("exec_push", 0, 0);
+		if(abort_autoplay() || IS_INGAME) return false;
 
 		if(focus_first)
 		{
-			sys_ppu_thread_usleep(2000000);
+			explore_interface->ExecXMBcommand("open_list nocheck", 0, 0);
+			if(wait_for_abort(500000)) return false;
 			focus_first_item();
 		}
+		else
+			explore_interface->ExecXMBcommand("exec_push", 0, 0);
+
+		return true;
 	}
+	return false;
 }
 
 static void launch_disc(char *category, char *seg_name, bool execute)
@@ -176,9 +195,9 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 	unload_vsh_gui();
 #endif
 
-	for(n = 0; n < 15; n++) {if(abort_autoplay()) return; view = View_Find("explore_plugin"); if(!view) sys_ppu_thread_sleep(2); else break;}
+	for(n = 0; n < 15; n++) {view = View_Find("explore_plugin"); if(view) break; if(wait_for_abort(2000000)) return;}
 
-	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 10); if(n) sys_ppu_thread_sleep(3);
+	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 10); if(n) {if(wait_for_abort(3000000)) return;}
 
 	if(view)
 	{
@@ -194,7 +213,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 			while(View_Find("webrender_plugin") || View_Find("webbrowser_plugin"))
 			{
-				sys_ppu_thread_usleep(50000); retry++; if(retry > 40) break; if(abort_autoplay()) return;
+				if(wait_for_abort(50000)) return; if(++retry > 40) break;
 			}
 
 			// use segment for media type
@@ -223,15 +242,15 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 				if((n < icon_found) && file_exists("/dev_hdd0/tmp/game/ICON0.PNG")) {n = icon_found;}
 				wait = (n < icon_found) || execute;
 
-				if(wait) sys_ppu_thread_usleep(50000);
+				if(wait) {if(wait_for_abort(50000)) return;}
 				explore_interface->ExecXMBcommand("close_all_list", 0, 0);
-				if(wait) sys_ppu_thread_usleep(150000);
+				if(wait) {if(wait_for_abort(150000)) return;}
 				sprintf(explore_command, "focus_category %s", category);
 				explore_interface->ExecXMBcommand(explore_command, 0, 0);
-				if(wait) sys_ppu_thread_usleep(100000);
+				if(wait) {if(wait_for_abort(100000)) return;}
 				sprintf(explore_command, "focus_segment_index %s", seg_name);
 				explore_interface->ExecXMBcommand(explore_command, 0, 0);
-				if(wait) sys_ppu_thread_usleep(100000);
+				if(wait) {if(wait_for_abort(100000)) return;}
 			}
 
 			if(execute) explore_exec_push(0, false);
@@ -253,7 +272,7 @@ static void reload_xmb(void)
 		explore_interface->ExecXMBcommand("close_all_list", 0, 0);
 		explore_interface->ExecXMBcommand("focus_category network", 0, 0);
 		explore_interface->ExecXMBcommand("focus_segment_index -1", 0, 0);
-		sys_ppu_thread_sleep(1);
+		if(wait_for_abort(1000000)) return;
 		explore_exec_push(0, false);
 	}
 }

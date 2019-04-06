@@ -72,8 +72,9 @@ static void auto_play(char *param)
 		{
 			if(!(webman_config->nogrp) && webman_config->pspl && (view != 0) && (strstr(param, "_ps3") != NULL))
 			{
-				explore_exec_push(250000, true); // open psp_launcher folder
-				explore_exec_push(250000, false); // start psp_launcher
+				if( explore_exec_push(250000, true))	// move to psp_launcher folder and open it
+				if(!explore_exec_push(500000, false))	// start psp_launcher
+					autoplay = false;
 			}
 		}
 		else
@@ -102,9 +103,9 @@ static void auto_play(char *param)
 				else
 				{
 					explore_interface->ExecXMBcommand("focus_index rx_video", 0, 0);
-					explore_exec_push(200000, true);  // open rx_video folder
 
-					if(!autoplay || strcasestr(param, ".mkv")) {is_busy = false; return;}
+					// open rx_video folder
+					if(!explore_exec_push(200000, true) || !autoplay || strcasestr(param, ".mkv")) {is_busy = false; return;}
 
 					explore_exec_push(2000000, true); // open Data Disc
 				}
@@ -1004,7 +1005,7 @@ static void mount_autoboot(void)
 	CellPadData pad_data = pad_read();
 
 	// prevent auto-mount on startup if L2+R2 is pressed
-	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))) { BEEP2; return;}
+	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))) { if(!webman_config->nobeep) BEEP2; return;}
 
 	if(from_reboot && *path && (strstr(path, "/PS2") != NULL)) return; //avoid re-launch PS2 returning to XMB
 
