@@ -78,7 +78,8 @@ int main(int argc, const char* argv[])
 
 	FILE *fp;
 
-	fp = fopen("/dev_hdd0/game/PKGLAUNCH/USRDIR/launch.txt", "rb");
+	fp = fopen("/dev_bdvd/PS3_GAME/USRDIR/launch.txt", "rb");
+	if(!fp) fp = fopen("/dev_hdd0/game/PKGLAUNCH/USRDIR/launch.txt", "rb");
 
 	memset(path, 2048, 0);
 	memset(param, 2048, 0);

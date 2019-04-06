@@ -52,7 +52,7 @@ static void auto_play(char *param)
 #ifdef OFFLINE_INGAME
 	if((strstr(param, OFFLINE_TAG) != NULL)) net_status = 0;
 #endif
-	if(IS_ON_XMB && (strstr(param, "/PSPISO") == NULL) && (extcmp(param, ".BIN.ENC", 8) != 0))
+	if(IS_ON_XMB && (extcmp(param, ".BIN.ENC", 8) != 0))
 	{
 		u8 autoplay = webman_config->autoplay;
 
@@ -67,8 +67,17 @@ static void auto_play(char *param)
  #if defined(FAKEISO) || defined(PKG_LAUNCHER)
 		int view = View_Find("explore_plugin");
 		if(view) explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
- #endif
 
+		if(!l2 && strstr(param, "/PSPISO"))
+		{
+			if(!(webman_config->nogrp) && webman_config->pspl && (view != 0) && (strstr(param, "_ps3") != NULL))
+			{
+				explore_exec_push(250000, true); // open psp_launcher folder
+				explore_exec_push(250000, false); // start psp_launcher
+			}
+		}
+		else
+ #endif
  #ifdef PKG_LAUNCHER
 		if(strstr(param, "/GAMEI/"))
 		{

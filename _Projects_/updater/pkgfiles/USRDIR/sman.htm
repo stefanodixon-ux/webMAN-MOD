@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><meta http-equiv="Content-type" content="text/html;charset=UTF-8"><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-<head><title>wMAN MOD 1.47.14</title><style type="text/css">
+<head><title>wMAN MOD 1.47.15</title><style type="text/css">
 <!--
 a:hover{color:#FFFFFF;text-decoration:none;}
 a:visited{color:#f0f0f0;text-decoration:none;}
@@ -91,9 +91,13 @@ body,td,th{color:#f0f0f0;}
 }
 
 .tg:hover:before {
-	position: relative;
-	top: -2px;
-	content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuNv1OCegAAACCSURBVChTfYyxCYNgFISfYiNuoSMEZ3CSFNnC1hEcQbJKqqSwsbKzSBtBkl+/+yMKFh58cO/ueOacq8/QoAc3H6QMtRrcYFrzTWQjFBpk8ILtC/YHd4iNO4KS4+NbhB8gxwYmYVJ4EEpfqCDxpaQlwRXe0HFf1moXYUT5hAYf/lOzBQW0yKXy3jyAAAAAAElFTkSuQmCC');
+	display: inline-block;
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
+	transition-duration:0.5s;
 }
 
 @keyframes highlight {
@@ -228,7 +232,7 @@ a.l_menu:hover{color:#006699;}
 <div id="wmsg"><H1>. . .</H1></div>
 
 <div id="top_action">
-	<a href="#" onclick="javascript:document.getElementById('rxml').style.display='block';window.open('/refresh.ps3;/sman.ps3', '_self');" class="t_menu">Refresh</a>
+	<a href="#" onclick="javascript:document.getElementById('rxml').style.display='block';window.open('/refresh.ps3?xmb;/sman.ps3', '_self');" class="t_menu">Refresh</a>
 	<a href="#" onclick="javascript:window.open('/mount.ps3/unmount?/sman.ps3', '_self');" class="t_menu">Eject</a>
 	<a href="#" onclick="javascript:window.open('/restart.ps3', '_self');" class="t_menu">Restart</a>
 	<a href="#" onclick="javascript:window.open('/shutdown.ps3', '_self');" class="t_menu">Shutdown</a>

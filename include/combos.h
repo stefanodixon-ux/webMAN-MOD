@@ -2,7 +2,7 @@
  FAIL SAFE    : SELECT+L3+L2+R2
  RESET SAFE   : SELECT+R3+L2+R2
 
- REFRESH XML  : SELECT+L3 (+R2=profile1, +L2=profile2)
+ REFRESH XML  : SELECT+L3 (+R2=profile1, +L2=profile2, +R1=profile3, +L1=profile4, +L1+R1=Reload XMB, +R2+L2=FAIL SAFE)
  UNLOAD WM    : L3+R3+R2
 
  PLAY_DISC    : L2+START
@@ -162,6 +162,7 @@
 
 							cellFsUnlink("/dev_hdd0/boot_plugins.txt");
 							cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
+							cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
 							goto reboot; // vsh reboot
 						}
 						else
@@ -230,8 +231,10 @@
 							if(data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2) profile=2; else
 							if(data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R1) profile=3; else
 							if(data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L1) profile=4; else profile=0;
+							if(data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_L1)) n = 11;
 
 							refresh_xml(msg);
+							if(n > 10) reload_xmb();
 						}
 #ifdef VIDEO_REC
 						else

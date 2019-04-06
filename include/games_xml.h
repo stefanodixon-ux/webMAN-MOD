@@ -380,16 +380,17 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		if(!(webman_config->cmask & PSP))
 		{
 			xml_len[gPSP] =  sprintf(myxml_psp, "<View id=\"seg_wm_psp_items\"><Attributes>");
-			if(webman_config->pspl && file_exists("/dev_hdd0/game/PSPC66820"))
+			if(webman_config->pspl && (isDir("/dev_hdd0/game/PSPC66820") || isDir("/dev_hdd0/game/PSPM66820")))
 			{
 #ifndef ENGLISH_ONLY
 				char *STR_LAUNCHPSP =  tempstr; //[144];//	= "Launch PSP ISO mounted through webMAN or mmCM";
 				language("STR_LAUNCHPSP", STR_LAUNCHPSP, "Launch PSP ISO mounted through webMAN or mmCM");
 #endif
 				sprintf(templn, "<Table key=\"cobra_psp_launcher\">"
-								XML_PAIR("icon","/dev_hdd0/game/PSPC66820/ICON0.PNG")
+								XML_PAIR("icon","/dev_hdd0/game/%s/ICON0.PNG")
 								XML_PAIR("title","PSP Launcher")
 								XML_PAIR("info","%s") "%s",
+								(isDir("/dev_hdd0/game/PSPC66820")) ? "PSPC66820" : "PSPM66820",
 								STR_LAUNCHPSP, "</Table>"); xml_len[gPSP] += concat(myxml_psp, templn);
 			}
 		}
@@ -765,7 +766,7 @@ continue_reading_folder_xml:
 
 #ifdef COBRA_ONLY
 		if(!(webman_config->cmask & PS1)) {strcat(myxml_psx, "</Attributes><Items>");}
-		if(!(webman_config->cmask & PSP)) {strcat(myxml_psp, "</Attributes><Items>"); if(webman_config->pspl && isDir("/dev_hdd0/game/PSPC66820")) strcat(myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://127.0.0.1/query?limit=1&cond=Ae+Game:Game.titleId PSPC66820"));}
+		if(!(webman_config->cmask & PSP)) {strcat(myxml_psp, "</Attributes><Items>"); if(webman_config->pspl && (isDir("/dev_hdd0/game/PSPC66820") || isDir("/dev_hdd0/game/PSPM66820"))) strcat(myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://127.0.0.1/query?cond=AGL+Game:Game.titleId PSPC66820 PSPM66820"));}
 		if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU)) {strcat(myxml_dvd, "</Attributes><Items>"); if(webman_config->rxvid) strcat(myxml_dvd, QUERY_XMB("rx_video", "#seg_wm_bdvd"));}
  #ifdef MOUNT_ROMS
 		if(  webman_config->roms       )  {strcat(myxml_roms, "</Attributes><Items>");}

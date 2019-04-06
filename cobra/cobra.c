@@ -32,8 +32,11 @@
 
 #define PSPL_PATH		"/dev_hdd0/game/PSPC66820"
 #define PSPL_ICON		PSPL_PATH "/ICON0.PNG"
-#define PSPL_LAMBDA		PSPL_PATH "/USRDIR/CONTENT/lambda.db"
-#define PSPL_LAMBDA_NONCE 	0x0ab40b3bbd1f1a7bULL
+#define PSPL_PATH2		"/dev_hdd0/game/PSPM66820"
+#define PSPL_ICON2		PSPL_PATH2 "/ICON0.PNG"
+
+//#define PSPL_LAMBDA		PSPL_PATH "/USRDIR/CONTENT/lambda.db"
+//#define PSPL_LAMBDA_NONCE 	0x0ab40b3bbd1f1a7bULL
 
 #define DPRINTF(...)
 
@@ -1570,7 +1573,9 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 	if(file_copy(umd_file, icon_save_path, 0) >= CELL_FS_SUCCEEDED)
 	{
-		sys_map_path(PSPL_ICON, icon_save_path);
+		sys_map_path(PSPL_ICON,  icon_save_path);
+		sys_map_path(PSPL_ICON2, icon_save_path);
+
 		snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/SYSDIR/EBOOT.OLD", root);
 
 		if (cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
@@ -2112,9 +2117,10 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 
 int cobra_unset_psp_umd(void)
 {
-	int ret = sys_map_path(PSPL_ICON, NULL);
-	if (ret == ENOSYS)
-		return ret;
+	int ret1 = sys_map_path(PSPL_ICON,  NULL);
+	int ret2 = sys_map_path(PSPL_ICON2, NULL);
+
+	if (ret1 == ENOSYS || ret2 == ENOSYS) return ENOSYS;
 
 	sys_psp_set_umdfile(NULL, NULL, 0);
 	//sys_psp_change_emu_path(NULL);

@@ -949,7 +949,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 #ifdef LAUNCHPAD
 	if(launchpad_mode) cellFsUnlink(LAUNCHPAD_FILE_XML); else
 #endif
-	if(!mobile_mode && strstr(param, "/index.ps3"))
+	if((!mobile_mode) && !(webman_config->sman) && strstr(param, "/index.ps3"))
 	{
 		char *pbuffer = buffer + buf_len + concat(buffer, "<font style=\"font-size:18px\">");
 
@@ -1502,7 +1502,7 @@ next_html_entry:
 #endif
 		if(mobile_mode)
 			sprintf(buffer, "slides = [");
-		else if(islike(param, "/sman.ps3"))
+		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
 			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); strcat(buffer, templn);
 		}

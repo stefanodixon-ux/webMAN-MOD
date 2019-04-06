@@ -40,7 +40,6 @@ mkdir pkgfiles-rebugification_theme\USRDIR\CONFIG\SOFT
 copy /y pkgfiles\USRDIR\CONFIG\SOFT\*.CONFIG pkgfiles-rebugification_theme\USRDIR\CONFIG\SOFT>>nul
 
 cls
-
 ren pkgfiles pkgfiles-normal_theme
 ren pkgfiles-rebugification_theme pkgfiles
 

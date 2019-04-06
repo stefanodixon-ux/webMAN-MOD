@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.14 MOD"
+#define WM_VERSION			"1.47.15 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -1412,6 +1412,12 @@ parse_request:
 				if(islike(param + 8, "_ps3"))
 				{
 					refresh_xml(param);
+
+					if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+					{
+						reload_xmb();
+					}
+
 					#ifdef WM_REQUEST
 					if(!wm_request)
 					#endif
@@ -1452,6 +1458,7 @@ parse_request:
 
 							|| islike(param, "/mount")
 							|| islike(param, "/refresh.ps3")
+							|| islike(param, "/reloadxmb.ps3")
 							|| islike(param, "/index.ps3")
 							|| islike(param, "/sman.ps3")
 							|| islike(param, "/games.ps3")
@@ -1566,6 +1573,12 @@ parse_request:
 				sprintf(param, "/cpursx.ps3");
 			}
  #endif //  #ifdef VIRTUAL_PAD
+
+			if(islike(param, "/reloadxmb.ps3") && refreshing_xml == 0)
+			{
+				reload_xmb();
+				sprintf(param, "/index.ps3");
+			}
 
  #ifdef SYS_ADMIN_MODE
 			if(islike(param, "/admin.ps3"))
@@ -3146,6 +3159,8 @@ parse_request:
 
 						refresh_xml(templn);
 
+						if(strstr(param + 12, "xmb")) reload_xmb();
+
  #ifndef ENGLISH_ONLY
 						sprintf(templn, "<br>");
 
@@ -3160,6 +3175,11 @@ parse_request:
  #else
 						sprintf(templn,  "<br>%s", STR_XMLRF); strcat(pbuffer, templn);
  #endif
+						if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+						{
+							sprintf(templn, " [<a href=\"/reloadxmb.ps3\">%s XMB</a>]", STR_REFRESH);
+							strcat(pbuffer, templn);
+						}
 					}
 					else
 					if(is_setup)
@@ -3369,8 +3389,9 @@ parse_request:
 						else if(islike(param2 , "?uninstall"))
 						{
 							struct CellFsStat buf;
-							if(cellFsStat("/dev_hdd0/boot_plugins.txt", &buf)         == CELL_FS_SUCCEEDED && buf.st_size < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
-							if(cellFsStat("/dev_hdd0/boot_plugins_nocobra.txt", &buf) == CELL_FS_SUCCEEDED && buf.st_size < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
+							if(cellFsStat("/dev_hdd0/boot_plugins.txt", &buf)             == CELL_FS_SUCCEEDED && buf.st_size < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
+							if(cellFsStat("/dev_hdd0/boot_plugins_nocobra.txt", &buf)     == CELL_FS_SUCCEEDED && buf.st_size < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
+							if(cellFsStat("/dev_hdd0/boot_plugins_nocobra_dex.txt", &buf) == CELL_FS_SUCCEEDED && buf.st_size < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
 
 							// delete files
 							sprintf(param, "plugins/");

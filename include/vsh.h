@@ -240,6 +240,24 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 	}
 }
 
+static void reload_xmb(void)
+{
+	CellPadData pad_data = pad_read();
+	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
+
+	if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+	{
+		int view = View_Find("explore_plugin");
+		if(view) explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
+
+		explore_interface->ExecXMBcommand("close_all_list", 0, 0);
+		explore_interface->ExecXMBcommand("focus_category network", 0, 0);
+		explore_interface->ExecXMBcommand("focus_segment_index -1", 0, 0);
+		sys_ppu_thread_sleep(1);
+		explore_exec_push(0, false);
+	}
+}
+
 /*
 static void show_msg2(char* msg) // usage: show_msg2(L"text");
 {

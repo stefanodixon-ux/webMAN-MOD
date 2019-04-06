@@ -19,6 +19,8 @@
 
 	<View id="seg_webman_links_items">
 		<Items>
+			<Query class="type:x-xmb/folder-pixmap" key="reloadxmb" src="xcb://localhost/query?limit=1&cond=Ae+Game:Game.titleId RELOADXMB"/>
+
 			<Query class="type:x-xmb/folder-pixmap" key="webman_setup_link" src="#seg_webman_setup"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_unmount_link" src="#seg_webman_unmount"/>
 
@@ -38,7 +40,8 @@
 			<Query class="type:x-xmb/folder-pixmap" key="webman_gamefix_link" src="#seg_webman_gamefix"/>
 
 			<Query class="type:x-xmb/folder-pixmap" key="webman_insert_link" src="#seg_webman_insert"/>
-			<Query class="type:x-xmb/folder-pixmap" key="webman_webman_unload" src="#seg_webman_unload"/>
+			<Query class="type:x-xmb/folder-pixmap" key="webman_uninstall_link" src="#seg_webman_uninstall"/>
+			<Query class="type:x-xmb/folder-pixmap" key="webman_unload_link" src="#seg_webman_unload"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_wm_vsh_menu" src="#seg_wm_vsh_menu"/>
 
 			<Query class="type:x-xmb/folder-pixmap" key="webman_webman_restart" src="#seg_webman_restart"/>
@@ -275,7 +278,7 @@
 				<Pair key="info"><String>XML 새로고침으로 업데이트된 게임목록이 저장됩니다. 재부팅후 목록이 갱신됩니다.</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
-				<Pair key="module_action"><String>/refresh.ps3</String></Pair>
+				<Pair key="module_action"><String>/refresh_ps3</String></Pair>
 			</Table>
 		</Attributes>
 		<Items><Item class="type:x-xmb/module-action" key="webman_refresh_xml" attr="webman_refresh_xml"/></Items>
@@ -933,6 +936,21 @@
 			</Table>
 		</Attributes>
 		<Items><Item class="type:x-xmb/module-action" key="webman_insert" attr="webman_insert"/></Items>
+	</View>
+
+	<!-- Main > webMAN > Uninstall webMAN -->
+	<View id="seg_webman_uninstall">
+		<Attributes>
+			<Table key="webman_uninstall">
+				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/multiman.png</String></Pair>
+				<Pair key="title"><String>webMAN MOD 제거</String></Pair>
+				<Pair key="info"><String></String></Pair>
+				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="bar_action"><String>none</String></Pair>
+				<Pair key="module_action"><String>/delete.ps3?uninstall</String></Pair>
+			</Table>
+		</Attributes>
+		<Items><Item class="type:x-xmb/module-action" key="webman_uninstall" attr="webman_uninstall"/></Items>
 	</View>
 
 	<!-- Main > webMAN > Unload webMAN -->

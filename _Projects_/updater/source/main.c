@@ -54,6 +54,8 @@
 bool full = false;
 bool lite = false;
 
+bool plugins_dir_exists = false;
+
 int sys_fs_mount(char const* deviceName, char const* deviceFileSystem, char const* devicePath, int writeProt)
 {
 	lv2syscall8(837, (u64) deviceName, (u64) deviceFileSystem, (u64) devicePath, 0, (u64) writeProt, 0, 0, 0 );
@@ -123,6 +125,12 @@ skip:
 	if((ret == SUCCESS) && (stat.st_size == length)) ret = SUCCESS; else ret = FAILED;
 
 	return ret;
+}
+
+int sys_get_version2(u32 *version)
+{
+	lv2syscall2(8, 0x7001, (u64)version);
+	return_to_user_prog(int);
 }
 
 int sys_get_version(u32 *version)
@@ -639,6 +647,8 @@ int main()
 
 	sysLv2FsMkdir(PLUGINS_DIR, 0777);
 
+	plugins_dir_exists = (sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS);
+
 	// install vsh menu
 	if(sysLv2FsStat(RES_DIR, &stat) == SUCCESS)
 	{
@@ -819,7 +829,7 @@ cont:
 				f = fopen(HDDROOT_DIR "/boot_plugins.txt", "r");
 				while(fgets(line, 255, f) != NULL)
 				{
-					if(strstr(line,"webftp_server") != NULL && strstr(line,"/dev_blind") == NULL)
+					if((strstr(line,"webftp_server") != NULL) && (strstr(line,"/dev_blind") == NULL) && (strstr(line,"/dev_flash") == NULL))
 					{
 						strtok(line, "\r\n");
 						sysLv2FsChmod(line, 0777);
@@ -829,6 +839,39 @@ cont:
 				}
 				fclose(f);
 			}
+
+			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra.txt", &stat) == SUCCESS)
+			{
+				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "r");
+				while(fgets(line, 255, f) != NULL)
+				{
+					if((strstr(line,"webftp_server") != NULL) && (strstr(line,"/dev_blind") == NULL) && (strstr(line,"/dev_flash") == NULL))
+					{
+						strtok(line, "\r\n");
+						sysLv2FsChmod(line, 0777);
+						sysLv2FsUnlink(line);
+						break;
+					}
+				}
+				fclose(f);
+			}
+
+			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", &stat) == SUCCESS)
+			{
+				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "r");
+				while(fgets(line, 255, f) != NULL)
+				{
+					if((strstr(line,"webftp_server") != NULL) && (strstr(line,"/dev_blind") == NULL) && (strstr(line,"/dev_flash") == NULL))
+					{
+						strtok(line, "\r\n");
+						sysLv2FsChmod(line, 0777);
+						sysLv2FsUnlink(line);
+						break;
+					}
+				}
+				fclose(f);
+			}
+
 		}
 
 		// reboot
@@ -854,6 +897,87 @@ cont:
 			file_copy(APP_USRDIR "/webftp_server_lite.sprx", REBUG_VSH_MODULE_DIR "/webftp_server.sprx.bak");
 		else
 			file_copy(APP_USRDIR "/webftp_server_rebug_cobra_ps3mapi.sprx", REBUG_VSH_MODULE_DIR "/webftp_server.sprx.bak");
+	}
+
+
+	u32 cobra_version = 0;
+	if((sysLv2FsStat("/dev_flash/rebug/cobra", &stat) == SUCCESS) && (sys_get_version2(&cobra_version) >= 0 && cobra_version >= 0x0810))
+	{
+		// parse boot_plugins_nocobra.txt (update existing path)
+		if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra.txt", &stat) == SUCCESS)
+		{
+			f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "r");
+			while(fgets(line, 255, f) != NULL)
+			{
+				if(strstr(line,"webftp_server") != NULL)
+				{
+					fclose(f);
+					strtok(line, "\r\n");
+					sysLv2FsChmod(line, 0777);
+					sysLv2FsUnlink(line);
+					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", line);
+					break;
+				}
+			}
+			fclose(f);
+		}
+		else
+		{
+			// append line to boot_plugins_nocobra.txt
+			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra.txt", &stat) == SUCCESS)
+				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "a");
+			else
+				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "w");
+			if(plugins_dir_exists)
+			{
+				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", PLUGINS_DIR "/webftp_server_noncobra.sprx");
+				fputs("\r\n" PLUGINS_DIR "/webftp_server_noncobra.sprx", f);
+			}
+			else
+			{
+				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", HDDROOT_DIR "/webftp_server_noncobra.sprx");
+				fputs("\r\n" HDDROOT_DIR "/webftp_server_noncobra.sprx", f);
+			}
+			fclose(f);
+		}
+
+		// parse boot_plugins_nocobra_dex.txt (update existing path)
+		if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", &stat) == SUCCESS)
+		{
+			f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "r");
+			while(fgets(line, 255, f) != NULL)
+			{
+				if(strstr(line,"webftp_server") != NULL)
+				{
+					fclose(f);
+					strtok(line, "\r\n");
+					sysLv2FsChmod(line, 0777);
+					sysLv2FsUnlink(line);
+					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", line);
+					break;
+				}
+			}
+			fclose(f);
+		}
+		else
+		{
+			// append line to boot_plugins_nocobra_dex.txt
+			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", &stat) == SUCCESS)
+				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "a");
+			else
+				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "w");
+			if(plugins_dir_exists)
+			{
+				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", PLUGINS_DIR "/webftp_server_noncobra.sprx");
+				fputs("\r\n" PLUGINS_DIR "/webftp_server_noncobra.sprx", f);
+			}
+			else
+			{
+				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", HDDROOT_DIR "/webftp_server_noncobra.sprx");
+				fputs("\r\n" HDDROOT_DIR "/webftp_server_noncobra.sprx", f);
+			}
+			fclose(f);
+		}
 	}
 
 	// update boot_plugins.txt
@@ -888,14 +1012,10 @@ cont:
 			f = fopen(HDDROOT_DIR "/boot_plugins.txt", "a");
 		else
 			f = fopen(HDDROOT_DIR "/boot_plugins.txt", "w");
-		if((sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS))
-		{
+		if(plugins_dir_exists)
 			fputs("\r\n" PLUGINS_DIR "/webftp_server.sprx", f);
-		}
 		else
-		{
 			fputs("\r\n" HDDROOT_DIR "/webftp_server.sprx", f);
-		}
 		fclose(f);
 
 		// delete old sprx
@@ -912,7 +1032,7 @@ cont:
 		sysLv2FsUnlink(PLUGINS_DIR "/webftp_server_ps3mapi.sprx");
 
 		// copy ps3mapi/cobra/rebug/lite sprx
-		if((sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS))
+		if(plugins_dir_exists)
 		{
 			if(full)
 				file_copy(APP_USRDIR "/webftp_server_full.sprx", PLUGINS_DIR "/webftp_server.sprx");
@@ -965,10 +1085,8 @@ cont:
 			f = fopen(HDDROOT_DIR "/mamba_plugins.txt", "a");
 		else
 			f = fopen(HDDROOT_DIR "/mamba_plugins.txt", "w");
-		if((sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS))
-		{
+		if(plugins_dir_exists)
 			fputs("\r\n" PLUGINS_DIR "/webftp_server.sprx", f);
-		}
 		else
 			fputs("\r\n" HDDROOT_DIR "/webftp_server.sprx", f);
 		fclose(f);
@@ -981,7 +1099,7 @@ cont:
 		sysLv2FsUnlink(PLUGINS_DIR "/webftp_server_ps3mapi.sprx");
 
 		// copy ps3mapi sprx
-		if((sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS))
+		if(plugins_dir_exists)
 		{
 			if(full)
 				file_copy(APP_USRDIR "/webftp_server_full.sprx", PLUGINS_DIR "/webftp_server.sprx");
@@ -1022,7 +1140,7 @@ cont:
 		// append line to prx_plugins.txt
 		f = fopen(HDDROOT_DIR "/prx_plugins.txt", "a");
 
-		if(sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS)
+		if(plugins_dir_exists)
 			fputs("\r\n" PLUGINS_DIR "/webftp_server_noncobra.sprx", f);
 		else
 			fputs("\r\n" HDDROOT_DIR "/webftp_server_noncobra.sprx", f);
@@ -1036,7 +1154,7 @@ cont:
 		sysLv2FsUnlink(PLUGINS_DIR "/webftp_server_noncobra.sprx");
 
 		// copy non cobra sprx
-		if(sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS)
+		if(plugins_dir_exists)
 			file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", PLUGINS_DIR "/webftp_server_noncobra.sprx");
 		else
 			file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", HDDROOT_DIR "/webftp_server_noncobra.sprx");
