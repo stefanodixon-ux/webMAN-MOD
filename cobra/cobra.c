@@ -1492,7 +1492,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 	CellFsStat stat;
 
-	if (cellFsStat(PSPL_ICON, &stat) != CELL_FS_SUCCEEDED)
+	if( (cellFsStat(PSPL_ICON, &stat) != CELL_FS_SUCCEEDED) && (cellFsStat(PSPL_ICON2, &stat) != CELL_FS_SUCCEEDED) )
 	{
 		return EABORT;
 	}
@@ -1576,6 +1576,11 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 		sys_map_path(PSPL_ICON,  icon_save_path);
 		sys_map_path(PSPL_ICON2, icon_save_path);
 
+		snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/PIC1.PNG", root);
+
+		if(cellFsStat("/dev_hdd0/game/PSPC66820", &stat) == CELL_FS_SUCCEEDED) file_copy(umd_file, (char*)"/dev_hdd0/game/PSPC66820/PIC1.PNG", 0);
+		if(cellFsStat("/dev_hdd0/game/PSPM66820", &stat) == CELL_FS_SUCCEEDED) file_copy(umd_file, (char*)"/dev_hdd0/game/PSPM66820/PIC1.PNG", 0);
+
 		snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/SYSDIR/EBOOT.OLD", root);
 
 		if (cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
@@ -1617,7 +1622,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 			}
 		}
 
-		ret = 0;
+		ret = CELL_FS_SUCCEEDED;
 	}
 	else
 	{
@@ -1633,7 +1638,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 			cobra_send_fake_disc_insert_event();
 	}
 
-	if (ret == 0)
+	if (ret == CELL_FS_SUCCEEDED)
 	{
 		sys_psp_set_umdfile(path, title_id, prometheus);
 		sys_psp_set_decrypt_options(decrypt_patch, tag, keys, code, 0, NULL, 0);

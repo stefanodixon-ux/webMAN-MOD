@@ -66,7 +66,7 @@ static void parse_script(const char *script_file)
 					if(*buffer == '/')            {if(islike(buffer, "/mount") || strstr(buffer, ".ps3") != NULL || strstr(buffer, "_ps3") != NULL) handle_file_request(buffer);} else
 	#endif
 					if(_islike(buffer, "ren /"))  {buffer += 4; cellFsRename(buffer, dest);} else
-					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else file_copy(buffer, dest, COPY_WHOLE_FILE);} else
+					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else _file_copy(buffer, dest);} else
 					if(_islike(buffer, "swap /")) {buffer += 5; sprintf(cp_path, "%s", buffer); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(buffer, cp_path); cellFsRename(dest, buffer); cellFsRename(cp_path, dest);}
 				}
 				else if(*buffer == '#' || *buffer == ';' || *buffer == '*') ; // remark

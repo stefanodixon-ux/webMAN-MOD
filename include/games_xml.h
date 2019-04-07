@@ -357,10 +357,10 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		{
 			xml_len[gPS3] = sprintf(myxml_ps3, "<View id=\"seg_wm_ps3_items\"><Attributes>");
 #ifdef PKG_LAUNCHER
-			if(webman_config->ps3l && file_exists("/dev_hdd0/game/PKGLAUNCH"))
+			if(webman_config->ps3l && isDir(PKGLAUNCH_DIR))
 			{
 				sprintf(templn, "<Table key=\"pkg_launcher\">"
-								XML_PAIR("icon","/dev_hdd0/game/PKGLAUNCH/ICON0.PNG")
+								XML_PAIR("icon", PKGLAUNCH_ICON)
 								XML_PAIR("title","PKG Launcher")
 								XML_PAIR("info","%s") "%s",
 								"PKG Launcher", "</Table>"); xml_len[gPS3] += concat(myxml_ps3, templn);
@@ -370,14 +370,14 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		if(!(webman_config->cmask & PS2))
 		{
 			xml_len[gPS2] =  sprintf(myxml_ps2, "<View id=\"seg_wm_ps2_items\"><Attributes>");
-			if(webman_config->ps2l && file_exists("/dev_hdd0/game/PS2U10000"))
+			if(webman_config->ps2l && isDir(PS2_CLASSIC_LAUCHER_DIR))
 			{
 #ifndef ENGLISH_ONLY
 				char *STR_LAUNCHPS2 =  tempstr; //[48];//	= "Launch PS2 Classic";
 				language("STR_LAUNCHPS2", STR_LAUNCHPS2, "Launch PS2 Classic");
 #endif
 				sprintf(templn, "<Table key=\"ps2_classic_launcher\">"
-								XML_PAIR("icon","/dev_hdd0/game/PS2U10000/ICON0.PNG")
+								XML_PAIR("icon", PS2_CLASSIC_ISO_ICON)
 								XML_PAIR("title","PS2 Classic Launcher")
 								XML_PAIR("info","%s") "%s",
 								STR_LAUNCHPS2, "</Table>"); xml_len[gPS2] += concat(myxml_ps2, templn);
@@ -388,7 +388,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		if(!(webman_config->cmask & PSP))
 		{
 			xml_len[gPSP] =  sprintf(myxml_psp, "<View id=\"seg_wm_psp_items\"><Attributes>");
-			if(webman_config->pspl && (isDir("/dev_hdd0/game/PSPC66820") || isDir("/dev_hdd0/game/PSPM66820")))
+			if(webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
 #ifndef ENGLISH_ONLY
 				char *STR_LAUNCHPSP =  tempstr; //[144];//	= "Launch PSP ISO mounted through webMAN or mmCM";
@@ -398,7 +398,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 								XML_PAIR("icon","/dev_hdd0/game/%s/ICON0.PNG")
 								XML_PAIR("title","PSP Launcher")
 								XML_PAIR("info","%s") "%s",
-								(isDir("/dev_hdd0/game/PSPC66820")) ? "PSPC66820" : "PSPM66820",
+								isDir(PSP_LAUNCHER_REMASTERS) ? PSP_LAUNCHER_REMASTERS_ID : PSP_LAUNCHER_MINIS_ID,
 								STR_LAUNCHPSP, "</Table>"); xml_len[gPSP] += concat(myxml_psp, templn);
 			}
 		}
@@ -646,7 +646,7 @@ next_xml_entry:
 								if(file_exists(tempstr) == false)
 								{
 									sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
-									mkdir_tree(tempstr); file_copy(templn, tempstr, COPY_WHOLE_FILE);
+									mkdir_tree(tempstr); _file_copy(templn, tempstr);
 								}
 
 								if(!webman_config->ps3l) continue;
@@ -768,13 +768,13 @@ continue_reading_folder_xml:
 #ifndef PKG_LAUNCHER
 		if(!(webman_config->cmask & PS3)) {strcat(myxml_ps3, "</Attributes><Items>");}
 #else
-		if(!(webman_config->cmask & PS3)) {strcat(myxml_ps3, "</Attributes><Items>"); if(webman_config->ps3l && isDir("/dev_hdd0/game/PKGLAUNCH")) strcat(myxml_ps3, QUERY_XMB("pkg_launcher", "xcb://localhost/query?limit=1&cond=Ae+Game:Common.dirPath /dev_hdd0/game+Ae+Game:Common.fileName PKGLAUNCH"));}
+		if(!(webman_config->cmask & PS3)) {strcat(myxml_ps3, "</Attributes><Items>"); if(webman_config->ps3l && isDir(PKGLAUNCH_DIR)) strcat(myxml_ps3, QUERY_XMB("pkg_launcher", "xcb://localhost/query?limit=1&cond=Ae+Game:Common.dirPath /dev_hdd0/game+Ae+Game:Common.fileName " PKGLAUNCH_ID));}
 #endif
 		if(!(webman_config->cmask & PS2)) {strcat(myxml_ps2, "</Attributes><Items>"); if(webman_config->ps2l && isDir(PS2_CLASSIC_PLACEHOLDER)) strcat(myxml_ps2, QUERY_XMB("ps2_classic_launcher", "xcb://127.0.0.1/query?limit=1&cond=Ae+Game:Game.titleId PS2U10000"));}
 
 #ifdef COBRA_ONLY
 		if(!(webman_config->cmask & PS1)) {strcat(myxml_psx, "</Attributes><Items>");}
-		if(!(webman_config->cmask & PSP)) {strcat(myxml_psp, "</Attributes><Items>"); if(webman_config->pspl && (isDir("/dev_hdd0/game/PSPC66820") || isDir("/dev_hdd0/game/PSPM66820"))) strcat(myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://127.0.0.1/query?cond=AGL+Game:Game.titleId PSPC66820 PSPM66820"));}
+		if(!(webman_config->cmask & PSP)) {strcat(myxml_psp, "</Attributes><Items>"); if(webman_config->pspl && (isDir(PSP_LAUNCHER_REMASTERS) || isDir(PSP_LAUNCHER_MINIS))) strcat(myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://127.0.0.1/query?cond=AGL+Game:Game.titleId " PSP_LAUNCHER_REMASTERS_ID " " PSP_LAUNCHER_MINIS_ID));}
 		if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU)) {strcat(myxml_dvd, "</Attributes><Items>"); if(webman_config->rxvid) strcat(myxml_dvd, QUERY_XMB("rx_video", "#seg_wm_bdvd"));}
  #ifdef MOUNT_ROMS
 		if(  webman_config->roms       )  {strcat(myxml_roms, "</Attributes><Items>");}

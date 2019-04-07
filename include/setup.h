@@ -560,7 +560,7 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("ps1", false, "PLAYSTATION\xC2\xAE&nbsp;"  ,     " ("       , !(webman_config->cmask & PS1), buffer);
 	add_check_box("pse", false, "ps1_netemu"                 ,     ")<br>"    ,  (webman_config->ps1emu)     , buffer);
 
-	b = (isDir("/dev_hdd0/game/PSPC66820") || isDir("/dev_hdd0/game/PSPM66820"));
+	b = (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS));
 	add_check_box("psp", false, "PLAYSTATION\xC2\xAEPORTABLE", b ? " (" : _BR_, !(webman_config->cmask & PSP), buffer);
 	if(b) add_check_box("psl", false, STR_PSPL               ,     ")<br>"    ,  (webman_config->pspl)       , buffer);
 

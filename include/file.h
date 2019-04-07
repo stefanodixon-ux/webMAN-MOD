@@ -7,6 +7,7 @@
 #define NO_MSG							NULL
 
 int file_copy(const char *file1, char *file2, u64 maxbytes);
+static void _file_copy(const char *file1, char *file2);
 
 static bool copy_in_progress = false;
 static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
@@ -524,6 +525,13 @@ next_part:
 	return ret;
 }
 
+void _file_copy(const char *file1, char *file2)
+{
+	dont_copy_same_size = false; // force copy files with the same size
+	file_copy(file1, file2, COPY_WHOLE_FILE);
+	dont_copy_same_size = true;  // restore default mode
+}
+
 #ifdef COPY_PS3
 static int folder_copy(const char *path1, char *path2)
 {
@@ -772,7 +780,7 @@ static bool do_custom_combo(const char *filename)
 
 	if(file_exists(combo_file))
 	{
-		file_copy(combo_file, (char*)WMREQUEST_FILE, COPY_WHOLE_FILE);
+		_file_copy(combo_file, (char*)WMREQUEST_FILE);
 
 		handle_file_request(NULL);
 		return true;
@@ -842,6 +850,7 @@ static void import_edats(const char *path1, const char *path2)
 
 	copy_aborted = false;
 	from_usb = islike(path1, "/dev_usb");
+	dont_copy_same_size = true;
 
 	if(cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
 	{

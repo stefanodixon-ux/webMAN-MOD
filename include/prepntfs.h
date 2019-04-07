@@ -265,7 +265,7 @@ next_ntfs_entry:
 
 									// copy external image
 									strcpy(path + plen - 3, path0 + nlen - 3);
-									file_copy(path0, path, COPY_WHOLE_FILE);
+									_file_copy(path0, path);
 /*
 for_sfo:
 									if(m == mPS3) // mount PS3ISO

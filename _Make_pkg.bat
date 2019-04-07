@@ -23,6 +23,6 @@ call Make_PKG_metalification_theme.bat
 set ver=1.47
 set rev=15
 
-move webMAN_MOD_%ver%.xx_Updater.pkg                      ..\..\webMAN_MOD_%ver%.%rev%_Updater.pkg
-move webMAN_MOD_%ver%.xx_Updater_rebugification_theme.pkg ..\..\webMAN_MOD_%ver%.%rev%_Updater_rebugification_theme.pkg
-move webMAN_MOD_%ver%.xx_Updater_metalification_theme.pkg ..\..\webMAN_MOD_%ver%.%rev%_Updater_metalification_theme.pkg
+move webMAN_MOD_%ver%.xx_Updater.pkg                      ..\..\webMAN_MOD_%ver%.%rev%_Installer.pkg
+move webMAN_MOD_%ver%.xx_Updater_rebugification_theme.pkg ..\..\webMAN_MOD_%ver%.%rev%_Installer_rebugification_theme.pkg
+move webMAN_MOD_%ver%.xx_Updater_metalification_theme.pkg ..\..\webMAN_MOD_%ver%.%rev%_Installer_metalification_theme.pkg

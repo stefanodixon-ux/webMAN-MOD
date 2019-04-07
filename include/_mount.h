@@ -367,13 +367,13 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							{
 								sprintf(tempstr, "%s", source);
 								strcpy(strrchr(tempstr, '/'), "/stage2.bin");
-								if(file_exists(tempstr)) file_copy(tempstr, target, COPY_WHOLE_FILE);
+								if(file_exists(tempstr)) _file_copy(tempstr, target);
 							}
 
 							// copy: /dev_flash/sys/lv2_self
 							sprintf(target, "/dev_blind/sys/lv2_self");
 							if((cellFsStat(target, &buf) != CELL_FS_SUCCEEDED) || (buf.st_size != size))
-								file_copy(source, target, COPY_WHOLE_FILE);
+								_file_copy(source, target);
 
 							if((cellFsStat(target, &buf) == CELL_FS_SUCCEEDED) && (buf.st_size == size))
 							{
@@ -852,6 +852,13 @@ static void do_umount(bool clean)
 
 		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL);
 
+		sys_map_path(PSP_LAUNCHER_MINIS     "/USRDIR/MINIS.EDAT", NULL);
+		sys_map_path(PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS.EDAT", NULL);
+		sys_map_path(PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS2.EDAT", NULL);
+
+		cellFsUnlink(PSP_LAUNCHER_MINIS     "/PIC1.PNG");
+		cellFsUnlink(PSP_LAUNCHER_REMASTERS "/PIC1.PNG");
+
  #ifdef PKG_LAUNCHER
 		if(*map_title_id)
 		{
@@ -935,6 +942,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 						 "%s %s", STR_COPYING, source, STR_CPYDEST, basepath);
 			show_msg(msg);
 
+			dont_copy_same_size = true;
 			copy_in_progress = true, copied_count = 1;
 			file_copy(source, target, COPY_WHOLE_FILE);
 			copy_in_progress = false;
@@ -958,6 +966,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 
 	char *ext = destpath + strlen(destpath);
 	strcat(ext, ".SFO\0");
+	dont_copy_same_size = false;
 
 	// cache PARAM.SFO
 	if(file_exists(destpath) == false)
@@ -979,6 +988,8 @@ static void cache_icon0_and_param_sfo(char *destpath)
 			sys_ppu_thread_usleep(500000);
 		}
 	}
+
+	dont_copy_same_size = true;
 }
 #endif
 
@@ -1304,7 +1315,7 @@ static void mount_thread(u64 action)
 	{
 		char temp[STD_PATH_LEN + 16];
 
-		if(file_exists(PS2_CLASSIC_PLACEHOLDER))
+		if(isDir(PS2_CLASSIC_PLACEHOLDER))
 		{
 			copy_in_progress = true, copied_count = 0;
 
@@ -1323,7 +1334,7 @@ static void mount_thread(u64 action)
 			if(file_copy(_path, (char*)PS2_CLASSIC_ISO_PATH, COPY_WHOLE_FILE) == 0)
 			{
 				if(file_exists(PS2_CLASSIC_ISO_ICON ".bak") == false)
-					file_copy((char*)PS2_CLASSIC_ISO_ICON, (char*)(PS2_CLASSIC_ISO_ICON ".bak"), COPY_WHOLE_FILE);
+					_file_copy((char*)PS2_CLASSIC_ISO_ICON, (char*)(PS2_CLASSIC_ISO_ICON ".bak"));
 
 				size_t len = sprintf(temp, "%s.png", _path);
 				if(file_exists(temp) == false) sprintf(temp, "%s.PNG", _path);
@@ -1332,13 +1343,13 @@ static void mount_thread(u64 action)
 
 				cellFsUnlink(PS2_CLASSIC_ISO_ICON);
 				if(file_exists(temp))
-					file_copy(temp, (char*)PS2_CLASSIC_ISO_ICON, COPY_WHOLE_FILE);
+					_file_copy(temp, (char*)PS2_CLASSIC_ISO_ICON);
 				else
-					file_copy((char*)(PS2_CLASSIC_ISO_ICON ".bak"), (char*)PS2_CLASSIC_ISO_ICON, COPY_WHOLE_FILE);
+					_file_copy((char*)(PS2_CLASSIC_ISO_ICON ".bak"), (char*)PS2_CLASSIC_ISO_ICON);
 
 				sprintf(temp, "%s.CONFIG", _path);
 				if(file_exists(temp) == false && len > 12) strcat(temp + len - 12, ".CONFIG\0");
-				file_copy(temp, (char*)PS2_CLASSIC_ISO_CONFIG, COPY_WHOLE_FILE);
+				_file_copy(temp, (char*)PS2_CLASSIC_ISO_CONFIG);
 
 				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //fan_control( ((webman_config->ps2temp*255)/100), 0);
 
@@ -1763,11 +1774,23 @@ static void mount_thread(u64 action)
 
 					mount_unk = EMU_PSP;
 
-					cellFsUnlink("/dev_hdd0/game/PSPC66820/PIC1.PNG");
 					cobra_unset_psp_umd();
 
 					if(file_exists(iso_list[0]))
 					{
+						sprintf(templn, "%s.MINIS.EDAT", iso_list[0]);
+						if(file_exists(templn))
+						{
+							if(isDir(PSP_LAUNCHER_MINIS))		sys_map_path(PSP_LAUNCHER_MINIS     "/USRDIR/MINIS.EDAT", templn);
+							if(isDir(PSP_LAUNCHER_REMASTERS))	sys_map_path(PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS.EDAT", templn);
+						}
+
+						sprintf(templn, "%s.MINIS2.EDAT", iso_list[0]);
+						if(file_exists(templn))
+						{
+							if(isDir(PSP_LAUNCHER_REMASTERS)) sys_map_path(PSP_LAUNCHER_MINIS "/USRDIR/MINIS2.EDAT", templn);
+						}
+
 						int result = cobra_set_psp_umd(iso_list[0], NULL, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png");
 
 						if(result) ret = false;
@@ -1835,18 +1858,18 @@ static void mount_thread(u64 action)
 											char temp[STD_PATH_LEN];
 											sprintf(temp, "%sPS2CONFIG/USRDIR/%s.CONFIG", HDD0_GAME_DIR, tempID);
 											if(file_exists(temp))
-												file_copy(temp, _path, COPY_WHOLE_FILE);
+												_file_copy(temp, _path);
 											else
 											{
 												char config_path[4][8] = {"CUSTOM", "NET", "GX", "SOFT"};
 												for(u8 i = 0; i < 4; i++)
 												{
 													sprintf(temp, "%sPS2CONFIG/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
-													if(file_exists(temp)) {file_copy(temp, _path, COPY_WHOLE_FILE); break;}
+													if(file_exists(temp)) {_file_copy(temp, _path); break;}
 													sprintf(temp, "%sMANAGUNZ0/USRDIR/sys/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
-													if(file_exists(temp)) {file_copy(temp, _path, COPY_WHOLE_FILE); break;}
+													if(file_exists(temp)) {_file_copy(temp, _path); break;}
 													sprintf(temp, "%sUPDWEBMOD/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
-													if(file_exists(temp)) {file_copy(temp, _path, COPY_WHOLE_FILE); break;}
+													if(file_exists(temp)) {_file_copy(temp, _path); break;}
 												}
 											}
 											break;

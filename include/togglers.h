@@ -215,16 +215,16 @@ static void toggle_ps2emu(void)
 
 		// ---- Backup PS2Emus to Rebug Toolbox folder ----
 		if( file_exists(REBUG_TOOLBOX "ps2_netemu.self.cobra") == false )
-			  file_copy((char*)PS2_EMU_PATH  "ps2_netemu.self",
-						(char*)REBUG_TOOLBOX "ps2_netemu.self.cobra", COPY_WHOLE_FILE);
+			 _file_copy((char*)PS2_EMU_PATH  "ps2_netemu.self",
+						(char*)REBUG_TOOLBOX "ps2_netemu.self.cobra");
 
 		if( file_exists(REBUG_TOOLBOX "ps2_gxemu.self.cobra") == false )
-			  file_copy((char*)PS2_EMU_PATH  "ps2_gxemu.self",
-						(char*)REBUG_TOOLBOX "ps2_gxemu.self.cobra", COPY_WHOLE_FILE);
+			 _file_copy((char*)PS2_EMU_PATH  "ps2_gxemu.self",
+						(char*)REBUG_TOOLBOX "ps2_gxemu.self.cobra");
 
 		if( file_exists(REBUG_TOOLBOX "ps2_emu.self.cobra") == false )
-			  file_copy((char*)PS2_EMU_PATH  "ps2_emu.self",
-						(char*)REBUG_TOOLBOX "ps2_emu.self.cobra", COPY_WHOLE_FILE);
+			 _file_copy((char*)PS2_EMU_PATH  "ps2_emu.self",
+						(char*)REBUG_TOOLBOX "ps2_emu.self.cobra");
 
 		// ---- Swap ps2_netemu.self ----
 		size1 = size2 = 0;
@@ -235,9 +235,9 @@ static void toggle_ps2emu(void)
 									(char*)"Switching to custom ps2emu...");
 
 		if(size1>0 && size2>0)
-			file_copy((size1==size2) ?  (char*)REBUG_TOOLBOX "ps2_netemu.self.cobra" :
+			_file_copy((size1==size2) ? (char*)REBUG_TOOLBOX "ps2_netemu.self.cobra" :
 										(char*)REBUG_TOOLBOX "ps2_netemu.self",
-										(char*)PS2_EMU_PATH  "ps2_netemu.self", COPY_WHOLE_FILE);
+										(char*)PS2_EMU_PATH  "ps2_netemu.self");
 
 		// ---- Swap ps2_gxemu.self ----
 		size1 = size2 = 0;
@@ -245,9 +245,9 @@ static void toggle_ps2emu(void)
 		if( cellFsStat(REBUG_TOOLBOX "ps2_gxemu.self", &s) == CELL_FS_SUCCEEDED ) size2 = s.st_size;
 
 		if(size1>0 && size2>0)
-			file_copy((size1==size2) ?  (char*)REBUG_TOOLBOX "ps2_gxemu.self.cobra" :
+			_file_copy((size1==size2) ? (char*)REBUG_TOOLBOX "ps2_gxemu.self.cobra" :
 										(char*)REBUG_TOOLBOX "ps2_gxemu.self",
-										(char*)PS2_EMU_PATH  "ps2_gxemu.self", COPY_WHOLE_FILE);
+										(char*)PS2_EMU_PATH  "ps2_gxemu.self");
 
 		// ---- Swap ps2_emu.self ----
 		size1 = size2 = 0;
@@ -255,9 +255,9 @@ static void toggle_ps2emu(void)
 		if( cellFsStat(REBUG_TOOLBOX "ps2_emu.self", &s) == CELL_FS_SUCCEEDED ) size2 = s.st_size;
 
 		if(size1>0 && size2>0)
-			file_copy((size1==size2) ?  (char*)REBUG_TOOLBOX "ps2_emu.self.cobra" :
+			_file_copy((size1==size2) ? (char*)REBUG_TOOLBOX "ps2_emu.self.cobra" :
 										(char*)REBUG_TOOLBOX "ps2_emu.self",
-										(char*)PS2_EMU_PATH  "ps2_emu.self", COPY_WHOLE_FILE);
+										(char*)PS2_EMU_PATH  "ps2_emu.self");
 	}
 	else
  #endif //#ifdef REX_ONLY

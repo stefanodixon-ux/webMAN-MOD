@@ -502,11 +502,11 @@ int main()
 	sysLv2FsUnlink(TMP_DIR "/wm_online_ids.txt");
 	file_copy(APP_USRDIR "/wm_online_ids.txt"	, RES_DIR "/wm_online_ids.txt");
 
-/*
+
 	if(sysLv2FsStat(PS2CONFIG_USRDIR, &stat) != SUCCESS)
 	{
 		// copy PS2 CONFIG files
-		char path1[200], path2[200];
+		char path1[80], path2[80];
 		int fd; sysFSDirent dir; u64 read_e;
 
 		sysLv2FsMkdir(PS2CONFIG_DIR, 0777);
@@ -523,6 +523,7 @@ int main()
 			{
 				sprintf(path1, APP_USRDIR       "/CONFIG/%s/%s", "GX", dir.d_name);
 				sprintf(path2, PS2CONFIG_USRDIR "/CONFIG/%s/%s", "GX", dir.d_name);
+				sysLv2FsUnlink(path2);
 				sysLv2FsLink(path1, path2);
 			}
 			sysLv2FsCloseDir(fd);
@@ -533,6 +534,7 @@ int main()
 			{
 				sprintf(path1, APP_USRDIR       "/CONFIG/%s/%s", "NET", dir.d_name);
 				sprintf(path2, PS2CONFIG_USRDIR "/CONFIG/%s/%s", "NET", dir.d_name);
+				sysLv2FsUnlink(path2);
 				sysLv2FsLink(path1, path2);
 			}
 			sysLv2FsCloseDir(fd);
@@ -543,6 +545,7 @@ int main()
 			{
 				sprintf(path1, APP_USRDIR       "/CONFIG/%s/%s", "SOFT", dir.d_name);
 				sprintf(path2, PS2CONFIG_USRDIR "/CONFIG/%s/%s", "SOFT", dir.d_name);
+				sysLv2FsUnlink(path2);
 				sysLv2FsLink(path1, path2);
 			}
 			sysLv2FsCloseDir(fd);
@@ -553,12 +556,13 @@ int main()
 			{
 				sprintf(path1, APP_USRDIR       "/CONFIG/%s/%s", "CUSTOM", dir.d_name);
 				sprintf(path2, PS2CONFIG_USRDIR "/CONFIG/%s/%s", "CUSTOM", dir.d_name);
+				sysLv2FsUnlink(path2);
 				sysLv2FsLink(path1, path2);
 			}
 			sysLv2FsCloseDir(fd);
 		}
 	}
-*/
+
 	// webMAN LaunchPad icons
 	file_copy(APP_USRDIR "/icon_lp_ps3.png"      , ICONS_DIR "/icon_lp_ps3.png");
 	file_copy(APP_USRDIR "/icon_lp_psx.png"      , ICONS_DIR "/icon_lp_psx.png");
