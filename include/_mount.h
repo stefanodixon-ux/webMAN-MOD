@@ -72,8 +72,8 @@ static void auto_play(char *param)
 		{
 			if(!(webman_config->nogrp) && webman_config->pspl && (view != 0) && (strstr(param, "_ps3") != NULL))
 			{
-				if( explore_exec_push(250000, true))	// move to psp_launcher folder and open it
-				if(!explore_exec_push(500000, false))	// start psp_launcher
+				if(explore_exec_push(250000, true))	// move to psp_launcher folder and open it
+				if(autoplay && !explore_exec_push(500000, false))	// start psp_launcher
 					autoplay = false;
 			}
 		}
@@ -835,6 +835,8 @@ static void do_umount(bool clean)
 	{
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
+		cobra_unset_psp_umd();
+
 		do_umount_iso();
  #ifdef PS2_DISC
 		do_umount_ps2disc(false);
@@ -842,7 +844,6 @@ static void do_umount(bool clean)
 		sys_ppu_thread_usleep(20000);
 
 		cobra_unload_vsh_plugin(0); // unload rawseciso / netiso plugins
-		cobra_unset_psp_umd();
 
 		sys_map_path("/dev_bdvd", NULL);
 		sys_map_path("//dev_bdvd", NULL);
@@ -851,13 +852,6 @@ static void do_umount(bool clean)
 		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL);
 
 		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL);
-
-		sys_map_path(PSP_LAUNCHER_MINIS     "/USRDIR/MINIS.EDAT", NULL);
-		sys_map_path(PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS.EDAT", NULL);
-		sys_map_path(PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS2.EDAT", NULL);
-
-		cellFsUnlink(PSP_LAUNCHER_MINIS     "/PIC1.PNG");
-		cellFsUnlink(PSP_LAUNCHER_REMASTERS "/PIC1.PNG");
 
  #ifdef PKG_LAUNCHER
 		if(*map_title_id)

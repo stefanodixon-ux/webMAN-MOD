@@ -30,12 +30,12 @@
 #define  _16KB_		  16384UL
 #define _128KB_		 131072UL
 
-#define PSPL_PATH		"/dev_hdd0/game/PSPC66820"
-#define PSPL_ICON		PSPL_PATH "/ICON0.PNG"
+#define PSPL_PATH1		"/dev_hdd0/game/PSPC66820"
+#define PSPL_ICON1		PSPL_PATH1 "/ICON0.PNG"
 #define PSPL_PATH2		"/dev_hdd0/game/PSPM66820"
 #define PSPL_ICON2		PSPL_PATH2 "/ICON0.PNG"
 
-//#define PSPL_LAMBDA		PSPL_PATH "/USRDIR/CONTENT/lambda.db"
+//#define PSPL_LAMBDA		PSPL_PATH1 "/USRDIR/CONTENT/lambda.db"
 //#define PSPL_LAMBDA_NONCE 	0x0ab40b3bbd1f1a7bULL
 
 #define DPRINTF(...)
@@ -1483,6 +1483,28 @@ int cobra_map_paths(char *paths[], char *new_paths[], unsigned int num)
 	return sys_map_paths(paths, new_paths, num);
 }
 */
+
+int cobra_unset_psp_umd(void)
+{
+	int ret1 = sys_map_path(PSPL_ICON1, NULL);
+	int ret2 = sys_map_path(PSPL_ICON2, NULL);
+
+	cellFsUnlink(PSPL_PATH1 "/PIC1.PNG");
+	cellFsUnlink(PSPL_PATH2 "/PIC1.PNG");
+
+	sys_map_path(PSPL_PATH1 "/USRDIR/MINIS.EDAT", NULL);
+	sys_map_path(PSPL_PATH2 "/USRDIR/MINIS.EDAT", NULL);
+	sys_map_path(PSPL_PATH1 "/USRDIR/MINIS2.EDAT", NULL);
+
+	if (ret1 == ENOSYS || ret2 == ENOSYS) return ENOSYS;
+
+	sys_psp_set_umdfile(NULL, NULL, 0);
+	//sys_psp_change_emu_path(NULL);
+	//sys_storage_ext_mount_encrypted_image(NULL, (char*)"/dev_moo", NULL, 0);
+
+	return 0;
+}
+
 int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 {
 	int ret;
@@ -1492,10 +1514,12 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 	CellFsStat stat;
 
-	if( (cellFsStat(PSPL_ICON, &stat) != CELL_FS_SUCCEEDED) && (cellFsStat(PSPL_ICON2, &stat) != CELL_FS_SUCCEEDED) )
+	if( (cellFsStat(PSPL_ICON1, &stat) != CELL_FS_SUCCEEDED) && (cellFsStat(PSPL_ICON2, &stat) != CELL_FS_SUCCEEDED) )
 	{
 		return EABORT;
 	}
+
+	cobra_unset_psp_umd();
 
 	//char sector[1024];
 	//read_file(path, sector, sizeof(sector), 0x8000);
@@ -1568,18 +1592,17 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	uint8_t code = 0;
 
 	char umd_file[256];
-
 	snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/ICON0.PNG", root);
 
 	if(file_copy(umd_file, icon_save_path, 0) >= CELL_FS_SUCCEEDED)
 	{
-		sys_map_path(PSPL_ICON,  icon_save_path);
+		sys_map_path(PSPL_ICON1, icon_save_path);
 		sys_map_path(PSPL_ICON2, icon_save_path);
 
 		snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/PIC1.PNG", root);
 
-		if(cellFsStat("/dev_hdd0/game/PSPC66820", &stat) == CELL_FS_SUCCEEDED) file_copy(umd_file, (char*)"/dev_hdd0/game/PSPC66820/PIC1.PNG", 0);
-		if(cellFsStat("/dev_hdd0/game/PSPM66820", &stat) == CELL_FS_SUCCEEDED) file_copy(umd_file, (char*)"/dev_hdd0/game/PSPM66820/PIC1.PNG", 0);
+		if(cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED) file_copy(umd_file, (char*)PSPL_PATH1  "/PIC1.PNG", 0);
+		if(cellFsStat(PSPL_PATH2, &stat) == CELL_FS_SUCCEEDED) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
 
 		snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/SYSDIR/EBOOT.OLD", root);
 
@@ -1665,7 +1688,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	if (!path || !icon_save_path)
 		return EINVAL;
 
-	if (cellFsStat(PSPL_ICON, &stat) != CELL_FS_SUCCEEDED)
+	if (cellFsStat(PSPL_ICON1, &stat) != CELL_FS_SUCCEEDED)
 	{
 		return EABORT;
 	}
@@ -1755,7 +1778,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	{
 		int fd;
 
-		sys_map_path(PSPL_ICON, icon_save_path);
+		sys_map_path(PSPL_ICON1, icon_save_path);
 		snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/SYSDIR/prometheus.prx", root);
 
 		if (cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
@@ -1911,7 +1934,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 
 	CellFsStat stat;
 
-	if (cellFsStat(PSPL_ICON, &stat) != CELL_FS_SUCCEEDED)
+	if (cellFsStat(PSPL_ICON1, &stat) != CELL_FS_SUCCEEDED)
 	{
 		return EABORT;
 	}
@@ -2011,7 +2034,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 	{
 		int fd;
 
-		sys_map_path(PSPL_ICON, icon_save_path);
+		sys_map_path(PSPL_ICON1, icon_save_path);
 		snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/SYSDIR/EBOOT.OLD", root);
 
 		if (cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
@@ -2118,23 +2141,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 
 	return ret;
 }
-*/
 
-int cobra_unset_psp_umd(void)
-{
-	int ret1 = sys_map_path(PSPL_ICON,  NULL);
-	int ret2 = sys_map_path(PSPL_ICON2, NULL);
-
-	if (ret1 == ENOSYS || ret2 == ENOSYS) return ENOSYS;
-
-	sys_psp_set_umdfile(NULL, NULL, 0);
-	//sys_psp_change_emu_path(NULL);
-	//sys_storage_ext_mount_encrypted_image(NULL, (char*)"/dev_moo", NULL, 0);
-
-	return 0;
-}
-
-/*
 int cobra_get_usb_device_name(char *mount_point, char *dev_name)
 {
 	int ret;
