@@ -1090,7 +1090,7 @@ static void setup_form(char *buffer, char *templn)
 #ifndef LITE_EDITION
 	strcat(buffer,  HTML_RED_SEPARATOR
 					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">webMAN MOD - Latest release</a><br>"
-					"<a href=\"http://www.psx-place.com/threads/webman-mod-general-information-thread.27\">webMAN MOD - Info @ PSX-Place</a><br>");
+					"<a href=\"http://psx-place.com/forums/wMM.126/\">webMAN MOD - Info @ PSX-Place</a><br>");
 #else
 	strcat(buffer,  HTML_BLU_SEPARATOR
 					"webMAN - Simple Web Server" EDITION "<p>");

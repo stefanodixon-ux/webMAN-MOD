@@ -107,6 +107,15 @@ int main(int argc, const char* argv[])
 			if((path[0]=='/') && (strstr(path, ".ps3") != NULL))
 				{urlenc(url, path); sprintf(url, "GET %s HTTP/1.0\r\n", path);}
 			else
+			if((path[0]=='/') && (strstr(path, "_ps3") != NULL))
+				{urlenc(url, path); sprintf(url, "GET %s HTTP/1.0\r\n", path);}
+			else
+			if(!strncmp(path, "/mount.ps2/", 11))
+				{urlenc(url, path); sprintf(url, "GET %s HTTP/1.0\r\n", path);}
+			else
+			if(!strncmp(path, "/mount_ps2/", 11))
+				{urlenc(url, path); sprintf(url, "GET %s HTTP/1.0\r\n", path);}
+			else
 			if((!strncmp(path, "/dev_", 5) || !strncmp(path, "/net", 4)) && ((strstr(path, "/GAME") != NULL) || (strstr(path, "/PS3ISO") != NULL) || (strstr(path, "/PSXISO") != NULL) || (strstr(path, "/PS2ISO") != NULL) || (strstr(path, "/PSPISO") != NULL) || (strstr(path, "/DVDISO") != NULL) || (strstr(path, "/BDISO") != NULL) || (strstr(path, ".ntfs[") != NULL)))
 				{urlenc(url, path); sprintf(url, "GET /mount_ps3%s HTTP/1.0\r\n", path);}
 		}

@@ -462,6 +462,9 @@ int main()
 	file_copy(APP_USRDIR "/background.gif", XMLHOST_DIR "/background.gif");
 	file_copy(APP_USRDIR "/sman.htm",       XMLHOST_DIR "/sman.htm");
 
+	if((sysLv2FsStat(XMLHOST_DIR "/fb.xml", &stat) != SUCCESS))
+		file_copy(APP_USRDIR "/fb.xml",    XMLHOST_DIR "/fb.xml");
+
 	// copy javascripts
 	file_copy(APP_USRDIR "/jquery.min.js",    XMLHOST_DIR "/jquery.min.js");  // jQuery v3.1.1
 	file_copy(APP_USRDIR "/jquery-ui.min.js", XMLHOST_DIR "/jquery-ui.min.js"); // jQuery UI v1.12.1

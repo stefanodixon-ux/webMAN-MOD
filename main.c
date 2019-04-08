@@ -1101,9 +1101,9 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 
 	sprintf(templn, "</head>%s", HTML_BODY); buffer += concat(buffer, templn);
 
-	char slider[40]; if(file_exists(MOBILE_HTML)) sprintf(slider, " [<a href=\"/games.ps3\">Slider</a>]"); else *slider = NULL;
+	char coverflow[40]; if(file_exists(MOBILE_HTML)) sprintf(coverflow, " [<a href=\"/games.ps3\">Coverflow</a>]"); else *coverflow = NULL;
 
-	size_t tlen = sprintf(templn, "<b>webMAN " WM_VERSION " %s <font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_TRADBY, STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, slider);
+	size_t tlen = sprintf(templn, "<b>webMAN " WM_VERSION " %s <font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_TRADBY, STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
 
 #ifdef SYS_ADMIN_MODE
 	if(sys_admin)
@@ -3601,10 +3601,10 @@ parse_request:
 						// /index.ps3                  show game list in HTML (refresh if cache file is not found)
 						// /index.ps3?html             refresh game list in HTML
 						// /index.ps3?launchpad        refresh game list in LaunchPad xml
-						// /index.ps3?mobile           show game list in slider mode
+						// /index.ps3?mobile           show game list in coverflow mode
 						// /index.ps3?<query>          search game by device name, path or name of game
 						// /index.ps3?<device>?<name>  search game by device name and name
-						// /index.ps3?<query>&mobile   search game by device name, path or name of game in slider mode
+						// /index.ps3?<query>&mobile   search game by device name, path or name of game in coverflow mode
 						// /index.ps3?cover=<mode>     refresh game list in HTML using cover type (icon0, mm, disc, online)
 
 						mobile_mode |= ((strstr(param, "?mob") != NULL) || (strstr(param, "&mob") != NULL));

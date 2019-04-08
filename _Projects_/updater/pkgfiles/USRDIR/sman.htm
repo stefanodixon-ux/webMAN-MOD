@@ -56,7 +56,7 @@ body,td,th{color:#f0f0f0;}
 	box-shadow:5px 5px 15px #101010;
 }
 
-.t_menu,.b_games,.b_files,.b_setup, .b_cpursx {
+.t_menu,.b_games,.b_files,.b_cflow,.b_ps3mapi,.b_setup, .b_cpursx {
 	float:left;
 	margin:8px;
 	width:85px;
@@ -105,7 +105,7 @@ body,td,th{color:#f0f0f0;}
 	to {color:#FFFFFF;}
 }
 
-.t_menu:hover,.b_games:hover,.b_files:hover,.b_setup:hover, .b_cpursx:hover {
+.t_menu:hover,.b_games:hover,.b_files:hover,.b_cflow:hover,.b_ps3mapi:hover,.b_setup:hover, .b_cpursx:hover {
 	background:#3cb0fd;
 	background-image:-webkit-linear-gradient(top, #3cb0fd, #043452);
 	background-image:-moz-linear-gradient(top, #3cb0fd, #043452);
@@ -119,12 +119,12 @@ body,td,th{color:#f0f0f0;}
 	transition-duration:1s;
 }
 
-.t_menu:active,.b_games:active,.b_files:active,.b_setup:active, .b_cpursx:active {
+.t_menu:active,.b_games:active,.b_files:active,.b_cflow:active,.b_ps3mapi:active,.b_setup:active, .b_cpursx:active {
 	transform:translate(2px,1px);
 	transition-duration:0.2s;
 }
 
-.t_menu:focus,.b_games:focus,.b_files:focus,.b_setup:focus, .b_cpursx:focus {
+.t_menu:focus,.b_games:focus,.b_files:focus,.b_cflow:focus,.b_ps3mapi:focus,.b_setup:focus, .b_cpursx:focus {
 	outline:0;
 }
 
@@ -245,6 +245,8 @@ a.l_menu:hover{color:#006699;}
 <div id="left_action">
 	<a href="#" onclick="javascript:document.getElementById('rhtm').style.display='block';window.open('/sman.ps3?', '_self');" class="b_games">Games</a>
 	<a href="#" onclick="javascript:window.open('/', '_self');" class="b_files">Files</a>
+	<a href="#" onclick="javascript:window.open('/games.ps3', '_self');" class="b_cflow">Coverflow</a>
+	<a href="#" onclick="javascript:window.open('/home.ps3mapi/sman.ps3', '_self');" class="b_ps3mapi">PS3MAPI</a>
 	<a href="#" onclick="javascript:window.open('/setup.ps3/sman.ps3', '_self');" class="b_setup">Setup</a>
 	<a href="#" onclick="javascript:window.open('/cpursx.ps3?/sman.ps3', '_self');" class="b_cpursx">CPU/RSX</a>
 </div>
