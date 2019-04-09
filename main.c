@@ -2581,6 +2581,7 @@ parse_request:
 			}
 			else mobile_mode = false;
 
+retry_response:
 			if(!is_busy && (islike(param, "/index.ps3?") || islike(param, "/refresh.ps3"))) ; else
 
 			if(!is_busy && sys_admin && (islike(param, "/mount.ps3?http")
@@ -2718,6 +2719,14 @@ parse_request:
 				{
 					c_len = buf.st_size;
 					if(buf.st_mode & S_IFDIR) {is_binary = FOLDER_LISTING;} // folder listing
+				}
+				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
+				{
+					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
+					cellFsUnlink("/dev_hdd0/tmp/wmtmp/filelist.txt");
+					scan(param, true, wildcard, SCAN_LIST, "/dev_hdd0/tmp/wmtmp/filelist.txt");
+					sprintf(param, "/dev_hdd0/tmp/wmtmp/filelist.txt");
+					allow_retry_response = false; goto retry_response;
 				}
 				else
 				{
@@ -3444,7 +3453,9 @@ parse_request:
 						}
 						else
 						{
-							ret = del(param2, islike(param, "/delete.ps3"));
+							char *wildcard = strstr(param2, "*"); if(wildcard) *wildcard++ = NULL;
+							//ret = del(param2, islike(param, "/delete.ps3"));
+							ret = scan(param2, islike(param, "/delete.ps3"), wildcard, SCAN_DELETE, NULL);
 
 							sprintf(tempstr, "%s %s : ", STR_DELETE, ret ? STR_ERROR : ""); strcat(pbuffer, tempstr);
 							add_breadcrumb_trail(pbuffer, param2); sprintf(tempstr, "<br>");

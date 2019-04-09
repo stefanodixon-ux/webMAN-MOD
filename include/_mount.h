@@ -169,6 +169,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		char target[STD_PATH_LEN], *pos; *target = NULL;
 		if(islike(param, "/copy.ps3")) {plen = IS_COPY; pos = strstr(param, "&to="); if(pos) {strcpy(target, pos + 4); *pos = NULL;}}
 		bool is_copy = ((plen == IS_COPY) && (copy_in_progress == false));
+		char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
 #endif
 		char enc_dir_name[STD_PATH_LEN*3], *source = param + plen;
 		max_mapped = 0;
@@ -764,6 +765,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				// copy folder to target
 				if(strstr(source,"/exdata"))
 					import_edats(source, target);
+				else if(wildcard)
+					scan(source, true, wildcard, SCAN_COPY, target);
 				else if(isDir(source))
 					folder_copy(source, target);
 				else

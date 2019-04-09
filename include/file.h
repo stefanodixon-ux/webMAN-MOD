@@ -24,6 +24,15 @@ static u32 copied_count = 0;
 
 static sys_addr_t g_sysmem = NULL;
 
+enum scan_operations
+{
+	SCAN_LIST   = 0,
+	SCAN_DELETE = 1,
+	SCAN_COPY   = 2,
+	SCAN_MOVE   = 3,
+	SCAN_RENAME = 4
+};
+
 #ifdef USE_NTFS
 
 static bool is_ntfs_path(const char *path)
@@ -549,15 +558,17 @@ static int folder_copy(const char *path1, char *path2)
 	{
 		pdir = ps3ntfs_opendir((char*)path1);
 		if(pdir) is_ntfs = true;
-
-		ps3ntfs_mkdir(path2 + 5, MODE);
 	}
 	else
 #endif
 	{
 		cellFsChmod(path1, DMODE);
-		cellFsMkdir(path2, DMODE);
 	}
+
+	if(is_ntfs_path(path2))
+		ps3ntfs_mkdir(path2 + 5, MODE);
+	else
+		cellFsMkdir(path2, DMODE);
 
 	if(is_ntfs || cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
 	{
@@ -617,6 +628,133 @@ static int folder_copy(const char *path1, char *path2)
 #endif
 
 #ifndef LITE_EDITION
+static int scan(const char *path, u8 recursive, const char *wildcard, u8 fop, const char *dest)
+{
+	// fop: 0 = scan to file, 1 = del, 2 = copy, 3 = move, 4 = rename/move in same fs
+
+	if(recursive == RECURSIVE_DELETE) ; else
+	if(!sys_admin || !working) return FAILED;
+
+#ifdef USE_NTFS
+	if(!isDir(path))
+	{
+		if(is_ntfs_path(path))
+			return ps3ntfs_unlink(path + 5);
+		else
+			return cellFsUnlink(path);
+	}
+#else
+	if(!isDir(path)) return cellFsUnlink(path);
+#endif
+
+	if(strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind")) return FAILED;
+
+	int fd; bool is_ntfs = false;
+
+	copy_aborted = false;
+
+#ifdef USE_NTFS
+	struct stat bufn;
+	DIR_ITER *pdir;
+
+	if(is_ntfs_path(path))
+	{
+		pdir = ps3ntfs_opendir((char*)path);
+		if(pdir) is_ntfs = true;
+	}
+#endif
+
+	if(is_ntfs || cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
+	{
+		CellFsDirent dir; u64 read_e;
+
+		char entry[STD_PATH_LEN], dest_entry[STD_PATH_LEN];
+
+		size_t path_len = strlen(path);
+		bool p_slash = (path_len > 1) && (path[path_len - 1] == '/');
+
+		while(working)
+		{
+#ifdef USE_NTFS
+			if(is_ntfs)
+			{
+				if(ps3ntfs_dirnext(pdir, dir.d_name, &bufn)) break;
+				if(dir.d_name[0]=='$' && path[12] == 0) continue;
+			}
+			else
+#endif
+			if((cellFsReaddir(fd, &dir, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break;
+
+			if(copy_aborted) break;
+			if(dir.d_name[0] == '.' && (dir.d_name[1] == '.' || dir.d_name[1] == NULL)) continue;
+
+			if(p_slash) sprintf(entry, "%s%s", path, dir.d_name); else sprintf(entry, "%s/%s", path, dir.d_name);
+
+			if(fop > 1) {sprintf(dest_entry, "%s/%s", dest, dir.d_name);}
+
+			if(isDir(entry))
+				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
+
+			else if(wildcard && (strstr(dir.d_name, wildcard) == NULL)) continue;
+
+			else if(fop == 0)
+			{
+				if(!dest || *dest != '/') break;
+				strcat(entry, "\r\n");
+				save_file(dest, entry, APPEND_TEXT);
+			}
+			else if(fop == 2)
+			{
+				file_copy(entry, dest_entry, COPY_WHOLE_FILE); // copy ntfs & cellFS
+			}
+#ifdef USE_NTFS
+			else if(is_ntfs)
+			{
+				if(fop == 1) {ps3ntfs_unlink(entry + 5);} else
+			//	if(fop == 2) {ps3ntfs_copy(entry, dest_entry); else
+				if(fop == 3) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) ps3ntfs_unlink(entry + 5);} else
+				if(fop == 4) {ps3ntfs_rename(entry + 5, dest_entry);}
+			}
+#endif
+			else
+			{
+				if(fop == 1) {cellFsUnlink(entry);} else
+			//	if(fop == 2) {file_copy(entry, dest_entry);} else
+				if(fop == 3) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) cellFsUnlink(entry);} else
+				if(fop == 4) {cellFsRename(entry, dest_entry);}
+			}
+		}
+
+#ifdef USE_NTFS
+		if(is_ntfs) ps3ntfs_dirclose(pdir);
+		else
+#endif
+		cellFsClosedir(fd);
+
+		if(copy_aborted) return FAILED;
+	}
+	else
+		return FAILED;
+
+	if(recursive && (fop == 1))
+	{
+#ifdef USE_NTFS
+		if(is_ntfs) 
+			ps3ntfs_unlink(path + 5);
+		else
+#endif
+			cellFsRmdir(path);
+	}
+
+	return CELL_FS_SUCCEEDED;
+}
+
+static int del(const char *path, u8 recursive)
+{
+	return scan(path, recursive, NULL, SCAN_DELETE, NULL);
+}
+
+/*
 static int del(const char *path, u8 recursive)
 {
 	if(recursive == RECURSIVE_DELETE) ; else
@@ -706,6 +844,7 @@ static int del(const char *path, u8 recursive)
 
 	return CELL_FS_SUCCEEDED;
 }
+*/
 #endif
 
 static int wait_path(const char *path, u8 timeout, bool found)

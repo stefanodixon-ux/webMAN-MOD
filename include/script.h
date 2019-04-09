@@ -33,7 +33,7 @@ static void parse_script(const char *script_file)
 	{
 		sys_addr_t sysmem = NULL;
 		sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem); 
-		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0; u8 exec_mode = true, enable_db = true;
+		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0; u8 exec_mode = true, enable_db = true, do_else = true;
 		size_t buffer_size = read_file(script_file, buffer, _64KB_, 0); buffer[buffer_size] = 0;
 		char log_file[STD_PATH_LEN + 1] = TMP_DIR "/log.txt";
 
@@ -51,10 +51,17 @@ static void parse_script(const char *script_file)
 				if(pos) *pos = NULL; //EOL
 				cr = strstr(buffer, "\r"); if(cr) *cr = NULL;
 
-				if(exec_mode) {dest = strstr(buffer, "=/"); if(enable_db && !strstr(buffer, "/dev_blind")) {enable_dev_blind(NO_MSG); enable_db = false;}}
+				if(exec_mode)
+				{
+					dest = strstr(buffer, "=/");
+					if(!dest) dest = strstr(buffer, ",/");
+					if(!dest) dest = strstr(buffer, ", /");
+					if(enable_db && !strstr(buffer, "/dev_blind")) {enable_dev_blind(NO_MSG); enable_db = false;}
+				}
 				if(dest)
 				{
-					*dest = NULL, dest++; //split parameters
+					*dest = NULL, dest++; if(*dest == ' ') dest++; //split parameters
+					char *wildcard = strstr(buffer, "*");
 	#ifdef COBRA_ONLY
 					if(_islike(buffer, "map /"))  {buffer += 4;}
 		#ifndef WM_REQUEST
@@ -65,19 +72,21 @@ static void parse_script(const char *script_file)
 	#elif defined(WM_REQUEST)
 					if(*buffer == '/')            {if(islike(buffer, "/mount") || strstr(buffer, ".ps3") != NULL || strstr(buffer, "_ps3") != NULL) handle_file_request(buffer);} else
 	#endif
-					if(_islike(buffer, "ren /"))  {buffer += 4; cellFsRename(buffer, dest);} else
-					if(_islike(buffer, "copy /")) {buffer += 5; if(isDir(buffer)) folder_copy(buffer, dest); else _file_copy(buffer, dest);} else
-					if(_islike(buffer, "swap /")) {buffer += 5; sprintf(cp_path, "%s", buffer); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(buffer, cp_path); cellFsRename(dest, buffer); cellFsRename(cp_path, dest);}
+					if(_islike(buffer, "ren /"))  {buffer += 4; if(wildcard) {*wildcard++ = NULL;  scan(buffer, true, wildcard, SCAN_RENAME, dest);} else cellFsRename(buffer, dest);} else
+					if(_islike(buffer, "copy /")) {buffer += 5; if(wildcard) {*wildcard++ = NULL;  scan(buffer, true, wildcard, SCAN_COPY, dest);} else if(isDir(buffer)) folder_copy(buffer, dest); else _file_copy(buffer, dest);} else
+					if(_islike(buffer, "swap /")) {buffer += 5; sprintf(cp_path, "%s", buffer); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(buffer, cp_path); cellFsRename(dest, buffer); cellFsRename(cp_path, dest);} else
+					if(_islike(buffer, "move /")) {buffer += 5; if(wildcard) {*wildcard++ = NULL;  scan(buffer, true, wildcard, SCAN_MOVE, dest);} else cellFsRename(buffer, dest);} else
+					if(_islike(buffer, "list /")) {buffer += 5; if(wildcard) {*wildcard++ = NULL;} scan(buffer, true, wildcard, SCAN_LIST, dest);}
 				}
 				else if(*buffer == '#' || *buffer == ';' || *buffer == '*') ; // remark
-				else if(_islike(buffer, "else")) {exec_mode ^= 1; buffer += 4; if(exec_mode && *buffer) goto parse_cmd;}
-				else if(_islike(buffer, "end"))  exec_mode = true;
+				else if(_islike(buffer, "else") && do_else) {if(exec_mode) do_else = false; exec_mode ^= 1; buffer += 4; if(exec_mode && *buffer) goto parse_cmd;}
+				else if(_islike(buffer, "end")) {exec_mode = do_else = true;}
 				else if(exec_mode)
 				{
 	#ifdef WM_REQUEST
 					if(*buffer == '/')               {if(islike(buffer, "/mount") || strstr(buffer, ".ps3") != NULL || strstr(buffer, "_ps3") != NULL) handle_file_request(buffer);} else
 	#endif
-					if(_islike(buffer, "del /"))     {buffer += 4; del(buffer, RECURSIVE_DELETE);} else
+					if(_islike(buffer, "del /"))     {buffer += 4; char *wildcard = strstr(buffer, "*"); if(wildcard) {*wildcard++ = NULL; scan(buffer, true, wildcard, SCAN_DELETE, NULL);} else del(buffer, RECURSIVE_DELETE);} else
 					if(_islike(buffer, "md /"))      {buffer += 3; mkdir_tree(buffer);} else
 					if(_islike(buffer, "wait /"))    {buffer += 5; wait_for(buffer, 5);} else
 					if(_islike(buffer, "lwait /"))   {buffer += 6; wait_for(buffer, 10);} else
@@ -97,7 +106,7 @@ static void parse_script(const char *script_file)
 	#endif
 					if(_islike(buffer, "if ") || _islike(buffer, "abort if "))
 					{
-						bool ret = false; u8 ifmode = (_islike(buffer, "if ")) ? 3 : 9; buffer += ifmode;
+						bool ret = false; u8 ifmode = (_islike(buffer, "if ")) ? 3 : 9; buffer += ifmode; do_else = true;
 
 						if(_islike(buffer, "exist /")) {buffer += 6; ret = file_exists(buffer);} else
 						if(_islike(buffer, "not exist /")) {buffer += 10; ret = !file_exists(buffer);}
