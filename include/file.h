@@ -565,13 +565,15 @@ static int folder_copy(const char *path1, char *path2)
 		cellFsChmod(path1, DMODE);
 	}
 
-	if(is_ntfs_path(path2))
-		ps3ntfs_mkdir(path2 + 5, MODE);
-	else
-		cellFsMkdir(path2, DMODE);
-
 	if(is_ntfs || cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
 	{
+#ifdef USE_NTFS
+		if(is_ntfs_path(path2))
+			ps3ntfs_mkdir(path2 + 5, MODE);
+		else
+#endif
+			cellFsMkdir(path2, DMODE);
+
 		CellFsDirent dir; u64 read_e;
 
 		char source[STD_PATH_LEN];
