@@ -2653,10 +2653,12 @@ retry_response:
 #ifdef USE_NTFS
 				is_ntfs = is_ntfs_path(param);
 #endif
+#ifdef COBRA_ONLY
 				if(islike(param, "/net") && (param[4] >= '0' && param[4] <= '4')) //net0/net1/net2/net3/net4
 				{
 					is_binary = FOLDER_LISTING, is_net = true;
 				}
+#endif
 #ifdef USE_NTFS
 				else if(is_ntfs)
 				{
@@ -2685,6 +2687,8 @@ retry_response:
 #endif
 				else
 					is_binary = (*param == '/') && (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED);
+
+				if(!is_binary && IS(param, "/dev_hdd1")) {sprintf(param, "/mount.ps3/dev_hdd1"); goto html_response;} // auto-mount /dev_hdd1
 
 				if(is_binary == BINARY_FILE) ;
 
@@ -3601,9 +3605,38 @@ retry_response:
 						// /mount.ps3/unmount
 						// /mount.ps2/<path>[?random=<x>]
 						// /mount.ps2/unmount
+						// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
+						// /mount.ps3/unmount<dev_path>
 						// /copy.ps3/<path>[&to=<destination>]
 						// /copy.ps3/<path>[&to=<destination>]?restart.ps3
-						game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
+
+						if(islike(param, "/mount"))
+						{
+							char *dev_name = NULL, *fs = (char*)"CELL_FS_FAT";
+							if(IS(param + 10, "/dev_hdd1"))
+								dev_name = (char*)"CELL_FS_UTILITY:HDD1"; 
+							else
+							{
+								char *pos1 = strstr(param, "&name="), *pos2 = strstr(param, "&fs=");
+								if(pos1) {*pos1 = 0, dev_name = (pos1 + 6);}
+								if(pos2) {*pos2 = 0, fs = (pos2 + 4);}
+							}
+							if(dev_name && islike(dev_name, "CELL_FS_"))
+							{
+								{system_call_8(SC_FS_MOUNT, dev_name, fs, (param + 10), 0, 0, 0, 0, 0);}
+								sprintf(param, "%s", param + 10); is_binary = FOLDER_LISTING; is_busy = false;
+								goto html_response;
+							}
+						}
+
+						if(islike(param, "/mount.ps3/unmount/"))
+						{
+							{system_call_3(SC_FS_UMOUNT, (param + 18), 0, 1);}
+							sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
+							goto html_response;
+						}
+						else
+							game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
 					}
 
 					else
