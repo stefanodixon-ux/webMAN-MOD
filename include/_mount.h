@@ -133,7 +133,7 @@ static void auto_play(char *param)
 
 static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, bool mount_ps3, bool forced_mount)
 {
-	bool mounted = false;
+	bool mounted = false, umounted = false;
 
 	// ---------------------
 	// unmount current game
@@ -142,7 +142,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	{
 		do_umount(true);
 
-		if(!mount_ps3) strcat(buffer, STR_GAMEUM);
+		if(!mount_ps3) umounted = true;
 	}
 
 	// -----------------
@@ -153,9 +153,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	{
 		do_umount_ps2disc(false);
 
-		if(!mount_ps3) strcat(buffer, STR_GAMEUM);
+		if(!mount_ps3) umounted = true;
 	}
 #endif
+
+	if(umounted) {strcat(buffer, STR_GAMEUM); sprintf(templn, HTML_REDIRECT_TO_URL, "javascript:window.history.back();", HTML_REDIRECT_WAIT); strcat(buffer, templn);}
+
 
 	// -----------------------
 	// mount game / copy file

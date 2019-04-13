@@ -1504,6 +1504,12 @@ next_html_entry:
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
 			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); strcat(buffer, templn);
+#ifndef EMBED_JS
+			if(file_exists(GAMES_SCRIPT_JS))
+			{
+				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); strcat(buffer, templn);
+			}
+#endif
 		}
 		else
 		{

@@ -1654,8 +1654,7 @@ parse_request:
 				// /dev_blind?1        unmounts /dev_blind
 				// /dev_blind?disable  unmounts /dev_blind
 
-				is_binary = FOLDER_LISTING;
-				goto html_response;
+				goto retry_response;
 			}
 
  #ifdef PKG_HANDLER
@@ -3272,6 +3271,7 @@ retry_response:
 						// /eject.ps3   eject physical disc from bd drive
 						eject_insert(1, 0);
 						strcat(pbuffer, STR_EJECTED);
+						sprintf(templn, HTML_REDIRECT_TO_URL, "window.history.back();", HTML_REDIRECT_WAIT); strcat(pbuffer, templn);
 					}
 					else
 					if(islike(param, "/insert.ps3"))
@@ -3280,6 +3280,7 @@ retry_response:
 						eject_insert(0, 1);
 						if(!isDir("/dev_bdvd")) eject_insert(1, 1);
 						strcat(pbuffer, STR_LOADED);
+						if(isDir("/dev_bdvd")) {sprintf(templn, HTML_REDIRECT_TO_URL, "/dev_bdvd", HTML_REDIRECT_WAIT); strcat(pbuffer, templn);}
 					}
  #ifdef LOAD_PRX
 					else
@@ -3800,7 +3801,6 @@ exit_handleclient_www:
 
 static void wwwd_thread(u64 arg)
 {
-
 	////////////////////////////////////////
 
 	led(YELLOW, BLINK_FAST);
@@ -3875,7 +3875,7 @@ again_debug:
 	ssend(debug_s, debug);
 #endif
 
-	sys_ppu_thread_sleep(2);
+	//sys_ppu_thread_sleep(2);
 
 	led(YELLOW, OFF);
 
