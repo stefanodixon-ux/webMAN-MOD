@@ -2306,14 +2306,13 @@ parse_request:
 				size_t cmd_len = islike(param, "/rename.ps3") ? RENAME_CMD : SWAP_CMD;
 
 				char *source = param + cmd_len, *dest = strstr(source, "|");
-				if(dest) {*dest = NULL; dest++;} else {dest = strstr(source, "&to="); if(dest) {dest = NULL; dest+=4;}}
+				if(dest) {*dest++ = NULL;} else {dest = strstr(source, "&to="); if(dest) {*dest = NULL, dest+=4;}}
 
-				if((*dest != '/') && !extcmp(source, ".bak", 4)) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
+				if(dest && (*dest != '/') && !extcmp(source, ".bak", 4)) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
 
-				if(*dest == '/')
+				if(dest && *dest == '/')
 				{
 					filepath_check(dest);
-
 #ifdef COPY_PS3
 					char *wildcard = strstr(source, "*");
 					if(wildcard)
@@ -2358,6 +2357,15 @@ parse_request:
 					sprintf(param, "%s", dest);
 					if(do_restart) goto reboot;
 				}
+				else
+				{
+					char *p = strrchr(source, '/'); *p = NULL;
+					sprintf(param, "%s", source);
+					if(!isDir(param)) sprintf(param, "/");
+				}
+
+				is_binary = FOLDER_LISTING;
+				goto html_response;
 			}
 			else
 			if(islike(param, "/cpy.ps3") || islike(param, "/cut.ps3"))
