@@ -11,8 +11,10 @@
 // [PS2]     PS2 extracted folders in /PS2DISC (needs PS2_DISC compilation flag)
 // [netemu]  Mount ps2/psx game with netemu
 
+#define TITLEID_LEN		10
+
 #ifdef PKG_LAUNCHER
-static char map_title_id[10];
+static char map_title_id[TITLEID_LEN];
 #endif
 
 typedef struct
@@ -27,7 +29,8 @@ typedef struct
 	t_path_entries game[MAX_LAST_GAMES];
 } __attribute__((packed)) _lastgames;
 
-#define IS_COPY		9
+#define COPY_CMD		9
+#define MOUNT_CMD		10
 
 // mount_game actions:
 #define MOUNT_SILENT	0	// mount game/folder
@@ -162,13 +165,13 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// ---------------
 		// init variables
 		// ---------------
-		u8 plen = 10; // /mount.ps3
+		u8 plen = MOUNT_CMD; // /mount.ps3
 		enum icon_type default_icon = iPS3;
 
 #ifdef COPY_PS3
 		char target[STD_PATH_LEN], *pos; *target = NULL;
-		if(islike(param, "/copy.ps3")) {plen = IS_COPY; pos = strstr(param, "&to="); if(pos) {strcpy(target, pos + 4); *pos = NULL;}}
-		bool is_copy = ((plen == IS_COPY) && (copy_in_progress == false));
+		if(islike(param, "/copy.ps3")) {plen = COPY_CMD; pos = strstr(param, "&to="); if(pos) {strcpy(target, pos + 4); *pos = NULL;}}
+		bool is_copy = ((plen == COPY_CMD) && (copy_in_progress == false));
 		char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
 #endif
 		char enc_dir_name[STD_PATH_LEN*3], *source = param + plen;
@@ -285,7 +288,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// -----------------
 			char *filename = strrchr(_path, '/'), *icon = tempstr;
 			{
-				char tempID[10], *d_name; *icon = *tempID = NULL;
+				char titleid[TITLEID_LEN], *d_name; *icon = *titleid = NULL;
 				u8 f0 = strstr(filename, ".ntfs[") ? NTFS : 0, f1 = strstr(_path, "PS2") ? 5 : strstr(_path, "PSX") ? 6 : strstr(_path, "PSP") ? 8 : 2, is_dir = isDir(source);
 
 				check_cover_folders(templn);
@@ -300,17 +303,17 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					if(is_dir)
 					{
 						sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name);
-						get_title_and_id_from_sfo(templn, tempID, d_name, icon, buf, 0); f1 = 0;
+						get_title_and_id_from_sfo(templn, titleid, d_name, icon, buf, 0); f1 = 0;
 					}
 #ifdef COBRA_ONLY
 					else
 					{
-						get_name_iso_or_sfo(templn, tempID, icon, _path, d_name, f0, f1, FROM_MOUNT, strlen(d_name), buf);
+						get_name_iso_or_sfo(templn, titleid, icon, _path, d_name, f0, f1, FROM_MOUNT, strlen(d_name), buf);
 					}
 #endif
 					free(buf);
 				}
-				default_icon = get_default_icon(icon, _path, d_name, is_dir, tempID, NONE, 0, f0, f1);
+				default_icon = get_default_icon(icon, _path, d_name, is_dir, titleid, NONE, f0, f1);
 
 				*filename = '/';
 			}
@@ -322,7 +325,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// set target path
 			// ----------------
 #ifdef COPY_PS3
-			if(plen == IS_COPY)
+			if(plen == COPY_CMD)
 			{
 				bool is_copying_from_hdd = islike(source, "/dev_hdd0");
 
@@ -564,7 +567,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							sprintf(title, "/dev_bdvd/PS3_GAME/PARAM.SFO");
 							if(file_exists(title))
 							{
-								char titleid[10];
+								char titleid[TITLEID_LEN];
 								getTitleID(title, titleid, GET_TITLE_AND_ID);
 								if(*titleid && (titleid[8] >= '0'))
 								{
@@ -688,7 +691,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[default_icon], mounted ? STR_GAMELOADED : STR_ERROR);
 				}
 
-				if(!mounted && !forced_mount && IS_INGAME) sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + 10, param + 10);
+				if(!mounted && !forced_mount && IS_INGAME) sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + MOUNT_CMD, param + MOUNT_CMD);
 
 #ifndef ENGLISH_ONLY
 				close_language();
@@ -1108,7 +1111,7 @@ static void mount_thread(u64 action)
 	// ---------------
 
 	char netid = NULL;
-	char _path[STD_PATH_LEN], titleID[10];
+	char _path[STD_PATH_LEN], titleID[TITLEID_LEN];
 
 	ret = true;
 
@@ -2394,15 +2397,15 @@ mounting_done:
 	{
 		if(ret && file_exists("/dev_bdvd/PS3UPDAT.PUP"))
 		{
-			sys_map_path("/dev_bdvd/PS3/UPDATE", (char*)"/dev_bdvd"); //redirect root of bdvd to /dev_bdvd/PS3/UPDATE (allows update from mounted /net folder or fake BDFILE)
+			sys_map_path("/dev_bdvd/PS3/UPDATE", "/dev_bdvd"); //redirect root of bdvd to /dev_bdvd/PS3/UPDATE (allows update from mounted /net folder or fake BDFILE)
 		}
 
 		if(ret && ((!netid) && isDir("/dev_bdvd/PKG")))
 		{
-			sys_map_path("/app_home", (char*)"/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
+			sys_map_path("/app_home", "/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
 		}
 
-		{sys_map_path("/dev_bdvd/PS3_UPDATE", (char*)SYSMAP_PS3_UPDATE);} // redirect firmware update on BD disc to empty folder
+		{sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
 
 		{ DISABLE_SND0_AT3 } // enable/disable SND0.AT3 on mount
 

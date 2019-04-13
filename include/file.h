@@ -630,7 +630,7 @@ static int folder_copy(const char *path1, char *path2)
 #endif
 
 #ifndef LITE_EDITION
-static int scan(const char *path, u8 recursive, const char *wildcard, u8 fop, const char *dest)
+static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, const char *dest)
 {
 	// fop: 0 = scan to file, 1 = del, 2 = copy, 3 = move, 4 = rename/move in same fs
 
@@ -692,38 +692,38 @@ static int scan(const char *path, u8 recursive, const char *wildcard, u8 fop, co
 
 			if(p_slash) sprintf(entry, "%s%s", path, dir.d_name); else sprintf(entry, "%s/%s", path, dir.d_name);
 
-			if(fop > 1) {sprintf(dest_entry, "%s/%s", dest, dir.d_name);}
+			if(fop > 1) {sprintf(dest_entry, "%s/%s", dest, dir.d_name);} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
 
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
 
 			else if(wildcard && (strstr(dir.d_name, wildcard) == NULL)) continue;
 
-			else if(fop == 0)
+			else if(fop == SCAN_LIST)
 			{
 				if(!dest || *dest != '/') break;
 				strcat(entry, "\r\n");
 				save_file(dest, entry, APPEND_TEXT);
 			}
-			else if(fop == 2)
+			else if(fop == SCAN_COPY)
 			{
 				file_copy(entry, dest_entry, COPY_WHOLE_FILE); // copy ntfs & cellFS
 			}
 #ifdef USE_NTFS
 			else if(is_ntfs)
 			{
-				if(fop == 1) {ps3ntfs_unlink(entry + 5);} else
-			//	if(fop == 2) {ps3ntfs_copy(entry, dest_entry); else
-				if(fop == 3) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) ps3ntfs_unlink(entry + 5);} else
-				if(fop == 4) {ps3ntfs_rename(entry + 5, dest_entry);}
+				if(fop == SCAN_DELETE) {ps3ntfs_unlink(entry + 5);} else
+			//	if(fop == SCAN_COPY  ) {ps3ntfs_copy(entry, dest_entry); else
+				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) ps3ntfs_unlink(entry + 5);} else
+				if(fop == SCAN_RENAME) {ps3ntfs_rename(entry + 5, dest_entry);}
 			}
 #endif
 			else
 			{
-				if(fop == 1) {cellFsUnlink(entry);} else
-			//	if(fop == 2) {file_copy(entry, dest_entry);} else
-				if(fop == 3) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) cellFsUnlink(entry);} else
-				if(fop == 4) {cellFsRename(entry, dest_entry);}
+				if(fop == SCAN_DELETE) {cellFsUnlink(entry);} else
+			//	if(fop == SCAN_COPY  ) {file_copy(entry, dest_entry);} else
+				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) cellFsUnlink(entry);} else
+				if(fop == SCAN_RENAME) {cellFsRename(entry, dest_entry);}
 			}
 		}
 
@@ -738,7 +738,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, u8 fop, co
 	else
 		return FAILED;
 
-	if(recursive && (fop == 1))
+	if(recursive && (fop == SCAN_DELETE))
 	{
 #ifdef USE_NTFS
 		if(is_ntfs) 
@@ -879,7 +879,7 @@ static void mount_device(const char *dev_name, const char *sys_dev_name, const c
 		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_UTILITY:HDD1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_hdd1", 0, 0, 0, 0, 0);}
 	else if(!sys_dev_name || !file_system) return;
 	else if((*dev_name == '/') && islike(sys_dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
-		{system_call_8(SC_FS_MOUNT, sys_dev_name, file_system, dev_name, 0, 0, 0, 0, 0);}
+		{system_call_8(SC_FS_MOUNT, (uint32_t)sys_dev_name, (uint32_t)file_system, (uint32_t)dev_name, 0, 0, 0, 0, 0);}
 }
 
 static void enable_dev_blind(const char *msg)

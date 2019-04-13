@@ -26,7 +26,7 @@ static void poll_start_play_time(void)
 		}
 	#endif
 	#ifdef COBRA_ONLY
-		if(toggle_snd0 && webman_config->nosnd0 && !syscalls_removed) { toggle_snd0 = false; sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", (char*)SYSMAP_PS3_UPDATE); } /* disable SND0.AT3 on XMB */
+		if(toggle_snd0 && webman_config->nosnd0 && !syscalls_removed) { toggle_snd0 = false; sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", (char*)SYSMAP_EMPTY_DIR); } /* disable SND0.AT3 on XMB */
 	#endif
 
 	}

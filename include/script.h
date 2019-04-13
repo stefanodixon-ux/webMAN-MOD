@@ -60,7 +60,7 @@ static void parse_script(const char *script_file)
 				}
 				if(dest)
 				{
-					*dest = NULL, dest++; if(*dest == ' ') dest++; //split parameters
+					*dest++ = NULL; if(*dest == ' ') dest++; //split parameters
 					char *wildcard = strstr(buffer, "*");
 	#ifdef COBRA_ONLY
 					if(_islike(buffer, "map /"))  {buffer += 4;}
@@ -99,16 +99,18 @@ static void parse_script(const char *script_file)
 					if(_islike(buffer, "unmap /"))   {buffer += 6; sys_map_path(buffer, NULL);} else
 					if(_islike(buffer, "mute coldboot"))
 					{
-						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), SYSMAP_PS3_UPDATE);
-						sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"), SYSMAP_PS3_UPDATE);
+						sys_map_path(VSH_RESOURCE_DIR "coldboot_stereo.ac3", SYSMAP_EMPTY_DIR);
+						sys_map_path(VSH_RESOURCE_DIR "coldboot_multi.ac3", SYSMAP_EMPTY_DIR);
 					}
 					else
 	#endif
 					if(_islike(buffer, "if ") || _islike(buffer, "abort if "))
 					{
-						bool ret = false; u8 ifmode = (_islike(buffer, "if ")) ? 3 : 9; buffer += ifmode; do_else = true;
+						#define ABORT_IF	9
 
-						if(_islike(buffer, "exist /")) {buffer += 6; ret = file_exists(buffer);} else
+						bool ret = false; u8 ifmode = (_islike(buffer, "if ")) ? 3 : ABORT_IF; buffer += ifmode; do_else = true;
+
+						if(_islike(buffer, "exist /"))     {buffer +=  6; ret =  file_exists(buffer);} else
 						if(_islike(buffer, "not exist /")) {buffer += 10; ret = !file_exists(buffer);}
 						else
 						{
@@ -116,11 +118,11 @@ static void parse_script(const char *script_file)
 							if(pad_data.len > 0)
 							{
 								if(_islike(buffer, "L1")) {ret = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1);}
-								if(_islike(buffer, "R1")) ret = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1);
+								if(_islike(buffer, "R1")) {ret = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1);}
 							}
 						}
 
-						if(ifmode == 9) {if(ret) break;} else if(!ret) exec_mode = false;
+						if(ifmode == ABORT_IF) {if(ret) break;} else if(!ret) exec_mode = false;
 					}
 				}
 

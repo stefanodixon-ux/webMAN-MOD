@@ -22,7 +22,7 @@ static s32 vpad_handle = NONE;
 static inline void sys_pad_dbg_ldd_register_controller(u8 *data, s32 *handle, u8 addr, u32 capability)
 {
 	// syscall for registering a virtual controller with custom capabilities
-	system_call_4(SC_PAD_REGISTER_CONTROLLER, (u8 *)data, (s32 *)handle, addr, capability);
+	system_call_4(SC_PAD_REGISTER_CONTROLLER, (uint32_t)(u8 *)data, (uint32_t)(s32 *)handle, addr, capability);
 }
 
 static inline void sys_pad_dbg_ldd_set_data_insert_mode(s32 handle, u16 addr, u32 *mode, u8 addr2)

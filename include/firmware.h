@@ -872,7 +872,7 @@ static void patch_lv2(void)
 #ifndef LITE_EDITION
 static u32 GetApplicableVersion(void * data)
 {
-	system_call_8(863, 0x6011, 1, data, 0, 0, 0, 0, 0);
+	system_call_8(863, 0x6011, 1, (uint32_t)data, 0, 0, 0, 0, 0);
 	return_to_user_prog(u32);
 }
 #endif

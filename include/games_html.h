@@ -229,7 +229,7 @@ static bool get_cover_by_titleid(char *icon, char *tempID)
 			if(use_icon_region) sprintf(icon, COVERS_PATH,  (tempID[2] == 'U') ? "US" :
 															(tempID[2] == 'J') ? "JA" : "EN", tempID);
 			else
-								sprintf(icon, COVERS_PATH, tempID);
+								sprintf(icon, (const char *)COVERS_PATH, tempID);
 			return true;
 		}
 #endif
@@ -341,7 +341,7 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 	}
 }
 
-static void get_default_icon_for_iso(char *icon, const char *param, char *file, int isdir, int ns, int abort_connection)
+static void get_default_icon_for_iso(char *icon, const char *param, char *file, int isdir, int ns)
 {
 	//this function is called only from get_default_icon
 
@@ -430,7 +430,7 @@ static enum icon_type get_default_icon_by_type(u8 f1)
 			IS_DVD_FOLDER  ? iDVD : iBDVD;
 }
 
-static enum icon_type get_default_icon(char *icon, const char *param, char *file, int is_dir, char *tempID, int ns, int abort_connection, u8 f0, u8 f1)
+static enum icon_type get_default_icon(char *icon, const char *param, char *file, int is_dir, char *tempID, int ns, u8 f0, u8 f1)
 {
 	char filename[STD_PATH_LEN];
 
@@ -451,7 +451,7 @@ static enum icon_type get_default_icon(char *icon, const char *param, char *file
 	if(SHOW_COVERS && get_cover_from_name(icon, file, tempID)) return default_icon; // show mm cover
 
 	// get icon from folder && copy remote icon
-	get_default_icon_for_iso(icon, param, file, is_dir, ns, abort_connection);
+	get_default_icon_for_iso(icon, param, file, is_dir, ns);
 
 	if(HAS(icon)) return default_icon;
 
@@ -664,7 +664,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	if(webman_config->tid && HAS_TITLE_ID && strlen(templn) < 50 && strstr(templn, " [") == NULL) {sprintf(enc_dir_name, " [%s]", tempID); strcat(templn, enc_dir_name);}
 
 	urlenc(enc_dir_name, data[v3_entry].name);
-	get_default_icon(icon, param, data[v3_entry].name, data[v3_entry].is_directory, tempID, ns, abort_connection, ((neth[4] & 0x0F) + 7), f1);
+	get_default_icon(icon, param, data[v3_entry].name, data[v3_entry].is_directory, tempID, ns, ((neth[4] & 0x0F) + 7), f1);
 
 	if(SHOW_COVERS_OR_ICON0 && (NO_ICON || (webman_config->nocov == SHOW_ICON0))) {get_name(tempstr, data[v3_entry].name, GET_WMTMP); strcat(tempstr, ".PNG"); if(file_exists(tempstr)) strcpy(icon, tempstr);}
 
@@ -1383,7 +1383,7 @@ next_html_entry:
 														!strcasestr(param,  filter_name) &&
 														!strcasestr(entry.entry_name.d_name, filter_name)) {if(subfolder) goto next_html_entry; else continue;}
 
-							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, tempID, ns, abort_connection, f0, f1);
+							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, tempID, ns, f0, f1);
 
 #ifdef SLAUNCH_FILE
 							if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, tempID, f1);

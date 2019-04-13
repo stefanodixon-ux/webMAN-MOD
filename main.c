@@ -170,7 +170,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define PKGLAUNCH_ICON		PKGLAUNCH_DIR "/ICON0.PNG"
 
 #define VSH_RESOURCE_DIR	"/dev_flash/vsh/resource/"
-#define SYSMAP_PS3_UPDATE	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
+#define SYSMAP_EMPTY_DIR	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
 
 #define PS2_CLASSIC_TOGGLER		"/dev_hdd0/classic_ps2"
 
@@ -326,7 +326,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define BEEP2 { system_call_3(SC_RING_BUZZER, 0x1004, 0x7,  0x36); }
 #define BEEP3 { system_call_3(SC_RING_BUZZER, 0x1004, 0xa, 0x1b6); }
 
-#define DISABLE_SND0_AT3 { sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? (char*)SYSMAP_PS3_UPDATE : NULL);}
+#define DISABLE_SND0_AT3 { sys_map_path("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? SYSMAP_EMPTY_DIR : NULL);}
 
 ////////////
 
@@ -2283,52 +2283,79 @@ parse_request:
 				goto html_response;
 			}
 			else
-			if(islike(param, "/rename.ps3") || islike(param, "/swap.ps3"))
+			if(islike(param, "/rename.ps3") || islike(param, "/swap.ps3") || islike(param, "/move.ps3"))
 			{
-				// /rename.ps3<path>|<target>     rename <path> to <target>
-				// /rename.ps3<path>&to=<target>  rename <path> to <target>
+				// /rename.ps3<path>|<dest>       rename <path> to <dest>
+				// /rename.ps3<path>&to=<dest>    rename <path> to <dest>
 				// /rename.ps3<path>.bak          removes .bak extension
 				// /rename.ps3<path>.bak          removes .bak extension
-				// /rename.ps3<path>|<target>?restart.ps3
-				// /rename.ps3<path>&to=<target>?restart.ps3
+				// /rename.ps3<path>|<dest>?restart.ps3
+				// /rename.ps3<path>&to=<dest>?restart.ps3
+				// /move.ps3<path>|<dest>         move <path> to <dest>
+				// /move.ps3<path>&to=<dest>      move <path> to <dest>
+				// /move.ps3<path>|<dest>?restart.ps3
+				// /move.ps3<path>&to=<dest>?restart.ps3
 				// /swap.ps3<file1>|<file2>       swap <file1> & <file2>
 				// /swap.ps3<file1>&to=<file2>    swap <file1> & <file2>
 				// /swap.ps3<file1>|<file2>?restart.ps3
 				// /swap.ps3<file1>&to=<file2>?restart.ps3
 
-				size_t cmd_len = islike(param, "/swap.ps3") ? 9 : 11;
+				#define SWAP_CMD	9
+				#define RENAME_CMD	11
 
-				char *source = param + cmd_len, *target = strstr(source, "|");
-				if(target) {*target = NULL; target++;} else {target = strstr(source, "&to="); if(target) {target = NULL; target+=4;}}
+				size_t cmd_len = islike(param, "/rename.ps3") ? RENAME_CMD : SWAP_CMD;
 
-				if((*target != '/') && !extcmp(source, ".bak", 4)) {size_t flen = strlen(source); *target = *param + flen; strncpy(target, source, flen - 4);}
+				char *source = param + cmd_len, *dest = strstr(source, "|");
+				if(dest) {*dest = NULL; dest++;} else {dest = strstr(source, "&to="); if(dest) {dest = NULL; dest+=4;}}
 
-				if(*target == '/')
+				if((*dest != '/') && !extcmp(source, ".bak", 4)) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
+
+				if(*dest == '/')
 				{
-					filepath_check(target);
+					filepath_check(dest);
 
-					if((cmd_len == 9) && file_exists(source) && file_exists(target))
+#ifdef COPY_PS3
+					char *wildcard = strstr(source, "*");
+					if(wildcard)
+					{
+						*wildcard++ = NULL;
+						scan(source, true, wildcard, SCAN_MOVE, dest);
+					}
+					else if(islike(param, "/move.ps3"))
+					{
+						if(isDir(source))
+						{
+							if(folder_copy(source, dest) >= CELL_OK) del(source, true);
+						}
+						else
+						{
+							if(file_copy(source, dest, COPY_WHOLE_FILE) >= CELL_OK) del(source, false);
+						}
+					}
+					else
+#endif
+					if((cmd_len == SWAP_CMD) && file_exists(source) && file_exists(dest))
 					{
 						sprintf(header, "%s.bak", source);
 						cellFsRename(source, header);
-						cellFsRename(target, source);
-						cellFsRename(header, target);
+						cellFsRename(dest, source);
+						cellFsRename(header, dest);
 					}
 #ifdef USE_NTFS
-					else if(is_ntfs_path(source) || is_ntfs_path(target))
+					else if(is_ntfs_path(source) || is_ntfs_path(dest))
 					{
 						u8 ps = 0, pt = 0;
-						if(is_ntfs_path(source)) {ps = 5; source[10] = ':';}
-						if(is_ntfs_path(target)) {pt = 5; target[10] = ':';}
+						if(is_ntfs_path(source)) {ps = 5, source[10] = ':';}
+						if(is_ntfs_path(dest)) {pt = 5, dest[10] = ':';}
 
-						ps3ntfs_rename(source + ps, target + pt);
+						ps3ntfs_rename(source + ps, dest + pt);
 					}
 #endif
 					else
-						cellFsRename(source, target);
+						cellFsRename(source, dest);
 
-					char *p = strrchr(target, '/'); *p = NULL;
-					sprintf(param, "%s", target);
+					char *p = strrchr(dest, '/'); *p = NULL;
+					sprintf(param, "%s", dest);
 					if(do_restart) goto reboot;
 				}
 			}
@@ -2352,12 +2379,14 @@ parse_request:
 			{
 				// /paste.ps3<path>  performs a copy or move of path stored in <cp_path clipboard> to <path> indicated in url
 
-				char *source = header, *target = cp_path;
+				#define PASTE_CMD	10
+
+				char *source = header, *dest = cp_path;
 				if(file_exists(cp_path))
 				{
 					sprintf(source, "/copy.ps3%s", cp_path);
-					sprintf(target, "%s", param + 10);
-					sprintf(param, "%s", source); strcat(target, strrchr(param, '/'));
+					sprintf(dest, "%s", param + PASTE_CMD);
+					sprintf(param, "%s", source); strcat(dest, strrchr(param, '/'));
 					is_binary = WEB_COMMAND;
 					goto html_response;
 				}
@@ -3615,7 +3644,7 @@ retry_response:
 								char *dev_name = (param + 18); // /mount.ps3/unmount<dev_path>
 								if(*dev_name == '/')
 								{
-									if(isDir(dev_name)) {system_call_3(SC_FS_UMOUNT, dev_name, 0, 1);}
+									if(isDir(dev_name)) {system_call_3(SC_FS_UMOUNT, (uint32_t)dev_name, 0, 1);}
 									sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
 									goto html_response;
 								}
@@ -3780,7 +3809,7 @@ static void wwwd_thread(u64 arg)
 
 #ifdef COBRA_ONLY
 	{sys_map_path("/app_home", NULL);}
-	{sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_PS3_UPDATE);} // redirect firmware update on BD disc to empty folder
+	{sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
 #endif
 
 	//WebmanCfg *webman_config = (WebmanCfg*) wmconfig;

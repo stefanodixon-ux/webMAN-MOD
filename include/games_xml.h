@@ -676,7 +676,7 @@ next_xml_entry:
 #endif
 							}
 
-							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, tempID, ns, abort_connection, f1, f0);
+							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, tempID, ns, f1, f0);
 #ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, tempID, f1);
 #endif
