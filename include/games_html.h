@@ -23,7 +23,7 @@ enum paths_ids
 	id_ROMS     = 12,
 };
 
-#define IS_ISO_FOLDER (((f1>=id_PS3ISO) && (f1<=id_ISO)) || (f1==id_ROMS))
+#define IS_ISO_FOLDER  ((f1>=id_PS3ISO) && (f1!=id_GAMEI) && (f1!=id_VIDEO))
 #define IS_PS3_TYPE    ((f1<=id_PS3ISO) || (f1==id_VIDEO || (f1==id_GAMEI)))
 #define IS_BLU_TYPE    ((f1<=id_BDISO)  || (f1==id_VIDEO || (f1==id_GAMEI)))
 #define IS_VID_FOLDER  ((f1==id_BDISO)  || (f1==id_DVDISO))
@@ -610,7 +610,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 	*icon = *tempID = NULL;
 
-	if(IS_PS3_TYPE) //PS3 games only (0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video")
+	if(IS_PS3_TYPE) //PS3 games only (0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI")
 	{
 		if(data[v3_entry].is_directory)
 			sprintf(templn, WMTMP "/%s.SFO", data[v3_entry].name);
@@ -851,7 +851,7 @@ static int check_drive(u8 f0)
 
 static int check_content_type(u8 f1)
 {
-	if( (webman_config->cmask & PS3) && IS_PS3_TYPE   ) return FAILED; // 0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video"
+	if( (webman_config->cmask & PS3) && IS_PS3_TYPE   ) return FAILED; // 0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI"
 	if( (webman_config->cmask & BLU) && IS_BLU_FOLDER ) return FAILED;
 	if( (webman_config->cmask & DVD) && IS_DVD_FOLDER ) return FAILED;
 	if( (webman_config->cmask & PS2) && IS_PS2_FOLDER ) return FAILED;
@@ -925,7 +925,7 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 	if(IS_NTFS)
 		return (flen > 13) && (strstr(entry_name + flen - 13, ".ntfs[") != NULL);
 	else
-		return (IS_ISO_FOLDER && (flen > 4) && (
+		return ((IS_ISO_FOLDER || IS_VIDEO_FOLDER)  && (flen > 4) && (
 				(              _IS(ext, ".iso")) ||
 				((flen > 6) && _IS(entry_name + flen - 6, ".iso.0")) ||
 				((IS_PS2_FOLDER) && strcasestr(".bin|.img|.mdf|.enc", ext)) ||
@@ -1174,6 +1174,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 #ifdef USE_NTFS
 list_games:
 #endif
+
 		for(u8 f0 = filter0; f0 < 16; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
 		{
 			if(check_drive(f0)) continue;
@@ -1246,8 +1247,6 @@ list_games:
 #ifdef NET_SUPPORT
 				if(is_net && open_remote_dir(ns, param, &abort_connection) < 0) goto continue_reading_folder_html; //continue;
 #endif
-
-
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, slen;
 				char tempID[12];
@@ -1264,8 +1263,8 @@ list_games:
 					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
 				}
 #endif
-				if(!is_net && file_exists( param) == false) goto continue_reading_folder_html; //continue;
-				if(!is_net && cellFsOpendir( param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_html; //continue;
+				if(!is_net && file_exists(param) == false) goto continue_reading_folder_html; //continue;
+				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_html; //continue;
 
 				default_icon =  get_default_icon_by_type(f1);
 
@@ -1350,7 +1349,7 @@ next_html_entry:
 
 						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
 
-						if(IS_JB_FOLDER && !is_iso)
+						if(IS_JB_FOLDER)
 						{
 #ifdef PKG_LAUNCHER
 							if(IS_GAMEI_FOLDER)

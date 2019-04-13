@@ -636,7 +636,7 @@ next_xml_entry:
 
 						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
 
-						if(IS_JB_FOLDER && !is_iso)
+						if(IS_JB_FOLDER)
 						{
 #ifdef PKG_LAUNCHER
 							if(IS_GAMEI_FOLDER)

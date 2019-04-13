@@ -867,12 +867,26 @@ int wait_for(const char *path, u8 timeout)
 	return wait_path(path, timeout, true);
 }
 
+static void mount_device(const char *dev_name, const char *sys_dev_name, const char *file_system)
+{
+	if(!sys_admin) return;
+
+	if(!dev_name || isDir(dev_name)) return;
+
+	if(islike(dev_name, "/dev_blind"))
+		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_IOS:BUILTIN_FLSH1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_blind", 0, 0, 0, 0, 0);}
+	else if(islike(dev_name, "/dev_hdd1"))
+		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_UTILITY:HDD1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_hdd1", 0, 0, 0, 0, 0);}
+	else if(!sys_dev_name || !file_system) return;
+	else if((*dev_name == '/') && islike(sys_dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
+		{system_call_8(SC_FS_MOUNT, sys_dev_name, file_system, dev_name, 0, 0, 0, 0, 0);}
+}
+
 static void enable_dev_blind(const char *msg)
 {
 	if(!sys_admin) return;
 
-	if(!isDir("/dev_blind"))
-		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_IOS:BUILTIN_FLSH1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_blind", 0, 0, 0, 0, 0);}
+	mount_device("/dev_blind", NULL, NULL);
 
 	if(!msg) return;
 

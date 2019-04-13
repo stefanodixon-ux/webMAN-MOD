@@ -45,7 +45,8 @@ static void absPath(char* absPath_s, const char* path, const char* cwd)
 
 	filepath_check(absPath_s);
 
-	if(islike(absPath_s, "/dev_blind") && !isDir("/dev_blind")) enable_dev_blind(NO_MSG);
+	if(islike(absPath_s, "/dev_blind")) mount_device("/dev_blind", NULL, NULL); else
+	if(islike(absPath_s, "/dev_hdd1") ) mount_device("/dev_hdd1",  NULL, NULL);
 }
 
 static int ssplit(const char* str, char* left, int lmaxlen, char* right, int rmaxlen)

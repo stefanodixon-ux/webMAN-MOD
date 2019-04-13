@@ -805,13 +805,7 @@ static void do_umount_iso(void)
 	if(effective_disctype != DISC_TYPE_NONE)
 	{
 		cobra_send_fake_disc_eject_event();
-
-		for(u8 m = 0; m < 250; m++)
-		{
-			sys_ppu_thread_usleep(4000);
-
-			if(!isDir("/dev_bdvd")) break;
-		}
+		wait_path("/dev_bdvd", 1, false);
 	}
 
 	if(iso_disctype != DISC_TYPE_NONE) cobra_umount_disc_image();
@@ -886,7 +880,6 @@ static void do_umount(bool clean)
 		while(rawseciso_loaded) {sys_ppu_thread_usleep(100000);}
  #endif
 #endif
-
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
 

@@ -2650,6 +2650,8 @@ retry_response:
 			else
 			{
 				struct CellFsStat buf; bool is_net = false;
+
+				if(islike(param, "/dev_hdd1")) mount_device("/dev_hdd1", NULL, NULL); // auto-mount /dev_hdd1
 #ifdef USE_NTFS
 				is_ntfs = is_ntfs_path(param);
 #endif
@@ -2675,7 +2677,6 @@ retry_response:
 					if(ps3ntfs_stat(param + 5, &bufn) < 0)
 					{
 						http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found");
-
 						goto exit_handleclient_www;
 					}
 
@@ -2687,8 +2688,6 @@ retry_response:
 #endif
 				else
 					is_binary = (*param == '/') && (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED);
-
-				if(!is_binary && IS(param, "/dev_hdd1")) {sprintf(param, "/mount.ps3/dev_hdd1"); goto html_response;} // auto-mount /dev_hdd1
 
 				if(is_binary == BINARY_FILE) ;
 
@@ -3234,7 +3233,6 @@ retry_response:
 					if(islike(param, "/eject.ps3"))
 					{
 						// /eject.ps3   eject physical disc from bd drive
-
 						eject_insert(1, 0);
 						strcat(pbuffer, STR_EJECTED);
 					}
@@ -3242,8 +3240,8 @@ retry_response:
 					if(islike(param, "/insert.ps3"))
 					{
 						// /insert.ps3   insert physical disc into bd drive
-
 						eject_insert(0, 1);
+						if(!isDir("/dev_bdvd")) eject_insert(1, 1);
 						strcat(pbuffer, STR_LOADED);
 					}
  #ifdef LOAD_PRX
@@ -3612,31 +3610,42 @@ retry_response:
 
 						if(islike(param, "/mount"))
 						{
-							char *dev_name = NULL, *fs = (char*)"CELL_FS_FAT";
-							if(IS(param + 10, "/dev_hdd1"))
-								dev_name = (char*)"CELL_FS_UTILITY:HDD1"; 
+							if(islike(param, "/mount.ps3/unmount"))
+							{
+								char *dev_name = (param + 18); // /mount.ps3/unmount<dev_path>
+								if(*dev_name == '/')
+								{
+									if(isDir(dev_name)) {system_call_3(SC_FS_UMOUNT, dev_name, 0, 1);}
+									sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
+									goto html_response;
+								}
+							}
 							else
 							{
-								char *pos1 = strstr(param, "&name="), *pos2 = strstr(param, "&fs=");
-								if(pos1) {*pos1 = 0, dev_name = (pos1 + 6);}
+								// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
+								char *dev_name = (param + 10), *sys_dev_name = NULL, *fs = (char*)"CELL_FS_FAT";
+								char *pos1 = strstr(dev_name, "&name="), *pos2 = strstr(dev_name, "&fs=");
+								if(pos1) {*pos1 = 0, sys_dev_name = (pos1 + 6);}
 								if(pos2) {*pos2 = 0, fs = (pos2 + 4);}
-							}
-							if(dev_name && islike(dev_name, "CELL_FS_"))
-							{
-								{system_call_8(SC_FS_MOUNT, dev_name, fs, (param + 10), 0, 0, 0, 0, 0);}
-								sprintf(param, "%s", param + 10); is_binary = FOLDER_LISTING; is_busy = false;
-								goto html_response;
+
+								if(!file_exists(dev_name) || sys_dev_name)
+								{
+									mount_device(dev_name, sys_dev_name, fs); is_busy = false;
+									if(isDir(dev_name))
+									{
+										sprintf(param, "%s", dev_name); is_binary = FOLDER_LISTING;
+										goto html_response;
+									}
+									else
+									{
+										http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found");
+										goto exit_handleclient_www;
+									}
+								}
 							}
 						}
 
-						if(islike(param, "/mount.ps3/unmount/"))
-						{
-							{system_call_3(SC_FS_UMOUNT, (param + 18), 0, 1);}
-							sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
-							goto html_response;
-						}
-						else
-							game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
+						game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
 					}
 
 					else
