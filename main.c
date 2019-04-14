@@ -935,7 +935,7 @@ static void http_response(int conn_s, char *header, const char *url, int code, c
 #endif
 
 		sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
-						HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:window.history.back();"), HTML_BODY_END); strcat(body, header);
+						HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); strcat(body, header);
 
 		slen = sprintf(header,  HTML_RESPONSE_FMT,
 								(code == CODE_RETURN_TO_ROOT) ? CODE_HTTP_OK : code, url, HTML_BODY, HTML_RESPONSE_TITLE, body);
@@ -3271,7 +3271,7 @@ retry_response:
 						// /eject.ps3   eject physical disc from bd drive
 						eject_insert(1, 0);
 						strcat(pbuffer, STR_EJECTED);
-						sprintf(templn, HTML_REDIRECT_TO_URL, "window.history.back();", HTML_REDIRECT_WAIT); strcat(pbuffer, templn);
+						sprintf(templn, HTML_REDIRECT_TO_URL, "javascript:history.back();", HTML_REDIRECT_WAIT); strcat(pbuffer, templn);
 					}
 					else
 					if(islike(param, "/insert.ps3"))
