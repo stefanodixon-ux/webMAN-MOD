@@ -629,7 +629,7 @@ static int folder_copy(const char *path1, char *path2)
 }
 #endif
 
-#ifndef LITE_EDITION
+#ifdef COPY_PS3
 static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, const char *dest)
 {
 	// fop: 0 = scan to file, 1 = del, 2 = copy, 3 = move, 4 = rename/move in same fs

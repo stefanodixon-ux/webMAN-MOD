@@ -429,7 +429,6 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	char param[STD_PATH_LEN], icon[STD_PATH_LEN], subpath[STD_PATH_LEN], enc_dir_name[1024];
 
 	u8 is_net = 0;
-	int abort_connection = 0;
 
 	// --- scan xml content ---
 
@@ -452,6 +451,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	int ns = NONE; u8 uprofile = profile;
 
 #ifdef NET_SUPPORT
+	int abort_connection = 0;
 	if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection) < 0) do_umount(false);
 #endif
 

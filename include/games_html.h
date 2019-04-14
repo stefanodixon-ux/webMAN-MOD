@@ -1019,7 +1019,6 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 
 	if(loading_games)
 	{
-		int abort_connection = 0;
 		u8 is_net = 0;
 
 		u16 idx = 0;
@@ -1080,6 +1079,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		int ns = NONE; u8 uprofile = profile; enum icon_type default_icon;
 
 #ifdef NET_SUPPORT
+		int abort_connection = 0;
 		if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection) < 0) do_umount(false);
 #endif
 

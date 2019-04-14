@@ -13,7 +13,7 @@ u16 _MAX_LINE_LEN = MAX_LINE_LEN;
 
 #define TABLE_ITEM_SIZE  28  // strlen(TABLE_ITEM_PREFIX + TABLE_ITEM_SUFIX) = (18 + 10)
 
-#define FILE_MGR_KEY_LEN	6
+#define FILE_MGR_KEY_LEN	10
 
 #define ext5   name + MAX(flen - 5, 0)
 #define ext8   name + MAX(flen - 8, 0)
@@ -295,7 +295,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	if(sort_by == 's')
 	{	// convert sbyte to base 255 to avoid nulls that would break strncmp in sort
-		memset(ename, 1, 5); u8 index = 4;
+		memset(ename, 1, FILE_MGR_KEY_LEN -1); u8 index = 6;
 		while (sbytes > 0)
 		{
 			ename[index] = 1 + (sbytes % 255);
@@ -307,11 +307,12 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(ename, "%c%c%c%c%c", ((rDate.year - 1968) % 223) + 0x20, rDate.month+0x20, rDate.day+0x20, rDate.hour+0x20, rDate.minute+0x20);
 	else
 	{
-		if(*name == '0' && flen == 8 && IS(param, "/dev_hdd0/home"))
-			snprintf(ename, FILE_MGR_KEY_LEN, "%s", name + 3);
-		else
-			snprintf(ename, FILE_MGR_KEY_LEN, "%s     ", name); sclass = dclass;
-		if(flen > 4) {char c = name[flen - 1]; if(ISDIGIT(c)) ename[4] = c;}
+		//if(*name == '0' && flen == 8 && IS(param, "/dev_hdd0/home"))
+		//	snprintf(ename, FILE_MGR_KEY_LEN, "%s", name + 3);
+		//else
+		snprintf(ename, FILE_MGR_KEY_LEN, "%s         ", name); sclass = dclass;
+
+		if(flen > FILE_MGR_KEY_LEN -2) {char c = name[flen - 1]; if(ISDIGIT(c)) ename[FILE_MGR_KEY_LEN - 2] = c;} // sort isos
 	}
 
 	if((plen > 1) && memcmp(templn, param, plen) == 0) sprintf(templn, "%s", templn + plen + 1); // remove path from templn (use relative path)
@@ -324,7 +325,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	const u16 dlen = FILE_MGR_KEY_LEN + 21; // key length + length of date column
 
 	// -- key
-	*tempstr = sclass; memcpy(tempstr + 1, ename, 5);
+	*tempstr = sclass; memcpy(tempstr + 1, ename, FILE_MGR_KEY_LEN -1);
 
 	// -- name column
 	flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
@@ -340,7 +341,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 							fsize, is_root ? "" : " &nbsp; ");
 
 	// -- reduce features if html code is too long
-	if((flen + slen + dlen) >= _LINELEN)
+	if((FILE_MGR_KEY_LEN + flen + slen + dlen) >= _LINELEN)
 	{
 		// -- remove link from size column
 		if(is_dir) sprintf(fsize, HTML_DIR); else sprintf(fsize, "%llu %s", sz, sf);
@@ -350,7 +351,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 								fsize, is_root ? "" : " &nbsp; ");
 
 		// -- rebuild name without link if html code is still too long
-		if((flen + slen + dlen) >= _LINELEN)
+		if((FILE_MGR_KEY_LEN + flen + slen + dlen) >= _LINELEN)
 		{
 			flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
 									 "%c\">%s</a></td>",
@@ -367,7 +368,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	flen += slen + dlen; // size of key + name column + size column + date column
 
-	if(flen >= _LINELEN) {flen = 0, *tempstr = NULL;} //ignore file if it is still too long
+	if(FILE_MGR_KEY_LEN + flen >= _LINELEN) {flen = 0, *tempstr = NULL;} //ignore file if it is still too long
 
 	return flen;
 }

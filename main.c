@@ -2758,6 +2758,7 @@ retry_response:
 					c_len = buf.st_size;
 					if(buf.st_mode & S_IFDIR) {is_binary = FOLDER_LISTING;} // folder listing
 				}
+#ifdef COPY_PS3
 				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
 				{
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
@@ -2766,6 +2767,7 @@ retry_response:
 					sprintf(param, "/dev_hdd0/tmp/wmtmp/filelist.txt");
 					allow_retry_response = false; goto retry_response;
 				}
+#endif
 				else
 				{
 					int code =  is_busy ?				 CODE_SERVER_BUSY :
