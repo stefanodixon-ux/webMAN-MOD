@@ -73,7 +73,7 @@ static void auto_play(char *param)
 
 		if(!l2 && strstr(param, "/PSPISO"))
 		{
-			if(!(webman_config->nogrp) && webman_config->pspl && (view != 0) && (strstr(param, "_ps3") != NULL))
+			if(!(webman_config->nogrp) && webman_config->pspl && (view != 0) && (strstr(param, "_ps3") != NULL) && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
 				if(explore_exec_push(250000, true))	// move to psp_launcher folder and open it
 				if(autoplay && !explore_exec_push(500000, false))	// start psp_launcher

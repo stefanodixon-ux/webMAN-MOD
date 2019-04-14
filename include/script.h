@@ -56,7 +56,7 @@ static void parse_script(const char *script_file)
 					dest = strstr(buffer, "=/");
 					if(!dest) dest = strstr(buffer, ",/");
 					if(!dest) dest = strstr(buffer, ", /");
-					if(enable_db && !strstr(buffer, "/dev_blind")) {enable_dev_blind(NO_MSG); enable_db = false;}
+					if(enable_db && (strstr(buffer, "/dev_blind") != NULL)) {enable_dev_blind(NO_MSG); enable_db = false;}
 				}
 				if(dest)
 				{

@@ -450,10 +450,10 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 		if( param[11] ) {sprintf(templn, HTML_REDIRECT_TO_URL, "/", HTML_REDIRECT_WAIT); strcat(buffer, templn);}
 
-		sprintf(templn, "/dev_blind: %s", isDir("/dev_blind")?STR_ENABLED:STR_DISABLED); strcat(buffer, templn); return true; //goto send_response;
+		sprintf(templn, "/dev_blind: %s", isDir("/dev_blind") ? STR_ENABLED : STR_DISABLED); strcat(buffer, templn); return true; //goto send_response;
 	}
 
-	absPath(templn, param, "/"); // auto mount /dev_blind
+	absPath(templn, param, "/"); // auto mount /dev_blind & /dev_hdd1
 
 	u8 is_net = (param[1] == 'n'), skip_cmd = 0;
 
