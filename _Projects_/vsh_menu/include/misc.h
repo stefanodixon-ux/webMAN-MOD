@@ -20,7 +20,7 @@
 int32_t rsx_fifo_pause(uint8_t pause);
 
 void play_rco_sound(const char *plugin, const char *sound);
-void buzzer(uint8_t mode);
+void beep(uint8_t mode);
 
 uint64_t lv2peek(uint64_t addr);
 uint64_t lv2poke(uint64_t addr, uint64_t value);

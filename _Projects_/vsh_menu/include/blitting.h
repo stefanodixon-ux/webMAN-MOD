@@ -8,6 +8,7 @@
 
 #include "vsh_exports.h"
 
+#define FAILED        -1
 
 // font constants
 #define FONT_W         20.f            // default font width

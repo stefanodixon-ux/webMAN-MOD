@@ -28,7 +28,7 @@ void play_rco_sound(const char *plugin, const char *sound)
 /***********************************************************************
 * ring buzzer
 ***********************************************************************/
-void buzzer(uint8_t mode)
+void beep(uint8_t mode)
 {
 	uint16_t param = 0;
 

@@ -7,7 +7,7 @@
 
 //uint32_t load_rco_texture(uint32_t* texture, const char *plugin, const char *texture_name);
 void play_rco_sound(const char *sound);
-//void buzzer(uint8_t mode);
+void beep(uint8_t mode);
 
 uint64_t peekq(uint64_t addr);
 //uint64_t pokeq(uint64_t addr, uint64_t value);

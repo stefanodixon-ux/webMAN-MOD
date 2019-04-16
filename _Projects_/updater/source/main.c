@@ -667,9 +667,7 @@ int main()
 	// install vsh menu
 	if(sysLv2FsStat(RES_DIR, &stat) == SUCCESS)
 	{
-		sysLv2FsMkdir(RES_DIR "/images", 0777);
-
-		// update images
+		// remove old resource path for images
 		sysLv2FsUnlink(PLUGINS_DIR "/images/wm_vsh_menu.png");
 		sysLv2FsUnlink(PLUGINS_DIR "/images/wm_vsh_menu_1.png");
 		sysLv2FsUnlink(PLUGINS_DIR "/images/wm_vsh_menu_2.png");
@@ -681,7 +679,7 @@ int main()
 		sysLv2FsUnlink(PLUGINS_DIR "/images/wm_vsh_menu_8.png");
 
 		sysLv2FsUnlink(PLUGINS_DIR "/images/slaunch_fav.jpg");
-		sysLv2FsUnlink(PLUGINS_DIR "/images/slaunch_PS1.jpg");
+		sysLv2FsUnlink(PLUGINS_DIR "/images/slaunch_PSX.jpg");
 		sysLv2FsUnlink(PLUGINS_DIR "/images/slaunch_PS2.jpg");
 		sysLv2FsUnlink(PLUGINS_DIR "/images/slaunch_PS3.jpg");
 		sysLv2FsUnlink(PLUGINS_DIR "/images/slaunch_PSP.jpg");
@@ -690,10 +688,12 @@ int main()
 
 		sysLv2FsRmdir(PLUGINS_DIR "/images");
 
+		// remove old path for VSH Menu and sLaunch Menu
 		sysLv2FsUnlink(PLUGINS_DIR "/slaunch.sprx");
 		sysLv2FsUnlink(PLUGINS_DIR "/wm_vsh_menu.sprx");
 
 		// update images
+		sysLv2FsMkdir(RES_DIR "/images", 0777);
 		file_copy(APP_USRDIR "/images/wm_vsh_menu.png",   RES_DIR "/images/wm_vsh_menu.png");
 		file_copy(APP_USRDIR "/images/wm_vsh_menu_1.png", RES_DIR "/images/wm_vsh_menu_1.png");
 		file_copy(APP_USRDIR "/images/wm_vsh_menu_2.png", RES_DIR "/images/wm_vsh_menu_2.png");
@@ -705,13 +705,14 @@ int main()
 		file_copy(APP_USRDIR "/images/wm_vsh_menu_8.png", RES_DIR "/images/wm_vsh_menu_8.png");
 
 		file_copy(APP_USRDIR "/images/slaunch_fav.jpg",   RES_DIR "/images/slaunch_fav.jpg");
-		file_copy(APP_USRDIR "/images/slaunch_PS1.jpg",   RES_DIR "/images/slaunch_PS1.jpg");
+		file_copy(APP_USRDIR "/images/slaunch_PSX.jpg",   RES_DIR "/images/slaunch_PSX.jpg");
 		file_copy(APP_USRDIR "/images/slaunch_PS2.jpg",   RES_DIR "/images/slaunch_PS2.jpg");
 		file_copy(APP_USRDIR "/images/slaunch_PS3.jpg",   RES_DIR "/images/slaunch_PS3.jpg");
 		file_copy(APP_USRDIR "/images/slaunch_PSP.jpg",   RES_DIR "/images/slaunch_PSP.jpg");
 		file_copy(APP_USRDIR "/images/slaunch_ROMS.jpg",  RES_DIR "/images/slaunch_ROMS.jpg");
 		file_copy(APP_USRDIR "/images/slaunch_video.jpg", RES_DIR "/images/slaunch_video.jpg");
 
+		// update VSH Menu and sLaunch Menu
 		file_copy(APP_USRDIR "/slaunch.sprx", RES_DIR "/slaunch.sprx");
 		file_copy(APP_USRDIR "/wm_vsh_menu.sprx", RES_DIR "/wm_vsh_menu.sprx");
 	}

@@ -21,8 +21,7 @@ void play_rco_sound(const char *sound)
 /***********************************************************************
 * ring buzzer
 ***********************************************************************/
-/*
-void buzzer(uint8_t mode)
+void beep(uint8_t mode)
 {
 	uint16_t param = 0;
 
@@ -36,7 +35,7 @@ void buzzer(uint8_t mode)
 
 	system_call_3(392, 0x1007, 0xA, param);
 }
-*/
+
 
 /***********************************************************************
 * peek & poke

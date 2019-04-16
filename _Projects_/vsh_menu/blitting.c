@@ -27,7 +27,6 @@ static int32_t get_font_object(void)
 	int32_t pm_start = 0x10000;
 	uint64_t pat[2] = {0x3800001090810080ULL, 0x90A100849161008CULL};
 
-
 	while(pm_start < 0x700000)
 	{
 		if((*(uint64_t*)pm_start == pat[0]) && (*(uint64_t*)(pm_start+8) == pat[1]))
@@ -49,7 +48,7 @@ static int32_t get_font_object(void)
 		pm_start+=4;
 	}
 
-	return -1;
+	return FAILED;
 }
 
 /***********************************************************************
@@ -87,7 +86,7 @@ static void font_init(void)
 	CellFontRendererConfig rd_cfg;
 	CellFont *opened_font = NULL;
 
-	get_font_object();
+	if(get_font_object() == FAILED) return;
 
 	// get id of current logged in user for the xRegistry query we do next
 	user_id = xsetting_CC56EB2D()->GetCurrentUserNumber();
@@ -348,7 +347,7 @@ void init_graphic()
 ***********************************************************************/
 int32_t load_png_bitmap(int32_t idx, const char *path)
 {
-	if(idx > PNG_MAX) return -1;
+	if(idx > PNG_MAX) return FAILED;
 
 	mem_free(ctx.png[idx].w * ctx.png[idx].h * 4);
 

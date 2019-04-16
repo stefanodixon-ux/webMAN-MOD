@@ -23,6 +23,7 @@ PPU_PRX_LDLIBS 	+= -lfs_stub -lnet_stub -lrtc_stub -lio_stub -lnetctl_stub -ljpg
                    -lvsh_export_stub \
                    -lpaf_export_stub \
                    -lvshmain_export_stub \
+                   -lvshtask_export_stub \
                    -lsdk_export_stub \
                    -lsys_io_export_stub
 

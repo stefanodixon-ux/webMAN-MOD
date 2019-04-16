@@ -36,6 +36,7 @@ document.write( "<div id='mnu' style='position:fixed;width:180px;background:#333
 				"<a id='m3'>Delete<br></a>" +
 				"<a id='m7'>Rename<br></a>" +
 				"<a id='mf' href=\"javascript:t=prompt('New Folder', self.location.pathname);if(t.indexOf('/dev_')==0)self.location='/mkdir.ps3'+t\">New Folder</a>" +
+				"<a id='md'>MD5 Hash<br></a>"+
 				"<hr>" +
 				"<a id='m4'>Cut<br></a>" +
 				"<a id='m5'>Copy<br></a>" +
@@ -79,6 +80,7 @@ window.addEventListener('contextmenu',function(e){
 		m7.href='javascript:rn(\"'+p+'\")';m7.style.display=(p.substring(0,5)=='/dev_')?b:n;
 		m8.href='/copy.ps3'+p; m8.text = 'Copy to ' + ((p.indexOf('/dev_hdd')==0) ? "usb" : "hdd0");
 		m9.href='/copy_ps3'+p;
+		md.href='/md5.ps3'+p;
 		ms.href='http://google.com/search?q='+t.text;ms.style.display=(t.parentNode.className=='gn')?b:n;
 		y=p.indexOf('.ps3');if(y>0)p=p.substring(y+4);url=window.location.href;
 		ml.href=p.substring(0,p.lastIndexOf("/"));if(url.indexOf('?sort=')<0)ml.href+='?sort=name&desc';

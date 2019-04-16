@@ -392,7 +392,7 @@ static void do_main_menu_action(void)
 	switch(line)
 	{
 		case 0:
-			buzzer(1);
+			beep(1);
 			send_wm_request("/mount_ps3/unmount");
 
 			//if(entry_mode[line]) wait_for_request(); else
@@ -437,10 +437,10 @@ static void do_main_menu_action(void)
 				}
 			}
 
-			if(entry_mode[line] == (fan_mode ? 1 : 0)) {send_wm_request("/cpursx.ps3?dn"); buzzer(1);}
-			if(entry_mode[line] == (fan_mode ? 0 : 1)) {send_wm_request("/cpursx.ps3?up"); buzzer(1);}
+			if(entry_mode[line] == (fan_mode ? 1 : 0)) {send_wm_request("/cpursx.ps3?dn"); beep(1);}
+			if(entry_mode[line] == (fan_mode ? 0 : 1)) {send_wm_request("/cpursx.ps3?up"); beep(1);}
 
-			if(entry_mode[line] == 2) {send_wm_request("/cpursx.ps3?mode"); buzzer(3); entry_mode[line]=3; strcpy(entry_str[view][line], "2: System Info"); fan_mode = fan_mode ? 0 : 1;} else
+			if(entry_mode[line] == 2) {send_wm_request("/cpursx.ps3?mode"); beep(3); entry_mode[line]=3; strcpy(entry_str[view][line], "2: System Info"); fan_mode = fan_mode ? 0 : 1;} else
 			if(entry_mode[line] == 3) {send_wm_request("/popup.ps3"); return_to_xmb();}
 
 			play_rco_sound("system_plugin", "snd_system_ok");
@@ -464,7 +464,7 @@ static void do_main_menu_action(void)
 
 			break;
 		case 6:
-			buzzer(1);
+			beep(1);
 			screenshot(entry_mode[line]); // mode = 0 (XMB only), 1 (XMB + menu)
 			stop_VSH_Menu();
 
@@ -490,13 +490,13 @@ static void do_main_menu_action(void)
 		case 0xA:
 			return_to_xmb();
 
-			buzzer(2);
+			beep(2);
 			shutdown_system();
 			return;
 		case 0xB:
 			return_to_xmb();
 
-			buzzer(1);
+			beep(1);
 			if(entry_mode[line]) hard_reboot(); else soft_reboot();
 			return;
 	}
@@ -516,7 +516,7 @@ static void do_main_menu_action(void)
 
 static void do_rebug_menu_action(void)
 {
-	buzzer(1);
+	beep(1);
 
 	switch(line)
 	{
@@ -1408,6 +1408,15 @@ static bool gui_allowed(bool popup)
 
 static void vsh_menu_thread(uint64_t arg)
 {
+	int val_lang = 1;
+	xsetting_0AF1F161()->GetSystemLanguage(&val_lang);
+
+	if(val_lang == 7)
+	{
+		vshtask_notify("VSH Menu Error!\nRussian language is not supported.");
+		beep(3); sys_ppu_thread_exit(0); return;
+	}
+
 #ifdef DEBUG
 	dbg_init();
 	dbg_printf("programstart:\n");
