@@ -2768,7 +2768,7 @@ retry_response:
 				{
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
 					cellFsUnlink(WMTMP "/filelist.txt");
-					scan(param, true, wildcard, SCAN_LIST, WMTMP "/filelist.txt");
+					scan(param, true, wildcard, SCAN_LIST, (char*)(WMTMP "/filelist.txt"));
 					sprintf(param, WMTMP "/filelist.txt");
 					allow_retry_response = false; goto retry_response;
 				}
