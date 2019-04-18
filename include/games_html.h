@@ -229,7 +229,7 @@ static bool get_cover_by_titleid(char *icon, char *tempID)
 			if(use_icon_region) sprintf(icon, COVERS_PATH,  (tempID[2] == 'U') ? "US" :
 															(tempID[2] == 'J') ? "JA" : "EN", tempID);
 			else
-								sprintf(icon, (const char *)COVERS_PATH, tempID);
+								sprintf(icon, COVERS_PATH, tempID);
 			return true;
 		}
 #endif
@@ -1263,7 +1263,6 @@ list_games:
 					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
 				}
 #endif
-				if(!is_net && file_exists(param) == false) goto continue_reading_folder_html; //continue;
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_html; //continue;
 
 				default_icon =  get_default_icon_by_type(f1);
@@ -1333,15 +1332,19 @@ list_games:
 
 //////////////////////////////
 						subfolder = 0;
-						sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
-						if(IS_ISO_FOLDER && isDir(subpath) && cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
+						if(IS_ISO_FOLDER || IS_VIDEO_FOLDER)
 						{
-							strcpy(subpath, entry.entry_name.d_name); subfolder = 1;
+							sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
+							if(cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
+							{
+								strcpy(subpath, entry.entry_name.d_name); subfolder = 1;
 next_html_entry:
-							cellFsGetDirectoryEntries(fd2, &entry, sizeof(entry), &read_e);
-							if(read_e < 1) {cellFsClosedir(fd2); fd2 = 0; continue;}
-							if(entry.entry_name.d_name[0] == '.') goto next_html_entry;
-							sprintf(templn, "%s/%s", subpath, entry.entry_name.d_name); entry.entry_name.d_name[0] = NULL; entry.entry_name.d_namlen = concat(entry.entry_name.d_name, templn);
+								cellFsGetDirectoryEntries(fd2, &entry, sizeof(entry), &read_e);
+								if(read_e < 1) {cellFsClosedir(fd2); fd2 = 0; continue;}
+								if(entry.entry_name.d_name[0] == '.') goto next_html_entry;
+								entry.entry_name.d_namlen = sprintf(templn, "%s/%s", subpath, entry.entry_name.d_name);
+								strcpy(entry.entry_name.d_name, templn);
+							}
 						}
 //////////////////////////////
 
@@ -1451,11 +1454,13 @@ next_html_entry:
 
 //
 	continue_reading_folder_html:
-
-				if((uprofile > 0) && (f1 < id_ISO)) {subfolder = uprofile = 0; goto read_folder_html;}
-				if(!IS_NTFS)
+				if(f1 < id_ISO)
 				{
-					if(is_net && ls && (li < 27)) {li++; goto subfolder_letter_html;} else if(li < 99 && f1 < id_ISO) {li = 99; goto subfolder_letter_html;}
+					if(uprofile > 0) {subfolder = uprofile = 0; goto read_folder_html;}
+					if(is_net && (f1 > id_GAMEZ))
+					{
+						if(ls && (li < 27)) {li++; goto subfolder_letter_html;} else if(li < 99) {li = 99; goto subfolder_letter_html;}
+					}
 				}
 //
 			}

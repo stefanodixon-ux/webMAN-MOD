@@ -268,7 +268,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			|| IS(ext,  ".rco") ||  IS(ext, ".qrc")
 			|| _IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi")
 			|| _IS(ext, ".mp3")
-			|| !memcmp(name, "webftp_server", 13) || !memcmp(name, "boot_plugins", 12) || !memcmp(name, "coldboot", 8)
+			|| !memcmp(name, "webftp_server", 13) || !memcmp(name, "coldboot", 8)
  #ifdef SWAP_KERNEL
 			|| !memcmp(name, "lv2_kernel", 10)
  #endif
@@ -276,13 +276,14 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				sprintf(fsize, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
 #endif //#ifdef COPY_PS3
 
-#ifdef LOAD_PRX
-	else if(!is_net && ( IS(ext5, ".sprx")))
-		sprintf(fsize, "<a href=\"/loadprx.ps3?slot=6&prx=%s\">%'llu %s</a>", templn, sz, sf);
-#endif
 #ifndef LITE_EDITION
 	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !islike(templn, "/net") && !islike(templn, DEV_NTFS) )
 			sprintf(fsize, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
+#endif
+
+#ifdef LOAD_PRX
+	else if(!is_net && ( IS(ext5, ".sprx")))
+		sprintf(fsize, "<a href=\"/loadprx.ps3?slot=6&prx=%s\">%'llu %s</a>", templn, sz, sf);
 #endif
 	else if(sbytes < 10240)
 		sprintf(fsize, "%'llu %s", sz, sf);
@@ -537,7 +538,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 #endif
 		tlen = strlen(buffer);
 
-		tlen += concat(buffer + tlen, "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}</style>"
+		tlen += concat(buffer + tlen, "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}td+td{text-align:right}</style>"
 									  "<table id=\"files\" class=\"propfont\">");
 /*
 		if(file_exists("/dev_hdd0/xmlhost/game_plugin/sort.js"))
@@ -927,7 +928,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			}
 
 			// summary
-			sprintf(templn, "</b> &nbsp; <font color=\"#707070\">%'i Dir(s) %'d %s %'d %s</font>%s",
+			sprintf(templn, "</b> &nbsp; <font color=\"#C0C0C0\">%'i Dir(s) %'d %s %'d %s</font>%s",
 							MAX(dirs - 1, 0), (idx-dirs), STR_FILES,
 							dir_size<(_1MB_) ? (int)(dir_size>>10):(int)(dir_size>>20),
 							dir_size<(_1MB_) ? STR_KILOBYTE:STR_MEGABYTE, tempstr);

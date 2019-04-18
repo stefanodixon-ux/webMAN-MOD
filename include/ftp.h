@@ -119,7 +119,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	char cmd[16], param[STD_PATH_LEN], filename[STD_PATH_LEN], source[STD_PATH_LEN]; // used as source parameter in RNFR and COPY commands
 	char *cpursx = filename, *tempcwd = filename, *d_path = param, *pasv_output = param;
 	struct CellFsStat buf;
-	int fd, pos;
+	int fd, pos, timeout = 0;
 
 	bool is_ntfs = false;
 
@@ -147,13 +147,15 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	while(connactive && working)
 	{
-		memset(buffer, 0, FTP_RECV_SIZE);
+		if(sysmem && (IS_INGAME || (timeout++ > 36000))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer
+
+		if(*buffer) memset(buffer, 0, FTP_RECV_SIZE);
 		if(working && ((recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0)) > 0))
 		{
 			char *p = strstr(buffer, "\r\n");
 			if(p) strcpy(p, "\0\0"); else break;
 
-			is_ntfs = false;
+			is_ntfs = false, timeout = 0;
 
 			int split = ssplit(buffer, cmd, 15, param, STD_PATH_LEN - 1);
 
@@ -770,7 +772,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(islike(filename, "/dvd_bdvd"))
 								{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
 
-							if(!sysmem && ftp_active > 1)
+							if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
 							{
 								sys_memory_container_t mc_app = get_app_memory_container();
 								if(mc_app)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
@@ -877,7 +879,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							int err = FAILED, is_append = _IS(cmd, "APPE");
 
-							if(!sysmem && ftp_active > 1)
+							if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
 							{
 								sys_memory_container_t mc_app = get_app_memory_container();
 								if(mc_app)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);

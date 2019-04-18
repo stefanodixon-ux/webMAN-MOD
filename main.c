@@ -710,7 +710,7 @@ static char html_base_path[MAX_PATH_LEN];
 static const char smonth[12][4]  = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 static char drives[17][12] = {"/dev_hdd0", "/dev_usb000", "/dev_usb001", "/dev_usb002", "/dev_usb003", "/dev_usb006", "/dev_usb007", "/net0", "/net1", "/net2", "/net3", "/net4", "/dev_ntfs", "/dev_sd", "/dev_ms", "/dev_cf", "/dev_blind"};
-static char paths [13][12] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
+static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
 
 #ifdef COPY_PS3
 static char current_file[STD_PATH_LEN + 1];
@@ -2216,7 +2216,7 @@ parse_request:
 				goto html_response;
 			}
 	#ifdef COPY_PS3
-			if(islike(param, "/copy")) {if(!copy_in_progress) dont_copy_same_size = (param[5] == '.'); param[5] = '.';}
+			if(islike(param, "/copy")) {if(!copy_in_progress) dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same files
 
 			if(islike(param, "/rmdir.ps3"))
 			{
@@ -2310,6 +2310,9 @@ parse_request:
 				if(dest) {*dest++ = NULL;} else {dest = strstr(source, "&to="); if(dest) {*dest = NULL, dest+=4;}}
 
 				if(dest && (*dest != '/') && !extcmp(source, ".bak", 4)) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
+
+				if(islike(source, "/dev_blind") || islike(source, "/dev_hdd1")) mount_device(source, NULL, NULL); // auto-mount source device
+				if(islike(dest,   "/dev_blind") || islike(dest,   "/dev_hdd1")) mount_device(dest,   NULL, NULL); // auto-mount destination device
 
 				if(dest && *dest == '/')
 				{
@@ -2764,9 +2767,9 @@ retry_response:
 				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
 				{
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
-					cellFsUnlink("/dev_hdd0/tmp/wmtmp/filelist.txt");
-					scan(param, true, wildcard, SCAN_LIST, "/dev_hdd0/tmp/wmtmp/filelist.txt");
-					sprintf(param, "/dev_hdd0/tmp/wmtmp/filelist.txt");
+					cellFsUnlink(WMTMP "/filelist.txt");
+					scan(param, true, wildcard, SCAN_LIST, WMTMP "/filelist.txt");
+					sprintf(param, WMTMP "/filelist.txt");
 					allow_retry_response = false; goto retry_response;
 				}
 #endif
@@ -3496,6 +3499,8 @@ retry_response:
 						}
 						else
 						{
+							if(islike(param2, "/dev_hdd1")) mount_device(param2, NULL, NULL); // auto-mount device
+
 							char *wildcard = strstr(param2, "*"); if(wildcard) *wildcard++ = NULL;
 							//ret = del(param2, islike(param, "/delete.ps3"));
 							ret = scan(param2, islike(param, "/delete.ps3"), wildcard, SCAN_DELETE, NULL);
@@ -3650,39 +3655,41 @@ retry_response:
 						// /copy.ps3/<path>[&to=<destination>]
 						// /copy.ps3/<path>[&to=<destination>]?restart.ps3
 
-						if(islike(param, "/mount"))
+						if(islike(param, "/mount.ps3/unmount"))
 						{
-							if(islike(param, "/mount.ps3/unmount"))
+							char *dev_name = (param + 18); // /mount.ps3/unmount<dev_path>
+							if(*dev_name == '/')
 							{
-								char *dev_name = (param + 18); // /mount.ps3/unmount<dev_path>
-								if(*dev_name == '/')
+								if(isDir(dev_name)) {system_call_3(SC_FS_UMOUNT, (uint32_t)dev_name, 0, 1);}
+								sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
+								goto html_response;
+							}
+						}
+						else
+						{
+							strcpy(templn, param);
+
+							// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
+							char *dev_name = (templn + 10), *sys_dev_name = NULL, *fs = (char*)"CELL_FS_FAT";
+							char *pos1 = strstr(dev_name, "&name="), *pos2 = strstr(dev_name, "&fs=");
+							if(pos1) {*pos1 = 0, sys_dev_name = (pos1 + 6);}
+							if(pos2) {*pos2 = 0, fs = (pos2 + 4);}
+
+							if(!file_exists(dev_name) || sys_dev_name)
+							{
+								mount_device(dev_name, sys_dev_name, fs);
+
+								if(islike(param, "/copy.ps3")) ;
+
+								else if(isDir(dev_name))
 								{
-									if(isDir(dev_name)) {system_call_3(SC_FS_UMOUNT, (uint32_t)dev_name, 0, 1);}
-									sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
+									strcpy(param, dev_name); is_binary = FOLDER_LISTING; is_busy = false;
 									goto html_response;
 								}
-							}
-							else
-							{
-								// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
-								char *dev_name = (param + 10), *sys_dev_name = NULL, *fs = (char*)"CELL_FS_FAT";
-								char *pos1 = strstr(dev_name, "&name="), *pos2 = strstr(dev_name, "&fs=");
-								if(pos1) {*pos1 = 0, sys_dev_name = (pos1 + 6);}
-								if(pos2) {*pos2 = 0, fs = (pos2 + 4);}
-
-								if(!file_exists(dev_name) || sys_dev_name)
+								else
 								{
-									mount_device(dev_name, sys_dev_name, fs); is_busy = false;
-									if(isDir(dev_name))
-									{
-										sprintf(param, "%s", dev_name); is_binary = FOLDER_LISTING;
-										goto html_response;
-									}
-									else
-									{
-										http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found");
-										goto exit_handleclient_www;
-									}
+									http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found"); is_busy = false;
+									goto exit_handleclient_www;
 								}
 							}
 						}

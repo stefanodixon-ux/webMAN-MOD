@@ -109,17 +109,19 @@ static void make_fb_xml(char *myxml)
 	close_language();
  #endif
 
-	u16 size = sprintf(myxml, "%s"
+	u16 size = sprintf(myxml, "%s" // XML_HEADER
 							  "<View id=\"seg_fb\">"
-							  "<Attributes><Table key=\"mgames\">%s"
-//							  XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
+							  "<Attributes>"
+							  "<Table key=\"mgames\">%s"
+							//XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
 							  XML_PAIR("ingame","disable")
 							  XML_PAIR("title","%s%s")
 							  XML_PAIR("info","%s")
 							  "</Table>"
-							  "%s"
-							  QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames")
-							  "%s</XMBML>", XML_HEADER,
+							//"</Attributes><Items>"
+							  "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s"
+							//"</Items></View>"
+							  "</XMBML>", XML_HEADER,
 							  file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
 									XML_PAIR("icon", WM_ICONS_PATH "/icon_wm_root.png") :
 									XML_PAIR("icon_rsc", "item_tex_ps3util"),
@@ -339,10 +341,13 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	make_fb_xml(myxml);
 
+#ifdef PKG_LAUNCHER
 	bool pkg_launcher = webman_config->ps3l && isDir(PKGLAUNCH_DIR);
+#endif
 	bool ps2_launcher = webman_config->ps2l && isDir(PS2_CLASSIC_PLACEHOLDER);
+#ifdef COBRA_ONLY
 	bool psp_launcher = webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS));
-
+#endif
 	char templn[1024];
 
 	// --- build group headers ---
@@ -558,7 +563,6 @@ static bool scan_mygames_xml(u64 conn_s_p)
 					data=(netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
 				}
 #endif
-				if(!is_net && file_exists(param) == false) goto continue_reading_folder_xml; //continue;
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_xml; //continue;
 
 				plen = strlen(param);
@@ -615,15 +619,19 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 //////////////////////////////
 						subfolder = 0;
-						sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
-						if(IS_ISO_FOLDER && isDir(subpath) && cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
+						if(IS_ISO_FOLDER || IS_VIDEO_FOLDER)
 						{
-							strcpy(subpath, entry.entry_name.d_name); subfolder = 1;
+							sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
+							if(cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
+							{
+								strcpy(subpath, entry.entry_name.d_name); subfolder = 1;
 next_xml_entry:
-							cellFsGetDirectoryEntries(fd2, &entry, sizeof(entry), &read_e);
-							if(read_e < 1) {cellFsClosedir(fd2); fd2 = 0; continue;}
-							if(entry.entry_name.d_name[0] == '.') goto next_xml_entry;
-							sprintf(templn, "%s/%s", subpath, entry.entry_name.d_name); entry.entry_name.d_name[0] = NULL; entry.entry_name.d_namlen = concat(entry.entry_name.d_name, templn);
+								cellFsGetDirectoryEntries(fd2, &entry, sizeof(entry), &read_e);
+								if(read_e < 1) {cellFsClosedir(fd2); fd2 = 0; continue;}
+								if(entry.entry_name.d_name[0] == '.') goto next_xml_entry;
+								entry.entry_name.d_namlen = sprintf(templn, "%s/%s", subpath, entry.entry_name.d_name);
+								strcpy(entry.entry_name.d_name, templn);
+							}
 						}
 //////////////////////////////
 
@@ -732,11 +740,13 @@ next_xml_entry:
 			}
 //
 continue_reading_folder_xml:
-
-			if((uprofile > 0) && (f1 < id_ISO)) {subfolder = uprofile = 0; goto read_folder_xml;}
-			if(!IS_NTFS)
+			if(f1 < id_ISO)
 			{
-				if(is_net && ls && (li < 27)) {li++; goto subfolder_letter_xml;} else if(li < 99 && f1 < id_ISO) {li = 99; goto subfolder_letter_xml;}
+				if(uprofile > 0) {subfolder = uprofile = 0; goto read_folder_xml;}
+				if(is_net && (f1 > id_GAMEZ))
+				{
+					if(ls && (li < 27)) {li++; goto subfolder_letter_xml;} else if(li < 99) {li = 99; goto subfolder_letter_xml;}
+				}
 			}
 //
 		}
@@ -1057,34 +1067,37 @@ continue_reading_folder_xml:
 	}
 
 	// --- save xml file
+	int fdxml = 0, slen;
+	if(cellFsOpen(MY_GAMES_XML, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdxml, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
-		save_file(MY_GAMES_XML, myxml, SAVE_ALL);
+		cellFsWrite(fdxml, myxml, strlen(myxml), NULL);
 
 		if( (webman_config->nogrp))
 		{
-			save_file(MY_GAMES_XML, myxml_ps3, APPEND_TEXT);
-			save_file(MY_GAMES_XML, "</Attributes><Items>", APPEND_TEXT);
-			save_file(MY_GAMES_XML, myxml_items, APPEND_TEXT);
-
-			sprintf(myxml, "%s%s", "</Items></View>", "</XMBML>\r\n");
+			cellFsWrite(fdxml, myxml_ps3, strlen(myxml_ps3), NULL);
+			cellFsWrite(fdxml, (char*)"</Attributes><Items>", 20, NULL);
+			cellFsWrite(fdxml, myxml_items, strlen(myxml_items), NULL);
+			slen = sprintf(myxml, "%s%s", "</Items></View>", "</XMBML>\r\n");
 		}
 		else
 		{
-			if(!(webman_config->cmask & PS3)) save_file(MY_GAMES_XML, myxml_ps3, APPEND_TEXT);
-			if(!(webman_config->cmask & PS2)) save_file(MY_GAMES_XML, myxml_ps2, APPEND_TEXT);
-
+			if(!(webman_config->cmask & PS3)) cellFsWrite(fdxml, myxml_ps3, strlen(myxml_ps3), NULL);
+			if(!(webman_config->cmask & PS2)) cellFsWrite(fdxml, myxml_ps2, strlen(myxml_ps2), NULL);
 #ifdef COBRA_ONLY
-			if(!(webman_config->cmask & PS1)) save_file(MY_GAMES_XML, myxml_psx, APPEND_TEXT);
-			if(!(webman_config->cmask & PSP)) save_file(MY_GAMES_XML, myxml_psp, APPEND_TEXT);
-			if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU)) save_file(MY_GAMES_XML, myxml_ps3, APPEND_TEXT);
+			if(!(webman_config->cmask & PS1)) cellFsWrite(fdxml, myxml_psx, strlen(myxml_psx), NULL);
+			if(!(webman_config->cmask & PSP)) cellFsWrite(fdxml, myxml_psp, strlen(myxml_psp), NULL);
+			if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU)) cellFsWrite(fdxml, (char*)myxml_dvd, strlen(myxml_dvd), NULL);
  #ifdef MOUNT_ROMS
-			if(webman_config->roms) save_file(MY_GAMES_XML, myxml_roms, APPEND_TEXT);
+			if(webman_config->roms) cellFsWrite(fdxml, myxml_roms, strlen(myxml_roms), NULL);
  #endif
 #endif
-			sprintf(myxml, "</XMBML>\r\n");
+			slen = sprintf(myxml, "</XMBML>\r\n");
 		}
 
-		save_file(MY_GAMES_XML, myxml, APPEND_TEXT);
+		cellFsWrite(fdxml, myxml, slen, NULL);
+		cellFsClose(fdxml);
+
+		cellFsChmod(MY_GAMES_XML, MODE);
 	}
 
 #ifdef LAUNCHPAD

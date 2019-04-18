@@ -362,11 +362,32 @@ int main()
 	if(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 250000)) full=true;
 //---
 
+	// Create webman folders
 	sysLv2FsMkdir(TMP_DIR,   0777);
 	sysLv2FsMkdir(LANG_DIR,  0777);
 	sysLv2FsMkdir(COMBO_DIR, 0777);
 	sysLv2FsMkdir(ICONS_DIR, 0777);
 	sysLv2FsMkdir(RES_DIR,   0777);
+
+	sysLv2FsMkdir(HDDROOT_DIR "/xmlhost", 0777);
+	sysLv2FsMkdir(XMLHOST_DIR, 0777);
+
+	sysLv2FsMkdir(HDDROOT_DIR "/game", 0777);
+	sysLv2FsMkdir(XMLMANPLS_DIR, 0777);
+	sysLv2FsMkdir(XMLMANPLS_DIR "/USRDIR", 0777);
+	sysLv2FsMkdir(XMLMANPLS_IMAGES_DIR, 0777);
+	sysLv2FsMkdir(XMLMANPLS_FEATS_DIR, 0777);
+
+	// Create backup folders
+	sysLv2FsMkdir(HDDROOT_DIR "/packages", 0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/PS3ISO", 0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/PSXISO", 0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/PS2ISO", 0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/PSPISO", 0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/DVDISO", 0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/BDISO",  0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/GAMES",  0777);
+	sysLv2FsMkdir(HDDROOT_DIR "/ROMS",   0777);
 
 	// remove language files (old location)
 	sysLv2FsUnlink(TMP_DIR "/LANG_EN.TXT");

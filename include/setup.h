@@ -1,3 +1,5 @@
+#define RU 7 
+
 //combo
 #define FAIL_SAFE (1<<0)
 #define SHOW_TEMP (1<<1)
@@ -170,8 +172,12 @@ static void setup_parse_settings(char *param)
 	if(!strstr(param, "pld=1")) webman_config->combo2|=PLAY_DISC;
 
 #ifdef COBRA_ONLY
-	if(!strstr(param, "vs=1")) webman_config->combo2|=C_VSHMENU;
-	if(!strstr(param, "sl=1")) webman_config->combo2|=C_SLAUNCH;
+	int system_lang = 1;
+	xsetting_0AF1F161()->GetSystemLanguage(&system_lang);
+
+	/* disable VSH Menu & sLAUNCH Menu if system language is Russian */
+	if(!strstr(param, "vs=1") || (system_lang == RU)) webman_config->combo2|=C_VSHMENU;
+	if(!strstr(param, "sl=1") || (system_lang == RU)) webman_config->combo2|=C_SLAUNCH;
 #endif
 
 #ifdef VIDEO_REC
@@ -511,7 +517,7 @@ static void setup_form(char *buffer, char *templn)
  #endif
 
 	u8 value, b;
-	sprintf(templn, "<style>#cnt,#cfg,#adv,#cmb,#wt{max-height:0px;overflow: hidden;transition:max-height 0.25s linear;}td+td{text-align:left;white-space:nowrap}</style>"
+	sprintf(templn, "<style>#cnt,#cfg,#adv,#cmb,#wt{max-height:0px;overflow: hidden;transition:max-height 0.25s linear;}td+td{vertical-align:top;text-align:left;white-space:nowrap}</style>"
 					"<form action=\"/setup.ps3\" method=\"get\" enctype=\"application/x-www-form-urlencoded\" target=\"_self\">"
 					"<b><a class=\"tg\" href=\"javascript:tgl(cnt);\"> %s </a></b><br><div id=\"cnt\">"
 					"<table width=\"820\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\">"
@@ -940,8 +946,14 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(templn, "</div>" HTML_BLU_SEPARATOR "<b><a class=\"tg\" href=\"javascript:tgl(cmb);\"> %s </a></b><br><div id=\"cmb\"><table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", STR_COMBOS2); strcat(buffer, templn);
 
 #ifdef COBRA_ONLY
-	add_check_box("vs", false, "VSH MENU",      " : <b>SELECT</b><br>"           , !(webman_config->combo2 & C_VSHMENU), buffer);
-	add_check_box("sl", false, "GAME MENU",     " : <b>START / L2+R2</b><br>"    , !(webman_config->combo2 & C_SLAUNCH), buffer);
+	int system_lang = 1;
+	xsetting_0AF1F161()->GetSystemLanguage(&system_lang);
+
+	if(system_lang != RU)
+	{
+		add_check_box("vs", false, "VSH MENU",      " : <b>SELECT</b><br>"           , !(webman_config->combo2 & C_VSHMENU), buffer);
+		add_check_box("sl", false, "GAME MENU",     " : <b>START / L2+R2</b><br>"    , !(webman_config->combo2 & C_SLAUNCH), buffer);
+	}
 #endif
 
 #ifdef SYS_ADMIN_MODE

@@ -112,7 +112,7 @@ static u64 get_free_space(const char *dev_name)
 
 	u64 freeSize = 0, devSize = 0;
 
-    #define SC_FS_DISK_FREE		840
+	#define SC_FS_DISK_FREE		840
 	{system_call_3(SC_FS_DISK_FREE, (u64)(u32)(dev_name), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
 	return freeSize;
 /*
@@ -638,7 +638,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if(!sys_admin || !working) return FAILED;
 
 #ifdef USE_NTFS
-	if(!isDir(path))
+	if((fop == SCAN_DELETE) && !isDir(path))
 	{
 		if(is_ntfs_path(path))
 			return ps3ntfs_unlink(path + 5);
@@ -646,7 +646,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			return cellFsUnlink(path);
 	}
 #else
-	if(!isDir(path)) return cellFsUnlink(path);
+	if((fop == SCAN_DELETE) && !isDir(path)) return cellFsUnlink(path);
 #endif
 
 	if(strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind")) return FAILED;
@@ -1035,71 +1035,4 @@ static void import_edats(const char *path1, const char *path2)
 
 	return;
 }
-
-/*
-static int read_text_line(int fd, char *line, unsigned int size, int *eof)
-{
-	if (size == 0) {*eof = true; return FAILED;}
-
-	*eof = false;
-
-	int line_started = 0;
-	unsigned int i = 0, p = 0;
-	char buffer[MAX_LINE_LEN];
-
-	u8 ch;
-	u64 bytes_read = 0;
-
-	while(i < (size - 1))
-	{
-		if(p >= bytes_read)
-		{
-			if(cellFsRead(fd, &buffer, MAX_LINE_LEN, &bytes_read) != CELL_FS_SUCCEEDED || bytes_read == 0)
-			{
-				*eof = true;
-				break;
-			}
-			ch = *buffer, p = 1;
-		}
-		else
-		{
-			ch = buffer[p++];
-		}
-
-		if(!line_started)
-		{
-			if (ch > ' ')
-			{
-				line[i++] = (char)ch;
-				line_started = 1;
-			}
-		}
-		else
-		{
-			if(ch == '\n' || ch == '\r')
-				break;
-
-			line[i++] = (char)ch;
-		}
-	}
-
-	line[i] = 0;
-
-	// Remove space chars at end
-	for(int j = i - 1; j >= 0; j--)
-	{
-		if(line[j] <= ' ')
-		{
-			line[j] = 0;
-			i = j;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	return i;
-}
-*/
 #endif

@@ -112,7 +112,10 @@ static void poll_thread(u64 poll)
 
 			if((t1 >= max_temp) || (t1 >= MAX_TEMPERATURE))
 			{
-				if (delta  < 0) fan_speed += 2;
+				//if (delta  < 0) fan_speed += 2;
+				for(u8 cc = 0; cc < 5; cc++)
+					if (delta  < -cc) fan_speed += 2;
+
 				if((delta == 0) && (t1 != (max_temp - 1))) fan_speed++;
 				if((delta == 0) && (t1 >= (max_temp + 1))) fan_speed += (2 + (t1 - max_temp));
 				if (delta  > 0)
@@ -129,15 +132,20 @@ static void poll_thread(u64 poll)
 			}
 			else
 			{
-				if((delta <  0) && (t1 >= (max_temp - 1))) fan_speed += 2;
+				//if((delta <  0) && (t1 >= (max_temp - 1))) fan_speed += 2;
+				for(u8 cc = 0; cc < 5; cc++)
+					if((delta < -cc) && (t1 >= (max_temp - 1))) fan_speed += 2;
+
 				if((delta == 0) && (t1 <= (max_temp - 2)))
 				{
 					smoothstep++;
 					if(smoothstep > 1)
 					{
 						fan_speed--;
-						if(t1 <= (max_temp - 3)) {fan_speed--; if(fan_speed > 0xA8) fan_speed--;} // decrease fan speed faster if > 66% & cpu is cool
-						if(t1 <= (max_temp - 5)) {fan_speed--; if(fan_speed > 0x80) fan_speed--;} // decrease fan speed faster if > 50% & cpu is very cool
+						//if(t1 <= (max_temp - 3)) {fan_speed--; if(fan_speed > 0xA8) fan_speed--;} // decrease fan speed faster if > 66% & cpu is cool
+						//if(t1 <= (max_temp - 5)) {fan_speed--; if(fan_speed > 0x80) fan_speed--;} // decrease fan speed faster if > 50% & cpu is very cool
+						for(u8 cc = 1; cc < 5; cc++)
+							if(t1 <= (max_temp - cc)) {fan_speed--; if(fan_speed>0x66) fan_speed--;} // decrease fan speed faster if > 40% & cpu is very cool
 						smoothstep = 0;
 					}
 				}
@@ -148,8 +156,10 @@ static void poll_thread(u64 poll)
 					//if(smoothstep)
 					{
 						fan_speed--;
-						if(t1 <= (max_temp - 3)) {fan_speed--; if(fan_speed>0xA8) fan_speed--;} // decrease fan speed faster if > 66% & cpu is cool
-						if(t1 <= (max_temp - 5)) {fan_speed--; if(fan_speed>0x80) fan_speed--;} // decrease fan speed faster if > 50% & cpu is very cool
+						//if(t1 <= (max_temp - 3)) {fan_speed--; if(fan_speed>0xA8) fan_speed--;} // decrease fan speed faster if > 66% & cpu is cool
+						//if(t1 <= (max_temp - 5)) {fan_speed--; if(fan_speed>0x80) fan_speed--;} // decrease fan speed faster if > 50% & cpu is very cool
+						for(u8 cc = 1; cc < 5; cc++)
+							if(t1 <= (max_temp - cc)) {fan_speed--; if(fan_speed>0x66) fan_speed -= 2;} // decrease fan speed faster if > 40% & cpu is very cool
 						smoothstep = 0;
 					}
 				}

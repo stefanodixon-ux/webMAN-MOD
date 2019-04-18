@@ -10,7 +10,7 @@
 // vshmain_8C067C7C  //
 // vshmain_2E1AA6EF  //
 
-extern void vshmain_45D85C54(uint32_t flag);   // set running mode flag
+extern void vshmain_45D85C54(uint32_t flag);   // set running mode flag _ZN3vsh18SetCooperationModeENS_15CooperationModeE	vsh::SetCooperationMode(vsh::CooperationMode)
 #define SetCurrentRunningMode vshmain_45D85C54
 
 extern uint32_t vshmain_EB757101(void);        // get running mode flag, 0 = XMB is running
@@ -19,15 +19,15 @@ extern uint32_t vshmain_EB757101(void);        // get running mode flag, 0 = XMB
                                                //                        3 = PSX/PSP Emu is running
 #define GetCurrentRunningMode vshmain_EB757101 // _ZN3vsh18GetCooperationModeEv	 | vsh::GetCooperationMode(void)
 
-// vshmain_5046CFAB  //
-// vshmain_0648F3BB  //
+// vshmain_5046CFAB  // _ZN3vsh20ApplyCooperationModeEv	vsh::ApplyCooperationMode(void)
+// vshmain_0648F3BB  // _ZN3vsh15RaiseFatalErrorEj	vsh::RaiseFatalError(unsigned int)
 // vshmain_1F7BE1C8  // _ZN3vsh15RaiseFatalErrorENS_14FatalErrorTypeE | vsh::RaiseFatalError(vsh::FatalErrorType)
 
 // vshmain_071EC82E  // ret 0x8001000A(EBUSY) | sys_event_port_send using static sys_event_port_t | int vshmain_71EC82E(uint64_t data1, uint64_t data2, uint64_t data3)
 // vshmain_14F8AB14  // ret 0x8001000A(EBUSY)
 // vshmain_85CB2261  // ret 0x8001000A(EBUSY) | sys_event_port_send using static sys_event_port_t | int vshmain_85CB2261(uint64_t data1, uint64_t data2, uint64_t data3)
 
-// vshmain_6BFD6A5A  // interface -> paf_D7138829()
+// vshmain_6BFD6A5A  // interface -> paf_D7138829()	_ZN3vsh11LayoutTable4SwapEiii	vsh::LayoutTable::Swap(int, int, int)
 
 // vshmain_2906AFB9  // set u32 ?
 
@@ -88,8 +88,8 @@ extern int vshmain_87BB0001(int param);  // shutdown_reset()
 // vshmain_1A4D136F  //
 // vshmain_6F9F3126  // get struct addr
 // vshmain_75A22E21  // get struct addr
-// vshmain_F78B2215  // memset() structs
-// vshmain_4F99DA2B  // set u32 gametool version, 2 or 3 | with 1 and 8 you can lock "settings" column items	vshmain_4F99DA2B(int)
+// vshmain_F78B2215  // memset() structs _ZN3vsh16RebootSafeMemory5ClearEv	vsh::RebootSafeMemory::Clear(void)
+// vshmain_4F99DA2B  // set u32 gametool version, 2 or 3 | with 1 and 8 you can lock "settings" column items	vshmain_4F99DA2B(int)	_ZN3vsh16SetReleaseTargetENS_13ReleaseTargetE	vsh::SetReleaseTarget(vsh::ReleaseTarget)
 // vshmain_BC0F8BCA  // get u32 gametool version, counterpart of vshmain_4F99DA2B() | _ZN3vsh16GetReleaseTargetEv | vsh::GetReleaseTarget(void)
 
 // vshmain_BE16BB9D  // get u8 ?
@@ -217,7 +217,7 @@ extern int32_t vshmain_6D5FC398(int dev_type, int port_num, int intr_type);  // 
 // vshmain_106C87C1  //
 
 extern int32_t vshmain_BEF63A14(void);  // setting net, base pointer for recording stuff
-// vshmain_24C860B0  //
+// vshmain_24C860B0  // SetRegistry2NetCtlSetting
 
 extern uint32_t vshmain_0624D3AE(void);  // returns game u32 process id
 #define GetGameProcessID vshmain_0624D3AE
@@ -230,7 +230,7 @@ extern uint32_t vshmain_0624D3AE(void);  // returns game u32 process id
 // vshmain_AE8FBFC6  // ? int 0 or 1, const char *cxml_magic, void *entry | _ZN3vsh7sysutil10SetHandlerEiPKcPFiPKvjE | vsh::sysutil::SetHandler(int, char const*, int (*)(void const*, unsigned int))
 // vshmain_6797B097  //
 
-// vshmain_0F3F75BE  // sysutil_BeginService
+// vshmain_0F3F75BE  // sysutil::BeginService
 
 // vshmain_36C01263  //
 // vshmain_D8026119  //
@@ -245,57 +245,58 @@ extern uint32_t vshmain_0624D3AE(void);  // returns game u32 process id
 
 // vshmain_BC00D5EF  // cellSysutilSharedMemoryFree | int cellSysutilSharedMemoryFree(0 /*ignored*/, sys_addr_t start_addr, uint64_t mode /* 0x200 (unmap) or 0x400 (unmap and free) */)
 // vshmain_51E7CC21  // cellSysutilSharedMemoryAlloc
-// vshmain_134034CE  //
+// vshmain_134034CE  // _ZN8cxmlutil6GetIntERKN4cxml7ElementEPKcPi	cxmlutil::GetInt(cxml::Element const&, char const*, int *)
 
 // vshmain_4986187C  // _ZN8cxmlutil16CheckElementNameERKN4cxml7ElementEPKc | cxmlutil::CheckElementName(cxml::Element const&, char const*)
 // vshmain_6AF9FD89  // _ZN8cxmlutil16FindChildElementERKN4cxml7ElementEPKcS5_S5_ | cxml::Element cxmlutil::FindChildElement(const cxml::Element& parent, const char* name, const char* idname, const char* idvalue)
-// vshmain_BA7437D9  //
-// vshmain_6CE65E82  //
+// vshmain_BA7437D9  // _ZN8cxmlutil8GetIDRefERKN4cxml7ElementEPKcPS5_PS1_	cxmlutil::GetIDRef(cxml::Element const&, char const*, char const**, cxml::Element*)
+// vshmain_6CE65E82  // _ZN8cxmlutil5GetIDERKN4cxml7ElementEPKcPS5_	cxmlutil::GetID(cxml::Element const&, char const*, char const**)
 
-// vshmain_505FA917  // VersionFile_get
-// vshmain_D80EA56E  //
-// vshmain_FB1E70A0  //
-// vshmain_0633EDC2  //
+// vshmain_505FA917  // VersionFile_get | _ZN8cxmlutil7GetFileERKN4cxml7ElementEPKcPNS0_4FileE	int GetFile( const cxml::Element & elm, const char * attrname, cxml::File * file )
+// vshmain_D80EA56E  // _ZN8cxmlutil13GetFloatArrayERKN4cxml7ElementEPKcPPKfPj	int cxmlutil::GetFloatArray(const cxml::Element& elm, const char* attrname, const float** f, unsigned int* num )
+// vshmain_FB1E70A0  // _ZN8cxmlutil9SetStringERKN4cxml7ElementEPKcS5_	int cxmlutil::SetString( const cxml::Element & elm, const char * attrname, const char * str )
 
-// vshmain_A971E5A3  //
-// vshmain_E77FAFB5  //
+// vshmain_0633EDC2  // _ZN8cxmlutil9GetStringERKN4cxml7ElementEPKcPS5_Pj	int cxmlutil::GetString( const cxml::Element & elm, const char * attrname, const char ** str, unsigned int * len )
+
+// vshmain_A971E5A3  // _ZN8cxmlutil8GetFloatERKN4cxml7ElementEPKcPf	cxmlutil::GetFloat(cxml::Element const&, char const*, float *)
+// vshmain_E77FAFB5  // _ZN8cxmlutil6SetIntERKN4cxml7ElementEPKci	int cxmlutil::SetInt( const cxml::Element & elm, const char * attrname, int i )
 
 // vshmain_B401D9AD  // cxml::Document::GetSize() | Gets the size of a cxml document | int cxml::Document::GetSize()
 
-// vshmain_B172E9CB  //
-// vshmain_BCF4D026  // cxml::Element::GetName()
-// vshmain_E04F6BC8  //
-// vshmain_523A54A6  //
+// vshmain_B172E9CB  // _ZN4cxml8Document13WriteToBufferEPvj	int cxml::Document::WriteToBuffer( void * buf, unsigned int bufsize )
+// vshmain_BCF4D026  // cxml::Element::GetName() | _ZNK4cxml7Element7GetNameEv	const char * cxml::Element::GetName() Gets the name of an instance of cxml::Element.
+// vshmain_E04F6BC8  // _ZNK4cxml7Element12NumAttributeEv	cxml::Element::NumAttribute(void)const
+// vshmain_523A54A6  // _ZNK4cxml7Element12GetAttributeEiPNS_9AttributeE	cxml::Element::GetAttribute(int, cxml::Attribute *)const
 // vshmain_58B963E5  // _ZN4cxml7Element11AppendChildERS0_ | cxml::Element::AppendChild(cxml::Element&) int cxml::Element::AppendChild( Element & child )
 
-// vshmain_D526FD70  // cxml::Attribute::GetInt()
+// vshmain_D526FD70  // cxml::Attribute::GetInt() 	_ZNK4cxml9Attribute6GetIntEPi	cxml::Attribute::GetInt(int *)const
 
-// vshmain_3329CAAA  // cxml::Attribute::GetFloat()
+// vshmain_3329CAAA  // cxml::Attribute::GetFloat()	_ZNK4cxml9Attribute8GetFloatEPf	cxml::Attribute::GetFloat(float *)const
 
-// vshmain_D03F99CF  // cxml::Attribute::GetFloatArray()
+// vshmain_D03F99CF  // cxml::Attribute::GetFloatArray()	_ZNK4cxml9Attribute13GetFloatArrayEPPKfPj	int cxml::Attribute::GetFloatArray( const float ** addr, unsigned int * num )
 
-// vshmain_79EFF338  //
+// vshmain_79EFF338  // _ZNK4cxml4File7GetAddrEv	cxml::File::GetAddr(void)const
 
-// vshmain_2CD62587  // cxml::Document::SetHeaderMagic()
+// vshmain_2CD62587  // cxml::Document::SetHeaderMagic()	_ZN4cxml8Document14SetHeaderMagicEPKc	int cxml::Document::SetHeaderMagic( const char * buf[4] ) Sets the header magic of a cxml document. Example: cxml::Document doc; doc.SetHeaderMagic("NPTR");
 
-// vshmain_7907768A  // cxml::Document::GetHeaderMagic()
+// vshmain_7907768A  // cxml::Document::GetHeaderMagic()	_ZNK4cxml8Document14GetHeaderMagicEPc	void cxml::Document::GetHeaderMagic( char buf[4] ) Gets the header magic of a cxml document. Example: char buf[4]; cxml::Document doc; doc.GetHeaderMagic(buf);
 
 // vshmain_7F4E4139  // cxml::Document::Clear() | int cxml::Document::Document() (Constructor) | Clears a cxml document.
-// vshmain_6EEE1B61  // cxml::Document::CreateFromBuffer()
+// vshmain_6EEE1B61  // cxml::Document::CreateFromBuffer() | _ZN4cxml8Document16CreateFromBufferEPKvjb	int cxml::Document::CreateFromBuffer( const void * buf, unsigned int bufsize, bool _access_mode )
 // vshmain_5EC145E2  // -> vshmain_7F4E4139(), cxml::Document::Clear() | cxml::Document::~Document() | Destroys a cxml document.
 // vshmain_CFAD36DE  // cxml::Document::Document()  // Creates a blank cxml document for VSH Service/Process Communication
 
 // vshmain_6BA1D72F  // cxml::Document::CreateElement() | _ZN4cxml8Document13CreateElementEPKciPNS_7ElementE | int cxml::Document::CreateElement(const char * name, int attr_num, Element * element), Creates an element on a cxml document. Example: cxml::Document doc; doc.CreateElement( "basicPresenceOffline", 0, element );
-// vshmain_8AD11D24  //
-// vshmain_54CC1C3F  //
-// vshmain_E7D9F074  //
-// vshmain_1C5F3492  // cxml::Element::GetAttribute()
-// vshmain_4D89A149  // cxml::Attribute::GetFile()
+// vshmain_8AD11D24  // _ZN4cxml8Document18GetDocumentElementEv	cxml::Document::GetDocumentElement(void)
+// vshmain_54CC1C3F  // _ZNK4cxml7Element13GetFirstChildEv	cxml::Element::GetFirstChild(void)const
+// vshmain_E7D9F074  // _ZNK4cxml7Element14GetNextSiblingEv	cxml::Element::GetNextSibling(void)const
+// vshmain_1C5F3492  // cxml::Element::GetAttribute() | _ZNK4cxml7Element12GetAttributeEPKcPNS_9AttributeE	int cxml::Element::GetAttribute( const char * name, Attribute * attr ) Gets the attribute of a cxml element.
+// vshmain_4D89A149  // cxml::Attribute::GetFile() | _ZNK4cxml9Attribute7GetFileEPNS_4FileE	int cxml::Attribute::GetFile(File * file)
 
 // vshmain_AFF2957B  // cxml::File::Load
 // vshmain_32EF17EE  // cxml::Document::WriteToFile() | _ZN4cxml8Document11WriteToFileEPKc | int cxml::Document::WriteToFile( const char * filename )
 
-// vshmain_3848A5D4  // cxml:Document:CreateFromFile()
+// vshmain_3848A5D4  // cxml:Document:CreateFromFile() | _ZN4cxml8Document14CreateFromFileEPvb	int cxml::Document::CreateFromFile( void * fd, bool _access_mode )
 
 // vshmain_9367CAE0  // "MUSC"
 // vshmain_EDAB5E5E  // "MUSC", BgmPlaybackEnable

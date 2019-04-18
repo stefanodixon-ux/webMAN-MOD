@@ -176,6 +176,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		if(islike(param, "/copy.ps3")) {plen = COPY_CMD; pos = strstr(param, "&to="); if(pos) {strcpy(target, pos + 4); *pos = NULL;}}
 		bool is_copy = ((plen == COPY_CMD) && (copy_in_progress == false));
 		char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
+
+		if(is_copy)
+		{
+			if(islike(param,  "/dev_blind") || islike(param,  "/dev_hdd1")) mount_device(param,  NULL, NULL); // auto-mount source device
+			if(islike(target, "/dev_blind") || islike(target, "/dev_hdd1")) mount_device(target, NULL, NULL); // auto-mount destination device
+		}
 #endif
 		char enc_dir_name[STD_PATH_LEN*3], *source = param + plen;
 		max_mapped = 0;
