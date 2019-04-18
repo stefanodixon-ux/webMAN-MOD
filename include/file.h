@@ -649,11 +649,12 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if((fop == SCAN_DELETE) && !isDir(path)) return cellFsUnlink(path);
 #endif
 
-	if(strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind")) return FAILED;
+	if((fop == SCAN_DELETE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
 	char *(*instr)(const char *, const char *) = &strstr;
-	char *wildcard1 = wildcard; if(wildcard && *wildcard1 == '^') {wildcard1++, instr = &strcasestr;}	// *^TEXT = case insensitive search
-	char *wildcard2 = strstr((char*)wildcard1, "*"); if(wildcard2) *wildcard2++ = NULL;					// *TEXT1*TEXT2 = text1 and text2
+	char wcard[strlen(wildcard) + 1]; sprintf(wcard, "%s", wildcard);
+	char *wildcard1 = wcard; if(*wildcard1 == '^') {wildcard1++, instr = &strcasestr;}	// *^TEXT = case insensitive search
+	char *wildcard2 = strstr((char*)wildcard1, "*"); if(wildcard2) *wildcard2++ = NULL;	// *TEXT1*TEXT2 = text1 and text2
 
 	int fd; bool is_ntfs = false;
 
@@ -701,12 +702,13 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
 
-			else if(wildcard1 && *wildcard1 && (instr(dir.d_name, wildcard1) == NULL))  continue;
-			else if(wildcard2 && *wildcard2 && (instr(dir.d_name, wildcard2) == NULL)) continue;
+			else if(wildcard1 && (*wildcard1!=NULL) && (!instr(entry + path_len, wildcard1))) continue;
+			else if(wildcard2 && (*wildcard2!=NULL) && (!instr(entry + path_len, wildcard2))) continue;
 
 			else if(fop == SCAN_LIST)
 			{
 				if(!dest || *dest != '/') break;
+
 				strcat(entry, "\r\n");
 				save_file(dest, entry, APPEND_TEXT);
 			}

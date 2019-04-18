@@ -51,7 +51,7 @@ static void refresh_xml(char *msg)
 	setPluginInactive();
 }
 
-static bool add_xmb_entry(u8 f0, u8 f1, int plen, char *tempstr, char *templn, char *skey, u16 key, char *myxml_ps3, char *myxml_ps2, char *myxml_psx, char *myxml_psp, char *myxml_dvd, char *myxml_roms, char *entry_name, u16 *item_count, u32 *xml_len, u8 subfolder)
+static bool add_xmb_entry(u8 f0, u8 f1, int plen, const char *tempstr, char *templn, char *skey, u16 key, char *myxml_ps3, char *myxml_ps2, char *myxml_psx, char *myxml_psp, char *myxml_dvd, char *myxml_roms, char *entry_name, u16 *item_count, u32 *xml_len, u8 subfolder)
 {
 	set_sort_key(skey, templn, key, subfolder, f1);
 

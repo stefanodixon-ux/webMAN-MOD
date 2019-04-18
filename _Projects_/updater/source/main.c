@@ -491,6 +491,7 @@ int main()
 	file_copy(APP_USRDIR "/jquery-ui.min.js", XMLHOST_DIR "/jquery-ui.min.js"); // jQuery UI v1.12.1
 
 	file_copy(APP_USRDIR "/fm.js",     XMLHOST_DIR "/fm.js");
+	file_copy(APP_USRDIR "/fs.js",     XMLHOST_DIR "/fs.js");
 	file_copy(APP_USRDIR "/games.js",  XMLHOST_DIR "/games.js");
 	file_copy(APP_USRDIR "/common.js", XMLHOST_DIR "/common.js");
 

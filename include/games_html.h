@@ -26,7 +26,6 @@ enum paths_ids
 #define IS_ISO_FOLDER  ((f1>=id_PS3ISO) && (f1!=id_GAMEI) && (f1!=id_VIDEO))
 #define IS_PS3_TYPE    ((f1<=id_PS3ISO) || (f1==id_VIDEO || (f1==id_GAMEI)))
 #define IS_BLU_TYPE    ((f1<=id_BDISO)  || (f1==id_VIDEO || (f1==id_GAMEI)))
-#define IS_VID_FOLDER  ((f1==id_BDISO)  || (f1==id_DVDISO))
 
 #define IS_JB_FOLDER    ((f1<=id_GAMEZ) || (f1==id_VIDEO))
 #define IS_PS3_FOLDER    (f1==id_PS3ISO)
@@ -868,7 +867,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	bool is_html = (key <= HTML_KEY);
 
 	u16 tlen = strlen(templn);
-	if(tlen < 6) strcat(templn, "      ");
+	if(tlen < HTML_KEY_LEN) strcat(templn, "      "); // HTML_KEY_LEN = 6
 
 	u8 c = 0;
 	if(templn[4] == ']' && templn[0] == '[') {c = (templn[5]!=' ') ? 5 : 6;} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
@@ -903,7 +902,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 		for(u16 i = 5; i < tlen; i++)
 		{
 			if(templn[i+1]=='[') break;
-			if(templn[i]==' ') {skey[6] = templn[++i]; break;} // sort by 2nd word
+			if(templn[i] == ' ') {skey[6] = templn[++i]; break;} // sort by 2nd word
 			//if(ISDIGIT(templn[i])) {skey[6]=templn[i]; break;} // sort by game number (if possible)
 		}
 	}

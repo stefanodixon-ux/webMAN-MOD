@@ -288,6 +288,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define COMMON_CSS				HTML_BASE_PATH "/common.css"
 #define COMMON_SCRIPT_JS		HTML_BASE_PATH "/common.js"
 #define FM_SCRIPT_JS			HTML_BASE_PATH "/fm.js"
+#define FS_SCRIPT_JS			HTML_BASE_PATH "/fs.js"
 #define GAMES_SCRIPT_JS			HTML_BASE_PATH "/games.js"
 #endif
 
@@ -2753,9 +2754,9 @@ retry_response:
 					if(is_net) goto html_response;
 
 					if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);} else
-					if(file_exists(param) == false && *html_base_path == '/') {strcpy(header, param); sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
+					if((file_exists(param) == false) && !islike(param, "/dev_") && (*html_base_path == '/')) {strcpy(header, param); sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
 
-					is_binary = is_ntfs || (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED);
+					is_binary = is_ntfs || (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED); allow_retry_response = true;
 				}
 
 				if(is_binary)
@@ -2766,11 +2767,24 @@ retry_response:
 #ifdef COPY_PS3
 				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
 				{
+					bool reply_html = !strstr(param, "//");
+					char *FILE_LIST = reply_html ? "/dev_hdd0/tmp/wmtmp/filelist.htm" : "/dev_hdd0/tmp/wmtmp/filelist.txt";
+					cellFsUnlink(FILE_LIST);
+					if(reply_html)
+					{
+						memset(header, HTML_RECV_SIZE, 0);
+						sprintf(header, SCRIPT_SRC_FMT, FS_SCRIPT_JS);
+
+						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
+						save_file(FILE_LIST, (const char*)header, APPEND_TEXT);
+						save_file(FILE_LIST, (const char*)"<body onload='try{t2lnks()}catch(e){}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
+					}
+
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
-					cellFsUnlink(WMTMP "/filelist.txt");
-					scan(param, true, wildcard, SCAN_LIST, (char*)(WMTMP "/filelist.txt"));
-					sprintf(param, WMTMP "/filelist.txt");
-					allow_retry_response = false; goto retry_response;
+					scan(param, true, wildcard, SCAN_LIST, (char*)FILE_LIST);
+
+					sprintf(param, "%s", FILE_LIST);
+					is_busy = false, allow_retry_response = false; goto retry_response;
 				}
 #endif
 				else
