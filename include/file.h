@@ -651,13 +651,18 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if((fop == SCAN_DELETE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
-	char *wildcard1 = NULL, *wildcard2 = NULL;
-	char *(*instr)(const char *, const char *) = &strstr;
+	size_t wildcard_len = (wildcard) ? strlen(wildcard) : 0;
+	char *wildcard1 = NULL, *wildcard2 = NULL, wcard[wildcard_len + 1];
+	char *(*instr)(const char *, const char *) = &strstr; bool wfound1 = true, wfound2 = true;
 	if(wildcard)
 	{
-		char wcard[strlen(wildcard) + 1]; sprintf(wcard, "%s", wildcard);
-		wildcard1 = wcard; if(wildcard1 && *wildcard1 == '^') {wildcard1++, instr = &strcasestr;}	// *^TEXT = case insensitive search
+		sprintf(wcard, "%s", wildcard);
+		wildcard1 = wcard;
+		if(*wildcard1 == '~') {wildcard1++, wfound1 = false;}							// *~TEXT = exclude files
+		if(*wildcard1 == '^') {wildcard1++, instr = &strcasestr;}						// *^TEXT = case insensitive search
+		if( wfound1 && (*wildcard1 == '~')) {wildcard1++, wfound1 = false;}				// <-- accept prefixes: ~^ or ^~
 		wildcard2 = strstr((char*)wildcard1, "*"); if(wildcard2) *wildcard2++ = NULL;	// *TEXT1*TEXT2 = text1 and text2
+		if(wildcard2 && (*wildcard2 == '~')) {wildcard2++, wfound2 = false;}
 	}
 
 	int fd; bool is_ntfs = false;
@@ -706,8 +711,8 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
 
-			else if(wildcard1 && (*wildcard1!=NULL) && (!instr(entry + path_len, wildcard1))) continue;
-			else if(wildcard2 && (*wildcard2!=NULL) && (!instr(entry + path_len, wildcard2))) continue;
+			else if(wildcard1 && (*wildcard1!=NULL) && ((!instr(entry + path_len, wildcard1)) == wfound1)) continue;
+			else if(wildcard2 && (*wildcard2!=NULL) && ((!instr(entry + path_len, wildcard2)) == wfound2)) continue;
 
 			else if(fop == SCAN_LIST)
 			{
