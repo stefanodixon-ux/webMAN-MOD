@@ -651,10 +651,14 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if((fop == SCAN_DELETE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
+	char *wildcard1 = NULL, *wildcard2 = NULL;
 	char *(*instr)(const char *, const char *) = &strstr;
-	char wcard[strlen(wildcard) + 1]; sprintf(wcard, "%s", wildcard);
-	char *wildcard1 = wcard; if(*wildcard1 == '^') {wildcard1++, instr = &strcasestr;}	// *^TEXT = case insensitive search
-	char *wildcard2 = strstr((char*)wildcard1, "*"); if(wildcard2) *wildcard2++ = NULL;	// *TEXT1*TEXT2 = text1 and text2
+	if(wildcard)
+	{
+		char wcard[strlen(wildcard) + 1]; sprintf(wcard, "%s", wildcard);
+		wildcard1 = wcard; if(wildcard1 && *wildcard1 == '^') {wildcard1++, instr = &strcasestr;}	// *^TEXT = case insensitive search
+		wildcard2 = strstr((char*)wildcard1, "*"); if(wildcard2) *wildcard2++ = NULL;	// *TEXT1*TEXT2 = text1 and text2
+	}
 
 	int fd; bool is_ntfs = false;
 
@@ -745,7 +749,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	else
 		return FAILED;
 
-	if(recursive && (fop == SCAN_DELETE))
+	if((recursive > 0) && (fop == SCAN_DELETE))
 	{
 #ifdef USE_NTFS
 		if(is_ntfs) 
@@ -757,13 +761,12 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	return CELL_FS_SUCCEEDED;
 }
-
+/*
 static int del(const char *path, u8 recursive)
 {
 	return scan(path, recursive, NULL, SCAN_DELETE, NULL);
 }
-
-/*
+*/
 static int del(const char *path, u8 recursive)
 {
 	if(recursive == RECURSIVE_DELETE) ; else
@@ -853,7 +856,6 @@ static int del(const char *path, u8 recursive)
 
 	return CELL_FS_SUCCEEDED;
 }
-*/
 #endif
 
 static int wait_path(const char *path, u8 timeout, bool found)

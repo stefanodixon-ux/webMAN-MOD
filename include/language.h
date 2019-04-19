@@ -556,6 +556,8 @@ static void update_language(void)
 		language("COVERS_PATH", COVERS_PATH, COVERS_PATH);
 		language("IP_ADDRESS", local_ip, local_ip);
 		language("SEARCH_URL", search_url, "http://google.com/search?q=");
+
+		strcpy(STR_TRADBY, "<br>");
 /*
 #ifdef COBRA_ONLY
 		language("STR_DISCOBRA", STR_DISCOBRA);

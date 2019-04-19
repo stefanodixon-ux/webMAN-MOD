@@ -778,7 +778,7 @@ static void setup_form(char *buffer, char *templn)
 	}
 #endif
 
-	add_check_box("sm", false, "sMAN GUI",  _BR_, (webman_config->sman), buffer);
+	add_check_box("sm\"  accesskey=\"G", false, "sMAN GUI",  _BR_, (webman_config->sman), buffer);
 
 	//general settings
 #ifdef SPOOF_CONSOLEID

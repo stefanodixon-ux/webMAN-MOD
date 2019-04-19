@@ -177,7 +177,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				else
 					sprintf(tempstr, "/mount.ps3%s", templn);
 
-				// show graphic of device size & free space
+				// show graphic bar of device size & free space
 				if(devSize > 0)
 					sprintf(fsize,  "<div class='bf' style='height:18px;text-align:left;overflow:hidden;'><div class='bu' style='height:18px;width:%i%%'></div><div style='position:relative;top:-%ipx;text-align:right'>"
 								"<a href=\"%s\" title=\"%'llu %s (%'llu %s) / %'llu %s (%'llu %s)\">&nbsp; %'8llu %s &nbsp;</a>"

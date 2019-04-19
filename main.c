@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.15 MOD"
+#define WM_VERSION			"1.47.16 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -2772,12 +2772,16 @@ retry_response:
 					cellFsUnlink(FILE_LIST);
 					if(reply_html)
 					{
+#ifndef EMBED_JS
 						memset(header, HTML_RECV_SIZE, 0);
 						sprintf(header, SCRIPT_SRC_FMT, FS_SCRIPT_JS);
-
 						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
 						save_file(FILE_LIST, (const char*)header, APPEND_TEXT);
 						save_file(FILE_LIST, (const char*)"<body onload='try{t2lnks()}catch(e){}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
+#else
+						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
+						save_file(FILE_LIST, (const char*)"<body bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
+#endif
 					}
 
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
