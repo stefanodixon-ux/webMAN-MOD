@@ -1134,11 +1134,43 @@ static void setup_form(char *buffer, char *templn)
 */
 }
 
+static bool snd0_running = false;
+static u8 prev_nosnd0 = 0;
+
+static void snd0_thread(u64 action)
+{
+	if(snd0_running || (webman_config->nosnd0 == prev_nosnd0)) return; snd0_running = true;
+
+	int fd;
+	if(cellFsOpendir("/dev_hdd0/game", &fd) == CELL_FS_SUCCEEDED)
+	{
+		prev_nosnd0 = webman_config->nosnd0;
+		int mode = webman_config->nosnd0 ? 0 : MODE; // toggle file access permissions
+		CellFsDirent dir; u64 read_e; char snd0_file[32];
+		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
+		{
+			if(dir.d_namlen != 9) continue;
+			sprintf(snd0_file, "%s%s/SND0.AT3", HDD0_GAME_DIR, dir.d_name);
+			cellFsChmod(snd0_file, mode);
+			sprintf(snd0_file, "%s%s/ICON1.PAM", HDD0_GAME_DIR, dir.d_name);
+			cellFsChmod(snd0_file, mode);
+		}
+		cellFsClosedir(fd);
+	}
+
+	snd0_running = false;
+	sys_ppu_thread_exit(0);
+}
+
 static int save_settings(void)
 {
 #ifdef COBRA_ONLY
-	{ DISABLE_SND0_AT3 } // enable/disable SND0.AT3 on startup / save settngs
+	apply_remaps(); // update remaps on startup / save settngs
 #endif
+	cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? 0 : MODE);
+
+	sys_ppu_thread_t t_id;
+	sys_ppu_thread_create(&t_id, snd0_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_16KB, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_SND0);
 
 	return save_file(WMCONFIG, (char*)wmconfig, sizeof(WebmanCfg));
 }
@@ -1264,6 +1296,8 @@ static void read_settings(void)
 	if(webman_config->sc8mode < 1 || webman_config->sc8mode > 4) webman_config->sc8mode = 4; // default: disable all syscalls (including sc8)
 #endif
 
+	prev_nosnd0 = webman_config->nosnd0;
+
 	// set default autoboot path
 	if((webman_config->autoboot_path[0] != '/') && !islike(webman_config->autoboot_path, "http")) sprintf(webman_config->autoboot_path, "%s", DEFAULT_AUTOBOOT_PATH);
 
@@ -1286,7 +1320,6 @@ static void read_settings(void)
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
 	if(!is_pkg_launcher_installed) {webman_config->ps3l = webman_config->roms = 0; f1_len = 11;}
 #endif
-
 	// settings
 	save_settings();
 

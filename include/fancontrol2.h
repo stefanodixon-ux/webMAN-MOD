@@ -1,8 +1,6 @@
 #define _IS_ON_XMB_		((sec & 1) && (gTick.tick == rTick.tick))
 
-#ifdef COBRA_ONLY
 static bool toggle_snd0 = false;
-#endif
 
 static void poll_start_play_time(void)
 {
@@ -13,7 +11,9 @@ static void poll_start_play_time(void)
 	if(IS_ON_XMB)
 	{
 		//if(gTick.tick != rTick.tick) vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // re-apply redirection of custom update file returning to XMB
-
+#ifdef WM_PROXY_SPRX
+		if(gTick.tick != rTick.tick) apply_remaps(); // re-apply remaps returning to XMB
+#endif
 		gTick = rTick;
 
 	#ifdef OFFLINE_INGAME
@@ -25,18 +25,14 @@ static void poll_start_play_time(void)
 			cellFsUnlink(WMNET_DISABLED);
 		}
 	#endif
-	#ifdef COBRA_ONLY
-		if(toggle_snd0 && webman_config->nosnd0 && !syscalls_removed) { toggle_snd0 = false; sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", (char*)SYSMAP_EMPTY_DIR); } /* disable SND0.AT3 on XMB */
-	#endif
 
+		if(toggle_snd0 && webman_config->nosnd0) { toggle_snd0 = false; cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", 0); } /* disable SND0.AT3 on XMB */
 	}
 	else if(gTick.tick == rTick.tick) /* the game started a moment ago */
 	{
 		cellRtcGetCurrentTick(&gTick);
 
-	#ifdef COBRA_ONLY
-		if(!toggle_snd0 && webman_config->nosnd0 && !syscalls_removed) { toggle_snd0 = true; sys_map_path((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", NULL); } /* re-enable SND0.AT3 in-game */
-	#endif
+		if(!toggle_snd0 && webman_config->nosnd0) { toggle_snd0 = true; cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", MODE); } /* re-enable SND0.AT3 in-game */
 
 	#ifdef OFFLINE_INGAME
 		if((webman_config->spp & 4) || (net_status >= 0))
@@ -236,9 +232,9 @@ static void poll_thread(u64 poll)
 
 		// detect aprox. time when a game is launched & set network connect status
 		#ifndef OFFLINE_INGAME
-		if((sec % 10) == 0) poll_start_play_time();
+		if((sec % 6) == 0) poll_start_play_time();
 		#else
-		if((sec % 10) == 0 || (webman_config->spp & 4)) poll_start_play_time();
+		if((sec % 6) == 0 || (webman_config->spp & 4)) poll_start_play_time();
 		#endif
 
 		// USB Polling

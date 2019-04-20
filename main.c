@@ -170,7 +170,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define PKGLAUNCH_ICON		PKGLAUNCH_DIR "/ICON0.PNG"
 
 #define VSH_RESOURCE_DIR	"/dev_flash/vsh/resource/"
-#define SYSMAP_EMPTY_DIR	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
+#define SYSMAP_EMPTY_DIR	(char*)VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
 
 #define PS2_CLASSIC_TOGGLER		"/dev_hdd0/classic_ps2"
 
@@ -202,6 +202,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define THREAD_NAME_NTFS		"ntfsd"
 #define THREAD_NAME_PSX_EJECT	"ntfsd_eject"
 #define THREAD_NAME_POLL		"poll_thread"
+#define THREAD_NAME_SND0		"snd0_thread"
 #define THREAD_NAME_INSTALLPKG	"install_pkg"
 #define THREAD_NAME_NETSVR		"netsvr"
 #define THREAD_NAME_NETSVRD		"netsvrd"
@@ -326,8 +327,6 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define BEEP1 { system_call_3(SC_RING_BUZZER, 0x1004, 0x4,   0x6); }
 #define BEEP2 { system_call_3(SC_RING_BUZZER, 0x1004, 0x7,  0x36); }
 #define BEEP3 { system_call_3(SC_RING_BUZZER, 0x1004, 0xa, 0x1b6); }
-
-#define DISABLE_SND0_AT3 { sys_map_path("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? SYSMAP_EMPTY_DIR : NULL);}
 
 ////////////
 
@@ -806,6 +805,9 @@ static void restore_cfw_syscalls(void);
 static int installPKG(const char *pkgpath, char *msg);
 #endif
 
+#ifdef COBRA_ONLY
+static void apply_remaps(void);
+#endif
 static void handleclient_www(u64 conn_s_p);
 
 static void do_umount(bool clean);
@@ -1132,6 +1134,18 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 	return buffer;
 }
 
+#ifdef COBRA_ONLY
+static void apply_remaps(void)
+{
+	sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR); // redirect firmware update on BD disc to empty folder
+	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), NULL);
+	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"),  NULL);
+ #ifdef WM_PROXY_SPRX
+	sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);
+ #endif
+}
+#endif
+
 static void handleclient_www(u64 conn_s_p)
 {
 	int conn_s = (int)conn_s_p; // main communications socket
@@ -1153,10 +1167,10 @@ static void handleclient_www(u64 conn_s_p)
  #ifndef ENGLISH_ONLY
 			update_language();
  #endif
-			if(profile || (!(webman_config->wmstart) && STR_WMSTART[0] != NULL))
+			if(profile || !(webman_config->wmstart))
 			{
 				sys_ppu_thread_sleep(10);
-				sprintf(param, "%s%s", STR_WMSTART, SUFIX2(profile));
+				sprintf(param, "webMAN " WM_VERSION "\n" EDITION "%s", SUFIX2(profile));
 				show_msg(param);
 			}
 
@@ -1170,10 +1184,9 @@ static void handleclient_www(u64 conn_s_p)
 		cellFsMkdir(TMP_DIR, DMODE);
 		cellFsMkdir(WMTMP, DMODE);
 
-#ifdef WM_PROXY_SPRX
-		{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);}
+#ifdef COBRA_ONLY
+		apply_remaps();
 #endif
-
 		//////////// usb ports ////////////
 		for(u8 indx = 5, d = 6; d < 128; d++)
 		{
@@ -3845,8 +3858,7 @@ static void wwwd_thread(u64 arg)
 	{from_reboot = file_exists(WMNOSCAN);}
 
 #ifdef COBRA_ONLY
-	{sys_map_path("/app_home", NULL);}
-	{sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
+	{sys_map_path((char*)"/app_home", NULL);}
 #endif
 
 	//WebmanCfg *webman_config = (WebmanCfg*) wmconfig;
@@ -3976,12 +3988,6 @@ relisten:
 
 	}
 end:
-
-#ifdef COBRA_ONLY
-	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), NULL);
-	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"),  NULL); 
-#endif
-
 	sclose(&list_s);
 	sys_ppu_thread_exit(0);
 }

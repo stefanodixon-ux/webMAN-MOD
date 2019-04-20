@@ -854,11 +854,13 @@ static void do_umount(bool clean)
 
 		cobra_unload_vsh_plugin(0); // unload rawseciso / netiso plugins
 
+		cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", MODE);
+
 		sys_map_path("/dev_bdvd", NULL);
 		sys_map_path("//dev_bdvd", NULL);
 
 		sys_map_path("/app_home/USRDIR", NULL);
-		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL);
+		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD
 
 		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL);
 
@@ -2404,6 +2406,8 @@ mounting_done:
 	// redirect system files (PUP, net/PKG, SND0.AT3)
 	// -----------------------------------------------
 	{
+		cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? 0 : MODE);
+
 		if(ret && file_exists("/dev_bdvd/PS3UPDAT.PUP"))
 		{
 			sys_map_path("/dev_bdvd/PS3/UPDATE", "/dev_bdvd"); //redirect root of bdvd to /dev_bdvd/PS3/UPDATE (allows update from mounted /net folder or fake BDFILE)
@@ -2414,9 +2418,7 @@ mounting_done:
 			sys_map_path("/app_home", "/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
 		}
 
-		{sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
-
-		{ DISABLE_SND0_AT3 } // enable/disable SND0.AT3 on mount
+		apply_remaps();
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
