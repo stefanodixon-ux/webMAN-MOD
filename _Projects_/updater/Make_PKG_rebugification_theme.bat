@@ -22,7 +22,7 @@ copy /y pkgfiles\USRDIR\blank.png     pkgfiles-rebugification_theme\USRDIR>>nul
 copy /y pkgfiles\USRDIR\eject.png     pkgfiles-rebugification_theme\USRDIR>>nul
 copy /y pkgfiles\USRDIR\refresh.png   pkgfiles-rebugification_theme\USRDIR>>nul
 copy /y pkgfiles\USRDIR\setup.png     pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\setup.png     pkgfiles-rebugification_theme\USRDIR>>nul
+copy /y pkgfiles\USRDIR\slaunch.png   pkgfiles-rebugification_theme\USRDIR>>nul
 
 mkdir pkgfiles-rebugification_theme\USRDIR\images>>nul
 copy /y pkgfiles\USRDIR\images\*.png pkgfiles-rebugification_theme\USRDIR\images>>nul
@@ -93,6 +93,7 @@ del /s/q pkgfiles-rebugification_theme\USRDIR\blank.png>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\eject.png>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\refresh.png>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\setup.png>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\slaunch.png>>nul
 
 del /s/q pkgfiles-rebugification_theme\USRDIR\images\*.png>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\images\*.jpg>>nul

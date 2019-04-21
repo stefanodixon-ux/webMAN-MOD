@@ -1170,7 +1170,7 @@ static int save_settings(void)
 	cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? 0 : MODE);
 
 	sys_ppu_thread_t t_id;
-	sys_ppu_thread_create(&t_id, snd0_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_16KB, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_SND0);
+	sys_ppu_thread_create(&t_id, snd0_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_6KB, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_SND0);
 
 	return save_file(WMCONFIG, (char*)wmconfig, sizeof(WebmanCfg));
 }
