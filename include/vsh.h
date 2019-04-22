@@ -107,6 +107,7 @@ static bool abort_autoplay(void)
 	if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & (CELL_PAD_CTRL_DOWN | CELL_PAD_CTRL_UP | CELL_PAD_CTRL_LEFT | CELL_PAD_CTRL_RIGHT)) ||
 		(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CIRCLE)))
 	{
+		if(mount_unk == APP_GAME) return false;
 		if(webman_config->autoplay && !webman_config->nobeep) BEEP2;
 		return true;
 	}
@@ -205,6 +206,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 		if(!*category) sprintf(category, "game");
 
 		// default segment
+		if(mount_unk == APP_GAME) sprintf(seg_name, "seg_gamedebug"); else
 		if(!*seg_name) sprintf(seg_name, "seg_device");
 
 		if(!IS(seg_name, "seg_device") || isDir("/dev_bdvd"))
@@ -229,7 +231,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
 
-			if(mount_unk == EMU_ROMS) {timeout = 2, icon_found = 1;}
+			if(mount_unk >= EMU_ROMS) {timeout = 2, icon_found = 1;}
 
 			char explore_command[128]; // info: http://www.psdevwiki.com/ps3/explore_plugin
 
@@ -257,6 +259,12 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 		}
 		else if(!webman_config->nobeep) {BEEP3}
 	}
+}
+
+static bool is_app_home_onxmb(char *buffer, size_t size)
+{
+	size_t read_e = read_file((char*)"/dev_flash/vsh/resource/explore/xmb/category_game.xml", buffer, size, 0);
+	return ((read_e > 100) && (!strstr(buffer, "<!--")) && (strstr(buffer, "seg_gamedebug") != NULL));
 }
 
 static void reload_xmb(void)

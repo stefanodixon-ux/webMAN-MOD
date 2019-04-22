@@ -59,6 +59,7 @@ static void setup_parse_settings(char *param)
 	if(strstr(param, "x0=1")) webman_config->dev_sd = 1;
 	if(strstr(param, "x1=1")) webman_config->dev_ms = 1;
 	if(strstr(param, "x2=1")) webman_config->dev_cf = 1;
+	if(strstr(param, "np=1")) webman_config->npdrm = 1;
 
 #ifdef USE_NTFS
 	if(strstr(param, "xn=1")) webman_config->ntfs = 1;
@@ -194,7 +195,7 @@ static void setup_parse_settings(char *param)
 	if(!strstr(param, "pw=1" )){setAutoPowerOff(false); AutoPowerOffGame = AutoPowerOffVideo = -1; webman_config->auto_power_off = 1;}
 #endif
 	if( strstr(param, "ft=1" )) webman_config->ftpd = 1;
-//	if( strstr(param, "np=1" )) webman_config->nopad = 1;
+//	if( strstr(param, "xp=1" )) webman_config->nopad = 1;
 	if( strstr(param, "nc=1" )) webman_config->nocov = SHOW_ICON0;	else // (0 = Use MM covers, 1 = Use ICON0.PNG, 2 = No game icons, 3 = Online Covers)
 	if( strstr(param, "ic=1" )) webman_config->nocov = SHOW_ICON0;	else
 	if( strstr(param, "ic=2" )) webman_config->nocov = SHOW_DISC;
@@ -524,6 +525,8 @@ static void setup_form(char *buffer, char *templn)
 					"<tr><td width=\"250\">", STR_SCAN2); strcat(buffer, templn);
 
 	//Scan these devices
+	if((!isDir("/dev_hdd0/GAMEZ")) && is_app_home_onxmb(buffer + _32KB_, _2KB_))
+		add_check_box("np", false, "/dev_hdd0/game", "</label><br>", (webman_config->npdrm), buffer);
 	add_check_box("u0", false, drives[1], _BR_, (webman_config->usb0), buffer);
 	add_check_box("u1", false, drives[2], _BR_, (webman_config->usb1), buffer);
 	add_check_box("u2", false, drives[3], _BR_, (webman_config->usb2), buffer);
@@ -680,7 +683,7 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("nss", false, STR_NOSINGSTAR,  _BR_, (webman_config->noss), buffer);
 #endif
 
-//	add_check_box("np", false, STR_COMBOS,   _BR_, (webman_config->nopad), buffer);
+//	add_check_box("xp", false, STR_COMBOS,   _BR_, (webman_config->nopad), buffer);
 
 	//game listing
 	strcat(buffer, "</div>" HTML_BLU_SEPARATOR);
@@ -1067,8 +1070,10 @@ static void setup_form(char *buffer, char *templn)
  #ifdef GET_KLICENSEE
 					"<option>GET /klic.ps3?log"
  #endif
-					"<option>GET /play.ps3?col=tv&seg=HTSS00003"
-					"<option>GET /play.ps3?col=network&seg=seg_premo"
+ #ifndef LITE_EDITION
+					"<option>GET /play.ps3?movian"
+					"<option>GET /play.ps3?remoteplay"
+ #endif
 					"</datalist></div>");
 #endif // #ifdef WM_REQUEST
 

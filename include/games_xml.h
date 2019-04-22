@@ -460,6 +460,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	int ns = NONE; u8 uprofile = profile;
 
+	bool is_npdrm = webman_config->npdrm && (!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb(tempstr, _2KB_)); strcpy(paths[id_GAMEZ], is_npdrm ? "game" : "GAMEZ");
+
 #ifdef NET_SUPPORT
 	int abort_connection = 0;
 	if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection) < 0) do_umount(false);
@@ -501,6 +503,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 #endif
 			if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
 			if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
+
+			if(is_npdrm && !IS_HDD0) {is_npdrm = false; strcpy(paths[id_GAMEZ], "GAMEZ");}
 
 #ifdef NET_SUPPORT
 			if(is_net)
@@ -573,7 +577,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 #endif
 					)
 				{
-					if(key >= max_xmb_items) break;
+					if(key >= max_xmb_items) break; if(is_npdrm && (f1 == id_GAMEZ) && !islike(entry.entry_name.d_name, "NP")) continue;
 #ifdef NET_SUPPORT
 					if(is_net)
 					{
@@ -659,6 +663,9 @@ next_xml_entry:
 							}
 							else
 #endif
+							if(is_npdrm && (f1 == id_GAMEZ))
+								read_e = sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name);
+							else
 								sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
 						}
 
@@ -668,6 +675,7 @@ next_xml_entry:
 
 							if(!is_iso)
 							{
+								if(is_npdrm && (f1 == id_GAMEZ)) sprintf(templn + read_e - 17, "/PARAM.SFO");
 								get_title_and_id_from_sfo(templn, tempID, entry.entry_name.d_name, icon, tempstr, 0);
 							}
 							else

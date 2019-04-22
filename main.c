@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.16 MOD"
+#define WM_VERSION			"1.47.17 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -449,6 +449,8 @@ static u8 system_bgm = 0;
 
 #define PERSIST  100
 
+#define APP_GAME  0xFF
+
 static bool show_info_popup = false;
 static bool do_restart = false;
 
@@ -545,8 +547,9 @@ typedef struct
 	u8 roms;
 	u8 mc_app; // allow allocation from app memory container
 	u8 info;   // info level: 0=Path, 1=Path + ID, 2=ID, 3=None
+	u8 npdrm;
 
-	u8 padding2[15];
+	u8 padding2[14];
 
 	// start up settings
 
@@ -1573,10 +1576,34 @@ parse_request:
 					if(file_exists(param + 9)) mount_game(param + 9, EXPLORE_CLOSE_ALL);
 
 					// default: play.ps3?col=game&seg=seg_device
-					char *pos, col[16], seg[80], *param2 = buttons; *col = *seg = NULL;
-					pos = strstr(param2, "col="); if(pos) get_value(col, pos + 4, 16); // game / video / friend / psn / network / music / photo / tv
-					pos = strstr(param2, "seg="); if(pos) get_value(seg, pos + 4, 80);
-					launch_disc(col, seg, true);
+					char *pos, col[16], seg[80], *param2 = buttons; *col = *seg = NULL; bool execute = true;
+#ifndef LITE_EDITION
+					if(_islike(param2, "movian") || IS(param2, "HTSS00003"))
+													 {sprintf(param2, "col=tv&seg=HTSS00003"); mount_unk = APP_GAME;} else
+					if(_islike(param2, "remoteplay")){sprintf(param2, "col=network&seg=seg_premo");} else
+					if(_islike(param2, "retro"))     {sprintf(param2, "SSNE10000");} else
+					if(_islike(param2, "multiman"))  {sprintf(param2, "BLES80608");} else
+					if(_islike(param2, "rebug"))     {sprintf(param2, "RBGTLBOX2");} else
+#endif
+#ifdef COBRA_ONLY
+					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
+					if(isDir(header))
+					{
+						sys_map_path((char*)"/app_home", (char*)NULL);
+						sys_map_path((char*)"/app_home/USRDIR", (char*)NULL);
+						sys_map_path((char*)"/app_home/PS3_GAME", (char*)header);
+
+						if(is_app_home_onxmb(header, sizeof(header))) mount_unk = APP_GAME; else execute = false;
+					}
+					else
+#endif
+					{
+						pos = strstr(param2, "col="); if(pos) get_value(col, pos + 4, 16); // game / video / friend / psn / network / music / photo / tv
+						pos = strstr(param2, "seg="); if(pos) get_value(seg, pos + 4, 80);
+					}
+
+					launch_disc(col, seg, execute);
+					mount_unk = EMU_OFF;
 				}
 
 				if(is_combo == 1 && param[10] != '?') sprintf(param, "/cpursx.ps3");
@@ -3428,7 +3455,6 @@ retry_response:
 							strcat(pbuffer, extgd ? STR_ENABLED : STR_DISABLED);
 					}
  #endif
-
  #ifdef SYS_BGM
 					else
 					if(islike(param, "/sysbgm.ps3"))
@@ -3528,6 +3554,7 @@ retry_response:
 							del(HTML_BASE_PATH, RECURSIVE_DELETE);
 							del(VSH_MENU_IMAGES, RECURSIVE_DELETE);
 
+							sprintf(param, "%s%s", "/delete.ps3", "?uninstall");
 							goto reboot;
 						}
 						else

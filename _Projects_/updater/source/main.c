@@ -616,6 +616,9 @@ int main()
 	if(sysLv2FsStat(XMLMANPLS_DIR "/ICON0.PNG", &stat) != SUCCESS)
 		file_copy(APP_DIR "/ICON0.PNG", XMLMANPLS_DIR "/ICON0.PNG");
 
+	//if(sysLv2FsStat(HDDROOT_DIR "/boot_init.bak", &stat) != SUCCESS)
+	//	file_copy(APP_DIR "/boot_init.bak", HDDROOT_DIR "/boot_init.bak");
+
 	file_copy(APP_USRDIR "/webMAN.xml"    , XMLMANPLS_FEATS_DIR "/webMAN.xml");
 	file_copy(APP_USRDIR "/webMAN_EN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_EN.xml");
 	file_copy(APP_USRDIR "/webMAN_AR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_AR.xml");

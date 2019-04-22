@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><meta http-equiv="Content-type" content="text/html;charset=UTF-8"><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-<head><title>wMAN MOD 1.47.16</title><style type="text/css">
+<head><title>wMAN MOD 1.47.17</title><style type="text/css">
 <!--
 .bu{background:#346;}.bf{background:GREEN;}
 
@@ -214,6 +214,14 @@ a.l_menu:hover{color:#006699;}
 
 .gn{position:absolute;height:38px;width:220px;bottom:6px;right:10px;left:10px;text-align:center;}
 
+iframe{
+    overflow:hidden;
+}
+
+#cpursx::-webkit-scrollbar { 
+    display: none; 
+}
+
 @keyframes msg {
 	0%{color:#ffffff}
 	50%{color:#101010}
@@ -224,7 +232,7 @@ a.l_menu:hover{color:#006699;}
 </style>
 </head>
 
-<body bgcolor="#303030">
+<body bgcolor="#303030" onresize="resizeEvent()">
 <div class="top_line">&nbsp;</div>
 <div id="smv" class="smv">wMAN MOD</div>
 
@@ -234,13 +242,19 @@ a.l_menu:hover{color:#006699;}
 <div id="wmsg"><H1>. . .</H1></div>
 
 <div id="top_action">
+	<div id="topbuttons">
 	<a href="#" onclick="javascript:document.getElementById('rxml').style.display='block';window.open('/refresh.ps3?xmb;/sman.ps3', '_self');" class="t_menu">Refresh</a>
 	<a href="#" onclick="javascript:window.open('/mount.ps3/unmount?/sman.ps3', '_self');" class="t_menu">Eject</a>
 	<a href="#" onclick="javascript:window.open('/insert.ps3', '_self');" class="t_menu">Insert</a>
 	<a href="#" onclick="javascript:window.open('/restart.ps3', '_self');" class="t_menu">Restart</a>
 	<a href="#" onclick="javascript:window.open('/shutdown.ps3', '_self');" class="t_menu">Shutdown</a>
+	</div>
 
-	<span style="position:absolute;right:0px;top:15px;">
+	<div id="cpursx" style="position:absolute;top:5px;right:150px;max-width:220px;overflow:hidden;">
+	<iframe src="/cpursx_ps3" frameborder="0" scrolling="no" seamless="seamless" style="border:none;height:35px;top:5px;overflow:hidden;"></iframe>
+	</div>
+
+	<span style="position:absolute;float:right;right:-15px;top:10px;">
 	<a href="javascript:var s=prompt('Search:','');if(s){document.getElementById('rhtm').style.display='block';self.location=self.location+'?'+escape(s)}"><span id="ngames"></span> &nbsp; &#x1F50D;</a></font>
 	</span>
 </div>
@@ -254,7 +268,27 @@ a.l_menu:hover{color:#006699;}
 	<a href="#" onclick="javascript:window.open('/cpursx.ps3?/sman.ps3', '_self');" class="b_cpursx">CPU/RSX</a>
 </div>
 </font>
+
 <script>
 if(navigator.userAgent.indexOf("PLAYSTATION")!=-1) document.getElementsByClassName("b_cflow")[0].style.display='none';
+
+var getAbsPosition = function(el){
+    var el2 = el;
+    var curleft = 0;
+    if (document.getElementById || document.all) {
+            curleft += el.offsetLeft-el.scrollLeft;
+            el = el.offsetParent;
+    } else if (document.layers) {
+        curleft += el.x;
+    }
+    return curleft;
+};
+
+function resizeEvent()
+{
+	var cpursx = document.getElementById("cpursx");
+	cpursx.style.display = 'block';
+	cpursx.style.display = (getAbsPosition(cpursx) < 650) ? 'none' : 'block';
+}; resizeEvent();
 </script>
 <div id="content" class="propfont">

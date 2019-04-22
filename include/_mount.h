@@ -860,6 +860,7 @@ static void do_umount(bool clean)
 		sys_map_path("//dev_bdvd", NULL);
 
 		sys_map_path("/app_home/USRDIR", NULL);
+		sys_map_path("/app_home/PS3_GAME", NULL);
 		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD
 
 		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL);
@@ -1052,7 +1053,7 @@ static void mount_autoboot(void)
 			int discboot = 0xff;
 			xsetting_0AF1F161()->GetSystemDiscBootFirstEnabled(&discboot);
 			if(discboot) xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(0); // disable Disc Boot
-			mount_game(path, MOUNT_NORMAL);
+			if(!islike(path, "/dev_hdd0/game")) mount_game(path, MOUNT_NORMAL);
 			sys_ppu_thread_sleep(5);
 			if(discboot) xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(1); // restore Disc Boot setting
 		}
@@ -1263,6 +1264,20 @@ static void mount_thread(u64 action)
 
 
 #ifdef COBRA_ONLY
+	// ------------------
+	// mount NPDRM game
+	// ------------------
+	if(islike(_path, "/dev_hdd0/game"))
+	{
+		sys_map_path((char*)"/app_home", (char*)NULL);
+		sys_map_path((char*)"/app_home/USRDIR", (char*)NULL);
+		sys_map_path((char*)"/app_home/PS3_GAME", (char*)_path);
+
+		char buffer[_2KB_], col[16], seg[16]; *col = NULL, *seg = NULL; ret = false;
+		if(is_app_home_onxmb(buffer, _2KB_)) {mount_unk = APP_GAME; launch_disc(col, seg, true); ret = true;}
+		mount_unk = EMU_MAX;
+		goto exit_mount;
+	}
 
 	// ------------------
 	// mount GAMEI game
@@ -2437,6 +2452,7 @@ finish:
 	led(GREEN, ON);
 	max_mapped = 0;
 	mount_ret = ret;
+	mount_unk = EMU_OFF;
 
 	is_mounting = false;
 	sys_ppu_thread_exit(0);
