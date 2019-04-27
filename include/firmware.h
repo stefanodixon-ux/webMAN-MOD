@@ -11,6 +11,7 @@ static u64 sc_142 = 0;
 #define IS_DEH (dex_mode == 1)
 #define IS_DEX (dex_mode == 2)
 
+#define IS_HEN (lv2peek(0x8000000000003d90ULL)!=0x386000014e800020ULL)
 
 struct platform_info {
 	u32 firmware_version;
@@ -47,13 +48,20 @@ static void detect_firmware(void)
 #ifdef DECR_SUPPORT
 	const u64 DEH = 0x4445480000000000ULL;
 #endif
-
 	dex_mode = 0;
+
+	if(IS_HEN)
+	{
+		//payload_ps3hen = (lv1peek(0x1337) == 0x1337);
+		lv2poke(0x8000000000003d90ULL,0x386000014e800020ULL);
+		payload_ps3hen = IS_HEN; if(payload_ps3hen) {sc_peekq = SC_PEEK_LV2, sc_pokeq = SC_POKE_LV2;}
+	}
 
 	for(u8 lv2_offset = 1; lv2_offset < 0x10; lv2_offset++)
 	{
 		if(SYSCALL_TABLE) break;
-		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
+		LV2_OFFSET_ON_LV1 = (payload_ps3hen) ? 0 : (u64)lv2_offset * 0x1000000ULL;
+
 		if(peekq(0x80000000002ED818ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peekq(0x80000000002FCB68ULL) == 0x323031392F30312FULL) ? 4.84f : (peekq(0x80000000002FCB68ULL) == 0x323031382F30392FULL) ? 4.83f : (peekq(0x80000000002FCB68ULL) == 0x323031372F30382FULL) ? 4.82f : (peekq(0x80000000002FCB68ULL) == 0x323031362F31302FULL) ? 4.81f : (peekq(0x80000000002FCB68ULL) == 0x323031352F31322FULL) ? 4.78f : (peekq(0x80000000002FCB68ULL) == 0x323031352F30382FULL) ? 4.76f : (peekq(0x80000000002FCB68ULL) == 0x323031352F30342FULL) ? 4.75f : get_firmware_version();} else
 		if(peekq(0x80000000002ED808ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_480;  c_firmware = 4.80f;}				else
 #ifndef LAST_FIRMWARE_ONLY
@@ -134,7 +142,7 @@ static void detect_firmware(void)
 			if(c_firmware == 4.21f) SYSCALL_TABLE = SYSCALL_TABLE_421;
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355;
 #endif
-			LV2_OFFSET_ON_LV1 = 0x01000000ULL;
+			LV2_OFFSET_ON_LV1 = (payload_ps3hen) ? 0 : 0x01000000ULL;
 		}
 		if(IS_DEX)
 		{
@@ -152,7 +160,7 @@ static void detect_firmware(void)
 			if(c_firmware == 4.21f) SYSCALL_TABLE = SYSCALL_TABLE_421D;
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355D;
 #endif
-			LV2_OFFSET_ON_LV1 = 0x08000000ULL;
+			LV2_OFFSET_ON_LV1 = (payload_ps3hen) ? 0 : 0x08000000ULL;
 		}
 	}
 

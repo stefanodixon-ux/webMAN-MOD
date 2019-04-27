@@ -760,7 +760,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			{
 				if(is_netsrv_enabled(n))
 				{
-					sprintf(line_entry[idx].path, "dnet%i "
+					sprintf(line_entry[idx].path, "dnet%i     "
 												  "d\" href=\"/net%i\">net%i (%s:%i)</a></td>"
 												  "<td> <a href=\"/mount.ps3/net%i\">%s</a>" HTML_ENTRY_DATE
 												  , n, n, n, webman_config->neth[n], webman_config->netp[n], n, HTML_DIR); idx++;

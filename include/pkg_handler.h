@@ -151,13 +151,13 @@ static void unload_web_plugins(void)
 	while(View_Find("webrender_plugin"))
 	{
 		UnloadPluginById(0x1C, (void *)unloadSysPluginCallback);
-		sys_ppu_thread_usleep(500000); retry++; if(retry > 20) break;
+		sys_ppu_thread_sleep(1); if(++retry > 10) break;
 	}
 
 	while(View_Find("webbrowser_plugin"))
 	{
 		UnloadPluginById(0x1B, (void *)unloadSysPluginCallback);
-		sys_ppu_thread_usleep(500000); retry++; if(retry > 20) break;
+		sys_ppu_thread_sleep(1); if(++retry > 10) break;
 	}
 
 #ifdef VIRTUAL_PAD

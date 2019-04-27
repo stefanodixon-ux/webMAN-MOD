@@ -49,18 +49,18 @@ static bool is_sfo(unsigned char *mem)
 		indx+=0x10; if(indx>=fld) break; \
 	}
 
-static void parse_param_sfo(unsigned char *mem, char *titleID, char *title, u16 sfo_size)
+static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16 sfo_size)
 {
 	READ_SFO_HEADER()
 
-	memset(titleID, 0, 10);
+	memset(title_id, 0, 10);
 	memset(title, 0, 128);
 
 	FOR_EACH_SFO_FIELD()
 	{
 		if(!memcmp((char *) &mem[str], "TITLE_ID", 8))
 		{
-			strncpy(titleID, (char *)mem + pos, 9);
+			strncpy(title_id, (char *)mem + pos, TITLE_ID_LEN);
 #ifndef ENGLISH_ONLY
 			if(*TITLE_XX == NULL)
 #endif
@@ -73,30 +73,30 @@ static void parse_param_sfo(unsigned char *mem, char *titleID, char *title, u16 
 #ifndef ENGLISH_ONLY
 			if(*TITLE_XX == NULL)
 #endif
-				if(*titleID) break;
+				if(*title_id) break;
 		}
 #ifndef ENGLISH_ONLY
 		else
-		if(!memcmp((char *) &mem[str], TITLE_XX, 9))
+		if(!memcmp((char *) &mem[str], TITLE_XX, TITLE_ID_LEN))
 		{
 			strncpy(title, (char *)mem + pos, 128);
-			if(*titleID) break;
+			if(*title_id) break;
 		}
 #endif
 		READ_NEXT_SFO_FIELD()
 	}
 
-	if(webman_config->tid && (titleID[8] != NULL) && (*titleID == 'B' || *titleID == 'N'))
+	if(webman_config->tid && (title_id[8] != NULL) && (*title_id == 'B' || *title_id == 'N'))
 	{
-		strcat(title, " ["); strcat(title, titleID); strcat(title, "]");
+		strcat(title, " ["); strcat(title, title_id); strcat(title, "]");
 	}
 }
 
-static bool fix_param_sfo(unsigned char *mem, char *titleID, u8 opcode, u16 sfo_size)
+static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo_size)
 {
 	READ_SFO_HEADER(false)
 
-	memset(titleID, 0, 10);
+	memset(title_id, 0, 10);
 
 #ifdef FIX_GAME
 	u8 fcount = 0;
@@ -108,7 +108,7 @@ static bool fix_param_sfo(unsigned char *mem, char *titleID, u8 opcode, u16 sfo_
 	{
 		if(!memcmp((char *) &mem[str], "TITLE_ID", 8))
 		{
-			strncpy(titleID, (char *) &mem[pos], 9);
+			strncpy(title_id, (char *) &mem[pos], TITLE_ID_LEN);
 #ifdef FIX_GAME
 			if(opcode == GET_TITLE_ID_ONLY) break;
 			fcount++; if(fcount >= 2) break;
@@ -155,11 +155,11 @@ static void get_app_ver(unsigned char *mem, char *version, u16 sfo_size)
 	}
 }
 
-static bool getTitleID(char *filename, char *titleID, u8 opcode)
+static bool getTitleID(char *filename, char *title_id, u8 opcode)
 {
 	bool ret = false;
 
-	memset(titleID, 0, 10);
+	memset(title_id, 0, 10);
 
 	char paramsfo[_4KB_];
 	unsigned char *mem = (u8*)paramsfo;
@@ -170,13 +170,13 @@ static bool getTitleID(char *filename, char *titleID, u8 opcode)
 	{
 		// get titleid
 		if(opcode == GET_VERSION)
-			get_app_ver(mem, titleID, (u16)sfo_size);                 // get game version (app_ver)
+			get_app_ver(mem, title_id, (u16)sfo_size);                 // get game version (app_ver)
 		else
 		if(opcode == GET_TITLE_AND_ID)
-			parse_param_sfo(mem, titleID, filename, (u16)sfo_size);   // get titleid & return title in the file name (used to backup games in _mount.h)
+			parse_param_sfo(mem, title_id, filename, (u16)sfo_size);   // get titleid & return title in the file name (used to backup games in _mount.h)
 		else
 		{
-			ret = fix_param_sfo(mem, titleID, opcode, (u16)sfo_size); // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
+			ret = fix_param_sfo(mem, title_id, opcode, (u16)sfo_size); // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
 
 			if(ret && opcode == FIX_SFO) save_file(filename, paramsfo, sfo_size);
 		}
@@ -298,7 +298,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 	if(islike(iso_file, "/net") || strstr(iso_file, ".ntfs[")) ; else
 	if(fix_aborted || (cellFsStat(iso_file, &buf) != CELL_FS_SUCCEEDED) || (c_firmware >= LATEST_CFW)) return;
 
-	int fd; char titleID[10], update_path[STD_PATH_LEN];
+	int fd; char title_id[10], update_path[STD_PATH_LEN];
 
 #ifdef COPY_PS3
 	sprintf(current_file, "%s", iso_file);
@@ -336,11 +336,11 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 					cellFsLseek(fd, lba, CELL_FS_SEEK_SET, &bytes_read);
 					cellFsRead(fd, (void *)&chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 
-					fix_ver = fix_param_sfo((unsigned char *)chunk, titleID, FIX_SFO, (u16)bytes_read);
+					fix_ver = fix_param_sfo((unsigned char *)chunk, title_id, FIX_SFO, (u16)bytes_read);
 
 					if(patch_update)
 					{
-						sprintf(update_path, "%s%s/USRDIR/EBOOT.BIN", HDD0_GAME_DIR, titleID); // has update on hdd0?
+						sprintf(update_path, "%s%s/USRDIR/EBOOT.BIN", HDD0_GAME_DIR, title_id); // has update on hdd0?
 						if(file_exists(update_path)) fix_ver = false;
 					}
 
@@ -431,18 +431,18 @@ exit_fix:
 	else
 	{
 		get_name(update_path, strrchr(iso_file, '/') + 1, GET_WMTMP); strcat(update_path, ".SFO\0");
-		getTitleID(update_path, titleID, GET_TITLE_ID_ONLY);
+		getTitleID(update_path, title_id, GET_TITLE_ID_ONLY);
 	}
 
 	// fix update folder
-	sprintf(update_path, "%s%s/PARAM.SFO", HDD0_GAME_DIR, titleID);
-	if(getTitleID(update_path, titleID, FIX_SFO) || webman_config->fixgame==FIX_GAME_FORCED) {sprintf(update_path, "%s%s/USRDIR", HDD0_GAME_DIR, titleID); fix_game_folder(update_path);}
+	sprintf(update_path, "%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+	if(getTitleID(update_path, title_id, FIX_SFO) || webman_config->fixgame==FIX_GAME_FORCED) {sprintf(update_path, "%s%s/USRDIR", HDD0_GAME_DIR, title_id); fix_game_folder(update_path);}
 }
 #endif //#ifdef COBRA_ONLY
 
-static void fix_game(char *game_path, char *titleID, u8 fix_type)
+static void fix_game(char *game_path, char *title_id, u8 fix_type)
 {
-	memset(titleID, 0, 10);
+	memset(title_id, 0, 10);
 
 	if(c_firmware >= LATEST_CFW) return;
 
@@ -486,7 +486,7 @@ static void fix_game(char *game_path, char *titleID, u8 fix_type)
 				tmp_path[10] = NULL;
 
 				// get titleid & fix game folder if version is higher than cfw
-				if((fix_param_sfo(mem, titleID, FIX_SFO, (u16)bytes_read) || fix_type == FIX_GAME_FORCED) && fix_type != FIX_GAME_DISABLED && !islike(tmp_path, "/net") && !islike(tmp_path, "/dev_bdvd") && !strstr(game_path, ".ntfs["))
+				if((fix_param_sfo(mem, title_id, FIX_SFO, (u16)bytes_read) || fix_type == FIX_GAME_FORCED) && fix_type != FIX_GAME_DISABLED && !islike(tmp_path, "/net") && !islike(tmp_path, "/dev_bdvd") && !strstr(game_path, ".ntfs["))
 				{
 					save_file(filename, paramsfo, bytes_read);
 
@@ -501,7 +501,7 @@ static void fix_game(char *game_path, char *titleID, u8 fix_type)
 				// fix PARAM.SFO on hdd0
 				for(u8 i = 0; i < 2; i++)
 				{
-					sprintf(filename, "%s%s%s/PARAM.SFO", HDD0_GAME_DIR, titleID, i ? "" : "/C00");
+					sprintf(filename, "%s%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id, i ? "" : "/C00");
 
 					bytes_read = read_file(filename, paramsfo, _4KB_, 0);
 					if(is_sfo(mem))
@@ -512,16 +512,16 @@ static void fix_game(char *game_path, char *titleID, u8 fix_type)
 							save_file(filename, paramsfo, bytes_read);
 						}
 
-						if((fix_param_sfo(mem, titleID, FIX_SFO, (u16)bytes_read) || fix_type == FIX_GAME_FORCED) && fix_type!=FIX_GAME_DISABLED)
+						if((fix_param_sfo(mem, title_id, FIX_SFO, (u16)bytes_read) || fix_type == FIX_GAME_FORCED) && fix_type!=FIX_GAME_DISABLED)
 						{
 							save_file(filename, paramsfo, bytes_read);
 
 							if(i == 0) continue;
 
-							sprintf(filename, "%s %s%s", STR_FIXING, HDD0_GAME_DIR, titleID);
+							sprintf(filename, "%s %s%s", STR_FIXING, HDD0_GAME_DIR, title_id);
 							show_msg(filename);
 
-							sprintf(filename, "%s%s/USRDIR", HDD0_GAME_DIR, titleID);  // fix update folder in /dev_hdd0/game
+							sprintf(filename, "%s%s/USRDIR", HDD0_GAME_DIR, title_id);  // fix update folder in /dev_hdd0/game
 
 							fix_game_folder(filename);
 						}

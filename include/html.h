@@ -12,7 +12,8 @@
 #define HTML_ONCLICK			"onclick=\"location.href="
 #define HTML_INPUT(n, v, m, s)	"<input name=\"" n "\" type=\"text\" value=\"" v "\" maxlength=\"" m "\" size=\"" s "\">"
 #define HTML_PASSW(n, v, m, s)	"<input name=\"" n "\" type=\"password\" value=\"" v "\" maxlength=\"" m "\" size=\"" s "\">"
-#define HTML_NUMBER(n, v, min, max)	"<input name=\"" n "\" type=\"number\" value=\"" v "\" min=\"" min "\" max=\"" max "\">"
+#define HTML_NUMBER(n, v, min, max)	"<input name=\"" n "\" type=\"number\" value=\"" v "\" min=\"" min "\" max=\"" max "\" style=\"width:45px;\">"
+#define HTML_PORT(n, v)			"<input name=\"" n "\" type=\"number\" value=\"" v "\" min=\"1\" max=\"65535\" style=\"width:60px;\">"
 
 #define HTML_DISABLED_CHECKBOX	"disabled=\"disabled"
 
@@ -131,7 +132,7 @@ static char h2a(const char hex)
 
 static inline void urldec(char *url, char *original)
 {
-	if(strchr(url, '%'))
+	if(strchr(url, '+') || strchr(url, '%'))
 	{
 		strcpy(original, url); // return original url
 
@@ -147,7 +148,7 @@ static inline void urldec(char *url, char *original)
 				url[pos] = 0; u8 n = 2;
 				while(n--)
 				{
-					url[pos] <<= 4, i++, c = (url[i] | 0x20);
+					url[pos] <<= 4, c = (url[++i] | 0x20);
 					if(c >= '0' && c <= '9') url[pos] += c -'0';      else
 					if(c >= 'a' && c <= 'f') url[pos] += c -'a' + 10;
 				}

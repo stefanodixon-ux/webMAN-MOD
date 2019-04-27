@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.17 MOD"
+#define WM_VERSION			"1.47.18 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -170,7 +170,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define PKGLAUNCH_ICON		PKGLAUNCH_DIR "/ICON0.PNG"
 
 #define VSH_RESOURCE_DIR	"/dev_flash/vsh/resource/"
-#define SYSMAP_EMPTY_DIR	(char*)VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
+#define SYSMAP_EMPTY_DIR	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
 
 #define PS2_CLASSIC_TOGGLER		"/dev_hdd0/classic_ps2"
 
@@ -238,15 +238,15 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define THREAD_STACK_SIZE_NET_CLIENT	THREAD_STACK_SIZE_24KB
 
 #define THREAD_STACK_SIZE_PS3MAPI_SVR	THREAD_STACK_SIZE_6KB
-#define THREAD_STACK_SIZE_PS3MAPI_CLI	THREAD_STACK_SIZE_32KB
+#define THREAD_STACK_SIZE_PS3MAPI_CLI	THREAD_STACK_SIZE_48KB
 
-#define THREAD_STACK_SIZE_NET_ISO		THREAD_STACK_SIZE_6KB
-#define THREAD_STACK_SIZE_NTFS_ISO		THREAD_STACK_SIZE_6KB
+#define THREAD_STACK_SIZE_NET_ISO		THREAD_STACK_SIZE_8KB
+#define THREAD_STACK_SIZE_NTFS_ISO		THREAD_STACK_SIZE_8KB
 
 #define THREAD_STACK_SIZE_STOP_THREAD	THREAD_STACK_SIZE_6KB
 #define THREAD_STACK_SIZE_INSTALL_PKG	THREAD_STACK_SIZE_6KB
 #define THREAD_STACK_SIZE_POLL_THREAD	THREAD_STACK_SIZE_32KB
-#define THREAD_STACK_SIZE_UPDATE_XML	THREAD_STACK_SIZE_192KB
+#define THREAD_STACK_SIZE_UPDATE_XML	THREAD_STACK_SIZE_128KB
 #define THREAD_STACK_SIZE_MOUNT_GAME	THREAD_STACK_SIZE_48KB
 
 #define SYS_PPU_THREAD_CREATE_NORMAL	0x000
@@ -278,7 +278,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 #define HTML_BASE_PATH			"/dev_hdd0/xmlhost/game_plugin"
 
-#define FB_XML					HTML_BASE_PATH "/fb.xml"
+#define FB_XML					"/dev_hdd0/xmlhost/game_plugin/fb.xml"
 #ifdef COBRA_ONLY
 #define MY_GAMES_XML			HTML_BASE_PATH "/mygames.xml"
 #else
@@ -390,12 +390,15 @@ static u32 BUFFER_SIZE_ROM	= (  _32KB_ / 2);
 
 static const u32 MODE  = 0777;
 static const u32 DMODE = (CELL_FS_S_IFDIR | 0777);
+static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
 
 #define LINELEN			512 // file listing
 #define MAX_LINE_LEN	640 // html games
 #define STD_PATH_LEN	263 // standard path len (260 characters in NTFS - Windows 10 removed this limit in 2016)
 #define MAX_PATH_LEN	512 // do not change!
 #define MAX_TEXT_LEN	1300 // should not exceed HTML_RECV_SIZE
+
+#define TITLE_ID_LEN	9
 
 #define FAILED		-1
 
@@ -453,6 +456,7 @@ static u8 system_bgm = 0;
 
 static bool show_info_popup = false;
 static bool do_restart = false;
+static bool payload_ps3hen = false;
 
 #ifdef USE_DEBUG
  static int debug_s = -1;
@@ -462,6 +466,7 @@ static bool do_restart = false;
 static volatile u8 wm_unload_combo = 0;
 static volatile u8 working = 1;
 static u8 max_mapped = 0;
+static int init_delay = 0;
 
 static bool syscalls_removed = false;
 
@@ -798,7 +803,6 @@ int wwwd_stop(void);
 static void stop_prx_module(void);
 static void unload_prx_module(void);
 
-
 #ifdef REMOVE_SYSCALLS
 static void remove_cfw_syscalls(bool keep_ccapi);
 #ifdef PS3MAPI
@@ -821,6 +825,7 @@ static bool mount_game(const char *_path, u8 do_eject);
 #ifdef COBRA_ONLY
 static void do_umount_iso(void);
 static void unload_vsh_gui(void);
+static void set_apphome(char *game_path);
 #endif
 
 static size_t get_name(char *name, const char *filename, u8 cache);
@@ -828,6 +833,7 @@ static void add_breadcrumb_trail(char *buffer, char *param);
 static void get_cpursx(char *cpursx);
 static void get_last_game(char *last_path);
 static void add_game_info(char *buffer, char *templn, bool is_cpursx);
+static void mute_snd0(bool scan_gamedir);
 
 static bool from_reboot = false;
 static bool is_busy = false;
@@ -1142,12 +1148,10 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 #ifdef COBRA_ONLY
 static void apply_remaps(void)
 {
-	sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR); // redirect firmware update on BD disc to empty folder
-	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_stereo.ac3"), NULL);
-	sys_map_path((char*)(VSH_RESOURCE_DIR "coldboot_multi.ac3"),  NULL);
  #ifdef WM_PROXY_SPRX
-	sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);
+	{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);}
  #endif
+	{sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
 }
 #endif
 
@@ -1189,7 +1193,7 @@ static void handleclient_www(u64 conn_s_p)
 		cellFsMkdir(TMP_DIR, DMODE);
 		cellFsMkdir(WMTMP, DMODE);
 
-#ifdef COBRA_ONLY
+#ifdef WM_PROXY_SPRX
 		apply_remaps();
 #endif
 		//////////// usb ports ////////////
@@ -1286,6 +1290,9 @@ static void handleclient_www(u64 conn_s_p)
  #endif
 		}
 
+		{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);}
+		{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
+
 		sys_ppu_thread_exit(0);
 	}
 
@@ -1304,7 +1311,7 @@ static void handleclient_www(u64 conn_s_p)
 	char cmd[16], header[HTML_RECV_SIZE], *mc = NULL;
 
  #ifdef WM_REQUEST
-	struct CellFsStat buf; u8 wm_request = (cellFsStat(WMREQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);;
+	struct CellFsStat buf; u8 wm_request = (cellFsStat(WMREQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
 
 	if(!wm_request)
  #endif
@@ -1404,6 +1411,42 @@ parse_request:
 			{
 				if(buf.st_size > 5 && buf.st_size < HTML_RECV_SIZE && read_file(WMREQUEST_FILE, header, buf.st_size, 0) > 4)
 				{
+					if(islike(header, "/dev_hdd0/photo"))
+					{
+						char *filename = strrchr(header, '/'); if(filename) filename++;
+						if(filename)
+						{
+							char *pos1 = strcasestr(filename, ".jpg"); if(pos1) *pos1 = NULL;
+							char *pos2 = strcasestr(filename, ".png"); if(pos2) *pos2 = NULL;
+
+							int fsl = 0;
+							if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fsl, NULL, 0) == CELL_FS_SUCCEEDED)
+							{
+								typedef struct // 1MB for 2000+1 titles
+								{
+									u8  type;
+									char id[10];
+									u8  path_pos; // start position of path
+									u16 icon_pos; // start position of icon
+									u16 padd;
+									char name[508]; // name + path + icon
+								} __attribute__((packed)) _slaunch; _slaunch slaunch; u64 read_e;
+
+								while(cellFsRead(fsl, &slaunch, sizeof(_slaunch), &read_e) == CELL_FS_SUCCEEDED && read_e > 0)
+								{
+									char *path = slaunch.name + slaunch.path_pos;
+									char *templn = slaunch.name;
+									if((strcasestr(path, filename) == NULL) && (strcasestr(templn, filename) == NULL)) continue;
+									sprintf(filename, "%s", path); break;
+								}
+								cellFsClose(fsl);
+							}
+							show_msg(filename);
+							sprintf(header, "%s", filename);
+							init_delay = -10; // prevent show Not in XMB message
+						}
+					}
+
 					if(*header == '/') {strcpy(param, header); buf.st_size = sprintf(header, "GET %s", param);}
 					for(size_t n = buf.st_size; n > 4; n--) if(header[n] == ' ') header[n] = '+';
 					if(islike(header, "GET /play.ps3")) {if(IS_INGAME) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}
@@ -1435,7 +1478,7 @@ parse_request:
 			char *param_original = header; // used in /download.ps3
 
  #ifdef WM_REQUEST
-			if(wm_request) { for(size_t n = 0; param[n]; n++) {if(param[n] == 9) param[n] = ' ';} } wm_request = 0;
+			if(wm_request) { for(size_t n = 0; param[n]; n++) {if(param[n] == '\t') param[n] = ' ';} } wm_request = 0;
  #endif
 
 			if((refreshing_xml == 0) && islike(param, "/refresh"))
@@ -1550,7 +1593,6 @@ parse_request:
  #endif
 			{
 	redirect_url:
-
 				urldec(param, param_original);
 
 				if(islike(param, "/setup.ps3")) goto html_response;
@@ -1589,11 +1631,9 @@ parse_request:
 					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
 					if(isDir(header))
 					{
-						sys_map_path((char*)"/app_home", (char*)NULL);
-						sys_map_path((char*)"/app_home/USRDIR", (char*)NULL);
-						sys_map_path((char*)"/app_home/PS3_GAME", (char*)header);
+						set_apphome(header);
 
-						if(is_app_home_onxmb(header, sizeof(header))) mount_unk = APP_GAME; else execute = false;
+						if(is_app_home_onxmb()) mount_unk = APP_GAME; else execute = false;
 					}
 					else
 #endif
@@ -3725,7 +3765,7 @@ retry_response:
 								goto html_response;
 							}
 						}
-						else
+						else if(!islike(param + 10, "/net"))
 						{
 							strcpy(templn, param);
 
@@ -3880,20 +3920,16 @@ static void wwwd_thread(u64 arg)
 	memset(cp_path, 0, STD_PATH_LEN);
 #endif
 
-#ifdef WM_REQUEST
-	cellFsUnlink(WMREQUEST_FILE);
-#endif
-
-	{from_reboot = file_exists(WMNOSCAN);}
-
-#ifdef COBRA_ONLY
-	{sys_map_path((char*)"/app_home", NULL);}
-#endif
-
 	//WebmanCfg *webman_config = (WebmanCfg*) wmconfig;
 	read_settings();
 
-	max_temp = 0;
+	if(webman_config->blind) enable_dev_blind(NO_MSG);
+
+	set_buffer_sizes(webman_config->foot);
+
+#ifdef COPY_PS3
+	parse_script("/dev_hdd0/boot_init.txt");
+#endif
 
 	if(webman_config->fanc)
 	{
@@ -3901,13 +3937,15 @@ static void wwwd_thread(u64 arg)
 		fan_control(webman_config->temp0, 0);
 	}
 
-	if(webman_config->blind) enable_dev_blind(NO_MSG);
-
-#ifdef COPY_PS3
-	parse_script("/dev_hdd0/boot_init.txt");
+#ifdef WM_REQUEST
+	cellFsUnlink(WMREQUEST_FILE);
 #endif
 
-	set_buffer_sizes(webman_config->foot);
+#ifdef COBRA_ONLY
+	{sys_map_path((char*)"/app_home", NULL);}
+#endif
+
+	from_reboot = file_exists(WMNOSCAN);
 
 	#ifdef AUTO_POWER_OFF
 	restoreAutoPowerOff();
@@ -4047,8 +4085,6 @@ int wwwd_start(size_t args, void *argp)
 	//pokeq(0x8000000000003D90ULL, 0x386000014E800020ULL); // li r3, 0 / blr
 
 	sys_ppu_thread_create(&thread_id_wwwd, wwwd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_WEB_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_SVR);
-
-	led(GREEN, ON);
 
 #ifndef CCAPI
 	_sys_ppu_thread_exit(0); // remove for ccapi compatibility

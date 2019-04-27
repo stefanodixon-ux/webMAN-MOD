@@ -12,7 +12,7 @@ u64 idps_offset1 = 0;
 u64 idps_offset2 = 0;
 u64 psid_offset  = 0;
 
-u64 eid0_idps[2];
+u64 eid0_idps[2] = {0, 0};
 
 static void get_idps_psid(void)
 {
@@ -109,6 +109,8 @@ static void spoof_idps_psid(void)
 
 static void get_eid0_idps(void)
 {
+	if(eid0_idps[0]) return;
+
 	u64 buffer[0x40], start_sector;
 	u32 read;
 	sys_device_handle_t source;

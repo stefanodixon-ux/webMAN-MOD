@@ -1,19 +1,35 @@
-//#define SC_PEEK_LV2					(6)
-//#define SC_POKE_LV2					(7)
+#define SC_PEEK_LV2						(6)
+#define SC_POKE_LV2						(7)
 #define SC_PEEK_LV1 					(8)
 #define SC_POKE_LV1 					(9)
 
 #define SYSCALL8_OPCODE_PS3MAPI			0x7777
 #define PS3MAPI_OPCODE_LV1_POKE			0x1009
 
-static inline u64 peek_lv1(u64 addr)
+static u64 sc_peekq = SC_PEEK_LV1; // SC used for lv2 peek
+static u64 sc_pokeq = SC_POKE_LV1; // SC used for lv2 poke
+
+static inline u64 lv2peek(u64 addr) //lv2
 {
+	system_call_1(SC_PEEK_LV2, addr);
+	return (u64) p1;
+}
+
+static void lv2poke(u64 addr, u64 value) //lv2
+{
+	system_call_2(SC_POKE_LV2, addr, value);
+}
+
+static u64 peek_lv1(u64 addr)
+{
+	if(payload_ps3hen) return ENOTSUP;
 	system_call_1(SC_PEEK_LV1, (u64) addr);
 	return (u64) p1;
 }
 
 static void poke_lv1( u64 addr, u64 value)
 {
+	if(payload_ps3hen) return;
 	if(!syscalls_removed)
 		{system_call_2(SC_POKE_LV1, addr, value);}
 #ifdef COBRA_ONLY
@@ -22,19 +38,21 @@ static void poke_lv1( u64 addr, u64 value)
 #endif
 }
 
-static inline u64 peekq(u64 addr) //lv2
+static u64 peekq(u64 addr) //lv2
 {
-	system_call_1(SC_PEEK_LV1, addr + LV2_OFFSET_ON_LV1); //old: {system_call_1(SC_PEEK_LV2, addr);}
+	system_call_1(sc_peekq, addr + LV2_OFFSET_ON_LV1); //old: {system_call_1(SC_PEEK_LV2, addr);}
 	return (u64) p1;
 }
 
 static void pokeq(u64 addr, u64 value) //lv2
 {
 	if(!syscalls_removed)
-		{system_call_2(SC_POKE_LV1, addr + LV2_OFFSET_ON_LV1, value);} // {system_call_2(SC_POKE_LV2, addr, value);}
+		{system_call_2(sc_pokeq, addr + LV2_OFFSET_ON_LV1, value);} // {system_call_2(SC_POKE_LV2, addr, value);}
 #ifdef COBRA_ONLY
 	else
 		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_POKE, addr + LV2_OFFSET_ON_LV1, value);} // use ps3mapi extension to support poke lv2
+	
+	if(payload_ps3hen && (peekq(addr) != value)) {system_call_3(SC_COBRA_SYSCALL8, 0x7003ULL, addr, value);}
 #endif
 }
 

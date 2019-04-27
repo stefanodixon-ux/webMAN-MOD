@@ -20,6 +20,7 @@ static void get_cobra_version(char *cfw_info)
 	#else
 		sprintf(cfw_info, "%s %s: %s", "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
 	#endif
+	if(!cobra_version) {char *cfw = strchr(cfw_info, ' '); *cfw = NULL;}
 #elif DEX_SUPPORT
 	#if defined(DECR_SUPPORT)
 		sprintf(cfw_info, "%s", (dex_mode == 1) ? "DECR" : dex_mode ? "DEX" : "CEX");

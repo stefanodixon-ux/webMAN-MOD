@@ -107,7 +107,7 @@ static bool abort_autoplay(void)
 	if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & (CELL_PAD_CTRL_DOWN | CELL_PAD_CTRL_UP | CELL_PAD_CTRL_LEFT | CELL_PAD_CTRL_RIGHT)) ||
 		(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CIRCLE)))
 	{
-		if(mount_unk == APP_GAME) return false;
+		if((mount_unk == APP_GAME) || ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2))) return false;
 		if(webman_config->autoplay && !webman_config->nobeep) BEEP2;
 		return true;
 	}
@@ -215,7 +215,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 			while(View_Find("webrender_plugin") || View_Find("webbrowser_plugin"))
 			{
-				if(wait_for_abort(50000)) return; if(++retry > 40) break;
+				if(wait_for_abort(50000)) return; if(++retry > 100) break;
 			}
 
 			// use segment for media type
@@ -228,10 +228,11 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 				if(isDir("/dev_bdvd/AVCHD"))    {sprintf(category, "video"); sprintf(seg_name, "seg_avchd_device");} else
 				return;
 			}
+			else {timeout = 1, icon_found = 1;}
 
 			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
 
-			if(mount_unk >= EMU_ROMS) {timeout = 2, icon_found = 1;}
+			if(mount_unk >= EMU_ROMS) {timeout = 1, icon_found = 1;}
 
 			char explore_command[128]; // info: http://www.psdevwiki.com/ps3/explore_plugin
 
@@ -257,16 +258,44 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 			if(execute) explore_exec_push(0, false);
 		}
-		else if(!webman_config->nobeep) {BEEP3}
+		//else if(!webman_config->nobeep) {BEEP3}
 	}
 }
 
-static bool is_app_home_onxmb(char *buffer, size_t size)
+static int has_app_home = -1;
+
+static bool is_app_home_onxmb(void)
 {
-	size_t read_e = read_file((char*)"/dev_flash/vsh/resource/explore/xmb/category_game.xml", buffer, size, 0);
-	return ((read_e > 100) && (!strstr(buffer, "<!--")) && (strstr(buffer, "seg_gamedebug") != NULL));
+	if(has_app_home >= 0) return (bool)has_app_home; has_app_home = false;
+
+	sys_addr_t sysmem = NULL;
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	{
+		char *buffer = (char*)sysmem;
+		size_t read_e = read_file((char*)"/dev_flash/vsh/resource/explore/xmb/category_game.xml", buffer, _8KB_, 0);
+		has_app_home = ((read_e > 100) && (!strstr(buffer, "<!--")) && (strstr(buffer, "seg_gamedebug") != NULL));
+		sys_memory_free(sysmem);
+	}
+
+	return has_app_home;
 }
 
+#ifdef COBRA_ONLY
+static void reload_xmb(void)
+{
+	if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+	{
+		if(is_app_home_onxmb())
+		{
+			char col[8] = "network", seg[16] ="-1";
+			set_apphome((char*)"/dev_hdd0/game/RELOADXMB");
+			mount_unk = APP_GAME; *col = NULL, *seg = NULL;
+			launch_disc(col, seg, true);
+			mount_unk = EMU_OFF;
+		}
+	}
+}
+#else
 static void reload_xmb(void)
 {
 	CellPadData pad_data = pad_read();
@@ -284,7 +313,7 @@ static void reload_xmb(void)
 		explore_exec_push(0, false);
 	}
 }
-
+#endif
 /*
 static void show_msg2(char* msg) // usage: show_msg2(L"text");
 {

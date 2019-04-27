@@ -210,7 +210,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -------------------------
 		// use relative source path
 		// -------------------------
-		if(file_exists(source) == false) {sprintf(templn, "%s/%s", html_base_path, source + 1); if(file_exists(templn)) sprintf(source, "%s", templn);}
+		if(!islike(source, "/net") && file_exists(source) == false) {sprintf(templn, "%s/%s", html_base_path, source + 1); if(file_exists(templn)) sprintf(source, "%s", templn);}
 
 		// --------------
 		// set mount url
@@ -297,7 +297,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// -----------------
 			char *filename = strrchr(_path, '/'), *icon = tempstr;
 			{
-				char titleid[TITLEID_LEN], *d_name; *icon = *titleid = NULL;
+				char title_id[TITLEID_LEN], *d_name; *icon = *title_id = NULL;
 				u8 f0 = strstr(filename, ".ntfs[") ? NTFS : 0, f1 = strstr(_path, "PS2") ? 5 : strstr(_path, "PSX") ? 6 : strstr(_path, "PSP") ? 8 : 2, is_dir = isDir(source);
 
 				check_cover_folders(templn);
@@ -312,17 +312,17 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					if(is_dir)
 					{
 						sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name);
-						get_title_and_id_from_sfo(templn, titleid, d_name, icon, buf, 0); f1 = 0;
+						get_title_and_id_from_sfo(templn, title_id, d_name, icon, buf, 0); f1 = 0;
 					}
 #ifdef COBRA_ONLY
 					else
 					{
-						get_name_iso_or_sfo(templn, titleid, icon, _path, d_name, f0, f1, FROM_MOUNT, strlen(d_name), buf);
+						get_name_iso_or_sfo(templn, title_id, icon, _path, d_name, f0, f1, FROM_MOUNT, strlen(d_name), buf);
 					}
 #endif
 					free(buf);
 				}
-				default_icon = get_default_icon(icon, _path, d_name, is_dir, titleid, NONE, f0, f1);
+				default_icon = get_default_icon(icon, _path, d_name, is_dir, title_id, NONE, f0, f1);
 
 				*filename = '/';
 			}
@@ -576,14 +576,14 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							sprintf(title, "/dev_bdvd/PS3_GAME/PARAM.SFO");
 							if(file_exists(title))
 							{
-								char titleid[TITLEID_LEN];
-								getTitleID(title, titleid, GET_TITLE_AND_ID);
-								if(*titleid && (titleid[8] >= '0'))
+								char title_id[TITLEID_LEN];
+								getTitleID(title, title_id, GET_TITLE_AND_ID);
+								if(*title_id && (title_id[8] >= '0'))
 								{
 									if(strstr(title, " ["))
 										sprintf(target, "%s/%s", "/dev_hdd0/GAMES", title);
 									else
-										sprintf(target, "%s/%s [%s]", "/dev_hdd0/GAMES", title, titleid);
+										sprintf(target, "%s/%s [%s]", "/dev_hdd0/GAMES", title, title_id);
 								}
 							}
 						}
@@ -808,6 +808,17 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 }
 
 #ifdef COBRA_ONLY
+static void set_apphome(char *game_path)
+{
+		if(game_path)
+			sys_map_path("/app_home", game_path);
+		else
+			sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD
+
+		sys_map_path("/app_home/USRDIR", NULL);
+		sys_map_path("/app_home/PS3_GAME", game_path);
+}
+
 static void do_umount_iso(void)
 {
 	unsigned int real_disctype, effective_disctype, iso_disctype;
@@ -859,9 +870,7 @@ static void do_umount(bool clean)
 		sys_map_path("/dev_bdvd", NULL);
 		sys_map_path("//dev_bdvd", NULL);
 
-		sys_map_path("/app_home/USRDIR", NULL);
-		sys_map_path("/app_home/PS3_GAME", NULL);
-		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD
+		set_apphome(NULL);
 
 		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL);
 
@@ -1123,7 +1132,7 @@ static void mount_thread(u64 action)
 	// ---------------
 
 	char netid = NULL;
-	char _path[STD_PATH_LEN], titleID[TITLEID_LEN];
+	char _path[STD_PATH_LEN], title_id[TITLEID_LEN];
 
 	ret = true;
 
@@ -1269,12 +1278,11 @@ static void mount_thread(u64 action)
 	// ------------------
 	if(islike(_path, "/dev_hdd0/game"))
 	{
-		sys_map_path((char*)"/app_home", (char*)NULL);
-		sys_map_path((char*)"/app_home/USRDIR", (char*)NULL);
-		sys_map_path((char*)"/app_home/PS3_GAME", (char*)_path);
+		set_apphome(_path);
 
-		char buffer[_2KB_], col[16], seg[16]; *col = NULL, *seg = NULL; ret = false;
-		if(is_app_home_onxmb(buffer, _2KB_)) {mount_unk = APP_GAME; launch_disc(col, seg, true); ret = true;}
+		char col[8], seg[16]; *col = NULL, *seg = NULL; ret = false;
+		if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(col, seg, true); ret = true;}
+
 		mount_unk = EMU_MAX;
 		goto exit_mount;
 	}
@@ -1574,7 +1582,7 @@ static void mount_thread(u64 action)
 						get_name(templn, _path, NO_EXT);
 						cache_icon0_and_param_sfo(templn);
 	#ifdef FIX_GAME
-						fix_game(_path, titleID, webman_config->fixgame);
+						fix_game(_path, title_id, webman_config->fixgame);
 	#endif
 					}
 
@@ -1736,7 +1744,7 @@ static void mount_thread(u64 action)
 					cache_icon0_and_param_sfo(templn);
 
 					#ifdef FIX_GAME
-					fix_game(_path, titleID, webman_config->fixgame);
+					fix_game(_path, title_id, webman_config->fixgame);
 					#endif
 				}
 
@@ -2035,12 +2043,12 @@ static void mount_thread(u64 action)
 
 			// -- fix game & get TitleID from PARAM.SFO
 		#ifdef FIX_GAME
-			fix_game(_path, titleID, webman_config->fixgame);
+			fix_game(_path, title_id, webman_config->fixgame);
 		#else
 			char filename[STD_PATH_LEN + 20];
 			sprintf(filename, "%s/PS3_GAME/PARAM.SFO", _path);
 
-			getTitleID(filename, titleID, GET_TITLE_ID_ONLY);
+			getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 		#endif
 			// ----
 
@@ -2054,8 +2062,8 @@ static void mount_thread(u64 action)
 			}
 
 			// -- mount game folder
-			if((*titleID > ' ') && (titleID[8] >= '0'))
-				cobra_map_game(_path, titleID, &special_mode);
+			if((*title_id > ' ') && (title_id[8] >= '0'))
+				cobra_map_game(_path, title_id, &special_mode);
 			else
 				cobra_map_game(_path, "TEST00000", &special_mode);
 		}
@@ -2186,10 +2194,10 @@ install_mm_payload:
 		char filename[STD_PATH_LEN + 20];
 
 		sprintf(filename, "%s/PS3_GAME/PARAM.SFO", _path);
-		getTitleID(filename, titleID, GET_TITLE_ID_ONLY);
+		getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 	}
 	#else
-		fix_game(_path, titleID, webman_config->fixgame);
+		fix_game(_path, title_id, webman_config->fixgame);
 	#endif //#ifndef FIX_GAME
 	// ----
 
@@ -2245,8 +2253,8 @@ install_mm_payload:
 	// Patched explore_plugin.sprx
 	//----------------------------
 	{
-		char expplg[128];
-		char app_sys[128];
+		char expplg[64];
+		char app_sys[64];
 
 		sprintf(app_sys, MM_ROOT_STD "/sys");
 		if(!isDir(app_sys))
@@ -2281,8 +2289,10 @@ install_mm_payload:
 		//---------------
 		if(action && (c_firmware >= 4.20f))
 		{
-			sprintf(expplg, "%s/ILFS0_000.BIN", app_sys);
-			if(file_exists(NEW_LIBFS_PATH)) sprintf(expplg, "%s", NEW_LIBFS_PATH);
+			if(file_exists(NEW_LIBFS_PATH))
+				sprintf(expplg, "%s", NEW_LIBFS_PATH);
+			else
+				sprintf(expplg, "%s/ILFS0_000.BIN", app_sys);
 
 			if(file_exists(expplg))
 				add_to_map(ORG_LIBFS_PATH, expplg);
@@ -2373,15 +2383,15 @@ exit_mount:
 	{
 		char filename[64];
 		sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
-		getTitleID(filename, titleID, GET_TITLE_ID_ONLY);
+		getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 
 		// check update folder
-		sprintf(filename, "%s%s%s", HDD0_GAME_DIR, titleID, "/PARAM.SFO");
+		sprintf(filename, "%s%s%s", HDD0_GAME_DIR, title_id, "/PARAM.SFO");
 
 		if(file_exists(filename) == false)
 			sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
 
-		getTitleID(filename, titleID, SHOW_WARNING);
+		getTitleID(filename, title_id, SHOW_WARNING);
 	}
 #endif
 
@@ -2421,7 +2431,9 @@ mounting_done:
 	// redirect system files (PUP, net/PKG, SND0.AT3)
 	// -----------------------------------------------
 	{
-		cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? 0 : MODE);
+		cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? NOSND : MODE);
+
+		apply_remaps();
 
 		if(ret && file_exists("/dev_bdvd/PS3UPDAT.PUP"))
 		{
@@ -2432,8 +2444,6 @@ mounting_done:
 		{
 			sys_map_path("/app_home", "/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
 		}
-
-		apply_remaps();
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
@@ -2467,7 +2477,7 @@ static bool mount_game(const char *path, u8 action)
 	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, mount_thread, (u64)action, THREAD_PRIO_HIGH, THREAD_STACK_SIZE_MOUNT_GAME, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
 
-	while(is_mounting && working) sys_ppu_thread_usleep(200000); // wait until thread mount game
+	while(is_mounting && working) sys_ppu_thread_sleep(1); // wait until thread mount game
 
 	_path0 = NULL;
 

@@ -1310,7 +1310,7 @@ relisten:
 	{
 		while(working)
 		{
-			sys_ppu_thread_usleep(100000);
+			sys_ppu_thread_usleep(50000);
 			int conn_s_ftp;
 			if(!working || !ftp_working) break;
 			if(ftp_active > MAX_FTP_THREADS) continue;

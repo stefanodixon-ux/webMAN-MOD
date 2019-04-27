@@ -85,7 +85,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 
 static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 {
-	u64 address, addr, byte_addr, fvalue, value=0, upper_memory=LV2_UPPER_MEMORY, found_address=0, step = 1;
+	u64 address, addr, byte_addr, fvalue, value=0, upper_memory, found_address=0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0;
 	bool bits8 = false, bits16 = false, bits32 = false, found = false;
 	u8 flen=0;
@@ -104,31 +104,30 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 		flen -= byte; byte = p = 0;
 	}
 
-	bits32=(flen>4) && (flen<=8);
-	bits16=(flen>2) && (flen<=4);
+	bits32=(flen >4) && (flen<=8);
+	bits16=(flen >2) && (flen<=4);
 	bits8 =(flen<=2);
 
 	buffer += concat(buffer, "<pre>");
 
 	address|=0x8000000000000000ULL;
 
-	lv1=strstr(param,".lv1?")?1:0;
-	upper_memory=(lv1?LV1_UPPER_MEMORY:LV2_UPPER_MEMORY)-8;
+	lv1 = strstr(param,".lv1?") ? 1 : 0;
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
 
-	if(strstr(param,"#"))
+	if(islike(param, "/find.lv"))
 	{
-		if(islike(param, "/find.lv"))
-			step = 4, address &= 0x80000000FFFFFFFCULL; // find using aligned memory address (4X faster) e.g. /find.lv2?3000=3940ffff#
-		else
-			upper_memory = 0x80000000FFFFFFF8ULL; // override the default upper memory limit (peek & poke only). /peek.lv2?3000#
+		if(strstr(param,"#")) {step = 4, address &= 0x80000000FFFFFFFCULL;} // find using aligned memory address (4X faster) e.g. /find.lv2?3000=3940ffff#
+		upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;
 	}
+	else
+		upper_memory = 0x8FFFFFFFFFFFFFF8ULL; // allow peek/poke any memory address
 
 	if((v == NULL) || (address > upper_memory)) { /* ignore find/poke if value is not provided or invalid address */ }
 	else
 	if(islike(param, "/find.lv"))
 	{
-		fvalue = convertH(v+1);
+		fvalue = convertH(v + 1);
 
 		if(bits8)  fvalue = (fvalue << 56);
 		if(bits16) fvalue = (fvalue << 48);

@@ -205,6 +205,7 @@ static char STR_SETTINGSUPD[192];//	= "Settings updated.<br><br>Click <a href=\"
 static char STR_ERROR[16];//		= "Error!";
 
 static char STR_MYGAMES[32];//		= "webMAN Games";
+static char STR_LOADGAMES[72];//	= "Load games with webMAN";
 
 static char STR_FIXING[32];//		= "Fixing";
 
@@ -463,13 +464,10 @@ static bool language(const char *key_name, char *label, const char *default_str)
 	return true;
 }
 
-#ifndef ENGLISH_ONLY
 static void close_language(void)
 {
 	if(fh) cellFsClose(fh); fh = 0;
 }
-#endif
-
 
 #undef CHUNK_SIZE
 #undef GET_NEXT_BYTE
@@ -520,6 +518,7 @@ static void update_language(void)
 		language("STR_ERROR", STR_ERROR, "Error!");
 
 		language("STR_MYGAMES", STR_MYGAMES, "webMAN Games");
+		language("STR_LOADGAMES", STR_LOADGAMES, "Load games with webMAN");
 
 		language("STR_FIXING", STR_FIXING, "Fixing");
 

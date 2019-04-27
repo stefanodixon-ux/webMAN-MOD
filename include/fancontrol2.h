@@ -26,7 +26,7 @@ static void poll_start_play_time(void)
 		}
 	#endif
 
-		if(toggle_snd0 && webman_config->nosnd0) { toggle_snd0 = false; cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", 0); } /* disable SND0.AT3 on XMB */
+		if(toggle_snd0 && webman_config->nosnd0) { toggle_snd0 = false; cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", NOSND); } /* disable SND0.AT3 on XMB */
 	}
 	else if(gTick.tick == rTick.tick) /* the game started a moment ago */
 	{

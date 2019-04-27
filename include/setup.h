@@ -237,8 +237,8 @@ static void setup_parse_settings(char *param)
 	if(strstr(param, "rf=1")) webman_config->refr = 1;
 
 #ifdef LAUNCHPAD
-	if(strstr(param, "lx=1")) webman_config->launchpad_xml = 1;
-	if(strstr(param, "lg=1")) webman_config->launchpad_grp = 1;
+	if(!strstr(param, "lx=1")) webman_config->launchpad_xml = 1;
+	if( strstr(param, "lg=1")) webman_config->launchpad_grp = 1;
 #endif
 
 	webman_config->temp0   = 0;
@@ -525,7 +525,7 @@ static void setup_form(char *buffer, char *templn)
 					"<tr><td width=\"250\">", STR_SCAN2); strcat(buffer, templn);
 
 	//Scan these devices
-	if((!isDir("/dev_hdd0/GAMEZ")) && is_app_home_onxmb(buffer + _32KB_, _2KB_))
+	if(!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb())
 		add_check_box("np", false, "/dev_hdd0/game", "</label><br>", (webman_config->npdrm), buffer);
 	add_check_box("u0", false, drives[1], _BR_, (webman_config->usb0), buffer);
 	add_check_box("u1", false, drives[2], _BR_, (webman_config->usb1), buffer);
@@ -592,7 +592,7 @@ static void setup_form(char *buffer, char *templn)
 		sprintf(_nd, "nd%i", id); sprintf(_neth, "neth%i", id); sprintf(_netp, "netp%i", id);
 
 		add_check_box(_nd, false, STR_LANGAMES,  PS3NETSRV, (webman_config->netd[id]), buffer);
-		sprintf(templn, HTML_INPUT("%s", "%s", "15", "16") ":" HTML_NUMBER("%s", "%i", "1", "65535") "<br>",
+		sprintf(templn, HTML_INPUT("%s", "%s", "15", "16") ":" HTML_PORT("%s", "%i") "<br>",
 				_neth, webman_config->neth[id],
 				_netp, webman_config->netp[id]); strcat(buffer, templn);
 		++PS3NETSRV[21], ++PS3NETSRV[75];
@@ -634,15 +634,7 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("bl", false, STR_DEVBL,   _BR_, (webman_config->blind),   buffer);
 	add_check_box("wn", false, STR_NOWMDN,  _BR_, (webman_config->wmstart), buffer);
 
-#ifdef LAUNCHPAD
-	add_check_box("rf", false, STR_CONTSCAN, " ", (webman_config->refr), buffer);
-	if(file_exists(LAUNCHPAD_FILE_XML))
-		add_check_box("lx", false, "& LaunchPad.xml", _BR_, (webman_config->launchpad_xml), buffer);
-	else
-		strcat(buffer, "<br>");
-#else
 	add_check_box("rf", false,  STR_CONTSCAN, _BR_, (webman_config->refr), buffer);
-#endif
 
 	add_check_box("pl", false, STR_USBPOLL, _BR_, (webman_config->poll) , buffer);
 #ifdef COBRA_ONLY
@@ -650,7 +642,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 	add_check_box("ft", false, STR_FTPSVC,   " : ", (webman_config->ftpd) , buffer);
-	sprintf(templn, HTML_NUMBER("ff", "%i", "1", "65535") " • Timeout ", webman_config->ftp_port); strcat(buffer, templn);
+	sprintf(templn, HTML_PORT("ff", "%i") " • Timeout ", webman_config->ftp_port); strcat(buffer, templn);
 
 #ifdef AUTO_POWER_OFF
 	sprintf(templn, HTML_NUMBER("tm", "%i", "0", "255") " mins • ", webman_config->ftp_timeout); strcat(buffer, templn);
@@ -662,7 +654,7 @@ static void setup_form(char *buffer, char *templn)
  #ifdef PS3NET_SERVER
 	sprintf(templn, "%s", STR_FTPSVC); char *pos = strcasestr(templn, "FTP"); if(pos) {pos[0] = 'N', pos[1] = 'E', pos[2] = 'T';}
 	add_check_box("nd", false, templn,   " : ", (webman_config->netsrvd) , buffer);
-	sprintf(templn, HTML_NUMBER("ndp", "%i", "1", "65535") "<br>", webman_config->netsrvp); strcat(buffer, templn);
+	sprintf(templn, HTML_PORT("ndp", "%i") "<br>", webman_config->netsrvp); strcat(buffer, templn);
  #endif
 
 #ifdef LITE_EDITION
@@ -690,7 +682,8 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef LAUNCHPAD
 	add_check_box("ng" , false, STR_NOGRP,       " & "   , (webman_config->nogrp  ),       buffer);
-	add_check_box("lg" , false, "LaunchPad.xml",     _BR_, (webman_config->launchpad_grp), buffer);
+	if(file_exists(LAUNCHPAD_FILE_XML))
+		add_check_box("lg" , false, "LaunchPad.xml",     _BR_, (webman_config->launchpad_grp), buffer);
 #else
 	add_check_box("ng" , false, STR_NOGRP,     _BR_, (webman_config->nogrp  ), buffer);
 #endif
@@ -766,9 +759,14 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item(1, "Path + ID", (value == 1), buffer);
 	strcat(buffer, "</select><br>");
 
-	//game mounting
-	add_check_box("apd", false, STR_AUTO_PLAY, _BR_, (webman_config->autoplay), buffer);
+#ifdef LAUNCHPAD
+	if(file_exists(LAUNCHPAD_FILE_XML))
+		add_check_box("lx", false, "LaunchPad.xml | PhotoGUI (USB0/PICTURE)", _BR_, !(webman_config->launchpad_xml), buffer);
+	else
+		add_check_box("lx", false, "PhotoGUI (USB0/PICTURE)", _BR_, !(webman_config->launchpad_xml), buffer);
+#endif
 
+	//game mounting
 #ifdef FIX_GAME
 	if(c_firmware >= 4.20f && c_firmware < LATEST_CFW)
 	{
@@ -780,7 +778,7 @@ static void setup_form(char *buffer, char *templn)
 		strcat(buffer, "</select><br>");
 	}
 #endif
-
+	add_check_box("apd", false, STR_AUTO_PLAY, _BR_, (webman_config->autoplay), buffer);
 	add_check_box("sm\"  accesskey=\"G", false, "sMAN GUI",  _BR_, (webman_config->sman), buffer);
 
 	//general settings
@@ -1139,32 +1137,41 @@ static void setup_form(char *buffer, char *templn)
 */
 }
 
-static bool snd0_running = false;
+static sys_ppu_thread_t t_snd0_thread_id = SYS_PPU_THREAD_NONE;
 static u8 prev_nosnd0 = 0;
 
 static void snd0_thread(u64 action)
 {
-	if(snd0_running || (webman_config->nosnd0 == prev_nosnd0)) return; snd0_running = true;
-
 	int fd;
-	if(cellFsOpendir("/dev_hdd0/game", &fd) == CELL_FS_SUCCEEDED)
+	if(cellFsOpendir((char*)"/dev_hdd0/game", &fd) == CELL_FS_SUCCEEDED)
 	{
 		prev_nosnd0 = webman_config->nosnd0;
-		int mode = webman_config->nosnd0 ? 0 : MODE; // toggle file access permissions
-		CellFsDirent dir; u64 read_e; char snd0_file[32];
-		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
+
+		CellFsDirectoryEntry entry; size_t read_e; char snd0_file[MAX_PATH_LEN];
+		int mode = webman_config->nosnd0 ? NOSND : MODE; // toggle file access permissions
+
+		while(working)
 		{
-			if(dir.d_namlen != 9) continue;
-			sprintf(snd0_file, "%s%s/SND0.AT3", HDD0_GAME_DIR, dir.d_name);
-			cellFsChmod(snd0_file, mode);
-			sprintf(snd0_file, "%s%s/ICON1.PAM", HDD0_GAME_DIR, dir.d_name);
-			cellFsChmod(snd0_file, mode);
+			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
+			if(entry.entry_name.d_namlen != TITLE_ID_LEN) continue;
+			sprintf(snd0_file, "%s%s/SND0.AT3",  HDD0_GAME_DIR, entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
+			sprintf(snd0_file, "%s%s/ICON1.PAM", HDD0_GAME_DIR, entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
 		}
 		cellFsClosedir(fd);
 	}
 
-	snd0_running = false;
+	t_snd0_thread_id = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
+}
+
+static void mute_snd0(bool scan_gamedir)
+{
+	cellFsChmod("/dev_bdvd/PS3_GAME/ICON1.PAM", webman_config->nosnd0 ? NOSND : MODE);
+
+	if(!scan_gamedir) return;
+
+	if((t_snd0_thread_id == SYS_PPU_THREAD_NONE) && !payload_ps3hen)
+		sys_ppu_thread_create(&t_snd0_thread_id, snd0_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_64KB, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_SND0);
 }
 
 static int save_settings(void)
@@ -1172,10 +1179,7 @@ static int save_settings(void)
 #ifdef COBRA_ONLY
 	apply_remaps(); // update remaps on startup / save settngs
 #endif
-	cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", webman_config->nosnd0 ? 0 : MODE);
-
-	sys_ppu_thread_t t_id;
-	sys_ppu_thread_create(&t_id, snd0_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_6KB, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_SND0);
+	mute_snd0(webman_config->nosnd0 != prev_nosnd0);
 
 	return save_file(WMCONFIG, (char*)wmconfig, sizeof(WebmanCfg));
 }
@@ -1287,13 +1291,13 @@ static void read_settings(void)
 	webman_config->lang = 0; // english
 #endif
 
-	// read current settings
-	for(u8 retry = 0; retry < 10; retry++)
-	{
-		if(read_file(WMCONFIG, (char*)&wmconfig, sizeof(WebmanCfg), DONT_CLEAR_DATA)) break;
+	bool save_defaults = false;
 
-		sys_ppu_thread_usleep(500000);
-	}
+	// read current settings
+	if(file_exists(WMCONFIG))
+		read_file(WMCONFIG, (char*)&wmconfig, sizeof(WebmanCfg), DONT_CLEAR_DATA);
+	else
+		save_defaults = true;
 
 #ifndef COBRA_ONLY
 	webman_config->spp = 0; //disable removal of syscalls on nonCobra
@@ -1326,7 +1330,11 @@ static void read_settings(void)
 	if(!is_pkg_launcher_installed) {webman_config->ps3l = webman_config->roms = 0; f1_len = 11;}
 #endif
 	// settings
-	save_settings();
+	if(save_defaults)
+	{
+		if(payload_ps3hen) webman_config->refr = 1; //disable scan on startup
+		save_settings();
+	}
 
 	profile = webman_config->profile;
 

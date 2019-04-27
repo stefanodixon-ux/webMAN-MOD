@@ -40,10 +40,19 @@ static void refresh_xml(char *msg)
 	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
 	show_msg(msg);
 
+	// refresh XML
 	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, handleclient_www, (u64)REFRESH_CONTENT, THREAD_PRIO_HIGH, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
 
-	while(refreshing_xml && working) sys_ppu_thread_usleep(200000);
+	// refresh SND0 settings for new installed games only with combo SELECT+R3+L1+R1 (reload_xmb)
+	CellPadData pad_data = pad_read();
+	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_L1)))
+	{
+		mute_snd0(true);
+	}
+
+	// wait until complete
+	while(refreshing_xml && working) sys_ppu_thread_sleep(1);
 
 	sprintf(msg, "%s XML%s: OK", STR_REFRESH, SUFIX2(profile));
 	show_msg(msg);
@@ -100,36 +109,34 @@ static bool add_xmb_entry(u8 f0, u8 f1, int plen, const char *tempstr, char *tem
 	return (true);
 }
 
-static void make_fb_xml(char *myxml)
+static void make_fb_xml(void)
 {
- #ifndef ENGLISH_ONLY
-	char STR_LOADGAMES[72];//	= "Load games with webMAN";
-
-	language("STR_LOADGAMES", STR_LOADGAMES, "Load games with webMAN");
-	close_language();
- #endif
-
-	u16 size = sprintf(myxml, "%s" // XML_HEADER
-							  "<View id=\"seg_fb\">"
-							  "<Attributes>"
-							  "<Table key=\"mgames\">%s"
-							//XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
-							  XML_PAIR("ingame","disable")
-							  XML_PAIR("title","%s%s")
-							  XML_PAIR("info","%s")
-							  "</Table>"
-							//"</Attributes><Items>"
-							  "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s"
-							//"</Items></View>"
-							  "</XMBML>", XML_HEADER,
-							  file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
-									XML_PAIR("icon", WM_ICONS_PATH "/icon_wm_root.png") :
-									XML_PAIR("icon_rsc", "item_tex_ps3util"),
-							  STR_MYGAMES, SUFIX2(profile),
-							  STR_LOADGAMES,
-							  "</Attributes><Items>", MY_GAMES_XML, "</Items></View>");
-
-	save_file(FB_XML, myxml, size);
+	sys_addr_t sysmem = NULL;
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	{
+		char *myxml = (char*)sysmem;
+		u16 size = sprintf(myxml, "%s" // XML_HEADER
+								  "<View id=\"seg_fb\">"
+								  "<Attributes>"
+								  "<Table key=\"mgames\">%s"
+								//XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
+								  XML_PAIR("ingame","disable")
+								  XML_PAIR("title","%s%s")
+								  XML_PAIR("info","%s")
+								  "</Table>"
+								//"</Attributes><Items>"
+								  "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s"
+								//"</Items></View>"
+								  "</XMBML>", XML_HEADER,
+								  file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
+										XML_PAIR("icon", WM_ICONS_PATH "/icon_wm_root.png") :
+										XML_PAIR("icon_rsc", "item_tex_ps3util"),
+								  STR_MYGAMES, SUFIX2(profile),
+								  STR_LOADGAMES,
+								  "</Attributes><Items>", MY_GAMES_XML, "</Items></View>");
+		save_file(FB_XML, myxml, size);
+		sys_memory_free(sysmem);
+	}
 }
 
 static u32 get_buffer_size(u8 footprint)
@@ -269,8 +276,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 			if(file_exists(MY_GAMES_XML))
 			{
-				char tmpxml[0x320];
-				make_fb_xml(tmpxml);
+				make_fb_xml();
 				return true; // skip refresh xml & mount autoboot
 			}
 		}
@@ -339,7 +345,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	u16 key = 0; const u16 max_xmb_items = ((u16)(BUFFER_SIZE_ALL / AVG_ITEM_SIZE));
 
-	make_fb_xml(myxml);
+	make_fb_xml();
 
 #ifdef PKG_LAUNCHER
 	bool pkg_launcher = webman_config->ps3l && isDir(PKGLAUNCH_DIR);
@@ -460,7 +466,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	int ns = NONE; u8 uprofile = profile;
 
-	bool is_npdrm = webman_config->npdrm && (!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb(tempstr, _2KB_)); strcpy(paths[id_GAMEZ], is_npdrm ? "game" : "GAMEZ");
+	bool is_npdrm = webman_config->npdrm && (!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb()); strcpy(paths[id_GAMEZ], is_npdrm ? "game" : "GAMEZ");
 
 #ifdef NET_SUPPORT
 	int abort_connection = 0;
@@ -553,7 +559,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 			{
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, plen;
-				char tempID[12];
+				char title_id[12];
 				u8 is_iso = 0;
 
 #ifdef NET_SUPPORT
@@ -567,6 +573,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 					data=(netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
 				}
 #endif
+				if(!is_net && isDir(param) == false) goto continue_reading_folder_xml; //continue;
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_xml; //continue;
 
 				plen = strlen(param);
@@ -583,9 +590,9 @@ static bool scan_mygames_xml(u64 conn_s_p)
 					{
 						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1]==NULL)) ls=true; // single letter folder was found
 
-						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, tempID, f1, 0) == FAILED) {v3_entry++; continue;}
+						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, f1, 0) == FAILED) {v3_entry++; continue;}
 #ifdef SLAUNCH_FILE
-						if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, tempID, f1);
+						if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
 #endif
 						read_e = sprintf(tempstr, "<Table key=\"%04i\">"
 										 XML_PAIR("icon","%s")
@@ -597,13 +604,13 @@ static bool scan_mygames_xml(u64 conn_s_p)
 						// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
 						if(webman_config->info <= 1)
 						{
-							if((webman_config->info == 1) & HAS_TITLE_ID) {sprintf(folder_name, " | %s" , tempID);} else *folder_name = NULL;
+							if((webman_config->info == 1) & HAS_TITLE_ID) {sprintf(folder_name, " | %s" , title_id);} else *folder_name = NULL;
 							read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s%s%s"), neth, param, folder_name);
 						}
 						else if(webman_config->info == 2)
 						{
 							if(HAS_TITLE_ID)
-								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), tempID, drives[f0] + 1);
+								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), title_id, drives[f0] + 1);
 							else
 								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s"), drives[f0] + 1);
 
@@ -626,7 +633,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 						if(IS_ISO_FOLDER || IS_VIDEO_FOLDER)
 						{
 							sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
-							if(cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
+							if(isDir(subpath) && cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
 							{
 								strcpy(subpath, entry.entry_name.d_name); subfolder = 1;
 next_xml_entry:
@@ -671,27 +678,27 @@ next_xml_entry:
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
 						{
-							*icon = *tempID = NULL;
+							*icon = *title_id = NULL;
 
 							if(!is_iso)
 							{
 								if(is_npdrm && (f1 == id_GAMEZ)) sprintf(templn + read_e - 17, "/PARAM.SFO");
-								get_title_and_id_from_sfo(templn, tempID, entry.entry_name.d_name, icon, tempstr, 0);
+								get_title_and_id_from_sfo(templn, title_id, entry.entry_name.d_name, icon, tempstr, 0);
 							}
 							else
 							{
 #ifndef COBRA_ONLY
 								get_name(templn, entry.entry_name.d_name, NO_EXT);
 #else
-								if(get_name_iso_or_sfo(templn, tempID, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) continue;
+								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) continue;
 #endif
 							}
 
-							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, tempID, ns, f1, f0);
+							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f1, f0);
 #ifdef SLAUNCH_FILE
-							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, tempID, f1);
+							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
 #endif
-							if(webman_config->tid && HAS_TITLE_ID && strlen(templn) < 50 && strstr(templn, " [") == NULL) {sprintf(enc_dir_name, " [%s]", tempID); strcat(templn, enc_dir_name);}
+							if(webman_config->tid && HAS_TITLE_ID && strlen(templn) < 50 && strstr(templn, " [") == NULL) {sprintf(enc_dir_name, " [%s]", title_id); strcat(templn, enc_dir_name);}
 
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
@@ -717,13 +724,13 @@ next_xml_entry:
 							// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
 							if(webman_config->info <= 1)
 							{
-								if((webman_config->info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, tempID);}
+								if((webman_config->info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
 								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s/%s%s"), drives[f0], paths[f1], folder_name);
 							}
 							else if(webman_config->info == 2)
 							{
 								if(HAS_TITLE_ID)
-									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), tempID, drives[f0] + 5);
+									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), title_id, drives[f0] + 5);
 								else
 									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s"), drives[f0] + 5);
 
@@ -1078,31 +1085,31 @@ continue_reading_folder_xml:
 	int fdxml = 0, slen;
 	if(cellFsOpen(MY_GAMES_XML, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdxml, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
-		cellFsWrite(fdxml, myxml, strlen(myxml), NULL);
+		cellFsWrite(fdxml, (char*)myxml, strlen(myxml), NULL);
 
 		if( (webman_config->nogrp))
 		{
-			cellFsWrite(fdxml, myxml_ps3, strlen(myxml_ps3), NULL);
+			cellFsWrite(fdxml, (char*)myxml_ps3, strlen(myxml_ps3), NULL);
 			cellFsWrite(fdxml, (char*)"</Attributes><Items>", 20, NULL);
-			cellFsWrite(fdxml, myxml_items, strlen(myxml_items), NULL);
+			cellFsWrite(fdxml, (char*)myxml_items, strlen(myxml_items), NULL);
 			slen = sprintf(myxml, "%s%s", "</Items></View>", "</XMBML>\r\n");
 		}
 		else
 		{
-			if(!(webman_config->cmask & PS3)) cellFsWrite(fdxml, myxml_ps3, strlen(myxml_ps3), NULL);
-			if(!(webman_config->cmask & PS2)) cellFsWrite(fdxml, myxml_ps2, strlen(myxml_ps2), NULL);
+			if(!(webman_config->cmask & PS3)) cellFsWrite(fdxml, (char*)myxml_ps3, strlen(myxml_ps3), NULL);
+			if(!(webman_config->cmask & PS2)) cellFsWrite(fdxml, (char*)myxml_ps2, strlen(myxml_ps2), NULL);
 #ifdef COBRA_ONLY
-			if(!(webman_config->cmask & PS1)) cellFsWrite(fdxml, myxml_psx, strlen(myxml_psx), NULL);
-			if(!(webman_config->cmask & PSP)) cellFsWrite(fdxml, myxml_psp, strlen(myxml_psp), NULL);
+			if(!(webman_config->cmask & PS1)) cellFsWrite(fdxml, (char*)myxml_psx, strlen(myxml_psx), NULL);
+			if(!(webman_config->cmask & PSP)) cellFsWrite(fdxml, (char*)myxml_psp, strlen(myxml_psp), NULL);
 			if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU)) cellFsWrite(fdxml, (char*)myxml_dvd, strlen(myxml_dvd), NULL);
  #ifdef MOUNT_ROMS
-			if(webman_config->roms) cellFsWrite(fdxml, myxml_roms, strlen(myxml_roms), NULL);
+			if(webman_config->roms) cellFsWrite(fdxml, (char*)myxml_roms, strlen(myxml_roms), NULL);
  #endif
 #endif
 			slen = sprintf(myxml, "</XMBML>\r\n");
 		}
 
-		cellFsWrite(fdxml, myxml, slen, NULL);
+		cellFsWrite(fdxml, (char*)myxml, slen, NULL);
 		cellFsClose(fdxml);
 
 		cellFsChmod(MY_GAMES_XML, MODE);
