@@ -2850,7 +2850,7 @@ retry_response:
 				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
 				{
 					bool reply_html = !strstr(param, "//");
-					char *FILE_LIST = reply_html ? "/dev_hdd0/tmp/wmtmp/filelist.htm" : "/dev_hdd0/tmp/wmtmp/filelist.txt";
+					char *FILE_LIST = reply_html ? (char*)"/dev_hdd0/tmp/wmtmp/filelist.htm" : (char*)"/dev_hdd0/tmp/wmtmp/filelist.txt";
 					cellFsUnlink(FILE_LIST);
 					if(reply_html)
 					{
@@ -3030,7 +3030,7 @@ retry_response:
 
 				bool mount_ps3 = !is_popup && islike(param, "/mount_ps3"), forced_mount = false;
 
-				if(mount_ps3 && IS_INGAME) {mount_ps3 = false; forced_mount = true;}
+				if(mount_ps3 && IS_INGAME) {mount_ps3 = false, forced_mount = true, param[6] = '.';}
 
 				char *pbuffer = prepare_html(buffer, templn, param, is_ps3_http, is_cpursx, mount_ps3);
 
@@ -3156,11 +3156,8 @@ retry_response:
 
 					// game list resizer
 					if(!is_ps3_http && islike(param, "/index.ps3"))
-						sprintf( templn, "<script>function rz(z){document.cookie=z + '; expires=Tue, 19 Jan 2038 03:14:07 UTC;';var i,el=document.getElementsByClassName('gc');for(i=0;i<el.length;++i)el[i].style.zoom=z/100;}</script>"
-										 "&nbsp;<input id=\"sz\" type=\"range\" value=\"100\" min=\"20\" max=\"200\" style=\"width:80px;position:relative;top:7px;\" ondblclick=\"this.value=100;rz(100);\" onchange=\"rz(this.value);\">"
-										 "<script>var d=document,z=d.cookie.split(';');css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;</script>"
-/*
-										 // select icon type
+					{
+/*										 // select icon type
 										 "&nbsp;"
 										 "<select name=\"cov\" onchange=\"wmsg.style.display='block';window.location='/index.ps3?cover='+cov.value;\" accesskey=\"C\" style=\"font-size:12px;\">"
 										 "<option value=m>MM COVERS</option>"
@@ -3171,7 +3168,8 @@ retry_response:
 #endif
 										 "</select>"
 */
-										 "</form><hr>");
+						sprintf( templn, "</form><hr>");
+					}
 					else
  #endif
 						sprintf( templn, "</form><hr>");
@@ -4062,8 +4060,6 @@ end:
 int wwwd_start(size_t args, void *argp)
 {
 	cellRtcGetCurrentTick(&rTick); gTick = rTick;
-
-	*backup = NULL;
 
 	detect_firmware();
 

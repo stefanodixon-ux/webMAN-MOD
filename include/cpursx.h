@@ -110,10 +110,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	if((webman_config->fanc == DISABLED) && (get_fan_policy_offset > 0))
 	{
 		u8 st, mode, unknown;
-		backup[2]=peekq(get_fan_policy_offset);
-		lv2poke32(get_fan_policy_offset, 0x38600001); // sys 409 get_fan_policy
 		sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
-		pokeq(get_fan_policy_offset, backup[2]);
 
 		if(strstr(param, "?u")) enable_fan_control(ENABLE_SC8, templn);
 	}

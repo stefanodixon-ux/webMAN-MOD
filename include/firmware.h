@@ -11,8 +11,6 @@ static u64 sc_142 = 0;
 #define IS_DEH (dex_mode == 1)
 #define IS_DEX (dex_mode == 2)
 
-#define IS_HEN (lv2peek(0x8000000000003d90ULL)!=0x386000014e800020ULL)
-
 struct platform_info {
 	u32 firmware_version;
 } info;
@@ -50,12 +48,7 @@ static void detect_firmware(void)
 #endif
 	dex_mode = 0;
 
-	if(IS_HEN)
-	{
-		//payload_ps3hen = (lv1peek(0x1337) == 0x1337);
-		lv2poke(0x8000000000003d90ULL,0x386000014e800020ULL);
-		payload_ps3hen = IS_HEN; if(payload_ps3hen) {sc_peekq = SC_PEEK_LV2, sc_pokeq = SC_POKE_LV2;}
-	}
+	payload_ps3hen = (peek_lv1(0x1337) == 0x1337);
 
 	for(u8 lv2_offset = 1; lv2_offset < 0x10; lv2_offset++)
 	{

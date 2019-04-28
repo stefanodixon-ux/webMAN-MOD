@@ -140,9 +140,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// ---------------------
 	if(islike(param, "/mount") && (strstr(param, "ps3/unmount") != NULL || strstr(param, "ps3/dev_bdvd") != NULL || strstr(param, "ps3/app_home") != NULL))
 	{
-		do_umount(true);
-
-		if(!mount_ps3) umounted = true;
+		if(mount_ps3 || forced_mount || IS_ON_XMB)
+		{
+			do_umount(true);
+			if(mount_ps3) {is_busy = false; return false;}
+			umounted = true;
+		}
 	}
 
 	// -----------------
@@ -153,7 +156,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	{
 		do_umount_ps2disc(false);
 
-		if(!mount_ps3) umounted = true;
+		if(mount_ps3) {is_busy = false; return false;}
+		umounted = true;
 	}
 #endif
 

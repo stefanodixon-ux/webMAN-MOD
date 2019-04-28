@@ -21,6 +21,7 @@ enum paths_ids
 	id_VIDEO    = 10,
 	id_GAMEI    = 11,
 	id_ROMS     = 12,
+	id_NPDRM    = 99,
 };
 
 #define IS_ISO_FOLDER  ((f1>=id_PS3ISO) && (f1!=id_GAMEI) && (f1!=id_VIDEO))
@@ -948,14 +949,15 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 #ifdef LAUNCHPAD
 	if(launchpad_mode) cellFsUnlink(LAUNCHPAD_FILE_XML); else
 #endif
-	if((!mobile_mode) && !(webman_config->sman) && strstr(param, "/index.ps3"))
+	if((!mobile_mode) && strstr(param, "/index.ps3"))
 	{
-		char *pbuffer = buffer + buf_len + concat(buffer, "<font style=\"font-size:18px\">");
+		char *pbuffer = buffer + buf_len + concat(buffer, "<font style=\"font-size:13px\">");
 
 #ifdef COBRA_ONLY
 		if(!(webman_config->cmask & PS3)) { add_query_html(pbuffer, "ps3");
 											add_query_html(pbuffer, "games");
-											add_query_html(pbuffer, "PS3ISO");}
+											add_query_html(pbuffer, "PS3ISO");
+				if( webman_config->npdrm )  add_query_html(pbuffer, "npdrm");}
 
 		if(!(webman_config->cmask & PS2))   add_query_html(pbuffer, "PS2ISO");
 		if(!(webman_config->cmask & PSP))   add_query_html(pbuffer, "PSPISO");
@@ -981,6 +983,11 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		add_query_html(pbuffer, "hdd");
 		add_query_html(pbuffer, "usb");
 #endif //#ifdef COBRA_ONLY
+
+		strcat(pbuffer, "<script>function rz(z){document.cookie=z + '; expires=Tue, 19 Jan 2038 03:14:07 UTC';document.getElementById('mg').style.zoom=z/100;}</script>"
+						"&nbsp;<input id=\"sz\" type=\"range\" value=\"100\" min=\"20\" max=\"200\" style=\"width:80px;position:relative;top:7px;\" ondblclick=\"this.value=100;rz(100);\" onchange=\"rz(this.value);\">");
+
+		if(webman_config->sman) strcat(pbuffer, "<p></font>");
 
 		buf_len += strlen(buffer + buf_len);
 	}
@@ -1069,6 +1076,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			if(!b0 && strstr(param, "usb" ))  {filter0 = 1, b0 = 2;}
 			if(!b1 && strstr(param, "games")) {filter1 = 0, b1 = 2;}
 			if(!b1 && strstr(param, "?ps3"))  {filter1 = 0, b1 = 3;}
+			if(!b1 && strstr(param, "npdrm")) {filter1 = 0, b1 = id_NPDRM;}
 #ifdef NET_SUPPORT
 			if(!b0 && strstr(param, "net" ))  {filter0 = 7, b0=3;}
 #endif
@@ -1116,9 +1124,13 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 						(slaunch.type == TYPE_PSP) ? id_PSPISO :
 						(slaunch.type == TYPE_VID) ? id_BDISO  : id_ROMS;
 
-				if((f1 == id_PS3ISO) && strstr(param, "/GAME")) f1 = id_GAMES;
+				if(f1 == id_PS3ISO)
+				{
+					if(filter1 == f1 && islike(param, HDD0_GAME_DIR)) continue; else
+					if(strstr(param, "/GAME")) f1 = id_GAMES;
+				}
 
-				if(b1) {if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1!=f1) continue;}
+				if(b1) {if(b1 == id_NPDRM) {if(!islike(param, HDD0_GAME_DIR)) continue;} if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1!=f1) continue;}
 				else
 					if(check_content_type(f1)) continue;
 
@@ -1508,35 +1520,36 @@ next_html_entry:
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
 			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); strcat(buffer, templn);
-#ifndef EMBED_JS
-			if(file_exists(GAMES_SCRIPT_JS))
-			{
-				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); strcat(buffer, templn);
-			}
-#endif
 		}
 		else
 		{
 			sprintf(templn, // wait dialog div
 							"<div id=\"wmsg\"><H1>. . .</H1></div>"
 							// show games count + find icon
-							"<a href=\"javascript:var s=prompt('Search:','');if(s){document.getElementById('rhtm').style.display='block';self.location='/index.ps3?'+escape(s)}\">%'i %s &#x1F50D;</a></font>"
+							"<a href=\"javascript:var s=prompt('Search:','');if(s){document.getElementById('rhtm').style.display='block';self.location='/index.ps3?'+escape(s)}\"> &nbsp; %'i %s &#x1F50D;</a></font>"
 							// separator
 							"<HR><span style=\"white-space:normal;\">", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); strcat(buffer, templn);
-#ifndef EMBED_JS
-			if(file_exists(GAMES_SCRIPT_JS))
-			{
-				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); strcat(buffer, templn);
-			}
-#endif
+
 #ifndef LITE_EDITION
 			sortable = file_exists(JQUERY_LIB_JS) && file_exists(JQUERY_UI_LIB_JS);
 			if(sortable)
 			{	// add external jquery libraries
 				sprintf(templn, SCRIPT_SRC_FMT
 								SCRIPT_SRC_FMT
-								"<script>$(function(){$(\"#mg\").sortable();});</script><div id=\"mg\">",
+								"<script>$(function(){$(\"#mg\").sortable();});</script>",
 								JQUERY_LIB_JS, JQUERY_UI_LIB_JS); strcat(buffer, templn);
+			}
+#endif
+		}
+
+		if(!mobile_mode)
+		{
+			strcat(buffer, "<div id=\"mg\">"
+							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;document.getElementById('mg').style.zoom=z/100;</script>");
+#ifndef EMBED_JS
+			if(file_exists(GAMES_SCRIPT_JS))
+			{
+				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); strcat(buffer, templn);
 			}
 #endif
 		}
@@ -1571,12 +1584,14 @@ next_html_entry:
 				tlen += concat(buffer + tlen, (line_entry[m].path) + HTML_KEY_LEN);
 			}
 		else
+		{
 			for(u16 m = 0; m < idx; m++)
 			{
 				tlen += concat(buffer + tlen, GAME_DIV_PREFIX);
 				tlen += concat(buffer + tlen, (line_entry[m].path) + HTML_KEY_LEN);
 				tlen += concat(buffer + tlen, GAME_DIV_SUFIX);
 			}
+		}
 
 #ifndef LITE_EDITION
 		if(sortable) strcat(buffer + tlen, "</div>");
