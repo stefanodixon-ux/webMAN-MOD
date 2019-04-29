@@ -48,6 +48,8 @@
 #define PS3MAPI_OPCODE_SET_ACCESS_KEY				0x2000
 #define PS3MAPI_OPCODE_REQUEST_ACCESS				0x2001
 
+#define PS3MAPI_OPCODE_PHOTO_GUI					0x2222
+
 #define PS3MAPI_FIND_FREE_SLOT						NULL
 
 #define unload_vsh_plugin(a) get_vsh_plugin_slot_by_name(a, true)

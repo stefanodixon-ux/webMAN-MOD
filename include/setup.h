@@ -745,7 +745,6 @@ static void setup_form(char *buffer, char *templn)
 		add_option_item(l, languages[ll], (value == l) , buffer);
 	}
 #endif
-
 	strcat(buffer, "</select><br>");
 
 	add_check_box("tid", false, STR_TITLEID, " • ", (webman_config->tid),  buffer);
@@ -779,7 +778,7 @@ static void setup_form(char *buffer, char *templn)
 	}
 #endif
 	add_check_box("apd", false, STR_AUTO_PLAY, _BR_, (webman_config->autoplay), buffer);
-	add_check_box("sm\"  accesskey=\"G", false, "sMAN GUI",  _BR_, (webman_config->sman), buffer);
+	add_check_box("sm\"  accesskey=\"G", false, "sMAN GUI", _BR_, (webman_config->sman), buffer);
 
 	//general settings
 #ifdef SPOOF_CONSOLEID
@@ -1098,9 +1097,31 @@ static void setup_form(char *buffer, char *templn)
 	strcat(buffer, "</div>");
 
 	sprintf(templn, HTML_RED_SEPARATOR "<input class=\"bs\" type=\"submit\" accesskey=\"S\" value=\" %s \"/>"
-					//"<script>function tgl(o){o.style.display=(o.style.display!='block')?'block':'none';}</script>"
-					"<script>function tgl(o){o.style.maxHeight=(o.style.maxHeight=='500px')?'0px':'500px';}</script>"
-					"</form>", STR_SAVE); strcat(buffer, templn);
+					"<script>function tgl(o){o.style.maxHeight=(o.style.maxHeight=='500px')?'0px':'500px';}</script>",
+					STR_SAVE); strcat(buffer, templn);
+/*
+#ifdef PKG_HANDLER
+	if(IS_ON_XMB && file_exists(WM_RES_PATH "/wm_theme_standard.pkg"))
+	{
+		strcat( buffer, " • Install PKG: <select onchange=\"window.location='/install.ps3" WM_RES_PATH "/'+this.value;\"><option>");
+		int fd;
+		if(cellFsOpendir((char*)WM_RES_PATH, &fd) == CELL_FS_SUCCEEDED)
+		{
+			CellFsDirectoryEntry entry; size_t read_e;
+			while(working)
+			{
+				if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
+				if(!strstr(entry.entry_name.d_name, ".pkg")) continue;
+				strcat(buffer, "<option>");
+				strcat(buffer, entry.entry_name.d_name);
+			}
+			cellFsClosedir(fd);
+		}
+		strcat(buffer, "</select>");
+	}
+#endif
+*/
+	strcat(buffer, "</form>");
 
 #ifndef LITE_EDITION
 	strcat(buffer,  HTML_RED_SEPARATOR
@@ -1180,6 +1201,13 @@ static int save_settings(void)
 	apply_remaps(); // update remaps on startup / save settngs
 #endif
 	mute_snd0(webman_config->nosnd0 != prev_nosnd0);
+
+#ifdef WM_REQUEST
+ #ifdef SLAUNCH_FILE
+	photo_gui = !webman_config->launchpad_xml;
+	if(photo_gui) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PHOTO_GUI, (u64)photo_gui); }
+ #endif
+#endif
 
 	return save_file(WMCONFIG, (char*)wmconfig, sizeof(WebmanCfg));
 }
@@ -1335,6 +1363,15 @@ static void read_settings(void)
 		if(payload_ps3hen) webman_config->refr = 1; //disable scan on startup
 		save_settings();
 	}
+#ifdef WM_REQUEST
+ #ifdef SLAUNCH_FILE
+	else
+	{
+		photo_gui = !webman_config->launchpad_xml;
+		if(photo_gui) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PHOTO_GUI, (u64)photo_gui); }
+	}
+ #endif
+#endif
 
 	profile = webman_config->profile;
 

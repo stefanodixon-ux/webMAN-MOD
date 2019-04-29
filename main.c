@@ -1407,11 +1407,12 @@ parse_request:
 			#endif
 
  #ifdef WM_REQUEST
+  #ifdef SLAUNCH_FILE
 			if(wm_request)
 			{
 				if(buf.st_size > 5 && buf.st_size < HTML_RECV_SIZE && read_file(WMREQUEST_FILE, header, buf.st_size, 0) > 4)
 				{
-					if(islike(header, "/dev_hdd0/photo"))
+					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
 					{
 						char *filename = strrchr(header, '/'); if(filename) filename++;
 						if(filename)
@@ -1422,15 +1423,7 @@ parse_request:
 							int fsl = 0;
 							if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fsl, NULL, 0) == CELL_FS_SUCCEEDED)
 							{
-								typedef struct // 1MB for 2000+1 titles
-								{
-									u8  type;
-									char id[10];
-									u8  path_pos; // start position of path
-									u16 icon_pos; // start position of icon
-									u16 padd;
-									char name[508]; // name + path + icon
-								} __attribute__((packed)) _slaunch; _slaunch slaunch; u64 read_e;
+								_slaunch slaunch; u64 read_e;
 
 								while(cellFsRead(fsl, &slaunch, sizeof(_slaunch), &read_e) == CELL_FS_SUCCEEDED && read_e > 0)
 								{
@@ -1453,7 +1446,8 @@ parse_request:
 				}
 				cellFsUnlink(WMREQUEST_FILE);
 			}
- #endif
+   #endif //#ifdef SLAUNCH_FILE
+ #endif //#ifdef WM_REQUEST
 		}
 		else sprintf(header, "GET %s", mc + 1);
 
@@ -2901,7 +2895,7 @@ retry_response:
 
 				bool is_index_ps3 = islike(param, "/index.ps3?");
 
-				if( is_index_ps3 || islike(param, "/refresh.ps3") ) {char mode, *cover_mode = strstr(param, "?cover="); if(cover_mode) {mode = *(cover_mode + 7) | 0x20, *cover_mode = NULL; webman_config->nocov = (mode == 'o') ? ONLINE_COVERS : (mode == 'd' || mode == 'n') ? SHOW_DISC : (mode == 'i') ? SHOW_ICON0 : SHOW_MMCOVERS;}}
+				if( is_index_ps3 || islike(param, "/refresh.ps3") ) {char mode, *cover_mode = strstr(param, "?cover="); if(cover_mode) {custom_icon = true; mode = *(cover_mode + 7) | 0x20, *cover_mode = NULL; webman_config->nocov = (mode == 'o') ? ONLINE_COVERS : (mode == 'd' || mode == 'n') ? SHOW_DISC : (mode == 'i') ? SHOW_ICON0 : SHOW_MMCOVERS;}}
 
 				for(u8 i = 0; i < 5; i++)
 				{
@@ -3153,27 +3147,8 @@ retry_response:
  #ifndef LITE_EDITION
 					char *nobypass = strstr(param, "$nobypass");
 					if(!nobypass) { PS3MAPI_REENABLE_SYSCALL8 } else *nobypass = NULL;
-
-					// game list resizer
-					if(!is_ps3_http && islike(param, "/index.ps3"))
-					{
-/*										 // select icon type
-										 "&nbsp;"
-										 "<select name=\"cov\" onchange=\"wmsg.style.display='block';window.location='/index.ps3?cover='+cov.value;\" accesskey=\"C\" style=\"font-size:12px;\">"
-										 "<option value=m>MM COVERS</option>"
-										 "<option value=i>ICON0.PNG</option>"
-										 "<option value=n>DISC ICONS</option>"
-#ifndef ENGLISH_ONLY
-										 "<option value=o>ONLINE COVERS</option>"
-#endif
-										 "</select>"
-*/
-						sprintf( templn, "</form><hr>");
-					}
-					else
  #endif
-						sprintf( templn, "</form><hr>");
-
+					sprintf( templn, "</form><hr>");
 					pbuffer += concat(pbuffer, templn);
  #ifdef COPY_PS3
 					if(copy_in_progress)

@@ -1,5 +1,3 @@
-#define SLAUNCH_PEEK_ADDR  0x8000000000000180
-
 #ifdef SLAUNCH_FILE
 typedef struct // 1MB for 2000+1 titles
 {
@@ -11,12 +9,17 @@ typedef struct // 1MB for 2000+1 titles
 	char     name[508]; // name + path + icon
 } __attribute__((packed)) _slaunch;
 
+#ifdef WM_REQUEST
+static bool photo_gui = true;
 static bool usb0_picture_exists = false;
+#endif
 
 static int create_slaunch_file(void)
 {
-	int fd;
-	usb0_picture_exists = !(webman_config->launchpad_xml) && isDir("/dev_usb000/PICTURE");
+#ifdef WM_REQUEST
+	usb0_picture_exists = photo_gui && isDir("/dev_usb000/PICTURE");
+#endif
+	int fd; custom_icon = false;
 	if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		return fd;
 	else
@@ -33,6 +36,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 
 	slaunch.type = IS_ROMS_FOLDER ? TYPE_ROM : IS_PS3_TYPE ? TYPE_PS3 : IS_PSX_FOLDER ? TYPE_PS1 : IS_PS2_FOLDER ? TYPE_PS2 : IS_PSP_FOLDER ? TYPE_PSP : TYPE_VID;
 
+#ifdef WM_REQUEST
 	if(usb0_picture_exists)
 	{
 		u8 f1 = (slaunch.type == TYPE_PS1) ? id_PSXISO :
@@ -41,12 +45,13 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 				(slaunch.type == TYPE_PSP) ? id_PSPISO :
 				(slaunch.type == TYPE_VID) ? id_BDISO  : id_ROMS;
 
-		sprintf(enc_filename, "%s/%s/", "/dev_usb000/PICTURE", paths[f1]); cellFsMkdir(enc_filename, MODE);
+		sprintf(enc_filename, "%s%s/", "/dev_usb000/PICTURE/", paths[f1]); cellFsMkdir(enc_filename, MODE);
 		strcat(enc_filename, filename);
 		strcat(enc_filename, strcasestr(icon, ".png") ? ".PNG" : ".JPG");
 
 		if(file_exists(enc_filename) == false) file_copy(icon, enc_filename, COPY_WHOLE_FILE);
 	}
+#endif
 
 	snprintf(slaunch.id, sizeof(slaunch.id), "%s", id); urlenc_ex(enc_filename, filename, false);
 

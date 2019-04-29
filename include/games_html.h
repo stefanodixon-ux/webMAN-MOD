@@ -113,6 +113,7 @@ static const char ext[4][5] = {".jpg\0", ".png\0", ".PNG\0", ".JPG\0"};
 static const char *cpath[5] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"};
 
 #ifdef SLAUNCH_FILE
+static bool custom_icon = false; // override default cover mode using index.ps3?cover=<cover type> (icon0, mm, disc, online)
 static int create_slaunch_file(void);
 static void add_slaunch_entry(int fd, const char *neth, const char *path, const char *filename, const char *icon, const char *name, const char *id, u8 f1);
 static void close_slaunch_file(int fd);
@@ -1135,6 +1136,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 					if(check_content_type(f1)) continue;
 
 				default_icon =  get_default_icon_by_type(f1);
+				if(custom_icon && *param == '/') {char *pos = strrchr(param, '/'); *pos = *icon = NULL; get_default_icon(icon, param, (pos + 1), isDir(param), slaunch.id, 0, 0, f1); *pos = '/';}
 
 				set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, 0, f1); // sort key
 
@@ -1544,14 +1546,14 @@ next_html_entry:
 
 		if(!mobile_mode)
 		{
-			strcat(buffer, "<div id=\"mg\">"
-							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;document.getElementById('mg').style.zoom=z/100;</script>");
 #ifndef EMBED_JS
 			if(file_exists(GAMES_SCRIPT_JS))
 			{
 				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); strcat(buffer, templn);
 			}
 #endif
+			strcat(buffer, "<div id=\"mg\">"
+							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;document.getElementById('mg').style.zoom=z/100;</script>");
 		}
 
 		tlen = buf_len;
