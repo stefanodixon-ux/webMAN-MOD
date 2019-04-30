@@ -21,7 +21,7 @@ include $(PSL1GHT)/ppu_rules
 #-v --sce-type=SELF --compress-data=TRUE --skip-sections=TRUE --key-revision=01 --self-auth-id=1010000001000003 --self-app-version=0001000000000000 --self-add-shdrs=TRUE --self-vendor-id=01000002 --self-type=NPDRM --self-fw-version=0003004000000000 --self-ctrl-flags=4000000000000000000000000000000000000000000000000000000000000002 --self-cap-flags=009EBDEFBB88E5AE0000000000000000000000000000003B0000000100002000 --np-license-type=FREE --np-content-id=EP0001-BLES80616_00-PREPNTFS0MOD0111 --np-app-type=EXEC --np-real-fname=EBOOT.BIN --encrypt EBOOT.elf EBOOT.BIN
 
 # aditional scetool flags (--self-ctrl-flags, --self-cap-flags...)
-SCETOOL_FLAGS	+=	--compress-data=TRUE --skip-sections=TRUE --key-revision=01 --self-auth-id=1010000001000003 --self-add-shdrs=TRUE
+SCETOOL_FLAGS	+=	--compress-data=TRUE --skip-sections=TRUE --key-revision=0A --self-auth-id=1010000001000003 --self-add-shdrs=TRUE
 SCETOOL_FLAGS	+=	--self-ctrl-flags 4000000000000000000000000000000000000000000000000000000000000002
 SCETOOL_FLAGS	+=	--self-cap-flags 00000000000000000000000000000000000000000000007B0000000100000000
 #SCETOOL_FLAGS	+=	--self-cap-flags 009EBDEFBB88E5AE0000000000000000000000000000003B0000000100002000

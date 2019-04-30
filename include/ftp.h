@@ -147,7 +147,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	while(connactive && working)
 	{
-		if(sysmem && (IS_INGAME || (timeout++ > 36000))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer
+		if(sysmem && (IS_INGAME || (timeout++ > 1500))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 3 seconds
 
 		if(*buffer) memset(buffer, 0, FTP_RECV_SIZE);
 		if(working && ((recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0)) > 0))
@@ -1270,7 +1270,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 			break;
 		}
 
-		sys_ppu_thread_usleep(1668);
+		sys_ppu_thread_usleep(2000);
 	}
 
 	if(sysmem) sys_memory_free(sysmem);

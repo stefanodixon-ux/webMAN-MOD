@@ -77,8 +77,8 @@ enum icon_type
 	iPS2  = 7,
 	iPSP  = 8,
 	iDVD  = 9,
-	iBDVD = 5,
-	iROM  = 9,
+	iBDVD = 12,
+	iROM  = 13,
 };
 
 #define LAUNCHPAD_MODE			2
@@ -480,6 +480,8 @@ no_icon0:
 			default_icon = iDVD;
 		else if(strstr(icon, "BDISO")) //if(strstr(param, "/BDISO") || !extcmp(file, ".ntfs[BDISO]", 13))
 			default_icon = iBDVD;
+		else if(strstr(icon, "/ROMS"))
+			default_icon = iROM;
 		else
 			default_icon = iPS3;
 	}
@@ -881,7 +883,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 			snprintf(skey, HTML_KEY_LEN + 1, "%s", templn);
 		else
 		{
-			char group = IS_BLU_FOLDER ? 10 : get_default_icon_by_type(f1);
+			char group = IS_BLU_FOLDER ? id_VIDEO : get_default_icon_by_type(f1);
 			snprintf(skey, HTML_KEY_LEN + 1, "%c%s", group, templn);
 		}
 #else

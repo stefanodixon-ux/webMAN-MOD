@@ -19,12 +19,12 @@ cls
 cd _Projects_\updater
 call Make_PKG.bat
 title Building webMAN_MOD_1.47.xx_Updater_rebugfication_theme.pkg ...
-call Make_PKG_rebugification_theme.bat
+rem call Make_PKG_rebugification_theme.bat
 title Building webMAN_MOD_1.47.xx_Updater_metalification_theme.pkg ...
-call Make_PKG_metalification_theme.bat
+rem call Make_PKG_metalification_theme.bat
 
 set ver=1.47
-set rev=18
+set rev=19
 
 move webMAN_MOD_%ver%.xx_Updater.pkg                      ..\..\webMAN_MOD_%ver%.%rev%_Installer.pkg
 move webMAN_MOD_%ver%.xx_Updater_rebugification_theme.pkg ..\..\webMAN_MOD_%ver%.%rev%_Installer_rebugification_theme.pkg

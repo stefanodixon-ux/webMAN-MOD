@@ -8,21 +8,26 @@ set PS3DEV=%PS3SDK%/ps3dev
 copy /y pkgfiles\ICON0.PNG pkgfiles-metalification_theme>>nul
 copy /y pkgfiles\PARAM.SFO pkgfiles-metalification_theme>>nul
 
-copy /y pkgfiles\USRDIR\*.css pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.html pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.txt pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.gif pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.js pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.sfo pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.sprx pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.xml pkgfiles-metalification_theme\USRDIR>>nul
+if not exist pkgfiles-metalification_theme\USRDIR\addons mkdir pkgfiles-metalification_theme\USRDIR\addons
+if not exist pkgfiles-metalification_theme\USRDIR\html   mkdir pkgfiles-metalification_theme\USRDIR\html
+if not exist pkgfiles-metalification_theme\USRDIR\lang   mkdir pkgfiles-metalification_theme\USRDIR\lang
+if not exist pkgfiles-metalification_theme\USRDIR\res    mkdir pkgfiles-metalification_theme\USRDIR\res
+if not exist pkgfiles-metalification_theme\USRDIR\xml    mkdir pkgfiles-metalification_theme\USRDIR\xml
+if not exist pkgfiles-metalification_theme\USRDIR\xmb    mkdir pkgfiles-metalification_theme\USRDIR\xmb
+
+copy /y pkgfiles\USRDIR\*.txt  pkgfiles-metalification_theme\USRDIR>>nul
 copy /y pkgfiles\USRDIR\wm_custom_combo pkgfiles-metalification_theme\USRDIR>>nul
+copy /y pkgfiles\USRDIR\*.sprx pkgfiles-metalification_theme\USRDIR>>nul
+
 copy /y pkgfiles\USRDIR\icon_lp_*.png pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\blank.png     pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\eject.png     pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\refresh.png   pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\setup.png     pkgfiles-metalification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\slaunch.png   pkgfiles-metalification_theme\USRDIR>>nul
+copy /y pkgfiles\USRDIR\addons\*.pkg  pkgfiles-metalification_theme\USRDIR\addons>>nul
+copy /y pkgfiles\USRDIR\html\*.*      pkgfiles-metalification_theme\USRDIR\html>>nul
+copy /y pkgfiles\USRDIR\icons\icon_lp_*.png pkgfiles-metalification_theme\USRDIR\icons>>nul
+copy /y pkgfiles\USRDIR\lang\*.txt    pkgfiles-metalification_theme\USRDIR\lang>>nul
+copy /y pkgfiles\USRDIR\res\*.*       pkgfiles-metalification_theme\USRDIR\res>>nul
+copy /y pkgfiles\USRDIR\xml\*.xml     pkgfiles-metalification_theme\USRDIR\xml>>nul
+copy /y pkgfiles\USRDIR\xmb\*.xml     pkgfiles-metalification_theme\USRDIR\xmb>>nul
+copy /y pkgfiles\USRDIR\xmbm\*.sfo    pkgfiles-metalification_theme\USRDIR\xmbm>>nul
 
 mkdir pkgfiles-metalification_theme\USRDIR\images>>nul
 copy /y pkgfiles\USRDIR\images\*.png pkgfiles-metalification_theme\USRDIR\images>>nul
@@ -80,21 +85,20 @@ rd /q/s build>>nul
 ren pkgfiles pkgfiles-metalification_theme>>nul
 ren pkgfiles-normal_theme pkgfiles>>nul
 
-del /s/q pkgfiles-metalification_theme\USRDIR\*.css>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\*.html>>nul
 del /s/q pkgfiles-metalification_theme\USRDIR\*.txt>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\*.gif>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\*.js>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\*.sfo>>nul
+
 del /s/q pkgfiles-metalification_theme\USRDIR\*.sprx>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\addons\*.pkg>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\html\*.*>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\icons\icon_lp_*.png>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\lang\*.txt>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\res\*.*>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\xml\*.xml>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\xmb\*.xml>>nul
+del /s/q pkgfiles-metalification_theme\USRDIR\xmbm\*.sfo>>nul
 del /s/q pkgfiles-metalification_theme\USRDIR\*.xml>>nul
 del /s/q pkgfiles-metalification_theme\USRDIR\icon_lp_*.png>>nul
 del /s/q pkgfiles-metalification_theme\USRDIR\wm_custom_combo>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\blank.png>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\eject.png>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\refresh.png>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\setup.png>>nul
-del /s/q pkgfiles-metalification_theme\USRDIR\slaunch.png>>nul
 
 del /s/q pkgfiles-metalification_theme\USRDIR\images\*.png>>nul
 del /s/q pkgfiles-metalification_theme\USRDIR\images\*.jpg>>nul
@@ -107,5 +111,11 @@ rmdir /s/q pkgfiles-metalification_theme\USRDIR\CONFIG>>nul
 
 rd pkgfiles-metalification_theme\USRDIR\images>>nul
 rd pkgfiles-metalification_theme\USRDIR\official>>nul
+rd pkgfiles-metalification_theme\USRDIR\addons>>nul
+rd pkgfiles-metalification_theme\USRDIR\html>>nul
+rd pkgfiles-metalification_theme\USRDIR\lang>>nul
+rd pkgfiles-metalification_theme\USRDIR\res>>nul
+rd pkgfiles-metalification_theme\USRDIR\xmb>>nul
+rd pkgfiles-metalification_theme\USRDIR\xml>>nul
 
 :end

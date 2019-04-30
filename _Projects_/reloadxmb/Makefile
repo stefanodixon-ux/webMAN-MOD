@@ -31,6 +31,7 @@ CONTENTID	:=	EP0001-$(APPID)_00-0000000000000000
 #---------------------------------------------------------------------------------
 
 # aditional scetool flags (--self-ctrl-flags, --self-cap-flags...)
+SCETOOL_FLAGS	+=	-2 0A
 SCETOOL_FLAGS	+=	--self-ctrl-flags 4000000000000000000000000000000000000000000000000000000000000002
 SCETOOL_FLAGS	+=	--self-cap-flags 00000000000000000000000000000000000000000000007B0000000100000000
 

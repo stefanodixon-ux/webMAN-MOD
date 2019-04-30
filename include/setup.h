@@ -1099,34 +1099,21 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(templn, HTML_RED_SEPARATOR "<input class=\"bs\" type=\"submit\" accesskey=\"S\" value=\" %s \"/>"
 					"<script>function tgl(o){o.style.maxHeight=(o.style.maxHeight=='500px')?'0px':'500px';}</script>",
 					STR_SAVE); strcat(buffer, templn);
-/*
-#ifdef PKG_HANDLER
-	if(IS_ON_XMB && file_exists(WM_RES_PATH "/wm_theme_standard.pkg"))
-	{
-		strcat( buffer, " • Install PKG: <select onchange=\"window.location='/install.ps3" WM_RES_PATH "/'+this.value;\"><option>");
-		int fd;
-		if(cellFsOpendir((char*)WM_RES_PATH, &fd) == CELL_FS_SUCCEEDED)
-		{
-			CellFsDirectoryEntry entry; size_t read_e;
-			while(working)
-			{
-				if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
-				if(!strstr(entry.entry_name.d_name, ".pkg")) continue;
-				strcat(buffer, "<option>");
-				strcat(buffer, entry.entry_name.d_name);
-			}
-			cellFsClosedir(fd);
-		}
-		strcat(buffer, "</select>");
-	}
-#endif
-*/
 	strcat(buffer, "</form>");
 
 #ifndef LITE_EDITION
+ #ifdef PKG_HANDLER
+	strcat(buffer,  HTML_RED_SEPARATOR
+					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">webMAN MOD - Latest release</a> • "
+					"<a href=\"/install.ps3/dev_hdd0/packages\">Install PKG</a> • "
+					"<a href=\"/install.ps3/dev_hdd0/theme\">Install P3T</a> • "
+					"<a href=\"/install.ps3$\">Add-ons</a><br>"
+					"<a href=\"http://psx-place.com/forums/wMM.126/\">webMAN MOD - Info @ PSX-Place</a><br>");
+ #else
 	strcat(buffer,  HTML_RED_SEPARATOR
 					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">webMAN MOD - Latest release</a><br>"
 					"<a href=\"http://psx-place.com/forums/wMM.126/\">webMAN MOD - Info @ PSX-Place</a><br>");
+ #endif
 #else
 	strcat(buffer,  HTML_BLU_SEPARATOR
 					"webMAN - Simple Web Server" EDITION "<p>");
@@ -1361,6 +1348,7 @@ static void read_settings(void)
 	if(save_defaults)
 	{
 		if(payload_ps3hen) webman_config->refr = 1; //disable scan on startup
+		webman_config->sman = 1; //default sMAN GUI
 		save_settings();
 	}
 #ifdef WM_REQUEST

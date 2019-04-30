@@ -8,21 +8,26 @@ set PS3DEV=%PS3SDK%/ps3dev
 copy /y pkgfiles\ICON0.PNG pkgfiles-rebugification_theme>>nul
 copy /y pkgfiles\PARAM.SFO pkgfiles-rebugification_theme>>nul
 
-copy /y pkgfiles\USRDIR\*.css pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.html pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.txt pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.gif pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.js pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.sfo pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.sprx pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\*.xml pkgfiles-rebugification_theme\USRDIR>>nul
+if not exist pkgfiles-rebugification_theme\USRDIR\addons mkdir pkgfiles-rebugification_theme\USRDIR\addons
+if not exist pkgfiles-rebugification_theme\USRDIR\html   mkdir pkgfiles-rebugification_theme\USRDIR\html
+if not exist pkgfiles-rebugification_theme\USRDIR\lang   mkdir pkgfiles-rebugification_theme\USRDIR\lang
+if not exist pkgfiles-rebugification_theme\USRDIR\res    mkdir pkgfiles-rebugification_theme\USRDIR\res
+if not exist pkgfiles-rebugification_theme\USRDIR\xml    mkdir pkgfiles-rebugification_theme\USRDIR\xml
+if not exist pkgfiles-rebugification_theme\USRDIR\xmb    mkdir pkgfiles-rebugification_theme\USRDIR\xmb
+
+copy /y pkgfiles\USRDIR\*.txt  pkgfiles-rebugification_theme\USRDIR>>nul
 copy /y pkgfiles\USRDIR\wm_custom_combo pkgfiles-rebugification_theme\USRDIR>>nul
+copy /y pkgfiles\USRDIR\*.sprx pkgfiles-rebugification_theme\USRDIR>>nul
+
 copy /y pkgfiles\USRDIR\icon_lp_*.png pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\blank.png     pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\eject.png     pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\refresh.png   pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\setup.png     pkgfiles-rebugification_theme\USRDIR>>nul
-copy /y pkgfiles\USRDIR\slaunch.png   pkgfiles-rebugification_theme\USRDIR>>nul
+copy /y pkgfiles\USRDIR\addons\*.pkg  pkgfiles-rebugification_theme\USRDIR\addons>>nul
+copy /y pkgfiles\USRDIR\html\*.*      pkgfiles-rebugification_theme\USRDIR\html>>nul
+copy /y pkgfiles\USRDIR\icons\icon_lp_*.png pkgfiles-rebugification_theme\USRDIR\icons>>nul
+copy /y pkgfiles\USRDIR\lang\*.txt    pkgfiles-rebugification_theme\USRDIR\lang>>nul
+copy /y pkgfiles\USRDIR\res\*.*       pkgfiles-rebugification_theme\USRDIR\res>>nul
+copy /y pkgfiles\USRDIR\xml\*.xml     pkgfiles-rebugification_theme\USRDIR\xml>>nul
+copy /y pkgfiles\USRDIR\xmb\*.xml     pkgfiles-rebugification_theme\USRDIR\xmb>>nul
+copy /y pkgfiles\USRDIR\xmbm\*.sfo    pkgfiles-rebugification_theme\USRDIR\xmbm>>nul
 
 mkdir pkgfiles-rebugification_theme\USRDIR\images>>nul
 copy /y pkgfiles\USRDIR\images\*.png pkgfiles-rebugification_theme\USRDIR\images>>nul
@@ -40,6 +45,7 @@ mkdir pkgfiles-rebugification_theme\USRDIR\CONFIG\SOFT
 copy /y pkgfiles\USRDIR\CONFIG\SOFT\*.CONFIG pkgfiles-rebugification_theme\USRDIR\CONFIG\SOFT>>nul
 
 cls
+
 ren pkgfiles pkgfiles-normal_theme
 ren pkgfiles-rebugification_theme pkgfiles
 
@@ -79,21 +85,20 @@ rd /q/s build>>nul
 ren pkgfiles pkgfiles-rebugification_theme>>nul
 ren pkgfiles-normal_theme pkgfiles>>nul
 
-del /s/q pkgfiles-rebugification_theme\USRDIR\*.css>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\*.html>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\*.txt>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\*.gif>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\*.js>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\*.sfo>>nul
+
 del /s/q pkgfiles-rebugification_theme\USRDIR\*.sprx>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\addons\*.pkg>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\html\*.*>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\icons\icon_lp_*.png>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\lang\*.txt>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\res\*.*>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\xml\*.xml>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\xmb\*.xml>>nul
+del /s/q pkgfiles-rebugification_theme\USRDIR\xmbm\*.sfo>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\*.xml>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\icon_lp_*.png>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\wm_custom_combo>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\blank.png>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\eject.png>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\refresh.png>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\setup.png>>nul
-del /s/q pkgfiles-rebugification_theme\USRDIR\slaunch.png>>nul
 
 del /s/q pkgfiles-rebugification_theme\USRDIR\images\*.png>>nul
 del /s/q pkgfiles-rebugification_theme\USRDIR\images\*.jpg>>nul
@@ -106,5 +111,11 @@ rmdir /s/q pkgfiles-rebugification_theme\USRDIR\CONFIG>>nul
 
 rd pkgfiles-rebugification_theme\USRDIR\images>>nul
 rd pkgfiles-rebugification_theme\USRDIR\official>>nul
+rd pkgfiles-rebugification_theme\USRDIR\addons>>nul
+rd pkgfiles-rebugification_theme\USRDIR\html>>nul
+rd pkgfiles-rebugification_theme\USRDIR\lang>>nul
+rd pkgfiles-rebugification_theme\USRDIR\res>>nul
+rd pkgfiles-rebugification_theme\USRDIR\xmb>>nul
+rd pkgfiles-rebugification_theme\USRDIR\xml>>nul
 
 :end

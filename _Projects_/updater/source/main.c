@@ -13,13 +13,13 @@
 #define SYS_REBOOT				 		0x8201
 
 #define BUTTON_SQUARE        0x80
-#define BUTTON_CROSS         0x40
-#define BUTTON_CIRCLE        0x20
+#define BUTTON_CROSS         0x40	/* install lite edition */
+#define BUTTON_CIRCLE        0x20	/* install lite edition */
 #define BUTTON_TRIANGLE      0x10
-#define BUTTON_R1            0x08
-#define BUTTON_L1            0x04
-#define BUTTON_R2            0x02
-#define BUTTON_L2            0x01
+#define BUTTON_R1            0x08	/* install standard edition */
+#define BUTTON_L1            0x04	/* install full edition */
+#define BUTTON_R2            0x02	/* force update images */
+#define BUTTON_L2            0x01	/* force update images */
 
 #define APP_DIR              "/dev_hdd0/game/UPDWEBMOD"
 #define APP_USRDIR           APP_DIR "/USRDIR"
@@ -78,7 +78,7 @@ int file_copy(char* path, char* path2)
 
 	sysFSStat stat;
 
-	ret= sysLv2FsStat(path, &stat);
+	ret = sysLv2FsStat(path, &stat);
 	length = stat.st_size;
 
 	if(ret) goto skip;
@@ -87,10 +87,17 @@ int file_copy(char* path, char* path2)
 	{
 		if(strcmp(path, path2)==0) return ret;
 
+		if(!update_images && (sysLv2FsStat(path2, &stat) == SUCCESS))
+		{
+			if(strstr(path, ".png")) return SUCCESS;
+			if(strstr(path, ".jpg")) return SUCCESS;
+			if(strstr(path, ".gif")) return SUCCESS;
+		}
+
 		sysLv2FsUnlink(path2);
 		sysLv2FsLink(path, path2);
 
-		if (sysLv2FsStat(path2, &stat) == 0) return 0;
+		if (sysLv2FsStat(path2, &stat) == SUCCESS) return SUCCESS;
 	}
 
 	ret = sysLv2FsOpen(path, 0, &fd, S_IRWXU | S_IRWXG | S_IRWXO, NULL, 0);
@@ -246,7 +253,7 @@ int add_mygame()
 	fclose (f);
 
 	// is fb.xml entry in cat file ?
-	if(strstr(cat, "fb.xml")!=NULL) {free(cat); return 0;}
+	if(strstr(cat, "fb.xml")!=NULL) {free(cat); return SUCCESS;}
 
 	// search position of game exit
 	char gameexit1[] = {0x0d, 0x0a, 0x09, 0x09, 0x09, 0x3c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x3d, 0x22, 0x74, 0x79, 0x70, 0x65, 0x3a, 0x78, 0x2d, 0x78, 0x6d, 0x62, 0x2f, 0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x2d, 0x70, 0x69, 0x78, 0x6d, 0x61, 0x70, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x6b, 0x65, 0x79, 0x3d, 0x22, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x73, 0x72, 0x63, 0x3d, 0x22, 0x73, 0x65, 0x6c, 0x3a, 0x2f, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x69, 0x6e, 0x67, 0x61, 0x6d, 0x65, 0x3f, 0x70, 0x61, 0x74, 0x68, 0x3d, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x23, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x26, 0x74, 0x79, 0x70, 0x65, 0x3d, 0x67, 0x61, 0x6d, 0x65, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x2f, 0x3e};
@@ -307,13 +314,12 @@ patch_xml:
 
 	// rename category_game.xml as category_game.xml.bak
 	char cat_path_bak[255];
-	strcpy(cat_path_bak, cat_path);
-	strcat(cat_path_bak, ".bak");
+	strcpy(cat_path_bak, cat_path); strcat(cat_path_bak, ".bak");
 	sysLv2FsUnlink(cat_path_bak);
 	if(sysLv2FsRename(cat_path, cat_path_bak) != SUCCESS) {free(cat); return FAILED;} ;
 
 	// update category_game.xml
-	if(file_copy(APP_USRDIR "/category_game.xml", cat_path) != SUCCESS)
+	if(file_copy(APP_USRDIR "/xmb/category_game.xml", cat_path) != SUCCESS)
 	{
 		sysLv2FsUnlink(cat_path);
 		if(sysLv2FsRename(cat_path_bak, cat_path)) { //restore category_game.xml from category_game.xml.bak
@@ -359,7 +365,8 @@ int main()
 
 	if(button & (BUTTON_L1)) full=true; else
 	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite=true; else
-	if(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 250000)) full=true;
+	if(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 285000)) full=true;
+	if(button & (BUTTON_L2 | BUTTON_R2)) update_images=true;
 //---
 
 	// Create webman folders
@@ -454,79 +461,94 @@ int main()
 	sysLv2FsUnlink(TMP_DIR "/psp_icon.png");
 
 	// update languages
-	file_copy(APP_USRDIR "/LANG_EN.TXT", LANG_DIR "/LANG_EN.TXT");
-	file_copy(APP_USRDIR "/LANG_AR.TXT", LANG_DIR "/LANG_AR.TXT");
-	file_copy(APP_USRDIR "/LANG_CN.TXT", LANG_DIR "/LANG_CN.TXT");
-	file_copy(APP_USRDIR "/LANG_DE.TXT", LANG_DIR "/LANG_DE.TXT");
-	file_copy(APP_USRDIR "/LANG_ES.TXT", LANG_DIR "/LANG_ES.TXT");
-	file_copy(APP_USRDIR "/LANG_FR.TXT", LANG_DIR "/LANG_FR.TXT");
-	file_copy(APP_USRDIR "/LANG_GR.TXT", LANG_DIR "/LANG_GR.TXT");
-	file_copy(APP_USRDIR "/LANG_DK.TXT", LANG_DIR "/LANG_DK.TXT");
-	file_copy(APP_USRDIR "/LANG_HU.TXT", LANG_DIR "/LANG_HU.TXT");
-	file_copy(APP_USRDIR "/LANG_HR.TXT", LANG_DIR "/LANG_HR.TXT");
-	file_copy(APP_USRDIR "/LANG_BG.TXT", LANG_DIR "/LANG_BG.TXT");
-	file_copy(APP_USRDIR "/LANG_CZ.TXT", LANG_DIR "/LANG_CZ.TXT");
-	file_copy(APP_USRDIR "/LANG_SK.TXT", LANG_DIR "/LANG_SK.TXT");
-	file_copy(APP_USRDIR "/LANG_IN.TXT", LANG_DIR "/LANG_IN.TXT");
-	file_copy(APP_USRDIR "/LANG_IT.TXT", LANG_DIR "/LANG_IT.TXT");
-	file_copy(APP_USRDIR "/LANG_JP.TXT", LANG_DIR "/LANG_JP.TXT");
-	file_copy(APP_USRDIR "/LANG_KR.TXT", LANG_DIR "/LANG_KR.TXT");
-	file_copy(APP_USRDIR "/LANG_NL.TXT", LANG_DIR "/LANG_NL.TXT");
-	file_copy(APP_USRDIR "/LANG_PL.TXT", LANG_DIR "/LANG_PL.TXT");
-	file_copy(APP_USRDIR "/LANG_PT.TXT", LANG_DIR "/LANG_PT.TXT");
-	file_copy(APP_USRDIR "/LANG_RU.TXT", LANG_DIR "/LANG_RU.TXT");
-	file_copy(APP_USRDIR "/LANG_TR.TXT", LANG_DIR "/LANG_TR.TXT");
-	file_copy(APP_USRDIR "/LANG_ZH.TXT", LANG_DIR "/LANG_ZH.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_EN.TXT", LANG_DIR "/LANG_EN.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_AR.TXT", LANG_DIR "/LANG_AR.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_CN.TXT", LANG_DIR "/LANG_CN.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_DE.TXT", LANG_DIR "/LANG_DE.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_ES.TXT", LANG_DIR "/LANG_ES.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_FR.TXT", LANG_DIR "/LANG_FR.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_GR.TXT", LANG_DIR "/LANG_GR.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_DK.TXT", LANG_DIR "/LANG_DK.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_HU.TXT", LANG_DIR "/LANG_HU.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_HR.TXT", LANG_DIR "/LANG_HR.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_BG.TXT", LANG_DIR "/LANG_BG.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_CZ.TXT", LANG_DIR "/LANG_CZ.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_SK.TXT", LANG_DIR "/LANG_SK.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_IN.TXT", LANG_DIR "/LANG_IN.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_IT.TXT", LANG_DIR "/LANG_IT.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_JP.TXT", LANG_DIR "/LANG_JP.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_KR.TXT", LANG_DIR "/LANG_KR.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_NL.TXT", LANG_DIR "/LANG_NL.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_PL.TXT", LANG_DIR "/LANG_PL.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_PT.TXT", LANG_DIR "/LANG_PT.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_RU.TXT", LANG_DIR "/LANG_RU.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_TR.TXT", LANG_DIR "/LANG_TR.TXT");
+	file_copy(APP_USRDIR "/lang/LANG_ZH.TXT", LANG_DIR "/LANG_ZH.TXT");
 
+	// copy html
 	sysLv2FsMkdir(XMLHOST_DIR, 0777);
-	file_copy(APP_USRDIR "/mobile.html",    XMLHOST_DIR "/mobile.html");
-	file_copy(APP_USRDIR "/background.gif", XMLHOST_DIR "/background.gif");
-	file_copy(APP_USRDIR "/sman.htm",       XMLHOST_DIR "/sman.htm");
-
-	if((sysLv2FsStat(XMLHOST_DIR "/fb.xml", &stat) != SUCCESS))
-		file_copy(APP_USRDIR "/fb.xml",    XMLHOST_DIR "/fb.xml");
+	file_copy(APP_USRDIR "/html/mobile.html",    XMLHOST_DIR "/mobile.html");
+	file_copy(APP_USRDIR "/html/background.gif", XMLHOST_DIR "/background.gif");
+	file_copy(APP_USRDIR "/html/sman.htm",       XMLHOST_DIR "/sman.htm");
 
 	// copy javascripts
-	file_copy(APP_USRDIR "/jquery.min.js",    XMLHOST_DIR "/jquery.min.js");  // jQuery v3.1.1
-	file_copy(APP_USRDIR "/jquery-ui.min.js", XMLHOST_DIR "/jquery-ui.min.js"); // jQuery UI v1.12.1
+	file_copy(APP_USRDIR "/html/jquery.min.js",    XMLHOST_DIR "/jquery.min.js");  // jQuery v3.1.1
+	file_copy(APP_USRDIR "/html/jquery-ui.min.js", XMLHOST_DIR "/jquery-ui.min.js"); // jQuery UI v1.12.1
 
-	file_copy(APP_USRDIR "/fm.js",     XMLHOST_DIR "/fm.js");
-	file_copy(APP_USRDIR "/fs.js",     XMLHOST_DIR "/fs.js");
-	file_copy(APP_USRDIR "/games.js",  XMLHOST_DIR "/games.js");
-	file_copy(APP_USRDIR "/common.js", XMLHOST_DIR "/common.js");
+	file_copy(APP_USRDIR "/html/fm.js",     XMLHOST_DIR "/fm.js");
+	file_copy(APP_USRDIR "/html/fs.js",     XMLHOST_DIR "/fs.js");
+	file_copy(APP_USRDIR "/html/games.js",  XMLHOST_DIR "/games.js");
+	file_copy(APP_USRDIR "/html/common.js", XMLHOST_DIR "/common.js");
 
 	// copy css
-	file_copy(APP_USRDIR "/common.css",  XMLHOST_DIR "/common.css");
+	file_copy(APP_USRDIR "/html/common.css",  XMLHOST_DIR "/common.css");
 
-	sysLv2FsMkdir(TMP_DIR "/wm_icons", 0777);
+	// fb.xml
+	if((sysLv2FsStat(XMLHOST_DIR "/fb.xml", &stat) != SUCCESS))
+		file_copy(APP_USRDIR "/xmb/fb.xml", XMLHOST_DIR "/fb.xml");
 
 	// copy new icons
-	file_copy(APP_USRDIR "/icon_wm_album_ps3.png", ICONS_DIR "/icon_wm_album_ps3.png");
-	file_copy(APP_USRDIR "/icon_wm_album_psx.png", ICONS_DIR "/icon_wm_album_psx.png");
-	file_copy(APP_USRDIR "/icon_wm_album_ps2.png", ICONS_DIR "/icon_wm_album_ps2.png");
-	file_copy(APP_USRDIR "/icon_wm_album_psp.png", ICONS_DIR "/icon_wm_album_psp.png");
-	file_copy(APP_USRDIR "/icon_wm_album_dvd.png", ICONS_DIR "/icon_wm_album_dvd.png");
-	file_copy(APP_USRDIR "/icon_wm_album_emu.png", ICONS_DIR "/icon_wm_album_emu.png");
+	sysLv2FsMkdir(TMP_DIR "/wm_icons", 0777);
 
-	file_copy(APP_USRDIR "/icon_wm_ps3.png"      , ICONS_DIR "/icon_wm_ps3.png");
-	file_copy(APP_USRDIR "/icon_wm_psx.png"      , ICONS_DIR "/icon_wm_psx.png");
-	file_copy(APP_USRDIR "/icon_wm_ps2.png"      , ICONS_DIR "/icon_wm_ps2.png");
-	file_copy(APP_USRDIR "/icon_wm_psp.png"      , ICONS_DIR "/icon_wm_psp.png");
-	file_copy(APP_USRDIR "/icon_wm_dvd.png"      , ICONS_DIR "/icon_wm_dvd.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_album_ps3.png", ICONS_DIR "/icon_wm_album_ps3.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_album_psx.png", ICONS_DIR "/icon_wm_album_psx.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_album_ps2.png", ICONS_DIR "/icon_wm_album_ps2.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_album_psp.png", ICONS_DIR "/icon_wm_album_psp.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_album_dvd.png", ICONS_DIR "/icon_wm_album_dvd.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_album_emu.png", ICONS_DIR "/icon_wm_album_emu.png");
 
-	file_copy(APP_USRDIR "/icon_wm_settings.png" , ICONS_DIR "/icon_wm_settings.png");
-	file_copy(APP_USRDIR "/icon_wm_eject.png"    , ICONS_DIR "/icon_wm_eject.png"   );
+	file_copy(APP_USRDIR "/icons/icon_wm_ps3.png"      , ICONS_DIR "/icon_wm_ps3.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_psx.png"      , ICONS_DIR "/icon_wm_psx.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_ps2.png"      , ICONS_DIR "/icon_wm_ps2.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_psp.png"      , ICONS_DIR "/icon_wm_psp.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_bdv.png"      , ICONS_DIR "/icon_wm_bdv.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_dvd.png"      , ICONS_DIR "/icon_wm_dvd.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_retro.png"    , ICONS_DIR "/icon_wm_retro.png");
+
+	file_copy(APP_USRDIR "/icons/icon_wm_settings.png" , ICONS_DIR "/icon_wm_settings.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_eject.png"    , ICONS_DIR "/icon_wm_eject.png"   );
 
 	if((sysLv2FsStat(APP_USRDIR "/multiman.png", &stat) == SUCCESS) && (stat.st_size == 9894))
-		file_copy(APP_USRDIR "/icon_wm_root.png" , ICONS_DIR "/icon_wm_root.png"    );
+		file_copy(APP_USRDIR "/icons/icon_wm_root.png" , ICONS_DIR "/icon_wm_root.png"    );
 	else
 		sysLv2FsUnlink(ICONS_DIR "/icon_wm_root.png");
 
-	file_copy(APP_USRDIR "/blank.png"            , ICONS_DIR "/blank.png"    );
+	file_copy(APP_USRDIR "/icons/blank.png", ICONS_DIR "/blank.png");
 
 	sysLv2FsUnlink(TMP_DIR "/wm_online_ids.txt");
-	file_copy(APP_USRDIR "/wm_online_ids.txt"	, RES_DIR "/wm_online_ids.txt");
+	file_copy(APP_USRDIR "/res/wm_online_ids.txt", RES_DIR "/wm_online_ids.txt");
 
+	// webMAN ADD-ONS
+	file_copy(APP_USRDIR "/addons/boot_mamba.pkg", RES_DIR "/boot_mamba.pkg");
+	file_copy(APP_USRDIR "/addons/prepNTFS.pkg", RES_DIR "/prepNTFS.pkg");
+	file_copy(APP_USRDIR "/addons/PS2_CONFIG.pkg", RES_DIR "/PS2_CONFIG.pkg");
+	file_copy(APP_USRDIR "/addons/PSP_Minis_Launcher.pkg", RES_DIR "/PSP_Minis_Launcher.pkg");
+	file_copy(APP_USRDIR "/addons/PSP_Remasters_Launcher.pkg"	, RES_DIR "/PSP_Remasters_Launcher.pkg");
+	file_copy(APP_USRDIR "/addons/Reload_XMB.pkg", RES_DIR "/Reload_XMB.pkg");
+	file_copy(APP_USRDIR "/addons/ROMS_PKG_Launcher.pkg", RES_DIR "/ROMS_PKG_Launcher.pkg");
+	file_copy(APP_USRDIR "/addons/wm_theme_standard.pkg", RES_DIR "/wm_theme_standard.pkg");
+	file_copy(APP_USRDIR "/addons/wm_theme_metalification.pkg"	, RES_DIR "/wm_theme_metalification.pkg");
+	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");
 
 	if(sysLv2FsStat(PS2CONFIG_USRDIR, &stat) != SUCCESS)
 	{
@@ -589,13 +611,13 @@ int main()
 	}
 
 	// webMAN LaunchPad icons
-	file_copy(APP_USRDIR "/icon_lp_ps3.png"      , ICONS_DIR "/icon_lp_ps3.png");
-	file_copy(APP_USRDIR "/icon_lp_psx.png"      , ICONS_DIR "/icon_lp_psx.png");
-	file_copy(APP_USRDIR "/icon_lp_ps2.png"      , ICONS_DIR "/icon_lp_ps2.png");
-	file_copy(APP_USRDIR "/icon_lp_psp.png"      , ICONS_DIR "/icon_lp_psp.png");
-	file_copy(APP_USRDIR "/icon_lp_dvd.png"      , ICONS_DIR "/icon_lp_dvd.png");
-	file_copy(APP_USRDIR "/icon_lp_blu.png"      , ICONS_DIR "/icon_lp_blu.png");
-	file_copy(APP_USRDIR "/icon_lp_nocover.png"  , ICONS_DIR "/icon_lp_nocover.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_ps3.png"      , ICONS_DIR "/icon_lp_ps3.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_psx.png"      , ICONS_DIR "/icon_lp_psx.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_ps2.png"      , ICONS_DIR "/icon_lp_ps2.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_psp.png"      , ICONS_DIR "/icon_lp_psp.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_dvd.png"      , ICONS_DIR "/icon_lp_dvd.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_blu.png"      , ICONS_DIR "/icon_lp_blu.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_nocover.png"  , ICONS_DIR "/icon_lp_nocover.png");
 
 	// XMBM+ webMAN
 	sysLv2FsMkdir(XMLMANPLS_DIR, 0777);
@@ -603,15 +625,8 @@ int main()
 	sysLv2FsMkdir(XMLMANPLS_IMAGES_DIR, 0777);
 	sysLv2FsMkdir(XMLMANPLS_FEATS_DIR, 0777);
 
-	file_copy(APP_USRDIR "/eject.png"  			, XMLMANPLS_IMAGES_DIR "/eject.png");
-	file_copy(APP_USRDIR "/setup.png"  			, XMLMANPLS_IMAGES_DIR "/setup.png");
-	file_copy(APP_USRDIR "/refresh.png"			, XMLMANPLS_IMAGES_DIR "/refresh.png");
-	//file_copy(APP_USRDIR "/clear.png"  		, XMLMANPLS_IMAGES_DIR "/clear.png");
-	//file_copy(APP_USRDIR "/cache.png"  		, XMLMANPLS_IMAGES_DIR "/cache.png");
-	//file_copy(APP_USRDIR "/restart.png"		, XMLMANPLS_IMAGES_DIR "/restart.png");
-
 	if(sysLv2FsStat(XMLMANPLS_DIR "/PARAM.SFO", &stat) != SUCCESS)
-		file_copy(APP_USRDIR "/PARAM.SFO", XMLMANPLS_DIR "/PARAM.SFO");
+		file_copy(APP_USRDIR "/xmbm/PARAM.SFO", XMLMANPLS_DIR "/PARAM.SFO");
 
 	if(sysLv2FsStat(XMLMANPLS_DIR "/ICON0.PNG", &stat) != SUCCESS)
 		file_copy(APP_DIR "/ICON0.PNG", XMLMANPLS_DIR "/ICON0.PNG");
@@ -619,64 +634,66 @@ int main()
 	//if(sysLv2FsStat(HDDROOT_DIR "/boot_init.bak", &stat) != SUCCESS)
 	//	file_copy(APP_DIR "/boot_init.bak", HDDROOT_DIR "/boot_init.bak");
 
-	file_copy(APP_USRDIR "/webMAN.xml"    , XMLMANPLS_FEATS_DIR "/webMAN.xml");
-	file_copy(APP_USRDIR "/webMAN_EN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_EN.xml");
-	file_copy(APP_USRDIR "/webMAN_AR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_AR.xml");
-	file_copy(APP_USRDIR "/webMAN_CN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_CN.xml");
-	file_copy(APP_USRDIR "/webMAN_DE.xml" , XMLMANPLS_FEATS_DIR "/webMAN_DE.xml");
-	file_copy(APP_USRDIR "/webMAN_ES.xml" , XMLMANPLS_FEATS_DIR "/webMAN_ES.xml");
-	file_copy(APP_USRDIR "/webMAN_FR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_FR.xml");
-	file_copy(APP_USRDIR "/webMAN_GR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_GR.xml");
-	file_copy(APP_USRDIR "/webMAN_DK.xml" , XMLMANPLS_FEATS_DIR "/webMAN_DK.xml");
-	file_copy(APP_USRDIR "/webMAN_HU.xml" , XMLMANPLS_FEATS_DIR "/webMAN_HU.xml");
-	file_copy(APP_USRDIR "/webMAN_HR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_HR.xml");
-	file_copy(APP_USRDIR "/webMAN_BG.xml" , XMLMANPLS_FEATS_DIR "/webMAN_BG.xml");
-	file_copy(APP_USRDIR "/webMAN_CZ.xml" , XMLMANPLS_FEATS_DIR "/webMAN_CZ.xml");
-	file_copy(APP_USRDIR "/webMAN_SK.xml" , XMLMANPLS_FEATS_DIR "/webMAN_SK.xml");
-	file_copy(APP_USRDIR "/webMAN_IN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_IN.xml");
-	file_copy(APP_USRDIR "/webMAN_JP.xml" , XMLMANPLS_FEATS_DIR "/webMAN_JP.xml");
-	file_copy(APP_USRDIR "/webMAN_KR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_KR.xml");
-	file_copy(APP_USRDIR "/webMAN_IT.xml" , XMLMANPLS_FEATS_DIR "/webMAN_IT.xml");
-	file_copy(APP_USRDIR "/webMAN_NL.xml" , XMLMANPLS_FEATS_DIR "/webMAN_NL.xml");
-	file_copy(APP_USRDIR "/webMAN_PL.xml" , XMLMANPLS_FEATS_DIR "/webMAN_PL.xml");
-	file_copy(APP_USRDIR "/webMAN_PT.xml" , XMLMANPLS_FEATS_DIR "/webMAN_PT.xml");
-	file_copy(APP_USRDIR "/webMAN_RU.xml" , XMLMANPLS_FEATS_DIR "/webMAN_RU.xml");
-	file_copy(APP_USRDIR "/webMAN_TR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_TR.xml");
-	file_copy(APP_USRDIR "/webMAN_ZH.xml" , XMLMANPLS_FEATS_DIR "/webMAN_ZH.xml");
+	file_copy(APP_USRDIR "/xml/webMAN.xml"    , XMLMANPLS_FEATS_DIR "/webMAN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_EN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_EN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_AR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_AR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_CN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_CN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_DE.xml" , XMLMANPLS_FEATS_DIR "/webMAN_DE.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_ES.xml" , XMLMANPLS_FEATS_DIR "/webMAN_ES.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_FR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_FR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_GR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_GR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_DK.xml" , XMLMANPLS_FEATS_DIR "/webMAN_DK.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_HU.xml" , XMLMANPLS_FEATS_DIR "/webMAN_HU.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_HR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_HR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_BG.xml" , XMLMANPLS_FEATS_DIR "/webMAN_BG.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_CZ.xml" , XMLMANPLS_FEATS_DIR "/webMAN_CZ.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_SK.xml" , XMLMANPLS_FEATS_DIR "/webMAN_SK.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_IN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_IN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_JP.xml" , XMLMANPLS_FEATS_DIR "/webMAN_JP.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_KR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_KR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_IT.xml" , XMLMANPLS_FEATS_DIR "/webMAN_IT.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_NL.xml" , XMLMANPLS_FEATS_DIR "/webMAN_NL.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_PL.xml" , XMLMANPLS_FEATS_DIR "/webMAN_PL.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_PT.xml" , XMLMANPLS_FEATS_DIR "/webMAN_PT.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_RU.xml" , XMLMANPLS_FEATS_DIR "/webMAN_RU.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_TR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_TR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_ZH.xml" , XMLMANPLS_FEATS_DIR "/webMAN_ZH.xml");
 
-	file_copy(APP_USRDIR "/bd.png"        	, XMLMANPLS_IMAGES_DIR "/bd.png");
-	file_copy(APP_USRDIR "/blockpsn.png"  	, XMLMANPLS_IMAGES_DIR "/blockpsn.png");
-	file_copy(APP_USRDIR "/cachefiles.png"	, XMLMANPLS_IMAGES_DIR "/cachefiles.png");
-	file_copy(APP_USRDIR "/filemanager.png"	, XMLMANPLS_IMAGES_DIR "/filemanager.png");
-	file_copy(APP_USRDIR "/gamedata.png"  	, XMLMANPLS_IMAGES_DIR "/gamedata.png");
-	file_copy(APP_USRDIR "/gamefix.png"   	, XMLMANPLS_IMAGES_DIR "/gamefix.png");
-	file_copy(APP_USRDIR "/gamesbrowser.png"	, XMLMANPLS_IMAGES_DIR "/gamesbrowser.png");
-	file_copy(APP_USRDIR "/multiman.png"  	, XMLMANPLS_IMAGES_DIR "/multiman.png");
-	file_copy(APP_USRDIR "/network.png"   	, XMLMANPLS_IMAGES_DIR "/network.png");
-	file_copy(APP_USRDIR "/pkgmanager.png"	, XMLMANPLS_IMAGES_DIR "/pkgmanager.png");
-	file_copy(APP_USRDIR "/refreshhtml.png"	, XMLMANPLS_IMAGES_DIR "/refreshhtml.png");
-	file_copy(APP_USRDIR "/refreshxml.png"	, XMLMANPLS_IMAGES_DIR "/refreshxml.png");
-	file_copy(APP_USRDIR "/restartps3.png"	, XMLMANPLS_IMAGES_DIR "/restartps3.png");
-	file_copy(APP_USRDIR "/settings.png"  	, XMLMANPLS_IMAGES_DIR "/settings.png");
-	file_copy(APP_USRDIR "/shutdownps3.png"	, XMLMANPLS_IMAGES_DIR "/shutdownps3.png");
-	file_copy(APP_USRDIR "/sysinfo.png"   	, XMLMANPLS_IMAGES_DIR "/sysinfo.png");
-	file_copy(APP_USRDIR "/sysfiles.png"   	, XMLMANPLS_IMAGES_DIR "/sysfiles.png");
-	file_copy(APP_USRDIR "/tools.png"  		, XMLMANPLS_IMAGES_DIR "/tools.png");
-	file_copy(APP_USRDIR "/unload.png"  		, XMLMANPLS_IMAGES_DIR "/unload.png");
-	file_copy(APP_USRDIR "/usbredirect.png" 	, XMLMANPLS_IMAGES_DIR "/usbredirect.png");
-	file_copy(APP_USRDIR "/vshmenu.png"   	, XMLMANPLS_IMAGES_DIR "/vshmenu.png");
-	file_copy(APP_USRDIR "/slaunch.png"   	, XMLMANPLS_IMAGES_DIR "/slaunch.png");
-	file_copy(APP_USRDIR "/webman.png"  		, XMLMANPLS_IMAGES_DIR "/webman.png");
+	file_copy(APP_USRDIR "/xmbm/bd.png"			, XMLMANPLS_IMAGES_DIR "/bd.png");
+	file_copy(APP_USRDIR "/xmbm/blockpsn.png"	, XMLMANPLS_IMAGES_DIR "/blockpsn.png");
+	file_copy(APP_USRDIR "/xmbm/cachefiles.png"	, XMLMANPLS_IMAGES_DIR "/cachefiles.png");
+	file_copy(APP_USRDIR "/xmbm/filemanager.png", XMLMANPLS_IMAGES_DIR "/filemanager.png");
+	file_copy(APP_USRDIR "/xmbm/gamedata.png"	, XMLMANPLS_IMAGES_DIR "/gamedata.png");
+	file_copy(APP_USRDIR "/xmbm/gamefix.png"	, XMLMANPLS_IMAGES_DIR "/gamefix.png");
+	file_copy(APP_USRDIR "/xmbm/gamesbrowser.png", XMLMANPLS_IMAGES_DIR "/gamesbrowser.png");
+	file_copy(APP_USRDIR "/xmbm/multiman.png"	, XMLMANPLS_IMAGES_DIR "/multiman.png");
+	file_copy(APP_USRDIR "/xmbm/network.png"	, XMLMANPLS_IMAGES_DIR "/network.png");
+	file_copy(APP_USRDIR "/xmbm/pkgmanager.png"	, XMLMANPLS_IMAGES_DIR "/pkgmanager.png");
+	file_copy(APP_USRDIR "/xmbm/refreshhtml.png", XMLMANPLS_IMAGES_DIR "/refreshhtml.png");
+	file_copy(APP_USRDIR "/xmbm/refreshxml.png"	, XMLMANPLS_IMAGES_DIR "/refreshxml.png");
+	file_copy(APP_USRDIR "/xmbm/restartps3.png"	, XMLMANPLS_IMAGES_DIR "/restartps3.png");
+	file_copy(APP_USRDIR "/xmbm/settings.png"	, XMLMANPLS_IMAGES_DIR "/settings.png");
+	file_copy(APP_USRDIR "/xmbm/shutdownps3.png", XMLMANPLS_IMAGES_DIR "/shutdownps3.png");
+	file_copy(APP_USRDIR "/xmbm/sysinfo.png"	, XMLMANPLS_IMAGES_DIR "/sysinfo.png");
+	file_copy(APP_USRDIR "/xmbm/sysfiles.png"	, XMLMANPLS_IMAGES_DIR "/sysfiles.png");
+	file_copy(APP_USRDIR "/xmbm/tools.png"		, XMLMANPLS_IMAGES_DIR "/tools.png");
+	file_copy(APP_USRDIR "/xmbm/unload.png"		, XMLMANPLS_IMAGES_DIR "/unload.png");
+	file_copy(APP_USRDIR "/xmbm/usbredirect.png", XMLMANPLS_IMAGES_DIR "/usbredirect.png");
+	file_copy(APP_USRDIR "/xmbm/vshmenu.png"	, XMLMANPLS_IMAGES_DIR "/vshmenu.png");
+	file_copy(APP_USRDIR "/xmbm/slaunch.png"	, XMLMANPLS_IMAGES_DIR "/slaunch.png");
+	file_copy(APP_USRDIR "/xmbm/webman.png"		, XMLMANPLS_IMAGES_DIR "/webman.png");
+	file_copy(APP_USRDIR "/xmbm/eject.png"		, XMLMANPLS_IMAGES_DIR "/eject.png");
+	file_copy(APP_USRDIR "/xmbm/setup.png"		, XMLMANPLS_IMAGES_DIR "/setup.png");
+	file_copy(APP_USRDIR "/xmbm/refresh.png"	, XMLMANPLS_IMAGES_DIR "/refresh.png");
+	//file_copy(APP_USRDIR "/xmbm/clear.png"	, XMLMANPLS_IMAGES_DIR "/clear.png");
+	//file_copy(APP_USRDIR "/xmbm/cache.png"	, XMLMANPLS_IMAGES_DIR "/cache.png");
+	//file_copy(APP_USRDIR "/xmbm/restart.png"	, XMLMANPLS_IMAGES_DIR "/restart.png");
 
-	file_copy(APP_USRDIR "/icon_wm_eject.png",  XMLMANPLS_IMAGES_DIR "/icon_wm_eject.png");
-	file_copy(APP_USRDIR "/icon_wm_insert.png", XMLMANPLS_IMAGES_DIR "/icon_wm_insert.png");
-	file_copy(APP_USRDIR "/icon_wm_ps3.png"  ,  XMLMANPLS_IMAGES_DIR "/icon_wm_ps3.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_eject.png",  XMLMANPLS_IMAGES_DIR "/icon_wm_eject.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_insert.png", XMLMANPLS_IMAGES_DIR "/icon_wm_insert.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_ps3.png"  ,  XMLMANPLS_IMAGES_DIR "/icon_wm_ps3.png");
 
 	sysLv2FsUnlink(XMLHOST_DIR "/mygames.xml");
-	sysLv2FsUnlink(TMP_DIR "/idle_plugin.sprx");
-	sysLv2FsUnlink(TMP_DIR "/eula_cddb_plugin.sprx");
-
-	file_copy(APP_USRDIR "/wm_proxy.sprx", RES_DIR "/wm_proxy.sprx");
 
 	sysLv2FsUnlink(APP_USRDIR "webftp_server.sprx");
 	sysLv2FsUnlink(APP_USRDIR "webftp_server_ps3mapi.sprx");
@@ -738,8 +755,8 @@ int main()
 		file_copy(APP_USRDIR "/images/slaunch_video.jpg", RES_DIR "/images/slaunch_video.jpg");
 
 		// update VSH Menu and sLaunch Menu
-		file_copy(APP_USRDIR "/slaunch.sprx", RES_DIR "/slaunch.sprx");
-		file_copy(APP_USRDIR "/wm_vsh_menu.sprx", RES_DIR "/wm_vsh_menu.sprx");
+		file_copy(APP_USRDIR "/res/slaunch.sprx", RES_DIR "/slaunch.sprx");
+		file_copy(APP_USRDIR "/res/wm_vsh_menu.sprx", RES_DIR "/wm_vsh_menu.sprx");
 	}
 
 	// skip update custom language file
@@ -750,19 +767,22 @@ int main()
 	if(sysLv2FsStat(TMP_DIR "/wm_custom_combo", &stat))
 		file_copy(APP_USRDIR "/wm_custom_combo", TMP_DIR "/wm_custom_combo");
 
+	// resource files sprx (wm_proxy, libfs, raw_iso, netiso, video_rec)
+	sysLv2FsUnlink(TMP_DIR "/idle_plugin.sprx");
+	sysLv2FsUnlink(TMP_DIR "/eula_cddb_plugin.sprx");
+
+	file_copy(APP_USRDIR "/res/wm_proxy.sprx", RES_DIR "/wm_proxy.sprx");
+
 	sysLv2FsUnlink(TMP_DIR "/libfs.sprx");
-	file_copy(APP_USRDIR "/libfs.sprx", RES_DIR "/libfs.sprx");
-
-	sysLv2FsStat(APP_USRDIR "/raw_iso.sprx", &stat);
-	u64 raw_iso_size = stat.st_size;
-
-	sysLv2FsStat(APP_USRDIR "/netiso.sprx", &stat);
-	u64 netiso_size = stat.st_size;
+	file_copy(APP_USRDIR "/res/libfs.sprx", RES_DIR "/libfs.sprx");
 
 	// copy raw_iso.sprx to dev_flash
+	sysLv2FsStat(APP_USRDIR "/res/raw_iso.sprx", &stat);
+	u64 raw_iso_size = stat.st_size;
+
 	if(sysLv2FsStat(RES_DIR "/raw_iso.sprx", &stat) != SUCCESS || (stat.st_size != raw_iso_size))
 	{
-		file_copy(APP_USRDIR "/raw_iso.sprx", RES_DIR "/raw_iso.sprx");
+		file_copy(APP_USRDIR "/res/raw_iso.sprx", RES_DIR "/raw_iso.sprx");
 
 		if(sysLv2FsStat(RES_DIR "/raw_iso.sprx", &stat) == SUCCESS)
 		{
@@ -772,9 +792,12 @@ int main()
 	}
 
 	// copy netiso.sprx to dev_flash
-	if(sysLv2FsStat(RES_DIR "/netiso.sprx", &stat) != SUCCESS || (stat.st_size != netiso_size))
+	sysLv2FsStat(APP_USRDIR "/res/netiso.sprx", &stat);
+	u64 netiso_size = stat.st_size;
+
+	if(sysLv2FsStat(RES_DIR "/res/netiso.sprx", &stat) != SUCCESS || (stat.st_size != netiso_size))
 	{
-		file_copy(APP_USRDIR "/netiso.sprx", RES_DIR "/netiso.sprx");
+		file_copy(APP_USRDIR "/res/netiso.sprx", RES_DIR "/netiso.sprx");
 
 		if(sysLv2FsStat(RES_DIR "/netiso.sprx", &stat) == SUCCESS)
 		{
@@ -786,7 +809,7 @@ int main()
 	// copy standalone video recorder plugin (video_rec.sprx) to /wm_res folder
 	sysLv2FsUnlink(PLUGINS_DIR "/video_rec.sprx");
 	if((sysLv2FsStat(RES_DIR, &stat) == SUCCESS))
-		file_copy(APP_USRDIR "/video_rec.sprx", RES_DIR "/video_rec.sprx");
+		file_copy(APP_USRDIR "/res/video_rec.sprx", RES_DIR "/video_rec.sprx");
 
 	// update PRX+Mamba Loader
 	if((sysLv2FsStat(IRISMAN_USRDIR "/webftp_server.sprx", &stat) == SUCCESS) || (sysLv2FsStat(IRISMAN_USRDIR "/webftp_server_ps3mapi.sprx", &stat) == SUCCESS))
@@ -922,7 +945,7 @@ cont:
 		{lv2syscall3(SC_SYS_POWER, SYS_REBOOT, 0, 0); return_to_user_prog(int);}
 		//{lv2syscall3(SC_SYS_POWER, SYS_REBOOT, 0, 0);}
 
-		return 0;
+		return SUCCESS;
 	}
 	else if(sysLv2FsStat(FLASH_VSH_MODULE_DIR "/webftp_server.sprx.bak", &stat) == SUCCESS)
 	{
@@ -1213,5 +1236,5 @@ exit:
 	//{lv2syscall4(379,0x1200,0,0,0); return_to_user_prog(int);}
 	{lv2syscall3(SC_SYS_POWER, SYS_REBOOT, 0, 0); return_to_user_prog(int);}
 
-	return 0;
+	return SUCCESS;
 }

@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.18 MOD"
+#define WM_VERSION			"1.47.19 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -743,7 +743,7 @@ static bool script_running = false;
 #define TYPE_ROM 6
 #define TYPE_MAX 7
 
-static char wm_icons[12][60] = {WM_ICONS_PATH "/icon_wm_album_ps3.png", //024.png  [0]
+static char wm_icons[14][60] = {WM_ICONS_PATH "/icon_wm_album_ps3.png", //024.png  [0]
 								WM_ICONS_PATH "/icon_wm_album_psx.png", //026.png  [1]
 								WM_ICONS_PATH "/icon_wm_album_ps2.png", //025.png  [2]
 								WM_ICONS_PATH "/icon_wm_album_psp.png", //022.png  [3]
@@ -757,6 +757,9 @@ static char wm_icons[12][60] = {WM_ICONS_PATH "/icon_wm_album_ps3.png", //024.pn
 
 								WM_ICONS_PATH "/icon_wm_settings.png",  //icon/icon_home.png  [10]
 								WM_ICONS_PATH "/icon_wm_eject.png",     //icon/icon_home.png  [11]
+
+								WM_ICONS_PATH "/icon_wm_bdv.png",       //024.png  [12]
+								WM_ICONS_PATH "/icon_wm_retro.png",     //023.png  [13]
 								};
 
 #ifndef ENGLISH_ONLY
@@ -1207,7 +1210,7 @@ static void handleclient_www(u64 conn_s_p)
 
 		check_cover_folders(param);
 
-		for(u8 i = 0; i < 12; i++)
+		for(u8 i = 0; i < 14; i++)
 		{
 			if(file_exists(wm_icons[i]) == false)
 			{
@@ -1220,6 +1223,7 @@ static void handleclient_www(u64 conn_s_p)
 				if(i == gPS2 || i == iPS2)	strcpy(icon, "user/025.png\0"); else // ps2
 				if(i == gPSP || i == iPSP)	strcpy(icon, "user/022.png\0"); else // psp
 				if(i == gDVD || i == iDVD)	strcpy(icon, "user/023.png\0"); else // dvd
+				if(i == iROM || i == iBDVD)	strcpy(wm_icons[i], wm_icons[iPS3]); else
 											strcpy(icon + 5, "icon_home.png\0"); // setup / eject
 			}
 		}
@@ -1784,6 +1788,17 @@ parse_request:
 				// /install_ps3?url=<url>  download, auto-install pkg & keep pkg in /dev_hdd0/packages
 				// /install.ps3<pkg-path>?restart.ps3
 				// /install.ps3?url=<url>?restart.ps3
+				// /install.ps3<p3t-path>  install ps3 theme
+				// /install.ps3<directory> install GUI
+
+				char *pkg_file = param + 12;
+				if(!*pkg_file) strcpy(pkg_file, "/dev_hdd0/packages"); else
+				if( *pkg_file == '$' ) strcpy(pkg_file, WM_RES_PATH);
+				if(isDir(pkg_file))
+				{
+					is_binary = WEB_COMMAND;
+					goto html_response;
+				}
 
 				size_t last_char = strlen(param) - 1;
 				if(param[last_char] == '?')
@@ -3424,6 +3439,35 @@ retry_response:
 						}
 						else
 							strcat(pbuffer, STR_NOTFOUND);
+					}
+ #endif
+
+ #ifdef PKG_HANDLER
+					else
+					if(islike(param, "/install.ps3") || islike(param, "/install_ps3"))
+					{
+						char *pkg_file = param + 12;
+						strcat(buffer, "Install PKG: <select autofocus onchange=\"window.location='/install.ps3");
+						strcat(buffer, pkg_file);
+						strcat(buffer, "/'+this.value;\"><option>");
+
+						int fd, len;
+						if(cellFsOpendir(pkg_file, &fd) == CELL_FS_SUCCEEDED)
+						{
+							CellFsDirectoryEntry entry; size_t read_e;
+							while(working)
+							{
+								if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
+								len = entry.entry_name.d_namlen -4; if(len < 0) continue;
+								if(!strcmp(entry.entry_name.d_name + len, ".pkg") || !strcmp(entry.entry_name.d_name + len, ".p3t"))
+								{
+									strcat(buffer, "<option>");
+									strcat(buffer, entry.entry_name.d_name);
+								}
+							}
+							cellFsClosedir(fd);
+						}
+						strcat(buffer, "</select>");
 					}
  #endif
 

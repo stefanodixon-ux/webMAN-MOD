@@ -251,7 +251,7 @@ static int sys_set_leds(uint64_t color, uint64_t state)
 	return (int)p1;
 }
 
-static u32 default_cd_sector_size(size_t discsize)
+static uint32_t default_cd_sector_size(size_t discsize)
 {
 	if(!(discsize % 0x930)) return 2352;
 	if(!(discsize % 0x920)) return 2336;
