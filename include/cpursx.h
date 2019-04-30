@@ -3,7 +3,7 @@ static void get_cobra_version(char *cfw_info)
 	// returns cfw_info[20]
 
 #ifdef COBRA_ONLY
-	if(!is_mamba && !syscalls_removed) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 ==0x666);}
+	if(!is_mamba && !syscalls_removed) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 == 0x666);}
 
 	if(!cobra_version) sys_get_version2(&cobra_version);
 
@@ -12,6 +12,8 @@ static void get_cobra_version(char *cfw_info)
 		sprintf(cobra_ver, "%X.%X", cobra_version>>8, (cobra_version & 0xFF) >> 4);
 	else
 		sprintf(cobra_ver, "%X.%02X", cobra_version>>8, (cobra_version & 0xFF));
+
+	if(payload_ps3hen) {sprintf(cfw_info, "%s %s: %s", "CEX", "PS3HEN", cobra_ver); return;}
 
 	#if defined(DECR_SUPPORT)
 		sprintf(cfw_info, "%s %s: %s", (dex_mode == 1) ? "DECR" : dex_mode ? "DEX" : "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
@@ -220,7 +222,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 					"<a class=\"s\" href=\"/cpursx.ps3?mode\">"
 					"%s %i%% (0x%X)</a><br>",
 					max_temp1, (meminfo.avail>>10), drives[0], hdd_free, STR_MBFREE, templn,
-					STR_FANCH2, (int)((int)fan_speed*100)/255, fan_speed); buffer += concat(buffer, param);
+					STR_FANCH2, (int)((int)fan_speed * 100) / 255, fan_speed); buffer += concat(buffer, param);
 
 	if(!max_temp && !is_ps3_http)
 	{

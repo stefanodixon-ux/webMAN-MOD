@@ -1,10 +1,12 @@
 #define MIN_FANSPEED			(20) /* % */
-#define DEFAULT_MIN_FANSPEED	(25) /* % */
+#define DEFAULT_MIN_FANSPEED	(35) /* % */
 #define MAX_FANSPEED			(0xF4)
 #define MAX_TEMPERATURE			(85) /* °C */
 #define MY_TEMP 				(68) /* °C */
 
 #define FAN_AUTO 				(0)
+
+#define PERCENT_TO_8BIT(val)	((val * 255) / 100)
 
 #define DISABLED		(0)
 #define ENABLED			(1)
@@ -72,21 +74,17 @@ static void fan_control(u8 set_fanspeed, u8 init)
 			sys_sm_set_fan_policy(0, 2, 0x33);
 		}
 
+		u8 min_fan_speed = PERCENT_TO_8BIT(webman_config->minfan);
+
 		if(set_fanspeed < 0x33)
 		{
 			u8 st, mode, unknown;
 			u8 fan_speed8 = 0;
 			sys_sm_get_fan_policy(0, &st, &mode, &fan_speed8, &unknown);
-			if(fan_speed8 < 0x33) return;
-			fan_speed = fan_speed8;
+			fan_speed = RANGE(fan_speed8, min_fan_speed , 0xFC);
 		}
 		else
-			fan_speed = set_fanspeed;
-
-		if(fan_speed < 0x33 || fan_speed > 0xFC)
-		{
-			fan_speed = RANGE(fan_speed, 0x48, 0xFC);
-		}
+			fan_speed = RANGE(set_fanspeed, min_fan_speed , 0xFC);
 
 		old_fan = fan_speed;
 		sys_sm_set_fan_policy(0, 2, fan_speed);
@@ -108,7 +106,7 @@ static void restore_fan(u8 set_ps2_temp)
 		if(set_ps2_temp)
 		{
 			webman_config->ps2temp = RANGE(webman_config->ps2temp, 20, 99); //%
-			sys_sm_set_fan_policy(0, 2, ((webman_config->ps2temp * 255) /100));
+			sys_sm_set_fan_policy(0, 2, PERCENT_TO_8BIT(webman_config->ps2temp));
 			fan_ps2_mode = true;
 		}
 		else sys_sm_set_fan_policy(0, 1, 0x0); //syscon

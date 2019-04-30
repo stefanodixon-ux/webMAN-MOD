@@ -163,7 +163,7 @@ static void poll_thread(u64 poll)
 
 			if((t1 > 76) && (old_fan < 0x66)) fan_speed += step_up; // increase fan speed faster if < 40% and cpu is too hot
 
-			if(fan_speed < ((webman_config->minfan * 255) / 100)) fan_speed = (webman_config->minfan * 255) / 100;
+			if(fan_speed < PERCENT_TO_8BIT(webman_config->minfan)) fan_speed = PERCENT_TO_8BIT(webman_config->minfan);
 			if(fan_speed > MAX_FANSPEED) fan_speed = MAX_FANSPEED;
 
 			//sprintf(debug, "OFAN: %x | CFAN: %x | TEMP: %i | STALL: %i\r\n", old_fan, fan_speed, t1, stall);	ssend(data_s, mytxt);

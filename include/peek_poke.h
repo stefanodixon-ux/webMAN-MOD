@@ -3,12 +3,17 @@
 #define SC_PEEK_LV1 					(8)
 #define SC_POKE_LV1 					(9)
 
+#define PS3MAPI_OPCODE_LV2_PEEK			0x1006
+#define PS3MAPI_OPCODE_LV2_POKE			0x1007
+#define PS3MAPI_OPCODE_LV1_PEEK			0x1008
+#define PS3MAPI_OPCODE_LV1_POKE			0x1009
+
 #define SYSCALL8_OPCODE_PS3MAPI			0x7777
 #define PS3MAPI_OPCODE_LV1_POKE			0x1009
 
 static u64 sc_peekq = SC_PEEK_LV1; // SC used for lv2 peek
 static u64 sc_pokeq = SC_POKE_LV1; // SC used for lv2 poke
-/*
+
 static inline u64 lv2peek(u64 addr) //lv2
 {
 	system_call_1(SC_PEEK_LV2, addr);
@@ -19,12 +24,19 @@ static void lv2poke(u64 addr, u64 value) //lv2
 {
 	system_call_2(SC_POKE_LV2, addr, value);
 }
-*/
 
 static u64 peek_lv1(u64 addr)
 {
-	system_call_1(SC_PEEK_LV1, (u64) addr);
-	return (u64) p1;
+	if(!syscalls_removed)
+	{
+		system_call_1(SC_PEEK_LV1, addr);
+		return (u64) p1;
+	}
+	else // use ps3mapi extension to support peek lv2
+	{
+		system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_PEEK, addr);
+		return (u64) p1;
+	}
 }
 
 static void poke_lv1( u64 addr, u64 value)
@@ -39,17 +51,25 @@ static void poke_lv1( u64 addr, u64 value)
 
 static u64 peekq(u64 addr) //lv2
 {
-	system_call_1(sc_peekq, addr + LV2_OFFSET_ON_LV1); //old: {system_call_1(SC_PEEK_LV2, addr);}
-	return (u64) p1;
+	if(!syscalls_removed)
+	{
+		system_call_1(sc_peekq, addr + LV2_OFFSET_ON_LV1); //old: {system_call_1(SC_PEEK_LV2, addr);} // on ps3hen: LV2_OFFSET_ON_LV1 = 0, sc_peekq = SC_PEEK_LV2 (set in firmware.h)
+		return (u64) p1;
+	}
+	else // use ps3mapi extension to support peek lv2
+	{
+		system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV2_PEEK, addr);
+		return (u64) p1;
+	}
 }
 
 static void pokeq(u64 addr, u64 value) //lv2
 {
 	if(!syscalls_removed)
-		{system_call_2(sc_pokeq, addr + LV2_OFFSET_ON_LV1, value);} // {system_call_2(SC_POKE_LV2, addr, value);}
+		{system_call_2(sc_pokeq, addr + LV2_OFFSET_ON_LV1, value);} // {system_call_2(SC_POKE_LV2, addr, value);} // on ps3hen: LV2_OFFSET_ON_LV1 = 0, sc_pokeq = SC_POKE_LV2 (set in firmware.h)
 #ifdef COBRA_ONLY
 	else
-		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_POKE, addr + LV2_OFFSET_ON_LV1, value);} // use ps3mapi extension to support poke lv2
+		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV2_POKE, addr, value);} // use ps3mapi extension to support poke lv2
 #endif
 }
 

@@ -68,7 +68,7 @@
 		CellPadInfo2 padinfo;
 		poll_pads = (cellPadGetInfo2(&padinfo) == CELL_OK);
 
-		#define PERSIST  100
+		#define PERSIST  248
 
 		for(n = 0; n < 10; n++)
 		{

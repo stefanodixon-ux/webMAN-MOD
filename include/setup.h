@@ -607,14 +607,14 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("warn", false , STR_NOWARN, " </td></tr>", (webman_config->nowarn), buffer);
 
 	strcat(buffer, "<tr><td>");
-	add_radio_button("temp", 0, "t_0", STR_AUTOAT , " : ", (webman_config->temp0 == 0), buffer);
+	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->temp0 == 0), buffer);
 	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C</td><td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% %s </td></tr>", webman_config->temp1, (webman_config->fanc && webman_config->temp0==0)?ITEM_CHECKED:"", STR_LOWEST, webman_config->minfan, STR_FANSPEED); strcat(buffer, templn);
 
 	strcat(buffer, "<tr><td>");
-	add_radio_button("temp", 1, "t_1", STR_MANUAL , " : ", (webman_config->temp0 != 0), buffer);
+	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->temp0 != 0), buffer);
 	sprintf(templn, HTML_NUMBER("manu", "%i", "20", "95") " %% %s </td><td> %s : " HTML_NUMBER("fsp0", "%i", "20", "99") " %% %s </td></tr>", (webman_config->manu), STR_FANSPEED, STR_PS2EMU, webman_config->ps2temp, STR_FANSPEED); strcat(buffer, templn);
 	strcat(buffer, "<tr><td>");
-	add_radio_button("temp", 2, "t_2", "SYSCON", "</table>", !(webman_config->fanc), buffer);
+	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "</table>", !(webman_config->fanc), buffer);
 
 	//general settings
 	sprintf(templn,	HTML_BLU_SEPARATOR
@@ -1251,10 +1251,10 @@ static void read_settings(void)
 	//webman_config->nobeep = 0;      //enable beep on reboot / shutdown / disable syscall
 
 	webman_config->fanc    = ENABLED; //fan control enabled
-	//webman_config->temp0 = 0;       //0=dynamic fan control mode, >0 set manual fan speed
-	webman_config->temp1   = MY_TEMP; // target temperature for dynamic fan control
-	webman_config->manu    = 35;      //manual temp
-	webman_config->ps2temp = 37;      //ps2 temp
+	//webman_config->temp0 = 0;       //0=dynamic fan control mode, >0 set manual fan speed in %
+	webman_config->temp1   = MY_TEMP; //°C target temperature for dynamic fan control
+	webman_config->manu    = 35;      //% manual temp
+	webman_config->ps2temp = 40;      //% ps2 temp
 
 	webman_config->minfan = DEFAULT_MIN_FANSPEED; // %
 

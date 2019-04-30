@@ -56,6 +56,7 @@
 bool full = false;
 bool lite = false;
 bool update_images = false;
+bool full_on_nocobra = false;
 
 bool plugins_dir_exists = false;
 
@@ -369,6 +370,9 @@ int main()
 	if(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 285000)) full=true;
 	if(button & (BUTTON_L2 | BUTTON_R2)) update_images=true;
 //---
+
+	full_on_nocobra = (sysLv2FsStat(HDDROOT_DIR "/kernel/mamba_484C.bin", &stat) == SUCCESS) && 
+					 ((sysLv2FsStat(HDDROOT_DIR "/boot_plugins_kernel_nocobra.txt", &stat) == SUCCESS) || (sysLv2FsStat(PLUGINS_DIR "/boot_plugins_kernel_nocobra _dex.txt", &stat) == SUCCESS));
 
 	// Create webman folders
 	sysLv2FsMkdir(TMP_DIR,   0777);
@@ -980,7 +984,10 @@ cont:
 					strtok(line, "\r\n");
 					sysLv2FsChmod(line, 0777);
 					sysLv2FsUnlink(line);
-					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", line);
+					if(full_on_nocobra)
+						file_copy(APP_USRDIR "/webftp_server_full.sprx", line);
+					else
+						file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", line);
 					break;
 				}
 			}
@@ -995,13 +1002,29 @@ cont:
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "w");
 			if(plugins_dir_exists)
 			{
-				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", PLUGINS_DIR "/webftp_server_noncobra.sprx");
-				fputs("\r\n" PLUGINS_DIR "/webftp_server_noncobra.sprx", f);
+				if(full_on_nocobra)
+				{
+					file_copy(APP_USRDIR "/webftp_server_full.sprx", PLUGINS_DIR "/webftp_server.sprx");
+					fputs("\r\n" PLUGINS_DIR "/webftp_server.sprx", f);
+				}
+				else
+				{
+					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", PLUGINS_DIR "/webftp_server_noncobra.sprx");
+					fputs("\r\n" PLUGINS_DIR "/webftp_server_noncobra.sprx", f);
+				}
 			}
 			else
 			{
-				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", HDDROOT_DIR "/webftp_server_noncobra.sprx");
-				fputs("\r\n" HDDROOT_DIR "/webftp_server_noncobra.sprx", f);
+				if(full_on_nocobra)
+				{
+					file_copy(APP_USRDIR "/webftp_server_full.sprx", HDDROOT_DIR "/webftp_server.sprx");
+					fputs("\r\n" HDDROOT_DIR "/webftp_server.sprx", f);
+				}
+				else
+				{
+					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", HDDROOT_DIR "/webftp_server_noncobra.sprx");
+					fputs("\r\n" HDDROOT_DIR "/webftp_server_noncobra.sprx", f);
+				}
 			}
 			fclose(f);
 		}
@@ -1018,7 +1041,10 @@ cont:
 					strtok(line, "\r\n");
 					sysLv2FsChmod(line, 0777);
 					sysLv2FsUnlink(line);
-					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", line);
+					if(full_on_nocobra)
+						file_copy(APP_USRDIR "/webftp_server_full.sprx", line);
+					else
+						file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", line);
 					break;
 				}
 			}
@@ -1033,13 +1059,29 @@ cont:
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "w");
 			if(plugins_dir_exists)
 			{
-				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", PLUGINS_DIR "/webftp_server_noncobra.sprx");
-				fputs("\r\n" PLUGINS_DIR "/webftp_server_noncobra.sprx", f);
+				if(full_on_nocobra)
+				{
+					file_copy(APP_USRDIR "/webftp_server_full.sprx", PLUGINS_DIR "/webftp_server.sprx");
+					fputs("\r\n" PLUGINS_DIR "/webftp_server.sprx", f);
+				}
+				else
+				{
+					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", PLUGINS_DIR "/webftp_server_noncobra.sprx");
+					fputs("\r\n" PLUGINS_DIR "/webftp_server_noncobra.sprx", f);
+				}
 			}
 			else
 			{
-				file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", HDDROOT_DIR "/webftp_server_noncobra.sprx");
-				fputs("\r\n" HDDROOT_DIR "/webftp_server_noncobra.sprx", f);
+				if(full_on_nocobra)
+				{
+					file_copy(APP_USRDIR "/webftp_server_full.sprx", HDDROOT_DIR "/webftp_server.sprx");
+					fputs("\r\n" HDDROOT_DIR "/webftp_server.sprx", f);
+				}
+				else
+				{
+					file_copy(APP_USRDIR "/webftp_server_noncobra.sprx", HDDROOT_DIR "/webftp_server_noncobra.sprx");
+					fputs("\r\n" HDDROOT_DIR "/webftp_server_noncobra.sprx", f);
+				}
 			}
 			fclose(f);
 		}

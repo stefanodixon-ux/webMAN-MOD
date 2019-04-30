@@ -450,8 +450,6 @@ static u8 system_bgm = 0;
 
 #define NTFS 			(12)
 
-#define PERSIST  100
-
 #define APP_GAME  0xFF
 
 static bool show_info_popup = false;
