@@ -55,6 +55,7 @@
 
 bool full = false;
 bool lite = false;
+bool update_images = false;
 
 bool plugins_dir_exists = false;
 
