@@ -18,8 +18,7 @@ static void backup_cfw_syscalls(void)
 
 static void restore_cfw_syscalls(void)
 {
-	if(!syscalls_removed) return;
-
+	#ifdef COBRA_ONLY
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
 	{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA, 0);}
@@ -27,12 +26,35 @@ static void restore_cfw_syscalls(void)
 	{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 0); }
 
 	for(u8 sc = 0; sc < CFW_SYSCALLS; sc++)
-		pokeq( SYSCALL_PTR(sc_disable[sc]), sc_backup[sc] );
+		lv2_poke_ps3mapi( SYSCALL_PTR(sc_disable[sc]), sc_backup[sc] );
+
+	syscalls_removed = (peekq(TOC) == SYSCALLS_UNAVAILABLE);
 
 	//ps3mapi_key = 0;
-	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
+	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
+	#else
+	for(u8 sc = 0; sc < CFW_SYSCALLS; sc++)
+		pokeq( SYSCALL_PTR(sc_disable[sc]), sc_backup[sc] );
 
-	syscalls_removed = false;
+	syscalls_removed = (peekq(TOC) == SYSCALLS_UNAVAILABLE);
+	#endif
+
+
+	if(payload_ps3hen)
+	{
+		peekq = lv2_peek_hen;
+		pokeq = lv2_poke_hen;
+		lv2_poke_fan = lv2_poke_fan_hen;
+	}
+	else
+	{
+		peekq = lv2_peek_cfw;
+		pokeq = lv2_poke_cfw;
+		lv2_poke_fan =  lv2_poke_cfw;
+	}
+
+	peek_lv1 = lv1_peek_cfw;
+	poke_lv1 = lv1_poke_cfw;
 }
 
 #endif // #ifdef PS3MAPI
@@ -91,6 +113,18 @@ static void remove_cfw_syscalls(bool keep_ccapi)
 	u64 sc9  = peekq(SYSCALL_PTR( 9));
 
 	syscalls_removed = (sc9 == SYSCALLS_UNAVAILABLE || sc9 == sc_null);
+
+	#ifdef COBRA_ONLY
+	if(syscalls_removed)
+	{
+		peekq = lv2_peek_ps3mapi;
+		pokeq = lv2_poke_ps3mapi;
+		lv2_poke_fan = (payload_ps3hen) ? lv2_poke_fan_hen : lv2_poke_ps3mapi;
+
+		peek_lv1 = lv1_peek_ps3mapi;
+		poke_lv1 = lv1_poke_ps3mapi;
+	}
+	#endif
 /*
 	#ifdef COBRA_ONLY
 	if(syscalls_removed)
@@ -104,7 +138,9 @@ static void remove_cfw_syscalls(bool keep_ccapi)
 
 static void disable_cfw_syscalls(bool keep_ccapi)
 {
+	#ifdef COBRA_ONLY
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
+	#endif
 
 	if(syscalls_removed)
 	{
@@ -142,7 +178,9 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 
 	sys_ppu_thread_sleep(2);
 
+	#ifdef COBRA_ONLY
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
+	#endif
 }
 
 #endif // #ifdef REMOVE_SYSCALLS
@@ -170,9 +208,11 @@ static void block_online_servers(bool notify)
 
 		if(notify) show_msg((char*)"Blocking PSN servers");
 
+		#ifdef COBRA_ONLY
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
 		{ PS3MAPI_REENABLE_SYSCALL8 }
+		#endif
 
 		if(peekq(TOC) == SYSCALLS_UNAVAILABLE)
 		{
@@ -231,9 +271,11 @@ static void block_online_servers(bool notify)
 			led(GREEN, ON);
 		}
 
+		#ifdef COBRA_ONLY
 		{ PS3MAPI_RESTORE_SC8_DISABLE_STATUS }
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
+		#endif
 	}
 
 	if(notify)

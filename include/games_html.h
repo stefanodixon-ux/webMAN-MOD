@@ -110,7 +110,7 @@ static u8 ex[4] = {0, 1, 2, 3};
 
 static const char ext[4][5] = {".jpg\0", ".png\0", ".PNG\0", ".JPG\0"};
 
-static const char *cpath[5] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"};
+static const char *cpath[6] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"};
 
 #ifdef SLAUNCH_FILE
 static bool custom_icon = false; // override default cover mode using index.ps3?cover=<cover type> (icon0, mm, disc, online)
@@ -201,7 +201,7 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 		}
 
 		// Search covers in MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
-		for(u8 p = 0; p < 5; p++)
+		for(u8 p = 0; p < 6; p++)
 			if(covers_exist[p + 1])
 			{
 				flen = sprintf(icon, "%s/covers/%s", cpath[p], title_id);
@@ -791,7 +791,7 @@ static void check_cover_folders(char *buffer)
 #ifndef ENGLISH_ONLY
 													covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
 #endif
-		for(u8 p = 0; p < 5; p++)
+		for(u8 p = 0; p < 6; p++)
 		{
 			sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
 		}

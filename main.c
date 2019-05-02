@@ -142,6 +142,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
 #define MM_ROOT_STL			"/dev_hdd0/tmp/game_repo/main"		// stealthMAN root folder
+#define MANAGUNZ			"/dev_hdd0/game/MANAGUNZ0/USRDIR"	// ManaGunZ folder
 
 #define TMP_DIR				"/dev_hdd0/tmp"
 

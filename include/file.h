@@ -766,12 +766,12 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	return CELL_FS_SUCCEEDED;
 }
-/*
+
 static int del(const char *path, u8 recursive)
 {
 	return scan(path, recursive, NULL, SCAN_DELETE, NULL);
 }
-*/
+/*
 static int del(const char *path, u8 recursive)
 {
 	if(recursive == RECURSIVE_DELETE) ; else
@@ -860,7 +860,7 @@ static int del(const char *path, u8 recursive)
 	}
 
 	return CELL_FS_SUCCEEDED;
-}
+}*/
 #endif
 
 static int wait_path(const char *path, u8 timeout, bool found)

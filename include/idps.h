@@ -27,10 +27,11 @@ static void get_idps_psid(void)
 		return; // do not update IDPS/PSID if syscalls are removed
 	else if(idps_offset2 | psid_offset)
 	{
-			IDPS[0] = peekq(idps_offset2  );
-			IDPS[1] = peekq(idps_offset2+8);
-			PSID[0] = peekq(psid_offset   );
-			PSID[1] = peekq(psid_offset +8);
+			IDPS[0] = peekq(idps_offset2    );
+			IDPS[1] = peekq(idps_offset2 + 8);
+
+			PSID[0] = peekq(psid_offset     );
+			PSID[1] = peekq(psid_offset  + 8);
 	}
 
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }

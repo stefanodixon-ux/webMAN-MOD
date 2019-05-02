@@ -1,5 +1,5 @@
-#define ITEM_CHECKED			" checked=\"checked\""
-#define ITEM_SELECTED			" selected=\"selected\""
+#define ITEM_CHECKED			" checked"
+#define ITEM_SELECTED			" selected"
 
 #define HTML_URL				"<a href=\"%s\">%s</a>"
 #define HTML_URL2				"<a href=\"%s%s\">%s</a>"
@@ -15,7 +15,7 @@
 #define HTML_NUMBER(n, v, min, max)	"<input name=\"" n "\" type=\"number\" value=\"" v "\" min=\"" min "\" max=\"" max "\" style=\"width:45px;\">"
 #define HTML_PORT(n, v)			"<input name=\"" n "\" type=\"number\" value=\"" v "\" min=\"1\" max=\"65535\" style=\"width:60px;\">"
 
-#define HTML_DISABLED_CHECKBOX	"disabled=\"disabled"
+#define HTML_DISABLED_CHECKBOX	"disabled"
 
 #define HTML_FORM_METHOD_FMT	"%s"
 #define HTML_FORM_METHOD		".ps3mapi\" method=\"get\" enctype=\"application/x-www-form-urlencoded\" target=\"_self\">"
