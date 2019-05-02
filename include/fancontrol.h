@@ -40,22 +40,24 @@ static int sys_sm_set_fan_policy(u8 unknown , u8 fan_mode, u8 fan_speed)
 	// syscon mode: 0, 1, 0x0
 	// manual mode: 0, 2, fan_speed (0x33 - 0xFF)
 
-	u64 restore_set_fan_policy = peekq(set_fan_policy_offset);
+	u64 restore_set_fan_policy = peekq(set_fan_policy_offset); // sys 389 get_fan_policy
+	u64 enable_set_fan_policy = 0x3860000100000000ULL | (restore_set_fan_policy & 0xffffffffULL);
 
-	lv2poke32(set_fan_policy_offset, 0x38600001); // sys 409 get_fan_policy
+	lv2_poke_fan(set_fan_policy_offset, enable_set_fan_policy);
 	system_call_3(SC_SET_FAN_POLICY, (u64) unknown, (u64) fan_mode, (u64) fan_speed);
-	lv2poke32(set_fan_policy_offset, restore_set_fan_policy);
+	lv2_poke_fan(set_fan_policy_offset, restore_set_fan_policy);
 
 	return_to_user_prog(int);
 }
 
 static int sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknown)
 {
-	u64 restore_get_fan_policy = peekq(get_fan_policy_offset);
+	u64 restore_get_fan_policy = peekq(get_fan_policy_offset); // sys 409 get_fan_policy
+	u64 enable_get_fan_policy = 0x3860000100000000ULL | (restore_get_fan_policy & 0xffffffffULL);
 
-	lv2poke32(get_fan_policy_offset, 0x38600001);
+	lv2_poke_fan(get_fan_policy_offset, enable_get_fan_policy);
 	system_call_5(SC_GET_FAN_POLICY, (u64) id, (u64)(u32) st, (u64)(u32) mode, (u64)(u32) speed, (u64)(u32) unknown);
-	lv2poke32(get_fan_policy_offset, restore_get_fan_policy);
+	lv2_poke_fan(get_fan_policy_offset, restore_get_fan_policy);
 
 	return_to_user_prog(int);
 }

@@ -301,12 +301,12 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 			sprintf(templn, "sc%i=1", sc_disable[sc]);
 			if(strstr(param, templn))
 			{
+				if(sc_disable[sc] == SC_PEEK_LV2) {peekq = lv2_peek_ps3mapi;}
+				if(sc_disable[sc] == SC_POKE_LV2) {pokeq = lv2_poke_ps3mapi, lv2_poke_fan = (payload_ps3hen) ? lv2_poke_fan_hen : lv2_poke_ps3mapi;}
+				if(sc_disable[sc] == SC_POKE_LV1) {poke_lv1 = lv1_poke_ps3mapi;}
+
 				pokeq(SYSCALL_PTR(sc_disable[sc]), sc_null);
 				system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_DISABLE_SYSCALL, (u64)sc_disable[sc]);
-
-				if(sc_disable[sc] == 6) {peekq = lv2_peek_ps3mapi;}
-				if(sc_disable[sc] == 7) {pokeq = lv2_poke_ps3mapi, lv2_poke_fan = (payload_ps3hen) ? lv2_poke_fan_hen : lv2_poke_ps3mapi;}
-				if(sc_disable[sc] == 9) {poke_lv1 = lv1_poke_ps3mapi;}
 			}
 		}
 
@@ -436,13 +436,14 @@ static void ps3mapi_syscall8(char *buffer, char *templn, char *param)
 
 	{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); ret_val = (int)p1;}
 
+	syscalls_removed = (ret_val != 0); peek_lv1 = (syscalls_removed) ? lv1_peek_ps3mapi : lv1_peek_cfw;
+
 	if(ret_val < 0)
 	{
 		add_radio_button("mode\" disabled", 0, "sc8_0", "Fully enabled", _BR_, false, buffer);
 		add_radio_button("mode\" disabled", 1, "sc8_1", "Partially disabled : Keep only COBRA/MAMBA/PS3MAPI features", _BR_, false, buffer);
 		add_radio_button("mode\" disabled", 2, "sc8_2", "Partially disabled : Keep only PS3MAPI features", _BR_, false, buffer);
 		add_radio_button("mode\" disabled", 3, "sc8_3", "Fake disabled (can be re-enabled)", _BR_, false, buffer);
-		syscalls_removed = true;
 	}
 	else
 	{

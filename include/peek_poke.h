@@ -93,14 +93,15 @@ static void lv2_poke_fan_hen(u64 addr, u64 value)
 	{system_call_3(SC_COBRA_SYSCALL8, 0x7003ULL, addr, value);} // advanced poke (requires restore original value)
 }
 
-static void lv2poke32(u64 addr, u32 value)
-{
-	u64 new_value = (((u64) value) <<32) | (peekq(addr) & 0xffffffffULL);
-	lv2_poke_fan(addr, new_value);
-}
 ///////////////////////////////////////////////////
 
 /*
+static void lv2poke32(u64 addr, u32 value)
+{
+	u64 new_value = (((u64) value) <<32) | (peekq(addr) & 0xffffffffULL);
+	pokeq(addr, new_value);
+}
+
 static u32 lv2peek32(u64 addr)
 {
 	u32 ret = (u32) (peekq(addr) >> 32ULL);
