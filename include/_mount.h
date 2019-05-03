@@ -780,7 +780,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				// copy folder to target
 				if(strstr(source,"/exdata"))
-					import_edats(source, target);
+				{
+					scan(source, false, ".edat", islike(source, "/dev_usb") ? SCAN_COPYBK : SCAN_COPY, target);
+				}
 				else if(wildcard)
 					scan(source, true, wildcard, SCAN_COPY, target);
 				else if(isDir(source))

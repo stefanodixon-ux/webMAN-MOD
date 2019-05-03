@@ -30,7 +30,8 @@ enum scan_operations
 	SCAN_DELETE = 1,
 	SCAN_COPY   = 2,
 	SCAN_MOVE   = 3,
-	SCAN_RENAME = 4
+	SCAN_RENAME = 4,
+	SCAN_COPYBK = 5
 };
 
 #ifdef USE_NTFS
@@ -630,7 +631,7 @@ static int folder_copy(const char *path1, char *path2)
 #endif
 
 #ifdef COPY_PS3
-static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, const char *dest)
+static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, char *dest)
 {
 	// fop: 0 = scan to file, 1 = del, 2 = copy, 3 = move, 4 = rename/move in same fs
 
@@ -689,6 +690,8 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 		size_t path_len = strlen(path);
 		bool p_slash = (path_len > 1) && (path[path_len - 1] == '/');
 
+		if(fop > 1) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
+
 		while(working)
 		{
 #ifdef USE_NTFS
@@ -721,9 +724,12 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 				strcat(entry, "\r\n");
 				save_file(dest, entry, APPEND_TEXT);
 			}
-			else if(fop == SCAN_COPY)
+			else if(fop == SCAN_COPY || fop == SCAN_COPYBK)
 			{
 				file_copy(entry, dest_entry, COPY_WHOLE_FILE); // copy ntfs & cellFS
+
+				if((fop == SCAN_COPYBK) && file_exists(dest_entry))
+					{sprintf(dest_entry, "%s.bak", entry); cellFsRename(entry, dest_entry);}
 			}
 #ifdef USE_NTFS
 			else if(is_ntfs)
@@ -1007,46 +1013,3 @@ static void del_turnoff(u8 beeps)
 		if(beeps == 2) { BEEP2 }
 	}
 }
-
-#ifdef COPY_PS3
-static void import_edats(const char *path1, const char *path2)
-{
-	cellFsMkdir(path2, DMODE);
-
-	if(!isDir(path2)) return;
-
-	int fd; bool from_usb;
-
-	copy_aborted = false;
-	from_usb = islike(path1, "/dev_usb");
-	dont_copy_same_size = true;
-
-	if(cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
-	{
-		CellFsDirent dir; u64 read_e;
-
-		char source[STD_PATH_LEN];
-		char target[STD_PATH_LEN];
-
-		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
-		{
-			if(copy_aborted) break;
-			if((strstr(dir.d_name, ".edat") == NULL) || !extcmp(dir.d_name, ".bak", 4)) continue;
-
-			sprintf(source, "%s/%s", path1, dir.d_name);
-			sprintf(target, "%s/%s", path2, dir.d_name);
-
-			if(file_exists(target) == false)
-				file_copy(source, target, COPY_WHOLE_FILE);
-
-			if(from_usb && file_exists(target))
-				{sprintf(target, "%s.bak", source); cellFsRename(source, target);}
-		}
-		cellFsClosedir(fd);
-	}
-	else
-		return;
-
-	return;
-}
-#endif

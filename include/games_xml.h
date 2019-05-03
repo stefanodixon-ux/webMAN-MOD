@@ -660,7 +660,7 @@ next_xml_entry:
 								if(file_exists(tempstr) == false)
 								{
 									sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
-									mkdir_tree(tempstr); _file_copy(templn, tempstr);
+									mkdir_tree(tempstr); file_copy(templn, tempstr, COPY_WHOLE_FILE);
 								}
 
 								if(!webman_config->ps3l) continue;

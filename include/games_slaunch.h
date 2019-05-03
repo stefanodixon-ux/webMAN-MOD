@@ -2,11 +2,11 @@
 typedef struct // 1MB for 2000+1 titles
 {
 	u8  type;
-	char     id[10];
+	char id[10];
 	u8  path_pos; // start position of path
 	u16 icon_pos; // start position of icon
 	u16 padd;
-	char     name[508]; // name + path + icon
+	char name[508]; // name + path + icon
 } __attribute__((packed)) _slaunch;
 
 #ifdef WM_REQUEST

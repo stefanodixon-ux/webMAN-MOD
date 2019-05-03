@@ -1217,13 +1217,13 @@ static void handleclient_www(u64 conn_s_p)
 				if(file_exists(param)) continue;
 
 				char *icon = wm_icons[i] + 32;
-				if(i == gPS3 || i == iPS3)	strcpy(icon, "user/024.png\0"); else // ps3
-				if(i == gPSX || i == iPSX)	strcpy(icon, "user/026.png\0"); else // psx
-				if(i == gPS2 || i == iPS2)	strcpy(icon, "user/025.png\0"); else // ps2
-				if(i == gPSP || i == iPSP)	strcpy(icon, "user/022.png\0"); else // psp
-				if(i == gDVD || i == iDVD)	strcpy(icon, "user/023.png\0"); else // dvd
+				if(i == gPS3 || i == iPS3)	sprintf(icon, "user/024.png"); else // ps3
+				if(i == gPSX || i == iPSX)	sprintf(icon, "user/026.png"); else // psx
+				if(i == gPS2 || i == iPS2)	sprintf(icon, "user/025.png"); else // ps2
+				if(i == gPSP || i == iPSP)	sprintf(icon, "user/022.png"); else // psp
+				if(i == gDVD || i == iDVD)	sprintf(icon, "user/023.png"); else // dvd
 				if(i == iROM || i == iBDVD)	strcpy(wm_icons[i], wm_icons[iPS3]); else
-											strcpy(icon + 5, "icon_home.png\0"); // setup / eject
+											sprintf(icon + 5, "icon_home.png"); // setup / eject
 			}
 		}
 
