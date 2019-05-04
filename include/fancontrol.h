@@ -1,5 +1,5 @@
 #define MIN_FANSPEED			(20) /* % */
-#define DEFAULT_MIN_FANSPEED	(35) /* % */
+#define DEFAULT_MIN_FANSPEED	(25) /* % */
 #define MAX_FANSPEED			(0xF4)
 #define MAX_TEMPERATURE			(85) /* °C */
 #define MY_TEMP 				(68) /* °C */
