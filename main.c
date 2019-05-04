@@ -674,6 +674,9 @@ typedef struct
 static u8 wmconfig[sizeof(WebmanCfg)];
 static WebmanCfg *webman_config = (WebmanCfg*) wmconfig;
 
+static u8 cconfig[sizeof(CobraConfig)];
+static CobraConfig *cobra_config = (CobraConfig*) cconfig;
+
 static int save_settings(void);
 static void restore_settings(void);
 ////////////////////////////////
@@ -1009,6 +1012,8 @@ static void restore_settings(void)
 	setAutoPowerOff(false);
 	#endif
 
+	if(cobra_config->fan_speed) cobra_read_config(cobra_config);
+
 	working = plugin_active = 0;
 	sys_ppu_thread_usleep(500000);
 }
@@ -1242,9 +1247,6 @@ static void handleclient_www(u64 conn_s_p)
 		if(conn_s_p == START_DAEMON)
 		{
 #ifdef COBRA_ONLY
-			u8 cconfig[15];
-			CobraConfig *cobra_config = (CobraConfig*) cconfig;
-			memset(cobra_config, 0, 15);
 			cobra_read_config(cobra_config);
 
 			// cobra spoofer not working since 4.53

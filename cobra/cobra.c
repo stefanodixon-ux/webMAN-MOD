@@ -604,6 +604,7 @@ static int sys_get_version2(uint16_t *version)
 static int sys_read_cobra_config(CobraConfig *cfg)
 {
 	cfg->size = sizeof(CobraConfig);
+	memset((uint8_t*)cfg, 0, cfg->size);
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_READ_COBRA_CONFIG, (uint64_t)(uint32_t)cfg);
 	return (int)p1;
 }

@@ -133,7 +133,8 @@ typedef struct
 	uint8_t dvd_video_region; // One of DVDRegion or 0 for default
 	uint8_t ps2softemu; // Non-zero to show ps2 discs in non bc consoles
 	uint32_t spoof_version; // version in BCD, eg. 0x0400 -> 4.00, 0x0420 -> 4.20 Max value: 0x0999
-	uint32_t spoof_revision; // revision nuber (decimal), e.g: 53642. MAx value: 99999
+	uint32_t spoof_revision; // revision number (decimal), e.g: 53642. Max value: 99999
+	uint8_t fan_speed; // 0 = SYSCON, 1 = Dynamic Fan Controller, 0x33 to 0xFF = Set manual fan speed
 } __attribute__((packed)) CobraConfig;
 
 /*

@@ -369,16 +369,17 @@ static void setup_parse_settings(char *param)
 #ifdef COBRA_ONLY
  #ifdef BDVD_REGION
 	{
-		u8 cconfig[15];
-		CobraConfig *cobra_config = (CobraConfig*) cconfig;
-		memset(cobra_config, 0, 15);
 		cobra_read_config(cobra_config);
 
 		cobra_config->bd_video_region  = get_valuen(param, "bdr=", 0, 4);  //BD Region
 		cobra_config->dvd_video_region = get_valuen(param, "dvr=", 0, 32); //DVD Region
 
-		cobra_write_config(cobra_config);
+		if(webman_config->fanc)
+			cobra_config->fan_speed = (webman_config->temp0 < 0x33) ? 1 : webman_config->temp0;
+		else
+			cobra_config->fan_speed = 0; // SYSCON
 
+		cobra_write_config(cobra_config);
 	}
  #endif
 #endif
@@ -892,9 +893,6 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef COBRA_ONLY
 #ifdef BDVD_REGION
-	u8 cconfig[15];
-	CobraConfig *cobra_config = (CobraConfig*) cconfig;
-	memset(cobra_config, 0, 15);
 	cobra_read_config(cobra_config);
 
 	//BD Region
