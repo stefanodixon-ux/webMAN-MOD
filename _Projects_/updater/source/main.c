@@ -1279,7 +1279,7 @@ exit:
 	// update category_game.xml (add fb.xml)
 	if(add_mygame() != -2);
 
-	if(is_ps3hen() == 0x1337) return SUCCESS;
+	//if(is_ps3hen() == 0x1337) return SUCCESS;
 
 	// reboot
 	sysLv2FsUnlink(TMP_DIR "/turnoff");
