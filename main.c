@@ -137,7 +137,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.19 MOD"
+#define WM_VERSION			"1.47.20 MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -1178,7 +1178,8 @@ static void handleclient_www(u64 conn_s_p)
 	{
 		if(conn_s_p == START_DAEMON)
 		{
-			vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
+			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
+				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
  #ifndef ENGLISH_ONLY
 			update_language();
@@ -1214,6 +1215,7 @@ static void handleclient_www(u64 conn_s_p)
 
 		check_cover_folders(param);
 
+		// Use system icons if wm_icons don't exist
 		for(u8 i = 0; i < 14; i++)
 		{
 			if(file_exists(wm_icons[i]) == false)
@@ -2221,7 +2223,7 @@ parse_request:
 					}
 				}
 				else
-					sprintf(param, "%s", STR_ERROR);
+					sprintf(param, "%s: %s %s", STR_ERROR, (isremap ? path2 : path1), STR_NOTFOUND);
 
 				if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, param);
 

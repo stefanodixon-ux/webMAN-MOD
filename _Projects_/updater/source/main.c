@@ -60,6 +60,12 @@ bool full_on_nocobra = false;
 
 bool plugins_dir_exists = false;
 
+int is_ps3hen(void)
+{
+	lv2syscall1(8, 0x1337);
+	return_to_user_prog(int);
+}
+
 int sys_fs_mount(char const* deviceName, char const* deviceFileSystem, char const* devicePath, int writeProt)
 {
 	lv2syscall8(837, (u64) deviceName, (u64) deviceFileSystem, (u64) devicePath, 0, (u64) writeProt, 0, 0, 0 );
@@ -365,10 +371,10 @@ int main()
 	}
 	ioPadEnd();
 
-	if(button & (BUTTON_L1)) full=true; else
-	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite=true; else
-	if(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 285000)) full=true;
-	if(button & (BUTTON_L2 | BUTTON_R2)) update_images=true;
+	if(button & (BUTTON_L1)) full = true; else
+	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite = true; else
+	if((is_ps3hen() == 0x1337) || (!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 285000))) full = true;
+	if(button & (BUTTON_L2 | BUTTON_R2)) update_images = true;
 //---
 
 	full_on_nocobra = (sysLv2FsStat(HDDROOT_DIR "/kernel/mamba_484C.bin", &stat) == SUCCESS) && 
@@ -1273,6 +1279,7 @@ exit:
 	// update category_game.xml (add fb.xml)
 	if(add_mygame() != -2);
 
+	if(is_ps3hen() == 0x1337) return SUCCESS;
 
 	// reboot
 	sysLv2FsUnlink(TMP_DIR "/turnoff");

@@ -1,3 +1,5 @@
+#define LATEST_CFW	4.84f
+
 #ifndef COBRA_ONLY
 static u64 base_addr = 0;
 static u64 open_hook = 0;
@@ -49,13 +51,7 @@ static void detect_firmware(void)
 	const u64 DEH = 0x4445480000000000ULL;
 #endif
 	dex_mode = 0;
-/*
-	if(IS_HEN)
-	{
-		lv2_poke_hen(0x8000000000003d90ULL, 0x386000014e800020ULL);
-		payload_ps3hen = IS_HEN;
-	}
-*/
+
 	payload_ps3hen = (lv1_peek_cfw(0x1337) == 0x1337); // <= {system_call_1(SC_COBRA_SYSCALL8, 0x1337); payload_ps3hen = (p1 == 0x1337);}
 	if(payload_ps3hen)
 	{
@@ -200,7 +196,7 @@ static void detect_firmware(void)
 		if(c_firmware == 4.70f) {base_addr = 0x2D8A70, open_hook = 0x2975C0;} else
  #endif  // #ifndef LAST_FIRMWARE_ONLY
 		if(c_firmware == 4.80f) {base_addr = 0x2D8AE0, open_hook = 0x29762C;} else
-		if(c_firmware >= 4.75f /*&& c_firmware <= 4.84f*/)
+		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 								{base_addr = 0x2D8AF0, open_hook = 0x297638;}
 	}
 
@@ -249,7 +245,7 @@ static void detect_firmware(void)
 
 	if(IS_CEX)
 	{ // CEX
-		if(c_firmware >= 4.55f /*&& c_firmware <= 4.84f*/)
+		if(c_firmware >= 4.55f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			get_fan_policy_offset = 0x8000000000009E38ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80/4.81/4.82/4.83/4.84
 			set_fan_policy_offset = 0x800000000000A334ULL; // sys 389 set_fan_policy
@@ -274,7 +270,7 @@ static void detect_firmware(void)
 			}
 			else
  #endif //#ifndef LAST_FIRMWARE_ONLY
-			if(c_firmware >= 4.75f /*&& c_firmware <= 4.84f*/)
+			if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 			{
 				idps_offset1 = 0x80000000003E2E30ULL;
 				idps_offset2 = 0x8000000000474AF4ULL;
@@ -612,7 +608,7 @@ static void patch_lv2(void)
 #endif
 		}
 		else
-		if(c_firmware >= 4.75f /*&& c_firmware <= 4.84f*/)
+		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026714CULL, 0x800000000005658CULL, 0x8000000000056650ULL,
 								  0x80000000000565FCULL, 0x800000000005A6E0ULL,
@@ -678,7 +674,7 @@ static void patch_lv2(void)
  #endif
 		}
 		else
-		if(c_firmware >= 4.75f /*&& c_firmware <= 4.84f*/)
+		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026E530ULL, (c_firmware >= 4.81f) ? 0x800000000005A584ULL : 0x800000000005A344ULL, 0x800000000005A408ULL,
 								  0x800000000005A3B4ULL, 0x800000000005E498ULL,
@@ -859,14 +855,14 @@ static void patch_lv2(void)
  #endif
 		}
 		else
-		if(c_firmware >= 4.75f /*&& c_firmware <= 4.84f*/)
+		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026D868ULL, 0x8000000000059F5CULL, 0x800000000005A020ULL,
 								  0x8000000000059FCCULL, 0x800000000005E0B0ULL,
 								  0x8000000000059C00ULL, 0x800000000022DAD0ULL,
 								  0x800000000005962CULL, 0x800000000005C7ECULL);
  #ifndef COBRA_ONLY
-			if(c_firmware >= 4.81f /*&& c_firmware <= 4.84f*/)
+			if(c_firmware >= 4.81f /*&& c_firmware <= LATEST_CFW*/)
 			{
 				sc_600 = 0x364928;
 				sc_604 = 0x364A00;

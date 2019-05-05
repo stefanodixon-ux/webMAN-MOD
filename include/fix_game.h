@@ -1,4 +1,3 @@
-#define LATEST_CFW	4.84f
 #define CFW_420		0xA410ULL /* 42000 */
 #define MIN_CFW		0x2710ULL /* 10000 */
 #define MAX_CFW		0xD6D8ULL /* 55000 */
@@ -129,7 +128,7 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 
 				mem[pos + 1] = '4', mem[pos + 3] = '2', mem[pos + 4] = '0'; ret = true;
 			}
-			fcount++; if(fcount>=2) break;
+			fcount++; if(fcount >= 2) break;
 		}
 #endif
 
