@@ -14,6 +14,8 @@ struct platform_info {
 //                      GET FIRMWARE VERSION                          //
 ////////////////////////////////////////////////////////////////////////
 
+#define SYSCALL8_OPCODE_IS_PS3HEN				0x1337
+#define SYSCALL8_OPCODE_HEN_REV					0x1339
 #define SYSCALL8_OPCODE_GET_MAMBA				0x7FFFULL
 #define SYSCALL8_OPCODE_GET_VERSION				0x7000
 #define SYSCALL8_OPCODE_GET_VERSION2			0x7001
@@ -64,9 +66,11 @@ static void get_payload_type(void)
 	if(!is_cobra_based()) return;
 
 	bool is_mamba; {system_call_1(8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 ==0x666);}
+	bool is_ps3hen;{system_call_1(8, SYSCALL8_OPCODE_IS_PS3HEN); is_ps3hen = ((int)p1==0x1337);}
 
-	uint16_t cobra_version; sys_get_version2(&cobra_version);
-	sprintf(payload_type, "%s %X.%X", is_mamba ? "Mamba" : "Cobra", cobra_version>>8, (cobra_version & 0xF) ? (cobra_version & 0xFF) : ((cobra_version>>4) & 0xF));
+	uint16_t cobra_version;
+	if(is_ps3hen) {system_call_1(8, SYSCALL8_OPCODE_HEN_REV); cobra_version = (int)p1;} else sys_get_version2(&cobra_version);
+	sprintf(payload_type, "%s %X.%X", is_ps3hen ? "PS3HEN" : is_mamba ? "Mamba" : "Cobra", cobra_version>>8, (cobra_version & 0xF) ? (cobra_version & 0xFF) : ((cobra_version>>4) & 0xF));
 
 	sprintf(cfw_str, "Firmware : %c.%c%c %s %s", FW[0], FW[2], FW[3], kernel_type, payload_type);
 }

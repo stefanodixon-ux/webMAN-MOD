@@ -5,13 +5,14 @@
  REFRESH XML  : SELECT+L3 (+R2=profile1, +L2=profile2, +R1=profile3, +L1=profile4, +L1+R1=Reload XMB, +R2+L2=FAIL SAFE)
  UNLOAD WM    : L3+R3+R2
 
- PLAY_DISC    : L2+START
+ PLAY_DISC    : L2+START                        *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_start
 
  PREV GAME    : SELECT+L1                       *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_l1
  NEXT GAME    : SELECT+R1                       *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_r1
  UMNT_GAME    : SELECT+O (unmount)              *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_circle
 
  RESERVED     : SELECT+TRIANGLE                 *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_triangle
+ RESERVED     : SELECT+CROSS                    *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_cross
 
  EXT GAME DATA: SELECT+□                        *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_square
  MOUNT net0/  : SELECT+R2+□
@@ -97,10 +98,16 @@
 				if(pad_data.len > 0)
 				{
 #ifdef COBRA_ONLY
-					if( ((!(webman_config->combo2 & C_SLAUNCH)) && (((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0)) ||                    // START
-																	((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == 0) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)))))   // L2+R2
-					||	((!(webman_config->combo2 & C_VSHMENU)) &&  ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_SELECT) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0))) )                   // SELECT
+					if( ((!(webman_config->combo2 & C_SLAUNCH)) && (((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0)) ||                    // START  = SLAUNCH MENU
+																	((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == 0) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)))))   // L2+R2  = SLAUNCH MENU
+					||	((!(webman_config->combo2 & C_VSHMENU)) &&  ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_SELECT) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0))) )                   // SELECT = VSH MENU
 					{
+#ifdef WM_CUSTOM_COMBO
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // L2+R2
+						{
+							if(do_custom_combo("l2_r2") == false) continue;
+						}
+#endif
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] && (++init_delay < 5)) {sys_ppu_thread_usleep(100000); continue;}
 
 						start_vsh_gui(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_SELECT);
@@ -111,6 +118,10 @@
 #endif
 					if(!(webman_config->combo2 & PLAY_DISC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2))
 					{
+						// L2+START = Play Disc
+#ifdef WM_CUSTOM_COMBO
+						if(do_custom_combo("l2_start") == false) continue;
+#endif
 						char category[16], seg_name[40]; *category = *seg_name = NULL;
 						launch_disc(category, seg_name, true); // L2+START
 						break;
@@ -118,39 +129,9 @@
 
 					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_SELECT))
 					{
-						if( !(webman_config->combo2 & (EXTGAMDAT | MOUNTNET0 | MOUNTNET1))         // Toggle External Game Data
-							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_SQUARE)) // SELECT+SQUARE
-						{
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
-							if(!(webman_config->combo2 & MOUNTNET0) &&
-								(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2))
-							{if(is_netsrv_enabled(0)) mount_game((char*)"/net0", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+R2 / SELECT+R2+SQUARE
-							else
-							if(!(webman_config->combo2 & MOUNTNET1) &&
-								(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2))
-							{if(is_netsrv_enabled(1)) mount_game((char*)"/net1", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+L2 / SELECT+L2+SQUARE
-							else
- #endif
-#endif
-							{
-#ifdef WM_CUSTOM_COMBO
-								if(do_custom_combo("select_square")) break;
-								else
-#endif
-								{
-#ifdef EXT_GDATA
-									set_gamedata_status(extgd^1, true); // SELECT+SQUARE
-#endif
-									n = 0;
-									break;
-								}
-							}
-						}
-						else
 						if( !(webman_config->combo & FAIL_SAFE) &&
-							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_L3) &&                    // fail-safe mode
-							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // SELECT+L3+L2+R2
+							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3)) && // fail-safe mode
+							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))        // SELECT+L3+L2+R2
 							)
 						{
 							//// startup time /////
@@ -166,20 +147,20 @@
 							goto reboot; // vsh reboot
 						}
 						else
-						if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_R3) &&                    // reset-safe mode
-							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // SELECT+R3+L2+R2
+						if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_R3)) && // reset-safe mode
+							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))        // SELECT+R3+L2+R2
 							)
 						{
 							if(!sys_admin || IS_INGAME) continue;
-#ifndef ENGLISH_ONLY
-							char STR_RMVWMCFG[96];//		= "webMAN config reset in progress...";
+ #ifndef ENGLISH_ONLY
+							char STR_RMVWMCFG[96];//	= "webMAN config reset in progress...";
 							char STR_RMVWMCFGOK[112];//	= "Done! Restart within 3 seconds";
 
 							language("STR_RMVWMCFG", STR_RMVWMCFG, "webMAN config reset in progress...");
 							language("STR_RMVWMCFGOK", STR_RMVWMCFGOK, "Done! Restart within 3 seconds");
 
 							close_language();
-#endif
+ #endif
 							cellFsUnlink(WMCONFIG);
 							{ BEEP1 }
 							show_msg((char*)STR_RMVWMCFG);
@@ -188,8 +169,8 @@
 							sys_ppu_thread_sleep(3);
 							goto reboot; // vsh reboot
 						}
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
+ #ifdef COBRA_ONLY
+  #ifndef LITE_EDITION
 						else
 						if( !(webman_config->combo2 & PS2TOGGLE)
 							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
@@ -221,28 +202,41 @@
 						{
 								toggle_ps2emu();
 						}
- #endif //#ifndef LITE_EDITION
-#endif //#ifdef COBRA_ONLY
-
+  #endif //#ifndef LITE_EDITION
+ #endif //#ifdef COBRA_ONLY
 						else
-						if(!(webman_config->combo2 & XMLREFRSH) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_L3) ) // SELECT+L3 refresh XML
+						if(!(webman_config->combo2 & XMLREFRSH) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3))) // SELECT+L3 refresh XML
 						{
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2) profile=1; else
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2) profile=2; else
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R1) profile=3; else
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L1) profile=4; else profile=0;
+							// SELECT+L3       = refresh XML
+							// SELECT+L3+R2    = refresh XML profile 1
+							// SELECT+L3+L2    = refresh XML profile 2
+							// SELECT+L3+R1    = refresh XML profile 3
+							// SELECT+L3+L1    = refresh XML profile 4
+							// SELECT+L3+L1+R1 = refresh XML + Reload XMB
+
+							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2) profile = 1; else
+							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2) profile = 2; else
+							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R1) profile = 3; else
+							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L1) profile = 4; else profile = 0;
+
 							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_L1)) n = 11;
 
 							refresh_xml(msg);
 							if(n > 10) reload_xmb();
 						}
-#ifdef VIDEO_REC
+ #ifdef VIDEO_REC
 						else
-						if(!(webman_config->combo2 & VIDRECORD) && pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_R3) // SELECT + R3
+						if(!(webman_config->combo2 & VIDRECORD) && pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_R3)) // SELECT + R3
 						{
-#ifdef COBRA_ONLY
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))// SELECT+R3+L2+R2  Record video with video_rec plugin (IN-GAME ONLY)
+							// SELECT+R3+L2+R2  = Record video with video_rec plugin (IN-GAME ONLY)
+							// SELECT+R3+L2     = Select video rec setting
+							// SELECT+R3+R2     = Change value of video rec setting
+							// SELECT+R3        = Toggle Record Video
+  #ifdef COBRA_ONLY
+							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // SELECT+R3+L2+R2  Record video with video_rec plugin (IN-GAME ONLY)
 							{
+								// SELECT+R3+L2+R2 = Record video with video_rec plugin (IN-GAME ONLY)
+
 								#define VIDEO_REC_PLUGIN  WM_RES_PATH "/video_rec.sprx"
 
 								if((!recording) && (IS_INGAME) && file_exists(VIDEO_REC_PLUGIN))
@@ -252,19 +246,23 @@
 								}
 							}
 							else
-#endif //#ifdef COBRA_ONLY
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2)
+  #endif //#ifdef COBRA_ONLY
+							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2)	// SELECT+R3+L2  Select video rec setting
 							{
-								rec_setting_to_change++; if(rec_setting_to_change>5) rec_setting_to_change = 0; 	// SELECT+R3+L2  Select video rec setting
+								// SELECT+R3+L2 = Select video rec setting
+
+								rec_setting_to_change++; if(rec_setting_to_change>5) rec_setting_to_change = 0;
 								set_setting_to_change(msg, "Change : ");
 
 								strcat(msg, "\n\nCurrent recording format:");
 								show_rec_format(msg);
 							}
 							else
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)
+							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)	// SELECT+R3+R2  Change value of video rec setting
 							{
-								set_setting_to_change(msg, "Changed : ");									// SELECT+R3+R2  Change value of video rec setting
+								// SELECT+R3+R2 = Change value of video rec setting
+
+								set_setting_to_change(msg, "Changed : ");
 
 								strcat(msg, "\n\nCurrent recording format:");
 								if(rec_setting_to_change == 0)
@@ -291,38 +289,46 @@
 
 							break;
 						}
-#endif
+ #endif
 						else
-						if( (!(webman_config->combo & SHOW_TEMP) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & (CELL_PAD_CTRL_R3 | CELL_PAD_CTRL_START)))) // SELECT+START show temperatures / hdd space
+						if( !(webman_config->combo & SHOW_TEMP) && ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_START)) // SELECT+START show temperatures / hdd space
+ #ifndef VIDEO_REC
+																||  (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_R3 | CELL_PAD_CTRL_START))
+ #endif
+							))
 						{
-#ifdef XMB_SCREENSHOT
-							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_L2) && IS_ON_XMB)
+							// SELECT+START+L2+R2 = screenshot of XMB
+							// SELECT+START       = show temp or copy progress + show temp (hold SELECT+START for 5 seconds to toggle persistant popup)
+							// SELECT+START+R2    = show only copy progress
+							// SELECT+R3          = show temp (if no VIDEO_REC)
+ #ifdef XMB_SCREENSHOT
+							if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_L2)) && IS_ON_XMB)
 								{memset(msg, 0, 256); saveBMP(msg, true); n = 0; break;} // L2 + R2 + SELECT + START
 							else
-#endif
+ #endif
 							{
 								if(show_persistent_popup == 0)        show_persistent_popup = 1;               else
 								if(show_persistent_popup  < PERSIST) {BEEP1; show_persistent_popup = PERSIST;} else
 																	 {BEEP2; show_persistent_popup = 0;}
-show_persistent_popup:
+ show_persistent_popup:
 								/////////////////////////////
-#if defined(FIX_GAME) || defined(COPY_PS3)
+ #if defined(FIX_GAME) || defined(COPY_PS3)
 								if(copy_in_progress || fix_in_progress)
 								{
- #ifdef FIX_GAME
+  #ifdef FIX_GAME
 									if(fix_in_progress)
 										sprintf(msg, "%s %s", STR_FIXING, current_file);
 									else
- #endif
+  #endif
 										sprintf(msg, "%s %s (%i %s)", STR_COPYING, current_file, copied_count, STR_FILES);
 
 									show_msg(msg);
 									sys_ppu_thread_sleep(2);
 									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_L2) ) break;
 								}
-#endif
+ #endif
 								/////////////////////////////
-show_popup:
+ show_popup:
 								{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
 								CellRtcTick pTick; u32 dd, hh, mm, ss; char tmp[256];
@@ -332,8 +338,8 @@ show_popup:
 								get_temperature(1, &t2); // RSX
 
 								u8 speed = fan_speed;
-								if(fan_ps2_mode) speed=(int)(255.f*(float)(webman_config->ps2temp+1)/100.f); else
-								if((webman_config->fanc == DISABLED) && (get_fan_policy_offset>0))
+								if(fan_ps2_mode) speed = (int)(255.f*(float)(webman_config->ps2temp + 1) / 100.f); else
+								if((webman_config->fanc == DISABLED) && (get_fan_policy_offset > 0))
 								{
 									u8 st, mode, unknown;
 									sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
@@ -394,28 +400,30 @@ show_popup:
 							}
 						}
 						else
-						if(webman_config->fanc && !(webman_config->combo & MANUALFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_UP) ) // SELECT+UP increase TEMP/FAN
+						if(webman_config->fanc && !(webman_config->combo & MANUALFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_UP))) // SELECT+UP increase TEMP/FAN
 						{
-#ifdef WM_CUSTOM_COMBO
+							// SELECT+UP      = increase TEMP of dynamic fan control / manual FAN SPEED +1
+							// SELECT+UP + R2 = increase TEMP of dynamic fan control / manual FAN SPEED +5
+ #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_up")) break;
 							else
-#endif
+ #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
 
 								if(max_temp) //auto mode
 								{
 									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) max_temp+=5; else max_temp+=1;
-									if(max_temp>85) max_temp=85;
-									webman_config->temp1=max_temp;
+									if(max_temp > 85) max_temp = 85;
+									webman_config->temp1 = max_temp;
 									sprintf(msg, "%s\n%s %i°C", STR_FANCH0, STR_FANCH1, max_temp);
 								}
 								else
 								{
 									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->manu+=5; else webman_config->manu+=1;
-									webman_config->manu=RANGE(webman_config->manu, 20, 95); //%
-									webman_config->temp0= (u8)(((float)(webman_config->manu+1) * 255.f)/100.f);
-									webman_config->temp0=RANGE(webman_config->temp0, 0x33, MAX_FANSPEED);
+									webman_config->manu = RANGE(webman_config->manu, 20, 95); //%
+									webman_config->temp0 = (u8)(((float)(webman_config->manu+1) * 255.f)/100.f);
+									webman_config->temp0 = RANGE(webman_config->temp0, 0x33, MAX_FANSPEED);
 									fan_control(webman_config->temp0, 0);
 									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->manu);
 								}
@@ -427,27 +435,28 @@ show_popup:
 							}
 						}
 						else
-						if(webman_config->fanc && !(webman_config->combo & MANUALFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_DOWN) ) // SELECT+DOWN increase TEMP/FAN
+						if(webman_config->fanc && !(webman_config->combo & MANUALFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_DOWN))) // SELECT+DOWN decrease TEMP/FAN
 						{
-#ifdef WM_CUSTOM_COMBO
+							// SELECT+DOWN    = decrease TEMP of dynamic fan control / manual FAN SPEED -1
+							// SELECT+DOWN+R2 = decrease TEMP of dynamic fan control / manual FAN SPEED -5
+ #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_down")) break;
 							else
-#endif
+ #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
 
 								if(max_temp) //auto mode
 								{
-									if(max_temp>30) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) max_temp-=5; else max_temp-=1;}
-									webman_config->temp1=max_temp;
+									if(max_temp > 30) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) max_temp-=5; else max_temp-=1;}
+									webman_config->temp1 = max_temp;
 									sprintf(msg, "%s\n%s %i°C", STR_FANCH0, STR_FANCH1, max_temp);
 								}
 								else
 								{
 									if(webman_config->manu>20) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->manu-=5; else webman_config->manu-=1;}
 									webman_config->temp0 = (u8)(((float)(webman_config->manu+1) * 255.f)/100.f);
-									if(webman_config->temp0<0x33) webman_config->temp0=0x33;
-									if(webman_config->temp0>MAX_FANSPEED) webman_config->temp0=MAX_FANSPEED;
+									webman_config->temp0 = RANGE(webman_config->temp0, 0x33, MAX_FANSPEED);
 									fan_control(webman_config->temp0, 0);
 									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->manu);
 								}
@@ -459,16 +468,17 @@ show_popup:
 							}
 						}
 						else
-						if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_LEFT) ) // SELECT+LEFT decrease Minfan
+						if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_LEFT))) // SELECT+LEFT decrease Minfan
 						{
-#ifdef WM_CUSTOM_COMBO
+							// SELECT+LEFT = decrease Minfan
+ #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_left")) break;
 							else
-#endif
+ #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
 
-								if(webman_config->minfan-5>=MIN_FANSPEED) webman_config->minfan -= 5;
+								if(webman_config->minfan-5 >= MIN_FANSPEED) webman_config->minfan -= 5;
 								sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH3, webman_config->minfan);
 
 								save_settings();
@@ -479,16 +489,17 @@ show_popup:
 							}
 						}
 						else
-						if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_RIGHT) ) // SELECT+RIGHT increase Minfan
+						if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_RIGHT))) // SELECT+RIGHT increase Minfan
 						{
-#ifdef WM_CUSTOM_COMBO
+							// SELECT+RIGHT = increase Minfan
+ #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_right")) break;
 							else
-#endif
+ #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
 
-								if(webman_config->minfan+5<100) webman_config->minfan += 5;
+								if(webman_config->minfan < 95) webman_config->minfan += 5;
 								sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH3, webman_config->minfan);
 
 								save_settings();
@@ -498,112 +509,178 @@ show_popup:
 								break;
 							}
 						}
-						else
-						if(!(webman_config->combo & PREV_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L1) ) // SELECT+L1 (previous title)
+						else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_SELECT)
 						{
-#ifdef WM_CUSTOM_COMBO
-							if(do_custom_combo("select_l1")) break;
-							else
-#endif
+							// SELECT+SQUARE    = Toggle External Game Data
+							// SELECT+SQUARE+R2 = Mount net0
+							// SELECT+SQUARE+L2 = Mount net1
+
+							// SELECT+L1 = mount previous title
+							// SELECT+R1 = mount next title
+							// SELECT+O+R2 = Install PKG
+							// SELECT+O = unmount
+							// SELECT+TRIANGLE = RESERVED
+
+							if( !(webman_config->combo2 & (EXTGAMDAT | MOUNTNET0 | MOUNTNET1))             // Toggle External Game Data
+								&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_SQUARE)) // SELECT+SQUARE
 							{
-								mount_game((char*)"_prev", EXPLORE_CLOSE_ALL);
+ #ifdef COBRA_ONLY
+  #ifndef LITE_EDITION
+								if(!(webman_config->combo2 & MOUNTNET0) &&
+									(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_SQUARE | CELL_PAD_CTRL_R2)))
+								{if(is_netsrv_enabled(0)) mount_game((char*)"/net0", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+R2 / SELECT+R2+SQUARE
+								else
+								if(!(webman_config->combo2 & MOUNTNET1) &&
+									(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_SQUARE | CELL_PAD_CTRL_L2)))
+								{if(is_netsrv_enabled(1)) mount_game((char*)"/net1", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+L2 / SELECT+L2+SQUARE
+								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_SQUARE))
+  #endif
+ #endif
+								{
+ #ifdef WM_CUSTOM_COMBO
+									if(do_custom_combo("select_square")) break;
+									else
+ #endif
+									{
+ #ifdef EXT_GDATA
+										set_gamedata_status(extgd^1, true); // SELECT+SQUARE
+ #endif
+										n = 0;
+										break;
+									}
+								}
+							}
+							else
+							if(!(webman_config->combo & PREV_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L1) ) // SELECT+L1 (previous title)
+							{
+								 // SELECT+L1 = mount previous title
+ #ifdef WM_CUSTOM_COMBO
+								if(do_custom_combo("select_l1")) break;
+								else
+ #endif
+								{
+									mount_game((char*)"_prev", EXPLORE_CLOSE_ALL);
+
+									n = 0;
+									break;
+								}
+							}
+							else
+							if(!(webman_config->combo & NEXT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R1) ) // SELECT+R1 (next title)
+							{
+								// SELECT+R1 = mount next title
+ #ifdef WM_CUSTOM_COMBO
+								if(do_custom_combo("select_r1")) break;
+								else
+ #endif
+								{
+									mount_game((char*)"_next", EXPLORE_CLOSE_ALL);
+
+									n = 0;
+									break;
+								}
+							}
+ #ifdef PKG_HANDLER
+							else
+							if(!(webman_config->combo2 & INSTALPKG) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_CIRCLE | CELL_PAD_CTRL_R2)) ) // SELECT+R2+O (Install PKG)
+							{
+								// SELECT+R2+O = Install PKG
+  #ifdef WM_CUSTOM_COMBO
+								if(do_custom_combo("select_r2_circle")) break;
+								else
+  #endif
+								if(!install_in_progress && IS_ON_XMB)
+								{
+									sys_ppu_thread_t thread_id;
+									sys_ppu_thread_create(&thread_id, installPKG_combo_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_INSTALL_PKG, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_INSTALLPKG);
+								}
 
 								n = 0;
 								break;
 							}
-						}
-						else
-						if(!(webman_config->combo & NEXT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R1) ) // SELECT+R1 (next title)
-						{
-#ifdef WM_CUSTOM_COMBO
-							if(do_custom_combo("select_r1")) break;
+ #endif //#ifdef PKG_HANDLER
 							else
-#endif
+							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CIRCLE) ) // SELECT+O (unmount)
 							{
-								mount_game((char*)"_next", EXPLORE_CLOSE_ALL);
+								// SELECT+O = unmount
+ #ifdef WM_CUSTOM_COMBO
+								if(do_custom_combo("select_circle")) break;
+								else
+ #endif
+									do_umount(true);
 
 								n = 0;
 								break;
 							}
-						}
-#ifdef PKG_HANDLER
-						else
-						if(!(webman_config->combo2 & INSTALPKG) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_CIRCLE | CELL_PAD_CTRL_R2)) ) // SELECT+R2+O
-						{
-#ifdef WM_CUSTOM_COMBO
-							if(do_custom_combo("select_r2_circle")) break;
+ #ifdef WM_CUSTOM_COMBO
 							else
-#endif
-							if(!install_in_progress && IS_ON_XMB)
+							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_TRIANGLE) ) // SELECT+TRIANGLE
 							{
-								sys_ppu_thread_t thread_id;
-								sys_ppu_thread_create(&thread_id, installPKG_combo_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_INSTALL_PKG, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_INSTALLPKG);
+								// SELECT+TRIANGLE = RESERVED for custom combos
+
+								//if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_TRIANGLE)) && do_custom_combo("select_l2_triangle")) break; // RESERVED
+								//if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_TRIANGLE)) && do_custom_combo("select_r2_triangle")) break; // RESERVED
+								if(do_custom_combo("select_triangle")) break;    // RESERVED
 							}
-
-							n = 0;
-							break;
-						}
-#endif
-						else
-						if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CIRCLE) ) // SELECT+O (unmount)
-						{
-#ifdef WM_CUSTOM_COMBO
-							if(do_custom_combo("select_circle")) break;
 							else
-#endif
-								do_umount(true);
+							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS) ) // SELECT+CROSS
+							{
+								// SELECT+CROSS = RESERVED for custom combos
 
-							n = 0;
-							break;
+								//if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CROSS)) && do_custom_combo("select_l2_cross")) break; // RESERVED
+								//if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CROSS)) && do_custom_combo("select_r2_cross")) break; // RESERVED
+								if(do_custom_combo("select_cross")) break;    // RESERVED
+							}
+ #endif
 						}
-#ifdef WM_CUSTOM_COMBO
-						else
-						if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_TRIANGLE) ) // SELECT+TRIANGLE
-						{
-							if(do_custom_combo("select_triangle")) break; // RESERVED
-						}
-#endif
+					} // SELECT
+					else if(!(webman_config->combo & UNLOAD_WM) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
+																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)) //  L3+R3+R2 (Quit / Unload webMAN)
+					{
+						// L3+R3+R2 = Quit / Unload webMAN
+ #ifdef VIDEO_REC
+						#ifdef COBRA_ONLY
+						quit_plugin:
+						#endif
+ #endif
+						wm_unload_combo = 1;
+
+						restore_settings();
+
+						stop_prx_module();
+						sys_ppu_thread_exit(0);
+						break;
 					}
 					else
-					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2))
+					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2))
 					{
-						if(!(webman_config->combo & SHUT_DOWN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CROSS) ) // L3+R2+X (shutdown)
+						// L3+R2+X     = Shutdown
+						// L3+R2+O     = Lpar restart
+						// L3+R2+START = Enable/disable fancontrol
+
+						if(!(webman_config->combo & SHUT_DOWN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CROSS))) // L3+R2+X (shutdown)
 						{
-							// power off
+							// L3+R2+X = power off
 							working = 0;
-							{ del_turnoff(1); }
+							{ del_turnoff(1); } // 1 beep
 
 							vsh_shutdown();
 
 							sys_ppu_thread_exit(0);
 						}
-						else if(!(webman_config->combo & RESTARTPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CIRCLE) ) // L3+R2+O (lpar restart)
+						else if(!(webman_config->combo & RESTARTPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE))) // L3+R2+O (lpar restart)
 						{
-							// lpar restart
+							// L3+R2+O = lpar restart
 							working = 0;
-							{ del_turnoff(2); }
+							{ del_turnoff(2); } // 2 beeps
 
 							{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);}
 
 							sys_ppu_thread_exit(0);
 						}
-						else if(!(webman_config->combo & UNLOAD_WM) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_R3) ) // L3+R3+R2 (Quit / Unload webMAN)
+						else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_START))) // L3+R2+START (enable/disable fancontrol)
 						{
-#ifdef VIDEO_REC
-							#ifdef COBRA_ONLY
-							quit_plugin:
-							#endif
-#endif
-							wm_unload_combo = 1;
-
-							restore_settings();
-
-							stop_prx_module();
-							sys_ppu_thread_exit(0);
-							break;
-						}
-						else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_START) ) // L3+R2+START (enable/disable fancontrol)
-						{
+							// L3+R2+START = Enable/disable fancontrol
 							enable_fan_control(TOGGLE_MODE, msg);
 
 							n = 0;
@@ -611,55 +688,66 @@ show_popup:
 						}
 					}
 					else
-					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1))
+					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1))
 					{
-						if(!(webman_config->combo & SHUT_DOWN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CROSS)) // L3+R1+X (vsh shutdown)
-						{
-							// vsh shutdown
-							working = 0;
-							{ del_turnoff(1); }
+						// L3+R1+X = vsh shutdown
+						// L3+R1+O = vsh restart
 
-							vsh_shutdown(); // VSH shutdown
+						if(!(webman_config->combo & SHUT_DOWN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_CROSS))) // L3+R1+X (vsh shutdown)
+						{
+							// L3+R1+X = vsh shutdown
+							working = 0;
+							{ del_turnoff(1); } // 1 beep
+
+							vsh_shutdown();
 
 							sys_ppu_thread_exit(0);
 						}
 
-						if(!(webman_config->combo & RESTARTPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CIRCLE)) // L3+R1+O (vsh restart)
+						if(!(webman_config->combo & RESTARTPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_CIRCLE))) // L3+R1+O (vsh restart)
 						{
-							// vsh reboot
+							// L3+R1+O = vsh reboot
 							working = 0;
-							{ del_turnoff(2); }
+							{ del_turnoff(2); } // 2 beeps
 
-							vsh_reboot(); // VSH reboot
+							vsh_reboot();
 
 							sys_ppu_thread_exit(0);
 						}
 					}
-#ifdef SYS_ADMIN_MODE
-					else
-					if((webman_config->combo & SYS_ADMIN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_TRIANGLE) )) // L2+R2+TRIANGLE Toggle user/admin mode
-					{
- #ifdef WM_CUSTOM_COMBO
-						if(do_custom_combo("l2_r2_triangle")) break;
-						else
- #endif
-						{
-							sys_admin ^= 1, pwd_tries = 0;
-
-							sprintf(msg, "ADMIN %s", sys_admin ? STR_ENABLED : STR_DISABLED);
-							show_msg(msg);
-
-							if(sys_admin) { BEEP1 } else { BEEP2 }
-						}
-						n = 0;
-						break;
-					}
-#endif
 					else
 					if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2)
 					{
+						// R2+L2+TRIANGLE = Toggle user/admin mode
+						// R2+L2+O + [L1/R1/L1+R1]
+						// R2+TRIANGLE = disable_cfw_syscalls
+						// R2+SQUARE   = block_online_servers
+						// R2+CIRCLE   = show_idps / abort copy/gamefix / enable_ingame_screenshot
+
+ #ifdef SYS_ADMIN_MODE
+						if((webman_config->combo & SYS_ADMIN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_TRIANGLE) )) // L2+R2+TRIANGLE
+						{
+							// R2+L2+TRIANGLE = Toggle user/admin mode
+  #ifdef WM_CUSTOM_COMBO
+							if(do_custom_combo("l2_r2_triangle")) break;
+							else
+  #endif
+							{
+								sys_admin ^= 1, pwd_tries = 0;
+
+								sprintf(msg, "ADMIN %s", sys_admin ? STR_ENABLED : STR_DISABLED);
+								show_msg(msg);
+
+								if(sys_admin) { BEEP1 } else { BEEP2 }
+							}
+							n = 0;
+							break;
+						}
+						else
+ #endif
 						if(!(webman_config->combo & SHOW_IDPS) && ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE)) == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE)) && IS_ON_XMB) // L2+R2+O
 						{
+							// L2+R2+O  +  [L1/R1/R1+R1] = Open Browser file manager / cpursx / games / setup
 #ifdef WM_CUSTOM_COMBO
 								 if(do_custom_combo("l2_r2_circle")) ;
 							else if(do_custom_combo("l2_r2_l1_circle")) ;
@@ -683,12 +771,12 @@ show_popup:
 							}
 						}
 						else
-						if((copy_in_progress || fix_in_progress) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CIRCLE)) // R2+O Abort copy process
+						if((copy_in_progress || fix_in_progress) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE))) // R2+O Abort copy process
 						{
 							fix_aborted = copy_aborted = true;
 						}
 						else
-						if(!(webman_config->combo & DISABLESH) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_TRIANGLE) ) // R2+TRIANGLE Disable CFW Sycalls
+						if(!( webman_config->combo & DISABLESH ) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_TRIANGLE))) // R2+TRIANGLE Disable CFW Sycalls
 						{
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_triangle")) break;
@@ -701,7 +789,7 @@ show_popup:
 							}
 						}
 						else
-						if(!(webman_config->combo2 & CUSTOMCMB) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_SQUARE) ) // R2+SQUARE
+						if(!(webman_config->combo2 & CUSTOMCMB) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_SQUARE))) // R2+SQUARE
 						{
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_square")) break;
@@ -716,7 +804,7 @@ show_popup:
 							}
 						}
 						else
-						if(!(webman_config->combo & SHOW_IDPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CIRCLE) ) // R2+O Show IDPS EID0+LV2
+						if(!(webman_config->combo & SHOW_IDPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE))) // R2+O Show IDPS EID0+LV2
 						{
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_circle")) break;
@@ -731,24 +819,23 @@ show_popup:
 #endif
 							}
 						}
-#ifdef WM_CUSTOM_COMBO
-						else
-						if(!(webman_config->combo & SHOW_IDPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))) // L2+R2
-						{
-							if(do_custom_combo("l2_r2") == false) continue; // RESERVED
-						}
-#endif
+
 						n = 0;
 						break;
 					}
 					else
-					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2))
+					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2))
 					{
+						// L3+L2+TRIANGLE = COBRA Toggle
+						// L3+L2+SQUARE   = REBUG Mode Switcher
+						// L3+L2+CIRCLE   = Normal Mode Switcher
+						// L3+L2+X        = DEBUG Menu Switcher
+
 						if(!sys_admin || IS_INGAME) continue;
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
 						if(!(webman_config->combo & DISACOBRA)
-							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_TRIANGLE))
+							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_TRIANGLE)))
 						{ // L3+L2+TRIANGLE COBRA Toggle
 							reboot = toggle_cobra();
 						}
@@ -757,19 +844,19 @@ show_popup:
 
 #ifdef REX_ONLY
 						if(!(webman_config->combo2 & REBUGMODE)
-							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_SQUARE))
-						{ // L3+L2+□ REBUG Mode Switcher
+							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_SQUARE)))
+						{ // L3+L2+SQUARE REBUG Mode Switcher
 							reboot = toggle_rebug_mode();
 						}
 						else
 						if(!(webman_config->combo2 & NORMAMODE)
-							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CIRCLE))
+							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CIRCLE)))
 						{ // L3+L2+O Normal Mode Switcher
 							reboot = toggle_normal_mode();
 						}
 						else
 						if(!(webman_config->combo2 & DEBUGMENU)
-							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_CROSS))
+							&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CROSS)))
 						{ // L3+L2+X DEBUG Menu Switcher
 							toggle_debug_menu();
 						}
@@ -787,7 +874,8 @@ show_popup:
 reboot:
 					// vsh reboot
 					working = 0;
-					{ del_turnoff(0); }
+					{ del_turnoff(0); } // no beep
+
 					save_file(WMNOSCAN, NULL, 0);
 
 					vsh_reboot(); // VSH reboot

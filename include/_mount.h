@@ -1096,6 +1096,8 @@ static void mount_thread(u64 action)
 	// show message if syscalls are fully disabled
 	// --------------------------------------------
 #ifdef COBRA_ONLY
+	if(syscalls_removed && peekq(TOC) != SYSCALLS_UNAVAILABLE) syscalls_removed = false;
+
 	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE)
 	{
 		syscalls_removed = true;

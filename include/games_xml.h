@@ -134,8 +134,28 @@ static void make_fb_xml(void)
 								  STR_MYGAMES, SUFIX2(profile),
 								  STR_LOADGAMES,
 								  "</Attributes><Items>", MY_GAMES_XML, "</Items></View>");
-		save_file(FB_XML, myxml, size);
+
+		char *fb_xml = (char *)FB_XML;
+		if(payload_ps3hen)
+		{
+			fb_xml = (char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml";
+			cellFsUnlink(FB_XML);
+			sys_map_path((char *)FB_XML, (char *)fb_xml);
+		}
+
+		save_file(fb_xml, myxml, size);
 		sys_memory_free(sysmem);
+
+		if(payload_ps3hen && IS_ON_XMB)
+		{
+			int view = View_Find("explore_plugin");
+			if(view)
+			{
+				explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
+				explore_interface->ExecXMBcommand("reload_category game",0,0);
+				explore_interface->ExecXMBcommand("reload_category network",0,0);
+			}
+		}
 	}
 }
 

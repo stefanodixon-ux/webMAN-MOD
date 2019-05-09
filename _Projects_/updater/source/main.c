@@ -515,8 +515,18 @@ int main()
 	file_copy(APP_USRDIR "/html/common.css",  XMLHOST_DIR "/common.css");
 
 	// fb.xml
-	if((sysLv2FsStat(XMLHOST_DIR "/fb.xml", &stat) != SUCCESS))
-		file_copy(APP_USRDIR "/xmb/fb.xml", XMLHOST_DIR "/fb.xml");
+	if(is_ps3hen() == 0x1337)
+	{
+		sysLv2FsUnlink(XMLHOST_DIR "/fb.xml");
+
+		if((sysLv2FsStat(XMLHOST_DIR "/fb-hen.xml", &stat) != SUCCESS))
+			file_copy(APP_USRDIR "/xmb/fb.xml", XMLHOST_DIR "/fb-hen.xml");
+	}
+	else
+	{
+		if((sysLv2FsStat(XMLHOST_DIR "/fb.xml", &stat) != SUCCESS))
+			file_copy(APP_USRDIR "/xmb/fb.xml", XMLHOST_DIR "/fb.xml");
+	}
 
 	// copy new icons
 	sysLv2FsMkdir(TMP_DIR "/wm_icons", 0777);
@@ -546,6 +556,7 @@ int main()
 
 	file_copy(APP_USRDIR "/icons/blank.png", ICONS_DIR "/blank.png");
 
+	sysLv2FsUnlink(RES_DIR "/reloadxmb.pkg");
 	sysLv2FsUnlink(TMP_DIR "/wm_online_ids.txt");
 	file_copy(APP_USRDIR "/res/wm_online_ids.txt", RES_DIR "/wm_online_ids.txt");
 

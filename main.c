@@ -279,6 +279,8 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 #define HTML_BASE_PATH			"/dev_hdd0/xmlhost/game_plugin"
 
+#define HEN_CFW_SETTINGS		"/dev_hdd0/hen/cfw_settings.xml"
+
 #define FB_XML					"/dev_hdd0/xmlhost/game_plugin/fb.xml"
 #ifdef COBRA_ONLY
 #define MY_GAMES_XML			HTML_BASE_PATH "/mygames.xml"
@@ -1050,8 +1052,8 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 	if(param[1] == 0)
 	{
 		// minimize times that these files are checked (at startup & root)
-		css_exists = file_exists(COMMON_CSS);
-		common_js_exists = file_exists(COMMON_SCRIPT_JS);
+		css_exists = css_exists || file_exists(COMMON_CSS);
+		common_js_exists = common_js_exists || file_exists(COMMON_SCRIPT_JS);
 	}
 	if(css_exists)
 	{
@@ -1158,6 +1160,13 @@ static void apply_remaps(void)
  #ifdef WM_PROXY_SPRX
 	{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);}
  #endif
+
+	if(payload_ps3hen)
+	{
+		{sys_map_path((char *)FB_XML,			(char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");}
+		{sys_map_path((char *)HEN_CFW_SETTINGS, (char *)"/dev_hdd0/hen/cfw_settings.xml.on");}
+	}
+
 	{sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
 }
 #endif
@@ -1176,6 +1185,8 @@ static void handleclient_www(u64 conn_s_p)
 
 	if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 	{
+		bool do_sleep = true;
+
 		if(conn_s_p == START_DAEMON)
 		{
 			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
@@ -1184,9 +1195,11 @@ static void handleclient_www(u64 conn_s_p)
  #ifndef ENGLISH_ONLY
 			update_language();
  #endif
+			make_fb_xml();
+
 			if(profile || !(webman_config->wmstart))
 			{
-				sys_ppu_thread_sleep(10);
+				sys_ppu_thread_sleep(10); do_sleep = false;
 				sprintf(param, "webMAN " WM_VERSION "\n" EDITION "%s", SUFIX2(profile));
 				show_msg(param);
 			}
@@ -1275,7 +1288,7 @@ static void handleclient_www(u64 conn_s_p)
 			#ifdef REMOVE_SYSCALLS
 			if(webman_config->spp & 1) //remove syscalls & history
 			{
-				sys_ppu_thread_sleep(5);
+				sys_ppu_thread_sleep(5); do_sleep = false;
 
 				remove_cfw_syscalls(webman_config->keep_ccapi);
 				delete_history(true);
@@ -1295,10 +1308,11 @@ static void handleclient_www(u64 conn_s_p)
 			}
 			#endif
  #endif
-		}
+			if(do_sleep) sys_ppu_thread_sleep(1);
 
-		{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);}
-		{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
+			{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);}
+			{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
+		}
 
 		sys_ppu_thread_exit(0);
 	}
@@ -2178,10 +2192,12 @@ parse_request:
 
 				goto html_response;
 			}
-			if(islike(param, "/remap.ps3") || islike(param, "/unmap.ps3"))
+			if(islike(param, "/remap.ps3") || islike(param, "/remap_ps3") || islike(param, "/unmap.ps3"))
 			{
 				// /remap.ps3<path1>&to=<path2>       files on path1 is accessed from path2
 				// /remap.ps3?src=<path1>&to=<path2>
+				// /remap_ps3<path1>&to=<path2>       files on path1 is accessed from path2 (no check if folder exists)
+				// /remap_ps3?src=<path1>&to=<path2>
 				// /unmap.ps3<path>
 				// /unmap.ps3?src=<path>
 
@@ -2197,6 +2213,7 @@ parse_request:
 				}
 
 				bool isremap = (param[1] == 'r');
+				bool nocheck = (param[6] == '_');
 
 				if(isremap)
 				{
@@ -2204,7 +2221,7 @@ parse_request:
 					if(pos) get_value(path2, pos + 3, MAX_PATH_LEN);
 				}
 
-				if(file_exists(isremap ? path2 : path1))
+				if(*path1 && (path1[1] != NULL) && (nocheck || file_exists(isremap ? path2 : path1)))
 				{
 					sys_map_path(path1, path2);
 

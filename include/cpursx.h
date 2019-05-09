@@ -1,11 +1,18 @@
+#define SYSCALL8_OPCODE_HEN_REV		0x1339
+
 static void get_cobra_version(char *cfw_info)
 {
 	// returns cfw_info[20]
 
 #ifdef COBRA_ONLY
+	if(syscalls_removed && peekq(TOC) != SYSCALLS_UNAVAILABLE) syscalls_removed = false;
+
 	if(!is_mamba && !syscalls_removed) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 == 0x666);}
 
-	if(!cobra_version) sys_get_version2(&cobra_version);
+	if(!cobra_version)
+	{
+		if(payload_ps3hen) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_HEN_REV); cobra_version = (int)p1;} else sys_get_version2(&cobra_version);
+	}
 
 	char cobra_ver[8];
 	if((cobra_version & 0x0F) == 0)
