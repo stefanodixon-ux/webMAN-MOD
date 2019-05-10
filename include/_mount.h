@@ -2487,6 +2487,10 @@ static bool mount_game(const char *path, u8 action)
 
 	while(is_mounting && working) sys_ppu_thread_sleep(1); // wait until thread mount game
 
+	ftp_session = 0; // close all open ftp sessions idle
+	for(u8 retry = 0; ftp_active && (retry < 3); retry++) sys_ppu_thread_sleep(1);
+	ftp_session = 1; // allow new ftp sessions
+
 	_path0 = NULL;
 
 	return mount_ret;

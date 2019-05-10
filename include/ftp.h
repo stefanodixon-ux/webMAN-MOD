@@ -25,6 +25,7 @@
 
 static u8 ftp_active = 0;
 static u8 ftp_working = 0;
+static u8 ftp_session = 1;
 
 #define FTP_RECV_SIZE  (STD_PATH_LEN + 20)
 
@@ -145,7 +146,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	sys_addr_t sysmem = NULL;
 
-	while(connactive && working)
+	while(connactive && working && ftp_session)
 	{
 		if(sysmem && (IS_INGAME || (timeout++ > 1500))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 3 seconds
 
@@ -817,7 +818,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								if(cellFsOpen(filename, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 								{
 									u64 read_e, pos;
-									cellFsLseek(fd, rest, CELL_FS_SEEK_SET, &pos);
+									if(rest) cellFsLseek(fd, rest, CELL_FS_SEEK_SET, &pos);
 
 									//int optval = BUFFER_SIZE_FTP;
 									//setsockopt(data_s, SOL_SOCKET, SO_SNDBUF, &optval, sizeof(optval));
@@ -938,7 +939,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									{
 										u64 pos = 0;
 
-										cellFsLseek(fd, rest, CELL_FS_SEEK_SET, &pos);
+										if(rest) cellFsLseek(fd, rest, CELL_FS_SEEK_SET, &pos);
 
 										rest = 0;
 
