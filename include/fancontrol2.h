@@ -34,6 +34,8 @@ static void poll_start_play_time(void)
 
 		if(!toggle_snd0 && webman_config->nosnd0) { toggle_snd0 = true; cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", MODE); } /* re-enable SND0.AT3 in-game */
 
+		close_ftp_sessions_idle();
+
 	#ifdef OFFLINE_INGAME
 		if((webman_config->spp & 4) || (net_status >= 0))
 		{

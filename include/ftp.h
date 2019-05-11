@@ -32,6 +32,13 @@ static u8 ftp_session = 1;
 #define FTP_FILE_UNAVAILABLE    -4
 #define FTP_DEVICE_IS_FULL      -8
 
+static void close_ftp_sessions_idle(void)
+{
+	ftp_session = 0; // close all open ftp sessions idle
+	for(u8 retry = 0; ftp_active && (retry < 3); retry++) sys_ppu_thread_sleep(1);
+	ftp_session = 1; // allow new ftp sessions
+}
+
 static void absPath(char* absPath_s, const char* path, const char* cwd)
 {
 	if(*path == '/') strcpy(absPath_s, path);
