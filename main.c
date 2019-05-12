@@ -279,7 +279,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 #define HTML_BASE_PATH			"/dev_hdd0/xmlhost/game_plugin"
 
-#define HEN_CFW_SETTINGS		"/dev_hdd0/hen/cfw_settings.xml"
+#define HEN_HFW_SETTINGS		"/dev_hdd0/hen/hfw_settings.xml"
 
 #define FB_XML					"/dev_hdd0/xmlhost/game_plugin/fb.xml"
 #ifdef COBRA_ONLY
@@ -1164,7 +1164,7 @@ static void apply_remaps(void)
 	if(payload_ps3hen)
 	{
 		{sys_map_path((char *)FB_XML,			(char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");}
-		{sys_map_path((char *)HEN_CFW_SETTINGS, (char *)"/dev_hdd0/hen/cfw_settings.xml.on");}
+		{sys_map_path((char *)HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");}
 	}
 
 	{sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
@@ -1189,8 +1189,8 @@ static void handleclient_www(u64 conn_s_p)
 
 		if(conn_s_p == START_DAEMON)
 		{
-			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
-				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
+			//if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
+			//	vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
  #ifndef ENGLISH_ONLY
 			update_language();
