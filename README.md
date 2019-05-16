@@ -118,7 +118,7 @@ Requirements for GNU/Linux:
 - The team that ported NTFS library from PSL1ght to PS3 SDK (freddy38510, bguerville, Zar, deank, Joonie)
 - PSX-SCENE, PSX-PLACE, PLAYSTATIONHAX, PS3HAX & other scene websites/users, who translated, helped in the testing process
 
-##License
-###WebMAN MOD
+## License
+### webMAN MOD
 
 Hum, not yet
