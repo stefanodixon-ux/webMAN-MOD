@@ -1,4 +1,13 @@
-#define SYSCALL8_OPCODE_HEN_REV		0x1339
+static void sys_get_cobra_version(void)
+{
+	if(payload_ps3hen)
+		{system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_HEN_REV); cobra_version = (int)p1;}
+	else
+	{
+		if(!is_mamba) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 == 0x666);}
+		sys_get_version2(&cobra_version);
+	}
+}
 
 static void get_cobra_version(char *cfw_info)
 {
@@ -7,12 +16,7 @@ static void get_cobra_version(char *cfw_info)
 #ifdef COBRA_ONLY
 	if(syscalls_removed && peekq(TOC) != SYSCALLS_UNAVAILABLE) syscalls_removed = false;
 
-	if(!is_mamba && !syscalls_removed) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 == 0x666);}
-
-	if(!cobra_version)
-	{
-		if(payload_ps3hen) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_HEN_REV); cobra_version = (int)p1;} else sys_get_version2(&cobra_version);
-	}
+	if(!cobra_version && !syscalls_removed) sys_get_cobra_version();
 
 	char cobra_ver[8];
 	if((cobra_version & 0x0F) == 0)
@@ -20,14 +24,14 @@ static void get_cobra_version(char *cfw_info)
 	else
 		sprintf(cobra_ver, "%X.%02X", cobra_version>>8, (cobra_version & 0xFF));
 
-	if(payload_ps3hen) {sprintf(cfw_info, "%s %s: %s", "CEX", "PS3HEN", cobra_ver); return;}
+	if(payload_ps3hen) {sprintf(cfw_info, "%s %s %s", dex_mode ? "DEX" : "CEX", "PS3HEN", cobra_ver); return;}
 
 	#if defined(DECR_SUPPORT)
-		sprintf(cfw_info, "%s %s: %s", (dex_mode == 1) ? "DECR" : dex_mode ? "DEX" : "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
+		sprintf(cfw_info, "%s %s %s", (dex_mode == 1) ? "DECR" : dex_mode ? "DEX" : "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
 	#elif defined(DEX_SUPPORT)
-		sprintf(cfw_info, "%s %s: %s", dex_mode ? "DEX" : "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
+		sprintf(cfw_info, "%s %s %s", dex_mode ? "DEX" : "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
 	#else
-		sprintf(cfw_info, "%s %s: %s", "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
+		sprintf(cfw_info, "%s %s %s", "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
 	#endif
 	if(!cobra_version) {char *cfw = strchr(cfw_info, ' '); *cfw = NULL;}
 #elif DEX_SUPPORT
@@ -126,7 +130,6 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 #ifdef SPOOF_CONSOLEID
 	get_eid0_idps();
-	get_idps_psid();
 #endif
 
 	if(sys_admin && !webman_config->sman && !strstr(param, "/sman.ps3")) {sprintf(templn, " [<a href=\"/shutdown.ps3\">%s</a>] [<a href=\"/restart.ps3\">%s</a>]", STR_SHUTDOWN, STR_RESTART ); buffer += concat(buffer, templn);}
@@ -315,7 +318,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	/////////////////////////////
 
 	strcat(buffer,  HTML_BLU_SEPARATOR
-					"webMAN " WM_VERSION " - Simple Web Server" EDITION "<p>");
+					WM_APP_VERSION " - Simple Web Server" EDITION "<p>");
 
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 }

@@ -68,16 +68,12 @@ static int read_remote_file(int s, void *buf, u64 offset, u32 size, int *abort_c
 	return bytes_read;
 }
 
-static u32 detect_cd_sector_size(int fd)
+static u32 detect_cd_sector_size(char *buffer)
 {
-	char buffer[0x10]; buffer[0xD] = NULL; u64 pos;
-
-	u32 sec_size[3] = {2048, 2336, 2448};
-	for(u8 n = 0; n < 3; n++)
+	int sec_size[3] = {2048, 2336, 2448};
+	for(int n = 0; n < 3; n++)
 	{
-		cellFsLseek(fd, ((sec_size[n]<<4) + 0x20), CELL_FS_SEEK_SET, &pos);
-		cellFsRead(fd, (void *)buffer, 0xC, NULL);
-		if(islike(buffer, PLAYSTATION)) return sec_size[n];
+		if(!strncmp(buffer + ((sec_size[n]<<4) + 0x20), PLAYSTATION, 0xC)) return sec_size[n];
 	}
 
 	return 2352;
@@ -129,20 +125,12 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 		{
 			char *chunk = (char*)sysmem;
 
-			int bytes_read, fd = 0;
+			int bytes_read = 0;
 
 			bytes_read = read_remote_file(s, (char*)chunk, 0, chunk_size, abort_connection);
 			if(bytes_read)
 			{
-				save_file(TEMP_NET_PSXISO, chunk, bytes_read);
-
-				if(cellFsOpen(TEMP_NET_PSXISO, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
-				{
-					CD_SECTOR_SIZE_2352 = detect_cd_sector_size(fd);
-					cellFsClose(fd);
-				}
-
-				cellFsUnlink(TEMP_NET_PSXISO);
+				CD_SECTOR_SIZE_2352 = detect_cd_sector_size(chunk);
 			}
 
 			sys_memory_free((sys_addr_t)sysmem);

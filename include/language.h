@@ -44,10 +44,10 @@ static char STR_HOME[8] = "Home";
 #define STR_COMBOS		"Disable all PAD shortcuts"
 #define STR_MMCOVERS	"Disable multiMAN covers"
 #define STR_ACCESS		"Disable remote access to FTP/WWW services"
-#define STR_NOSETUP		"Disable webMAN Setup entry in \"webMAN Games\""
+#define STR_NOSETUP		"Disable " WM_APPNAME " Setup entry in \"" WM_APPNAME " Games\""
 #define STR_NOSPOOF		"Disable firmware version spoofing"
-#define STR_NOGRP		"Disable grouping of content in \"webMAN Games\""
-#define STR_NOWMDN		"Disable startup notification of WebMAN on the XMB"
+#define STR_NOGRP		"Disable grouping of content in \"" WM_APPNAME " Games\""
+#define STR_NOWMDN		"Disable startup notification of " WM_APPNAME " on the XMB"
 #ifdef NOSINGSTAR
  #define STR_NOSINGSTAR	"Remove SingStar icon"
 #endif
@@ -96,24 +96,24 @@ static char STR_HOME[8] = "Home";
 #define STR_SETTINGSUPD	"Settings updated.<br><br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system."
 #define STR_ERROR		"Error!"
 
-#define STR_MYGAMES		"webMAN Games"
-#define STR_LOADGAMES	"Load games with webMAN"
+#define STR_MYGAMES		WM_APPNAME " Games"
+#define STR_LOADGAMES	"Load games with " WM_APPNAME
 #define STR_FIXING		"Fixing"
 
-#define STR_WMSETUP		"webMAN Setup"
-#define STR_WMSETUP2	"Setup webMAN options"
+#define STR_WMSETUP		WM_APPNAME " Setup"
+#define STR_WMSETUP2	"Setup " WM_APPNAME " options"
 
 #define STR_EJECTDISC	"Eject Disc"
 #define STR_UNMOUNTGAME	"Unmount current game"
 
-#define STR_WMSTART		"webMAN loaded!"
-#define STR_WMUNL		"webMAN unloaded!"
+#define STR_WMSTART		WM_APPNAME " loaded!"
+#define STR_WMUNL		WM_APPNAME " unloaded!"
 #define STR_CFWSYSALRD	"CFW Syscalls already disabled"
 #define STR_CFWSYSRIP	"Removal History files & CFW Syscalls in progress..."
 #define STR_RMVCFWSYS	"History files & CFW Syscalls deleted OK!"
 #define STR_RMVCFWSYSF	"Failed to remove CFW Syscalls"
 
-#define STR_RMVWMCFG	"webMAN config reset in progress..."
+#define STR_RMVWMCFG	WM_APPNAME " config reset in progress..."
 #define STR_RMVWMCFGOK	"Done! Restart within 3 seconds"
 
 #define STR_PS3FORMAT	"PS3 format games"
@@ -124,7 +124,7 @@ static char STR_HOME[8] = "Home";
 #define STR_VIDFORMAT	"Blu-ray\xE2\x84\xA2 and DVD"
 #define STR_VIDEO		"Video content"
 
-#define STR_LAUNCHPSP	"Launch PSP ISO mounted through webMAN or mmCM"
+#define STR_LAUNCHPSP	"Launch PSP ISO mounted through " WM_APPNAME " or mmCM"
 #define STR_LAUNCHPS2	"Launch PS2 Classic"
 
 #define STR_GAMEUM		"Game unmounted."
@@ -517,17 +517,17 @@ static void update_language(void)
 		language("STR_SETTINGSUPD", STR_SETTINGSUPD, STR_SETTINGSUPD);
 		language("STR_ERROR", STR_ERROR, "Error!");
 
-		language("STR_MYGAMES", STR_MYGAMES, "webMAN Games");
-		language("STR_LOADGAMES", STR_LOADGAMES, "Load games with webMAN");
+		language("STR_MYGAMES", STR_MYGAMES, WM_APPNAME " Games");
+		language("STR_LOADGAMES", STR_LOADGAMES, "Load games with " WM_APPNAME);
 
 		language("STR_FIXING", STR_FIXING, "Fixing");
 
-		language("STR_WMSETUP", STR_WMSETUP, "webMAN Setup");
+		language("STR_WMSETUP", STR_WMSETUP, WM_APPNAME " Setup");
 
 		language("STR_UNMOUNTGAME", STR_UNMOUNTGAME, "Unmount current game");
 
-		language("STR_WMSTART", STR_WMSTART, "webMAN loaded!");
-		language("STR_WMUNL", STR_WMUNL, "webMAN unloaded!");
+		language("STR_WMSTART", STR_WMSTART, WM_APPNAME " loaded!");
+		language("STR_WMUNL", STR_WMUNL, WM_APPNAME " unloaded!");
 		language("STR_CFWSYSALRD", STR_CFWSYSALRD, "CFW Syscalls already disabled");
 
 		language("STR_GAMEUM", STR_GAMEUM, "Game unmounted.");

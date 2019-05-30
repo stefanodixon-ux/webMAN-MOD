@@ -13,6 +13,8 @@ static u64 sc_142 = 0;
 #define IS_DEH (dex_mode == 1)
 #define IS_DEX (dex_mode == 2)
 
+#define SYSCALL8_OPCODE_HEN_REV		0x1339
+
 //#define IS_HEN (lv2_peek_hen(0x8000000000003d90ULL)!=0x386000014e800020ULL)
 
 struct platform_info {
@@ -21,7 +23,7 @@ struct platform_info {
 
 static int lv2_get_platform_info(struct platform_info *info)
 {
-	system_call_1(387, (u32) info);
+	system_call_1(SC_GET_PLATFORM_INFO, (u32) info);
 	return (s32)p1;
 }
 
@@ -35,7 +37,21 @@ static float get_firmware_version(void)
 static int get_kernel_type(void)
 {
 	u64 type;
-	system_call_1(985, (u32)&type); return (int)(type - 1);
+	system_call_1(SC_GET_CONSOLE_TYPE, (u32)&type);
+	return (int)(type - 1);
+}
+
+static u64 find_syscall_table(void)
+{
+	#ifdef LAST_FIRMWARE_ONLY
+	for(u64 addr = dex_mode ? SYSCALL_TABLE_421D : SYSCALL_TABLE_421; addr < 0x8000000000400000ULL; addr += 4)
+	#else
+	for(u64 addr = dex_mode ? SYSCALL_TABLE_470D : SYSCALL_TABLE_470; addr < 0x8000000000400000ULL; addr += 4)
+	#endif
+	{
+		if(peekq(addr) == 0x3235352E3235352EULL) return (addr + (dex_mode ? 0x1228 : 0x1220));
+	}
+	return 0;
 }
 
 static void detect_firmware(void)
@@ -52,6 +68,7 @@ static void detect_firmware(void)
 #endif
 	dex_mode = 0;
 
+	// detect ps3hen payload
 	payload_ps3hen = (lv1_peek_cfw(0x1337) == 0x1337); // <= {system_call_1(SC_COBRA_SYSCALL8, 0x1337); payload_ps3hen = (p1 == 0x1337);}
 	if(payload_ps3hen)
 	{
@@ -60,6 +77,10 @@ static void detect_firmware(void)
 		lv2_poke_fan = lv2_poke_fan_hen;
 	}
 
+	// get payload type & cobra_version
+	sys_get_cobra_version();
+
+	// detect firmware version & dex_mode using known offsets (in case of spoofed version)
 	for(u8 lv2_offset = 1; lv2_offset < 0x10; lv2_offset++)
 	{
 		if(SYSCALL_TABLE) break;
@@ -129,10 +150,12 @@ static void detect_firmware(void)
 	if(!SYSCALL_TABLE)
 	{
 		c_firmware = get_firmware_version(); dex_mode = get_kernel_type();
+		if(c_firmware > LATEST_CFW && dex_mode < 2) SYSCALL_TABLE = find_syscall_table();
 
 		if(IS_CEX)
 		{
-			if(c_firmware >= 4.75f) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80, 4.81, 4.82, 4.83, 4.84
+/*
+			if(c_firmware >= 4.75f && c_firmware <= LATEST_CFW) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80, 4.81, 4.82, 4.83, 4.84
 #ifndef LAST_FIRMWARE_ONLY
 			if(c_firmware == 4.70f) SYSCALL_TABLE = SYSCALL_TABLE_470;
 			if(c_firmware >= 4.60f && c_firmware <= 4.66f) SYSCALL_TABLE = SYSCALL_TABLE_460; // same for 4.60, 4.65, 4.66
@@ -145,10 +168,12 @@ static void detect_firmware(void)
 			if(c_firmware == 4.21f) SYSCALL_TABLE = SYSCALL_TABLE_421;
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355;
 #endif
+*/
 			LV2_OFFSET_ON_LV1 = 0x01000000ULL;
 		}
-		if(IS_DEX)
+		else if(IS_DEX)
 		{
+/*
 			if(c_firmware >= 4.80f) SYSCALL_TABLE = SYSCALL_TABLE_480D; // same for 4.80-4.81
 #ifndef LAST_FIRMWARE_ONLY
 			if(c_firmware >= 4.75f && c_firmware <= 4.78f) SYSCALL_TABLE = SYSCALL_TABLE_475D; // same for 4.75, 4.76, 4.78
@@ -163,6 +188,7 @@ static void detect_firmware(void)
 			if(c_firmware == 4.21f) SYSCALL_TABLE = SYSCALL_TABLE_421D;
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355D;
 #endif
+*/
 			LV2_OFFSET_ON_LV1 = 0x08000000ULL;
 		}
 	}
@@ -170,10 +196,6 @@ static void detect_firmware(void)
 	if(!SYSCALL_TABLE) {c_firmware = 0.00f; return;}
 
 	sprintf(fw_version, "%i.%02i", (int)c_firmware, ((u32)(c_firmware * 1000.0f) % 1000) / 10);
-
-	// get payload type & version
-	{system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 == 0x666);}
-	sys_get_version2(&cobra_version);
 
 #ifndef COBRA_ONLY
 	if(IS_CEX)

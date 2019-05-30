@@ -156,7 +156,7 @@
 							char STR_RMVWMCFG[96];//	= "webMAN config reset in progress...";
 							char STR_RMVWMCFGOK[112];//	= "Done! Restart within 3 seconds";
 
-							language("STR_RMVWMCFG", STR_RMVWMCFG, "webMAN config reset in progress...");
+							language("STR_RMVWMCFG", STR_RMVWMCFG, WM_APPNAME " config reset in progress...");
 							language("STR_RMVWMCFGOK", STR_RMVWMCFGOK, "Done! Restart within 3 seconds");
 
 							close_language();
@@ -764,9 +764,9 @@
 								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1)
 									{open_browser((char*)"http://127.0.0.1/index.ps3", 0); show_msg((char*)STR_MYGAMES);}     // L2+R2+R1+O
 								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1)
-									{open_browser((char*)"http://127.0.0.1/cpursx.ps3", 0); show_msg((char*)"webMAN Info");}  // L2+R2+L1+O
+									{open_browser((char*)"http://127.0.0.1/cpursx.ps3", 0); show_msg((char*)WM_APPNAME " Info");}  // L2+R2+L1+O
 								else
-									{open_browser((char*)"http://127.0.0.1/", 0); show_msg((char*)"webMAN " WM_VERSION);}     // L2+R2+O
+									{open_browser((char*)"http://127.0.0.1/", 0); show_msg((char*)WM_APP_VERSION);}           // L2+R2+O
 #endif
 							}
 						}
@@ -812,7 +812,7 @@
 #endif
 							{
 #ifndef LITE_EDITION
-								enable_ingame_screenshot();
+								if(!payload_ps3hen) enable_ingame_screenshot();
 #endif
 #ifdef SPOOF_CONSOLEID
 								show_idps(msg);

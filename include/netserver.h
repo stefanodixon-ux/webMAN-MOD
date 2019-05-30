@@ -113,7 +113,14 @@ static int process_open_cmd(u8 index, netiso_open_cmd *cmd)
 
 			if((result.file_size > _64KB_) && (result.file_size <= 0x35000000UL))
 			{
-				clients[index].CD_SECTOR_SIZE_2352 = detect_cd_sector_size(fd);
+				sys_addr_t sysmem = NULL; const u64 chunk_size = _64KB_;
+				if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+				{
+					char *chunk = (char*)sysmem; u64 read_e;
+					cellFsRead(fd, chunk, _64KB_, &read_e);
+					clients[index].CD_SECTOR_SIZE_2352 = detect_cd_sector_size(chunk);
+					sys_memory_free((sys_addr_t)sysmem);
+				}
 			}
 
 			/// detect multi part ISO - open file parts ///

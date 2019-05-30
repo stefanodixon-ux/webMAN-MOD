@@ -418,7 +418,7 @@ static void setup_form(char *buffer, char *templn)
 	char STR_NOSETUP[120];//	= "Disable webMAN Setup entry in \"webMAN Games\"";
 	char STR_NOSPOOF[96];//		= "Disable firmware version spoofing";
 	char STR_NOGRP[104];//		= "Disable grouping of content in \"webMAN Games\"";
-	char STR_NOWMDN[112];//		= "Disable startup notification of WebMAN on the XMB";
+	char STR_NOWMDN[112];//		= "Disable startup notification of webMAN on the XMB";
 	#ifdef NOSINGSTAR
 	static char STR_NOSINGSTAR[48];//	= "Remove SingStar icon";
 	#endif
@@ -472,10 +472,10 @@ static void setup_form(char *buffer, char *templn)
 //	language("STR_COMBOS",    STR_COMBOS,    "Disable all PAD shortcuts");
 	language("STR_MMCOVERS",  STR_MMCOVERS,  "Disable multiMAN covers");
 	language("STR_ACCESS",    STR_ACCESS,    "Disable remote access to FTP/WWW services");
-	language("STR_NOSETUP",   STR_NOSETUP,   "Disable webMAN Setup entry in \"webMAN Games\"");
+	language("STR_NOSETUP",   STR_NOSETUP,   "Disable " WM_APPNAME " Setup entry in \"" WM_APPNAME " Games\"");
 	language("STR_NOSPOOF",   STR_NOSPOOF,   "Disable firmware version spoofing");
-	language("STR_NOGRP",     STR_NOGRP,     "Disable grouping of content in \"webMAN Games\"");
-	language("STR_NOWMDN",    STR_NOWMDN,    "Disable startup notification of WebMAN on the XMB");
+	language("STR_NOGRP",     STR_NOGRP,     "Disable grouping of content in \"" WM_APPNAME " Games\"");
+	language("STR_NOWMDN",    STR_NOWMDN,    "Disable startup notification of " WM_APPNAME " on the XMB");
 #ifdef NOSINGSTAR
 	language("STR_NOSINGSTAR",STR_NOSINGSTAR, "Remove SingStar icon");
 #endif
@@ -560,7 +560,6 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("ps2", false, "PLAYSTATION\xC2\xAE\x32", " (" ,   !(webman_config->cmask & PS2), buffer);
 	if(b) add_check_box("p2l", false, STR_PS2L           , ", " ,    (webman_config->ps2l)       , buffer);
 #ifdef SPOOF_CONSOLEID
-	get_eid0_idps();
 	b = ((eid0_idps[0] & 0x00000000000000FF) <= 0x04); // 0x01 = CECH-A*, 0x02 = CECH-B, 0x03 = CECH-C, 0x04 = CECH-E
 	if(b) add_check_box("b2n", false, "ps2_netemu"       , ", " ,    (webman_config->ps2emu)     , buffer);
 #endif
@@ -619,7 +618,7 @@ static void setup_form(char *buffer, char *templn)
 
 	//general settings
 	sprintf(templn,	HTML_BLU_SEPARATOR
-					"<b><a class=\"tg\" href=\"javascript:tgl(cfg);\"> webMAN MOD %s </a></b><br><div id=\"cfg\">", STR_SETUP); strcat(buffer, templn);
+					"<b><a class=\"tg\" href=\"javascript:tgl(cfg);\"> " WM_APPNAME " MOD %s </a></b><br><div id=\"cfg\">", STR_SETUP); strcat(buffer, templn);
 
 	add_check_box("lp", false, STR_LPG   , " • ",   (webman_config->lastp),  buffer);
 #ifdef COBRA_ONLY
@@ -794,19 +793,16 @@ static void setup_form(char *buffer, char *templn)
 	//Change idps and psid in lv2 memory at system startup
 	//sprintf(templn, "<u> %s:</u><br>", STR_SPOOFID); strcat(buffer, templn);
 
-	if(!webman_config->vIDPS1[0] && !webman_config->vIDPS1[1]) {get_idps_psid(); sprintf(webman_config->vIDPS1, "%016llX", IDPS[0]); sprintf(webman_config->vIDPS2, "%016llX", IDPS[1]);}
-	if(!webman_config->vPSID1[0] && !webman_config->vPSID1[1]) {get_idps_psid(); sprintf(webman_config->vPSID1, "%016llX", PSID[0]); sprintf(webman_config->vPSID2, "%016llX", PSID[1]);}
-
 	strcat(buffer, "<span id='ht'>");
 
 	add_check_box("id1", false, "IDPS", " : ", (webman_config->sidps), buffer);
-	sprintf(templn, HTML_INPUT("vID1", "%s", "16", "22"), webman_config->vIDPS1); strcat(buffer, templn);
-	sprintf(templn, HTML_INPUT("vID2", "%s", "16", "22"), webman_config->vIDPS2); strcat(buffer, templn);
+	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vID1", webman_config->vIDPS1); strcat(buffer, templn);
+	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vID2", webman_config->vIDPS2); strcat(buffer, templn);
 	sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID2.value=", "1000000000000000"); strcat(buffer, templn);
 
 	add_check_box("id2", false, "PSID", " : ", (webman_config->spsid), buffer);
-	sprintf(templn, HTML_INPUT("vPS1", "%s", "16", "22"), webman_config->vPSID1); strcat(buffer, templn);
-	sprintf(templn, HTML_INPUT("vPS2", "%s", "16", "22"), webman_config->vPSID2); strcat(buffer, templn);
+	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vPS1", webman_config->vPSID1); strcat(buffer, templn);
+	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vPS2", webman_config->vPSID2); strcat(buffer, templn);
 	//sprintf(templn, HTML_BUTTON_FMT "<br><br>", HTML_BUTTON, " ", "onclick=\"vPS1.value=vPS2.value=", "0000000000000000"); strcat(buffer, templn);
 	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); strcat(buffer, templn);
 
@@ -1102,19 +1098,19 @@ static void setup_form(char *buffer, char *templn)
 #ifndef LITE_EDITION
  #ifdef PKG_HANDLER
 	strcat(buffer,  HTML_RED_SEPARATOR
-					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">webMAN MOD - Latest release</a> • "
+					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a> • "
 					"<a href=\"/install.ps3/dev_hdd0/packages\">Install PKG</a> • "
 					"<a href=\"/install.ps3/dev_hdd0/theme\">Install P3T</a> • "
 					"<a href=\"/install.ps3$\">Add-ons</a><br>"
-					"<a href=\"http://psx-place.com/forums/wMM.126/\">webMAN MOD - Info @ PSX-Place</a><br>");
+					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
  #else
 	strcat(buffer,  HTML_RED_SEPARATOR
-					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">webMAN MOD - Latest release</a><br>"
-					"<a href=\"http://psx-place.com/forums/wMM.126/\">webMAN MOD - Info @ PSX-Place</a><br>");
+					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a><br>"
+					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
  #endif
 #else
 	strcat(buffer,  HTML_BLU_SEPARATOR
-					"webMAN - Simple Web Server" EDITION "<p>");
+					WM_APPNAME " - Simple Web Server" EDITION "<p>");
 #endif
 
 /*
@@ -1329,6 +1325,12 @@ static void read_settings(void)
 	webman_config->minfan = RANGE(webman_config->minfan, MIN_FANSPEED, 99);   // %
 	webman_config->ps2temp = RANGE(webman_config->ps2temp, MIN_FANSPEED, 99); // %
 	webman_config->temp1 = RANGE(webman_config->temp1, 40, MAX_TEMPERATURE);  //°C
+
+#if defined(SPOOF_CONSOLEID) || defined(PS3MAPI)
+	get_eid0_idps();
+	if(!webman_config->vIDPS1[0] && !webman_config->vIDPS1[1]) {sprintf(webman_config->vIDPS1, "%016llX", IDPS[0]); sprintf(webman_config->vIDPS2, "%016llX", IDPS[1]);}
+	if(!webman_config->vPSID1[0] && !webman_config->vPSID1[1]) {sprintf(webman_config->vPSID1, "%016llX", PSID[0]); sprintf(webman_config->vPSID2, "%016llX", PSID[1]);}
+#endif
 
 	for(u8 id = 0; id < 5; id++) if(!webman_config->netp[id]) webman_config->netp[id] = NETPORT;
 

@@ -137,7 +137,11 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 
-#define WM_VERSION			"1.47.20 MOD"
+
+#define WM_APPNAME			"webMAN"
+#define WM_VERSION			"1.47.21 MOD"
+#define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
+#define WEBMAN_MOD			WM_APPNAME " MOD"
 
 #define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -313,11 +317,6 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define SC_FS_UMOUNT 					(838)
 #define SC_GET_CONSOLE_TYPE				(985)
 
-#define SC_GET_PRX_MODULE_BY_ADDRESS	(461)
-#define SC_STOP_PRX_MODULE 				(482)
-#define SC_UNLOAD_PRX_MODULE 			(483)
-#define SC_PPU_THREAD_EXIT				(41)
-
 #define SC_SYS_POWER 					(379)
 #define SYS_SOFT_REBOOT 				0x0200
 #define SYS_HARD_REBOOT					0x1200
@@ -326,8 +325,6 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 #define SYS_NET_EURUS_POST_COMMAND		(726)
 #define CMD_GET_MAC_ADDRESS				0x103f
-
-#define SYSCALL8_OPCODE_GET_MAMBA		0x7FFFULL
 
 #define BEEP1 { system_call_3(SC_RING_BUZZER, 0x1004, 0x4,   0x6); }
 #define BEEP2 { system_call_3(SC_RING_BUZZER, 0x1004, 0x7,  0x36); }
@@ -604,8 +601,8 @@ typedef struct
 	u8  ftpd;
 	u16 ftp_port;
 	u8  ftp_timeout;
-	char     ftp_password[20];
-	char     allow_ip[16];
+	char ftp_password[20];
+	char allow_ip[16];
 
 	u8 padding6[7];
 
@@ -620,7 +617,7 @@ typedef struct
 
 	u8  netd[5];
 	u16 netp[5];
-	char     neth[5][16];
+	char neth[5][16];
 
 	u8 padding8[33];
 
@@ -706,7 +703,6 @@ int npklic_struct_offset = 0; u8 klic_polling = 0;
 #define KLIC_CONTENT_ID_OFFSET  (npklic_struct_offset-0xA4)
 #endif
 
-
 static bool is_mamba = false;
 static u16 cobra_version = 0;
 
@@ -776,6 +772,7 @@ static char fw_version[8] = "4.xx";
 static char local_ip[16] = "127.0.0.1";
 
 static void show_msg(char* msg);
+static void sys_get_cobra_version(void);
 
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
@@ -783,7 +780,6 @@ static bool isDir(const char* path);
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
 int wait_for(const char *path, u8 timeout);
-static s64 val(const char *c);
 
 #include "include/html.h"
 #include "include/peek_poke.h"
@@ -821,9 +817,6 @@ static void restore_cfw_syscalls(void);
 static int installPKG(const char *pkgpath, char *msg);
 #endif
 
-#ifdef COBRA_ONLY
-static void apply_remaps(void);
-#endif
 static void handleclient_www(u64 conn_s_p);
 
 static void do_umount(bool clean);
@@ -832,7 +825,7 @@ static bool mount_game(const char *_path, u8 do_eject);
 #ifdef COBRA_ONLY
 static void do_umount_iso(void);
 static void unload_vsh_gui(void);
-static void set_apphome(char *game_path);
+static void set_apphome(const char *game_path);
 #endif
 
 static size_t get_name(char *name, const char *filename, u8 cache);
@@ -873,6 +866,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/ftp.h"
 #include "include/ps3mapi.h"
 #include "include/stealth.h"
+#include "include/process.h"
 #include "include/video_rec.h"
 #include "include/secure_file_id.h"
 #include "include/cue_file.h"
@@ -893,17 +887,6 @@ static u8 mount_unk = EMU_OFF;
 #include "include/fancontrol2.h"
 #include "include/md5.h"
 #include "include/script.h"
-
-static inline void _sys_ppu_thread_exit(u64 val)
-{
-	system_call_1(SC_PPU_THREAD_EXIT, val); // prxloader = mandatory; cobra = optional; ccapi = don't use !!!
-}
-
-static inline sys_prx_id_t prx_get_module_id_by_address(void *addr)
-{
-	system_call_1(SC_GET_PRX_MODULE_BY_ADDRESS, (u64)(u32)addr);
-	return (int)p1;
-}
 
 static void http_response(int conn_s, char *header, const char *url, int code, const char *msg)
 {
@@ -1020,7 +1003,7 @@ static void restore_settings(void)
 	sys_ppu_thread_usleep(500000);
 }
 
-static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_http, u8 is_cpursx, bool mount_ps3)
+static inline char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_http, u8 is_cpursx, bool mount_ps3)
 {
 	if((webman_config->sman || strstr(param, "/sman.ps3")) && file_exists(HTML_BASE_PATH "/sman.htm"))
 	{
@@ -1042,7 +1025,7 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 	if(mount_ps3) {strcat(buffer, HTML_BODY); return  buffer;}
 
 	buffer += concat(buffer,
-							"<head><title>webMAN MOD</title>"
+							"<head><title>" WEBMAN_MOD "</title>"
 							"<style>"
 							"a{" HTML_URL_STYLE "}"
 							"#rxml,#rhtm,#rcpy,#wmsg{position:fixed;top:40%;left:30%;width:40%;height:90px;z-index:5;border:5px solid #ccc;border-radius:25px;padding:10px;color:#fff;text-align:center;background-image:-webkit-gradient(linear,0 0,0 100%,color-stop(0,#999),color-stop(0.02,#666),color-stop(1,#222));background-image:-moz-linear-gradient(top,#999,#666 2%,#222);display:none;}"
@@ -1125,7 +1108,7 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 
 	char coverflow[40]; if(file_exists(MOBILE_HTML)) sprintf(coverflow, " [<a href=\"/games.ps3\">Coverflow</a>]"); else *coverflow = NULL;
 
-	size_t tlen = sprintf(templn, "<b>webMAN " WM_VERSION " %s <font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_TRADBY, STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
+	size_t tlen = sprintf(templn, "<b>" WM_APP_VERSION " %s <font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_TRADBY, STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
 
 #ifdef SYS_ADMIN_MODE
 	if(sys_admin)
@@ -1154,23 +1137,6 @@ static char *prepare_html(char *pbuffer, char *templn, char *param, u8 is_ps3_ht
 	return buffer;
 }
 
-#ifdef COBRA_ONLY
-static void apply_remaps(void)
-{
- #ifdef WM_PROXY_SPRX
-	{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);}
- #endif
-
-	if(payload_ps3hen)
-	{
-		{sys_map_path((char *)FB_XML,			(char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");}
-		{sys_map_path((char *)HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");}
-	}
-
-	{sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
-}
-#endif
-
 static void handleclient_www(u64 conn_s_p)
 {
 	int conn_s = (int)conn_s_p; // main communications socket
@@ -1187,6 +1153,10 @@ static void handleclient_www(u64 conn_s_p)
 	{
 		bool do_sleep = true;
 
+#ifdef WM_PROXY_SPRX
+		apply_remaps();
+#endif
+
 		if(conn_s_p == START_DAEMON)
 		{
 			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
@@ -1199,9 +1169,21 @@ static void handleclient_www(u64 conn_s_p)
 
 			if(profile || !(webman_config->wmstart))
 			{
-				sys_ppu_thread_sleep(10); do_sleep = false;
-				sprintf(param, "webMAN " WM_VERSION "\n" EDITION "%s", SUFIX2(profile));
-				show_msg(param);
+				char cfw_info[20];
+				get_cobra_version(cfw_info);
+
+				if(payload_ps3hen)
+				{
+					sprintf(param,	"%s\n"
+									"%s %s", WM_APP_VERSION, cfw_info + 4, STR_ENABLED);
+				}
+				else
+				{
+					sys_ppu_thread_sleep(6);
+					sprintf(param,	"%s\n"
+									"%s %s" EDITION, WM_APP_VERSION, fw_version, cfw_info);
+				}
+				show_msg(param); do_sleep = false;
 			}
 
 			if(webman_config->bootd) wait_for("/dev_usb", webman_config->bootd); // wait for any usb
@@ -1214,9 +1196,6 @@ static void handleclient_www(u64 conn_s_p)
 		cellFsMkdir(TMP_DIR, DMODE);
 		cellFsMkdir(WMTMP, DMODE);
 
-#ifdef WM_PROXY_SPRX
-		apply_remaps();
-#endif
 		//////////// usb ports ////////////
 		for(u8 indx = 5, d = 6; d < 128; d++)
 		{
@@ -1288,7 +1267,7 @@ static void handleclient_www(u64 conn_s_p)
 			#ifdef REMOVE_SYSCALLS
 			if(webman_config->spp & 1) //remove syscalls & history
 			{
-				sys_ppu_thread_sleep(5); do_sleep = false;
+				if(!payload_ps3hen) sys_ppu_thread_sleep(5); do_sleep = false;
 
 				remove_cfw_syscalls(webman_config->keep_ccapi);
 				delete_history(true);
@@ -1763,7 +1742,7 @@ parse_request:
 				// /download.ps3?url=<url>            (see pkg_handler.h for details)
 				// /download.ps3?to=<path>&url=<url>
 
-				char msg[MAX_LINE_LEN], filename[STD_PATH_LEN+1]; memset(msg, 0, MAX_LINE_LEN); *filename = NULL;
+				char msg[MAX_LINE_LEN], filename[STD_PATH_LEN + 1]; memset(msg, 0, MAX_LINE_LEN); *filename = NULL;
 
 				setPluginActive();
 
@@ -4188,38 +4167,6 @@ static void wwwd_stop_thread(u64 arg)
 	}
 
 	sys_ppu_thread_exit(0);
-}
-
-static void stop_prx_module(void)
-{
-	show_msg((char*)STR_WMUNL);
-
-#ifdef REMOVE_SYSCALLS
-	remove_cfw_syscall8(); // remove cobra if syscalls were disabled
-#endif
-
-	working = 0;
-
-	sys_prx_id_t prx = prx_get_module_id_by_address(stop_prx_module);
-
-	// int *result = NULL;
-	// {system_call_6(SC_STOP_PRX_MODULE, (u64)(u32)prx, 0, NULL, (u64)(u32)result, 0, NULL);}
-
-	u64 meminfo[5];
-
-	meminfo[0] = 0x28;
-	meminfo[1] = 2;
-	meminfo[3] = 0;
-
-	{system_call_3(SC_STOP_PRX_MODULE, prx, 0, (u64)(u32)meminfo);}
-}
-
-static void unload_prx_module(void)
-{
-
-	sys_prx_id_t prx = prx_get_module_id_by_address(unload_prx_module);
-
-	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
 }
 
 int wwwd_stop(void)

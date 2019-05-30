@@ -14,7 +14,7 @@ CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='crtbegin.o)
 CRT_TAIL                += $(shell ppu-lv2-gcc -print-file-name'='crtend.o)
 CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='ecrtn.o)
 
-PPU_SRCS = printf.c libc.c main.c cobra/cobra.c
+PPU_SRCS = libc.c printf.c main.c cobra/cobra.c
 PPU_PRX_TARGET = webftp_server.prx
 PPU_PRX_LDFLAGS += $(PRX_LDFLAGS_EXTRA)
 PPU_PRX_STRIP_FLAGS = -s
@@ -39,7 +39,7 @@ PPU_CFLAGS += -Os -ffunction-sections -fdata-sections \
               -fno-builtin-printf -nodefaultlibs -std=gnu99 \
               -Wno-shadow -Wno-unused-parameter
 
-#PPU_CFLAGS += -finline-limit=100
+#PPU_CFLAGS += -finline-limit=20
 
 ifeq ($(BUILD_TYPE), debug)
 PPU_CFLAGS += -DDEBUG -DDEBUG_FILE

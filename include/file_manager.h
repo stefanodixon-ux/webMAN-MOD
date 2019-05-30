@@ -943,7 +943,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			strcat(buffer, "<a onclick=\"o=lg.style,o.display=(o.display=='none')?'block':'none';\" style=\"cursor:pointer;\">");
 #endif
 			buffer += concat(buffer, HTML_BLU_SEPARATOR
-									 "webMAN - Simple Web Server" EDITION "<p>");
+									 WM_APPNAME " - Simple Web Server" EDITION "<p>");
 
 #ifndef LITE_EDITION
 			buffer += concat(buffer, "<div id=\"lg\" style=\"display:none\">");

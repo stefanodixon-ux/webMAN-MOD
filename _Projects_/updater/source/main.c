@@ -573,7 +573,7 @@ int main()
 	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_flowerification.pkg"	, RES_DIR "/wm_theme_flowerification.pkg");
 
-	if(sysLv2FsStat(PS2CONFIG_USRDIR, &stat) != SUCCESS)
+	if(sysLv2FsStat(PS2CONFIG_USRDIR "/CONFIG/ENC", &stat) != SUCCESS)
 	{
 		// copy PS2 CONFIG files
 		char path1[80], path2[80];
@@ -584,6 +584,7 @@ int main()
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG", 0777);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/GX", 0777);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/NET", 0777);
+		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/ENC", 0777);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/SOFT", 0777);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/CUSTOM", 0777);
 
@@ -604,6 +605,17 @@ int main()
 			{
 				sprintf(path1, APP_USRDIR       "/CONFIG/%s/%s", "NET", dir.d_name);
 				sprintf(path2, PS2CONFIG_USRDIR "/CONFIG/%s/%s", "NET", dir.d_name);
+				sysLv2FsUnlink(path2);
+				sysLv2FsLink(path1, path2);
+			}
+			sysLv2FsCloseDir(fd);
+		}
+		if(sysLv2FsOpenDir(APP_USRDIR "/CONFIG/ENC", &fd) == SUCCESS)
+		{
+			while((sysLv2FsReadDir(fd, &dir, &read_e) == SUCCESS) && (read_e > 0))
+			{
+				sprintf(path1, APP_USRDIR       "/CONFIG/%s/%s", "ENC", dir.d_name);
+				sprintf(path2, PS2CONFIG_USRDIR "/CONFIG/%s/%s", "ENC", dir.d_name);
 				sysLv2FsUnlink(path2);
 				sysLv2FsLink(path1, path2);
 			}

@@ -1699,13 +1699,12 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 static void ps3mapi_thread(u64 arg)
 {
-	ps3mapi_working = 1;
-
 	int core_minversion = 0;
 	{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_CORE_MINVERSION); core_minversion = (int)(p1); }
-	if((core_minversion !=0) &&(PS3MAPI_CORE_MINVERSION == core_minversion)) //Check if ps3mapi core has a compatible min_version.
+	if((core_minversion != 0) && (PS3MAPI_CORE_MINVERSION == core_minversion)) //Check if ps3mapi core has a compatible min_version.
 	{
 		int list_s = NONE;
+		ps3mapi_working = 1;
 
 	relisten:
 		if(working) list_s = slisten(PS3MAPIPORT, PS3MAPI_BACKLOG);
@@ -1750,18 +1749,12 @@ end:
 
 	sys_ppu_thread_exit(0);
 }
+#endif // #ifdef PS3MAPI
 
 ////////////////////////////////////////
 ///////////// PS3MAPI END //////////////
 ////////////////////////////////////////
 
-#endif // #ifdef PS3MAPI
-
-#ifdef COBRA_ONLY
- #ifndef SYSCALL8_OPCODE_PS3MAPI
-	#define SYSCALL8_OPCODE_PS3MAPI			 			0x7777
-	#define PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO			0x0047
- #endif
 
 static unsigned int get_vsh_plugin_slot_by_name(const char *name, bool unload)
 {
@@ -1799,4 +1792,5 @@ static void start_vsh_gui(bool vsh_menu)
 	slot = get_free_slot(); char arg[2] = {1, 0};
 	if(slot < 7) cobra_load_vsh_plugin(slot, vsh_menu ? WM_RES_PATH "/wm_vsh_menu.sprx" : WM_RES_PATH "/slaunch.sprx", (u8*)arg, 1);
 }
-#endif // #ifdef COBRA_ONLY
+
+///////////////////////////////

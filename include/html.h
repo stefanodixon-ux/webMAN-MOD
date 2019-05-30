@@ -42,7 +42,7 @@
 
 #define HTTP_RESPONSE_TITLE_LEN	90 /* strlen(HTML_RESPONSE_TITLE + HTML_BODY) = 26 + 64 */
 
-#define HTML_RESPONSE_TITLE		"webMAN " WM_VERSION "<hr><h2>" /* size: 26 */
+#define HTML_RESPONSE_TITLE		WM_APP_VERSION "<hr><h2>" /* size: 26 */
 
 #define HTML_BODY				"<body bgcolor=\"#101010\" text=\"#c0c0c0\">" \
 								"<font face=\"Courier New\">" /* size: 64 */
@@ -298,7 +298,7 @@ static size_t add_check_box(const char *name, bool disabled, const char *label, 
 static size_t add_option_item(int value, const char *label, bool selected, char *buffer)
 {
 	char templn[MAX_LINE_LEN];
-	sprintf(templn, "<option value=\"%i\"%s/>%s</option>", value, selected?ITEM_SELECTED : "", label);
+	sprintf(templn, "<option value=\"%i\"%s/>%s</option>", value, selected ? ITEM_SELECTED : "", label);
 	return concat(buffer, templn);
 }
 
@@ -306,7 +306,7 @@ static size_t add_option_item(int value, const char *label, bool selected, char 
 static size_t add_string_item(const char *value, const char *label, bool selected, char *buffer)
 {
 	char templn[MAX_LINE_LEN];
-	sprintf(templn, "<option value=\"%s\"%s/>%s</option>", value, selected?ITEM_SELECTED : "", label);
+	sprintf(templn, "<option value=\"%s\"%s/>%s</option>", value, selected ? ITEM_SELECTED : "", label);
 	return concat(buffer, templn);
 }
 #endif
@@ -315,15 +315,16 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 {
 	bool set_base_path = false;
 
-	size_t slen = sprintf(buffer, "HTTP/1.1 200 OK\r\n"
-								  "Content-Type: "); char *header = buffer + slen;
+	size_t slen = sprintf(buffer,	"HTTP/1.1 200 OK\r\n"
+									"Access-Control-Allow-Origin: *\r\n"
+									"Content-Type: "); char *header = buffer + slen;
 
 	int flen = strlen(param);
 
 	// get mime type
 	if(is_binary == BINARY_FILE)
 	{
-		char *ext = (char*)param + MAX(flen - 4, 0), *ext5 = (char*)param + MAX(flen - 5, 0);
+		const char *ext = (char*)param + MAX(flen - 4, 0), *ext5 = (char*)param + MAX(flen - 5, 0);
 
 		if(_IS(ext, ".png"))
 			strcat(header, "image/png");

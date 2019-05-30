@@ -6,7 +6,7 @@ static void select_ps1emu(const char *path)
 	sys_map_path("/dev_flash/ps1emu/ps1_netemu.self", NULL);
 	sys_map_path("/dev_flash/ps1emu/ps1_emu.self"   , NULL);
 
-	char msg[100];
+	char msg[50];
 
 	if(webman_config->ps1emu)
 	{

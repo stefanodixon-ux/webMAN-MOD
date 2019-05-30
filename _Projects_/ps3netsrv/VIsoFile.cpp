@@ -29,12 +29,15 @@ extern "C" int scandir(const char *dirname, struct dirent2 ***ret_namelist,
 
 #define MULTIEXTENT_PART_SIZE	0xFFFFF800
 
-#define TEMP_BUF_SIZE	(4*1024*1024)
-#define FS_BUF_SIZE	(32*1024*1024)
+#define TEMP_BUF_SIZE	( 4*1024*1024)
+#define FS_BUF_SIZE		(32*1024*1024)
+
+#define SECTOR_SIZE		0x800
+#define SECTOR_MASK		0x7FF
 
 static inline uint32_t bytesToSectors(off64_t size)
 {
-	return ((size+0x7ffULL)&~0x7ffULL) / 0x800ULL;
+	return ((size + 0x7ffULL) & ~0x7ffULL) / 0x800ULL;
 }
 
 static char *dupString(const char *str)
@@ -96,7 +99,7 @@ static bool getFileSizeAndProcessMultipart(char *file, off64_t *size)
 
 		if (i > 1)
 		{
-			if (prev_size&0x7FF)
+			if (prev_size & SECTOR_MASK)
 			{
 				fprintf(stderr, "666XX file must be multiple of sector, except last fragment. (file=%s)\n", file);
 			}
@@ -537,9 +540,9 @@ Iso9660DirectoryRecord *VIsoFile::findDirRecord(char *dirName, Iso9660DirectoryR
 
 		if (current->len_dr == 0)
 		{
-			p += (0x800 - (pos&0x7ff));
-			pos += (0x800 - (pos&0x7ff));
-			if (p >= (buf+size))
+			p += (SECTOR_SIZE - (pos & SECTOR_MASK));
+			pos += (SECTOR_SIZE - (pos & SECTOR_MASK));
+			if (p >= (buf + size))
 				break;
 
 			current = (Iso9660DirectoryRecord *)p;
@@ -699,8 +702,8 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 		for (unsigned int i = 0; i < parts; i++)
 		{
 			uint32_t offs;
-			record = (Iso9660DirectoryRecord *)malloc(2048);
-			memset(record, 0, 2048);
+			record = (Iso9660DirectoryRecord *)malloc(SECTOR_SIZE);
+			memset(record, 0, SECTOR_SIZE);
 
 			record->lsbStart = LE32(lba);
 			record->msbStart = BE32(lba);
@@ -715,7 +718,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 			}
 			else
 			{
-				char *s = new char[strlen(fileList->path)+7];
+				char *s = new char[strlen(fileList->path) + 7];
 				sprintf(s, "%s.66600", fileList->path);
 
 				if (stat_file(s, &statbuf) < 0)
@@ -759,7 +762,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 			record->lsbVolSetSeqNum = LE16(1);
 			record->msbVolSetSeqNum = BE16(1);
 
-			char *fileName = strrchr(fileList->path, '/')+1;
+			char *fileName = strrchr(fileList->path, '/') + 1;
 
 			if (!joliet)
 			{
@@ -784,13 +787,13 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 
 			offs = (p-tempBuf);
 
-			if ((offs/0x800) < ((offs+record->len_dr)/0x800))
+			if ((offs / SECTOR_SIZE) < ((offs + record->len_dr) / SECTOR_SIZE))
 			{
-				offs = (offs+0x7ff)&~0x7ff;
-				p = (tempBuf+offs);
+				offs = (offs + SECTOR_MASK) & ~SECTOR_MASK;
+				p = (tempBuf + offs);
 			}
 
-			if ((p+record->len_dr) >= (tempBuf+tempBufSize))
+			if ((p + record->len_dr) >= (tempBuf+tempBufSize))
 			{
 				free(record);
 				return false;
@@ -810,8 +813,8 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 		if (isDirectChild(tempList, dirList))
 		{
 			uint32_t offs;
-			record = (Iso9660DirectoryRecord *)malloc(2048);
-			memset(record, 0, 2048);
+			record = (Iso9660DirectoryRecord *)malloc(SECTOR_SIZE);
+			memset(record, 0, SECTOR_SIZE);
 
 			if (stat_file(tempList->path, &statbuf) < 0)
 			{
@@ -846,10 +849,10 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 
 			offs = (p-tempBuf);
 
-			if ((offs/0x800) < ((offs+record->len_dr)/0x800))
+			if ((offs / SECTOR_SIZE) < ((offs+record->len_dr) / SECTOR_SIZE))
 			{
-				offs = (offs+0x7ff)&~0x7ff;
-				p = (tempBuf+offs);
+				offs = (offs + SECTOR_MASK) & ~SECTOR_MASK;
+				p = (tempBuf + offs);
 			}
 
 			if ((p+record->len_dr) >= (tempBuf+tempBufSize))
@@ -866,8 +869,8 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 		tempList = tempList->next;
 	}
 
-	size_t size = (p-tempBuf);
-	size = (size+0x7ff)&~0x7ff;
+	size_t size = (p - tempBuf);
+	size = (size + SECTOR_MASK) & ~SECTOR_MASK;
 
 	p = new uint8_t[size];
 	memcpy(p, tempBuf, size);
@@ -878,7 +881,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 
 	if (dirList == parent)
 	{
-		parentRecord = (Iso9660DirectoryRecord *)(p+0x28);
+		parentRecord = (Iso9660DirectoryRecord *)(p + 0x28);
 		parentRecord->lsbStart = record->lsbStart;
 		parentRecord->msbStart = record->msbStart;
 		parentRecord->lsbDataLength = record->lsbDataLength;
@@ -928,8 +931,8 @@ void VIsoFile::fixDirLba(Iso9660DirectoryRecord *record, size_t size, uint32_t d
 
 		if (current->len_dr == 0)
 		{
-			p += (0x800 - (pos&0x7ff));
-			pos += (0x800 - (pos&0x7ff));
+			p += (SECTOR_SIZE - (pos & SECTOR_MASK));
+			pos += (SECTOR_SIZE - (pos & SECTOR_MASK));
 			if (p >= (buf+size))
 				break;
 
@@ -940,13 +943,13 @@ void VIsoFile::fixDirLba(Iso9660DirectoryRecord *record, size_t size, uint32_t d
 
 		if (current->fileFlags & ISO_DIRECTORY)
 		{
-			current->lsbStart = LE32(LE32(current->lsbStart)+dirLba);
-			current->msbStart = BE32(BE32(current->msbStart)+dirLba);
+			current->lsbStart = LE32(LE32(current->lsbStart) + dirLba);
+			current->msbStart = BE32(BE32(current->msbStart) + dirLba);
 		}
 		else
 		{
-			current->lsbStart = LE32(LE32(current->lsbStart)+filesLba);
-			current->msbStart = BE32(BE32(current->msbStart)+filesLba);
+			current->lsbStart = LE32(LE32(current->lsbStart) + filesLba);
+			current->msbStart = BE32(BE32(current->msbStart) + filesLba);
 		}
 
 		p += current->len_dr;
@@ -1127,7 +1130,7 @@ bool VIsoFile::build(char *inDir)
 	pathTableJolietL = buildPathTable(false, true, &pathTableSizeJoliet);
 	pathTableJolietM = buildPathTable(true, true, &pathTableSizeJoliet);
 
-	uint32_t isoLba = (0xA000/0x800) + (bytesToSectors(pathTableSize) * 2) + (bytesToSectors(pathTableSizeJoliet) * 2);
+	uint32_t isoLba = (0xA000 / SECTOR_SIZE) + (bytesToSectors(pathTableSize) * 2) + (bytesToSectors(pathTableSizeJoliet) * 2);
 	uint32_t jolietLba = isoLba + dirsSizeSectors;
 	uint32_t filesLba = jolietLba + dirsSizeSectorsJoliet;
 
@@ -1154,7 +1157,7 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 		DiscInfoSector *infoSector;
 
 		rangesSector = (DiscRangesSector *)fsBuf;
-		infoSector = (DiscInfoSector *)(fsBuf+0x800);
+		infoSector = (DiscInfoSector *)(fsBuf + SECTOR_SIZE);
 
 		// Sector 0
 		rangesSector->numRanges = BE32(1);
@@ -1172,8 +1175,8 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 	}
 
 	// Generate and write iso pvd
-	pvd = (Iso9660PVD *)(fsBuf+0x8000);
-	memset(pvd, 0, 0x800);
+	pvd = (Iso9660PVD *)(fsBuf + 0x8000);
+	memset(pvd, 0, SECTOR_SIZE);
 
 	pvd->VDType = 1;
 	memcpy(pvd->VSStdId, "CD001", sizeof(pvd->VSStdId));
@@ -1192,12 +1195,12 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 	pvd->msbVolumeSetSize = BE16(1);
 	pvd->lsbVolumeSetSequenceNumber = LE16(1);
 	pvd->msbVolumeSetSequenceNumber = BE16(1);
-	pvd->lsbLogicalBlockSize = LE16(0x800);
-	pvd->msbLogicalBlockSize = BE16(0x800);
+	pvd->lsbLogicalBlockSize = LE16(SECTOR_SIZE);
+	pvd->msbLogicalBlockSize = BE16(SECTOR_SIZE);
 	pvd->lsbPathTableSize = LE32(pathTableSize);
 	pvd->msbPathTableSize = BE32(pathTableSize);
-	pvd->lsbPathTable1 = LE32(0xA000/0x800);
-	pvd->msbPathTable1 = BE32((0xA000/0x800)+bytesToSectors(pathTableSize));
+	pvd->lsbPathTable1 = LE32(0xA000 / SECTOR_SIZE);
+	pvd->msbPathTable1 = BE32((0xA000 / SECTOR_SIZE) + bytesToSectors(pathTableSize));
 	memset(pvd->volumeSetIdentifier, ' ', sizeof(pvd->volumeSetIdentifier));
 	memcpy(pvd->volumeSetIdentifier, pvd->volumeIdentifier, sizeof(pvd->volumeIdentifier));
 	memset(pvd->publisherIdentifier, ' ', sizeof(pvd->publisherIdentifier));
@@ -1215,8 +1218,8 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 	pvd->rootDirectoryRecord[0] = sizeof(pvd->rootDirectoryRecord);
 
 	// Write joliet pvd
-	pvd = (Iso9660PVD *)(fsBuf+0x8800);
-	memset(pvd, 0, 0x800);
+	pvd = (Iso9660PVD *)(fsBuf + 0x8800);
+	memset(pvd, 0, SECTOR_SIZE);
 
 	pvd->VDType = 2;
 	memcpy(pvd->VSStdId, "CD001", sizeof(pvd->VSStdId));
@@ -1232,12 +1235,12 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 	pvd->msbVolumeSetSize = BE16(1);
 	pvd->lsbVolumeSetSequenceNumber = LE16(1);
 	pvd->msbVolumeSetSequenceNumber = BE16(1);
-	pvd->lsbLogicalBlockSize = LE16(0x800);
-	pvd->msbLogicalBlockSize = BE16(0x800);
+	pvd->lsbLogicalBlockSize = LE16(SECTOR_SIZE);
+	pvd->msbLogicalBlockSize = BE16(SECTOR_SIZE);
 	pvd->lsbPathTableSize = LE32(pathTableSizeJoliet);
 	pvd->msbPathTableSize = BE32(pathTableSizeJoliet);
-	pvd->lsbPathTable1 = LE32(0xA000/0x800 + (bytesToSectors(pathTableSize)*2));
-	pvd->msbPathTable1 = BE32(0xA000/0x800 + (bytesToSectors(pathTableSize)*2) + bytesToSectors(pathTableSizeJoliet));
+	pvd->lsbPathTable1 = LE32(0xA000 / SECTOR_SIZE + (bytesToSectors(pathTableSize)*2));
+	pvd->msbPathTable1 = BE32(0xA000 / SECTOR_SIZE + (bytesToSectors(pathTableSize)*2) + bytesToSectors(pathTableSizeJoliet));
 	memcpy(pvd->volumeSetIdentifier, pvd->volumeIdentifier, sizeof(pvd->volumeIdentifier));
 	genIso9660TimePvd(t, pvd->volumeCreation);
 	memset(pvd->volumeModification, '0', 16);
@@ -1249,33 +1252,33 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 
 	// Write sector 18
 	p = fsBuf+0x9000;
-	memset(p, 0, 0x800);
+	memset(p, 0, SECTOR_SIZE);
 	p[0] = 0xFF;
 	memcpy(p+1, "CD001", 5);
 
 	// Write empty sector 19
-	p = fsBuf+0x9800;
-	memset(p, 0, 0x800);
+	p = fsBuf + 0x9800;
+	memset(p, 0, SECTOR_SIZE);
 
 	// Write pathTableL
 	p = fsBuf+0xA000;
-	memset(p, 0, bytesToSectors(pathTableSize)*0x800);
+	memset(p, 0, bytesToSectors(pathTableSize) * SECTOR_SIZE);
 	memcpy(p, pathTableL, pathTableSize);
 
 	// Write pathTableM
-	p += (bytesToSectors(pathTableSize)*0x800);
+	p += (bytesToSectors(pathTableSize) * SECTOR_SIZE);
 	memcpy(p, pathTableM, pathTableSize);
 
 	// Write pathTableJolietL
-	p += (bytesToSectors(pathTableSize)*0x800);
-	memset(p, 0, bytesToSectors(pathTableSizeJoliet)*0x800);
+	p += (bytesToSectors(pathTableSize) * SECTOR_SIZE);
+	memset(p, 0, bytesToSectors(pathTableSizeJoliet) * SECTOR_SIZE);
 	memcpy(p, pathTableJolietL, pathTableSizeJoliet);
 
 	// Write pathTableJolietM
-	p += (bytesToSectors(pathTableSizeJoliet)*0x800);
+	p += (bytesToSectors(pathTableSizeJoliet) * SECTOR_SIZE);
 	memcpy(p, pathTableJolietM, pathTableSizeJoliet);
 
-	p += (bytesToSectors(pathTableSizeJoliet)*0x800);
+	p += (bytesToSectors(pathTableSizeJoliet) * SECTOR_SIZE);
 
 	delete[] pathTableL;
 	delete[] pathTableM;
@@ -1320,22 +1323,22 @@ bool VIsoFile::generate(char *inDir, const char *volumeName, const char *gameCod
 	if (!ret)
 		return false;
 
-	fsBufSize = (0xA000/0x800) + (bytesToSectors(pathTableSize) * 2) + (bytesToSectors(pathTableSizeJoliet) * 2) + dirsSizeSectors + dirsSizeSectorsJoliet;
+	fsBufSize = (0xA000 / SECTOR_SIZE) + (bytesToSectors(pathTableSize) * 2) + (bytesToSectors(pathTableSizeJoliet) * 2) + dirsSizeSectors + dirsSizeSectorsJoliet;
 	volumeSize =  fsBufSize + filesSizeSectors;
-	padAreaStart = (uint64_t)volumeSize*0x800;
+	padAreaStart = (uint64_t)volumeSize * SECTOR_SIZE;
 	padSectors = 0x20;
 
 	if (volumeSize & 0x1F)
 	{
-		padSectors += (0x20-(volumeSize&0x1F));
+		padSectors += (0x20 - (volumeSize & 0x1F));
 	}
 
-	padAreaSize = padSectors * 0x800;
+	padAreaSize = padSectors * SECTOR_SIZE;
 	volumeSize += padSectors;
 	totalSize = volumeSize;
 
-	fsBufSize = fsBufSize * 0x800;
-	totalSize = totalSize * 0x800;
+	fsBufSize = fsBufSize * SECTOR_SIZE;
+	totalSize = totalSize * SECTOR_SIZE;
 
 	if (fsBuf)
 		delete[] fsBuf;
@@ -1453,9 +1456,9 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 
 			while (fileList)
 			{
-				uint64_t fStart = (uint64_t)fsBufSize + (uint64_t)fileList->rlba * 0x800;
+				uint64_t fStart = (uint64_t)fsBufSize + (uint64_t)fileList->rlba * SECTOR_SIZE;
 				uint64_t fEnd = fStart + fileList->size;
-				uint64_t fEndSector = ((fEnd+0x7ffULL)&~0x7ffULL);
+				uint64_t fEndSector = ((fEnd + 0x7ffULL) & ~0x7ffULL);
 
 				if (vFilePtr >= fStart && vFilePtr < fEndSector)
 				{

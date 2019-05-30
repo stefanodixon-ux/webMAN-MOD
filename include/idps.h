@@ -8,6 +8,10 @@ u64 PSID[2] = {0, 0};
 #define SC_GET_IDPS 					(870)
 #define SC_GET_PSID 					(872)
 
+#define FLASH_DEVICE_NAND					0x0100000000000001ULL
+#define FLASH_DEVICE_NOR					0x0100000000000004ULL
+#define FLASH_FLAGS							0x22ULL
+
 u64 idps_offset1 = 0;
 u64 idps_offset2 = 0;
 u64 psid_offset  = 0;
@@ -110,23 +114,26 @@ static void spoof_idps_psid(void)
 
 static void get_eid0_idps(void)
 {
+	get_idps_psid();
+
 	if(eid0_idps[0]) return;
 
-	u64 buffer[0x40], start_sector;
+	u64 buffer[0x40], start_sector = 0x178; // NOR
 	u32 read;
-	sys_device_handle_t source;
-	if(sys_storage_open(0x100000000000004ULL, 0, &source, 0) != 0)
+	sys_device_handle_t dev_id;
+	if(sys_storage_open(FLASH_DEVICE_NOR, 0, &dev_id, 0) != CELL_OK)
 	{
-		start_sector = 0x204;
-		sys_storage_close(source);
-		sys_storage_open(0x100000000000001ULL, 0, &source, 0);
+		sys_storage_close(dev_id);
+		sys_storage_open(FLASH_DEVICE_NAND, 0, &dev_id, 0);
+		start_sector = 0x204; // NAND
 	}
-	else start_sector = 0x178;
-	sys_storage_read(source, 0, start_sector, 1, buffer, &read, 0);
-	sys_storage_close(source);
+	sys_storage_read(dev_id, 0, start_sector, 1, buffer, &read, FLASH_FLAGS);
+	sys_storage_close(dev_id);
 
 	eid0_idps[0] = buffer[0x0E];
 	eid0_idps[1] = buffer[0x0F];
+
+	if((eid0_idps[0] & 0xFFFFFFFFFFF0FF00ULL) != 0x0000000100800000ULL) eid0_idps[0] = eid0_idps[1] = 0;
 }
 
 static void show_idps(char *msg)
@@ -134,7 +141,6 @@ static void show_idps(char *msg)
 	if(!sys_admin) return;
 
 	get_eid0_idps();
-	get_idps_psid();
 
 	#define SEP "\n                  "
 	sprintf(msg, "IDPS EID0 : %016llX%s"

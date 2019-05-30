@@ -136,9 +136,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #ifdef USE_NTFS
 	struct stat bufn;
 
-	sprintf(buffer, "%i webMAN ftpd " WM_VERSION " [NTFS:%i]\r\n", 220, mountCount); ssend(conn_s_ftp, buffer);
+	sprintf(buffer, "%i " WM_APPNAME "ftpd " WM_VERSION " [NTFS:%i]\r\n", 220, mountCount); ssend(conn_s_ftp, buffer);
 #else
-	sprintf(buffer, "%i webMAN ftpd " WM_VERSION "\r\n", 220); ssend(conn_s_ftp, buffer);
+	sprintf(buffer, "%i " WM_APPNAME "ftpd " WM_VERSION "\r\n", 220); ssend(conn_s_ftp, buffer);
 #endif
 
 	strcpy(cwd, "/");

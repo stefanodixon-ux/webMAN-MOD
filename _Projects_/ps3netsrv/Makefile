@@ -45,6 +45,7 @@ CFLAGS += -static
 endif
 
 all: $(OUTPUT)
+	rm -f *.o
 
 clean:
 	rm -f $(OUTPUT) *.o

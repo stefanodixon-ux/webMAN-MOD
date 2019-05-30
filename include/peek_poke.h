@@ -33,7 +33,7 @@ static void lv1_poke_cfw( u64 addr, u64 value)
 }
 
 #ifdef COBRA_ONLY
-static void lv1_poke_ps3mapi( u64 addr, u64 value)
+static void lv1_poke_ps3mapi(u64 addr, u64 value)
 {
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_POKE, addr, value);
 }
@@ -127,12 +127,12 @@ static void remove_lv2_memory_protection(void)
 	else
 	if(c_firmware>=4.30f && c_firmware<=4.53f)
 	{
-		HV_START_OFFSET = HV_START_OFFSET_430;
+		HV_START_OFFSET = HV_START_OFFSET_430; // same for 4.30-4.53
 	}
 	else
 	if(c_firmware>=4.55f /*&& c_firmware<=4.84f*/)
 	{
-		HV_START_OFFSET = HV_START_OFFSET_460;
+		HV_START_OFFSET = HV_START_OFFSET_455; // same for 4.55-4.84
 	}
 
 	if(!HV_START_OFFSET) return;
@@ -255,29 +255,3 @@ static void Hex2Bin(const char* src, char* target)
 }
 
 #endif
-
-/*
-s32 lv2_get_platform_info(struct platform_info *info)
-{
-	system_call_1(SC_GET_PLATFORM_INFO, (u64) info);
-	return_to_user_prog(s32);
-}
-
-s32 lv2_get_target_type(u64 *type)
-{
-	lv2syscall1(985, (u64) type);
-	return_to_user_prog(s32);
-}
-
-u64 find_syscall_table()
-{
-	u64 targettype;
-	lv2_get_target_type(&targettype);
-
-	for(u64 i = 0x8000000000340000ULL; i<0x8000000000400000ULL; i+=4)
-	{
-		if(peekq(i) == 0x3235352E3235352EULL) return (i + (targettype == 2) ? 0x1228 : 0x1220);
-	}
-	return 0;
-}
-*/

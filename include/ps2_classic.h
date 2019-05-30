@@ -11,7 +11,6 @@ static int get_cobra_ps2netemu_status(void)
 static void enable_ps2netemu_cobra(int param)
 {
 #ifdef SPOOF_CONSOLEID
-	get_eid0_idps();
 	if ((eid0_idps[0] & 0x00000000000000FF) > 0x04) return; // 0x01 = CECH-A*, 0x02 = CECH-B, 0x03 = CECH-C, 0x04 = CECH-E
 #endif
 	int status = get_cobra_ps2netemu_status();
