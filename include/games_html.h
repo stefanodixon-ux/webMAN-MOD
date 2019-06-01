@@ -1510,6 +1510,8 @@ next_html_entry:
 		bool sortable = false;
 #endif
 
+		t_string sout; _set(&sout, buffer, buf_len);
+
 #ifdef LAUNCHPAD
 		if(launchpad_mode)
 		{
@@ -1520,10 +1522,10 @@ next_html_entry:
 		else
 #endif
 		if(mobile_mode)
-			sprintf(buffer, "slides = [");
+			_concat(&sout, "slides = [");
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
-			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); strcat(buffer, templn);
+			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
 		}
 		else
 		{
@@ -1532,7 +1534,7 @@ next_html_entry:
 							// show games count + find icon
 							"<a href=\"javascript:var s=prompt('Search:','');if(s){document.getElementById('rhtm').style.display='block';self.location='/index.ps3?'+escape(s)}\"> &nbsp; %'i %s &#x1F50D;</a></font>"
 							// separator
-							"<HR><span style=\"white-space:normal;\">", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); strcat(buffer, templn);
+							"<HR><span style=\"white-space:normal;\">", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
 
 #ifndef LITE_EDITION
 			sortable = file_exists(JQUERY_LIB_JS) && file_exists(JQUERY_UI_LIB_JS);
@@ -1541,7 +1543,7 @@ next_html_entry:
 				sprintf(templn, SCRIPT_SRC_FMT
 								SCRIPT_SRC_FMT
 								"<script>$(function(){$(\"#mg\").sortable();});</script>",
-								JQUERY_LIB_JS, JQUERY_UI_LIB_JS); strcat(buffer, templn);
+								JQUERY_LIB_JS, JQUERY_UI_LIB_JS); _concat(&sout, templn);
 			}
 #endif
 		}
@@ -1551,10 +1553,10 @@ next_html_entry:
 #ifndef EMBED_JS
 			if(file_exists(GAMES_SCRIPT_JS))
 			{
-				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); strcat(buffer, templn);
+				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, templn);
 			}
 #endif
-			strcat(buffer, "<div id=\"mg\">"
+			_concat(&sout, "<div id=\"mg\">"
 							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;document.getElementById('mg').style.zoom=z/100;</script>");
 		}
 
@@ -1585,20 +1587,20 @@ next_html_entry:
 		if(mobile_mode)
 			for(u16 m = 0; m < idx; m++)
 			{
-				tlen += concat(buffer + tlen, (line_entry[m].path) + HTML_KEY_LEN);
+				_concat(&sout, (line_entry[m].path) + HTML_KEY_LEN);
 			}
 		else
 		{
 			for(u16 m = 0; m < idx; m++)
 			{
-				tlen += concat(buffer + tlen, GAME_DIV_PREFIX);
-				tlen += concat(buffer + tlen, (line_entry[m].path) + HTML_KEY_LEN);
-				tlen += concat(buffer + tlen, GAME_DIV_SUFIX);
+				_concat(&sout, GAME_DIV_PREFIX);
+				_concat(&sout, (line_entry[m].path) + HTML_KEY_LEN);
+				_concat(&sout, GAME_DIV_SUFIX);
 			}
 		}
 
 #ifndef LITE_EDITION
-		if(sortable) strcat(buffer + tlen, "</div>");
+		if(sortable) _concat(&sout, "</div>");
 #endif
 
 		if(auto_mount && idx == 1)
@@ -1608,12 +1610,12 @@ next_html_entry:
 		}
 		else if(mobile_mode)
 		{
-			strcat(buffer + tlen, "];");
-			save_file(GAMELIST_JS, buffer, SAVE_ALL);
+			_concat(&sout, "];");
+			save_file(GAMELIST_JS, sout.str, sout.size);
 		}
 		else
 		{
-			save_file(WMTMP "/games.html", (buffer + buf_len), strlen(buffer + buf_len));
+			save_file(WMTMP "/games.html", (sout.str + buf_len), sout.size - buf_len);
 		}
 
 		loading_games = 0;

@@ -9,6 +9,7 @@ We would like to integrate all existing features available on the PS3 Scene like
 ### General
 - Support on custom firmware with cobra feature enabled (ver 4.46-4.84 CEX, DEX & DECR)
 - Support on REBUG firmware with cobra feature disabled (ver 4.84.2 CEX & DEX)
+- Support on PS3HEN on 4.82 OFW and 4.84 HFW CEX & DEX
 - Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.84 CEX & DEX) *https://github.com/aldostools/MAMBA_PRX_Loader*
 - Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.84 CEX & DEX) *https://github.com/aldostools/IRISMAN*
 - Support on classic custom firmware with PRXLoader (ver 3.41-4.84 CEX & DEX) *https://github.com/NzV/PRX_Loader*

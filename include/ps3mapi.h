@@ -893,11 +893,15 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 		{
 			sprintf(templn, "<tr><td width=\"75\" class=\"la\">%i</td>"
 							"<td width=\"120\" class=\"la\">%s</td>"
-							"<td width=\"500\" class=\"la\">%s</td>"
+							"<td width=\"500\" class=\"la\">",
+							slot, tmp_name); buffer += concat(buffer, templn);
+
+			buffer += add_breadcrumb_trail(buffer, tmp_filename);
+
+			sprintf(templn, "</td>"
 							"<td width=\"100\" class=\"ra\">"
 							"<form action=\"/vshplugin" HTML_FORM_METHOD_FMT
 							"<input name=\"unload_slot\" type=\"hidden\" value=\"%i\"><input type=\"submit\" %s/></form></td></tr>",
-							slot, tmp_name, tmp_filename,
 							HTML_FORM_METHOD, slot, (slot) ? "value=\" Unload \"" : "value=\" Reserved \" disabled" );
 		}
 		else
@@ -1024,7 +1028,12 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						"<tr>"
 						 "<td width=\"75\" class=\"la\">%i</td>"
 						 "<td width=\"300\" class=\"la\">%s</td>"
-						 "<td width=\"500\" class=\"la\">%s</td>"
+						 "<td width=\"500\" class=\"la\">", 
+						slot, tmp_name); buffer += concat(buffer, templn);
+
+				buffer += add_breadcrumb_trail(buffer, tmp_filename);
+
+				sprintf(templn, "</td>"
 						 "<td width=\"100\" class=\"ra\">"
 						  "<form action=\"/gameplugin" HTML_FORM_METHOD_FMT
 						  "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
@@ -1032,9 +1041,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						  "<input type=\"submit\" value=\" Unload \">"
 						  "</form>"
 						 "</td>"
-						"</tr>",
-						slot, tmp_name, tmp_filename,
-						HTML_FORM_METHOD, pid, mod_list[slot]);
+						"</tr>", HTML_FORM_METHOD, pid, mod_list[slot]);
 			}
 			else
 			{

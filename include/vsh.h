@@ -1,3 +1,5 @@
+#define ENABLE_INGAME_SCREENSHOT	((int*)getNIDfunc("vshmain",0x981D7E9F,0))[0] -= 0x2C;
+
 //int (*_cellGcmIoOffsetToAddress)(u32, void**) = NULL;
 int (*vshtask_notify)(int, const char *) = NULL;
 int (*View_Find)(const char *) = NULL;

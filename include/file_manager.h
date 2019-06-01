@@ -305,7 +305,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		}
 	}
 	else if(sort_by == 'd')
-		sprintf(ename, "%c%c%c%c%c", ((rDate.year - 1968) % 223) + 0x20, rDate.month+0x20, rDate.day+0x20, rDate.hour+0x20, rDate.minute+0x20);
+		snprintf(ename, FILE_MGR_KEY_LEN, "%c%c%c%c%c", ((rDate.year - 1968) % 223) + 0x20, rDate.month+0x20, rDate.day+0x20, rDate.hour+0x20, rDate.minute+0x20);
 	else
 	{
 		//if(*name == '0' && flen == 8 && IS(param, "/dev_hdd0/home"))
@@ -374,9 +374,9 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	return flen;
 }
 
-static void add_breadcrumb_trail(char *pbuffer, char *param)
+static int add_breadcrumb_trail(char *pbuffer, char *param)
 {
-	int tlen = 0;
+	int slen, tlen = 0;
 
 	char swap[MAX_PATH_LEN], templn[MAX_PATH_LEN], url[MAX_PATH_LEN], *slash, *buffer = pbuffer;
 
@@ -404,9 +404,8 @@ static void add_breadcrumb_trail(char *pbuffer, char *param)
 	}
 
 	// add link to file or folder
-
-	if(!param[1]) sprintf(swap, "/");
-	else if(param[1] != 'n' && file_exists(param) == false) strcpy(swap, strrchr(param, '/') + 1);
+	if(!param[1]) slen = sprintf(swap, "/");
+	else if(param[1] != 'n' && file_exists(param) == false) slen = sprintf(swap, "%s", strrchr(param, '/') + 1);
 	else
 	{
 		tlen = strlen(param) - 4; if(tlen < 0) tlen = 0;
@@ -415,10 +414,10 @@ static void add_breadcrumb_trail(char *pbuffer, char *param)
 		urlenc(url, param); if(islike(param, "/net")) htmlenc(label, templn, 0); else strcpy(label, templn);
 
 #ifdef USE_NTFS
-		if(is_ntfs_path(param)) sprintf(swap, HTML_URL, WMTMP, label);
+		if(is_ntfs_path(param)) slen = sprintf(swap, HTML_URL, WMTMP, label);
 		else
 #endif
-		sprintf(swap, HTML_URL2,
+		slen = sprintf(swap, HTML_URL2,
 						strstr(pbuffer, "To: ") ? "" :
 						islike(param + 23, "/trophy/NPWR") ? "/delete.ps3" :
 						islike(param, "/dev_hdd0/home") ? "/copy.ps3" :
@@ -436,11 +435,13 @@ static void add_breadcrumb_trail(char *pbuffer, char *param)
 	// add code to buffer
 
 	strcat(buffer, swap);
+
+	return slen + (buffer - pbuffer);
 }
 
 static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, char *param, int conn_s, char *tempstr, char *header, u8 is_ps3_http, s8 sort_by, s8 sort_order, char *file_query)
 {
-	int fd;
+	int fd; t_string sout; _set(&sout, buffer, strlen(buffer));
 
 	CellRtcDateTime rDate;
 
@@ -449,9 +450,9 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		if( param[11] & 1) enable_dev_blind(NO_MSG); else //enable
 		if(~param[11] & 1) disable_dev_blind();           //disable
 
-		if( param[11] ) {sprintf(templn, HTML_REDIRECT_TO_URL, "/", HTML_REDIRECT_WAIT); strcat(buffer, templn);}
+		if( param[11] ) {sprintf(templn, HTML_REDIRECT_TO_URL, "/", HTML_REDIRECT_WAIT); _concat(&sout, templn);}
 
-		sprintf(templn, "/dev_blind: %s", isDir("/dev_blind") ? STR_ENABLED : STR_DISABLED); strcat(buffer, templn); return true; //goto send_response;
+		sprintf(templn, "/dev_blind: %s", isDir("/dev_blind") ? STR_ENABLED : STR_DISABLED); _concat(&sout, templn); return true; //goto send_response;
 	}
 
 	absPath(templn, param, "/"); // auto mount /dev_blind & /dev_hdd1
@@ -480,11 +481,11 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 #endif
 
 #if defined(FIX_GAME) || defined(COPY_PS3)
-	if(copy_aborted) strcat(buffer, STR_CPYABORT);    //  /copy.ps3$abort
+	if(copy_aborted) _concat(&sout, STR_CPYABORT);    //  /copy.ps3$abort
 	else
-	if(fix_aborted)  strcat(buffer, "Fix aborted!");  //  /fixgame.ps3$abort
+	if(fix_aborted)  _concat(&sout, "Fix aborted!");  //  /fixgame.ps3$abort
 
-	if(copy_aborted | fix_aborted) {strcat(buffer, "<p>"); sys_ppu_thread_usleep(100000); copy_aborted = fix_aborted = false;}
+	if(copy_aborted | fix_aborted) {_concat(&sout, "<p>"); sys_ppu_thread_usleep(100000); copy_aborted = fix_aborted = false;}
 #endif
 
 	_LINELEN = LINELEN;
@@ -499,7 +500,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		char ename[16], sf[8];
 		char fsize[MAX_PATH_LEN], *swap = fsize;
 		u16 idx = 0, dirs = 0, flen; bool is_dir;
-		u32 tlen = 0, buf_len = 0;
+		u32 tlen = 0;
 		char *sysmem_html = buffer + (webman_config->sman ? _12KB_ : _6KB_);
 
 		typedef struct
@@ -520,35 +521,33 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 						"<script>"
 						// show icon of item pointed with mouse
 						"function s(o,d){u=o.href;p=u.indexOf('.ps3');if(p>0)u=u.substring(p+4);if(d){p=u.indexOf('/PS3_');if(p<0)p=u.indexOf('/USRDIR');if(p>0)u=u.substring(0,p);u+='%s/ICON0.PNG';}icon.src=u;icon.style.display='block';}"
-						"</script>", webman_config->sman ? 98 : 118, webman_config->sman ? 25 : 10, (jb_games ? "/PS3_GAME" : "")); strcat(buffer, templn);
+						"</script>", webman_config->sman ? 98 : 118, webman_config->sman ? 25 : 10, (jb_games ? "/PS3_GAME" : "")); _concat(&sout, templn);
 #endif
 
 		// breadcrumb trail //
-		add_breadcrumb_trail(buffer, param); if(param[10] != ':') strcat(buffer, ":");
+		sout.size += add_breadcrumb_trail(buffer, param); if(param[10] != ':') _concat(&sout, ":");
 
 		if((param[7] == 'v' || param[1] == 'a') && IS_ON_XMB && (isDir("/dev_bdvd/PS3_GAME") || file_exists("/dev_bdvd/SYSTEM.CNF") || isDir("/dev_bdvd/BDMV") || isDir("/dev_bdvd/VIDEO_TS") || isDir("/dev_bdvd/AVCHD")))
-			strcat(buffer, " <a href=\"/play.ps3\">&lt;Play>&nbsp;</a><br>");
+			_concat(&sout, " <a href=\"/play.ps3\">&lt;Play>&nbsp;</a><br>");
 		else
-			strcat(buffer, "<br>");
+			_concat(&sout, "<br>");
 
 #ifdef COPY_PS3
-		if(cp_mode) {sprintf(tempstr, "<font size=2><a href=\"/paste.ps3%s\">&#128203;</a> ", is_net ? "/dev_hdd0/packages" : param); add_breadcrumb_trail(tempstr, cp_path); strcat(buffer, tempstr); strcat(buffer, "</font><p>"); }
+		if(cp_mode) {sprintf(tempstr, "<font size=2><a href=\"/paste.ps3%s\">&#128203;</a> ", is_net ? "/dev_hdd0/packages" : param); add_breadcrumb_trail(tempstr, cp_path); _concat(&sout, tempstr); _concat(&sout, "</font><p>"); }
 
 		usb = get_default_usb_drive(0);
 #endif
-		tlen = strlen(buffer);
-
-		tlen += concat(buffer + tlen, "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}td+td{text-align:right}</style>"
+		_concat(&sout, "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}td+td{text-align:right}</style>"
 									  "<table id=\"files\" class=\"propfont\">");
 /*
 		if(file_exists("/dev_hdd0/xmlhost/game_plugin/sort.js"))
-			buffer += concat(buffer, "<script src=\"/dev_hdd0/xmlhost/game_plugin/sort.js\"></script>"
+			_concat(&sout, "<script src=\"/dev_hdd0/xmlhost/game_plugin/sort.js\"></script>"
 									 "<thead><tr><th align=left>Name</th><th>Size</th><th>Date</th></tr></thead>");
 		else
 */
-			tlen += concat(buffer + tlen, "<tr><td colspan=3><col width=\"220\"><col width=\"98\">");
+			_concat(&sout, "<tr><td colspan=3><col width=\"220\"><col width=\"98\">");
 
-		buf_len = tlen;
+		tlen = sout.size;
 
 #ifdef NET_SUPPORT
 		if(is_net)
@@ -566,7 +565,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					char *p = strrchr(templn, '/'); if(p) *p = NULL; if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = NULL;}
 
 					urlenc(swap, templn);
-					flen = sprintf(line_entry[idx].path,  "!     "
+					flen = sprintf(line_entry[idx].path,  "!         "
 														  "f\" href=\"%s\">..</a></td>"
 														  "<td> " HTML_URL HTML_ENTRY_DATE
 														, swap, swap, HTML_DIR);
@@ -791,21 +790,16 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		// add list entries //
 		//////////////////////
 
-		tlen = buf_len;
-
 		for(u16 m = 0; m < idx; m++)
 		{
 			if(tlen > BUFFER_SIZE_HTML) break;
 
-			tlen += concat(buffer + tlen, TABLE_ITEM_PREFIX);
-			tlen += concat(buffer + tlen, (line_entry[m].path) + FILE_MGR_KEY_LEN);
-			tlen += concat(buffer + tlen, TABLE_ITEM_SUFIX);
+			_concat(&sout, TABLE_ITEM_PREFIX);
+			_concat(&sout, (line_entry[m].path) + FILE_MGR_KEY_LEN);
+			_concat(&sout, TABLE_ITEM_SUFIX);
 		}
 
-		buffer += tlen;
-
-		buffer += concat(buffer, "</table>");
-
+		_concat(&sout, "</table>");
 
 		//////////////////
 		// build footer //
@@ -853,10 +847,10 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					sprintf(templn, "%s", wm_icons[dt]); show_icon = true;
 				}
 
-				for(u16 m = idx; m < 8; m++) buffer += concat(buffer, "<BR>");
+				for(u16 m = idx; m < 8; m++) _concat(&sout, "<BR>");
 
 				if(show_icon || show_icon0)
-					{urlenc(swap, templn); sprintf(templn, "<script>icon.src=\"%s\";icon.style.display='block';</script>", swap); buffer += concat(buffer, templn);}
+					{urlenc(swap, templn); sprintf(templn, "<script>icon.src=\"%s\";icon.style.display='block';</script>", swap); _concat(&sout, templn);}
 			}
 			///////////
 
@@ -893,12 +887,12 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
  #ifdef PKG_HANDLER
 							"Install PKG", //m0
  #endif
-							"Mount", "Open", "Delete", "New Folder", "New Folder", "Cut", "Copy", "Paste", "Rename", "Copy To"); buffer += concat(buffer, tempstr);
+							"Mount", "Open", "Delete", "New Folder", "New Folder", "Cut", "Copy", "Paste", "Rename", "Copy To"); _concat(&sout, tempstr);
  #else
 			// add fm.js script
 			if(file_exists(FM_SCRIPT_JS))
 			{
-				sprintf(templn, SCRIPT_SRC_FMT, FM_SCRIPT_JS); buffer += concat(buffer, templn);
+				sprintf(templn, SCRIPT_SRC_FMT, FM_SCRIPT_JS); _concat(&sout, templn);
 			}
  #endif
 #endif
@@ -919,12 +913,12 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			sprintf(templn, "<hr>"
 							"<b>" HTML_URL "%c", param, param, (param[10] == ':') ? 0 : ':');
 
-			buffer += concat(buffer, templn);
+			_concat(&sout, templn);
 
 			if(param[1] != 'n')
 			{
 				sprintf(templn, " %'d %s", (int)(get_free_space(param)>>20), STR_MBFREE);
-				buffer += concat(buffer, templn);
+				_concat(&sout, templn);
 			}
 
 			// summary
@@ -933,20 +927,20 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 							dir_size<(_1MB_) ? (int)(dir_size>>10):(int)(dir_size>>20),
 							dir_size<(_1MB_) ? STR_KILOBYTE:STR_MEGABYTE, tempstr);
 
-			strcat(buffer, templn);
+			_concat(&sout, templn);
 			///////////
 		}
 		else
 		{
 
 #ifndef LITE_EDITION
-			strcat(buffer, "<a onclick=\"o=lg.style,o.display=(o.display=='none')?'block':'none';\" style=\"cursor:pointer;\">");
+			_concat(&sout, "<a onclick=\"o=lg.style,o.display=(o.display=='none')?'block':'none';\" style=\"cursor:pointer;\">");
 #endif
-			buffer += concat(buffer, HTML_BLU_SEPARATOR
+			_concat(&sout, HTML_BLU_SEPARATOR
 									 WM_APPNAME " - Simple Web Server" EDITION "<p>");
 
 #ifndef LITE_EDITION
-			buffer += concat(buffer, "<div id=\"lg\" style=\"display:none\">");
+			_concat(&sout, "<div id=\"lg\" style=\"display:none\">");
 
 			_lastgames lastgames;
 
@@ -974,11 +968,11 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					{
 						char *name = strrchr(lastgames.game[n].path, '/') + 1; if(name[1] == NULL) name = lastgames.game[n].path;
 						sprintf(tempstr, "<a class=\"%c\" href=\"/mount.ps3%s\">%s</a><br>", (isDir(lastgames.game[n].path) || strstr(lastgames.game[n].path, "/GAME")) ? 'd' : 'w', lastgames.game[n].path, name);
-						buffer += concat(buffer, tempstr);
+						_concat(&sout, tempstr);
 					}
 				}
 			}
-			strcat(buffer, "</div></a>");
+			_concat(&sout, "</div></a>");
 #endif
 		}
 	}

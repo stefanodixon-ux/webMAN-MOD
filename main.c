@@ -782,6 +782,7 @@ int save_file(const char *file, const char *mem, s64 size);
 int wait_for(const char *path, u8 timeout);
 
 #include "include/html.h"
+#include "include/string.h"
 #include "include/peek_poke.h"
 #include "include/idps.h"
 #include "include/led.h"
@@ -829,7 +830,7 @@ static void set_apphome(const char *game_path);
 #endif
 
 static size_t get_name(char *name, const char *filename, u8 cache);
-static void add_breadcrumb_trail(char *buffer, char *param);
+static int add_breadcrumb_trail(char *buffer, char *param);
 static void get_cpursx(char *cpursx);
 static void get_last_game(char *last_path);
 static void add_game_info(char *buffer, char *templn, bool is_cpursx);
@@ -4094,6 +4095,8 @@ int wwwd_start(size_t args, void *argp)
 	BgmPlaybackEnable  = getNIDfunc("vshmain", 0xEDAB5E5E, 16*2);
 	BgmPlaybackDisable = getNIDfunc("vshmain", 0xEDAB5E5E, 17*2);
 #endif
+
+	{ ENABLE_INGAME_SCREENSHOT }
 
 	//pokeq(0x8000000000003560ULL, 0x386000014E800020ULL); // li r3, 0 / blr
 	//pokeq(0x8000000000003D90ULL, 0x386000014E800020ULL); // li r3, 0 / blr
