@@ -296,7 +296,6 @@ static int sys_map_path(const char *oldpath, const char *newpath)
 	return (int)p1;
 } */
 
-
 #ifdef __cplusplus
 }
 #endif

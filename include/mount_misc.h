@@ -109,16 +109,18 @@
 				if(file_exists(temp) == false && len > 12) strcat(temp + len - 12, ".CONFIG\0");
 				if(file_exists(temp) == false)
 				{
-					char *game_id = strstr(_path, "[S");
+					char *game_id = strstr(_path, "[SL"); 
+					if(!game_id)
+						  game_id = strstr(_path, "[SC");
 					if(game_id)
 					{
 						if(game_id[4] == '_')
 							sprintf(temp, "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC/%.11s.ENC", game_id + 1); //[SLxS_000.00]
 						else
-							sprintf(temp, "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC/%c%c%c%c_%c%c%c.%c%c.ENC",
-											game_id[1], game_id[2], game_id[3], game_id[4], // SLES, SLUS, SCES, SCUS
-											game_id[5], game_id[6], game_id[7],				// _000.00
-											game_id[8], game_id[9]); //[SLxS00000]
+							sprintf(temp, "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC/%.4s_%3s.%.2s.ENC",
+											game_id + 1,  // SLES, SLUS, SLPM, SLPS, SCES, SCUS, SCPS
+											game_id + 5,  // _000.00
+											game_id + 8); // [SLxS00000]
 					}
 				}
 
@@ -135,16 +137,15 @@
 			else
 				{sprintf(temp, "PS2 Classic\n%s", STR_ERROR); ret = false;}
 
-			show_msg(temp);
 			copy_in_progress = false;
 		}
 		else
 		{
 			sprintf(temp, "PS2 Classic Placeholder %s", STR_NOTFOUND);
-			show_msg(temp);
 			ret = false;
 		}
 
+		show_msg(temp);
 		goto exit_mount;
 	}
 

@@ -49,6 +49,7 @@ enum paths_ids
 #define PSP (1<<3)
 #define BLU (1<<4)
 #define DVD (1<<5)
+#define ROM (1<<6)
 
 #define PS3_ '3'
 
@@ -192,9 +193,9 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 		{
 			if(covers_exist[p + 1] && *title_id == 'S')
 			{
-				flen = sprintf(icon, "%s/covers_retro/psx/%c%c%c%c_%c%c%c.%c%c_COV", cpath[p],
-								title_id[0], title_id[1], title_id[2], title_id[3],
-								title_id[4], title_id[5], title_id[6], title_id[7], title_id[8]);
+				flen = sprintf(icon, "%s/covers_retro/psx/%.4s_%.3s.%.2s_COV", cpath[p],
+								title_id,
+								title_id + 4, title_id + 7);
 
 				if(get_image_file(icon, flen)) return true;
 			}
@@ -253,7 +254,7 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id)
 	else if((*name == 'B' || *name == 'N' || *name == 'S' || *name == 'U') && ISDIGIT(name[6]) && ISDIGIT(name[7]))
 	{
 		if(name[4] == '_' && name[8] == '.')
-			sprintf(title_id, "%c%c%c%c%c%c%c%c%c", name[0], name[1], name[2], name[3], name[5], name[6], name[7], name[9], name[10]); //SCUS_999.99.filename.iso
+			sprintf(title_id, "%.4s%.3s%.2s", name, name + 5, name + 9); //SCUS_999.99.filename.iso
 		else if(ISDIGIT(name[8]))
 			strncpy(title_id, name, 10);
 	}
@@ -891,7 +892,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 #endif
 	}
 	else
-		sprintf(skey, "!%c%c%c%c%c%c%04i", templn[c], templn[c+1], templn[c+2], templn[c+3], templn[c+4], templn[c+5], key);
+		sprintf(skey, "!%.6s%04i", templn + c, key);
 
 	if(subfolder) {char *s = strchr(templn + 3, '/'); if(s) {skey[4]=s[1],skey[5]=s[2],skey[6]=s[3];}} else
 	if(c == 0 && templn[0] == '[') {char *s = strstr(templn + 3, "] "); if(s) {skey[4]=s[2],skey[5]=s[3],skey[6]=s[4];}}
@@ -1469,7 +1470,7 @@ next_html_entry:
 
 //
 	continue_reading_folder_html:
-				if(f1 < id_ISO)
+				if(f1 < id_ISO && !IS_NTFS)
 				{
 					if(uprofile > 0) {subfolder = uprofile = 0; goto read_folder_html;}
 					if(is_net && (f1 > id_GAMEZ))

@@ -180,13 +180,13 @@ install_mm_payload:
 	//----------------------------
 	{
 		char expplg[64];
-		char app_sys[64];
+		char app_sys[40];
 
-		sprintf(app_sys, MM_ROOT_STD "/sys");
+			sprintf(app_sys, "%s/sys", MM_ROOT_STD);
 		if(!isDir(app_sys))
-			sprintf(app_sys, MM_ROOT_STL "/sys");
+			sprintf(app_sys, "%s/sys", MM_ROOT_STL);
 		if(!isDir(app_sys))
-			sprintf(app_sys, MM_ROOT_SSTL "/sys");
+			sprintf(app_sys, "%s/sys", MM_ROOT_SSTL);
 
 		if(c_firmware == 3.55f)
 			sprintf(expplg, "%s/IEXP0_355.BIN", app_sys);
@@ -229,28 +229,29 @@ install_mm_payload:
 	u64 map_data  = (MAP_BASE);
 	u64 map_paths = (MAP_BASE) + (max_mapped + 1) * 0x20;
 
-	for(u16 n = 0; n < 0x400; n += 8) pokeq(map_data + n, 0);
+	for(u16 n = 0; n < 0x400; n += 8) pokeq(map_data + n, 0); // clear 8KB
 
 	if(!max_mapped) {ret = false; goto exit_mount;}
 
+	u16 src_len, dst_len;
+
 	for(u8 n = 0; n < max_mapped; n++)
 	{
-		size_t src_len, dst_len;
-
 		if(map_paths > 0x80000000007FE800ULL) break;
+
 		pokeq(map_data + (n * 0x20) + 0x10, map_paths);
 		src_len = string_to_lv2(file_to_map[n].src, map_paths);
-		map_paths += (src_len + 8) & 0x7f8;
+		map_paths += src_len; //(src_len + 8) & 0x7f8;
 
 		pokeq(map_data + (n * 0x20) + 0x18, map_paths);
 		dst_len = string_to_lv2(file_to_map[n].dst, map_paths);
-		map_paths += (dst_len + 8) & 0x7f8;
+		map_paths += dst_len; //(dst_len + 8) & 0x7f8;
 
 		pokeq(map_data + (n * 0x20) + 0x00, src_len);
 		pokeq(map_data + (n * 0x20) + 0x08, dst_len);
 	}
 
-	if(isDir("/dev_bdvd")) sys_ppu_thread_sleep(2);
+	wait_for("/dev_bdvd", 2);
 
 	//if(action) eject_insert(0, 1);
 #endif

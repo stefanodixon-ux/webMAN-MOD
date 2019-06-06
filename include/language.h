@@ -387,21 +387,42 @@ static u32 get_system_language(u8 *lang)
 	return val_lang;
 }
 
-#define CHUNK_SIZE 512
+static void close_language(void)
+{
+	if(fh) cellFsClose(fh); fh = 0;
+}
+
+#define CHUNK_SIZE 256
 #define GET_NEXT_BYTE  {if(p < CHUNK_SIZE) c = buffer[p++]; else {cellFsRead(fd, buffer, CHUNK_SIZE, &bytes_read); c = *buffer, p = 1;} lang_pos++;}
+
+static size_t p = 0, lang_pos = 0, size = 0;
+
+static int open_language(const char *lang_path)
+{
+	close_language();
+
+	struct CellFsStat buf;
+
+	if(cellFsStat(lang_path, &buf) != CELL_FS_SUCCEEDED) return FAILED;
+
+	if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0) != CELL_FS_SUCCEEDED) return FAILED;
+
+	p = CHUNK_SIZE, lang_pos = 0, size = (size_t)buf.st_size;
+
+	cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL);
+
+	return CELL_OK;
+}
 
 static bool language(const char *key_name, char *label, const char *default_str)
 {
 	u8 c, i, key_len = strlen(key_name);
 	u64 bytes_read = 0;
-	static size_t p = 0, lang_pos = 0, size = 0;
 
 	sprintf(label, "%s", default_str);
 
 	u8 do_retry = 1;
-	char buffer[MAX_LINE_LEN];
-
- retry:
+	char buffer[CHUNK_SIZE];
 
 	if(fh == 0)
 	{
@@ -415,18 +436,12 @@ static bool language(const char *key_name, char *label, const char *default_str)
 		sprintf(lang_code, "_%s", lang_codes[i]);
 		sprintf(lang_path, "%s/LANG%s.TXT", WM_LANG_PATH, lang_code);
 
-		struct CellFsStat buf;
-
-		if(cellFsStat(lang_path, &buf) != CELL_FS_SUCCEEDED) return false; size = (size_t)buf.st_size;
-
-		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0) != CELL_FS_SUCCEEDED) return false;
-
-		lang_pos = 0;
-
-		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE;
+		if(open_language(lang_path)) return false;
 	}
 
 	int fd = fh;
+
+ retry:
 
 	do {
 		for(i = 0; i < key_len; )
@@ -437,6 +452,10 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 			if(i == key_len)
 			{
+				{ GET_NEXT_BYTE }
+
+				if(c > ' ') break;
+
 				size_t str_len = 0; u8 copy = 0;
 
 				// set value
@@ -453,20 +472,15 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 				label[str_len] = NULL;
 
-				return true;
+				if(str_len) return true;
 			}
 		}
 
 	} while(lang_pos < size);
 
-	if(do_retry) {cellFsClose(fh); do_retry--, fh = lang_pos = 0; goto retry;}
+	if(do_retry) {--do_retry, lang_pos = 0, p = CHUNK_SIZE; cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); goto retry;}
 
 	return true;
-}
-
-static void close_language(void)
-{
-	if(fh) cellFsClose(fh); fh = 0;
 }
 
 #undef CHUNK_SIZE

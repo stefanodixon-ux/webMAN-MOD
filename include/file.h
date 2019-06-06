@@ -193,13 +193,13 @@ static void mkdir_tree(char *path)
 	{
 		path[10] = ':';
 		for(u16 p = 12; p < path_len; p++)
-			if(path[p] == '/') {path[p] = NULL; ps3ntfs_mkdir(path + 5, MODE); path[p] = '/';}
+			if(path[p] == '/') {path[p] = NULL; ps3ntfs_mkdir(path + 5, DMODE); path[p] = '/';}
 	}
 	else
 #endif
 	{
 		for(u16 p = 12; p < path_len; p++)
-			if(path[p] == '/') {path[p] = NULL; cellFsMkdir(path, MODE); path[p] = '/';}
+			if(path[p] == '/') {path[p] = NULL; cellFsMkdir(path, DMODE); path[p] = '/';}
 	}
 }
 #endif
@@ -570,7 +570,7 @@ static int folder_copy(const char *path1, char *path2)
 	{
 #ifdef USE_NTFS
 		if(is_ntfs_path(path2))
-			ps3ntfs_mkdir(path2 + 5, MODE);
+			ps3ntfs_mkdir(path2 + 5, DMODE);
 		else
 #endif
 			cellFsMkdir(path2, DMODE);

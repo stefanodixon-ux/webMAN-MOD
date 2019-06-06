@@ -40,7 +40,9 @@ static bool install_in_progress = false;
 
 #define PKG_MAGIC				0x7F504B47
 
-#define IS_INSTALLING	(View_Find("game_plugin") != 0)
+#define IS_INSTALLING		(View_Find("game_plugin") != 0)
+#define IS_INSTALLING_NAS	(View_Find("nas_plugin")  != 0)
+#define IS_DOWNLOADING		(View_Find("download_plugin") != 0)
 
 typedef struct {
    u32 magic; // 0x7F504B47 //
@@ -88,7 +90,12 @@ static void wait_for_xml_download(char *filename, char *param)
 		xml = strstr(filename, "~");
 
 		struct CellFsStat s; u64 size = 475000; if(xml) size = val(xml + 1); else xml = strstr(filename, ".xm!");
-
+/*
+		while(IS_DOWNLOADING)
+		{
+			sys_timer_sleep(1);
+		}
+*/
 		for(u8 retry = 0; retry < 15; retry++)
 			{if(!working || (cellFsStat(filename, &s) == CELL_FS_SUCCEEDED && s.st_size >= size)) break; sys_ppu_thread_sleep(2);}
 
@@ -108,6 +115,7 @@ static void wait_for_pkg_install(void)
 {
 	sys_ppu_thread_sleep(5);
 	while (working && IS_INSTALLING) sys_ppu_thread_sleep(2);
+	while (working && IS_INSTALLING_NAS) sys_ppu_thread_sleep(2);
 
 	time_t install_time = pkg_install_time;  // set time before install
 	get_pkg_size_and_install_time(pkg_path); // get time after install
@@ -303,7 +311,7 @@ static int download_file(const char *param, char *msg)
 		{
 			unload_web_plugins();
 
-			mkdir_tree(pdpath); cellFsMkdir(pdpath, MODE);
+			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
 			sprintf(msg_durl, "%s%s", "Downloading ", pdurl);
 

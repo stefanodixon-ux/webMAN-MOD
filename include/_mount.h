@@ -945,7 +945,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 	if(*source == '/')
 	{
 		sprintf(target, "/dev_hdd0%s", basepath);
-		cellFsMkdir(basepath, MODE);
+		cellFsMkdir(basepath, DMODE);
 
 		strcat(target, strrchr(source, '/')); // add file name
 

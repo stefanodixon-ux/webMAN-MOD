@@ -466,6 +466,7 @@ int main()
 	sysLv2FsUnlink(LANG_DIR "/LANG_RU.TXT");
 	sysLv2FsUnlink(LANG_DIR "/LANG_TR.TXT");
 	sysLv2FsUnlink(LANG_DIR "/LANG_ZH.TXT");
+	sysLv2FsUnlink(LANG_DIR "/LANG_ROMS.TXT");
 
 	// remove old files
 	sysLv2FsUnlink(APP_USRDIR "/webftp_server_rebug_cobra_multi19.sprx");
@@ -504,6 +505,8 @@ int main()
 	file_copy(APP_USRDIR "/lang/LANG_RU.TXT", LANG_DIR "/LANG_RU.TXT");
 	file_copy(APP_USRDIR "/lang/LANG_TR.TXT", LANG_DIR "/LANG_TR.TXT");
 	file_copy(APP_USRDIR "/lang/LANG_ZH.TXT", LANG_DIR "/LANG_ZH.TXT");
+
+	file_copy(APP_USRDIR "/lang/LANG_ROMS.TXT", LANG_DIR "/LANG_ROMS.TXT");
 
 	// copy html
 	sysLv2FsMkdir(XMLHOST_DIR, DMODE);

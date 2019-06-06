@@ -1762,7 +1762,7 @@ end:
 ///////////// PS3MAPI END //////////////
 ////////////////////////////////////////
 
-
+#ifdef COBRA_ONLY
 static unsigned int get_vsh_plugin_slot_by_name(const char *name, bool unload)
 {
 	char tmp_name[30];
@@ -1799,5 +1799,5 @@ static void start_vsh_gui(bool vsh_menu)
 	slot = get_free_slot(); char arg[2] = {1, 0};
 	if(slot < 7) cobra_load_vsh_plugin(slot, vsh_menu ? WM_RES_PATH "/wm_vsh_menu.sprx" : WM_RES_PATH "/slaunch.sprx", (u8*)arg, 1);
 }
-
+#endif
 ///////////////////////////////

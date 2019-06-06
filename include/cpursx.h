@@ -204,7 +204,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		if(isDir(drives[d]))
 		{
 			hdd_free = (int)(get_free_space(drives[d])>>20);
-			sprintf(param, "<br><a href=\"%s\">USB%c%c%c: %'d %s</a>", drives[d], drives[d][8], drives[d][9], drives[d][10], hdd_free, STR_MBFREE); strcat(templn, param);
+			sprintf(param, "<br><a href=\"%s\">USB%.3s: %'d %s</a>", drives[d], drives[d] + 8, hdd_free, STR_MBFREE); strcat(templn, param);
 		}
 	}
 #endif

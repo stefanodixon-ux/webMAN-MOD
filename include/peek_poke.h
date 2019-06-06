@@ -110,7 +110,7 @@ static u32 lv2peek32(u64 addr)
 */
 
 #ifndef COBRA_ONLY
-static void remove_lv2_memory_protection(void)
+static inline void remove_lv2_memory_protection(void)
 {
 	u64 HV_START_OFFSET = 0;
 
@@ -173,10 +173,12 @@ static void install_peek_poke(void)
 	}
 }
 
+#define MAX_PATH_MAP	384
+
 typedef struct
 {
-	char src[384];
-	char dst[384];
+	char src[MAX_PATH_MAP];
+	char dst[MAX_PATH_MAP];
 } redir_files_struct;
 
 static redir_files_struct file_to_map[10];
@@ -200,22 +202,24 @@ static void add_to_map(const char *path1, const char *path2)
 
 static u16 string_to_lv2(char* path, u64 addr)
 {
-	u16 len  = (strlen(path) + 8) & 0x7f8;
-	len = RANGE(len, 8, 384);
-	u16 len2 = strlen(path); if(len2 > len) len2 = len;
+	u16 plen = strlen(path); 
+	u16 len  = (plen + 8) & 0x7f8;
 
-	u8 data2[384];
-	u8* data = data2;
-	memset(data, 0, 384);
-	memcpy(data, path, len2);
+	len = RANGE(len, 8, MAX_PATH_MAP);
+	if(plen > len) plen = len;
 
-	u64 val = 0x0000000000000000ULL;
+	u8 path_buf[MAX_PATH_MAP];
+	u8* data  = path_buf;
+
+	memcpy(data, path, plen);
+	memset(data + plen, 0, MAX_PATH_MAP - plen);
+
+	u64* data2 = path_buf;
 	for(u64 n = 0; n < len; n += 8)
 	{
-		memcpy(&val, &data[n], 8);
-		pokeq(addr + n, val);
+		pokeq(addr + n, &data2[n]);
 	}
-	return len2;
+	return len;
 }
 #endif
 

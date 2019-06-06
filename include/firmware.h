@@ -297,8 +297,6 @@ static void detect_firmware(void)
 				idps_offset1 = 0x80000000003E2E30ULL;
 				idps_offset2 = 0x8000000000474AF4ULL;
 			}
-
-			if(idps_offset2) psid_offset = idps_offset2 + 0x18ULL;
 #endif //#ifdef SPOOF_CONSOLEID
 		}
 #ifndef LAST_FIRMWARE_ONLY
@@ -376,8 +374,6 @@ static void detect_firmware(void)
 				idps_offset1 = 0x8000000000409A30ULL;
 				idps_offset2 = 0x800000000049CAF4ULL;
 			}
-
-			if(idps_offset2) psid_offset = idps_offset2 + 0x18ULL;
  #endif //#ifdef SPOOF_CONSOLEID
 		}
 
@@ -397,6 +393,9 @@ static void detect_firmware(void)
 	}
 #endif //#if defined(DEX_SUPPORT) || defined(DECR_SUPPORT)
 
+#ifdef SPOOF_CONSOLEID
+	if(idps_offset2) psid_offset = idps_offset2 + 0x18ULL;
+#endif
 #ifndef COBRA_ONLY
 	install_peek_poke();
 #endif

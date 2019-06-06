@@ -45,7 +45,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 				(slaunch.type == TYPE_PSP) ? id_PSPISO :
 				(slaunch.type == TYPE_VID) ? id_BDISO  : id_ROMS;
 
-		sprintf(enc_filename, "%s%s/", "/dev_usb000/PICTURE/", paths[f1]); cellFsMkdir(enc_filename, MODE);
+		sprintf(enc_filename, "%s%s/", "/dev_usb000/PICTURE/", paths[f1]); cellFsMkdir(enc_filename, DMODE);
 		strcat(enc_filename, filename);
 		strcat(enc_filename, strcasestr(icon, ".png") ? ".PNG" : ".JPG");
 

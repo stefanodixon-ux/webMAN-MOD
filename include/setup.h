@@ -995,7 +995,7 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("pf1", false, STR_FANCTRL2,   " : <b>SELECT+&#8593;/&#8595;</b><br>", !(webman_config->combo & MANUALFAN),  buffer);
 	add_check_box("pf2", false, STR_FANCTRL5,   " : <b>SELECT+&#8592;/&#8594;</b><br>", !(webman_config->combo & MINDYNFAN),  buffer);
 #ifdef REMOVE_SYSCALLS
-	add_check_box("psc", false, STR_DELCFWSYS2, " : <b>R2+&#8710;</b> ("         , !(webman_config->combo & DISABLESH),  buffer);
+	add_check_box("psc", false, STR_DELCFWSYS2, " : <b>R2+&#8710;</b><BR>&nbsp; ("         , !(webman_config->combo & DISABLESH),  buffer);
 	add_check_box("dsc", false, "PS3 DISC", " ", (webman_config->dsc), buffer);
 	add_check_box("kcc", false, "CCAPI", " ",  !(webman_config->keep_ccapi), buffer);
 

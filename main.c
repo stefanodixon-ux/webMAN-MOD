@@ -68,6 +68,7 @@
 #define IS_INGAME		(GetCurrentRunningMode() != 0)
 
 #include "common.h"
+
 #include "cobra/cobra.h"
 #include "cobra/storage.h"
 #include "vsh/game_plugin.h"
@@ -139,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.21 MOD"
+#define WM_VERSION			"1.47.22 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -1290,8 +1291,10 @@ static void handleclient_www(u64 conn_s_p)
  #endif
 			if(do_sleep) sys_ppu_thread_sleep(1);
 
+#ifdef COBRA_ONLY
 			{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);}
 			{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
+#endif
 		}
 
 		sys_ppu_thread_exit(0);
@@ -2172,6 +2175,7 @@ parse_request:
 
 				goto html_response;
 			}
+#ifdef COBRA_ONLY
 			if(islike(param, "/remap.ps3") || islike(param, "/remap_ps3") || islike(param, "/unmap.ps3"))
 			{
 				// /remap.ps3<path1>&to=<path2>       files on path1 is accessed from path2
@@ -2226,6 +2230,7 @@ parse_request:
 
 				goto exit_handleclient_www;
 			}
+#endif
 			if(islike(param, "/wait.ps3"))
 			{
 				// /wait.ps3?<secs>

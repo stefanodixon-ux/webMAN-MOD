@@ -1166,10 +1166,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						if(is_ntfs_path(filename))
 						{
 							filename[10] = ':';
-							if(ps3ntfs_mkdir(filename + 5, MODE) >= CELL_OK) is_ntfs = true;
+							if(ps3ntfs_mkdir(filename + 5, DMODE) >= CELL_OK) is_ntfs = true;
 						}
 #endif
-						if(is_ntfs || cellFsMkdir(filename, MODE) == CELL_FS_SUCCEEDED)
+						if(is_ntfs || cellFsMkdir(filename, DMODE) == CELL_FS_SUCCEEDED)
 						{
 							sprintf(buffer, "257 \"%s\" OK\r\n", param);
 							ssend(conn_s_ftp, buffer);
