@@ -82,6 +82,9 @@ body,td,th{color:#f0f0f0;}
 	padding:10px 20px 10px 20px;
 	text-decoration:none;
 	box-shadow:2px 2px 5px #101010;
+	overflow: hidden;
+	white-space: nowrap;
+	height: 24px;
 }
 .t_menu {
 	padding:5px 15px 5px 15px;
@@ -241,17 +244,17 @@ iframe {
 <div id="smv" class="smv"><a style="cursor:pointer" onclick="self.location='/index.ps3'">wMAN MOD</a></div>
 
 <font face="Helvetica">
-<div id="rxml"><H1>Refreshing XML ...</H1></div>
-<div id="rhtm"><H1>Loading Games ...</H1></div>
+<div id="rxml"><H1 id="msg1">Refreshing XML ...</H1></div>
+<div id="rhtm"><H1 id="msg2">Loading Games ...</H1></div>
 <div id="wmsg"><H1>. . .</H1></div>
 
 <div id="top_action">
 	<div id="top_buttons">
-	<a onclick="document.getElementById('rxml').style.display='block';self.location='/refresh.ps3?xmb;/sman.ps3';" class="t_menu">Refresh</a>
-	<a onclick="self.location='/mount.ps3/unmount?/sman.ps3';" class="t_menu">Eject</a>
-	<a onclick="self.location='/insert.ps3';" class="t_menu">Insert</a>
-	<a onclick="self.location='/restart.ps3';" class="t_menu">Restart</a>
-	<a onclick="self.location='/shutdown.ps3';" class="t_menu">Shutdown</a>
+	<a onclick="$('rxml').style.display='block';self.location='/refresh.ps3?xmb;/sman.ps3';" class="t_menu"><span id="refresh">Refresh</span></a>
+	<a onclick="self.location='/mount.ps3/unmount?/sman.ps3';" class="t_menu"><span id="eject">Eject</span></a>
+	<a onclick="self.location='/insert.ps3';" class="t_menu"><span id="insert">Insert</span></a>
+	<a onclick="self.location='/restart.ps3';" class="t_menu"><span id="restart">Restart</span></a>
+	<a onclick="self.location='/shutdown.ps3';" class="t_menu"><span id="shutdown">Shutdown</span></a>
 	</div>
 
 	<div id="cpursx" style="position:absolute;top:5px;right:150px;max-width:220px;overflow:hidden;">
@@ -259,22 +262,27 @@ iframe {
 	</div>
 
 	<span style="position:absolute;float:right;right:-5px;top:10px;">
-	<a href="javascript:var s=prompt('Search:','');if(s){document.getElementById('rhtm').style.display='block';self.location=self.location+'?'+escape(s)}"><span id="ngames"></span> &nbsp; &#x1F50D;</a></font>
+	<a href="javascript:var s=prompt('Search:','');if(s){$('rhtm').style.display='block';self.location=self.location+'?'+escape(s)}"><span id="ngames"></span> &nbsp; &#x1F50D;</a></font>
 	</span>
 </div>
 
 <div id="left_action">
-	<a onclick="document.getElementById('rhtm').style.display='block';self.location='/sman.ps3?';" class="b_games">Games</a>
-	<a onclick="self.location='/';" class="b_files">Files</a>
+	<a onclick="$('rhtm').style.display='block';self.location='/sman.ps3?';" class="b_games"><span id="games">Games</span></a>
+	<a onclick="self.location='/';" class="b_files"><span id="files">Files</span></a>
 	<a onclick="self.location='/games.ps3';" class="b_cflow">Coverflow</a>
 	<a onclick="self.location='/home.ps3mapi/sman.ps3';" class="b_ps3mapi">PS3MAPI</a>
-	<a onclick="self.location='/setup.ps3/sman.ps3';" class="b_setup" style="color:#0FF;">Setup</a>
+	<a onclick="self.location='/setup.ps3/sman.ps3';" class="b_setup" style="color:#0FF;"><span id="setup">Setup</span></a>
 	<a onclick="self.location='/cpursx.ps3?/sman.ps3';" class="b_cpursx">CPU/RSX</a>
 </div>
 </font>
 
 <script>
 if(navigator.userAgent.indexOf("PLAYSTATION")!=-1) document.getElementsByClassName("b_cflow")[0].style.display='none';
+
+function $(id,text){return document.getElementById(id);}
+function s(id){return document.getElementById(id).style;}
+
+function l(id,text){text=text.replace('[','').replace(']','');$(id).innerHTML=text;if(id=='msg1')return;if(text.length>9){s(id).fontSize='16px';s(id).position ='relative';s(id).top ='4px';s(id).left ='-8px';}}
 
 var getAbsPosition = function(el){
 	var el2 = el;
@@ -290,9 +298,10 @@ var getAbsPosition = function(el){
 
 function resizeEvent()
 {
-	var cpursx = document.getElementById("cpursx");
+	var cpursx = $("cpursx");
 	cpursx.style.display = 'block';
 	cpursx.style.display = (getAbsPosition(cpursx) < 650) ? 'none' : 'block';
 }; resizeEvent();
+l('msg1','test');
 </script>
 <div id="content" class="propfont">

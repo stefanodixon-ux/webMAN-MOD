@@ -175,6 +175,8 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define PKGLAUNCH_DIR		HDD0_GAME_DIR PKGLAUNCH_ID
 #define PKGLAUNCH_ICON		PKGLAUNCH_DIR "/ICON0.PNG"
 
+#define RETROARCH_DIR		HDD0_GAME_DIR "SSNE10000"
+
 #define VSH_RESOURCE_DIR	"/dev_flash/vsh/resource/"
 #define SYSMAP_EMPTY_DIR	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
 
@@ -380,10 +382,6 @@ static u32 BUFFER_SIZE_PSX;
 static u32 BUFFER_SIZE_PSP;
 static u32 BUFFER_SIZE_PS2;
 static u32 BUFFER_SIZE_DVD;
-
-#ifdef MOUNT_ROMS
-static u32 BUFFER_SIZE_ROM	= (  _32KB_ / 2);
-#endif
 
 #define MAX_PAGES   ((BUFFER_SIZE_ALL / (_64KB_ * MAX_WWW_THREADS)) + 1)
 
@@ -1009,10 +1007,24 @@ static inline char *prepare_html(char *pbuffer, char *templn, char *param, u8 is
 {
 	if((webman_config->sman || strstr(param, "/sman.ps3")) && file_exists(HTML_BASE_PATH "/sman.htm"))
 	{
-		read_file(HTML_BASE_PATH "/sman.htm", pbuffer, _12KB_, 0);
+		size_t size = read_file(HTML_BASE_PATH "/sman.htm", pbuffer, _12KB_, 0);
 
 		if(is_cpursx)
-			strcat(pbuffer, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3?/sman.ps3\">");
+			size += concat(pbuffer + size, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3?/sman.ps3\">");
+
+		 #ifndef ENGLISH_ONLY
+		size += concat(pbuffer + size, "<script>");
+		sprintf(templn, "l('%s',\"%s\");", "games",        STR_GAMES);    size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s\");", "files",        STR_FILES);    size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s\");", "setup",        STR_SETUP);    size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s\");", "eject",        STR_EJECT);    size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s\");", "insert",       STR_INSERT);   size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s\");", "refresh",      STR_REFRESH);  size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s\");", "restart",      STR_RESTART);  size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s\");", "shutdown",     STR_SHUTDOWN); size += concat(pbuffer + size, templn);
+		sprintf(templn, "l('%s',\"%s XML ...\");", "msg1", STR_REFRESH);  size += concat(pbuffer + size, templn);
+		size += concat(pbuffer + size, "</script>");
+		#endif
 
 		if(param[1] != NULL && !strstr(param, ".ps3")) {strcat(pbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); strcat(pbuffer, templn);}
 

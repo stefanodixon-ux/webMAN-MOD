@@ -387,64 +387,60 @@ static u32 get_system_language(u8 *lang)
 	return val_lang;
 }
 
-static void close_language(void)
-{
-	if(fh) cellFsClose(fh); fh = 0;
-}
+#define CHUNK_SIZE 512
+#define GET_NEXT_BYTE  {if(p >= CHUNK_SIZE)  {cellFsRead(fd, buffer, CHUNK_SIZE, &bytes_read); p = 0;} c = buffer[p++], lang_pos++;}
 
-#define CHUNK_SIZE 256
-#define GET_NEXT_BYTE  {if(p < CHUNK_SIZE) c = buffer[p++]; else {cellFsRead(fd, buffer, CHUNK_SIZE, &bytes_read); c = *buffer, p = 1;} lang_pos++;}
-
-static size_t p = 0, lang_pos = 0, size = 0;
-
-static int open_language(const char *lang_path)
-{
-	close_language();
-
-	struct CellFsStat buf;
-
-	if(cellFsStat(lang_path, &buf) != CELL_FS_SUCCEEDED) return FAILED;
-
-	if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0) != CELL_FS_SUCCEEDED) return FAILED;
-
-	p = CHUNK_SIZE, lang_pos = 0, size = (size_t)buf.st_size;
-
-	cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL);
-
-	return CELL_OK;
-}
+static u8 lang_roms = 0;
 
 static bool language(const char *key_name, char *label, const char *default_str)
 {
-	u8 c, i, key_len = strlen(key_name);
 	u64 bytes_read = 0;
+	static size_t p = 0, lang_pos = 0, size = 0;
+	u8 c, i, key_len = strlen(key_name);
 
 	sprintf(label, "%s", default_str);
 
 	u8 do_retry = 1;
-	char buffer[CHUNK_SIZE];
+	char buffer[MAX_LINE_LEN];
+
+ retry:
 
 	if(fh == 0)
 	{
-		if(webman_config->lang > 22 && (webman_config->lang != 99)) webman_config->lang = 0;
-
-		const char lang_codes[24][3] = {"EN", "FR", "IT", "ES", "DE", "NL", "PT", "RU", "HU", "PL", "GR", "HR", "BG", "IN", "TR", "AR", "CN", "KR", "JP", "ZH", "DK", "CZ", "SK", "XX"};
 		char lang_path[34];
 
-		i = webman_config->lang; if(i > 23) i = 23;
+		if(lang_roms)
+		{
+			sprintf(lang_path, "%s/LANG_EMUS.TXT", WM_LANG_PATH);
+			if(file_exists(lang_path) == false)
+				sprintf(lang_path, "%s/LANG_ROMS.TXT", WM_LANG_PATH);
+		}
+		else
+		{
+			if(webman_config->lang > 22 && (webman_config->lang != 99)) webman_config->lang = 0;
 
-		sprintf(lang_code, "_%s", lang_codes[i]);
-		sprintf(lang_path, "%s/LANG%s.TXT", WM_LANG_PATH, lang_code);
+			const char lang_codes[24][2] = {"EN", "FR", "IT", "ES", "DE", "NL", "PT", "RU", "HU", "PL", "GR", "HR", "BG", "IN", "TR", "AR", "CN", "KR", "JP", "ZH", "DK", "CZ", "SK", "XX"};
 
-		if(open_language(lang_path)) return false;
+			i = webman_config->lang; if(i > 23) i = 23;
+
+			sprintf(lang_code, "_%.2s", lang_codes[i]);
+			sprintf(lang_path, "%s/LANG%s.TXT", WM_LANG_PATH, lang_code);
+		}
+		struct CellFsStat buf;
+
+		if(cellFsStat(lang_path, &buf) != CELL_FS_SUCCEEDED) return false; size = (size_t)buf.st_size;
+
+		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0) != CELL_FS_SUCCEEDED) return false;
+
+		lang_pos = 0;
+
+		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE;
 	}
 
 	int fd = fh;
 
- retry:
-
 	do {
-		for(i = 0; i < key_len; )
+		for(i = 0; i < key_len;)
 		{
 			{ GET_NEXT_BYTE }
 
@@ -452,9 +448,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 			if(i == key_len)
 			{
-				{ GET_NEXT_BYTE }
-
-				if(c > ' ') break;
+				if(buffer[p] > ' ') break;
 
 				size_t str_len = 0; u8 copy = 0;
 
@@ -472,15 +466,20 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 				label[str_len] = NULL;
 
-				if(str_len) return true;
+				return true;
 			}
 		}
 
 	} while(lang_pos < size);
 
-	if(do_retry) {--do_retry, lang_pos = 0, p = CHUNK_SIZE; cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); goto retry;}
+	if(do_retry) {cellFsClose(fh); do_retry--, fh = lang_pos = 0; goto retry;}
 
 	return true;
+}
+
+static void close_language(void)
+{
+	if(fh) cellFsClose(fh); lang_roms = fh = 0;
 }
 
 #undef CHUNK_SIZE

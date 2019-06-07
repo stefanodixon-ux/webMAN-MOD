@@ -4,8 +4,6 @@
 
 static void calc_md5(char *filename, char *md5)
 {
-	int fd;
-
 	u8 _md5[16]; memset(_md5, 0, 16);
 
 	sys_addr_t sysmem = NULL; size_t buffer_size = _256KB_;
@@ -20,6 +18,8 @@ static void calc_md5(char *filename, char *md5)
 
 	if(sysmem || (!sysmem && sys_memory_allocate(buffer_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK))
 	{
+		int fd;
+
 		if(cellFsOpen(filename, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
 			CellMd5WorkArea workarea;

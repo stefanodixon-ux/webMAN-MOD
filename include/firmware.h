@@ -9,9 +9,25 @@ static u64 sc_604 = 0;
 static u64 sc_142 = 0;
 #endif
 
+#define CEX		0x4345580000000000ULL
+#define DEX		0x4445580000000000ULL
+#define DEH		0x4445480000000000ULL
+
 #define IS_CEX (dex_mode == 0)
 #define IS_DEH (dex_mode == 1)
 #define IS_DEX (dex_mode == 2)
+
+// build date
+#define FW466	0x323031342F31312FULL // 2014/11/
+#define FW475	0x323031352F30342FULL // 2015/04/
+#define FW476	0x323031352F30382FULL // 2015/08/
+#define FW478	0x323031352F31322FULL // 2015/12/
+#define FW480	0x323031362F30342FULL // 2016/04/
+#define FW481	0x323031362F31302FULL // 2016/10/
+#define FW482	0x323031372F30382FULL // 2017/08/
+#define FH482	0x323031372F30392FULL // 2017/09/
+#define FW483	0x323031382F30392FULL // 2018/09/
+#define FW484	0x323031392F30312FULL // 2019/01/
 
 #define SYSCALL8_OPCODE_HEN_REV		0x1339
 
@@ -58,14 +74,6 @@ static void detect_firmware(void)
 {
 	if((c_firmware > 3.40f) || SYSCALL_TABLE || syscalls_removed) return;
 
-	const u64 CEX = 0x4345580000000000ULL;
-
-#ifdef DEX_SUPPORT
-	const u64 DEX = 0x4445580000000000ULL;
-#endif
-#ifdef DECR_SUPPORT
-	const u64 DEH = 0x4445480000000000ULL;
-#endif
 	dex_mode = 0;
 
 	// detect ps3hen payload
@@ -86,60 +94,81 @@ static void detect_firmware(void)
 		if(SYSCALL_TABLE) break;
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
 
-		if(peekq(0x80000000002ED818ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peekq(0x80000000002FCB68ULL) == 0x323031392F30312FULL) ? 4.84f : (peekq(0x80000000002FCB68ULL) == 0x323031382F30392FULL) ? 4.83f : (peekq(0x80000000002FCB68ULL) == 0x323031372F30382FULL) ? 4.82f : (peekq(0x80000000002FCB68ULL) == 0x323031362F31302FULL) ? 4.81f : (peekq(0x80000000002FCB68ULL) == 0x323031352F31322FULL) ? 4.78f : (peekq(0x80000000002FCB68ULL) == 0x323031352F30382FULL) ? 4.76f : (peekq(0x80000000002FCB68ULL) == 0x323031352F30342FULL) ? 4.75f : get_firmware_version();} else
-		if(peekq(0x80000000002ED808ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_480;  c_firmware = 4.80f;}				else
+		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482; c_firmware = (peek(0x2FCB68) == FW484) ? 4.84f :
+																					(peek(0x2FCB68) == FW483) ? 4.83f :
+																					(peek(0x2FCB68) == FW482) ? 4.82f :
+																					(peek(0x2FCB68) == FW481) ? 4.81f :
 #ifndef LAST_FIRMWARE_ONLY
-		if(peekq(0x80000000002ED778ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_470;  c_firmware = 4.70f;}				else
-		if(peekq(0x80000000002ED860ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_465;  c_firmware = (peekq(0x80000000002FC938ULL) == 0x323031342F31312FULL) ? 4.66f : 4.65f;} else
-		if(peekq(0x80000000002ED850ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_460;  c_firmware = 4.60f;}				else
-		if(peekq(0x80000000002EC5E0ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_455;  c_firmware = 4.55f;}				else
-		if(peekq(0x80000000002E9D70ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_453;  c_firmware = 4.53f;}				else
-		if(peekq(0x80000000002E9BE0ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_450;  c_firmware = 4.50f;}				else
-		if(peekq(0x80000000002EA9B8ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_446;  c_firmware = 4.46f;}				else
-		if(peekq(0x80000000002E8610ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_421;  c_firmware = 4.21f;}				else
-		if(peekq(0x80000000002D83D0ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_355;  c_firmware = 3.55f;}				else
+																					(peek(0x2FCB68) == FW478) ? 4.78f :
+																					(peek(0x2FCB68) == FW476) ? 4.76f :
+																					(peek(0x2FCB68) == FW475) ? 4.75f :
+#endif
+																					get_firmware_version();} else
+#ifndef LAST_FIRMWARE_ONLY
+		if(peek(0x2ED808) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_480;  c_firmware = 4.80f;}	else
+		if(peek(0x2ED778) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_470;  c_firmware = 4.70f;}	else
+		if(peek(0x2ED860) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_465;  c_firmware = (peek(0x2FC938) == FW466) ? 4.66f : 4.65f;} else
+		if(peek(0x2ED850) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_460;  c_firmware = 4.60f;}	else
+		if(peek(0x2EC5E0) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_455;  c_firmware = 4.55f;}	else
+		if(peek(0x2E9D70) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_453;  c_firmware = 4.53f;}	else
+		if(peek(0x2E9BE0) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_450;  c_firmware = 4.50f;}	else
+		if(peek(0x2EA9B8) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_446;  c_firmware = 4.46f;}	else
+		if(peek(0x2E8610) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_421;  c_firmware = 4.21f;}	else
+		if(peek(0x2D83D0) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_355;  c_firmware = 3.55f;}	else
 
 		//No cobra cfw but as mamba compatibility
-		if(peekq(0x80000000002EA498ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_441;  c_firmware = 4.41f;}				else
-		if(peekq(0x80000000002EA488ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_440;  c_firmware = 4.40f;}				else
-		if(peekq(0x80000000002E9F18ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_431;  c_firmware = 4.31f;}				else
-		if(peekq(0x80000000002E9F08ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_430;  c_firmware = 4.30f;}				else
+		if(peek(0x2EA498) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_441;  c_firmware = 4.41f;}	else
+		if(peek(0x2EA488) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_440;  c_firmware = 4.40f;}	else
+		if(peek(0x2E9F18) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_431;  c_firmware = 4.31f;}	else
+		if(peek(0x2E9F08) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_430;  c_firmware = 4.30f;}	else
 #endif  // #ifndef LAST_FIRMWARE_ONLY
 
 #ifdef DEX_SUPPORT
-		if(peekq(0x800000000030F3B0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peekq(0x800000000031F028ULL) == 0x323031392F30312FULL) ? 4.84f : (peekq(0x800000000031F028ULL) == 0x323031372F30382FULL) ? 4.82f : (peekq(0x800000000031F028ULL) == 0x323031362F31302FULL) ? 4.81f : get_firmware_version(); dex_mode = 2;}	else
-		if(peekq(0x800000000030F3A0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_480D; c_firmware = 4.80f; dex_mode = 2;}	else
+		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW484) ? 4.84f :
+																					(peek(0x31F028) == FW482) ? 4.82f :
+																					(peek(0x31F028) == FW481) ? 4.81f :
+																					get_firmware_version(); dex_mode = 2;} else
  #ifndef LAST_FIRMWARE_ONLY
-		if(peekq(0x800000000030F2D0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_475D; c_firmware = (peekq(0x800000000031EF48ULL) == 0x323031352F31322FULL) ? 4.78f : (peekq(0x800000000031EF48ULL) == 0x323031352F30382FULL) ? 4.76f : 4.75f; dex_mode = 2;}	else
-		if(peekq(0x800000000030F240ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_470D; c_firmware = 4.70f; dex_mode = 2;}	else
-		if(peekq(0x800000000030F1A8ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_465D; c_firmware = (peekq(0x800000000031EBA8ULL) == 0x323031342F31312FULL) ? 4.66f : 4.65f; dex_mode = 2;} else
-		if(peekq(0x800000000030F198ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_460D; c_firmware = 4.60f; dex_mode = 2;}	else
-		if(peekq(0x800000000030D6A8ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_455D; c_firmware = 4.55f; dex_mode = 2;}	else
-		if(peekq(0x800000000030AEA8ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_453D; c_firmware = 4.53f; dex_mode = 2;}	else
-		if(peekq(0x8000000000309698ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_450D; c_firmware = 4.50f; dex_mode = 2;}	else
-		if(peekq(0x8000000000305410ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_446D; c_firmware = 4.46f; dex_mode = 2;}	else
-		if(peekq(0x8000000000304EF0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_441D; c_firmware = 4.41f; dex_mode = 2;}	else
-		if(peekq(0x8000000000304EE0ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_440D; c_firmware = 4.40f; dex_mode = 2;}	else
-		if(peekq(0x8000000000304640ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_431D; c_firmware = 4.31f; dex_mode = 2;}	else
-		if(peekq(0x8000000000304630ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_430D; c_firmware = 4.30f; dex_mode = 2;}	else
-		if(peekq(0x8000000000302D88ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_421D; c_firmware = 4.21f; dex_mode = 2;}	else
-		if(peekq(0x80000000002EFE20ULL) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_355D; c_firmware = 3.55f; dex_mode = 2;}	else
+		if(peek(0x30F3A0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_480D; c_firmware = 4.80f; dex_mode = 2;}	else
+		if(peek(0x30F2D0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_475D; c_firmware = (peek(0x31EF48) == FW478) ? 4.78f :
+																					(peek(0x31EF48) == FW476) ? 4.76f : 4.75f; dex_mode = 2;} else
+		if(peek(0x30F240) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_470D; c_firmware = 4.70f; dex_mode = 2;}	else
+		if(peek(0x30F1A8) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_465D; c_firmware = (peek(0x31EBA8) == FW466) ? 4.66f : 4.65f; dex_mode = 2;} else
+		if(peek(0x30F198) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_460D; c_firmware = 4.60f; dex_mode = 2;}	else
+		if(peek(0x30D6A8) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_455D; c_firmware = 4.55f; dex_mode = 2;}	else
+		if(peek(0x30AEA8) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_453D; c_firmware = 4.53f; dex_mode = 2;}	else
+		if(peek(0x309698) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_450D; c_firmware = 4.50f; dex_mode = 2;}	else
+		if(peek(0x305410) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_446D; c_firmware = 4.46f; dex_mode = 2;}	else
+		if(peek(0x304EF0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_441D; c_firmware = 4.41f; dex_mode = 2;}	else
+		if(peek(0x304EE0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_440D; c_firmware = 4.40f; dex_mode = 2;}	else
+		if(peek(0x304640) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_431D; c_firmware = 4.31f; dex_mode = 2;}	else
+		if(peek(0x304630) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_430D; c_firmware = 4.30f; dex_mode = 2;}	else
+		if(peek(0x302D88) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_421D; c_firmware = 4.21f; dex_mode = 2;}	else
+		if(peek(0x2EFE20) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_355D; c_firmware = 3.55f; dex_mode = 2;}	else
  #endif // #ifndef LAST_FIRMWARE_ONLY
 #endif
 
 #ifdef DECR_SUPPORT
  #ifndef LAST_FIRMWARE_ONLY
-		if(peekq(0x8000000000319F78ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_355H; c_firmware = 3.55f; dex_mode = 1;}	else
-	  //if(peekq(0x800000000032B270ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_450H; c_firmware = 4.50f; dex_mode = 1;}	else
-		if(peekq(0x800000000032EDC8ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_460H; c_firmware = 4.60f; dex_mode = 1;}	else
+		if(peek(0x319F78) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_355H; c_firmware = 3.55f; dex_mode = 1;}	else
+	  //if(peek(0x32B270) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_450H; c_firmware = 4.50f; dex_mode = 1;}	else
+		if(peek(0x32EDC8) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_460H; c_firmware = 4.60f; dex_mode = 1;}	else
  #endif // #ifndef LAST_FIRMWARE_ONLY
-		if(peekq(0x800000000032EB60ULL) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peekq(0x8000000000344B70ULL) == 0x323031372F30392FULL) ? 4.82f : (peekq(0x8000000000344B70ULL) == 0x323031362F31302FULL) ? 4.81f : (peekq(0x8000000000344B70ULL) == 0x323031362F30342FULL) ? 4.80f : (peekq(0x8000000000344B70ULL) == 0x323031352F31322FULL)? 4.78f : (peekq(0x8000000000344B70ULL) == 0x323031352F30382FULL) ? 4.76f : (peekq(0x8000000000344B70ULL) == 0x323031352F30342FULL) ? 4.75f : get_firmware_version(); dex_mode = 1;}	else
+		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FH482) ? 4.82f :
+																					(peek(0x344B70) == FW481) ? 4.81f :
+																					(peek(0x344B70) == FW480) ? 4.80f :
+ #ifndef LAST_FIRMWARE_ONLY
+																					(peek(0x344B70) == FW478) ? 4.78f :
+																					(peek(0x344B70) == FW476) ? 4.76f :
+																					(peek(0x344B70) == FW475) ? 4.75f :
+ #endif
+																					get_firmware_version(); dex_mode = 1;}	else
 #endif
 
 #ifndef LAST_FIRMWARE_ONLY
  #ifndef COBRA_ONLY
-		if(peekq(0x80000000002CFF98ULL) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_341;  c_firmware = 3.41f;} else
-		//if(peekq(0x80000000002E79C8ULL) == DEX) {c_firmware = 3.41f; dex_mode = 2;}	else
+		if(peek(0x2CFF98) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_341;  c_firmware = 3.41f;} else
+		//if(peek(0x2E79C8) == DEX) {c_firmware = 3.41f; dex_mode = 2;}	else
  #endif
 #endif // #ifndef LAST_FIRMWARE_ONLY
 
@@ -338,7 +367,7 @@ static void detect_firmware(void)
 					idps_offset1 = 0x8000000000432430ULL;
 					idps_offset2 = 0x80000000004C4F1CULL;
 				}
-				else if(c_firmware >= 4.75f /*&& c_firmware <= 4.82f*/)
+	else if(c_firmware >= 4.75f /*&& c_firmware <= 4.82f*/)
 				{
 					idps_offset1 = 0x80000000004326B0ULL;
 					idps_offset2 = 0x80000000004C4AF4ULL;

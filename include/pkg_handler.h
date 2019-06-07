@@ -39,24 +39,25 @@ static bool install_in_progress = false;
 #define TEMP_DOWNLOAD_PATH		"/dev_hdd0/tmp/downloader/"
 
 #define PKG_MAGIC				0x7F504B47
+#define XMM0					0x584d4d30
 
 #define IS_INSTALLING		(View_Find("game_plugin") != 0)
 #define IS_INSTALLING_NAS	(View_Find("nas_plugin")  != 0)
 #define IS_DOWNLOADING		(View_Find("download_plugin") != 0)
 
 typedef struct {
-   u32 magic; // 0x7F504B47 //
-   u32 version;
-   u16 sdk_type;
-   u16 SCE_header_type;
-   u32 meta_offset;
-   u64 size; // size of sce_hdr + sizeof meta_hdr
-   u64 pkg_size;
-   u64 unk1;
-   u64 data_size;
-   char publisher[6]; // ??
-   char sep;
-   char title_id[9];
+	u32 magic; // 0x7F504B47 //
+	u32 version;
+	u16 sdk_type;
+	u16 SCE_header_type;
+	u32 meta_offset;
+	u64 size; // size of sce_hdr + sizeof meta_hdr
+	u64 pkg_size;
+	u64 unk1;
+	u64 data_size;
+	char publisher[6]; // ??
+	char sep;
+	char title_id[9];
 } _pkg_header;
 
 static u64 get_pkg_size_and_install_time(char *pkgfile)
@@ -69,7 +70,7 @@ static u64 get_pkg_size_and_install_time(char *pkgfile)
 	{
 		if(cellFsRead(fd, (void *)&pkg_header, sizeof(pkg_header), NULL) == CELL_FS_SUCCEEDED && pkg_header.magic == PKG_MAGIC)
 		{
-			sprintf(install_path, "%s/%s%s", "/dev_hdd0/game", pkg_header.title_id, "/PS3LOGO.DAT");
+			sprintf(install_path, "%s%s%s", HDD0_GAME_DIR, pkg_header.title_id, "/PS3LOGO.DAT");
 
 			struct CellFsStat s;
 			if(cellFsStat(install_path, &s) == CELL_FS_SUCCEEDED) pkg_install_time = s.st_mtime; // prevents pkg deletion if user cancels install
@@ -106,7 +107,7 @@ static void wait_for_xml_download(char *filename, char *param)
 		cellFsRename(param, filename);
 
 #ifdef VIRTUAL_PAD
-		if(View_Find("download_plugin") != 0) press_cancel_button();
+		if(IS_DOWNLOADING) press_cancel_button();
 #endif
 	}
 }
@@ -114,13 +115,14 @@ static void wait_for_xml_download(char *filename, char *param)
 static void wait_for_pkg_install(void)
 {
 	sys_ppu_thread_sleep(5);
+
 	while (working && IS_INSTALLING) sys_ppu_thread_sleep(2);
 	while (working && IS_INSTALLING_NAS) sys_ppu_thread_sleep(2);
 
 	time_t install_time = pkg_install_time;  // set time before install
 	get_pkg_size_and_install_time(pkg_path); // get time after install
 
-	if(working && pkg_delete_after_install && islike(pkg_path, "/dev_hdd0") && (strstr(pkg_path, "/GAME") == NULL))
+	if(working && pkg_delete_after_install && islike(pkg_path, INT_HDD_ROOT_PATH) && (strstr(pkg_path, "/GAME") == NULL))
 	{
 		if(pkg_install_time != install_time) cellFsUnlink(pkg_path);
 	}
@@ -132,7 +134,8 @@ static int LoadPluginById(int id, void *handler)
 {
 	if(xmm0_interface == 0) // getting xmb_plugin xmm0 interface for loading plugin sprx
 	{
-		xmm0_interface = (xmb_plugin_xmm0 *)plugin_GetInterface(View_Find("xmb_plugin"), 'XMM0');
+		xmm0_interface = (xmb_plugin_xmm0 *)plugin_GetInterface(View_Find("xmb_plugin"), XMM0);
+		if(xmm0_interface == 0) return FAILED;
 	}
 	return xmm0_interface->LoadPlugin3(id, handler, 0);
 }
@@ -141,7 +144,8 @@ static int UnloadPluginById(int id, void *handler)
 {
 	if(xmm0_interface == 0) // getting xmb_plugin xmm0 interface for loading plugin sprx
 	{
-		xmm0_interface = (xmb_plugin_xmm0 *)plugin_GetInterface(View_Find("xmb_plugin"), 'XMM0');
+		xmm0_interface = (xmb_plugin_xmm0 *)plugin_GetInterface(View_Find("xmb_plugin"), XMM0);
+		if(xmm0_interface == 0) return FAILED;
 	}
 	return xmm0_interface->Shutdown(id, handler, 1);
 }
@@ -175,15 +179,13 @@ static void unload_web_plugins(void)
 	}
 #endif
 
-	int view = View_Find("explore_plugin");
-
-	if(view)
+	if(explore_interface == 0) 
 	{
-		explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
-		explore_interface->ExecXMBcommand("close_all_list", 0, 0);
+		explore_interface = (explore_plugin_interface *)plugin_GetInterface(View_Find("explore_plugin"), 1);
+		if(explore_interface == 0) return;
 	}
+	explore_interface->ExecXMBcommand("close_all_list", 0, 0);
 }
-
 
 static void downloadPKG_thread(void)
 {
@@ -191,6 +193,7 @@ static void downloadPKG_thread(void)
 	if(download_interface == 0) // test if download_interface is loaded for interface access
 	{
 		download_interface = (download_plugin_interface *)plugin_GetInterface(View_Find("download_plugin"), 1);
+		if(download_interface == 0) return;
 	}
 	download_interface->DownloadURL(0, pkg_durl, pkg_dpath);
 }
@@ -382,7 +385,7 @@ static int installPKG(const char *pkgpath, char *msg)
 	return ret;
 }
 
-static void installPKG_combo_thread(u64 arg)
+static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 {
 	int fd, ret = FAILED;
 	char msg[MAX_PATH_LEN];

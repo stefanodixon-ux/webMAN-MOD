@@ -7,7 +7,7 @@
 	// ------------------
 	// mount NPDRM game
 	// ------------------
-	if(islike(_path, "/dev_hdd0/game"))
+	if(islike(_path, HDD0_GAME_DIR))
 	{
 		set_apphome(_path);
 
@@ -53,7 +53,7 @@
 			do_umount(false);
 
 			sys_map_path(PKGLAUNCH_DIR, NULL);
-			sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", "/dev_hdd0/game/SSNE10000/USRDIR/cores");
+			sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR "/USRDIR/cores");
 
 			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", 0);
 
@@ -89,43 +89,12 @@
  #endif
 			cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
 			cellFsUnlink(PS2_CLASSIC_ISO_PATH);
+
 			if(file_copy(_path, (char*)PS2_CLASSIC_ISO_PATH, COPY_WHOLE_FILE) == 0)
 			{
-				if(file_exists(PS2_CLASSIC_ISO_ICON ".bak") == false)
-					_file_copy((char*)PS2_CLASSIC_ISO_ICON, (char*)(PS2_CLASSIC_ISO_ICON ".bak"));
+				copy_ps2icon(temp, _path);
 
-				size_t len = sprintf(temp, "%s.png", _path);
-				if(file_exists(temp) == false) sprintf(temp, "%s.PNG", _path);
-				if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".png"); // remove .BIN.ENC
-				if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".PNG");
-
-				cellFsUnlink(PS2_CLASSIC_ISO_ICON);
-				if(file_exists(temp))
-					_file_copy(temp, (char*)PS2_CLASSIC_ISO_ICON);
-				else
-					_file_copy((char*)(PS2_CLASSIC_ISO_ICON ".bak"), (char*)PS2_CLASSIC_ISO_ICON);
-
-				sprintf(temp, "%s.CONFIG", _path);
-				if(file_exists(temp) == false && len > 12) strcat(temp + len - 12, ".CONFIG\0");
-				if(file_exists(temp) == false)
-				{
-					char *game_id = strstr(_path, "[SL"); 
-					if(!game_id)
-						  game_id = strstr(_path, "[SC");
-					if(game_id)
-					{
-						if(game_id[4] == '_')
-							sprintf(temp, "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC/%.11s.ENC", game_id + 1); //[SLxS_000.00]
-						else
-							sprintf(temp, "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC/%.4s_%3s.%.2s.ENC",
-											game_id + 1,  // SLES, SLUS, SLPM, SLPS, SCES, SCUS, SCPS
-											game_id + 5,  // _000.00
-											game_id + 8); // [SLxS00000]
-					}
-				}
-
-				cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
-				_file_copy(temp, (char*)PS2_CLASSIC_ISO_CONFIG);
+				copy_ps2config(temp, _path);
 
 				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //fan_control( ((webman_config->ps2temp*255)/100), 0);
 

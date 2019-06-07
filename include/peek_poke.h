@@ -87,6 +87,10 @@ static void (*pokeq)(u64, u64) = lv2_poke_cfw;
 static u64  (*peek_lv1)(u64) = lv1_peek_cfw;
 static void (*poke_lv1)(u64, u64) = lv1_poke_cfw;
 
+static u64 peek(u64 addr)
+{
+	return peekq(addr | 0x8000000000000000ULL);
+}
 ///////////////// LV2 POKE32 //////////////////////
 static void lv2_poke_fan_hen(u64 addr, u64 value)
 {
