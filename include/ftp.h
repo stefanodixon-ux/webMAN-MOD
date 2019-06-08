@@ -143,7 +143,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	strcpy(cwd, "/");
 
-	if(webman_config->ftp_timeout > 0)
+	if(webman_config->ftp_timeout)
 	{
 		struct timeval tv;
 		tv.tv_usec = 0;
@@ -157,11 +157,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	{
 		if(sysmem && (IS_INGAME || (timeout++ > 1500))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 3 seconds
 
-		if(*buffer) memset(buffer, 0, FTP_RECV_SIZE);
-		if(working && ((recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0)) > 0))
+		u16 rlen = recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
+		if(rlen)
 		{
+			buffer[rlen] = NULL;
+
 			char *p = strstr(buffer, "\r\n");
-			if(p) strcpy(p, "\0\0"); else break;
+			if(p) *p = NULL; else break;
 
 			is_ntfs = false, timeout = 0;
 
@@ -688,7 +690,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 													rDate.hour, rDate.minute, entry.entry_name.d_name);
 									}
 									if(send(data_s, buffer, slen, 0) < 0) break;
-									sys_ppu_thread_usleep(1000);
 #ifdef USE_NTFS
 								}
 #endif
@@ -839,7 +840,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									{
 										if(cellFsRead(fd, (void *)buffer2, BUFFER_SIZE_FTP, &read_e) == CELL_FS_SUCCEEDED)
 										{
-											if(read_e > 0)
+											if(read_e)
 											{
 												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) {err = FAILED; break;}
 											}
@@ -856,6 +857,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
+								continue; // no delay
 							}
 							else if( err == FTP_FILE_UNAVAILABLE)
 							{
@@ -957,7 +959,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 										while(working)
 										{
-											if((read_e = (u64)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL)) > 0)
+											read_e = (u32)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
+											if(read_e)
 											{
 												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break;
 											}
@@ -988,6 +991,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
+								continue; // no delay
 							}
 							else if(err == FTP_DEVICE_IS_FULL)
 							{

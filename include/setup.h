@@ -45,8 +45,8 @@ static void setup_parse_settings(char *param)
 
 	memset(webman_config, 0, sizeof(WebmanCfg));
 
-	pos = strstr(param, "&autop=");
-	if(pos) get_value(webman_config->autoboot_path, pos + 7, 255);
+	get_param("&autop=", webman_config->autoboot_path, param, 255);
+
 	if((webman_config->autoboot_path[0] != '/') && !islike(webman_config->autoboot_path, "http")) sprintf(webman_config->autoboot_path, "%s", DEFAULT_AUTOBOOT_PATH);
 
 	if(strstr(param, "u0=1")) webman_config->usb0 = 1;
@@ -230,8 +230,7 @@ static void setup_parse_settings(char *param)
 	webman_config->bind = 0;
 	if(strstr(param, "bn=1")) webman_config->bind = 1;
 
-	pos = strstr(param, "pwd=");
-	if(pos) get_value(webman_config->ftp_password, pos + 4, 20);
+	get_param("pwd=", webman_config->ftp_password, param, 20);
 
 	webman_config->refr=0;
 	if(strstr(param, "rf=1")) webman_config->refr = 1;
@@ -285,17 +284,11 @@ static void setup_parse_settings(char *param)
 	if(strstr(param, "id1=1"))  webman_config->sidps = 1; //spoof IDPS
 	if(strstr(param, "id2=1"))  webman_config->spsid = 1; //spoof PSID
 
-	pos = strstr(param, "vID1=");
-	if(pos) get_value(webman_config->vIDPS1, pos + 5, 16);
+	get_param("vID1=", webman_config->vIDPS1, param, 16);
+	get_param("vID2=", webman_config->vIDPS2, param, 16);
 
-	pos = strstr(param, "vID2=");
-	if(pos) get_value(webman_config->vIDPS2, pos + 5, 16);
-
-	pos = strstr(param, "vPS1=");
-	if(pos) get_value(webman_config->vPSID1, pos + 5, 16);
-
-	pos = strstr(param, "vPS2=");
-	if(pos) get_value(webman_config->vPSID2, pos + 5, 16);
+	get_param("vPS1=", webman_config->vPSID1, param, 16);
+	get_param("vPS2=", webman_config->vPSID2, param, 16);
 
 	spoof_idps_psid();
 #endif
@@ -304,17 +297,13 @@ static void setup_parse_settings(char *param)
 	char value[8];
 
 	// set video format
-	pos = strstr(param, "vif=");
-	if(pos)
+	if(get_param("vif=", value, param, 4))
 	{
-		get_value(value, pos + 4, 4);
 		rec_video_format = webman_config->rec_video_format = convertH(value);
 	}
 	// set audio format
-	pos = strstr(param, "auf=");
-	if(pos)
+	if(get_param("auf=", value, param, 4))
 	{
-		get_value(value, pos + 4, 4);
 		rec_audio_format = webman_config->rec_audio_format = convertH(value);
 	}
 #endif
@@ -339,31 +328,25 @@ static void setup_parse_settings(char *param)
 		if(strstr(param, field))  webman_config->netd[id] = 1;
 
 		sprintf(field, "neth%i=", id);
-		pos = strstr(param, field);
-		if(pos)
+		if(get_param(field, webman_config->neth[id], param, 16))
 		{
-			get_value(webman_config->neth[id], pos + 6, 16);
-
 			sprintf(field, "netp%i=", id);
 			webman_config->netp[id] = get_valuen16(param, field);
 		}
 	}
 
-	pos = strstr(param, "aip=");
-	if(pos) get_value(webman_config->allow_ip, pos + 4, 16);
+	get_param("aip=", webman_config->allow_ip, param, 16);
  #endif
 #endif
 
 #ifndef LITE_EDITION
 	#ifdef USE_UACCOUNT
-	pos = strstr(param, "uacc=");
-	if(pos) get_value(webman_config->uaccount, pos + 5, 8);
+	get_param("uacc=", webman_config->uaccount, param, 8);
 	#endif
 
 	if(strstr(param, "hm=")) webman_config->homeb = 1;
 
-	pos = strstr(param, "hurl=");
-	if(pos) get_value(webman_config->home_url, pos + 5, 255);
+	get_param("hurl=", webman_config->home_url, param, 255);
 #endif
 
 #ifdef COBRA_ONLY
@@ -387,8 +370,7 @@ static void setup_parse_settings(char *param)
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
 	char command[256]; size_t cmdlen = 0; memset(command, 0, 256);
 
-	pos = strstr(param, "ccbo=");
-	if(pos) cmdlen = get_value(command, pos + 5, 255);
+	cmdlen = get_param("ccbo=", command, param, 255);
 
  #ifdef WM_CUSTOM_COMBO
 	if(save_file(WM_CUSTOM_COMBO "r2_square", command, cmdlen) != CELL_FS_SUCCEEDED)
@@ -608,11 +590,17 @@ static void setup_form(char *buffer, char *templn)
 
 	strcat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->temp0 == 0), buffer);
-	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C</td><td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% %s </td></tr>", webman_config->temp1, (webman_config->fanc && webman_config->temp0==0)?ITEM_CHECKED:"", STR_LOWEST, webman_config->minfan, STR_FANSPEED); strcat(buffer, templn);
+	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C</td>"
+					"<td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% %s </td></tr>",
+					webman_config->temp1, (webman_config->fanc && webman_config->temp0 == 0) ? ITEM_CHECKED : "",
+					STR_LOWEST, webman_config->minfan, STR_FANSPEED); strcat(buffer, templn);
 
 	strcat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->temp0 != 0), buffer);
-	sprintf(templn, HTML_NUMBER("manu", "%i", "20", "95") " %% %s </td><td> %s : " HTML_NUMBER("fsp0", "%i", "20", "99") " %% %s </td></tr>", (webman_config->manu), STR_FANSPEED, STR_PS2EMU, webman_config->ps2temp, STR_FANSPEED); strcat(buffer, templn);
+	sprintf(templn, HTML_NUMBER("manu", "%i", "20", "95") " %% %s </td>"
+					"<td> %s : " HTML_NUMBER("fsp0", "%i", "20", "99") " %% %s </td></tr>",
+					(webman_config->manu), STR_FANSPEED, STR_PS2EMU, webman_config->ps2temp, STR_FANSPEED); strcat(buffer, templn);
+
 	strcat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "</table>", !(webman_config->fanc), buffer);
 
@@ -681,9 +669,10 @@ static void setup_form(char *buffer, char *templn)
 	strcat(buffer, "</div>" HTML_BLU_SEPARATOR);
 
 #ifdef LAUNCHPAD
-	add_check_box("ng" , false, STR_NOGRP,       " & "   , (webman_config->nogrp  ),       buffer);
-	if(file_exists(LAUNCHPAD_FILE_XML))
-		add_check_box("lg" , false, "LaunchPad.xml",     _BR_, (webman_config->launchpad_grp), buffer);
+	b = file_exists(LAUNCHPAD_FILE_XML);
+	add_check_box("ng" , false, STR_NOGRP,  b ? " & " : _BR_, (webman_config->nogrp  ),       buffer);
+	if(b)
+		add_check_box("lg" , false, "LaunchPad.xml",    _BR_, (webman_config->launchpad_grp), buffer);
 #else
 	add_check_box("ng" , false, STR_NOGRP,     _BR_, (webman_config->nogrp  ), buffer);
 #endif

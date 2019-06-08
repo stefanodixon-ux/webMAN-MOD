@@ -46,24 +46,76 @@ static inline void copy_ps2icon(char *temp, const char *_path)
 		_file_copy((char*)(PS2_CLASSIC_ISO_ICON ".bak"), (char*)PS2_CLASSIC_ISO_ICON);
 }
 
+static void get_ps_titleid_from_path(char *title_id, const char *_path)
+{
+	// returns title_id as "SCES00000"
+
+	if(!title_id) return;
+	if(!_path) {*title_id = NULL; return;}
+
+	char *path = strrchr(_path, '/') + 1;
+	char *game_id = strstr(path, " [S"); // title id enclosed in square brackets
+
+	if(game_id) 
+		path = game_id + 2;
+	else
+	{
+		game_id = strstr(path, "[S"); // title id enclosed in square brackets
+		if(game_id)
+			path = game_id + 1;
+		else
+		{
+			game_id = strstr(path, "(S"); // title id enclosed in round brackets
+			if(game_id) path = game_id + 1;
+		}
+	}
+
+	// SLES 5052 games
+	// SLUS 2325 games
+	// SLPS 2119 games
+	// SLPM 3488 games
+	// SLKA  481 games
+	// SLAJ  175 games
+
+	// SCES 5003 games
+	// SCPS  735 games
+	// SCUS  604 games
+	// SCAJ  397 games
+	// SCKA  151 games
+
+	// TCPS  178 games
+
+		game_id = strstr(path, "SL"); // 13640 games SLES/SLUS/SLPM/SLPS/SLAJ/SLKA
+	if(!game_id)
+		game_id = strstr(path, "SC"); // 6890 games SCES/SCUS/SCPS/SCAJ/SCKA
+	if(!game_id)
+		game_id = strstr(path, "TCPS"); // 178 games
+
+	if(!game_id || game_id[5] < '0' || game_id[5] > '9' || !strchr("EUPKA", game_id[2]))
+		*title_id = NULL;
+	else if(game_id[4] == '_')
+		sprintf(title_id, "%.4s%.3s%.2s", game_id, game_id + 5, game_id + 9); // SLxS_000.00
+	else if(game_id[4] == '-')
+		sprintf(title_id, "%.4s%.5s", game_id, game_id + 5); // SLxS-00000
+	else
+		sprintf(title_id, "%.9s", game_id); // SLxS00000
+}
+
 static inline void copy_ps2config(char *temp, const char *_path)
 {
 	size_t len = sprintf(temp, "%s.CONFIG", _path);
 	if(file_exists(temp) == false && len > 15) strcpy(temp + len - 15, ".CONFIG\0"); // remove .BIN.ENC
 	if(file_exists(temp) == false)
 	{
-		char *game_id = strstr(_path, "[SL"); 
-		if(!game_id)
-			  game_id = strstr(_path, "[SC");
-		if(game_id)
+		char title_id[TITLE_ID_LEN + 1];
+		get_ps_titleid_from_path(title_id, _path);
+
+		if(strlen(title_id) == TITLE_ID_LEN)
 		{
-			if(game_id[5] == '_')
-				sprintf(temp, "%s/%.11s.ENC", "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC", game_id + 1); //[SLxS_000.00]
-			else
-				sprintf(temp, "%s/%.4s_%3s.%.2s.ENC", "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC",
-								game_id + 1,  // SLES, SLUS, SLPM, SLPS, SCES, SCUS, SCPS
-								game_id + 5,  // _000.00
-								game_id + 8); // [SLxS00000]
+			sprintf(temp, "%s/%.4s_%3s.%.2s.ENC", "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC",
+							title_id,      // SLES, SLUS, SLPM, SLPS, SCES, SCUS, SCPS
+							title_id + 4,  // _000.00
+							title_id + 7); // SLxS00000
 		}
 	}
 

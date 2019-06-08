@@ -282,7 +282,7 @@ if(navigator.userAgent.indexOf("PLAYSTATION")!=-1) document.getElementsByClassNa
 function $(id,text){return document.getElementById(id);}
 function s(id){return document.getElementById(id).style;}
 
-function l(id,text){text=text.replace('[','').replace(']','');$(id).innerHTML=text;if(id=='msg1')return;if(text.length>9){s(id).fontSize='16px';s(id).position ='relative';s(id).top ='4px';s(id).left ='-8px';}}
+function l(id,text){text=text.replace('[','').replace(']','');$(id).innerHTML=text;if(id=='msg1'||id=='msg2')return;if(text.length>9){s(id).fontSize='16px';s(id).position ='relative';s(id).top ='4px';s(id).left ='-8px';}}
 
 var getAbsPosition = function(el){
 	var el2 = el;

@@ -63,6 +63,8 @@ enum paths_ids
 #define HTML_KEY    -1
 #define FROM_MOUNT  -99
 
+#define TITLEID_LEN  10
+
 enum nocov_options
 {
 	SHOW_MMCOVERS = 0,
@@ -256,22 +258,28 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id)
 		if(name[4] == '_' && name[8] == '.')
 			sprintf(title_id, "%.4s%.3s%.2s", name, name + 5, name + 9); //SCUS_999.99.filename.iso
 		else if(ISDIGIT(name[8]))
-			strncpy(title_id, name, 10);
+			strncpy(title_id, name, TITLEID_LEN);
 	}
 
 	if(HAS_TITLE_ID) ;
 
-	else if((strstr(name, "-[") || strstr(name, " [B") || strstr(name, " [N") || strstr(name, " [S")))
+	else if((strstr(name, "-[") || strstr(name, "[B") || strstr(name, "[NP") || strstr(name, "[SL") || strstr(name, "[SC")))
 	{
 		char *pos;
 		if((pos = strstr(name, " [B")))
-			strncpy(title_id, pos + 2, 10); //BCES/BLES/BCUS/BLUS/etc.
-		else if((pos = strstr(name, " [N")))
-			strncpy(title_id, pos + 2, 10); //NP*
+			strncpy(title_id, pos + 2, TITLEID_LEN); //BCES/BLES/BCUS/BLUS/etc.
+		else if((pos = strstr(name, "[BL")))
+			strncpy(title_id, pos + 1, TITLEID_LEN); //BLES/BLUS/etc.
+		else if((pos = strstr(name, "[BC")))
+			strncpy(title_id, pos + 1, TITLEID_LEN); //BCES/BCUS/etc.
+		else if((pos = strstr(name, "[NP")))
+			strncpy(title_id, pos + 1, TITLEID_LEN); //NP*
 		else if((pos = strstr(name, " [S")))
-			strncpy(title_id, pos + 2, 10); //SLES/SCES/SCUS/SLUS/etc.
+			get_ps_titleid_from_path(title_id, pos + 2); //SLES/SLUS/SLPM/SLPS/SLAJ/SLKA/SCES/SCUS/SCPS/SCAJ/SCKA
+		else if((pos = strstr(name, "[S")))
+			get_ps_titleid_from_path(title_id, pos + 1); //SLES/SLUS/SLPM/SLPS/SLAJ/SLKA/SCES/SCUS/SCPS/SCAJ/SCKA
 		else
-			strncpy(title_id, name, 10);
+			strncpy(title_id, name, TITLEID_LEN); // TITLEID-[NAME]
 	}
 
 	if(title_id[4] == '-') strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = NULL;
@@ -314,18 +322,22 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 			// get mm covers & titleID
 			get_cover_from_name(icon, entry_name, title_id);
 
-			// get covers named as titleID from iso folder
+			// get covers named as titleID from iso folder e.g. /PS3ISO/BLES12345.JPG
 			if(!is_dir && HAS_TITLE_ID && (f0 < 7 || f0 > NTFS))
 			{
-				char titleid[STD_PATH_LEN];
-				char *pos = strchr(entry_name, '/'); if(pos) {*pos = NULL; sprintf(titleid, "%s/%s", entry_name, title_id); *pos = '/';} else sprintf(titleid, "%s", title_id);
+				if(HAS(icon)) return;
 
-				char tmp[STD_PATH_LEN]; if(HAS(icon)) sprintf(tmp, "%s", icon); else *tmp = NULL;
+				char titleid[STD_PATH_LEN];
+				char *pos = strchr(entry_name, '/');
+				if(pos)
+					{*pos = NULL; sprintf(titleid, "%s/%s", entry_name, title_id); *pos = '/';} 
+				else 
+					sprintf(titleid, "%s", title_id);
 
 				sprintf(icon, "%s/%s.JPG", param, titleid); if(file_exists(icon)) return;
 				sprintf(icon, "%s/%s.PNG", param, titleid); if(file_exists(icon)) return;
 
-				if(*tmp) {sprintf(icon, "%s", tmp); return;}
+				*icon = NULL;
 			}
 
 			// return ICON0
@@ -1265,7 +1277,7 @@ list_games:
 #endif
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, slen;
-				char title_id[12];
+				char title_id[TITLEID_LEN];
 				u8 is_iso = 0;
 
 #ifdef NET_SUPPORT
@@ -1301,9 +1313,10 @@ list_games:
 						if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
 #endif
 
-						if(*filter_name >=' '   && !strcasestr(templn, filter_name)
-												&& !strcasestr(param, filter_name)
-												&& !strcasestr(data[v3_entry].name, filter_name)) {v3_entry++; continue;}
+						if(*filter_name >=' '
+							&& !strcasestr(templn, filter_name)
+							&& !strcasestr(param, filter_name)
+							&& !strcasestr(data[v3_entry].name, filter_name)) {v3_entry++; continue;}
 
 						if(urlenc(tempstr, icon)) sprintf(icon, "%s", tempstr);
 

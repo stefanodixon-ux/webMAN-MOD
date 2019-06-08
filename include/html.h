@@ -182,13 +182,16 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 			dst[j++] = '3';
 			dst[j] = (src[i] & 0xf) + '7'; // A | F
 		}
-		else if((src[i]==' ' && gurl) || src[i]=='\'' || src[i]=='"' || src[i]=='%' || src[i]=='&' || src[i]=='+')
+		else if(src[i]==' ' && gurl)
+			dst[j] = '+';
+		else if(src[i]=='\'' || src[i]=='"' || src[i]=='%' || src[i]=='&' || src[i]=='+' || src[i]=='#')
 		{
 			dst[j++] = '%';
 			dst[j++] = '2';
 			dst[j] = (src[i] == '+') ? 'B' : '0' + (src[i] & 0xf);
 		}
-		else dst[j] = src[i];
+		else
+			dst[j] = src[i];
 	}
 	dst[j] = '\0';
 
@@ -203,10 +206,10 @@ static bool urlenc(char *dst, const char *src)
 static size_t htmlenc(char *dst, char *src, u8 cpy2src)
 {
 	size_t j = 0;
-	char tmp[8]; u8 t, c;
+	char tmp[10]; u8 t, c;
 	for(size_t i = 0; src[i]; i++)
 	{
-		if(src[i] & 0x80)
+		if(src[i] >= 0x7F)
 		{
 			t = sprintf(tmp, "&#%i;", (int)(unsigned char)src[i]); c = 0;
 			while(t--) {dst[j++] = tmp[c++];}
@@ -468,17 +471,35 @@ static s64 val(const char *c)
 	return(result * multiplier);
 }
 
-static u16 get_value(char *text, char *url, u16 size)
+static u16 get_value(char *value, const char *url, u16 max_size)
 {
 	u16 n;
-	for(n = 0; n < size; n++)
+	for(n = 0; n < max_size; n++)
 	{
 		if(url[n] == '&' || url[n] == 0) break;
-		if(url[n] == '+') url[n] = ' ';
-		text[n] = url[n];
+		value[n] = url[n];
 	}
-	text[n] = NULL;
+	value[n] = NULL;
 	return n;
+}
+
+static u16 get_param(const char *name, char *value, const char *url, u16 max_size)
+{
+	if(!value || !max_size) return 0;
+
+	u8 name_len = strlen(name);
+
+	if(name_len)
+	{
+		char *pos = strstr(url, name);
+		if(pos) 
+		{
+			if(name[name_len - 1] != '=') name_len++;
+			return get_value(value, pos + name_len, max_size);
+		}
+	}
+
+	return 0;
 }
 
 static u32 get_valuen32(const char *param, const char *label)

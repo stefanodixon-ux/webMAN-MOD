@@ -1007,23 +1007,25 @@ static inline char *prepare_html(char *pbuffer, char *templn, char *param, u8 is
 {
 	if((webman_config->sman || strstr(param, "/sman.ps3")) && file_exists(HTML_BASE_PATH "/sman.htm"))
 	{
-		size_t size = read_file(HTML_BASE_PATH "/sman.htm", pbuffer, _12KB_, 0);
+		t_string sbuffer; _alloc(&sbuffer, pbuffer);
+		sbuffer.size = read_file(HTML_BASE_PATH "/sman.htm", sbuffer.str, _12KB_, 0);
 
 		if(is_cpursx)
-			size += concat(pbuffer + size, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3?/sman.ps3\">");
+			_concat(&sbuffer, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3?/sman.ps3\">");
 
 		 #ifndef ENGLISH_ONLY
-		size += concat(pbuffer + size, "<script>");
-		sprintf(templn, "l('%s',\"%s\");", "games",        STR_GAMES);    size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s\");", "files",        STR_FILES);    size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s\");", "setup",        STR_SETUP);    size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s\");", "eject",        STR_EJECT);    size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s\");", "insert",       STR_INSERT);   size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s\");", "refresh",      STR_REFRESH);  size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s\");", "restart",      STR_RESTART);  size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s\");", "shutdown",     STR_SHUTDOWN); size += concat(pbuffer + size, templn);
-		sprintf(templn, "l('%s',\"%s XML ...\");", "msg1", STR_REFRESH);  size += concat(pbuffer + size, templn);
-		size += concat(pbuffer + size, "</script>");
+		_concat(&sbuffer, "<script>");
+		sprintf(templn, "l('%s',\"%s\");", "games",        STR_GAMES);    _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s\");", "files",        STR_FILES);    _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s\");", "setup",        STR_SETUP);    _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s\");", "eject",        STR_EJECT);    _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s\");", "insert",       STR_INSERT);   _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s\");", "refresh",      STR_REFRESH);  _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s\");", "restart",      STR_RESTART);  _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s\");", "shutdown",     STR_SHUTDOWN); _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s XML ...\");", "msg1", STR_REFRESH);  _concat(&sbuffer, templn);
+		sprintf(templn, "l('%s',\"%s ...\");",     "msg2", STR_MYGAMES);  _concat(&sbuffer, templn);
+		_concat(&sbuffer, "</script>");
 		#endif
 
 		if(param[1] != NULL && !strstr(param, ".ps3")) {strcat(pbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); strcat(pbuffer, templn);}
@@ -1628,7 +1630,7 @@ parse_request:
 					if(file_exists(param + 9)) mount_game(param + 9, EXPLORE_CLOSE_ALL);
 
 					// default: play.ps3?col=game&seg=seg_device
-					char *pos, col[16], seg[80], *param2 = buttons; *col = *seg = NULL; bool execute = true;
+					char col[16], seg[80], *param2 = buttons; *col = *seg = NULL; bool execute = true;
 #ifndef LITE_EDITION
 					if(_islike(param2, "movian") || IS(param2, "HTSS00003"))
 													 {sprintf(param2, "col=tv&seg=HTSS00003"); mount_unk = APP_GAME;} else
@@ -1648,8 +1650,8 @@ parse_request:
 					else
 #endif
 					{
-						pos = strstr(param2, "col="); if(pos) get_value(col, pos + 4, 16); // game / video / friend / psn / network / music / photo / tv
-						pos = strstr(param2, "seg="); if(pos) get_value(seg, pos + 4, 80);
+						get_param("col=", col, param2, 16); // game / video / friend / psn / network / music / photo / tv
+						get_param("col=", seg, param2, 80);
 					}
 
 					launch_disc(col, seg, execute);
@@ -2197,15 +2199,14 @@ parse_request:
 				// /unmap.ps3<path>
 				// /unmap.ps3?src=<path>
 
-				char *pos, *path1 = header, *path2 = header + MAX_PATH_LEN, *url = header + 2 * MAX_PATH_LEN, *title = header + 2 * MAX_PATH_LEN;
+				char *path1 = header, *path2 = header + MAX_PATH_LEN, *url = header + 2 * MAX_PATH_LEN, *title = header + 2 * MAX_PATH_LEN;
 
 				memset(header, 0, HTML_RECV_SIZE);
 
 				if(param[10] == '/') get_value(path1, param + 10, MAX_PATH_LEN); else
 				if(param[11] == '/') get_value(path1, param + 11, MAX_PATH_LEN); else
 				{
-					pos = strstr(param, "src=");
-					if(pos) get_value(path1, pos + 4, MAX_PATH_LEN);
+					get_param("src=", path1, param, MAX_PATH_LEN);
 				}
 
 				bool isremap = (param[1] == 'r');
@@ -2213,8 +2214,8 @@ parse_request:
 
 				if(isremap)
 				{
-					pos = strstr(param, "to="); sprintf(path2, "/dev_bdvd");
-					if(pos) get_value(path2, pos + 3, MAX_PATH_LEN);
+					sprintf(path2, "/dev_bdvd");
+					get_param("to=", path2, param, MAX_PATH_LEN);
 				}
 
 				if(*path1 && (path1[1] != NULL) && (nocheck || file_exists(isremap ? path2 : path1)))
@@ -3404,7 +3405,7 @@ retry_response:
 						// /unloadprx.ps3?prx=<path-sprx>
 						// /unloadprx.ps3?slot=<slot>
 
-						char *pos; unsigned int slot = 7; bool prx_found;
+						unsigned int slot = 7; bool prx_found;
 
 						if(param[12] == '/') sprintf(templn, "%s", param + 12); else
 						if(param[14] == '/') sprintf(templn, "%s", param + 14); else
@@ -3414,8 +3415,7 @@ retry_response:
 							if(file_exists(templn) == false) sprintf(templn, "%s/%s", "/dev_hdd0", "webftp_server.sprx");
 							if(file_exists(templn) == false) sprintf(templn, "%s/%s", "/dev_hdd0", "webftp_server_ps3mapi.sprx");
 
-							pos = strstr(param, "prx=");
-							if(pos) get_value(templn, pos + 4, MAX_PATH_LEN);
+							get_param("prx=", templn, param, MAX_PATH_LEN);
 						}
 
 						prx_found = file_exists(templn);

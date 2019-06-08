@@ -263,9 +263,8 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 	bool is_ps3mapi_home = (*param == ' ');
 
 	char msg[200]; strcpy(msg, "Hello :)");
-	if(islike(param, "/notify.ps3mapi?msg="))
+	if(get_param("?msg=", msg, param, 199))
 	{
-		get_value(msg, param + 20, 199);
 		show_msg(msg);
 	}
 
@@ -514,16 +513,13 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 
 	if(strstr(param, ".ps3mapi?"))
 	{
-		char *pos;
-		pos = strstr(param, "addr=");
-		if(pos)
+		char addr_tmp[17];
+		if(get_param("addr=", addr_tmp, param, 16))
 		{
-			char addr_tmp[17];
-			get_value(addr_tmp, pos + 5, 16);
 			address = convertH(addr_tmp);
 
 			length = get_valuen16(param, "len=");
-			if(length == 0) {pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
+			if(length == 0) {char *pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
 			length = RANGE(length, 1, 2048);
 
 			pid = get_valuen32(param, "proc=");
@@ -640,18 +636,14 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 
 	if(strstr(param, ".ps3mapi?"))
 	{
-		char *pos;
-		pos = strstr(param, "addr=");
-		if(pos)
+		char addr_tmp[17];
+		if(get_param("addr=", addr_tmp, param, 16))
 		{
-			char addr_tmp[17];
-			get_value(addr_tmp, pos + 5, 16);
 			address = convertH(addr_tmp);
 
-			pos = strstr(param, "val=");
-			if(pos)
+			length = get_param("val=", val_tmp, param, 259) / 2;
+			if(length)
 			{
-				length = get_value(val_tmp, pos + 4, 259) / 2;
 				Hex2Bin(val_tmp, value);
 
 				pid = get_valuen32(param, "proc=");
@@ -711,37 +703,28 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 
 	if(islike(param, "/setidps.ps3mapi") && param[16] == '?')
 	{
-		char *pos;
-		pos = strstr(param, "idps1=");
-		if(pos)
+		char idps1_tmp[17];
+		if(get_param("idps1=", idps1_tmp, param, 16))
 		{
-			char idps1_tmp[17];
-			get_value(idps1_tmp, pos + 6, 16);
 			_new_IDPS[0] = convertH(idps1_tmp);
 
-			pos = strstr(param, "idps2=");
-			if(pos)
+			char idps2_tmp[17];
+			if(get_param("idps2=", idps2_tmp, param, 16))
 			{
-				char idps2_tmp[17];
-				get_value(idps2_tmp, pos + 6, 16);
 				_new_IDPS[1] = convertH(idps2_tmp);
 
 				{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_IDPS, (u64)_new_IDPS[0], (u64)_new_IDPS[1]);}
 			}
 		}
 
-		pos = strstr(param, "psid1=");
-		if(pos)
+		char psid1_tmp[17];
+		if(get_param("psid1=", psid1_tmp, param, 16))
 		{
-			char psid1_tmp[17];
-			get_value(psid1_tmp, pos + 6, 16);
 			_new_PSID[0] = convertH(psid1_tmp);
 
-			pos = strstr(param, "psid2=");
-			if(pos)
+			char psid2_tmp[17];
+			if(get_param("psid2=", psid2_tmp, param, 16))
 			{
-				char psid2_tmp[17];
-				get_value(psid2_tmp, pos + 6, 16);
 				_new_PSID[1] = convertH(psid2_tmp);
 
 				{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PSID, (u64)_new_PSID[0], (u64)_new_PSID[1]);}
@@ -814,10 +797,9 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 
 	if(islike(param, "/vshplugin.ps3mapi") && param[18] == '?')
 	{
-		char *pos;
 		unsigned int uslot = 99;
 
-		pos = strstr(param, "?s=");
+		char *pos = strstr(param, "?s=");
 		if(pos)
 		{
 			pos += 3;
@@ -853,19 +835,15 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 		{
 			uslot = get_valuen(param, "load_slot=", 0, 6);
 
-			pos = strstr(param, "unload_slot=");
-			if(pos)
+			if(strstr(param, "unload_slot="))
 			{
 				if ( uslot ) {system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_VSH_PLUGIN, (u64)uslot);}
 			}
 			else
 			{
-				pos = strstr(param, "prx=");
-				if(pos)
+				char prx_path[STD_PATH_LEN];
+				if(get_param("prx=", prx_path, param, STD_PATH_LEN))
 				{
-					char prx_path[STD_PATH_LEN];
-					get_value(prx_path, pos + 4, STD_PATH_LEN);
-
 					if (!uslot ) uslot = get_free_slot(); // find free slot if slot == 0
 
 					if ( uslot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)prx_path, NULL, 0);}}
@@ -961,12 +939,10 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 			}
 			else
 			{
-				pos = strstr(param, "prx=");
-				if(pos)
+				char prx_path[STD_PATH_LEN];
+				if(get_param("prx=", prx_path, param, STD_PATH_LEN))
 				{
-					char prx_path[STD_PATH_LEN];
-					get_value(prx_path, pos + 4, STD_PATH_LEN);
-					{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)prx_path, NULL, 0); }
+					system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)prx_path, NULL, 0);
 				}
 			}
 		}
