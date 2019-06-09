@@ -170,7 +170,7 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 
 	for(i = 0; src[i]; i++, j++)
 	{
-		if(src[i] & 0x80)
+		if((unsigned char)src[i] & 0x80)
 		{
 			dst[j++] = '%';
 			dst[j++] = h2a((unsigned char)src[i]>>4);
@@ -209,7 +209,7 @@ static size_t htmlenc(char *dst, char *src, u8 cpy2src)
 	char tmp[10]; u8 t, c;
 	for(size_t i = 0; src[i]; i++)
 	{
-		if(src[i] >= 0x7F)
+		if((unsigned char)src[i] >= 0x7F)
 		{
 			t = sprintf(tmp, "&#%i;", (int)(unsigned char)src[i]); c = 0;
 			while(t--) {dst[j++] = tmp[c++];}

@@ -51,9 +51,10 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 	// returns title_id as "SCES00000"
 
 	if(!title_id) return;
-	if(!_path) {*title_id = NULL; return;}
 
-	char *path = strrchr(_path, '/') + 1;
+	if(!_path || *_path != '/') {*title_id = NULL; return;}
+
+	char *path = strrchr(_path, '/');
 	char *game_id = strstr(path, " [S"); // title id enclosed in square brackets
 
 	if(game_id) 
@@ -91,11 +92,13 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 	if(!game_id)
 		game_id = strstr(path, "TCPS"); // 178 games
 
-	if(!game_id || game_id[5] < '0' || game_id[5] > '9' || !strchr("EUPKA", game_id[2]))
+	u16 len = 0; for(;game_id[len] && ++len < 12;);
+
+	if(!game_id || len < 9 || game_id[5] < '0' || game_id[5] > '9' || !strchr("EUPKA", game_id[2]))
 		*title_id = NULL;
-	else if(game_id[4] == '_')
+	else if(game_id[4] == '_' && len >= 11)
 		sprintf(title_id, "%.4s%.3s%.2s", game_id, game_id + 5, game_id + 9); // SLxS_000.00
-	else if(game_id[4] == '-')
+	else if(game_id[4] == '-' && len >= 10)
 		sprintf(title_id, "%.4s%.5s", game_id, game_id + 5); // SLxS-00000
 	else
 		sprintf(title_id, "%.9s", game_id); // SLxS00000

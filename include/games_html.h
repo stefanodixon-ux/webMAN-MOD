@@ -258,7 +258,7 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id)
 		if(name[4] == '_' && name[8] == '.')
 			sprintf(title_id, "%.4s%.3s%.2s", name, name + 5, name + 9); //SCUS_999.99.filename.iso
 		else if(ISDIGIT(name[8]))
-			strncpy(title_id, name, TITLEID_LEN);
+			strncpy(title_id, name, TITLE_ID_LEN);
 	}
 
 	if(HAS_TITLE_ID) ;
@@ -635,7 +635,13 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 		if(file_exists(templn) == false)
 		{
-			sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
+			if(data[v3_entry].is_directory)
+				sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
+			else
+			{
+				get_name(tempstr, data[v3_entry].name, NO_EXT);
+				sprintf(enc_dir_name, "%s/%s.SFO", param, tempstr);
+			}
 			copy_net_file(templn, enc_dir_name, ns, COPY_WHOLE_FILE);
 		}
 
@@ -1277,7 +1283,7 @@ list_games:
 #endif
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, slen;
-				char title_id[TITLEID_LEN];
+				char title_id[12];
 				u8 is_iso = 0;
 
 #ifdef NET_SUPPORT

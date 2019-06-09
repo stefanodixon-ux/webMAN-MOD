@@ -513,6 +513,8 @@ int main()
 	file_copy(APP_USRDIR "/html/mobile.html",    XMLHOST_DIR "/mobile.html");
 	file_copy(APP_USRDIR "/html/background.gif", XMLHOST_DIR "/background.gif");
 	file_copy(APP_USRDIR "/html/sman.htm",       XMLHOST_DIR "/sman.htm");
+	file_copy(APP_USRDIR "/html/sman.css",       XMLHOST_DIR "/sman.css");
+	file_copy(APP_USRDIR "/html/sman.js",        XMLHOST_DIR "/sman.js");
 
 	// copy javascripts
 	file_copy(APP_USRDIR "/html/jquery.min.js",    XMLHOST_DIR "/jquery.min.js");  // jQuery v3.1.1
