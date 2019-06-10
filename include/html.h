@@ -145,7 +145,7 @@ static inline void urldec(char *url, char *original)
 				url[pos] = url[i];
 			else
 			{
-				url[pos] = 0; u8 n = 2;
+				url[pos] = 0; u8 n = 2; if(url[i+1]=='u') {i++, n+=2;}
 				while(n--)
 				{
 					url[pos] <<= 4, c = (url[++i] | 0x20);
@@ -182,7 +182,7 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 			dst[j++] = '3';
 			dst[j] = (src[i] & 0xf) + '7'; // A | F
 		}
-		else if(src[i]==' ' && gurl)
+		else if(src[i]==' ')
 			dst[j] = '+';
 		else if(src[i]=='\'' || src[i]=='"' || src[i]=='%' || src[i]=='&' || src[i]=='+' || src[i]=='#')
 		{
@@ -209,9 +209,9 @@ static size_t htmlenc(char *dst, char *src, u8 cpy2src)
 	char tmp[10]; u8 t, c;
 	for(size_t i = 0; src[i]; i++)
 	{
-		if((unsigned char)src[i] >= 0x7F)
+		if((unsigned char)src[i] >= 0x7F || (unsigned char)src[i] < 0x20)
 		{
-			t = sprintf(tmp, "&#%i;", (int)(unsigned char)src[i]); c = 0;
+			t = sprintf(tmp, "&#x%X;", (unsigned char)src[i]); c = 0;
 			while(t--) {dst[j++] = tmp[c++];}
 		}
 		else dst[j++] = src[i];
@@ -226,22 +226,47 @@ static size_t htmlenc(char *dst, char *src, u8 cpy2src)
 
 static size_t utf8enc(char *dst, char *src, u8 cpy2src)
 {
-	size_t j = 0; u16 c;
+	size_t j = 0; unsigned int c;
 	for(size_t i = 0; src[i]; i++)
 	{
 		c = ((unsigned char)src[i] & 0xFFFF);
 
-		if(!(c & 0xff80)) dst[j++]=c;
-		else if(!(c & 0xf800))
+		if(c <= 0x7F)
+			dst[j++] = c;
+		else if(c <= 0x7FF)
 		{
-			dst[j++]=0xC0|(c>>6);
-			dst[j++]=0x80|(0x3F&c);
+			dst[j++] = 0xC0 | (c>>06);
+			dst[j++] = 0x80 | (0x3F & c);
 		}
-		else
+		else if(c <= 0xFFFF)
 		{
-			dst[j++]=0xE0|(0x0F&(c>>12));
-			dst[j++]=0x80|(0x3F&(c>>06));
-			dst[j++]=0x80|(0x3F&(c    ));
+			dst[j++] = 0xE0 | (0x0F & (c>>12));
+			dst[j++] = 0x80 | (0x3F & (c>>06));
+			dst[j++] = 0x80 | (0x3F &  c);
+		}
+		else if(c <= 0x1FFFFF)
+		{
+			dst[j++] = 0xF0 | (0x0F & (c>>18));
+			dst[j++] = 0x80 | (0x3F & (c>>12));
+			dst[j++] = 0x80 | (0x3F & (c>>06));
+			dst[j++] = 0x80 | (0x3F &  c);
+		}
+		else if(c <= 0x3FFFFFF)
+		{
+			dst[j++] = 0xF8 | (0x0F & (c>>24));
+			dst[j++] = 0x80 | (0x3F & (c>>18));
+			dst[j++] = 0x80 | (0x3F & (c>>12));
+			dst[j++] = 0x80 | (0x3F & (c>>06));
+			dst[j++] = 0x80 | (0x3F &  c);
+		}
+		else if(c <= 0x7fffffff)
+		{
+			dst[j++] = 0xFC | (0x0F & (c>>30));
+			dst[j++] = 0x80 | (0x3F & (c>>24));
+			dst[j++] = 0x80 | (0x3F & (c>>18));
+			dst[j++] = 0x80 | (0x3F & (c>>12));
+			dst[j++] = 0x80 | (0x3F & (c>>06));
+			dst[j++] = 0x80 | (0x3F &  c);
 		}
 	}
 
@@ -255,17 +280,53 @@ static size_t utf8enc(char *dst, char *src, u8 cpy2src)
 static size_t utf8dec(char *dst, char *src, u8 cpy2src)
 {
 	size_t j = 0;
-	u8 c;
+	unsigned char c;
 	for(size_t i = 0; src[i] != '\0'; i++, j++)
 	{
-		c = ((unsigned char)src[i]&0xFF);
-		if(c < 0x80)
-			dst[j] = c;
-		else if(c & 0x20)
-			dst[j] = (((src[i++] & 0x1F)<<6) + (c & 0x3F));
-		else
+		c = (unsigned char)src[i];
+		if( (c & 0x80) == 0 )
 		{
-			dst[j] = ((src[i++] & 0xF)<<12) + ((src[i++] & 0x3F)<<6) + (c & 0x3F);
+			dst[j] = c;
+		}
+		else if( (c & 0xE0) == 0xC0 )
+		{
+			dst[j] = ((c & 0x1F)<<6) |
+					 (src[i+1] & 0x3F);
+			i+=1;
+		}
+		else if( (c & 0xF0) == 0xE0 )
+		{
+			dst[j]  = ((c & 0xF)<<12);
+			dst[j] |= ((src[i+1] & 0x3F)<<6);
+			dst[j] |= ((src[i+2] & 0x3F));
+			i+=2;
+		}
+		else if ( (c & 0xF8) == 0xF0 )
+		{
+			dst[j]  = ((c & 0x7)<<18);
+			dst[j] |= ((src[i+1] & 0x3F)<<12);
+			dst[j] |= ((src[i+2] & 0x3F)<<06);
+			dst[j] |= ((src[i+3] & 0x3F));
+			i+=3;
+		}
+		else if ( (c & 0xFC) == 0xF8 )
+		{
+			dst[j]  = ((c & 0x3)<<24);
+			dst[j] |= ((src[i+1] & 0x3F)<<18);
+			dst[j] |= ((src[i+2] & 0x3F)<<12);
+			dst[j] |= ((src[i+3] & 0x3F)<<06);
+			dst[j] |= ((src[i+4] & 0x3F));
+			i+=4;
+		}
+		else if ( (c & 0xFE) == 0xFC )
+		{
+			dst[j]  = ((c & 0x1)<<30);
+			dst[j] |= ((src[i+1] & 0x3F)<<24);
+			dst[j] |= ((src[i+2] & 0x3F)<<18);
+			dst[j] |= ((src[i+3] & 0x3F)<<12);
+			dst[j] |= ((src[i+4] & 0x3F)<<06);
+			dst[j] |= ((src[i+5] & 0x3F));
+			i+=5;
 		}
 	}
 

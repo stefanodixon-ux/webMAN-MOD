@@ -344,7 +344,7 @@ static u8 netiso_loaded = 0;
 static sys_event_queue_t command_queue_net = NONE;
 static sys_ppu_thread_t thread_id_net = SYS_PPU_THREAD_NONE;
 
-static void netiso_thread(u64 arg)
+static void netiso_thread(__attribute__((unused)) u64 arg)
 {
 	unsigned int real_disctype;
 	ScsiTrackDescriptor *tracks;
@@ -539,7 +539,7 @@ exit_netiso:
 	sys_ppu_thread_exit(0);
 }
 
-static void netiso_stop_thread(u64 arg)
+static void netiso_stop_thread(__attribute__((unused)) u64 arg)
 {
 	u64 exit_code;
 	netiso_loaded = 0;
@@ -569,12 +569,22 @@ static void netiso_stop_thread(u64 arg)
 
 static bool is_netsrv_enabled(u8 server_id)
 {
-	return( (webman_config->netd[server_id] == 1) && (webman_config->neth[server_id][0] != NULL) && (webman_config->netp[server_id] > 0) && !islike(webman_config->neth[server_id], "127.") && !islike(webman_config->neth[server_id], "localhost"));
+	server_id &= 0x0F; // change '0'-'4' to  0..4
+
+	if(server_id > 4) return false;
+
+	return( (webman_config->netd[server_id] == 1) && // is enabled
+			(webman_config->neth[server_id][0] != NULL) && // has host
+			(webman_config->netp[server_id] > 0) && // has port
+			!islike(webman_config->neth[server_id], "127.") && !islike(webman_config->neth[server_id], "localhost") // not a loopback
+		);
 }
 
 static int connect_to_remote_server(u8 server_id)
 {
 	int ns = FAILED;
+
+	server_id &= 0x0F; // change '0'-'4' to  0..4
 
 	if( is_netsrv_enabled(server_id) )
 	{

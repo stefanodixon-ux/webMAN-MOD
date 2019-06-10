@@ -8,20 +8,20 @@
 #define FTP_OK_USER_230		"230 Already in\r\n"				// User logged in, proceed.
 #define FTP_OK_250			"250 OK\r\n"						// Requested file action okay, completed.
 #define FTP_OK_331			"331 OK\r\n"						// User name okay, need password.
-#define FTP_OK_REST_350		"350 REST command successful\r\n"	// Requested file action pending further information
-#define FTP_OK_RNFR_350		"350 RNFR OK\r\n"					// Requested file action pending further information
+#define FTP_OK_REST_350		"350 REST command successful\r\n"	// Requested file action pending further information.
+#define FTP_OK_RNFR_350		"350 RNFR OK\r\n"					// Requested file action pending further information.
 
-#define FTP_ERROR_425		"425 ERR\r\n"						// Can't open data connection.
-#define FTP_ERROR_430		"430 ERR\r\n"						// Invalid username or password
-#define FTP_ERROR_450		"450 ERR\r\n"						// Can't access file
-#define FTP_ERROR_451		"451 ERR\r\n"						// Requested action aborted. Local error in processing.
-#define FTP_ERROR_500		"500 ERR\r\n"						// Syntax error, command unrecognized and the requested	action did not take place.
-#define FTP_ERROR_501		"501 ERR\r\n"						// Syntax error in parameters or arguments.
+#define FTP_ERROR_425		"425 Error in data connection\r\n"	// Can't open data connection.
+#define FTP_ERROR_430		"430 Invalid login\r\n"				// Invalid username or password.
+#define FTP_ERROR_450		"450 Can't access file\r\n"			// Can't access file.
+#define FTP_ERROR_451		"451 Action aborted\r\n"			// Requested action aborted. Local error in processing.
+#define FTP_ERROR_500		"500 Syntax error\r\n"				// Syntax error, command unrecognized and the requested	action did not take place.
+#define FTP_ERROR_501		"501 Error in arguments\r\n"		// Syntax error in parameters or arguments.
 #define FTP_ERROR_REST_501	"501 No restart point\r\n"			// Syntax error in parameters or arguments.
 #define FTP_ERROR_502		"502 Not implemented\r\n"			// Command not implemented.
-#define FTP_ERROR_530		"530 ERR\r\n"						// Not logged in.
-#define FTP_ERROR_550		"550 ERR\r\n"						// Requested action not taken. File unavailable (e.g., file not found, no access).
-#define FTP_ERROR_RNFR_550	"550 RNFR Error\r\n"				// Requested action not taken. File unavailable
+#define FTP_ERROR_530		"530 Not logged in\r\n"				// Not logged in.
+#define FTP_ERROR_550		"550 File unavailable\r\n"			// Requested action not taken. File unavailable (e.g., file not found, no access).
+#define FTP_ERROR_RNFR_550	"550 RNFR Error\r\n"				// Requested action not taken. File unavailable.
 
 static u8 ftp_active = 0;
 static u8 ftp_working = 0;
@@ -1299,7 +1299,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 }
 
 
-static void ftpd_thread(u64 arg)
+static void ftpd_thread(__attribute__((unused)) u64 arg)
 {
 	int list_s = NONE;
 	ftp_active = 0;

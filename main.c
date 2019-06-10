@@ -240,7 +240,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define THREAD_STACK_SIZE_FTP_CLIENT	THREAD_STACK_SIZE_16KB
 
 #define THREAD_STACK_SIZE_WEB_SERVER	THREAD_STACK_SIZE_6KB
-#define THREAD_STACK_SIZE_WEB_CLIENT	THREAD_STACK_SIZE_48KB
+#define THREAD_STACK_SIZE_WEB_CLIENT	THREAD_STACK_SIZE_64KB
 
 #define THREAD_STACK_SIZE_NET_SERVER	THREAD_STACK_SIZE_6KB
 #define THREAD_STACK_SIZE_NET_CLIENT	THREAD_STACK_SIZE_24KB
@@ -3213,12 +3213,17 @@ retry_response:
 						// /edit.ps3<file>              open text file (up to 2000 bytes)
 						// /edit.ps3?f=<file>&t=<txt>   saves text to file
 
-						char *filename = templn, *txt = buffer + BUFFER_SIZE_HTML - _6KB_, *backup = txt; memset(txt, 0, _2KB_);
+						char *filename = templn, *txt = buffer + BUFFER_SIZE_HTML - _6KB_, *backup = txt; memset(txt, 0, _2KB_); *filename = 0;
 
 						// get file name
 						get_value(filename, param + ((param[9] == '/') ? 9 : 12), MAX_PATH_LEN); // /edit.ps3<file>  *or* /edit.ps3?f=<file>&t=<txt>
 
 						filepath_check(filename);
+
+						if(*filename != '/')
+						{
+							sprintf(filename, "/dev_hdd0/boot_plugins.txt"); // default file
+						}
 
 						char *pos = strstr(param, "&t=");
 						if(pos)

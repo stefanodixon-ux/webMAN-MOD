@@ -674,7 +674,7 @@ static void handleclient_net(u64 arg)
 	sys_ppu_thread_exit(0);
 }
 
-static void netsvrd_thread(u64 arg)
+static void netsvrd_thread(__attribute__((unused)) u64 arg)
 {
 	int list_s = NONE;
 	net_working = 1;

@@ -299,7 +299,7 @@ static void toggle_video_rec(const char *param)
 			// get functions pointer for sub_163EB0() aka reco_open()
 			reco_open = vshmain_BEF63A14; // base pointer, the export nearest to sub_163EB0()
 
-			reco_open -= (50*8); // reco_open_opd (50 opd's above vshmain_BEF63A14_opd)
+			reco_open -= (50 * 8); // reco_open_opd (50 opd's above vshmain_BEF63A14_opd)
 
 			// fetch recording utility vsh options struct (build address from instructions...)
 			u32 addr = (*(u32*)(*(u32*)reco_open+0xC) & 0x0000FFFF) -1;

@@ -802,14 +802,13 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 		char *pos = strstr(param, "?s=");
 		if(pos)
 		{
-			pos += 3;
+			pos += 3; sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt");
 			switch (*pos)
 			{
-				case '1': sprintf(tmp_filename, "/dev_hdd0/mamba_plugins.txt"); break;
-				case '2': sprintf(tmp_filename, "/dev_hdd0/prx_plugins.txt");   break;
-				case '3': sprintf(tmp_filename, "/dev_hdd0/game/PRXLOADER/USRDIR/plugins.txt"); break;
-				case '4': sprintf(tmp_filename, "/dev_hdd0/game/PRXLOADER/USRDIR/boot_plugins_nocobra.txt"); break;
-				default : sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt");
+				case '1': sprintf(tmp_filename + 10, "mamba_plugins.txt"); break;
+				case '2': sprintf(tmp_filename + 10, "prx_plugins.txt");   break;
+				case '3': sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/plugins.txt"); break;
+				case '4': sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/boot_plugins_nocobra.txt"); break;
 			}
 
 			int fdw = 0;
@@ -1680,7 +1679,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 	sys_ppu_thread_exit(0);
 }
 
-static void ps3mapi_thread(u64 arg)
+static void ps3mapi_thread(__attribute__((unused)) u64 arg)
 {
 	int core_minversion = 0;
 	{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_CORE_MINVERSION); core_minversion = (int)(p1); }

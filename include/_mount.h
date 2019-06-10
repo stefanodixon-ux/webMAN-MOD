@@ -704,8 +704,18 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[default_icon], mounted ? STR_GAMELOADED : STR_ERROR);
 				}
 
-				if(!mounted && !forced_mount && IS_INGAME) sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + MOUNT_CMD, param + MOUNT_CMD);
-
+				if(!mounted)
+				{
+#ifndef ENGLISH_ONLY
+					if(webman_config->lang == 0)
+#endif
+						if(is_mounting) mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
+#ifndef LITE_EDITION
+ #ifdef COBRA_ONLY
+					if(islike(param + MOUNT_CMD, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
+ #endif
+#endif
+				}
 #ifndef ENGLISH_ONLY
 				close_language();
 #endif
@@ -1352,6 +1362,11 @@ finish:
 
 static bool mount_game(const char *path, u8 action)
 {
+#ifndef LITE_EDITION
+ #ifdef COBRA_ONLY
+	if(islike(path, "/net") && !is_netsrv_enabled(path[4])) return false;
+ #endif
+#endif
 	if(is_mounting) return false; is_mounting = true;
 
 	_path0 = (char*)path;
