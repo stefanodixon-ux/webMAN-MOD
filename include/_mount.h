@@ -715,6 +715,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					if(islike(param + MOUNT_CMD, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
  #endif
 #endif
+					if(!forced_mount && IS_INGAME) sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + MOUNT_CMD, param + MOUNT_CMD);
 				}
 #ifndef ENGLISH_ONLY
 				close_language();
