@@ -45,7 +45,6 @@ static int prepNTFS(u8 clear)
 	cellFsChmod(WMTMP, S_IFDIR | 0777);
 	cellFsUnlink((char*)WMTMP "/games.html");
 	int fd = NONE;
-	u64 read = 0;
 	char path[STD_PATH_LEN], subpath[STD_PATH_LEN], sufix[8], filename[STD_PATH_LEN]; char *path0 = filename;
 
 	check_ntfs_volumes();
@@ -54,10 +53,14 @@ static int prepNTFS(u8 clear)
 	{
 		dlen = sprintf(path, "%s/", WMTMP);
 		char *ext, *path_file = path + dlen;
-		while(!cellFsReaddir(fd, &dir, &read) && read)
+		
+		CellFsDirectoryEntry dir; u32 read_f;
+		char *entry_name = dir.entry_name.d_name;
+		
+		while(!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_f) && read_f)
 		{
-			ext = strstr(dir.d_name, ".ntfs[");
-			if(ext && (clear || (mountCount <= 0) || (!IS(ext, ".ntfs[BDFILE]") && !IS(ext, ".ntfs[PS2ISO]") && !IS(ext, ".ntfs[PSPISO]")))) {sprintf(path_file, "%s", dir.d_name); cellFsUnlink(path);}
+			ext = strstr(entry_name, ".ntfs[");
+			if(ext && (clear || (mountCount <= 0) || (!IS(ext, ".ntfs[BDFILE]") && !IS(ext, ".ntfs[PS2ISO]") && !IS(ext, ".ntfs[PSPISO]")))) {sprintf(path_file, "%s", entry_name); cellFsUnlink(path);}
 		}
 		cellFsClosedir(fd);
 	}

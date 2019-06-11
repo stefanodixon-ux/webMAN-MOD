@@ -258,7 +258,7 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id)
 		if(name[4] == '_' && name[8] == '.')
 			sprintf(title_id, "%.4s%.3s%.2s", name, name + 5, name + 9); //SCUS_999.99.filename.iso
 		else if(ISDIGIT(name[8]))
-			strncpy(title_id, name, TITLE_ID_LEN);
+			strncpy(title_id, name, TITLEID_LEN);
 	}
 
 	if(HAS_TITLE_ID) ;

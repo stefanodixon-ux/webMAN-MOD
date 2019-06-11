@@ -537,9 +537,9 @@ next_part:
 
 void _file_copy(const char *file1, char *file2)
 {
-	dont_copy_same_size = false; // force copy files with the same size
+	dont_copy_same_size = false; // force copy file with the same size than existing file
 	file_copy(file1, file2, COPY_WHOLE_FILE);
-	dont_copy_same_size = true;  // restore default mode
+	dont_copy_same_size = true;  // restore default mode (assume file is already copied if existing file has same size)
 }
 
 #ifdef COPY_PS3
@@ -566,6 +566,8 @@ static int folder_copy(const char *path1, char *path2)
 		cellFsChmod(path1, DMODE);
 	}
 
+	bool is_root = IS(path1, "/");
+
 	if(is_ntfs || cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
 	{
 #ifdef USE_NTFS
@@ -576,6 +578,8 @@ static int folder_copy(const char *path1, char *path2)
 			cellFsMkdir(path2, DMODE);
 
 		CellFsDirent dir; u64 read_e;
+		CellFsDirectoryEntry entry; u32 read_f;
+		char *entry_name = (is_root) ? dir.d_name : entry.entry_name.d_name;
 
 		char source[STD_PATH_LEN];
 		char target[STD_PATH_LEN];
@@ -591,18 +595,20 @@ static int folder_copy(const char *path1, char *path2)
 #ifdef USE_NTFS
 			if(is_ntfs)
 			{
-				if(ps3ntfs_dirnext(pdir, dir.d_name, &bufn)) break;
-				if(dir.d_name[0]=='$' && path1[12] == 0) continue;
+				if(ps3ntfs_dirnext(pdir, entry_name, &bufn)) break;
+				if(entry_name[0]=='$' && path1[12] == 0) continue;
 			}
 			else
 #endif
-			if((cellFsReaddir(fd, &dir, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break;
+			if(is_root && ((cellFsReaddir(fd, &dir, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0))) break;
+			else
+			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
 
 			if(copy_aborted) break;
-			if(dir.d_name[0] == '.' && (dir.d_name[1] == '.' || dir.d_name[1] == NULL)) continue;
+			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
-			sprintf(source, "%s/%s", path1, dir.d_name);
-			sprintf(target, "%s/%s", path2, dir.d_name);
+			sprintf(source, "%s/%s", path1, entry_name);
+			sprintf(target, "%s/%s", path2, entry_name);
 
 			if(isDir(source))
 			{
@@ -681,9 +687,13 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	}
 #endif
 
+	bool is_root = IS(path, "/");
+
 	if(is_ntfs || cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
 	{
 		CellFsDirent dir; u64 read_e;
+		CellFsDirectoryEntry entry_d; u32 read_f;
+		char *entry_name = (is_root) ? dir.d_name : entry_d.entry_name.d_name;
 
 		char entry[STD_PATH_LEN], dest_entry[STD_PATH_LEN];
 
@@ -697,19 +707,21 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 #ifdef USE_NTFS
 			if(is_ntfs)
 			{
-				if(ps3ntfs_dirnext(pdir, dir.d_name, &bufn)) break;
-				if(dir.d_name[0]=='$' && path[12] == 0) continue;
+				if(ps3ntfs_dirnext(pdir, entry_name, &bufn)) break;
+				if(entry_name[0]=='$' && path[12] == 0) continue;
 			}
 			else
 #endif
-			if((cellFsReaddir(fd, &dir, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break;
+			if(is_root && ((cellFsReaddir(fd, &dir, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0))) break;
+			else
+			if(cellFsGetDirectoryEntries(fd, &entry_d, sizeof(entry_d), &read_f) || !read_f) break;
 
 			if(copy_aborted) break;
-			if(dir.d_name[0] == '.' && (dir.d_name[1] == '.' || dir.d_name[1] == NULL)) continue;
+			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
-			if(p_slash) sprintf(entry, "%s%s", path, dir.d_name); else sprintf(entry, "%s/%s", path, dir.d_name);
+			if(p_slash) sprintf(entry, "%s%s", path, entry_name); else sprintf(entry, "%s/%s", path, entry_name);
 
-			if(fop > 1) {sprintf(dest_entry, "%s/%s", dest, dir.d_name);} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
+			if(fop > 1) {sprintf(dest_entry, "%s/%s", dest, entry_name);} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
 
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
@@ -970,14 +982,15 @@ static void delete_history(bool delete_folders)
 
 	if(cellFsOpendir("/dev_hdd0/home", &fd) == CELL_FS_SUCCEEDED)
 	{
-		CellFsDirent dir; u64 read_e;
+		CellFsDirectoryEntry dir; u32 read_e;
+		char *entry_name = dir.entry_name.d_name;
 
-		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
+		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{
-			unlink_file("/dev_hdd0/home", dir.d_name, "/etc/boot_history.dat");
-			unlink_file("/dev_hdd0/home", dir.d_name, "/etc/community/CI.TMP");
-			unlink_file("/dev_hdd0/home", dir.d_name, "/community/MI.TMP");
-			unlink_file("/dev_hdd0/home", dir.d_name, "/community/PTL.TMP");
+			unlink_file("/dev_hdd0/home", entry_name, "/etc/boot_history.dat");
+			unlink_file("/dev_hdd0/home", entry_name, "/etc/community/CI.TMP");
+			unlink_file("/dev_hdd0/home", entry_name, "/community/MI.TMP");
+			unlink_file("/dev_hdd0/home", entry_name, "/community/PTL.TMP");
 		}
 		cellFsClosedir(fd);
 	}

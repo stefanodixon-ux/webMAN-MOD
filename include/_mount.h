@@ -394,19 +394,26 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 							if((cellFsStat(target, &buf) == CELL_FS_SUCCEEDED) && (buf.st_size == size))
 							{
+								#define FLH_OS		0x2F666C682F6F732FULL
+								#define OS_LV2		0x2F6F732F6C76325FULL
+
+								#define LOCAL_S		0x2F6C6F63616C5F73ULL
+								#define YS0_SYS		0x7973302F7379732FULL
+								#define LV2_SELF	0x6C76325F73656C66ULL
+
 								u64 lv2_offset = 0x15DE78; // 4.xx CFW LV1 memory location for: /flh/os/lv2_kernel.self
-								if(peek_lv1(lv2_offset) != 0x2F666C682F6F732FULL)
-									for(u64 addr = 0x100000ULL; addr<0xFFFFF8ULL; addr+=4) // Find in 16MB
-										if(peek_lv1(addr) == 0x2F6F732F6C76325FULL)             // /os/lv2_
+								if(peek_lv1(lv2_offset) != FLH_OS)
+									for(u64 addr = 0x100000ULL; addr < 0xFFFFF8ULL; addr += 4) // Find in 16MB
+										if(peek_lv1(addr) == OS_LV2)      // /os/lv2_
 										{
 											lv2_offset = addr - 4; break; // 0x12A2C0 on 3.55
 										}
 
-								if(peek_lv1(lv2_offset) == 0x2F666C682F6F732FULL)  // Original: /flh/os/lv2_kernel.self
+								if(peek_lv1(lv2_offset) == FLH_OS)  // Original: /flh/os/lv2_kernel.self
 								{
-									poke_lv1(lv2_offset + 0x00, 0x2F6C6F63616C5F73ULL); // replace:	/flh/os/lv2_kernel.self -> /local_sys0/sys/lv2_self
-									poke_lv1(lv2_offset + 0x08, 0x7973302F7379732FULL);
-									poke_lv1(lv2_offset + 0x10, 0x6C76325F73656C66ULL);
+									poke_lv1(lv2_offset + 0x00, LOCAL_S); // replace -> /local_sys0/sys/lv2_self
+									poke_lv1(lv2_offset + 0x08, YS0_SYS);
+									poke_lv1(lv2_offset + 0x10, LV2_SELF);
 
 									working = 0;
 									{ del_turnoff(0); }
@@ -550,10 +557,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					}
 					else if(strstr(source, "/webftp_server"))
 					{
-						sprintf(target, "%s/webftp_server.sprx",         "/dev_hdd0/plugins"); if(file_exists(target) == false)
-						sprintf(target, "%s/webftp_server_ps3mapi.sprx", "/dev_hdd0/plugins"); if(file_exists(target) == false)
-						sprintf(target, "%s/webftp_server.sprx",         "/dev_hdd0");         if(file_exists(target) == false)
-						sprintf(target, "%s/webftp_server_ps3mapi.sprx", "/dev_hdd0");
+						sprintf(target, "%s/webftp_server.sprx", "/dev_hdd0/plugins");
+						if(file_exists(target) == false) sprintf(target + 31, "_ps3mapi.sprx");
+						if(file_exists(target) == false) sprintf(target + 10, "webftp_server.sprx");
+						if(file_exists(target) == false) sprintf(target + 23, "_ps3mapi.sprx");
 					}
 					else if(strstr(source, "/boot_plugins"))
 					{
@@ -730,7 +737,6 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 #ifdef PS2_DISC
 			if(mounted && (strstr(source, "/GAME") || strstr(source, "/PS3ISO") || strstr(source, ".ntfs[PS3ISO]")))
 			{
-				CellFsDirent entry; u64 read_e;
 				int fd2; u16 pcount = 0; u32 tlen = strlen(buffer) + 8; u8 is_iso = 0;
 
 				sprintf(target, "%s", source);
@@ -745,15 +751,18 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				// -----------------------------
 				if(cellFsOpendir(target, &fd2) == CELL_FS_SUCCEEDED)
 				{
-					while((cellFsReaddir(fd2, &entry, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
-					{
-						if((entry.d_name[0] == '.')) continue;
+					CellFsDirectoryEntry dir; u32 read_e;
+					char *entry_name = dir.entry_name.d_name;
 
-						if(is_iso || strstr(entry.d_name, "[PS2") != NULL)
+					while(working && (!cellFsGetDirectoryEntries(fd2, &dir, sizeof(dir), &read_e) && read_e))
+					{
+						if((entry_name[0] == '.')) continue;
+
+						if(is_iso || strstr(entry_name, "[PS2") != NULL)
 						{
 							if(pcount == 0) strcat(buffer, "<br><HR>");
-							urlenc(enc_dir_name, entry.d_name);
-							tlen += sprintf(templn, "<a href=\"/mount.ps2%s/%s\">%s</a><br>", target, enc_dir_name, entry.d_name);
+							urlenc(enc_dir_name, entry_name);
+							tlen += sprintf(templn, "<a href=\"/mount.ps2%s/%s\">%s</a><br>", target, enc_dir_name, entry_name);
 
 							if(tlen > (BUFFER_SIZE - _2KB_)) break;
 							strcat(buffer, templn); pcount++;
@@ -771,8 +780,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 #ifdef COPY_PS3
 		if(sys_admin && is_copy)
 		{
-			if(islike(target, source) || ((!islike(source, "/net")) && file_exists(source) == false) )
-				{sprintf(templn, "<hr>%s", STR_ERROR); strcat(buffer, templn);}
+			if(islike(target, source))
+				{sprintf(templn, "<hr>%s %s %s", STR_ERROR, STR_CPYDEST, source); strcat(buffer, templn);}
+			else if((!islike(source, "/net")) && file_exists(source) == false)
+				{sprintf(templn, "<hr>%s %s %s", STR_ERROR, source, STR_NOTFOUND); strcat(buffer, templn);}
 			else
 			{
 				setPluginActive();

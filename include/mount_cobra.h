@@ -458,14 +458,17 @@
 
 							wait_for("/dev_bdvd", 2);
 
-							CellFsDirent dir; u64 read_e; int fd;
+							int fd;
 							if(cellFsOpendir("/dev_bdvd", &fd) == CELL_FS_SUCCEEDED)
 							{
-								while(!cellFsReaddir(fd, &dir, &read_e) && read_e)
+								CellFsDirectoryEntry dir; u32 read_e;
+								char *entry_name = dir.entry_name.d_name;
+
+								while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 								{
-									if( ((dir.d_name[0] | 0x20) == 's') && (dir.d_namlen == 11) )
+									if( ((entry_name[0] | 0x20) == 's') && (dir.entry_name.d_namlen == 11) )
 									{
-										char *tempID = to_upper(dir.d_name);
+										char *tempID = to_upper(entry_name);
 										if (
 											(tempID[1] == 'L' || tempID[1] == 'C') &&
 											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') && 

@@ -661,7 +661,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		{
 			CellFsDirectoryEntry entry; u32 read_f;
 			CellFsDirent entry_s; u64 read_e; // list root folder using the slower readdir
-			struct CellFsStat buf;
+			char *entry_name = (is_root) ? entry_s.d_name : entry.entry_name.d_name;
 
 			if(is_ntfs && !param[11])
 			{
@@ -678,46 +678,47 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 #ifdef USE_NTFS
 				if(is_ntfs)
 				{
-					if(ps3ntfs_dirnext(pdir, entry.entry_name.d_name, &bufn)) break;
-					if(entry.entry_name.d_name[0] == '$' && param[12] == 0) continue;
+					if(ps3ntfs_dirnext(pdir, entry_name, &bufn)) break;
+					if(entry_name[0] == '$' && param[12] == 0) continue;
 
 					entry.attribute.st_mode = bufn.st_mode, entry.attribute.st_size = bufn.st_size, entry.attribute.st_mtime = bufn.st_mtime;
 				}
 				else
 #endif
-				if(is_root) {if((cellFsReaddir(fd, &entry_s, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break; strcpy(entry.entry_name.d_name, entry_s.d_name);}
+				if(is_root) {if((cellFsReaddir(fd, &entry_s, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break;}
 				else
 				if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
 
-				if(entry.entry_name.d_name[0] == '.' && entry.entry_name.d_name[1] == 0) continue;
+				if(entry_name[0] == '.' && entry_name[1] == 0) continue;
 				if(tlen > BUFFER_SIZE_HTML) break;
 				if(idx >= (max_entries-3)) break;
 
-				if(*file_query && (strcasestr(entry.entry_name.d_name, file_query) == NULL)) continue;
+				if(*file_query && (strcasestr(entry_name, file_query) == NULL)) continue;
 
 #ifdef USE_NTFS
 				// use host_root to expand all /dev_ntfs entries in root
-				bool is_host = is_root && ((mountCount > 0) && IS(entry.entry_name.d_name, "host_root") && mounts);
+				bool is_host = is_root && ((mountCount > 0) && IS(entry_name, "host_root") && mounts);
 
 				u8 ntmp = 1;
 				if(is_host) ntmp = mountCount + 1;
 
 				for (u8 u = 0; u < ntmp; u++)
 				{
-					if(u) {sprintf(entry.entry_name.d_name, "dev_%s", mounts[u-1].name);}
+					if(u) {sprintf(entry_name, "dev_%s", mounts[u-1].name);}
 #endif
 					if(is_root)
 					{
-						flen = sprintf(templn, "/%s", entry.entry_name.d_name);
+						flen = sprintf(templn, "/%s", entry_name);
 					}
 					else
 					{
-						flen = sprintf(templn, "%s/%s", param, entry.entry_name.d_name);
+						flen = sprintf(templn, "%s/%s", param, entry_name);
 					}
 					if(templn[flen - 1] == '/') templn[flen--] = NULL;
 
 					if(is_root)
 					{
+						struct CellFsStat buf;
 						cellFsStat(templn, &buf);
 						entry.attribute.st_mode  = buf.st_mode;
 						entry.attribute.st_size  = buf.st_size;
@@ -730,7 +731,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 					is_dir = (entry.attribute.st_mode & S_IFDIR); if(is_dir) dirs++;
 
-					flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, entry.entry_name.d_name, fsize, rDate, sz, sf, false, show_icon0, is_ps3_http, skip_cmd, sort_by);
+					flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, entry_name, fsize, rDate, sz, sf, false, show_icon0, is_ps3_http, skip_cmd, sort_by);
 
 					if((flen == 0) || (flen >= _MAX_LINE_LEN)) continue; //ignore lines too long
 					memcpy(line_entry[idx].path, tempstr, FILE_MGR_KEY_LEN + flen + 1); idx++;
@@ -933,11 +934,12 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		else
 		{
 
+			_concat(&sout,	HTML_BLU_SEPARATOR);
 #ifndef LITE_EDITION
-			_concat(&sout, "<a onclick=\"o=lg.style,o.display=(o.display=='none')?'block':'none';\" style=\"cursor:pointer;\">");
+			_concat(&sout,	webman_config->sman ? "<a class='tg' " : "<a ");
+			_concat(&sout,	"onclick=\"o=lg.style,o.display=(o.display=='none')?'block':'none';\" style=\"cursor:pointer;\"> ");
 #endif
-			_concat(&sout, HTML_BLU_SEPARATOR
-									 WM_APPNAME " - Simple Web Server" EDITION "<p>");
+			_concat(&sout,	WM_APPNAME " - Simple Web Server" EDITION "</a>");
 
 #ifndef LITE_EDITION
 			_concat(&sout, "<div id=\"lg\" style=\"display:none\">");
@@ -972,7 +974,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					}
 				}
 			}
-			_concat(&sout, "</div></a>");
+			_concat(&sout, "</div>");
 #endif
 		}
 	}

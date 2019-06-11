@@ -1013,7 +1013,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 		sbuffer.size = read_file(HTML_BASE_PATH "/sman.htm", sbuffer.str, _16KB_, 0);
 
 		if(is_cpursx)
-			_concat(&sbuffer, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3?/sman.ps3\">");
+			_concat(&sbuffer, "<meta http-equiv=\"refresh\" content=\"15;URL=/cpursx.ps3?/sman.ps3\">");
 
 		#ifndef ENGLISH_ONLY
 		if(webman_config->lang)

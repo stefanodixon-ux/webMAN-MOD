@@ -772,13 +772,14 @@ static void add_plugins_list(char *buffer, char *templn)
 		for(u8 i = 0; i < 10; i++)
 		if(cellFsOpendir(paths[i], &fd) == CELL_FS_SUCCEEDED)
 		{
-			CellFsDirent dir; u64 read_e;
+			CellFsDirectoryEntry dir; u32 read_e;
+			char *entry_name = dir.entry_name.d_name;
 
-			while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
+			while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 			{
-				if(!extcmp(dir.d_name, ".sprx", 5))
+				if(!extcmp(entry_name, ".sprx", 5))
 				{
-					sprintf(templn, "<option>%s/%s</option>", paths[i], dir.d_name); buffer += concat(buffer, templn); if(++cnt > 50) break;
+					sprintf(templn, "<option>%s/%s</option>", paths[i], entry_name); buffer += concat(buffer, templn); if(++cnt > 50) break;
 				}
 			}
 			cellFsClosedir(fd);
