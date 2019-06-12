@@ -23,8 +23,7 @@ static int g_socket = NONE;
 
 #define MAX_RETRIES    3
 
-#define TEMP_NET_PSXISO  WMTMP "/~netpsx.iso"
-#define PLAYSTATION      "PLAYSTATION "
+#define TEMP_NET_PSXCUE  WMTMP "/~netpsx.cue"
 
 static int netiso_svrid = NONE;
 
@@ -66,17 +65,6 @@ static int read_remote_file(int s, void *buf, u64 offset, u32 size, int *abort_c
 	}
 
 	return bytes_read;
-}
-
-static u32 detect_cd_sector_size(char *buffer)
-{
-	int sec_size[3] = {2048, 2336, 2448};
-	for(int n = 0; n < 3; n++)
-	{
-		if(!strncmp(buffer + ((sec_size[n]<<4) + 0x20), PLAYSTATION, 0xC)) return sec_size[n];
-	}
-
-	return 2352;
 }
 
 static s64 open_remote_file(int s, const char *path, int *abort_connection)

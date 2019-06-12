@@ -781,8 +781,8 @@ size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
 int wait_for(const char *path, u8 timeout);
 
-#include "include/html.h"
 #include "include/string.h"
+#include "include/html.h"
 #include "include/peek_poke.h"
 #include "include/idps.h"
 #include "include/led.h"
@@ -844,6 +844,7 @@ static u8 mount_unk = EMU_OFF;
 
 #ifdef COBRA_ONLY
 
+#include "include/psxemu.h"
 #include "include/rawseciso.h"
 #include "include/netclient.h"
 #include "include/netserver.h"
@@ -860,7 +861,6 @@ static u8 mount_unk = EMU_OFF;
 #include "include/autopoweroff.h"
 
 #include "include/gamedata.h"
-#include "include/psxemu.h"
 
 #include "include/debug_mem.h"
 #include "include/fix_game.h"
@@ -1162,7 +1162,9 @@ static void handleclient_www(u64 conn_s_p)
 	int conn_s = (int)conn_s_p; // main communications socket
 
 	size_t header_len;
-	sys_addr_t sysmem = NULL;
+	sys_addr_t sysmem = NULL; 
+	
+	prev_dest = last_dest = NULL; // init fast concat
 
 	bool is_ntfs = false;
 	char param[HTML_RECV_SIZE];
@@ -2379,10 +2381,11 @@ parse_request:
 					//cellFsMkdir("/dev_hdd0/DVDISO", DMODE);
 					//cellFsMkdir("/dev_hdd0/BDISO",  DMODE);
 
+					sprintf(param, "/dev_hdd0");
 					for(u8 i = 0; i < 9; i++)
 					{
 						if(i == 1 || i == 7) continue;
-						sprintf(param, "%s/%s",  "/dev_hdd0", paths[i]);
+						sprintf(param + 9 , "/%s", paths[i]);
 						cellFsMkdir(param, DMODE);
 					}
 
@@ -3421,10 +3424,10 @@ retry_response:
 						if(param[12] == '/') sprintf(templn, "%s", param + 12); else
 						if(param[14] == '/') sprintf(templn, "%s", param + 14); else
 						{
-															 sprintf(templn, "%s/%s", "/dev_hdd0/plugins", "webftp_server.sprx");
-							if(file_exists(templn) == false) sprintf(templn, "%s/%s", "/dev_hdd0/plugins", "webftp_server_ps3mapi.sprx");
-							if(file_exists(templn) == false) sprintf(templn, "%s/%s", "/dev_hdd0", "webftp_server.sprx");
-							if(file_exists(templn) == false) sprintf(templn, "%s/%s", "/dev_hdd0", "webftp_server_ps3mapi.sprx");
+							sprintf(templn, "%s/%s", "/dev_hdd0/plugins", "webftp_server.sprx");
+							if(file_exists(templn) == false) sprintf(templn + 31, "_ps3mapi.sprx");
+							if(file_exists(templn) == false) sprintf(templn + 10, "webftp_server.sprx");
+							if(file_exists(templn) == false) sprintf(templn + 23, "_ps3mapi.sprx");
 
 							get_param("prx=", templn, param, MAX_PATH_LEN);
 						}

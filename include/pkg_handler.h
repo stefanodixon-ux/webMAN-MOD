@@ -387,10 +387,11 @@ static int installPKG(const char *pkgpath, char *msg)
 
 static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 {
-	int fd, ret = FAILED;
-	char msg[MAX_PATH_LEN];
+	if(install_in_progress) return;
 
 	install_in_progress = true;
+
+	int fd, ret = FAILED;
 
 	if(cellFsOpendir(DEFAULT_PKG_PATH, &fd) == CELL_FS_SUCCEEDED)
 	{
@@ -402,19 +403,25 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 		{
 			if(!extcasecmp(dir.d_name, ".pkg", 4))
 			{
-				char pkgfile[MAX_PKGPATH_LEN];
-				sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, dir.d_name); ret = CELL_OK; if(!webman_config->nobeep) { BEEP1 }
+				if(!webman_config->nobeep) { BEEP1 }
 
-				installPKG(pkgfile, msg); show_msg(msg);
-				wait_for_pkg_install();
+				char pkgfile[MAX_PKGPATH_LEN];
+				sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, dir.d_name);
+
+				char msg[MAX_PATH_LEN];
+				ret = installPKG(pkgfile, msg); show_msg(msg);
+				if(ret == CELL_OK) wait_for_pkg_install();
+
+				ret = CELL_OK; 
 			}
 		}
 		cellFsClosedir(fd);
 
-		if(ret == FAILED) { BEEP2 } else sys_ppu_thread_sleep(2);
+		if(ret == FAILED) { BEEP2 }
 	}
 
-	install_in_progress = false;
+	sys_ppu_thread_sleep(2);
+	install_in_progress = false; 
 
 	sys_ppu_thread_exit(0);
 }
@@ -427,21 +434,22 @@ static void poll_downloaded_pkg_files(char *msg)
 
 		if(cellFsOpendir(TEMP_DOWNLOAD_PATH, &fd) == CELL_FS_SUCCEEDED)
 		{
+			char *dlfile = msg;
+
 			while(working && (cellFsReaddir(fd, &entry, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 			{
 				if(!extcmp(entry.d_name, ".pkg", 4))
 				{
-					char *dlfile = msg; u64 pkg_size;
 					sprintf(dlfile, "%s%s", TEMP_DOWNLOAD_PATH, entry.d_name); pkg_count++;
 					cellFsChmod(dlfile, MODE);
 
-					pkg_size = get_pkg_size_and_install_time(dlfile); if(pkg_size == 0) continue;
+					u64 pkg_size = get_pkg_size_and_install_time(dlfile); if(pkg_size == 0) continue;
 
 					struct CellFsStat s;
 					if(cellFsStat(dlfile, &s) == CELL_FS_SUCCEEDED && pkg_size == s.st_size)
 					{
-						char pkgfile[MAX_PATH_LEN]; u16 pkg_len;
-						pkg_len = sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, entry.d_name);
+						char pkgfile[MAX_PATH_LEN];
+						u16 pkg_len = sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, entry.d_name);
 						for(u8 retry = 1; retry < 255; retry++)
 						{
 							if(cellFsRename(dlfile, pkgfile) == CELL_FS_SUCCEEDED) break;

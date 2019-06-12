@@ -379,6 +379,7 @@ int main()
 	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite = true; else
 	if(	(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 285000)) ||
 		(is_ps3hen() == 0x1337) || 
+		(sysLv2FsStat("/dev_flash/hen/PS3HEN.BIN", &stat) == SUCCESS) ||
 		(sysLv2FsStat(HDDROOT_DIR "/hen/PS3HEN.BIN", &stat) == SUCCESS) ||
 		(sysLv2FsStat("/dev_usb000/PS3HEN.BIN", &stat) == SUCCESS) ||
 		(sysLv2FsStat("/dev_usb001/PS3HEN.BIN", &stat) == SUCCESS)

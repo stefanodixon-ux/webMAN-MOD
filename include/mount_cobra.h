@@ -252,22 +252,22 @@
 					int ns = connect_to_remote_server(netiso_svrid);
 					if(ns >= 0)
 					{
-						cellFsUnlink(TEMP_NET_PSXISO);
+						cellFsUnlink(TEMP_NET_PSXCUE);
 						strcpy(netiso_args.path + len - 3, "CUE");
-						if(copy_net_file(TEMP_NET_PSXISO, netiso_args.path, ns, _4KB_) == FAILED)
+						if(copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns, _4KB_) == FAILED)
 						{
 							strcpy(netiso_args.path + len - 3, "cue");
-							copy_net_file(TEMP_NET_PSXISO, netiso_args.path, ns, _4KB_);
+							copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns, _4KB_);
 						}
 						sclose(&ns);
 
-						if(file_exists(TEMP_NET_PSXISO))
+						if(file_exists(TEMP_NET_PSXCUE))
 						{
 							char *cue_buf = malloc(_4KB_);
 							if(cue_buf)
 							{
-								s64 cue_size = read_file(TEMP_NET_PSXISO, cue_buf, _4KB_, 0);
-								cellFsUnlink(TEMP_NET_PSXISO);
+								s64 cue_size = read_file(TEMP_NET_PSXCUE, cue_buf, _4KB_, 0);
+								cellFsUnlink(TEMP_NET_PSXCUE);
 
 								num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);
 								free(cue_buf);

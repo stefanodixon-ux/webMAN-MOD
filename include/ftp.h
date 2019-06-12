@@ -53,8 +53,8 @@ static void absPath(char* absPath_s, const char* path, const char* cwd)
 
 	filepath_check(absPath_s);
 
-	if(islike(absPath_s, "/dev_blind")) mount_device("/dev_blind", NULL, NULL); else
-	if(islike(absPath_s, "/dev_hdd1") ) mount_device("/dev_hdd1",  NULL, NULL);
+	if(islike(absPath_s, "/dev_blind") && !isDir("/dev_blind") ) mount_device("/dev_blind", NULL, NULL); else
+	if(islike(absPath_s, "/dev_hdd1")  && !isDir("/dev_hdd1")  ) mount_device("/dev_hdd1",  NULL, NULL);
 }
 
 static int ssplit(const char* str, char* left, int lmaxlen, char* right, int rmaxlen)
@@ -129,7 +129,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	struct CellFsStat buf;
 	int fd, pos, timeout = 0;
 
-	bool is_ntfs = false;
+	bool is_ntfs = false, do_sc36 = true;
 
 	char buffer[FTP_RECV_SIZE];
 
@@ -157,8 +157,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	{
 		if(sysmem && (IS_INGAME || (timeout++ > 1500))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 3 seconds
 
-		u16 rlen = recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
-		if(rlen)
+		int rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
+		if(rlen > 0)
 		{
 			buffer[rlen] = NULL;
 
@@ -779,8 +779,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							int err = FTP_FILE_UNAVAILABLE;
 
-							if(islike(filename, "/dvd_bdvd"))
-								{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+							if(do_sc36 && islike(filename, "/dvd_bdvd"))
+								{do_sc36 = false; system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
 
 							if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
 							{
@@ -800,8 +800,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									{
 										ps3ntfs_seek64(fd, rest, SEEK_SET);
 
-										rest = 0;
-										err = CELL_FS_OK; ftp_ntfs_transfer_in_progress++;
+										rest = 0, err = FAILED;
+										ftp_ntfs_transfer_in_progress++;
 
 										ssend(conn_s_ftp, FTP_OK_150);
 
@@ -811,12 +811,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											read_e = ps3ntfs_read(fd, (void *)buffer2, BUFFER_SIZE_FTP);
 											if(read_e > 0)
 											{
-												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) {err = FAILED; break;}
+												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) break; // FAILED
 											}
 											else if(read_e < 0)
-												{err = FAILED; break;}
+												break; // FAILED
 											else
-												break;
+												{err = CELL_FS_OK; break;}
 										}
 
 										ps3ntfs_close(fd); ftp_ntfs_transfer_in_progress--;
@@ -832,8 +832,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									//int optval = BUFFER_SIZE_FTP;
 									//setsockopt(data_s, SOL_SOCKET, SO_SNDBUF, &optval, sizeof(optval));
 
-									rest = 0;
-									err = CELL_FS_OK;
+									rest = 0, err = FAILED;
 
 									ssend(conn_s_ftp, FTP_OK_150); // File status okay; about to open data connection.
 
@@ -843,13 +842,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										{
 											if(read_e)
 											{
-												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) {err = FAILED; break;}
+												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) break; // FAILED
 											}
 											else
-												break;
+												{err = CELL_FS_OK; break;}
 										}
 										else
-											{err = FAILED; break;}
+											break; // FAILED
 									}
 									cellFsClose(fd);
 								}
@@ -858,7 +857,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-								continue; // no delay
+								//continue; // no delay
 							}
 							else if( err == FTP_FILE_UNAVAILABLE)
 							{
@@ -910,21 +909,21 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										ps3ntfs_seek64(fd, rest, SEEK_SET);
 
 										rest = 0;
-										err = CELL_FS_OK; ftp_ntfs_transfer_in_progress++;
+										ftp_ntfs_transfer_in_progress++;
 
 										ssend(conn_s_ftp, FTP_OK_150);
 
 										while(working)
 										{
-											read_e = recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
+											read_e = (int)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
 											if(read_e > 0)
 											{
-												if(ps3ntfs_write(fd, buffer2, read_e) != (int)read_e) {err = FAILED; break;}
+												if(ps3ntfs_write(fd, buffer2, read_e) != (int)read_e) break; // FAILED
 											}
 											else if(read_e < 0)
-												{err = FAILED; break;}
+												break; // FAILED
 											else
-												break;
+												{err = CELL_FS_OK; break;}
 										}
 
 										ps3ntfs_close(fd); ftp_ntfs_transfer_in_progress--;
@@ -943,8 +942,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									else
 										*source = NULL;
 
-									err = FAILED;
-
 									if(cellFsOpen(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | ((rest | is_append) ? CELL_FS_O_APPEND : CELL_FS_O_TRUNC), &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 									{
 										u64 pos = 0;
@@ -960,11 +957,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 										while(working)
 										{
-											read_e = (u32)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
-											if(read_e)
+											read_e = (int)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
+											if(read_e > 0)
 											{
-												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break;
+												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break; // FAILED
 											}
+											else if(read_e < 0)
+												break; // FAILED
 											else
 												{err = CELL_FS_OK; break;}
 										}
@@ -992,7 +991,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-								continue; // no delay
+								//continue; // no delay
 							}
 							else if(err == FTP_DEVICE_IS_FULL)
 							{

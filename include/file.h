@@ -11,6 +11,7 @@ static void _file_copy(const char *file1, char *file2);
 
 static bool copy_in_progress = false;
 static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
+static bool allow_sc36 = true; // used to skip decrypt dev_bdvd files in file_copy function if it's called from folder_copy
 
 static u32 copied_count = 0;
 
@@ -385,7 +386,7 @@ int file_copy(const char *file1, char *file2, u64 maxbytes)
 		if(buf.st_size > get_free_space("/dev_hdd0")) return FAILED;
 	}
 
-	if(islike(file1, "/dvd_bdvd"))
+	if(allow_sc36 && islike(file1, "/dvd_bdvd"))
 		{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
 
 #ifdef USE_NTFS
@@ -570,6 +571,9 @@ static int folder_copy(const char *path1, char *path2)
 
 	if(is_ntfs || cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
 	{
+		if(islike(path1, "/dvd_bdvd"))
+			{allow_sc36 = false; system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+
 #ifdef USE_NTFS
 		if(is_ntfs_path(path2))
 			ps3ntfs_mkdir(path2 + 5, DMODE);
@@ -590,6 +594,9 @@ static int folder_copy(const char *path1, char *path2)
 			if(mc_app)	sys_memory_allocate_from_container(_256KB_, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &g_sysmem);
 		}
 
+		u16 plen1 = sprintf(source, "%s", path1);
+		u16 plen2 = sprintf(target, "%s", path2);
+
 		while(working)
 		{
 #ifdef USE_NTFS
@@ -607,8 +614,8 @@ static int folder_copy(const char *path1, char *path2)
 			if(copy_aborted) break;
 			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
-			sprintf(source, "%s/%s", path1, entry_name);
-			sprintf(target, "%s/%s", path2, entry_name);
+			sprintf(source + plen1, "/%s", entry_name);
+			sprintf(target + plen2, "/%s", entry_name);
 
 			if(isDir(source))
 			{
@@ -625,7 +632,7 @@ static int folder_copy(const char *path1, char *path2)
 		if(is_ntfs) ps3ntfs_dirclose(pdir);
 		else
 #endif
-		cellFsClosedir(fd);
+		cellFsClosedir(fd); allow_sc36 = true;
 
 		if(copy_aborted) return FAILED;
 	}
@@ -697,10 +704,12 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 		char entry[STD_PATH_LEN], dest_entry[STD_PATH_LEN];
 
-		size_t path_len = strlen(path);
+		u16 path_len = sprintf(entry, "%s", path);
 		bool p_slash = (path_len > 1) && (path[path_len - 1] == '/');
 
 		if(fop > 1) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
+
+		u16 dest_len = sprintf(dest_entry, "%s", dest);
 
 		while(working)
 		{
@@ -719,9 +728,9 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			if(copy_aborted) break;
 			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
-			if(p_slash) sprintf(entry, "%s%s", path, entry_name); else sprintf(entry, "%s/%s", path, entry_name);
+			if(p_slash) sprintf(entry + path_len, "%s", entry_name); else sprintf(entry + path_len, "/%s", entry_name);
 
-			if(fop > 1) {sprintf(dest_entry, "%s/%s", dest, entry_name);} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
+			if(fop > 1) {sprintf(dest_entry + dest_len, "/%s", entry_name);} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
 
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}

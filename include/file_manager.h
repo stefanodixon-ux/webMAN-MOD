@@ -383,6 +383,7 @@ static int add_breadcrumb_trail(char *pbuffer, char *param)
 	sprintf(templn, "%s", param);
 
 	// add links to path
+	prev_dest = last_dest = NULL; // init fast concat
 
 	while((slash = strchr(templn + 1, '/')))
 	{

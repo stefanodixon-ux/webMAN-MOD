@@ -89,15 +89,27 @@ static bool _IS(const char *a, const char *b)
 	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
 }
 
+static char *last_dest = NULL; // for fast concat (avoids find last byte)
+static char *prev_dest = NULL;
+
 static size_t concat(char *dest, const char *src)
 {
-	while (*dest) dest++;
+	if(last_dest && (dest == prev_dest))
+		dest = last_dest;
+	else
+		prev_dest = dest;
+
+	while (*dest) dest++; // find last byte
 
 	size_t size = 0;
 
-	while ((*dest++ = *src++)) size++;
+	last_dest = dest;
 
-	return size;
+	while ((*dest++ = *src++)) size++;  // append src
+
+	last_dest += size;
+
+	return size; // return size of src
 }
 
 static char *to_upper(char *text)

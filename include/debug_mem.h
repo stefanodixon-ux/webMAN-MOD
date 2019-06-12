@@ -88,7 +88,7 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 	u64 address, addr, byte_addr, fvalue, value=0, upper_memory, found_address=0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0;
 	bool bits8 = false, bits16 = false, bits32 = false, found = false;
-	u8 flen=0;
+	u8 flen = 0;
 	char *v;
 
 	v = strstr(param + 10, "&");
@@ -120,8 +120,12 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 		if(strstr(param,"#")) {step = 4, address &= 0x80000000FFFFFFFCULL;} // find using aligned memory address (4X faster) e.g. /find.lv2?3000=3940ffff#
 		upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;
 	}
+	else if(strstr(param, "#"))
+		upper_memory = 0x8FFFFFFFFFFFFFF8ULL; // use # to peek/poke any memory address
 	else
-		upper_memory = 0x8FFFFFFFFFFFFFF8ULL; // allow peek/poke any memory address
+		upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8; // safe memory adddress
+
+	if(address > upper_memory) address = upper_memory - 0x200;
 
 	if((v == NULL) || (address > upper_memory)) { /* ignore find/poke if value is not provided or invalid address */ }
 	else
