@@ -268,6 +268,7 @@ static void poll_thread(u64 poll)
 		if(_IS_ON_XMB_) poll_downloaded_pkg_files(msg);
 #endif
 
+#ifdef COBRA_ONLY
 		// Auto-mount JB game found on root of USB device
 		if(is_mounting) ;
 
@@ -284,11 +285,9 @@ static void poll_thread(u64 poll)
 						{
 							if(automount != f0)
 							{
-#ifdef COBRA_ONLY
 								sprintf(msg, "%s/AUTOMOUNT.ISO", drives[f0]);
 								if(file_exists(msg)) {mount_game(msg, MOUNT_SILENT); automount = f0; break;}
 								else
-#endif
 								{
 									sprintf(msg, "%s/PS3_GAME/PARAM.SFO", drives[f0]);
 									if(file_exists(msg)) {mount_game(msg, MOUNT_SILENT); automount = f0; break;}
@@ -322,7 +321,11 @@ static void poll_thread(u64 poll)
 				automount = 99;
 			}
 		}
-		else if(fan_ps2_mode && IS_INGAME) {automount = 0; enable_fan_control(PS2_MODE_OFF, msg);}
+		else if(fan_ps2_mode && IS_INGAME)
+		{
+			automount = 0; enable_fan_control(PS2_MODE_OFF, msg);
+		}
+#endif
 
 #ifdef DO_WM_REQUEST_POLLING
 		// Poll requests via local file

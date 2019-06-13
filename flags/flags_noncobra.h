@@ -20,7 +20,7 @@
 #define COPY_PS3		1	// batch script commands and /copy.ps3/<path>
 #define DEBUG_MEM		1	// /dump.ps3 / peek.lv1 / poke.lv1 / find.lv1 / peek.lv2 / poke.lv2 / find.lv2
 #define VIDEO_REC		1	// /videorec.ps3  start/stop video recording (in-game only) (thanks to mysis & 3141card)
-#define LOAD_PRX		1	// /loadprx.ps3?slot=n&prx=path/file.sprx  (load prx)
+//#define LOAD_PRX		1	// /loadprx.ps3?slot=n&prx=path/file.sprx  (load prx)
 //#define FAKEISO 		1	// support .ntfs[BDFILE] (fake ISO)
 #define BDVD_REGION		1	// change BD/DVD region
 #define REMOVE_SYSCALLS	1	// remove syscalls on startup and using R2+TRIANGLE

@@ -673,8 +673,10 @@ typedef struct
 static u8 wmconfig[sizeof(WebmanCfg)];
 static WebmanCfg *webman_config = (WebmanCfg*) wmconfig;
 
+#ifdef COBRA_ONLY
 static u8 cconfig[sizeof(CobraConfig)];
 static CobraConfig *cobra_config = (CobraConfig*) cconfig;
+#endif
 
 static int save_settings(void);
 static void restore_settings(void);
@@ -703,7 +705,9 @@ int npklic_struct_offset = 0; u8 klic_polling = 0;
 #define KLIC_CONTENT_ID_OFFSET  (npklic_struct_offset-0xA4)
 #endif
 
+#ifdef COBRA_ONLY
 static bool is_mamba = false;
+#endif
 static u16 cobra_version = 0;
 
 static bool is_mounting = false;
@@ -798,6 +802,7 @@ int wait_for(const char *path, u8 timeout);
 static ntfs_md *mounts = NULL;
 static int mountCount = NTFS_UNMOUNTED;
 static bool skip_prepntfs = false;
+static bool root_check = true; // check ntfs volumes accessing file manager's root
 
 static int prepNTFS(u8 clear);
 #endif
@@ -998,8 +1003,9 @@ static void restore_settings(void)
 	setAutoPowerOff(false);
 	#endif
 
+#ifdef COBRA_ONLY
 	if(cobra_config->fan_speed) cobra_read_config(cobra_config);
-
+#endif
 	working = plugin_active = 0;
 	sys_ppu_thread_usleep(500000);
 }
@@ -1625,6 +1631,8 @@ parse_request:
 				// /play.ps3?col=<col>&seg=<seg>  click item on XMB
 				// /play.ps3<path>               mount <path> and start game from disc icon
 				// /play.ps3<script-path>        execute script. path must be a .txt or .bat file
+				// /play.ps3?<titleid>           mount npdrm game and start game from app_home icon (e.g IRISMAN00, MANAGUNZ0, NPUB12345, etc.)
+				// /play.ps3?<appname>           play movian, multiman, retroArch, rebug toolbox, remoteplay
 
 				u8 ret = 0, is_combo = (param[2] == 'a') ? 0 : (param[1] == 'c') ? 2 : 1; // 0 = /pad.ps3   1 = /play.ps3   2 = /combo.ps3
 
@@ -3302,6 +3310,8 @@ retry_response:
 
 				////////////////////////////////////
 
+				prev_dest = last_dest = NULL; // init fast concat
+
 				if(is_binary == FOLDER_LISTING) // folder listing
 				{
 					if(folder_listing(buffer, BUFFER_SIZE_HTML, templn, param, conn_s, tempstr, header, is_ps3_http, sort_by, sort_order, file_query) == false)
@@ -3410,6 +3420,7 @@ retry_response:
 						if(isDir("/dev_bdvd")) {sprintf(templn, HTML_REDIRECT_TO_URL, "/dev_bdvd", HTML_REDIRECT_WAIT); _concat(&sbuffer, templn);}
 					}
  #ifdef LOAD_PRX
+  #ifdef COBRA_ONLY
 					else
 					if(islike(param, "/loadprx.ps3") || islike(param, "/unloadprx.ps3"))
 					{
@@ -3436,21 +3447,15 @@ retry_response:
 
 						if(prx_found || (*templn != '/'))
 						{
-  #ifdef COBRA_ONLY
 							if(*templn)
 							{
 								slot = get_vsh_plugin_slot_by_name(templn, false);
 								if(islike(param, "/unloadprx.ps3")) prx_found = false;
 							}
-  #endif
 							if((slot < 1) || (slot > 6))
 							{
-  #ifdef COBRA_ONLY
 								slot = get_valuen(param, "slot=", 0, 6);
 								if(!slot) slot = get_free_slot(); // find first free slot if slot == 0
-  #else
-								slot = get_valuen(param, "slot=", 1, 6);
-  #endif
 							}
 
 							if(prx_found)
@@ -3471,7 +3476,8 @@ retry_response:
 						else
 							_concat(&sbuffer, STR_NOTFOUND);
 					}
- #endif
+  #endif // #ifdef COBRA_ONLY
+ #endif // #ifdef LOAD_PRX
 
  #ifdef PKG_HANDLER
 					else

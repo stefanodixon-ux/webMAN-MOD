@@ -61,6 +61,7 @@ static u32 ftp_ntfs_transfer_in_progress = 0;
 
 static void check_ntfs_volumes(void)
 {
+	root_check = false;
 
 	if((mountCount > 0) && (!ftp_ntfs_transfer_in_progress))
 	{

@@ -113,8 +113,9 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 	address|=0x8000000000000000ULL;
 
 	lv1 = strstr(param,".lv1?") ? 1 : 0;
+#ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
-
+#endif
 	if(islike(param, "/find.lv"))
 	{
 		if(strstr(param,"#")) {step = 4, address &= 0x80000000FFFFFFFCULL;} // find using aligned memory address (4X faster) e.g. /find.lv2?3000=3940ffff#
@@ -207,8 +208,9 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 	address &= 0xFFFFFFFFFFFFFFF0ULL;
 	addr = address;
 
+#ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
-
+#endif
 	for(u16 i = 0; i < 0x200; i++)
 	{
 		if(!p)
@@ -250,8 +252,9 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 		p++; if(p>=0x10) p=0;
 	}
 
+#ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_ENABLE_COBRA); }
-
+#endif
 	// footer
 
 	buffer += concat(buffer, "<hr>Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");

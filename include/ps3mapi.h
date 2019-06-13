@@ -179,11 +179,11 @@ static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
 
 	if(islike(param, "/buzzer.ps3mapi") && param[15] == '?')
 	{
-		char *value = strstr(param, "mode="); if(value) value += 5;
+		u8 value = get_valuen(param, "mode=", 1, 3);
 
-		if(*value == '1') { BEEP1 }
-		if(*value == '2') { BEEP2 }
-		if(*value == '3') { BEEP3 }
+		if(value == 1) { BEEP1 }
+		if(value == 2) { BEEP2 }
+		if(value == 3) { BEEP3 }
 
 	}
 
@@ -198,9 +198,9 @@ static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
 	sprintf(templn, "<form id=\"buzzer\" action=\"/buzzer%s<br>"
 					"<b>%s:</b>  <select name=\"mode\">", HTML_FORM_METHOD, "Mode");
 	concat(buffer, templn);
-	add_option_item(1, "Simple", strstr(param, "mode=1"), buffer);
-	add_option_item(2, "Double", strstr(param, "mode=2"), buffer);
-	add_option_item(3, "Triple", strstr(param, "mode=3"), buffer);
+	add_option_item(1, "Simple", IS_MARKED("mode=1"), buffer);
+	add_option_item(2, "Double", IS_MARKED("mode=2"), buffer);
+	add_option_item(3, "Triple", IS_MARKED("mode=3"), buffer);
 	sprintf(templn, "</select>   <input type=\"submit\" value=\" %s \"/></td></form><br>", "Ring");
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "</td>");
@@ -213,19 +213,17 @@ static void ps3mapi_led(char *buffer, char *templn, char *param)
 
 	if(islike(param, "/led.ps3mapi") && param[12] == '?')
 	{
-		int color = 0, mode = OFF; char *value;
+		int color = get_valuen(param, "color=", 0, 2);
 
-		value = strstr(param, "color="); if(value) value += 6;
+		if(color == 0) color = RED;	  else
+		if(color == 1) color = GREEN; else
+		if(color == 2) color = RED+GREEN; //YELLOW
 
-		if(*value == '0') color = RED;
-		if(*value == '1') color = GREEN;
-		if(*value == '2') color = RED+GREEN; //YELLOW
+		int mode = get_valuen(param, "mode=", 0, 3);
 
-		value = strstr(param, "mode="); if(value) value += 5;
-
-		if(*value == '1') mode = ON;
-		if(*value == '2') mode = BLINK_FAST;
-		if(*value == '3') mode = BLINK_SLOW;
+		if(mode == 1) mode = ON;		 else
+		if(mode == 2) mode = BLINK_FAST; else
+		if(mode == 3) mode = BLINK_SLOW;
 
 		if(color & RED)   { system_call_2(SC_SYS_CONTROL_LED, RED  , mode); }
 		if(color & GREEN) { system_call_2(SC_SYS_CONTROL_LED, GREEN, mode); }
@@ -243,17 +241,18 @@ static void ps3mapi_led(char *buffer, char *templn, char *param)
 	sprintf(templn, "<form id=\"led\" action=\"/led%s<br>"
 					"<b>%s:</b>  <select name=\"color\">", HTML_FORM_METHOD,  "Color"); concat(buffer, templn);
 
-	add_option_item(0, "Red", strstr(param, "color=0"), buffer);
-	add_option_item(1, "Green", strstr(param, "color=1"), buffer);
-	add_option_item(2, "Yellow (Red+Green)", strstr(param, "color=2"), buffer);
-	sprintf(templn, "</select>   <b>%s:</b>  <select name=\"mode\">", "Mode");
-	concat(buffer, templn);
-	add_option_item(0, "Off", strstr(param, "mode=0"), buffer);
-	add_option_item(1, "On", strstr(param, "mode=1"), buffer);
-	add_option_item(2, "Blink fast", strstr(param, "mode=2"), buffer);
-	add_option_item(3, "Blink slow", strstr(param, "mode=3"), buffer);
-	sprintf(templn, "</select>   <input type=\"submit\" value=\" %s \"/></form><br>", "Set");
+	add_option_item(0, "Red",                IS_MARKED("color=0"), buffer);
+	add_option_item(1, "Green",              IS_MARKED("color=1"), buffer);
+	add_option_item(2, "Yellow (Red+Green)", IS_MARKED("color=2"), buffer);
 
+	sprintf(templn, "</select>   <b>%s:</b>  <select name=\"mode\">", "Mode"); concat(buffer, templn);
+
+	add_option_item(0, "Off",        IS_MARKED("mode=0"), buffer);
+	add_option_item(1, "On",         IS_MARKED("mode=1"), buffer);
+	add_option_item(2, "Blink fast", IS_MARKED("mode=2"), buffer);
+	add_option_item(3, "Blink slow", IS_MARKED("mode=3"), buffer);
+
+	sprintf(templn, "</select>   <input type=\"submit\" value=\" %s \"/></form><br>", "Set");
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "</table></td>");
 	concat(buffer, templn);
 }
@@ -298,7 +297,7 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 		for(u8 sc = 0; sc < CFW_SYSCALLS; sc++)
 		{
 			sprintf(templn, "sc%i=1", sc_disable[sc]);
-			if(strstr(param, templn))
+			if(IS_MARKED(templn))
 			{
 				if(sc_disable[sc] == SC_PEEK_LV2) {peekq = lv2_peek_ps3mapi;}
 				if(sc_disable[sc] == SC_POKE_LV2) {pokeq = lv2_poke_ps3mapi, lv2_poke_fan = (payload_ps3hen) ? lv2_poke_fan_hen : lv2_poke_ps3mapi;}
@@ -310,8 +309,8 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 		}
 
 #ifdef REMOVE_SYSCALLS
-		if(strstr(param, "sce=1"))  { restore_cfw_syscalls(); } else
-		if(strstr(param, "scd=1"))  { remove_cfw_syscalls(webman_config->keep_ccapi); }
+		if(IS_MARKED("sce=1"))  { restore_cfw_syscalls(); } else
+		if(IS_MARKED("scd=1"))  { remove_cfw_syscalls(webman_config->keep_ccapi); }
 #endif
 	}
 
@@ -404,17 +403,13 @@ static void ps3mapi_syscall8(char *buffer, char *templn, char *param)
 
 	if(strstr(param, ".ps3mapi?"))
 	{
-		if(!strstr(param, "mode=5")) {{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA, 0);}}
-		if( strstr(param, "mode=0")) {{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 0); }}
-		if( strstr(param, "mode=1")) {{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 1); }}
-		if( strstr(param, "mode=2")) {{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 2); }}
-		if( strstr(param, "mode=3")) {{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 3); }}
-		if( strstr(param, "mode=4")) {{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_DISABLE_SYSCALL, SC_COBRA_SYSCALL8); }}
-		if( strstr(param, "mode=5"))
-		{
-			{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA, 1); }
-			{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 3); }
-		}
+		u8 mode = get_valuen(param, "mode=", 0, 5);
+
+		{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA, (mode == 5)); }
+
+		if( mode <= 3 ) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, (u64)mode); }
+		if( mode == 4 ) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_DISABLE_SYSCALL, SC_COBRA_SYSCALL8); }
+		if( mode == 5 )	{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 3); }
 	}
 
 	if(!is_ps3mapi_home && islike(param, "/syscall8.ps3mapi")) {ps3mapi_syscall(buffer, templn, param);}
@@ -518,7 +513,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 		{
 			address = convertH(addr_tmp);
 
-			length = get_valuen16(param, "len=");
+			length = (int)get_valuen32(param, "len=");
 			if(length == 0) {char *pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
 			length = RANGE(length, 1, 2048);
 
@@ -800,16 +795,17 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 	{
 		unsigned int uslot = 99;
 
-		char *pos = strstr(param, "?s=");
+		char *pos = strstr(param + 18, "?s=");
 		if(pos)
 		{
-			pos += 3; sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt");
-			switch (*pos)
+			u8 boot_mode = get_valuen(pos, "?s=", 0, 4);
+			sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt"); if(IS_DEX) sprintf(tmp_filename + 22, "_dex.txt");
+			switch (boot_mode)
 			{
-				case '1': sprintf(tmp_filename + 10, "mamba_plugins.txt"); break;
-				case '2': sprintf(tmp_filename + 10, "prx_plugins.txt");   break;
-				case '3': sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/plugins.txt"); break;
-				case '4': sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/boot_plugins_nocobra.txt"); break;
+				case 1: sprintf(tmp_filename + 10, "mamba_plugins.txt"); break;
+				case 2: sprintf(tmp_filename + 10, "prx_plugins.txt");   break;
+				case 3: sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/plugins.txt"); break;
+				case 4: sprintf(tmp_filename + 10, "boot_plugins_nocobra.txt"); if(IS_DEX) sprintf(tmp_filename + 30, "_dex.txt"); break;
 			}
 
 			int fdw = 0;
@@ -901,8 +897,12 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 													HTML_BUTTON_FMT
 													HTML_BUTTON_FMT
 													HTML_BUTTON_FMT "</td></tr>", STR_SAVE,
-		HTML_BUTTON, "boot_plugins.txt",			HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
-		HTML_BUTTON, "boot_plugins_nocobra.txt",	HTML_ONCLICK, "/vshplugin.ps3mapi?s=4",
+		HTML_BUTTON, dex_mode ?
+					"boot_plugins_dex.txt" :
+					"boot_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
+		HTML_BUTTON, dex_mode ? 
+					"boot_plugins_nocobra_dex.txt" :
+					"boot_plugins_nocobra.txt",		HTML_ONCLICK, "/vshplugin.ps3mapi?s=4",
 		HTML_BUTTON, "mamba_plugins.txt",			HTML_ONCLICK, "/vshplugin.ps3mapi?s=1",
 		HTML_BUTTON, "prx_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=2",
 		HTML_BUTTON, "plugins.txt",					HTML_ONCLICK, "/vshplugin.ps3mapi?s=3"); concat(buffer, templn);
@@ -923,18 +923,14 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 
 	if(islike(param, "/gameplugin.ps3mapi") && param[19] == '?')
 	{
-		unsigned int prx_id = 99;
-
-		char *pos;
-		pos = strstr(param, "proc=");
-		if(pos)
+		pid = get_valuen32(param, "proc=");
+		if(pid)
 		{
-			pid = get_valuen32(param, "proc=");
 
-			pos = strstr(param, "unload_slot=");
+			char *pos = strstr(param, "unload_slot=");
 			if(pos)
 			{
-				prx_id = get_valuen32(param, "unload_slot=");
+				unsigned int prx_id = get_valuen32(pos, "unload_slot=");
 				{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); }
 			}
 			else

@@ -1,6 +1,9 @@
 #define ITEM_CHECKED			" checked"
 #define ITEM_SELECTED			" selected"
 
+#define IS_MARKED(key)			 strstr(param, key)
+#define IS_UNMARKED(key)		!strstr(param, key)
+
 #define HTML_URL				"<a href=\"%s\">%s</a>"
 #define HTML_URL2				"<a href=\"%s%s\">%s</a>"
 
@@ -586,9 +589,11 @@ static u32 get_valuen32(const char *param, const char *label)
 	return 0;
 }
 
-static u16 get_valuen16(const char *param, const char *label)
+static u16 get_port(const char *param, const char *label, u16 default_port)
 {
-	return RANGE((u16)get_valuen32(param, label), 0, 65535);
+	u16 port = RANGE((u16)get_valuen32(param, label), 0, 65535);
+	if(port == 0) port = default_port;
+	return port;
 }
 
 static u8 get_valuen(const char *param, const char *label, u8 min_value, u8 max_value)

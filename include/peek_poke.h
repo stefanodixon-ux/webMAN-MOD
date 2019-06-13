@@ -213,15 +213,15 @@ static u16 string_to_lv2(char* path, u64 addr)
 	if(plen > len) plen = len;
 
 	u8 path_buf[MAX_PATH_MAP];
-	u8* data  = path_buf;
+	u8 *data  = path_buf;
 
 	memcpy(data, path, plen);
 	memset(data + plen, 0, MAX_PATH_MAP - plen);
 
-	u64* data2 = path_buf;
+	u64 *data2 = (u64 *)path_buf;
 	for(u64 n = 0; n < len; n += 8)
 	{
-		pokeq(addr + n, &data2[n]);
+		pokeq(addr + n, data2[n]);
 	}
 	return len;
 }

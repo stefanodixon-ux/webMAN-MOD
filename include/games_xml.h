@@ -1266,9 +1266,15 @@ static void update_xml_thread(u64 conn_s_p)
 
 static void refresh_xml(char *msg)
 {
+	if(refreshing_xml) return;
+	refreshing_xml = 1;
+
+#ifdef USE_NTFS
+	root_check = true;
+#endif
+
 	setPluginActive();
 
-	refreshing_xml = 1;
 	webman_config->profile = profile; save_settings();
 
 	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);

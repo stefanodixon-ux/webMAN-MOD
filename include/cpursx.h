@@ -1,5 +1,6 @@
 static void sys_get_cobra_version(void)
 {
+#ifdef COBRA_ONLY
 	if(payload_ps3hen)
 		{system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_HEN_REV); cobra_version = (int)p1;}
 	else
@@ -7,6 +8,7 @@ static void sys_get_cobra_version(void)
 		if(!is_mamba) {system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_MAMBA); is_mamba = ((int)p1 == 0x666);}
 		sys_get_version2(&cobra_version);
 	}
+#endif
 }
 
 static void get_cobra_version(char *cfw_info)

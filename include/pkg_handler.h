@@ -334,6 +334,8 @@ static int installPKG(const char *pkgpath, char *msg)
 {
 	int ret = FAILED;
 
+	unload_web_plugins();
+
 	if(IS_INGAME)
 	{
 		unload_web_plugins();
