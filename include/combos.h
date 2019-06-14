@@ -334,11 +334,9 @@
 								CellRtcTick pTick; u32 dd, hh, mm, ss; char tmp[256];
 
 								cellRtcGetCurrentTick(&pTick);
-								get_temperature(0, &t1); // CPU
-								get_temperature(1, &t2); // RSX
 
 								u8 speed = fan_speed;
-								if(fan_ps2_mode) speed = (int)(255.f*(float)(webman_config->ps2temp + 1) / 100.f); else
+								if(fan_ps2_mode) speed = (int)(255.f*(float)(webman_config->ps2_rate + 1) / 100.f); else
 								if((webman_config->fanc == DISABLED) && (get_fan_policy_offset > 0))
 								{
 									u8 st, mode, unknown;
@@ -367,7 +365,17 @@
 								char cfw_info[20];
 								get_cobra_version(cfw_info);
 
-								char smax[32]; if(fan_ps2_mode) sprintf(smax, "   PS2 Mode"); else if(max_temp) sprintf(smax, "   MAX: %i°C", max_temp); else if(webman_config->fanc == DISABLED) sprintf(smax, "   SYSCON"); else memset(smax, 0, 16);
+								char smax[32];
+								if(fan_ps2_mode) sprintf(smax, "   PS2 Mode");
+								else if(max_temp >= 80)
+									sprintf(smax, "   MAX: AUTO");
+								else if(max_temp)
+									sprintf(smax, "   MAX: %i°C", max_temp);
+								else if(webman_config->fanc == DISABLED)
+									sprintf(smax, "   SYSCON"); else memset(smax, 0, 16);
+
+								get_temperature(0, &t1); // CPU
+								get_temperature(1, &t2); // RSX
 
 								sprintf(tmp, "CPU: %i°C  RSX: %i°C  FAN: %i%%   \n"
 											 "%s: %id %02d:%02d:%02d%s\n"
@@ -415,17 +423,17 @@
 								{
 									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) max_temp+=5; else max_temp+=1;
 									if(max_temp > 85) max_temp = 85;
-									webman_config->temp1 = max_temp;
+									webman_config->dyn_temp = max_temp;
 									sprintf(msg, "%s\n%s %i°C", STR_FANCH0, STR_FANCH1, max_temp);
 								}
 								else
 								{
-									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->manu+=5; else webman_config->manu+=1;
-									webman_config->manu = RANGE(webman_config->manu, 20, 95); //%
-									webman_config->temp0 = (u8)(((float)(webman_config->manu+1) * 255.f)/100.f);
-									webman_config->temp0 = RANGE(webman_config->temp0, 0x33, MAX_FANSPEED);
-									fan_control(webman_config->temp0, 0);
-									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->manu);
+									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->man_rate += 5; else webman_config->man_rate += 1;
+									webman_config->man_rate = RANGE(webman_config->man_rate, 20, 95); //%
+									webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate);
+									webman_config->man_speed = RANGE(webman_config->man_speed, 0x33, MAX_FANSPEED);
+									set_fan_speed(webman_config->man_speed);
+									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 								}
 								save_settings();
 								show_msg(msg);
@@ -449,16 +457,16 @@
 								if(max_temp) //auto mode
 								{
 									if(max_temp > 30) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) max_temp-=5; else max_temp-=1;}
-									webman_config->temp1 = max_temp;
+									webman_config->dyn_temp = max_temp;
 									sprintf(msg, "%s\n%s %i°C", STR_FANCH0, STR_FANCH1, max_temp);
 								}
 								else
 								{
-									if(webman_config->manu>20) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->manu-=5; else webman_config->manu-=1;}
-									webman_config->temp0 = (u8)(((float)(webman_config->manu+1) * 255.f)/100.f);
-									webman_config->temp0 = RANGE(webman_config->temp0, 0x33, MAX_FANSPEED);
-									fan_control(webman_config->temp0, 0);
-									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->manu);
+									if(webman_config->man_rate>20) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->man_rate -= 5; else webman_config->man_rate -= 1;}
+									webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate);
+									webman_config->man_speed = RANGE(webman_config->man_speed, 0x33, MAX_FANSPEED);
+									set_fan_speed(webman_config->man_speed);
+									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 								}
 								save_settings();
 								show_msg(msg);

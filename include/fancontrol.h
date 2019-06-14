@@ -5,6 +5,7 @@
 #define MY_TEMP 				(68) /* °C */
 
 #define FAN_AUTO 				(0)
+#define FAN_MANUAL				(0)
 
 #define PERCENT_TO_8BIT(val)	((val * 255) / 100)
 
@@ -62,7 +63,7 @@ static int sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknown
 	return_to_user_prog(int);
 }
 
-static void fan_control(u8 set_fanspeed, u8 init)
+static void set_fan_speed(u8 new_fan_speed)
 {
 	if(fan_ps2_mode) return; //do not change fan settings while PS2 game is mounted
 
@@ -72,16 +73,7 @@ static void fan_control(u8 set_fanspeed, u8 init)
 
 		u8 min_fan_speed = PERCENT_TO_8BIT(webman_config->minfan);
 
-		if(!init)
-		{
-			//backup[3]=peekq(syscall_base + (u64) (130 * 8));
-			//backup[4]=peekq(syscall_base + (u64) (138 * 8));
-			//backup[5]=peekq(syscall_base + (u64) (379 * 8));
-
-			sys_sm_set_fan_policy(0, 2, min_fan_speed);
-		}
-
-		if(set_fanspeed < 0x33)
+		if(new_fan_speed < 0x33)
 		{
 			u8 st, mode, unknown;
 			u8 fan_speed8 = 0;
@@ -89,7 +81,7 @@ static void fan_control(u8 set_fanspeed, u8 init)
 			fan_speed = RANGE(fan_speed8, min_fan_speed , 0xFC);
 		}
 		else
-			fan_speed = RANGE(set_fanspeed, min_fan_speed , 0xFC);
+			fan_speed = RANGE(new_fan_speed, min_fan_speed , 0xFC);
 
 		old_fan = fan_speed;
 		sys_sm_set_fan_policy(0, 2, fan_speed);
@@ -110,11 +102,11 @@ static void restore_fan(u8 set_ps2_temp)
 
 		if(set_ps2_temp)
 		{
-			webman_config->ps2temp = RANGE(webman_config->ps2temp, 20, 99); //%
-			sys_sm_set_fan_policy(0, 2, PERCENT_TO_8BIT(webman_config->ps2temp));
+			webman_config->ps2_rate = RANGE(webman_config->ps2_rate, 20, 99); //%
+			sys_sm_set_fan_policy(0, 2, PERCENT_TO_8BIT(webman_config->ps2_rate));
 			fan_ps2_mode = true;
 		}
-		else sys_sm_set_fan_policy(0, 1, 0x0); //syscon
+		else sys_sm_set_fan_policy(0, 1, 0); //syscon
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
@@ -130,8 +122,8 @@ static void enable_fan_control(u8 enable, char *msg)
 	max_temp = 0;
 	if(webman_config->fanc)
 	{
-		if(webman_config->temp0 == FAN_AUTO) max_temp = webman_config->temp1;
-		fan_control(webman_config->temp0, false);
+		if(webman_config->man_speed == FAN_AUTO) max_temp = webman_config->dyn_temp;
+		set_fan_speed(webman_config->man_speed);
 		sprintf(msg, "%s %s", STR_FANCTRL3, STR_ENABLED);
 	}
 	else
@@ -149,9 +141,9 @@ static void reset_fan_mode(void)
 {
 	fan_ps2_mode = false;
 
-	webman_config->temp0 = (u8)(((float)(webman_config->manu + 1) * 255.f) / 100.f); // manual fan speed
-	webman_config->temp0 = RANGE(webman_config->temp0, 0x33, MAX_FANSPEED);
-	fan_control(webman_config->temp0, false);
+	webman_config->man_speed = (u8)(((float)(webman_config->man_rate + 1) * 255.f) / 100.f); // manual fan speed
+	webman_config->man_speed = RANGE(webman_config->man_speed, 0x33, MAX_FANSPEED);
+	set_fan_speed(webman_config->man_speed);
 
-	if(max_temp) webman_config->temp0 = FAN_AUTO; // enable dynamic fan mode
+	if(max_temp) webman_config->man_speed = FAN_AUTO; // enable dynamic fan mode
 }

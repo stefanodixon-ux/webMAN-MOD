@@ -1028,6 +1028,71 @@ static void cache_icon0_and_param_sfo(char *destpath)
 }
 #endif
 
+#ifdef COBRA_ONLY
+static void mount_on_insert_usb(bool on_xmb, char *msg)
+{
+	// Auto-mount x:\AUTOMOUNT.ISO or JB game found on root of USB devices (dev_usb00x, dev_sd, dev_ms, dev_cf)
+	if(is_mounting) ;
+
+	else if(on_xmb)
+	{
+		if(!isDir("/dev_bdvd"))
+		{
+			if(webman_config->autob)
+				for(u8 f0 = 1; f0 < 16; f0++)
+				{
+					if(IS_NET || IS_NTFS) continue;
+
+					if(!check_drive(f0))
+					{
+						if(automount != f0)
+						{
+							sprintf(msg, "%s/AUTOMOUNT.ISO", drives[f0]);
+							if(file_exists(msg)) {mount_game(msg, MOUNT_SILENT); automount = f0; break;}
+							else
+							{
+								sprintf(msg, "%s/PS3_GAME/PARAM.SFO", drives[f0]);
+								if(file_exists(msg)) {mount_game(msg, MOUNT_SILENT); automount = f0; break;}
+							}
+						}
+						else if(!isDir(drives[f0])) automount = 0;
+					}
+				}
+			else
+			{
+				automount = 0; if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF, msg);
+			}
+		}
+		else if((automount == 0) && IS_ON_XMB)
+		{
+			unsigned int real_disctype, effective_disctype, iso_disctype;
+			cobra_get_disc_type(&real_disctype, &effective_disctype, &iso_disctype);
+
+#ifdef REMOVE_SYSCALLS
+			if((iso_disctype == DISC_TYPE_NONE) && (real_disctype == DISC_TYPE_PS3_BD))
+			{
+				if(!syscalls_removed && webman_config->dsc) disable_cfw_syscalls(webman_config->keep_ccapi);
+			}
+#endif
+			if((effective_disctype == DISC_TYPE_PS2_DVD) || (effective_disctype == DISC_TYPE_PS2_CD) || (real_disctype == DISC_TYPE_PS2_DVD) || (real_disctype == DISC_TYPE_PS2_CD) || (iso_disctype == DISC_TYPE_PS2_DVD) || (iso_disctype == DISC_TYPE_PS2_CD))
+			{
+				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
+
+				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
+				save_file(WMNOSCAN, NULL, 0);
+			}
+			else if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF, msg);
+
+			automount = 99;
+		}
+	}
+	else if(fan_ps2_mode && IS_INGAME)
+	{
+		automount = 0; enable_fan_control(PS2_MODE_OFF, msg);
+	}
+}
+#endif
+
 static void mount_autoboot(void)
 {
 	char path[STD_PATH_LEN+1]; bool is_last_game = false;

@@ -313,12 +313,6 @@ SYS_MODULE_EXIT(wwwd_stop);
 ////////////
 
 #define SC_GET_FREE_MEM 				(352)
-#define SC_GET_PLATFORM_INFO			(387)
-#define SC_RING_BUZZER  				(392)
-
-#define SC_FS_MOUNT  					(837)
-#define SC_FS_UMOUNT 					(838)
-#define SC_GET_CONSOLE_TYPE				(985)
 
 #define SC_SYS_POWER 					(379)
 #define SYS_SOFT_REBOOT 				0x0200
@@ -326,8 +320,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define SYS_REBOOT						0x8201 /*load LPAR id 1*/
 #define SYS_SHUTDOWN					0x1100
 
-#define SYS_NET_EURUS_POST_COMMAND		(726)
-#define CMD_GET_MAC_ADDRESS				0x103f
+#define SC_RING_BUZZER  				(392)
 
 #define BEEP1 { system_call_3(SC_RING_BUZZER, 0x1004, 0x4,   0x6); }
 #define BEEP2 { system_call_3(SC_RING_BUZZER, 0x1004, 0x7,  0x36); }
@@ -574,11 +567,11 @@ typedef struct
 
 	// fan control settings
 
-	u8 fanc;
-	u8 temp0;
-	u8 temp1;
-	u8 manu;
-	u8 ps2temp;
+	u8 fanc;      // 1 = enabled, 0 = disabled (syscon)
+	u8 man_speed; // manual fan speed (calculated using man_rate)
+	u8 dyn_temp;  // max temp for dynamic fan control (0 = disabled)
+	u8 man_rate;  // % manual fan speed (0 = dynamic fan control)
+	u8 ps2_rate;  // % ps2 fan speed
 	u8 nowarn;
 	u8 minfan;
 
@@ -883,6 +876,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/prepntfs.h"
 
 #include "include/cpursx.h"
+#include "include/snd0.h"
 #include "include/setup.h"
 #include "include/togglers.h"
 
@@ -890,7 +884,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/file_manager.h"
 
 #include "include/pkg_handler.h"
-#include "include/fancontrol2.h"
+#include "include/poll.h"
 #include "include/md5.h"
 #include "include/script.h"
 
@@ -985,9 +979,9 @@ static void restore_settings(void)
 	for(u8 n = 0; n < 4; n++)
 		if(active_socket[n]>NONE) sys_net_abort_socket(active_socket[n], SYS_NET_ABORT_STRICT_CHECK);
 
-	if(webman_config->fanc == DISABLED || webman_config->temp0 == FAN_AUTO)
+	if(webman_config->fanc == DISABLED || webman_config->man_speed == FAN_AUTO)
 	{
-		bool set_ps2mode = (webman_config->fanc == ENABLED) && (webman_config->ps2temp >= 33);
+		bool set_ps2mode = (webman_config->fanc == ENABLED) && (webman_config->ps2_rate >= 33);
 
 		if(set_ps2mode)
 			restore_fan(SET_PS2_MODE); //set ps2 fan control mode
@@ -3987,8 +3981,8 @@ static void wwwd_thread(u64 arg)
 
 	if(webman_config->fanc)
 	{
-		if(webman_config->temp0 == FAN_AUTO) max_temp = webman_config->temp1;
-		fan_control(webman_config->temp0, 0);
+		if(webman_config->man_speed == FAN_AUTO) max_temp = webman_config->dyn_temp;
+		set_fan_speed(webman_config->man_speed);
 	}
 
 #ifdef WM_REQUEST
@@ -4033,7 +4027,7 @@ again_debug:
 	debug_s = connect_to_server("192.168.100.209", 38009);
 	if(debug_s <  0) {d_retries++; sys_ppu_thread_sleep(2); if(d_retries < 10) goto again_debug;}
 	if(debug_s >= 0) ssend(debug_s, "Connected...\r\n");
-	sprintf(debug, "FC=%i T0=%i T1=%i\r\n", webman_config->fanc, webman_config->temp0, webman_config->temp1);
+	sprintf(debug, "FC=%i T0=%i T1=%i\r\n", webman_config->fanc, webman_config->man_speed, webman_config->dyn_temp);
 	ssend(debug_s, debug);
 #endif
 

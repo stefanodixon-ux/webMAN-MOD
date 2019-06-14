@@ -513,7 +513,7 @@
 							cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
 
 						// set fan to PS2 mode (constant fan speed)
-						if(webman_config->fanc) restore_fan(SET_PS2_MODE); //fan_control( ((webman_config->ps2temp*255)/100), 0);
+						if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
 						// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 						save_file(WMNOSCAN, NULL, 0);

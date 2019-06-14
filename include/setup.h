@@ -222,7 +222,7 @@ static void setup_parse_settings(char *param)
 
 	if(IS_MARKED("fc=1") && IS_UNMARKED("temp=2")) webman_config->fanc = ENABLED;
 
-	webman_config->temp1 = MY_TEMP;
+	webman_config->dyn_temp = MY_TEMP;
 
 	webman_config->minfan = get_valuen(param, "mfan=", MIN_FANSPEED, 99); //%
 
@@ -239,22 +239,22 @@ static void setup_parse_settings(char *param)
 	if( IS_MARKED("lg=1")) webman_config->launchpad_grp = 1;
 #endif
 
-	webman_config->temp0   = 0;
+	webman_config->man_speed = 0;
 
-	webman_config->temp1   = get_valuen(param, "step=", 40, MAX_TEMPERATURE); //°C
-	webman_config->ps2temp = get_valuen(param, "fsp0=", MIN_FANSPEED, 99); // %
-	webman_config->manu    = get_valuen(param, "manu=", MIN_FANSPEED, 95); // %
+	webman_config->dyn_temp = get_valuen(param, "step=", 40, MAX_TEMPERATURE); //°C
+	webman_config->ps2_rate = get_valuen(param, "fsp0=", MIN_FANSPEED, 99); // %
+	webman_config->man_rate = get_valuen(param, "manu=", MIN_FANSPEED, 95); // %
 
 	if(IS_MARKED("temp=1"))
-		webman_config->temp0 = (u8)(((float)(webman_config->manu+1) * 255.f)/100.f); // manual fan speed
+		webman_config->man_speed = (u8)(((float)(webman_config->man_rate + 1) * 255.f)/100.f); // manual fan speed
 	else
-		webman_config->temp0 = 0; // dynamic fan control mode
+		webman_config->man_speed = FAN_AUTO; // dynamic fan control mode
 
 	max_temp = 0;
 	if(webman_config->fanc)
 	{
-		if(webman_config->temp0 == 0) max_temp = webman_config->temp1; // dynamic fan max temperature in °C
-		fan_control(webman_config->temp0, 0);
+		if(webman_config->man_speed == 0) max_temp = webman_config->dyn_temp; // dynamic fan max temperature in °C
+		set_fan_speed(webman_config->man_speed);
 	}
 	else
 		restore_fan(SYSCON_MODE); //restore syscon fan control mode
@@ -357,7 +357,7 @@ static void setup_parse_settings(char *param)
 		cobra_config->dvd_video_region = get_valuen(param, "dvr=", 0, 32); //DVD Region
 
 		if(webman_config->fanc)
-			cobra_config->fan_speed = (webman_config->temp0 < 0x33) ? 1 : webman_config->temp0;
+			cobra_config->fan_speed = (webman_config->man_speed < 0x33) ? 1 : webman_config->man_speed;
 		else
 			cobra_config->fan_speed = 0; // SYSCON
 
@@ -588,17 +588,17 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("warn", false , STR_NOWARN, " </td></tr>", (webman_config->nowarn), buffer);
 
 	concat(buffer, "<tr><td>");
-	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->temp0 == 0), buffer);
+	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->man_speed == 0), buffer);
 	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C</td>"
 					"<td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% %s </td></tr>",
-					webman_config->temp1, (webman_config->fanc && webman_config->temp0 == 0) ? ITEM_CHECKED : "",
+					webman_config->dyn_temp, (webman_config->fanc && webman_config->man_speed == 0) ? ITEM_CHECKED : "",
 					STR_LOWEST, webman_config->minfan, STR_FANSPEED); concat(buffer, templn);
 
 	concat(buffer, "<tr><td>");
-	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->temp0 != 0), buffer);
+	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->man_speed != 0), buffer);
 	sprintf(templn, HTML_NUMBER("manu", "%i", "20", "95") " %% %s </td>"
 					"<td> %s : " HTML_NUMBER("fsp0", "%i", "20", "99") " %% %s </td></tr>",
-					(webman_config->manu), STR_FANSPEED, STR_PS2EMU, webman_config->ps2temp, STR_FANSPEED); concat(buffer, templn);
+					(webman_config->man_rate), STR_FANSPEED, STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, templn);
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "</table>", !(webman_config->fanc), buffer);
@@ -1128,43 +1128,6 @@ static void setup_form(char *buffer, char *templn)
 */
 }
 
-static sys_ppu_thread_t t_snd0_thread_id = SYS_PPU_THREAD_NONE;
-static u8 prev_nosnd0 = 0;
-
-static void snd0_thread(u64 action)
-{
-	int fd;
-	if(cellFsOpendir((char*)"/dev_hdd0/game", &fd) == CELL_FS_SUCCEEDED)
-	{
-		prev_nosnd0 = webman_config->nosnd0;
-
-		CellFsDirectoryEntry entry; size_t read_e; char snd0_file[MAX_PATH_LEN];
-		int mode = webman_config->nosnd0 ? NOSND : MODE; // toggle file access permissions
-
-		while(working)
-		{
-			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
-			if(entry.entry_name.d_namlen != TITLE_ID_LEN) continue;
-			sprintf(snd0_file, "%s%s/SND0.AT3",  HDD0_GAME_DIR, entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
-			sprintf(snd0_file, "%s%s/ICON1.PAM", HDD0_GAME_DIR, entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
-		}
-		cellFsClosedir(fd);
-	}
-
-	t_snd0_thread_id = SYS_PPU_THREAD_NONE;
-	sys_ppu_thread_exit(0);
-}
-
-static void mute_snd0(bool scan_gamedir)
-{
-	cellFsChmod("/dev_bdvd/PS3_GAME/ICON1.PAM", webman_config->nosnd0 ? NOSND : MODE);
-
-	if(!scan_gamedir) return;
-
-	if((t_snd0_thread_id == SYS_PPU_THREAD_NONE) && !payload_ps3hen)
-		sys_ppu_thread_create(&t_snd0_thread_id, snd0_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_64KB, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_SND0);
-}
-
 static int save_settings(void)
 {
 #ifdef COBRA_ONLY
@@ -1240,11 +1203,11 @@ static void read_settings(void)
 	//webman_config->nocov = 0;       //enable multiMAN covers    (0 = Use MM covers, 1 = Use ICON0.PNG, 2 = No game icons, 3 = Online Covers)
 	//webman_config->nobeep = 0;      //enable beep on reboot / shutdown / disable syscall
 
-	webman_config->fanc    = ENABLED; //fan control enabled
-	//webman_config->temp0 = 0;       //0=dynamic fan control mode, >0 set manual fan speed in %
-	webman_config->temp1   = MY_TEMP; //°C target temperature for dynamic fan control
-	webman_config->manu    = 35;      //% manual temp
-	webman_config->ps2temp = 40;      //% ps2 temp
+	webman_config->fanc     = ENABLED; //fan control enabled
+	//webman_config->man_speed = 0;    //0=dynamic fan control mode, >0 set manual fan speed in %
+	webman_config->dyn_temp = MY_TEMP; //°C target temperature for dynamic fan control
+	webman_config->man_rate = 35;      //% manual fan speed
+	webman_config->ps2_rate = 40;      //% ps2 fan speed
 
 	webman_config->minfan = DEFAULT_MIN_FANSPEED; // %
 
@@ -1317,10 +1280,10 @@ static void read_settings(void)
 
 	// check stored data
 	if(webman_config->nowarn > 1) webman_config->nowarn = 0;
-	webman_config->manu = RANGE(webman_config->manu, MIN_FANSPEED, 99);       // %
-	webman_config->minfan = RANGE(webman_config->minfan, MIN_FANSPEED, 99);   // %
-	webman_config->ps2temp = RANGE(webman_config->ps2temp, MIN_FANSPEED, 99); // %
-	webman_config->temp1 = RANGE(webman_config->temp1, 40, MAX_TEMPERATURE);  //°C
+	webman_config->man_rate = RANGE(webman_config->man_rate, MIN_FANSPEED, 99);       // %
+	webman_config->minfan   = RANGE(webman_config->minfan, MIN_FANSPEED, 99);   // %
+	webman_config->ps2_rate = RANGE(webman_config->ps2_rate, MIN_FANSPEED, 99); // %
+	webman_config->dyn_temp = RANGE(webman_config->dyn_temp, 40, MAX_TEMPERATURE);  //°C
 
 #if defined(SPOOF_CONSOLEID) || defined(PS3MAPI)
 	get_eid0_idps();

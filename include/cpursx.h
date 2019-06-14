@@ -1,3 +1,14 @@
+#define SYS_NET_EURUS_POST_COMMAND		(726)
+#define CMD_GET_MAC_ADDRESS				0x103f
+
+/*
+static u32 in_cobra(u32 *mode)
+{
+	system_call_2(SC_COBRA_SYSCALL8, (u32) 0x7000, (u32)mode);
+	return_to_user_prog(u32);
+}
+*/
+
 static void sys_get_cobra_version(void)
 {
 #ifdef COBRA_ONLY
@@ -152,26 +163,47 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	if(strstr(param, "?"))
 	{
 		char *pos = strstr(param, "fan=");
-		if(pos) {u32 read = get_valuen(param, "fan=", 0, 99); max_temp = 0; if(!read) enable_fan_control(DISABLED, templn); else {webman_config->manu = read; if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);}}
-		else {pos = strstr(param, "max=");
-		if(pos) {max_temp = get_valuen(param, "max=", 40, MAX_TEMPERATURE);}
+		if(pos)
+		{
+			u32 new_speed = get_valuen(param, "fan=", 0, 99); max_temp = 0;
+			if(!new_speed)
+				enable_fan_control(DISABLED, templn); 
+			else
+			{
+				webman_config->man_rate = new_speed;
+				if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);
+			}
+		}
 		else
-		if(strstr(param, "?m")) {if((max_temp && !strstr(param, "dyn")) || strstr(param, "man")) max_temp=0; else {max_temp=webman_config->temp1;} if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);}}
+		{
+			pos = strstr(param, "max=");
+			if(pos) 
+				max_temp = get_valuen(param, "max=", 40, MAX_TEMPERATURE);
+			else if(strstr(param, "?m"))
+			{
+				if((max_temp && !strstr(param, "dyn")) || strstr(param, "man"))
+					max_temp = FAN_MANUAL;
+				else
+					max_temp = webman_config->dyn_temp;
+
+				if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);
+			}
+		}
 
 		if(max_temp) //auto mode
 		{
 			if(strstr(param, "?u")) max_temp++;
 			if(strstr(param, "?d")) max_temp--;
-			webman_config->temp1 = RANGE(max_temp, 40, MAX_TEMPERATURE); // dynamic fan max temperature in °C
-			webman_config->temp0 = FAN_AUTO;
+			webman_config->dyn_temp = RANGE(max_temp, 40, MAX_TEMPERATURE); // dynamic fan max temperature in °C
+			webman_config->man_speed = FAN_AUTO;
 
 			fan_ps2_mode=false;
 		}
 		else
 		{
-			if(strstr(param, "?u")) webman_config->manu++;
-			if(strstr(param, "?d")) webman_config->manu--;
-			webman_config->manu = RANGE(webman_config->manu, 20, 95); //%
+			if(strstr(param, "?u")) webman_config->man_rate++;
+			if(strstr(param, "?d")) webman_config->man_rate--;
+			webman_config->man_rate = RANGE(webman_config->man_rate, 20, 95); //%
 
 			reset_fan_mode();
 		}
@@ -184,17 +216,22 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	if(fan_ps2_mode)
 	{
-		sprintf(max_temp1, " (PS2 Mode: %i%%)", webman_config->ps2temp);
+		sprintf(max_temp1, " (PS2 Mode: %i%%)", webman_config->ps2_rate);
 	}
-	else if((webman_config->fanc == DISABLED) || (!webman_config->temp0 && !max_temp))
+	else if((webman_config->fanc == DISABLED) || (!webman_config->man_speed && !max_temp))
 		sprintf(max_temp1, " <small>[%s %s]</small>", STR_FANCTRL3, STR_DISABLED);
+	else if(max_temp >= 80)
+	{
+		sprintf(max_temp1, " (AUTO)");
+		sprintf(max_temp2, " (AUTO)");
+	}
 	else if(max_temp)
 	{
 		sprintf(max_temp1, " (MAX: %i°C)", max_temp);
 		sprintf(max_temp2, " (MAX: %i°F)", (int)(1.8f*(float)max_temp+32.f));
 	}
 	else
-		sprintf(max_temp1, " <small>[FAN: %i%% %s]</small>", webman_config->manu, STR_MANUAL);
+		sprintf(max_temp1, " <small>[FAN: %i%% %s]</small>", webman_config->man_rate, STR_MANUAL);
 
 	*templn = NULL;
 
@@ -238,7 +275,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	if(!max_temp && !is_ps3_http)
 	{
-		sprintf(templn, "<input type=\"range\" value=\"%i\" min=\"%i\" max=\"95\" style=\"width:600px\" onchange=\"self.location='/cpursx.ps3?fan='+this.value\">", webman_config->manu, DEFAULT_MIN_FANSPEED); buffer += concat(buffer, templn);
+		sprintf(templn, "<input type=\"range\" value=\"%i\" min=\"%i\" max=\"95\" style=\"width:600px\" onchange=\"self.location='/cpursx.ps3?fan='+this.value\">", webman_config->man_rate, DEFAULT_MIN_FANSPEED); buffer += concat(buffer, templn);
 	}
 
 	strcat(buffer, "<hr>");
