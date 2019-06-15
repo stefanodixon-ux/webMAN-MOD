@@ -39,9 +39,7 @@
 
 static void setup_parse_settings(char *param)
 {
-	char *pos;
-
-	pos = IS_MARKED("&ic="); if(!pos) return;
+	if(!strstr(param, "&ic=")) return;
 
 	memset(webman_config, 0, sizeof(WebmanCfg));
 
@@ -49,31 +47,31 @@ static void setup_parse_settings(char *param)
 
 	if((webman_config->autoboot_path[0] != '/') && !islike(webman_config->autoboot_path, "http")) sprintf(webman_config->autoboot_path, "%s", DEFAULT_AUTOBOOT_PATH);
 
-	if(IS_MARKED("u0=1")) webman_config->usb0 = 1;
-	if(IS_MARKED("u1=1")) webman_config->usb1 = 1;
-	if(IS_MARKED("u2=1")) webman_config->usb2 = 1;
-	if(IS_MARKED("u3=1")) webman_config->usb3 = 1;
-	if(IS_MARKED("u6=1")) webman_config->usb6 = 1;
-	if(IS_MARKED("u7=1")) webman_config->usb7 = 1;
+	webman_config->usb0 = IS_MARKED("u0=1");
+	webman_config->usb1 = IS_MARKED("u1=1");
+	webman_config->usb2 = IS_MARKED("u2=1");
+	webman_config->usb3 = IS_MARKED("u3=1");
+	webman_config->usb6 = IS_MARKED("u6=1");
+	webman_config->usb7 = IS_MARKED("u7=1");
 
-	if(IS_MARKED("x0=1")) webman_config->dev_sd = 1;
-	if(IS_MARKED("x1=1")) webman_config->dev_ms = 1;
-	if(IS_MARKED("x2=1")) webman_config->dev_cf = 1;
-	if(IS_MARKED("np=1")) webman_config->npdrm = 1;
+	webman_config->dev_sd = IS_MARKED("x0=1");
+	webman_config->dev_ms = IS_MARKED("x1=1");
+	webman_config->dev_cf = IS_MARKED("x2=1");
+	webman_config->npdrm  = IS_MARKED("np=1");
 
 #ifdef USE_NTFS
-	if(IS_MARKED("xn=1")) webman_config->ntfs = 1;
+	webman_config->ntfs = IS_MARKED("xn=1");
 #endif
 
-	if(IS_MARKED("lp=1")) webman_config->lastp = 1;
-	if(IS_MARKED("ab=1")) webman_config->autob = 1;
-	if(IS_MARKED("dy=1")) webman_config->delay = 1;
+	webman_config->lastp = IS_MARKED("lp=1");
+	webman_config->autob = IS_MARKED("ab=1");
+	webman_config->delay = IS_MARKED("dy=1");
 
 #ifdef COBRA_ONLY
-	if(IS_MARKED("sn=1")) webman_config->nosnd0 = 1;
+	webman_config->nosnd0 = IS_MARKED("sn=1");
 #endif
 
-	if(IS_UNMARKED("nb=1")) webman_config->nobeep = 1;
+	webman_config->nobeep = IS_UNMARKED("nb=1");
 
 	//Wait for any USB device to be ready
 	webman_config->bootd=get_valuen(param, "&b=", 0, 30);
@@ -81,18 +79,18 @@ static void setup_parse_settings(char *param)
 	//Wait additionally for each selected USB device to be ready
 	webman_config->boots=get_valuen(param, "&s=", 0, 30);
 
-	if(IS_MARKED("bl=1")) webman_config->blind = 1;
+	webman_config->blind = IS_MARKED("bl=1");
 	if(webman_config->blind)
 		enable_dev_blind(NO_MSG);
 	else
 		disable_dev_blind();
 
-	if(IS_MARKED("ns=1")) webman_config->nosetup = 1;
-	if(IS_MARKED("ng=1")) webman_config->nogrp   = 1;
-	if(IS_MARKED("sm=1")) webman_config->sman    = 1;
+	webman_config->nosetup = IS_MARKED("ns=1");
+	webman_config->nogrp   = IS_MARKED("ng=1");
+	webman_config->sman    = IS_MARKED("sm=1");
 
 #ifdef NOSINGSTAR
-	if(IS_MARKED("nss=1")) webman_config->noss = 1;
+	webman_config->noss = IS_MARKED("nss=1");
 	no_singstar_icon();
 #endif
 
@@ -108,15 +106,15 @@ static void setup_parse_settings(char *param)
 	if(IS_UNMARKED("ps3=1")) webman_config->cmask|=PS3;
 	if(IS_UNMARKED("ps2=1")) webman_config->cmask|=PS2;
 
-	if(IS_MARKED("psl=1")) webman_config->pspl   = 1;
-	if(IS_MARKED("p2l=1")) webman_config->ps2l   = 1;
-	if(IS_MARKED("rxv=1")) webman_config->rxvid  = 1;
-	if(IS_MARKED("pse=1")) webman_config->ps1emu = 1;
-	if(IS_MARKED("b2n=1")) webman_config->ps2emu = 1;
+	webman_config->pspl   = IS_MARKED("psl=1");
+	webman_config->ps2l   = IS_MARKED("p2l=1");
+	webman_config->rxvid  = IS_MARKED("rxv=1");
+	webman_config->ps1emu = IS_MARKED("pse=1");
+	webman_config->ps2emu = IS_MARKED("b2n=1");
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
-	if(IS_MARKED("p3l=1")) webman_config->ps3l   = 1;
-	if(IS_MARKED("rom=1")) webman_config->roms   = 1;
+	webman_config->ps3l = IS_MARKED("p3l=1");
+	webman_config->roms = IS_MARKED("rom=1");
 #endif
 
 	webman_config->combo = webman_config->combo2 = 0;
@@ -147,9 +145,9 @@ static void setup_parse_settings(char *param)
 
 	if(IS_MARKED("sc8=0")) webman_config->sc8mode = 4; else webman_config->sc8mode = 1;
 
-	if(IS_MARKED("bus=1")) webman_config->bus = 1;
+	webman_config->bus = IS_MARKED("bus=1");
 #endif
-	if(IS_MARKED("apd=1")) webman_config->autoplay = 1;
+	webman_config->autoplay = IS_MARKED("apd=1");
 #ifdef REX_ONLY
 	if(IS_UNMARKED("pr0=1")) webman_config->combo2|=REBUGMODE;
 	if(IS_UNMARKED("pr1=1")) webman_config->combo2|=NORMAMODE;
@@ -187,15 +185,15 @@ static void setup_parse_settings(char *param)
 
 	webman_config->info = get_valuen(param, "xi=", 0, 3); // XMB info level
 
-	if( IS_MARKED("wn=1"))  webman_config->wmstart = 1;
-	if( IS_MARKED("tid=1")) webman_config->tid  = 1;
-	if(IS_UNMARKED("sfo=1")) webman_config->use_filename = 1; // show filename instead of title in PARAM.SFO
-	if( IS_MARKED("pl=1" )) webman_config->poll = 1;
+	webman_config->wmstart = IS_MARKED("wn=1");
+	webman_config->tid     = IS_MARKED("tid=1");
+	webman_config->poll    = IS_MARKED("pl=1" );
+	webman_config->use_filename = IS_UNMARKED("sfo=1"); // show filename instead of title in PARAM.SFO
 #ifdef AUTO_POWER_OFF
 	if(IS_UNMARKED("pw=1" )){setAutoPowerOff(false); AutoPowerOffGame = AutoPowerOffVideo = -1; webman_config->auto_power_off = 1;}
 #endif
-	if( IS_MARKED("ft=1" )) webman_config->ftpd = 1;
-//	if( IS_MARKED("xp=1" )) webman_config->nopad = 1;
+	webman_config->ftpd = IS_MARKED("ft=1" );
+//	webman_config->nopad = IS_MARKED("xp=1");
 	if( IS_MARKED("nc=1" )) webman_config->nocov = SHOW_ICON0;	else // (0 = Use MM covers, 1 = Use ICON0.PNG, 2 = No game icons, 3 = Online Covers)
 	if( IS_MARKED("ic=1" )) webman_config->nocov = SHOW_ICON0;	else
 	if( IS_MARKED("ic=2" )) webman_config->nocov = SHOW_DISC;
@@ -207,17 +205,15 @@ static void setup_parse_settings(char *param)
 	webman_config->ftp_port = get_port(param, "ff=", 21);
 	webman_config->ftp_timeout = get_valuen(param, "tm=", 0, 255); //mins
 
-	if( IS_MARKED("nd=1" )) webman_config->netsrvd = 1;
+	webman_config->netsrvd = IS_MARKED("nd=1" );
 	webman_config->netsrvp = get_port(param, "netp=", NETPORT);
 
 #ifdef FIX_GAME
-	if(IS_MARKED("fm=0")) webman_config->fixgame = FIX_GAME_AUTO;
-	if(IS_MARKED("fm=1")) webman_config->fixgame = FIX_GAME_QUICK;
-	if(IS_MARKED("fm=2")) webman_config->fixgame = FIX_GAME_FORCED;
+	webman_config->fixgame = get_valuen(param, "fm=", 0, 2)
 	if(IS_MARKED("nf=1")) webman_config->fixgame = FIX_GAME_DISABLED;
 #endif
 
-	if(IS_MARKED("nsp=1")) webman_config->nospoof = 1; //don't spoof fw version
+	webman_config->nospoof = IS_MARKED("nsp=1"); //don't spoof fw version
 	if(c_firmware >= 4.53f) webman_config->nospoof = 1;
 
 	if(IS_MARKED("fc=1") && IS_UNMARKED("temp=2")) webman_config->fanc = ENABLED;
@@ -226,17 +222,15 @@ static void setup_parse_settings(char *param)
 
 	webman_config->minfan = get_valuen(param, "mfan=", MIN_FANSPEED, 99); //%
 
-	webman_config->bind = 0;
-	if(IS_MARKED("bn=1")) webman_config->bind = 1;
+	webman_config->bind = IS_MARKED("bn=1");
 
 	get_param("pwd=", webman_config->ftp_password, param, 20);
 
-	webman_config->refr=0;
-	if(IS_MARKED("rf=1")) webman_config->refr = 1;
+	webman_config->refr = IS_MARKED("rf=1");
 
 #ifdef LAUNCHPAD
-	if(IS_UNMARKED("lx=1")) webman_config->launchpad_xml = 1;
-	if( IS_MARKED("lg=1")) webman_config->launchpad_grp = 1;
+	webman_config->launchpad_xml = IS_UNMARKED("lx=1");
+	webman_config->launchpad_grp = IS_MARKED("lg=1");
 #endif
 
 	webman_config->man_speed = 0;
@@ -245,28 +239,32 @@ static void setup_parse_settings(char *param)
 	webman_config->ps2_rate = get_valuen(param, "fsp0=", MIN_FANSPEED, 99); // %
 	webman_config->man_rate = get_valuen(param, "manu=", MIN_FANSPEED, 95); // %
 
-	if(IS_MARKED("temp=1"))
+	if(IS_MARKED("&temp=1"))
 		webman_config->man_speed = (u8)(((float)(webman_config->man_rate + 1) * 255.f)/100.f); // manual fan speed
 	else
 		webman_config->man_speed = FAN_AUTO; // dynamic fan control mode
 
+	if(IS_MARKED("&temp=3"))
+		webman_config->fanc = FAN_AUTO2;
+
 	max_temp = 0;
 	if(webman_config->fanc)
 	{
-		if(webman_config->man_speed == 0) max_temp = webman_config->dyn_temp; // dynamic fan max temperature in °C
-		set_fan_speed(webman_config->man_speed);
+		if(webman_config->man_speed == FAN_AUTO)
+			max_temp = webman_config->dyn_temp; // dynamic fan max temperature in °C
+		else
+			set_fan_speed(webman_config->man_speed);
 	}
 	else
 		restore_fan(SYSCON_MODE); //restore syscon fan control mode
 
-	webman_config->nowarn = 0;
-	if(IS_MARKED("warn=1")) webman_config->nowarn = 1;
+	webman_config->nowarn = IS_MARKED("warn=1");
 
 	webman_config->foot=get_valuen(param, "fp=", 0, 7); set_buffer_sizes(webman_config->foot);
-	if(IS_UNMARKED("mc=1")) webman_config->mc_app = 1;
+	webman_config->mc_app = IS_MARKED("mc=1");
 
 #ifdef REMOVE_SYSCALLS
-	if(IS_MARKED("dsc=1")) webman_config->dsc=1;
+	webman_config->dsc = IS_MARKED("dsc=1");
 #endif
 
 	webman_config->spp = 0;
@@ -591,7 +589,7 @@ static void setup_form(char *buffer, char *templn)
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->man_speed == 0), buffer);
 	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C</td>"
 					"<td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% %s </td></tr>",
-					webman_config->dyn_temp, (webman_config->fanc && webman_config->man_speed == 0) ? ITEM_CHECKED : "",
+					webman_config->dyn_temp, (webman_config->fanc && (webman_config->man_speed == 0)) ? ITEM_CHECKED : "",
 					STR_LOWEST, webman_config->minfan, STR_FANSPEED); concat(buffer, templn);
 
 	concat(buffer, "<tr><td>");
@@ -601,6 +599,7 @@ static void setup_form(char *buffer, char *templn)
 					(webman_config->man_rate), STR_FANSPEED, STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, templn);
 
 	concat(buffer, "<tr><td>");
+	add_radio_button("temp\" onchange=\"fc.checked=1;", 3, "t_3", "Auto #2", _BR_, (webman_config->fanc == FAN_AUTO2), buffer);
 	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "</table>", !(webman_config->fanc), buffer);
 
 	//general settings
@@ -620,8 +619,6 @@ static void setup_form(char *buffer, char *templn)
 
 	add_check_box("bl", false, STR_DEVBL,   _BR_, (webman_config->blind),   buffer);
 	add_check_box("wn", false, STR_NOWMDN,  _BR_, (webman_config->wmstart), buffer);
-
-	add_check_box("rf", false,  STR_CONTSCAN, _BR_, (webman_config->refr), buffer);
 
 	add_check_box("pl", false, STR_USBPOLL, _BR_, (webman_config->poll) , buffer);
 #ifdef COBRA_ONLY
@@ -666,6 +663,8 @@ static void setup_form(char *buffer, char *templn)
 
 	//game listing
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR);
+
+	add_check_box("rf", false,  STR_CONTSCAN, _BR_, (webman_config->refr), buffer);
 
 #ifdef LAUNCHPAD
 	b = file_exists(LAUNCHPAD_FILE_XML);
@@ -850,7 +849,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 	//memory usage
-	sprintf(templn, " %s [%iKB]: <select name=\"fp\" accesskey=\"M\">", STR_MEMUSAGE, (webman_config->mc_app) ? (int)(BUFFER_SIZE_ALL / KB) : 3072); concat(buffer, templn);
+	sprintf(templn, " %s [%iKB]: <select name=\"fp\" accesskey=\"M\">", STR_MEMUSAGE, (webman_config->mc_app) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, templn);
 
 	value = webman_config->foot;
 	add_option_item(0, "Standard (896KB)"                , (value == 0), buffer);
@@ -867,7 +866,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 	concat(buffer, "</select>");
 
-	add_check_box("mc", false, "3072KB [MC]", "<p>", !(webman_config->mc_app), buffer);
+	add_check_box("mc", false, "3072KB [MC]", "<p>", webman_config->mc_app, buffer);
 
 #ifndef LITE_EDITION
 	//Home

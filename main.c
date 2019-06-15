@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.22 MOD"
+#define WM_VERSION			"1.47.23 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -541,11 +541,12 @@ typedef struct
 	u8 launchpad_grp;
 	u8 ps3l;
 	u8 roms;
-	u8 mc_app; // allow allocation from app memory container
+	u8 noused; // formerly mc_app
 	u8 info;   // info level: 0=Path, 1=Path + ID, 2=ID, 3=None
 	u8 npdrm;
+	u8 mc_app; // allow allocation from app memory container
 
-	u8 padding2[14];
+	u8 padding2[13];
 
 	// start up settings
 

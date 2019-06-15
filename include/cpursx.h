@@ -220,7 +220,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	}
 	else if((webman_config->fanc == DISABLED) || (!webman_config->man_speed && !max_temp))
 		sprintf(max_temp1, " <small>[%s %s]</small>", STR_FANCTRL3, STR_DISABLED);
-	else if(max_temp >= 80)
+	else if(webman_config->fanc == FAN_AUTO2)
 	{
 		sprintf(max_temp1, " (AUTO)");
 		sprintf(max_temp2, " (AUTO)");

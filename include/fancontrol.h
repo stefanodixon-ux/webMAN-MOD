@@ -7,6 +7,8 @@
 #define FAN_AUTO 				(0)
 #define FAN_MANUAL				(0)
 
+#define FAN_AUTO2				(2)
+
 #define PERCENT_TO_8BIT(val)	((val * 255) / 100)
 
 #define DISABLED		(0)

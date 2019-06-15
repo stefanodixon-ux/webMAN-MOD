@@ -4,8 +4,8 @@
 	if(max_temp)
 	{
 		t1 = t2 = 0;
-		get_temperature(0, &t1); // CPU: 3E030000 -> 3E.03�C -> 62.(03/256)�C
-		get_temperature(1, &t2); // RSX: 3E030000 -> 3E.03�C -> 62.(03/256)�C
+		get_temperature(0, &t1); // CPU: 3E030000 -> 3E.03°C -> 62.(03/256)°C
+		get_temperature(1, &t2); // RSX: 3E030000 -> 3E.03°C -> 62.(03/256)°C
 
 		if(t2 > t1) t1 = t2;
 
@@ -14,7 +14,7 @@
 		delta = (lasttemp - t1), lasttemp = t1;
 
 		////////////////////////// DYNAMIC FAN CONTROL #2 ////////////////////////
-		if(webman_config->dyn_temp >= 80)
+		if(webman_config->fanc == FAN_AUTO2)
 		{
 			if(delta)
 			{
@@ -111,7 +111,7 @@
 	}
 
 	//////////////////////////////////
-	// Overheat control (over 83�C) //
+	// Overheat control (over 83°C) //
 	//////////////////////////////////
 	if(++oc > 40)
 	{
@@ -124,7 +124,7 @@
 
 			u32 t = t1; if(t2 > t) t = t2;
 
-			if(t > (MAX_TEMPERATURE-2))
+			if(t > (MAX_TEMPERATURE - 2))
 			{
 				#ifndef ENGLISH_ONLY
 				char STR_OVERHEAT[80];//	= "System overheat warning!";
@@ -136,7 +136,7 @@
 				close_language();
 				#endif
 
-				sprintf(msg, "%s\n CPU: %i�C   RSX: %i�C", STR_OVERHEAT, t1, t2);
+				sprintf(msg, "%s\n CPU: %i°C   RSX: %i°C", STR_OVERHEAT, t1, t2);
 				show_msg(msg);
 				sys_ppu_thread_sleep(2);
 

@@ -367,7 +367,7 @@
 
 								char smax[32];
 								if(fan_ps2_mode) sprintf(smax, "   PS2 Mode");
-								else if(max_temp >= 80)
+								else if(webman_config->fanc == FAN_AUTO2)
 									sprintf(smax, "   MAX: AUTO");
 								else if(max_temp)
 									sprintf(smax, "   MAX: %i°C", max_temp);

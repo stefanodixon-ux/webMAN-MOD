@@ -53,7 +53,7 @@ static void * getNIDfunc(const char * vsh_module, u32 fnid, s32 offset)
 
 static sys_memory_container_t get_app_memory_container(void)
 {
-	if(IS_INGAME || webman_config->mc_app) return 0;
+	if(!webman_config->mc_app || IS_INGAME) return 0;
 	return vsh_memory_container_by_id(1);
 }
 

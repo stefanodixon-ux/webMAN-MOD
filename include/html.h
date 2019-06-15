@@ -1,7 +1,7 @@
 #define ITEM_CHECKED			" checked"
 #define ITEM_SELECTED			" selected"
 
-#define IS_MARKED(key)			 strstr(param, key)
+#define IS_MARKED(key)			(strstr(param, key) != NULL)
 #define IS_UNMARKED(key)		!strstr(param, key)
 
 #define HTML_URL				"<a href=\"%s\">%s</a>"
