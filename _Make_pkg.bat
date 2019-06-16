@@ -1,8 +1,8 @@
 @echo off
 title Building webMAN_MOD_1.47.xx_Updater.pkg ...
 
-copy /Y webftp_server_full.sprx                _Projects_\updater\custom\dev_hdd0\plugins\webftp_server.sprx
-copy /Y webftp_server_noncobra.sprx            _Projects_\updater\custom\dev_hdd0\plugins\webftp_server_noncobra.sprx
+copy /Y webftp_server_full.sprx                _Projects_\updater\update\dev_hdd0\plugins\webftp_server.sprx
+copy /Y webftp_server_noncobra.sprx            _Projects_\updater\update\dev_hdd0\plugins\webftp_server_noncobra.sprx
 
 move /Y webftp_server_lite.sprx                _Projects_\updater\pkgfiles\USRDIR
 move /Y webftp_server_full.sprx                _Projects_\updater\pkgfiles\USRDIR
