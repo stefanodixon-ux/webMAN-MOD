@@ -613,7 +613,7 @@ static void handleclient_net(u64 arg)
 	char ip_address[16];
 	sprintf(ip_address, "%s", inet_ntoa(conn_info.remote_adr));
 
-	if(webman_config->bind && ((conn_info.local_adr.s_addr!=conn_info.remote_adr.s_addr)  && strncmp(ip_address, webman_config->allow_ip, strlen(webman_config->allow_ip))!=0))
+	if(bind_check && webman_config->bind && ((conn_info.local_adr.s_addr!=conn_info.remote_adr.s_addr)  && strncmp(ip_address, webman_config->allow_ip, strlen(webman_config->allow_ip))!=0))
 	{
 		sclose(&clients[index].s);
 		sys_ppu_thread_exit(0);

@@ -566,7 +566,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					char *p = strrchr(templn, '/'); if(p) *p = NULL; if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = NULL;}
 
 					urlenc(swap, templn);
-					flen = sprintf(line_entry[idx].path,  "!         "
+					flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
 														  "f\" href=\"%s\">..</a></td>"
 														  "<td> " HTML_URL HTML_ENTRY_DATE
 														, swap, swap, HTML_DIR);
@@ -761,7 +761,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			{
 				if(is_netsrv_enabled(n))
 				{
-					sprintf(line_entry[idx].path, "dnet%i     "
+					sprintf(line_entry[idx].path, "dnet%i     " // <-- size should be = FILE_MGR_KEY_LEN
 												  "d\" href=\"/net%i\">net%i (%s:%i)</a></td>"
 												  "<td> <a href=\"/mount.ps3/net%i\">%s</a>" HTML_ENTRY_DATE
 												  , n, n, n, webman_config->neth[n], webman_config->netp[n], n, HTML_DIR); idx++;

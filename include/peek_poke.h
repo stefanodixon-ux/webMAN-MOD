@@ -94,7 +94,7 @@ static u64 peek(u64 addr)
 ///////////////// LV2 POKE32 //////////////////////
 static void lv2_poke_fan_hen(u64 addr, u64 value)
 {
-	{system_call_3(SC_COBRA_SYSCALL8, 0x7003ULL, addr, value);} // advanced poke (requires restore original value)
+	//{system_call_3(SC_COBRA_SYSCALL8, 0x7003ULL, addr, value);} // advanced poke (requires restore original value)
 }
 
 ///////////////////////////////////////////////////
