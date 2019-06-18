@@ -446,7 +446,6 @@ static u8 system_bgm = 0;
 #define APP_GAME  0xFF
 
 static bool show_info_popup = false;
-static bool bind_check = true; // set to false by script command: nobind -> disable ip check in ftp & http servers
 static bool do_restart = false;
 static bool payload_ps3hen = false;
 
@@ -1338,7 +1337,7 @@ static void handleclient_www(u64 conn_s_p)
  #ifdef WM_REQUEST
 	struct CellFsStat buf; u8 wm_request = (cellFsStat(WMREQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
 
-	if(!wm_request && bind_check)
+	if(!wm_request)
  #endif
 	{
 		sys_net_get_sockinfo(conn_s, &conn_info_main, 1);

@@ -32,6 +32,8 @@ static u8 ftp_session = 1;
 #define FTP_FILE_UNAVAILABLE    -4
 #define FTP_DEVICE_IS_FULL      -8
 
+#define _IS_INGAME      (gTick.tick >  rTick.tick)
+
 static void close_ftp_sessions_idle(void)
 {
 	ftp_session = 0; // close all open ftp sessions idle
@@ -101,7 +103,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	char remote_ip[16];
 	sprintf(remote_ip, "%s", inet_ntoa(conn_info.remote_adr));
 
-	if(bind_check && webman_config->bind && ((conn_info.local_adr.s_addr != conn_info.remote_adr.s_addr) && strncmp(remote_ip, webman_config->allow_ip, strlen(webman_config->allow_ip)) != 0))
+	if(webman_config->bind && ((conn_info.local_adr.s_addr != conn_info.remote_adr.s_addr) && strncmp(remote_ip, webman_config->allow_ip, strlen(webman_config->allow_ip)) != 0))
 	{
 		ssend(conn_s_ftp, "451 Access Denied. Use SETUP to allow remote connections.\r\n");
 		sclose(&conn_s_ftp);
@@ -143,19 +145,22 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	strcpy(cwd, "/");
 
+	struct timeval tv;
+	tv.tv_usec = 0;
+	tv.tv_sec = 86400;
+
 	if(webman_config->ftp_timeout)
 	{
-		struct timeval tv;
-		tv.tv_usec = 0;
 		tv.tv_sec = (webman_config->ftp_timeout * 60);
-		setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 	}
+
+	setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
 	sys_addr_t sysmem = NULL;
 
 	while(connactive && working && ftp_session)
 	{
-		if(sysmem && (IS_INGAME || (timeout++ > 1500))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 3 seconds
+		if(sysmem && (_IS_INGAME || (timeout++ > 1500))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 3 seconds
 
 		int rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
@@ -857,7 +862,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-								//continue; // no delay
 							}
 							else if( err == FTP_FILE_UNAVAILABLE)
 							{
@@ -942,6 +946,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									else
 										*source = NULL;
 
+									cellFsChmod(filename, MODE); // Set permission for overwrite
+
 									if(cellFsOpen(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | ((rest | is_append) ? CELL_FS_O_APPEND : CELL_FS_O_TRUNC), &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 									{
 										u64 pos = 0;
@@ -960,7 +966,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											read_e = (int)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
 											if(read_e > 0)
 											{
-												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break; // FAILED
+												if(cellFsWrite(fd, buffer2, read_e, &read_e) != CELL_FS_SUCCEEDED) break; // FAILED
 											}
 											else if(read_e < 0)
 												break; // FAILED
@@ -979,19 +985,17 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											}
 											cellFsUnlink(filename);
 										}
-										else
-											cellFsChmod(filename, islike(filename, "/dev_blind") ? 0644 : MODE);
 									}
-
-									if((err == CELL_FS_OK) && (*source == '/')) {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
-									*source = NULL;
 								}
 							}
 
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-								//continue; // no delay
+								cellFsChmod(filename, islike(filename, "/dev_blind") ? 0644 : MODE);
+
+								if(*source == '/') {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
+								*source = NULL;
 							}
 							else if(err == FTP_DEVICE_IS_FULL)
 							{
@@ -1276,13 +1280,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				}
 			}
 		}
-		else
+		else if(rlen < 0)
 		{
 			connactive = 0;
 			break;
 		}
 
-		sys_ppu_thread_usleep(2000);
+		sys_ppu_thread_usleep(2500);
 	}
 
 	if(sysmem) sys_memory_free(sysmem);

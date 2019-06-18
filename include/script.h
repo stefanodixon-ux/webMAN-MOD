@@ -116,11 +116,6 @@ static void parse_script(const char *script_file)
 						sys_map_path(VSH_RESOURCE_DIR "coldboot_multi.ac3", SYSMAP_EMPTY_DIR);
 					}
 					else
-					if(_islike(line, "nobind"))
-					{
-						bind_check = false;
-					}
-					else
 	#endif
 					if(_islike(line, "if ") || _islike(line, "abort if "))
 					{

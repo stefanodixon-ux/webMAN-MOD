@@ -183,7 +183,10 @@ static bool explore_exec_push(u32 usecs, u8 focus_first)
 			focus_first_item();
 		}
 		else
-			explore_interface->ExecXMBcommand("exec_push", 0, 0);
+		{
+			gTick.tick =  rTick.tick + 1; // notify in-game
+			explore_interface->ExecXMBcommand("exec_push", 0, 0); 
+		}
 
 		return true;
 	}

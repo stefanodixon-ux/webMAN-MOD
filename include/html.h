@@ -147,7 +147,7 @@ static char h2a(const char hex)
 
 static inline void urldec(char *url, char *original)
 {
-	if(strchr(url, '+') || strchr(url, '%'))
+	if((strchr(url, '+') != NULL) || (strchr(url, '%') != NULL))
 	{
 		strcpy(original, url); // return original url
 

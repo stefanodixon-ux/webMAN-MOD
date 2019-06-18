@@ -105,7 +105,7 @@
 #ifdef WM_CUSTOM_COMBO
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // L2+R2
 						{
-							if(do_custom_combo("l2_r2") == false) continue;
+							if(do_custom_combo("l2_r2")) continue;
 						}
 #endif
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] && (++init_delay < 5)) {sys_ppu_thread_usleep(100000); continue;}
@@ -120,7 +120,7 @@
 					{
 						// L2+START = Play Disc
 #ifdef WM_CUSTOM_COMBO
-						if(do_custom_combo("l2_start") == false) continue;
+						if(do_custom_combo("l2_start")) continue;
 #endif
 						char category[16], seg_name[40]; *category = *seg_name = NULL;
 						launch_disc(category, seg_name, true); // L2+START
