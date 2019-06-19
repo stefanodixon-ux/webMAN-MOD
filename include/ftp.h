@@ -41,22 +41,24 @@ static void close_ftp_sessions_idle(void)
 	ftp_session = 1; // allow new ftp sessions
 }
 
-static void absPath(char* absPath_s, const char* path, const char* cwd)
+static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 {
 	if(*path == '/') strcpy(absPath_s, path);
 	else
 	{
-		strcpy(absPath_s, cwd);
+		u16 len = sprintf(absPath_s, "%s", cwd);
 
-		if(cwd[strlen(cwd) - 1] != '/') strcat(absPath_s, "/");
+		if(cwd[len - 1] != '/') strcat(absPath_s + len, "/");
 
-		strcat(absPath_s, path);
+		strcat(absPath_s + len, path);
 	}
 
 	filepath_check(absPath_s);
 
-	if(islike(absPath_s, "/dev_blind")) mount_device("/dev_blind", NULL, NULL); else
-	if(islike(absPath_s, "/dev_hdd1") ) mount_device("/dev_hdd1",  NULL, NULL);
+	if(islike(absPath_s, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); return 1;}
+	if(islike(absPath_s, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
+
+	return 0;
 }
 
 static int ssplit(const char* str, char* left, int lmaxlen, char* right, int rmaxlen)
@@ -85,18 +87,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 {
 	int conn_s_ftp = (int)conn_s_ftp_p; // main communications socket
 
-#ifdef USE_NTFS
-	if(!ftp_active && mountCount == NTFS_UNMOUNTED && !refreshing_xml) check_ntfs_volumes();
-#endif
-
-	ftp_active++;
-
-	int p1x = 0;
-	int p2x = 0;
-
-	CellRtcDateTime rDate;
-	CellRtcTick pTick;
-
 	sys_net_sockinfo_t conn_info;
 	sys_net_get_sockinfo(conn_s_ftp, &conn_info, 1);
 
@@ -109,6 +99,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 		sclose(&conn_s_ftp);
 		sys_ppu_thread_exit(0);
 	}
+
+#ifdef USE_NTFS
+	if(!ftp_active && mountCount == NTFS_UNMOUNTED && !refreshing_xml) check_ntfs_volumes();
+#endif
 
 	setPluginActive();
 
@@ -126,6 +120,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	char cwd[STD_PATH_LEN];	// Current Working Directory
 	u64 rest = 0;			// for resuming file transfers
 
+	CellRtcDateTime rDate;
 	char cmd[16], param[STD_PATH_LEN], filename[STD_PATH_LEN], source[STD_PATH_LEN]; // used as source parameter in RNFR and COPY commands
 	char *cpursx = filename, *tempcwd = filename, *d_path = param, *pasv_output = param;
 	struct CellFsStat buf;
@@ -147,7 +142,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	struct timeval tv;
 	tv.tv_usec = 0;
-	tv.tv_sec = 86400;
+	tv.tv_sec = 20;
 
 	if(webman_config->ftp_timeout)
 	{
@@ -157,6 +152,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
 	sys_addr_t sysmem = NULL;
+
+	ftp_active++;
 
 	while(connactive && working && ftp_session)
 	{
@@ -394,8 +391,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							bool rw_flash = isDir("/dev_blind"); char *status = to_upper(filename);
 
 							if(*status == NULL) ; else
-							if(IS(status, "ON" )) {if( rw_flash) continue;} else
-							if(IS(status, "OFF")) {if(!rw_flash) continue;}
+							if(_IS(status, "ON" )) {if( rw_flash) continue;} else
+							if(_IS(status, "OFF")) {if(!rw_flash) continue;}
 
 							if(rw_flash)
 								disable_dev_blind();
@@ -426,8 +423,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							char *status = to_upper(filename);
 
 							if(*status == NULL)		set_gamedata_status(extgd^1, true); else
-							if(IS(status, "ON" ))	set_gamedata_status(0, true);		else
-							if(IS(status, "OFF"))	set_gamedata_status(1, true);
+							if(_IS(status, "ON" ))	set_gamedata_status(0, true);		else
+							if(_IS(status, "OFF"))	set_gamedata_status(1, true);
 
 						}
  #endif
@@ -740,9 +737,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				if(_IS(cmd, "PASV"))
 				{
 					rest = 0;
-					u8 pasv_retry = 0; cellRtcGetCurrentTick(&pTick); u32 pasv_port = (pTick.tick & 0xfeff00) >> 8;
+					CellRtcTick pTick; cellRtcGetCurrentTick(&pTick);
+					u8 pasv_retry = 0; u32 pasv_port = (pTick.tick & 0xfeff00) >> 8;
 
-					for( ; pasv_retry < 250; pasv_retry++, pasv_port++)
+					for(int p1x, p2x; pasv_retry < 250; pasv_retry++, pasv_port++)
 					{
 						if(data_s >= 0) sclose(&data_s);
 						if(pasv_s >= 0) sclose(&pasv_s);
@@ -889,7 +887,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					{
 						if(split)
 						{
-							absPath(filename, param, cwd);
+							u8 is_dev_blind = absPath(filename, param, cwd);
 
 							int err = FAILED, is_append = _IS(cmd, "APPE");
 
@@ -937,7 +935,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								else
 #endif
 								{
-									if(islike(filename, "/dev_blind") && file_exists(filename))
+									if(is_dev_blind && file_exists(filename))
 									{
 										strcpy(source, filename);
 										sprintf(filename, "%s.~", source);
@@ -945,8 +943,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									}
 									else
 										*source = NULL;
-
-									cellFsChmod(filename, MODE); // Set permission for overwrite
 
 									if(cellFsOpen(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | ((rest | is_append) ? CELL_FS_O_APPEND : CELL_FS_O_TRUNC), &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 									{
@@ -992,7 +988,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(err == CELL_FS_OK)
 							{
 								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-								cellFsChmod(filename, islike(filename, "/dev_blind") ? 0644 : MODE);
+								cellFsChmod(filename, is_dev_blind ? 0644 : MODE);
 
 								if(*source == '/') {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
 								*source = NULL;
@@ -1280,13 +1276,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				}
 			}
 		}
-		else if(rlen < 0)
+		else
 		{
 			connactive = 0;
 			break;
 		}
 
-		sys_ppu_thread_usleep(2500);
+		sys_ppu_thread_usleep(2000);
 	}
 
 	if(sysmem) sys_memory_free(sysmem);

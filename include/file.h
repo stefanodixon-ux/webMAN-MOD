@@ -204,6 +204,30 @@ static void mkdir_tree(char *path)
 }
 #endif
 
+static void mkdirs(char *param)
+{
+	cellFsMkdir(TMP_DIR, DMODE);
+	cellFsMkdir(WMTMP, DMODE);
+	cellFsMkdir("/dev_hdd0/packages", DMODE);
+	//cellFsMkdir("/dev_hdd0/GAMES",  DMODE);
+	//cellFsMkdir("/dev_hdd0/PS3ISO", DMODE);
+	//cellFsMkdir("/dev_hdd0/DVDISO", DMODE);
+	//cellFsMkdir("/dev_hdd0/BDISO",  DMODE);
+	//cellFsMkdir("/dev_hdd0/PS2ISO", DMODE);
+	//cellFsMkdir("/dev_hdd0/PSXISO", DMODE);
+	//cellFsMkdir("/dev_hdd0/PSPISO", DMODE);
+
+	sprintf(param, "/dev_hdd0");
+	for(u8 i = 0; i < 9; i++)
+	{
+		if(i == 1 || i == 7) continue; // skip /GAMEZ & /PSXGAMES
+		sprintf(param + 9 , "/%s", paths[i]);
+		cellFsMkdir(param, DMODE);
+	}
+
+	param[9] = NULL; // <- return /dev_hdd0
+}
+
 size_t read_file(const char *file, char *data, size_t size, s32 offset)
 {
 	int fd = 0; u64 pos, read_e = 0;

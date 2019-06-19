@@ -143,13 +143,13 @@ static void set_buffer_sizes(u8 footprint)
 	BUFFER_SIZE_ALL = get_buffer_size(footprint);
 	BUFFER_SIZE_FTP	= ( _128KB_);
 
-	BUFFER_SIZE_PSP	= (  _32KB_);
-	BUFFER_SIZE_PS2	= (  _64KB_);
-	BUFFER_SIZE_DVD	= (  _64KB_);
+	BUFFER_SIZE_PSP	= ( _32KB_);
+	BUFFER_SIZE_PS2	= ( _64KB_);
+	BUFFER_SIZE_DVD	= ( _64KB_);
 
 	if(footprint == USE_MC) //mc_app
 	{
-		BUFFER_SIZE_FTP	= ( _128KB_);
+		//BUFFER_SIZE_FTP	= ( _256KB_);
 
 		//BUFFER_SIZE	= (1792*KB);
 		BUFFER_SIZE_PSX	= (_384KB_);
@@ -167,6 +167,7 @@ static void set_buffer_sizes(u8 footprint)
 	if(footprint == 2) //MAX
 	{
 		BUFFER_SIZE_FTP	= ( _256KB_);
+
 		//BUFFER_SIZE	= ( _512KB_);
 		BUFFER_SIZE_PSX	= ( _256KB_);
 		BUFFER_SIZE_PSP	= (  _64KB_);
@@ -464,7 +465,7 @@ scan_roms:
 
 	char param[STD_PATH_LEN], icon[STD_PATH_LEN], subpath[STD_PATH_LEN], enc_dir_name[1024];
 
-	u8 is_net = 0;
+	u8 i0, is_net = 0;
 
 	// --- scan xml content ---
 	char localhost[24]; sprintf(localhost, "http://%s", local_ip);
@@ -490,10 +491,10 @@ scan_roms:
 	{
 		if(check_drive(f0)) continue;
 
-		is_net = IS_NET; 
+		i0 = f0, is_net = IS_NET; 
 
 		#ifdef MOUNT_ROMS
-		if(scanning_roms && (is_net || IS_NTFS)) continue;
+		if(scanning_roms && is_net) continue;
 		#endif
 
 		if(conn_s_p == START_DAEMON)
@@ -560,7 +561,12 @@ scan_roms:
 //
 			#ifdef MOUNT_ROMS
 			if(scanning_roms)
-				sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);
+			{
+				if(IS_NTFS)
+					{sprintf(param, "%s/USRDIR/cores/roms/%s", RETROARCH_DIR, roms_path[roms_index]); i0 = 0;}
+				else
+					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);
+			}
 			else
 			#endif
 			#ifdef NET_SUPPORT
@@ -755,14 +761,14 @@ next_xml_entry:
 							if(webman_config->info <= 1)
 							{
 								if((webman_config->info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
-								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s/%s%s"), drives[f0], paths[f1], folder_name);
+								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s/%s%s"), drives[i0], paths[f1], folder_name);
 							}
 							else if(webman_config->info == 2)
 							{
 								if(HAS_TITLE_ID)
-									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), title_id, drives[f0] + 5);
+									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), title_id, drives[i0] + 5);
 								else
-									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s"), drives[f0] + 5);
+									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s"), drives[i0] + 5);
 
 								if(f1 < 2) read_e += sprintf(tempstr + read_e, " | JB");
 							}

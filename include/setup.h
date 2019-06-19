@@ -261,7 +261,7 @@ static void setup_parse_settings(char *param)
 	webman_config->nowarn = IS_MARKED("warn=1");
 
 	webman_config->foot=get_valuen(param, "fp=", 0, 7); set_buffer_sizes(webman_config->foot);
-	webman_config->mc_app = IS_MARKED("mc=1");
+	webman_config->mc_app = get_valuen(param, "mc=", 0, 4);
 
 #ifdef REMOVE_SYSCALLS
 	webman_config->dsc = IS_MARKED("dsc=1");
@@ -866,7 +866,16 @@ static void setup_form(char *buffer, char *templn)
 #endif
 	concat(buffer, "</select>");
 
-	add_check_box("mc", false, "3072KB [MC]", "<p>", webman_config->mc_app, buffer);
+	//memory container
+	concat(buffer, "3072KB [MC]: <select name=\"mc\">");
+	value = webman_config->mc_app;
+	add_option_item(0, STR_DISABLED, (value == 0), buffer);
+	add_option_item(4, "4 - bg",     (value == 4), buffer);
+	add_option_item(3, "3 - fg",     (value == 3), buffer);
+	add_option_item(2, "2 - debug",  (value == 2), buffer);
+	add_option_item(1, "1 - app"  ,  (value == 1), buffer);
+	concat(buffer, "</select><br>");
+
 
 #ifndef LITE_EDITION
 	//Home
@@ -1220,7 +1229,7 @@ static void read_settings(void)
 
 	//for(u8 id = 0; id < 5; id++) webman_config->netp[id] = NETPORT; // webman_config->netd[id] = 0; webman_config->neth[id][0] = NULL;
 
-	webman_config->foot    = 1;       //MIN
+	//webman_config->foot  = 0;       //Standard (896KB)
 	webman_config->nospoof = 1;       //don't spoof fw version
 
 	webman_config->pspl = 1;          //Show PSP Launcher

@@ -335,7 +335,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 #define	MAX_WWW_CC		(255)
 #define MAX_WWW_THREADS	(8)
-#define MAX_FTP_THREADS	(8)
+#define MAX_FTP_THREADS	(10)
 
 #define WWW_BACKLOG		(2001)
 #define	FTP_BACKLOG		(7)
@@ -369,13 +369,13 @@ int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MAPI, 3=P
 #define MIN_MEM		_192KB_
 
 static u32 BUFFER_SIZE_FTP;
-static u32 BUFFER_SIZE_ALL;
 
 static u32 BUFFER_SIZE;
 static u32 BUFFER_SIZE_PSX;
 static u32 BUFFER_SIZE_PSP;
 static u32 BUFFER_SIZE_PS2;
 static u32 BUFFER_SIZE_DVD;
+static u32 BUFFER_SIZE_ALL;
 
 #define MAX_PAGES   ((BUFFER_SIZE_ALL / (_64KB_ * MAX_WWW_THREADS)) + 1)
 
@@ -1215,8 +1215,8 @@ static void handleclient_www(u64 conn_s_p)
 			{DELETE_CACHED_GAMES} // refresh XML will force "refresh HTML" to rebuild the cache file
 		}
 
-		cellFsMkdir(TMP_DIR, DMODE);
-		cellFsMkdir(WMTMP, DMODE);
+		mkdirs(param); // make hdd0 dirs GAMES, PS3ISO, PS2ISO, packages, etc.
+
 
 		//////////// usb ports ////////////
 		for(u8 indx = 5, d = 6; d < 128; d++)
@@ -2374,30 +2374,7 @@ parse_request:
 				}
 				else
 				{
-					cellFsMkdir("/dev_hdd0/packages", DMODE);
-					//cellFsMkdir("/dev_hdd0/GAMES",  DMODE);
-					//cellFsMkdir("/dev_hdd0/PS3ISO", DMODE);
-					//cellFsMkdir("/dev_hdd0/PSXISO", DMODE);
-					//cellFsMkdir("/dev_hdd0/PS2ISO", DMODE);
-					//cellFsMkdir("/dev_hdd0/PSPISO", DMODE);
-					//cellFsMkdir("/dev_hdd0/DVDISO", DMODE);
-					//cellFsMkdir("/dev_hdd0/BDISO",  DMODE);
-
-					sprintf(param, "/dev_hdd0");
-					for(u8 i = 0; i < 9; i++)
-					{
-						if(i == 1 || i == 7) continue;
-						sprintf(param + 9 , "/%s", paths[i]);
-						cellFsMkdir(param, DMODE);
-					}
-
-					sprintf(param, "/dev_hdd0");
-
-					// Let the user create these folders manually or enable webman_config->autoplay
-					//cellFsMkdir("/dev_hdd0/GAMES"  AUTOPLAY_TAG, DMODE);
-					//cellFsMkdir("/dev_hdd0/PS3ISO" AUTOPLAY_TAG, DMODE);
-					//cellFsMkdir("/dev_hdd0/PSXISO" AUTOPLAY_TAG, DMODE);
-					//cellFsMkdir("/dev_hdd0/PS2ISO" AUTOPLAY_TAG, DMODE);
+					mkdirs(param); // make hdd0 dirs GAMES, PS3ISO, PS2ISO, packages, etc.
 				}
 
 				is_binary = FOLDER_LISTING;
