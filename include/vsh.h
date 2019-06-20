@@ -92,7 +92,7 @@ static void enable_ingame_screenshot(void)
 
 	if(vshmain_is_ss_enabled() == 0)
 	{
-		set_SSHT_ = (u32*)&opd;
+		set_SSHT_ = (void*)&opd;
 		memcpy(set_SSHT_, vshmain_is_ss_enabled, 8);
 		opd[0] -= 0x2C; // Sub before vshmain_981D7E9F sets Screenshot Flag
 		set_SSHT_(1);	// enable screenshot

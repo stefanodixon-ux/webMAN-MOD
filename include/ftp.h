@@ -30,16 +30,10 @@ static u8 ftp_session = 1;
 #define FTP_RECV_SIZE  (STD_PATH_LEN + 20)
 
 #define FTP_FILE_UNAVAILABLE    -4
+#define FTP_OUT_OF_MEMORY       -6
 #define FTP_DEVICE_IS_FULL      -8
 
 #define _IS_INGAME      (gTick.tick >  rTick.tick)
-
-static void close_ftp_sessions_idle(void)
-{
-	ftp_session = 0; // close all open ftp sessions idle
-	for(u8 retry = 0; ftp_active && (retry < 3); retry++) sys_ppu_thread_sleep(1);
-	ftp_session = 1; // allow new ftp sessions
-}
 
 static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 {
@@ -81,6 +75,44 @@ static int ssplit(const char* str, char* left, int lmaxlen, char* right, int rma
 	}
 
 	return ret;
+}
+
+
+static void send_reply(int conn_s_ftp, int err)
+{
+	if(err == CELL_FS_OK)
+	{
+		ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
+	}
+	else if(err == FTP_FILE_UNAVAILABLE)
+	{
+		ssend(conn_s_ftp, FTP_ERROR_550);	// Requested action not taken. File unavailable (e.g., file not found, no access).
+	}
+	else if(err == FTP_DEVICE_IS_FULL)
+	{
+		ssend(conn_s_ftp, "451 ERR, Device is full\r\n");	// Closing data connection. Requested file action successful (for example, file transfer or file abort).
+	}
+	else if(err == FTP_OUT_OF_MEMORY)
+	{
+		ssend(conn_s_ftp, "451 ERR, Out of memory\r\n");	// Requested action aborted. Local error in processing.
+	}	
+	else
+	{
+		ssend(conn_s_ftp, FTP_ERROR_451);	// Requested action aborted. Local error in processing.
+	}
+}
+
+static sys_addr_t allocate_ftp_buffer(sys_addr_t sysmem)
+{
+	if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
+	{
+		sys_memory_container_t mc_app = get_app_memory_container();
+		if(mc_app)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
+	}
+
+	if(sysmem || (!sysmem && sys_memory_allocate(BUFFER_SIZE_FTP, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)) return sysmem;
+
+	return NULL;
 }
 
 static void handleclient_ftp(u64 conn_s_ftp_p)
@@ -142,7 +174,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	struct timeval tv;
 	tv.tv_usec = 0;
-	tv.tv_sec = 20;
+	tv.tv_sec = 3;
 
 	if(webman_config->ftp_timeout)
 	{
@@ -157,7 +189,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	while(connactive && working && ftp_session)
 	{
-		if(sysmem && (_IS_INGAME || (timeout++ > 1500))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 3 seconds
+		if(sysmem && (_IS_INGAME || (timeout++ > 2))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 6 seconds
 
 		int rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
@@ -291,7 +323,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						{
 							if(ISDIGIT(param[j])) data[i][k++] = param[j];
 							else {data[i++][k] = 0, k = 0;}
-							if((i >= 6) || !param[j]) break;
+							if((i >= 6) || (k >= 4) || !param[j]) break;
 						}
 
 						if(i == 6)
@@ -663,7 +695,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 										if(is_MLSx)
 										{
-											if(IS(entry_name, "."))	*dirtype =  'c'; else
+											if(IS(entry_name, "."))		*dirtype =  'c'; else
 											if(IS(entry_name, ".."))	*dirtype =  'p'; else
 																		*dirtype = '\0';
 
@@ -785,13 +817,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(do_sc36 && islike(filename, "/dvd_bdvd"))
 								{do_sc36 = false; system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
 
-							if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
-							{
-								sys_memory_container_t mc_app = get_app_memory_container();
-								if(mc_app)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
-							}
+							sysmem = allocate_ftp_buffer(sysmem);
 
-							if(sysmem || (!sysmem && sys_memory_allocate(BUFFER_SIZE_FTP, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK))
+							if(sysmem)
 							{
 								char *buffer2 = (char*)sysmem;
 #ifdef USE_NTFS
@@ -856,17 +884,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									cellFsClose(fd);
 								}
 							}
-
-							if(err == CELL_FS_OK)
-							{
-								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-							}
-							else if( err == FTP_FILE_UNAVAILABLE)
-							{
-								ssend(conn_s_ftp, FTP_ERROR_550);	// Requested action not taken. File unavailable (e.g., file not found, no access).
-							}
 							else
-								ssend(conn_s_ftp, FTP_ERROR_451);	// Requested action aborted. Local error in processing.
+								err = FTP_OUT_OF_MEMORY;
+
+							send_reply(conn_s_ftp, err);
 						}
 						else
 						{
@@ -891,15 +912,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							int err = FAILED, is_append = _IS(cmd, "APPE");
 
-							if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
-							{
-								sys_memory_container_t mc_app = get_app_memory_container();
-								if(mc_app)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
-							}
+							sysmem = allocate_ftp_buffer(sysmem);
 
-							if(sysmem || (!sysmem && sys_memory_allocate(BUFFER_SIZE_FTP, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK))
+							if(sysmem)
 							{
 								char *buffer2 = (char*)sysmem;
+
 								int read_e = 0;
 #ifdef USE_NTFS
 								if(is_ntfs_path(filename))
@@ -937,9 +955,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								{
 									if(is_dev_blind && file_exists(filename))
 									{
-										strcpy(source, filename);
-										sprintf(filename, "%s.~", source);
-										if(file_exists(filename)) {strcpy(filename, source); *source = NULL;} // overwrite if the temp file exists
+										u16 len = sprintf(source, "%s", filename);
+										sprintf(filename + len, ".~");
+										if(file_exists(filename)) {filename[len] = *source = NULL;} // overwrite if the temp file exists
 									}
 									else
 										*source = NULL;
@@ -962,7 +980,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											read_e = (int)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
 											if(read_e > 0)
 											{
-												if(cellFsWrite(fd, buffer2, read_e, &read_e) != CELL_FS_SUCCEEDED) break; // FAILED
+												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break; // FAILED
 											}
 											else if(read_e < 0)
 												break; // FAILED
@@ -972,7 +990,15 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 										cellFsClose(fd);
 
-										if(err != CELL_FS_OK)
+										if(err == CELL_FS_OK)
+										{
+											ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
+											cellFsChmod(filename, is_dev_blind ? 0644 : MODE);
+
+											if(*source == '/') {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
+											*source = NULL;
+										}
+										else
 										{
 											for(u8 n = 0; n < 17; n++)
 											{
@@ -984,23 +1010,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									}
 								}
 							}
-
-							if(err == CELL_FS_OK)
-							{
-								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-								cellFsChmod(filename, is_dev_blind ? 0644 : MODE);
-
-								if(*source == '/') {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
-								*source = NULL;
-							}
-							else if(err == FTP_DEVICE_IS_FULL)
-							{
-								ssend(conn_s_ftp, "451 ERR, Device is full\r\n");		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-							}
 							else
-							{
-								ssend(conn_s_ftp, FTP_ERROR_451);	// Requested action aborted. Local error in processing.
-							}
+								err = FTP_OUT_OF_MEMORY;
+
+							if(err != CELL_FS_OK) send_reply(conn_s_ftp, err);
 						}
 						else
 						{
@@ -1265,7 +1278,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						loggedin = 1;
 					}
 					else
-
 					{
 						ssend(conn_s_ftp, FTP_ERROR_430);	// Invalid username or password
 					}
@@ -1276,7 +1288,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				}
 			}
 		}
-		else
+		else if(rlen < 0)
 		{
 			connactive = 0;
 			break;
@@ -1298,6 +1310,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	sys_ppu_thread_exit(0);
 }
 
+static void close_ftp_sessions_idle(void)
+{
+	ftp_session = 0; // close all open ftp sessions idle
+	for(u8 retry = 0; ftp_active && (retry < 5); retry++) sys_ppu_thread_sleep(1);
+	ftp_session = 1; // allow new ftp sessions
+}
 
 static void ftpd_thread(__attribute__((unused)) u64 arg)
 {

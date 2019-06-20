@@ -867,7 +867,7 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, "</select>");
 
 	//memory container
-	concat(buffer, "3072KB [MC]: <select name=\"mc\">");
+	concat(buffer, " 3072KB [MC]: <select name=\"mc\">");
 	value = webman_config->mc_app;
 	add_option_item(0, STR_DISABLED, (value == 0), buffer);
 	add_option_item(4, "4 - bg",     (value == 4), buffer);
