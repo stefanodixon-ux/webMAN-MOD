@@ -132,12 +132,24 @@ Special thanks to Joonie, Habib & Rebug Team, flatz, haxxxen, devil303, Rancid-O
 ## License
 ### webMAN MOD
 
-webMAN MOD is a FREE software and all its components are distributed and protected under GNU General Public License version 3 (GPL v3).
+webMAN MOD is a FREE software and all its components are distributed and protected under GNU General Public License version 3
+(GPL v3) as published by the Free Software Foundation, or (at your option) any later version..
 
 That means that any change made to the source code, binaries or resources of this software should be made public.
 A detailed list of the changes and the credits to the original authors are required.
 
-It is not permited to distribute modified versions with the same name of this software.
+It is not permitted to distribute modified versions with the same name of this software.
 A similar name or misleading name should NOT be used, to avoid confusion about the origin or the version in use.
 
 For futher information about GPL v3, refer to: https://www.gnu.org/licenses/gpl-3.0.en.html
+
+The software is distributed "as is". __No warranty of any kind is expressed or implied. You use at your own risk.__
+Neither the author, the licensor nor the agents of the licensor will be liable for data loss, damages, loss of profits
+or any other kind of loss while using or misusing this software or its components.
+
+Furthermore, the author and his ASSOCIATES shall assume NO responsibility, legal or otherwise implied, for any misuse of,
+or for any loss that may occur while using the SOFTWARE or its components.
+
+Installing and using the software signifies acceptance of these terms and conditions of the license.
+If you do not agree with the terms of this license, you must remove all software files from your storage devices
+and cease to use the software.
