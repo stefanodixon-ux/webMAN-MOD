@@ -875,6 +875,10 @@ static void do_umount(bool clean)
 {
 	if(clean) cellFsUnlink(LAST_GAME_TXT);
 
+#ifdef USE_NTFS
+	root_check = true;
+#endif
+
 	cellFsUnlink("/dev_hdd0/tmp/game/ICON0.PNG"); // remove XMB disc icon
 
 	if(fan_ps2_mode) reset_fan_mode(); // restore normal fan mode

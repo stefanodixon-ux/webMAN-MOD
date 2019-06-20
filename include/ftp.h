@@ -33,8 +33,6 @@ static u8 ftp_session = 1;
 #define FTP_OUT_OF_MEMORY       -6
 #define FTP_DEVICE_IS_FULL      -8
 
-#define _IS_INGAME      (gTick.tick >  rTick.tick)
-
 static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 {
 	if(*path == '/') strcpy(absPath_s, path);
@@ -106,8 +104,8 @@ static sys_addr_t allocate_ftp_buffer(sys_addr_t sysmem)
 {
 	if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
 	{
-		sys_memory_container_t mc_app = get_app_memory_container();
-		if(mc_app)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
+		sys_memory_container_t vsh_mc = get_vsh_memory_container();
+		if(vsh_mc)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
 	}
 
 	if(sysmem || (!sysmem && sys_memory_allocate(BUFFER_SIZE_FTP, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)) return sysmem;
@@ -133,7 +131,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	}
 
 #ifdef USE_NTFS
-	if(!ftp_active && mountCount == NTFS_UNMOUNTED && !refreshing_xml) check_ntfs_volumes();
+	if(!ftp_active && (mountCount == NTFS_UNMOUNTED) && !refreshing_xml && root_check) check_ntfs_volumes();
 #endif
 
 	setPluginActive();
@@ -156,7 +154,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	char cmd[16], param[STD_PATH_LEN], filename[STD_PATH_LEN], source[STD_PATH_LEN]; // used as source parameter in RNFR and COPY commands
 	char *cpursx = filename, *tempcwd = filename, *d_path = param, *pasv_output = param;
 	struct CellFsStat buf;
-	int fd, pos, timeout = 0;
+	int fd, pos;
 
 	bool is_ntfs = false, do_sc36 = true;
 
@@ -165,7 +163,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #ifdef USE_NTFS
 	struct stat bufn;
 
-	sprintf(buffer, "%i " WM_APPNAME "ftpd " WM_VERSION " [NTFS:%i]\r\n", 220, mountCount); ssend(conn_s_ftp, buffer);
+	sprintf(buffer, "%i " WM_APPNAME "ftpd " WM_VERSION " [NTFS:%i]\r\n", 220, MAX(mountCount, 0)); ssend(conn_s_ftp, buffer);
 #else
 	sprintf(buffer, "%i " WM_APPNAME "ftpd " WM_VERSION "\r\n", 220); ssend(conn_s_ftp, buffer);
 #endif
@@ -174,14 +172,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	struct timeval tv;
 	tv.tv_usec = 0;
-	tv.tv_sec = 3;
 
 	if(webman_config->ftp_timeout)
 	{
 		tv.tv_sec = (webman_config->ftp_timeout * 60);
+		setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 	}
-
-	setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
 	sys_addr_t sysmem = NULL;
 
@@ -189,8 +185,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	while(connactive && working && ftp_session)
 	{
-		if(sysmem && (_IS_INGAME || (timeout++ > 2))) {sys_memory_free(sysmem); sysmem = NULL, timeout = 0;} // release allocated buffer after 6 seconds
-
 		int rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
 		{
@@ -199,7 +193,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 			char *p = strstr(buffer, "\r\n");
 			if(p) *p = NULL; else break;
 
-			is_ntfs = false, timeout = 0;
+			is_ntfs = false;
 
 			int split = ssplit(buffer, cmd, 15, param, STD_PATH_LEN - 1);
 
@@ -386,6 +380,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											  " SITE SHUTDOWN\r\n"
 											  " SITE RESTART\r\n"
 											  " SITE STOP\r\n"
+											  " SITE TIMEOUT <secs>\r\n"
 											  "214 End\r\n");
 						}
 						else
@@ -413,6 +408,14 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						{
 							if(working) ssend(conn_s_ftp, FTP_OK_221); // Service closing control connection.
 							ftp_working = connactive = 0;
+							break;
+						}
+						else
+						if(_IS(cmd, "TIMEOUT"))
+						{
+							if(working) ssend(conn_s_ftp, FTP_OK_221); // Service closing control connection.
+							tv.tv_sec = val(filename);
+							setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 							break;
 						}
 						else
@@ -1288,7 +1291,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				}
 			}
 		}
-		else if(rlen < 0)
+		else
 		{
 			connactive = 0;
 			break;

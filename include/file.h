@@ -30,7 +30,7 @@ enum scan_operations
 	SCAN_COPY   = 2,
 	SCAN_MOVE   = 3,
 	SCAN_RENAME = 4,
-	SCAN_COPYBK = 5
+	SCAN_COPYBK = 5		// rename source to source + .bak after copy
 };
 
 #ifdef USE_NTFS
@@ -248,17 +248,21 @@ size_t read_file(const char *file, char *data, size_t size, s32 offset)
 
 int save_file(const char *file, const char *mem, s64 size)
 {
-	int fd = 0; u32 flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;
-	cellFsChmod(file, MODE);
+	bool crlf = (size == APPEND_TEXT); // auto add new line
 
-	if( size < 0 )  {flags = CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY; size = (size == APPEND_TEXT) ? SAVE_ALL : -size;} else
+	u32 flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;
+	if( size < 0 )  {flags = CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY; size = crlf ? SAVE_ALL : -size;} else
 	if(!extcmp(file, "/PARAM.SFO", 10)) flags = CELL_FS_O_CREAT | CELL_FS_O_WRONLY;
 
+	cellFsChmod(file, MODE); // set permissions for overwrite
+
+	int fd = 0; 
 	if(cellFsOpen(file, flags, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
 		if((size <= SAVE_ALL) && mem) size = strlen(mem);
 
 		if(size) cellFsWrite(fd, (void *)mem, size, NULL);
+		if(crlf) cellFsWrite(fd, (void *)"\r\n", 2, NULL);
 		cellFsClose(fd);
 
 		cellFsChmod(file, MODE);
@@ -433,8 +437,8 @@ int file_copy(const char *file1, char *file2, u64 maxbytes)
 
 		if(g_sysmem) sysmem = g_sysmem; else
 		{
-			sys_memory_container_t mc_app = get_app_memory_container();
-			if(mc_app)	sys_memory_allocate_from_container(chunk_size, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
+			sys_memory_container_t vsh_mc = get_vsh_memory_container();
+			if(vsh_mc)	sys_memory_allocate_from_container(chunk_size, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
 		}
 
 		if(!sysmem) chunk_size = _64KB_;
@@ -613,8 +617,8 @@ static int folder_copy(const char *path1, char *path2)
 
 		if(!g_sysmem)
 		{
-			sys_memory_container_t mc_app = get_app_memory_container();
-			if(mc_app)	sys_memory_allocate_from_container(_256KB_, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &g_sysmem);
+			sys_memory_container_t vsh_mc = get_vsh_memory_container();
+			if(vsh_mc)	sys_memory_allocate_from_container(_256KB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &g_sysmem);
 		}
 
 		u16 plen1 = sprintf(source, "%s", path1);
@@ -765,7 +769,6 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			{
 				if(!dest || *dest != '/') break;
 
-				strcat(entry, "\r\n");
 				save_file(dest, entry, APPEND_TEXT);
 			}
 			else if(fop == SCAN_COPY || fop == SCAN_COPYBK)

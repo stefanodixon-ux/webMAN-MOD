@@ -261,7 +261,7 @@ static void setup_parse_settings(char *param)
 	webman_config->nowarn = IS_MARKED("warn=1");
 
 	webman_config->foot=get_valuen(param, "fp=", 0, 7); set_buffer_sizes(webman_config->foot);
-	webman_config->mc_app = get_valuen(param, "mc=", 0, 4);
+	webman_config->vsh_mc = get_valuen(param, "mc=", 0, 4);
 
 #ifdef REMOVE_SYSCALLS
 	webman_config->dsc = IS_MARKED("dsc=1");
@@ -849,7 +849,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 	//memory usage
-	sprintf(templn, " %s [%iKB]: <select name=\"fp\" accesskey=\"M\">", STR_MEMUSAGE, (webman_config->mc_app) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, templn);
+	sprintf(templn, " %s [%iKB]: <select name=\"fp\" accesskey=\"M\">", STR_MEMUSAGE, (webman_config->vsh_mc) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, templn);
 
 	value = webman_config->foot;
 	add_option_item(0, "Standard (896KB)"                , (value == 0), buffer);
@@ -868,7 +868,7 @@ static void setup_form(char *buffer, char *templn)
 
 	//memory container
 	concat(buffer, " 3072KB [MC]: <select name=\"mc\">");
-	value = webman_config->mc_app;
+	value = webman_config->vsh_mc;
 	add_option_item(0, STR_DISABLED, (value == 0), buffer);
 	add_option_item(4, "4 - bg",     (value == 4), buffer);
 	add_option_item(3, "3 - fg",     (value == 3), buffer);

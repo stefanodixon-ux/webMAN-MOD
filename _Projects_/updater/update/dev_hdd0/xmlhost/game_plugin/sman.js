@@ -29,3 +29,12 @@ function resizeEvent()
 	cpursx.style.display = (getAbsPosition(cpursx) < 650) ? 'none' : 'block';
 	if(navigator.userAgent.indexOf("PLAYSTATION")!=-1) document.getElementsByClassName("b_cflow")[0].style.display='none';
 };
+
+function home()
+{
+	$('rhtm').style.display='block';
+	if(typeof hurl !== 'undefined')
+		self.location = hurl;
+	else
+		self.location='/index.ps3';	
+}

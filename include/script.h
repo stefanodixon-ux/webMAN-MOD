@@ -89,7 +89,8 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "copy /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_COPY, dest);} else if(isDir(path)) folder_copy(path, dest); else _file_copy(path, dest);} else
 					if(_islike(line, "swap /")) {path += 5; sprintf(cp_path, "%s", path); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(path, cp_path); cellFsRename(dest, path); cellFsRename(cp_path, dest);} else
 					if(_islike(line, "move /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_MOVE, dest);} else cellFsRename(path, dest);} else
-					if(_islike(line, "list /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);}
+					if(_islike(line, "list /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);} else
+					if(_islike(line, "cpbk /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}
 				}
 				else if(*line == '#' || *line == ';' || *line == '*') ; // remark
 				else if(_islike(line, "else") && do_else) {if(exec_mode) do_else = false; exec_mode ^= 1; line += 4; if(exec_mode && *line) goto parse_cmd;}
@@ -106,7 +107,7 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "wait "))     {line += 5; wait_path("/dev_hdd0", (u8)val(line), false);} else
 					if(_islike(line, "beep"))      {if(line[4] == '3') {BEEP3;} else if(line[4] == '2') {BEEP2;} else {BEEP1;}} else
 					if(_islike(line, "popup "))    {line += 6; show_msg(line);} else
-					if(_islike(line, "log "))      {line += 4; save_file(log_file, line, APPEND_TEXT); save_file(log_file, "\r\n", APPEND_TEXT);} else
+					if(_islike(line, "log "))      {line += 4; save_file(log_file, line, APPEND_TEXT);} else
 					if(_islike(line, "logfile /")) {path += 8; sprintf(log_file, "%s", path);} else
 	#ifdef COBRA_ONLY
 					if(_islike(line, "unmap /"))   {path += 6; sys_map_path(path, NULL);} else

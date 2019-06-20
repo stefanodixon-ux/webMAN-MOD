@@ -70,8 +70,8 @@ static int prepNTFS(u8 clear)
 
 	if(mountCount <= 0) {mountCount = NTFS_UNMOUNTED; goto exit_prepntfs;}
 	{
-		sys_memory_container_t mc_app = get_app_memory_container();
-		if(mc_app) sys_memory_allocate_from_container(_64KB_, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &addr);
+		sys_memory_container_t vsh_mc = get_vsh_memory_container();
+		if(vsh_mc) sys_memory_allocate_from_container(_64KB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &addr);
 		if(!addr && sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) != CELL_OK) goto exit_prepntfs;
 	}
 

@@ -109,7 +109,7 @@ static void make_fb_xml(void)
 
 static u32 get_buffer_size(u8 footprint)
 {
-	if(webman_config->mc_app && (footprint == USE_MC)) //mc_app
+	if(webman_config->vsh_mc && (footprint == USE_MC)) //vsh_mc
 	{
 		return _3MB_;
 	}
@@ -147,7 +147,7 @@ static void set_buffer_sizes(u8 footprint)
 	BUFFER_SIZE_PS2	= ( _64KB_);
 	BUFFER_SIZE_DVD	= ( _64KB_);
 
-	if(footprint == USE_MC) //mc_app
+	if(footprint == USE_MC) //vsh_mc
 	{
 		//BUFFER_SIZE_FTP	= ( _256KB_);
 
@@ -302,10 +302,10 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		return false;  //leave if cannot allocate memory
 	}
 #else
-	if(webman_config->mc_app)
+	if(webman_config->vsh_mc)
 	{
-		sys_memory_container_t mc_app = get_app_memory_container();
-		if(mc_app && sys_memory_allocate_from_container(_3MB_, mc_app, SYS_MEMORY_PAGE_SIZE_1M, &sysmem) == CELL_OK) set_buffer_sizes(USE_MC);
+		sys_memory_container_t vsh_mc = get_vsh_memory_container();
+		if(vsh_mc && sys_memory_allocate_from_container(_3MB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_1M, &sysmem) == CELL_OK) set_buffer_sizes(USE_MC);
 	}
 
 	if(!sysmem)

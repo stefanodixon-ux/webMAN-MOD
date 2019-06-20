@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.23 MOD"
+#define WM_VERSION			"1.47.23.7 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -544,7 +544,7 @@ typedef struct
 	u8 noused; // formerly mc_app
 	u8 info;   // info level: 0=Path, 1=Path + ID, 2=ID, 3=None
 	u8 npdrm;
-	u8 mc_app; // allow allocation from app memory container
+	u8 vsh_mc; // allow allocation from vsh memory container
 
 	u8 padding2[13];
 
@@ -796,7 +796,7 @@ int wait_for(const char *path, u8 timeout);
 static ntfs_md *mounts = NULL;
 static int mountCount = NTFS_UNMOUNTED;
 static bool skip_prepntfs = false;
-static bool root_check = true; // check ntfs volumes accessing file manager's root
+static bool root_check = true; // check ntfs volumes accessing file manager's root only once; check is re-enabled if save settings, refresh_xml or unmount game
 
 static int prepNTFS(u8 clear);
 #endif
@@ -1015,22 +1015,29 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 		if(is_cpursx)
 			_concat(&sbuffer, "<meta http-equiv=\"refresh\" content=\"15;URL=/cpursx.ps3?/sman.ps3\">");
 
-		#ifndef ENGLISH_ONLY
-		if(webman_config->lang)
+		// add javascript
 		{
-			_concat(&sbuffer, "<script>");
-			sprintf(templn, "l('%s','%s');", "games",    STR_GAMES);    _concat(&sbuffer, templn);
-			sprintf(templn, "l('%s','%s');", "files",    STR_FILES);    _concat(&sbuffer, templn);
-			sprintf(templn, "l('%s','%s');", "setup",    STR_SETUP);    _concat(&sbuffer, templn);
-			sprintf(templn, "l('%s','%s');", "eject",    STR_EJECT);    _concat(&sbuffer, templn);
-			sprintf(templn, "l('%s','%s');", "insert",   STR_INSERT);   _concat(&sbuffer, templn);
-			sprintf(templn, "l('%s','%s');", "refresh",  STR_REFRESH);  _concat(&sbuffer, templn);
-			sprintf(templn, "l('%s','%s');", "restart",  STR_RESTART);  _concat(&sbuffer, templn);
-			sprintf(templn, "l('%s','%s');", "shutdown", STR_SHUTDOWN); _concat(&sbuffer, templn);
-			sprintf(templn, "l('msg2','%s ...');",       STR_MYGAMES);  _concat(&sbuffer, templn);
-			_concat(&sbuffer, "</script>");
+			#ifndef ENGLISH_ONLY
+			if(webman_config->lang)
+			{
+				_concat(&sbuffer, "<script>");
+				sprintf(templn, "l('%s','%s');", "games",    STR_GAMES);    _concat(&sbuffer, templn);
+				sprintf(templn, "l('%s','%s');", "files",    STR_FILES);    _concat(&sbuffer, templn);
+				sprintf(templn, "l('%s','%s');", "setup",    STR_SETUP);    _concat(&sbuffer, templn);
+				sprintf(templn, "l('%s','%s');", "eject",    STR_EJECT);    _concat(&sbuffer, templn);
+				sprintf(templn, "l('%s','%s');", "insert",   STR_INSERT);   _concat(&sbuffer, templn);
+				sprintf(templn, "l('%s','%s');", "refresh",  STR_REFRESH);  _concat(&sbuffer, templn);
+				sprintf(templn, "l('%s','%s');", "restart",  STR_RESTART);  _concat(&sbuffer, templn);
+				sprintf(templn, "l('%s','%s');", "shutdown", STR_SHUTDOWN); _concat(&sbuffer, templn);
+				sprintf(templn, "l('msg2','%s ...');"
+								"</script>",                 STR_MYGAMES);  _concat(&sbuffer, templn);
+			}
+			#endif
+			if(webman_config->homeb && *webman_config->home_url)
+			{
+				sprintf(templn, "<script>hurl=\"%s\";</script>", webman_config->home_url);  _concat(&sbuffer, templn);
+			}
 		}
-		#endif
 
 		if(param[1] != NULL && !strstr(param, ".ps3")) {_concat(&sbuffer,  "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
 
@@ -2161,7 +2168,7 @@ parse_request:
 						while((klic_polling != KL_OFF) && IS_INGAME && working)
 						{
 							hex_dump(kl, (int)KLICENSEE_OFFSET, KLICENSEE_SIZE);
-							sprintf(buffer, "%s %s %s %s\r\n", kl, (char*)(KLIC_CONTENT_ID_OFFSET), header, (char*)(KLIC_PATH_OFFSET));
+							sprintf(buffer, "%s %s %s %s", kl, (char*)(KLIC_CONTENT_ID_OFFSET), header, (char*)(KLIC_PATH_OFFSET));
 
 							if(klic_polling == KL_AUTO && IS(buffer, prev)) {sys_ppu_thread_usleep(10000); continue;}
 
@@ -2284,36 +2291,36 @@ parse_request:
 				// /netstatus.ps3?stop-ps3mapi  stop ps3mapi server
 				// /netstatus.ps3?stop          stop ps3mapi+net+ftp servers
 
-				s32 status = 0;
+				s32 status = 0; char *label = NULL;
 
+				if(param[15] == 'f') {label = param + 15, status = ftp_working;} else //ftp
 #ifdef PS3NET_SERVER
-				if( param[15] == 'n') status = net_working; else //netsrv
+				if(param[15] == 'n') {label = param + 15, status = net_working;} else //netsrv
 #endif
 #ifdef PS3MAPI
-				if( param[15] == 'p') status = ps3mapi_working; else //ps3mapi
+				if(param[15] == 'p') {label = param + 15, status = ps3mapi_working;} else //ps3mapi
 #endif
 				if( param[15] == 's') //stop
 				{
-					if( param[19] == 0 || param[20] == 'f') ftp_working = 0; //ftp
+					if( param[19] == 0 || param[20] == 'f') {label = param + 20, ftp_working = 0;} //ftp
 #ifdef PS3NET_SERVER
-					if( param[19] == 0 || param[20] == 'n') net_working = 0; //netsrv
+					if( param[19] == 0 || param[20] == 'n') {label = param + 20, net_working = 0;} //netsrv
 #endif
 #ifdef PS3MAPI
-					if( param[19] == 0 || param[20] == 'p') ps3mapi_working = 0; //ps3mapi
+					if( param[19] == 0 || param[20] == 'p') {label = param + 20, ps3mapi_working = 0;} //ps3mapi
 #endif
 				}
 				else
-				if( param[15] & 1) xsetting_F48C0548()->SetSettingNet_enable(1); else //enable
-				if(~param[15] & 1) xsetting_F48C0548()->SetSettingNet_enable(0);      //disable
+				{
+					if(param[14] == 0) {status ^= 1; xsetting_F48C0548()->SetSettingNet_enable(status);} else
+					if(param[15] == 0) ; else // query status
+					if( param[15] & 1) xsetting_F48C0548()->SetSettingNet_enable(1); else //enable
+					if(~param[15] & 1) xsetting_F48C0548()->SetSettingNet_enable(0);      //disable
 
-#ifdef PS3NET_SERVER
-				if( param[15] < 'n')
-#endif
-				xsetting_F48C0548()->GetSettingNet_enable(&status);
+					xsetting_F48C0548()->GetSettingNet_enable(&status);
+				}
 
-				if(param[14] != '?') {status ^= 1; xsetting_F48C0548()->SetSettingNet_enable(status);}
-
-				sprintf(param, "Network : %s", status ? STR_ENABLED : STR_DISABLED);
+				sprintf(param, "%s : %s", label ? to_upper(label) : "Network", status ? STR_ENABLED : STR_DISABLED);
 
 				#ifdef WM_REQUEST
 				if(!wm_request)
@@ -3010,8 +3017,8 @@ retry_response:
 			else
 			if((is_binary == FOLDER_LISTING) || islike(param, "/index.ps3") || islike(param, "/sman.ps3"))
 			{
-				sys_memory_container_t mc_app = get_app_memory_container();
-				if(mc_app && sys_memory_allocate_from_container(_3MB_, mc_app, SYS_MEMORY_PAGE_SIZE_1M, &sysmem) == CELL_OK) BUFFER_SIZE_HTML = _3MB_;
+				sys_memory_container_t vsh_mc = get_vsh_memory_container();
+				if(vsh_mc && sys_memory_allocate_from_container(_3MB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_1M, &sysmem) == CELL_OK) BUFFER_SIZE_HTML = _3MB_;
 
 				if(!sysmem)
 				{
