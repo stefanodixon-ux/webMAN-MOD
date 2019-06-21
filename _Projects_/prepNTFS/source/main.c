@@ -97,6 +97,7 @@ int main(int argc, const char* argv[])
 	char direntry[MAX_PATH_LEN];
 	char filename[MAX_PATH_LEN];
 	bool has_dirs, is_iso = false;
+	int cd_sector_size; 
 	char *ext;
 	u16 flen;
 
@@ -372,7 +373,7 @@ next_ntfs_entry:
 
 								if (parts > 0)
 								{
-									int cd_sector_size; cd_sector_size = 2352;
+									cd_sector_size = 2352;
 
 									num_tracks = 1;
 									if(m == PS3ISO) emu_mode = EMU_PS3; else
@@ -391,7 +392,8 @@ next_ntfs_entry:
 											ps3ntfs_seek64(fd, 0x9320LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2352; else {
 											ps3ntfs_seek64(fd, 0x8020LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2048; else {
 											ps3ntfs_seek64(fd, 0x9220LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2336; else {
-											ps3ntfs_seek64(fd, 0x9920LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2448; }}}
+											ps3ntfs_seek64(fd, 0x9420LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2368; else {
+											ps3ntfs_seek64(fd, 0x9920LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2448; }}}}
 											ps3ntfs_close(fd);
 										}
 

@@ -257,7 +257,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	u16 tlen = strlen(templn);
 	if(tlen < HTML_KEY_LEN) strcat(templn, "      "); // HTML_KEY_LEN = 6
 
-	u8 c = 0;
+	u8 c = 0, s = 5;
 	if(templn[4] == ']' && templn[0] == '[') {c = (templn[5]!=' ') ? 5 : 6;} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
 
 	if(is_html)
@@ -286,12 +286,16 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	if(p) {if(ISDIGIT(p[2])) skey[6] = p[2]; if(ISDIGIT(p[3])) skey[6] = p[3];} // sort by CD#
 	else
 	{
+		char w2 = 0;
 		if(tlen > 64) tlen = 64;
-		for(u16 i = 5; i < tlen; i++)
+		for(u16 i = s; i < tlen; i++)
 		{
-			if(templn[i+1]=='[') break;
-			if(templn[i] == ' ') {skey[6] = templn[++i]; break;} // sort by 2nd word
-			//if(ISDIGIT(templn[i])) {skey[6]=templn[i]; break;} // sort by game number (if possible)
+			if(templn[i+1]=='[') {tlen = i; break;}
+			if(templn[i] == ' ') {s = i + 1; w2 = skey[6] = templn[s]; break;} // sort by 2nd word
+		}
+		for(u16 i = tlen; i > s; i--)
+		{
+			if(ISDIGIT(templn[i])) {if(w2) skey[5] = w2; skey[6] = templn[i]; break;} // sort by game number (if possible)
 		}
 	}
 

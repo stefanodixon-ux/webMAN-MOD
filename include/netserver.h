@@ -21,7 +21,7 @@ typedef struct {
 	char dirpath[STD_PATH_LEN];
 } _client;
 
-_client clients[MAX_CLIENTS];
+static _client clients[MAX_CLIENTS];
 
 static void init_client(u8 index)
 {

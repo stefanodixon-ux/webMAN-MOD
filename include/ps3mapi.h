@@ -1076,9 +1076,6 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 	char buffer[PS3MAPI_RECV_SIZE];
 	char cmd[20], param1[PS3MAPI_MAX_LEN + 1], param2[PS3MAPI_MAX_LEN + 1];
 
-	int p1x = 0;
-	int p2x = 0;
-
 	#define PS3MAPI_OK_150    "150 OK: Binary status okay; about to open data connection.\r\n"
 	#define PS3MAPI_OK_200    "200 OK: The requested action has been successfully completed.\r\n"
 	#define PS3MAPI_OK_220    "220 OK: PS3 Manager API Server v1.\r\n"
@@ -1094,8 +1091,6 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	#define PS3MAPI_CONNECT_NOTIF 	 "PS3MAPI: Client connected [%s]\r\n"
 	#define PS3MAPI_DISCONNECT_NOTIF "PS3MAPI: Client disconnected [%s]\r\n"
-
-	CellRtcTick pTick;
 
 	sys_net_sockinfo_t conn_info;
 	sys_net_get_sockinfo(conn_s_ps3mapi, &conn_info, 1);
@@ -1116,11 +1111,10 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	while(connactive == 1 && working)
 	{
-
 		if(working && (recv(conn_s_ps3mapi, buffer, PS3MAPI_RECV_SIZE, 0) > 0))
 		{
 			char *p = strstr(buffer, "\r\n");
-			if(p) strcpy(p, "\0\0"); else break;
+			if(p) *p = NULL; else break;
 
 			int split = ssplit(buffer, cmd, 19, param1, PS3MAPI_MAX_LEN);
 
@@ -1525,7 +1519,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 							memset(buffer, 0, sizeof(buffer));
 							u32 buf_len = sprintf(buffer, "200 ");
 							{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_MODULE_PID, (u64)pid, (u64)(u32)prxid_list); }
-							for(int i = 0; i < 128; i++)
+							for(u8 i = 0; i < 128; i++)
 							{
 								buf_len += sprintf(buffer + buf_len, "%i|", prxid_list[i]);
 							}
@@ -1616,16 +1610,16 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 			}
 			else if(_IS(cmd, "PASV"))
 			{
-				u8 pasv_retry = 0;
+				CellRtcTick pTick; cellRtcGetCurrentTick(&pTick);
+				u8 pasv_retry = 0; u32 pasv_port = (pTick.tick & 0xfeff00) >> 8;
 
-				for( ; pasv_retry < 10; pasv_retry++)
+				for(int p1x, p2x; pasv_retry < 250; pasv_retry++, pasv_port++)
 				{
 					if(data_s >= 0) sclose(&data_s);
 					if(pasv_s >= 0) sclose(&pasv_s);
 
-					cellRtcGetCurrentTick(&pTick);
-					p1x = (((pTick.tick & 0xfe0000) >> 16) & 0xff) | 0x80; // use ports 32768 -> 65279 (0x8000 -> 0xFEFF)
-					p2x = (((pTick.tick & 0x00ff00) >>  8) & 0xff);
+					p1x = ( (pasv_port & 0xff00) >> 8) | 0x80; // use ports 32768 -> 65528 (0x8000 -> 0xFFF8)
+					p2x = ( (pasv_port & 0x00ff)     );
 
 					pasv_s = slisten(getPort(p1x, p2x), 1);
 
@@ -1641,7 +1635,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 				}
 
-				if(pasv_retry >= 10)
+				if(pasv_retry >= 250)
 				{
 					ssend(conn_s_ps3mapi, FTP_ERROR_451);	// Requested action aborted. Local error in processing.
 					if(pasv_s >= 0) sclose(&pasv_s);

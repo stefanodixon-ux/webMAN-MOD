@@ -11,7 +11,7 @@
 
 #define STR_NOITEM_PAIR			XML_PAIR("str_noitem", "msg_error_no_content") "</Table>"
 
-#define XML_KEY_LEN				7
+#define XML_KEY_LEN				7 /* 1 + 6 = Group + 6 chars */
 
 #define USE_MC					99
 
