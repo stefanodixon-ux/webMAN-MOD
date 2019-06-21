@@ -172,12 +172,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	struct timeval tv;
 	tv.tv_usec = 0;
+	tv.tv_sec = 20;
 
 	if(webman_config->ftp_timeout)
 	{
 		tv.tv_sec = (webman_config->ftp_timeout * 60);
-		setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 	}
+	setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
 	sys_addr_t sysmem = NULL;
 
@@ -414,6 +415,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						if(_IS(cmd, "TIMEOUT"))
 						{
 							if(working) ssend(conn_s_ftp, FTP_OK_221); // Service closing control connection.
+
 							tv.tv_sec = val(filename);
 							setsockopt(conn_s_ftp, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 							break;
@@ -792,6 +794,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							if((data_s = accept(pasv_s, NULL, NULL)) > 0)
 							{
+								setsockopt(pasv_s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+
 								dataactive = 1; break;
 							}
 						}
@@ -921,6 +925,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							{
 								char *buffer2 = (char*)sysmem;
 
+								setsockopt(data_s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+
 								int read_e = 0;
 #ifdef USE_NTFS
 								if(is_ntfs_path(filename))
@@ -992,22 +998,14 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										}
 
 										cellFsClose(fd);
-
-										if(err == CELL_FS_OK)
-										{
-											ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
-											cellFsChmod(filename, is_dev_blind ? 0644 : MODE);
-
-											if(*source == '/') {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
-											*source = NULL;
-										}
-										else
+										if(!working || err != CELL_FS_OK)
 										{
 											for(u8 n = 0; n < 17; n++)
 											{
 												if(islike(filename, drives[n]) && (get_free_space(drives[n]) < BUFFER_SIZE_FTP))
 													{ err = FTP_DEVICE_IS_FULL; break; }
 											}
+
 											cellFsUnlink(filename);
 										}
 									}
@@ -1016,7 +1014,18 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							else
 								err = FTP_OUT_OF_MEMORY;
 
-							if(err != CELL_FS_OK) send_reply(conn_s_ftp, err);
+							if(err == CELL_FS_OK)
+							{
+								ssend(conn_s_ftp, FTP_OK_226);		// Closing data connection. Requested file action successful (for example, file transfer or file abort).
+								cellFsChmod(filename, is_dev_blind ? 0644 : MODE);
+
+								if(*source == '/') {cellFsUnlink(source); cellFsRename(filename, source);} // replace original file
+								*source = NULL;
+							}
+							else
+							{
+								send_reply(conn_s_ftp, err);
+							}
 						}
 						else
 						{

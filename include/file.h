@@ -5,7 +5,6 @@
 #define NO_MSG							NULL
 
 int file_copy(const char *file1, char *file2, u64 maxbytes);
-static void _file_copy(const char *file1, char *file2);
 
 static bool copy_in_progress = false;
 static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
@@ -563,7 +562,7 @@ next_part:
 	return ret;
 }
 
-void _file_copy(const char *file1, char *file2)
+static void _file_copy(const char *file1, char *file2)
 {
 	dont_copy_same_size = false; // force copy file with the same size than existing file
 	file_copy(file1, file2, COPY_WHOLE_FILE);

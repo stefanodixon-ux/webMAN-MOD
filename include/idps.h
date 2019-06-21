@@ -155,4 +155,69 @@ static void show_idps(char *msg)
 	sys_ppu_thread_sleep(2);
 }
 
+static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param)
+{
+	char *filename = param + 9, *act_dat = header;
+	bool is_default = (*filename != '/') || (is_psid & is_idps);
+
+	show_idps(header);
+
+	*act_dat = NULL; int i = 0;
+
+	cellFsUnlink("/dev_hdd0/psid.hex");
+	cellFsUnlink("/dev_hdd0/idps.hex");
+	cellFsUnlink("/dev_hdd0/act.dat");
+
+	if(is_psid)
+	{
+		for(i = 1; i >= 0; i--)
+		{
+			if(is_default) {sprintf(filename, "%s/psid.hex", drives[i]); sprintf(act_dat, "%s/act.dat", drives[i]);}
+			save_file(filename, (char*)&PSID[0], 16);
+			if(file_exists(filename)) break; is_default = true;
+		}
+	}
+
+	if(is_idps)
+	{
+		for(i = 1; i >= 0; i--)
+		{
+			if(is_default) {sprintf(filename, "%s/idps.hex", drives[i]); sprintf(act_dat, "%s/act.dat", drives[i]);}
+			save_file(filename, (char*)&IDPS[0], 16);
+			if(file_exists(filename)) break; is_default = true;
+		}
+	}
+
+	if(*act_dat)
+	{
+		sprintf(filename, "%s/home/%08i/exdata/act.dat", drives[0], xsetting_CC56EB2D()->GetCurrentUserNumber());
+		_file_copy(filename, act_dat);
+	}
+
+	*param = NULL;
+
+	if(is_default) 
+	{
+		if(file_exists(act_dat))
+		{
+			add_breadcrumb_trail(param, act_dat); strcat(param, " from: ");
+			sprintf(header, "%s/home/%08i", drives[0], xsetting_CC56EB2D()->GetCurrentUserNumber());
+			add_breadcrumb_trail(param, header); strcat(param, "<br>");
+		}
+	}
+	else
+		strcpy(header, filename); // show custom filename
+
+	if(is_idps)
+	{
+		if(is_default) sprintf(header, "%s/idps.hex", drives[i]);
+		if(file_exists(header)) {add_breadcrumb_trail(param, header); sprintf(header, " • %016llX%016llX<br>", IDPS[0], IDPS[1]); strcat(param, header);}
+	}
+	if(is_psid)
+	{
+		if(is_default) sprintf(header, "%s/psid.hex", drives[i]);
+		if(file_exists(header)) {add_breadcrumb_trail(param, header); sprintf(header, " • %016llX%016llX<br>", PSID[0], PSID[1]); strcat(param, header);}
+	}
+}
+
 #endif // #ifdef SPOOF_CONSOLEID
