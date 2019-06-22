@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.23.10 MOD"
+#define WM_VERSION			"1.47.23.11 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -4131,7 +4131,7 @@ int wwwd_start(size_t args, void *argp)
 	BgmPlaybackDisable = getNIDfunc("vshmain", 0xEDAB5E5E, 17*2);
 #endif
 
-	{ ENABLE_INGAME_SCREENSHOT }
+	if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT }
 
 	//pokeq(0x8000000000003560ULL, 0x386000014E800020ULL); // li r3, 0 / blr
 	//pokeq(0x8000000000003D90ULL, 0x386000014E800020ULL); // li r3, 0 / blr
