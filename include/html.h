@@ -41,18 +41,12 @@
 								"<meta http-equiv=\"Cache-Control\" content=\"no-cache\">" \
 								"<meta name=\"viewport\" content=\"width=device-width,initial-scale=0.6,maximum-scale=1.0\">"  /* size: 264 */
 
-#define HTML_HEADER_SIZE		264
-
-#define HTTP_RESPONSE_TITLE_LEN	90 /* strlen(HTML_RESPONSE_TITLE + HTML_BODY) = 26 + 64 */
-
-#define HTML_RESPONSE_TITLE		WM_APP_VERSION "<hr><h2>" /* size: 26 */
+#define HTML_RESPONSE_TITLE		WM_APP_VERSION EDITION "<hr><h2>"
 
 #define HTML_BODY				"<body bgcolor=\"#101010\" text=\"#c0c0c0\">" \
 								"<font face=\"Courier New\">" /* size: 64 */
 
 #define HTML_BODY_END			"</font></body></html>" /* size: 21 */
-
-#define HTML_BODY_END_SIZE		21
 
 #define HTML_BLU_SEPARATOR		"<hr color=\"#0099FF\"/>"
 #define HTML_RED_SEPARATOR		"<hr color=\"#FF0000\"/>"

@@ -12,8 +12,10 @@ static void poll_start_play_time(void)
 	if(IS_ON_XMB)
 	{
 		//if(gTick.tick != rTick.tick) vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // re-apply redirection of custom update file returning to XMB
-#ifdef WM_PROXY_SPRX
+#ifdef COBRA_ONLY
+ #ifdef WM_PROXY_SPRX
 		if(gTick.tick != rTick.tick) apply_remaps(); // re-apply remaps returning to XMB
+ #endif
 #endif
 		gTick = rTick;
 
@@ -47,12 +49,12 @@ static void poll_start_play_time(void)
 				bool set_net_setatus = true;
 				if(net_status < 0)
 				{
-					char online_title_ids[1024];
-					read_file(WMOFFLINE_GAMES, online_title_ids, 1024, 0); // auto-disable network only on these title ids
+					char online_title_ids[512];
+					read_file(WMOFFLINE_GAMES, online_title_ids, 512, 0); // auto-disable network only on these title ids
 					if(*online_title_ids) set_net_setatus = strstr(online_title_ids, _game_TitleID);
 					else
 					{
-						read_file(WMONLINE_GAMES, online_title_ids, 1024, 0);  // auto-disable network except on these title ids
+						read_file(WMONLINE_GAMES, online_title_ids, 512, 0);  // auto-disable network except on these title ids
 						set_net_setatus = (strstr(online_title_ids, _game_TitleID) == NULL);
 					}
 				}

@@ -17,9 +17,9 @@ static u32 default_cd_sector_size(size_t discsize)
 {
 	if(!(discsize % 0x930)) return 2352;
 	if(!(discsize % 0x920)) return 2336;
-	if(!(discsize % 0x940)) return 2368; // not supported by Cobra
 	if(!(discsize % 0x990)) return 2448;
 	if(!(discsize % 0x800)) return 2048;
+	if(!(discsize % 0x940)) return 2368; // not supported by Cobra
 
 	return 2352;
 }

@@ -1293,7 +1293,7 @@ static void read_settings(void)
 	webman_config->ps2_rate = RANGE(webman_config->ps2_rate, MIN_FANSPEED, 99); // %
 	webman_config->dyn_temp = RANGE(webman_config->dyn_temp, 40, MAX_TEMPERATURE);  //°C
 
-#if defined(SPOOF_CONSOLEID) || defined(PS3MAPI)
+#if defined(SPOOF_CONSOLEID)
 	get_eid0_idps();
 	if(!webman_config->vIDPS1[0] && !webman_config->vIDPS1[1]) {sprintf(webman_config->vIDPS1, "%016llX", IDPS[0]); sprintf(webman_config->vIDPS2, "%016llX", IDPS[1]);}
 	if(!webman_config->vPSID1[0] && !webman_config->vPSID1[1]) {sprintf(webman_config->vPSID1, "%016llX", PSID[0]); sprintf(webman_config->vPSID2, "%016llX", PSID[1]);}

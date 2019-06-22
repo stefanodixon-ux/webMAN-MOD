@@ -4,7 +4,7 @@
 
 static void calc_md5(char *filename, char *md5)
 {
-	u8 _md5[16]; memset(_md5, 0, 16);
+	u64 _md5[2] = {0, 0};
 
 	sys_addr_t sysmem = NULL; size_t buffer_size = _256KB_;
 
@@ -36,14 +36,14 @@ static void calc_md5(char *filename, char *md5)
 			}
 
 			cellFsClose(fd);
-			cellMd5BlockResult(&workarea, _md5);
+			cellMd5BlockResult(&workarea, (u8*)_md5);
 		}
 
 		sys_memory_free(sysmem);
 	}
 
 	// return md5 hash as a string
-	for(u8 i = 0; i < 16; i++) sprintf(md5 + 2*i, "%02x", _md5[i]);
+	sprintf(md5, "%016llx%016llx", _md5[0], _md5[1]);
 }
 
 #endif

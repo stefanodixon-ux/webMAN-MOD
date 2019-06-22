@@ -8,7 +8,7 @@ static void snd0_thread(__attribute__((unused)) u64 arg)
 	{
 		prev_nosnd0 = webman_config->nosnd0;
 
-		CellFsDirectoryEntry entry; size_t read_e; char snd0_file[MAX_PATH_LEN];
+		CellFsDirectoryEntry entry; size_t read_e; char snd0_file[64];
 		int mode = webman_config->nosnd0 ? NOSND : MODE; // toggle file access permissions
 
 		while(working)

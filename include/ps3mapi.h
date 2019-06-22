@@ -94,12 +94,15 @@ static void ps3mapi_home(char *buffer, char *templn)
 {
 	int syscall8_state = NONE;
 	{system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); syscall8_state = (int)p1;}
-	int version = 0;
-	if(syscall8_state>=0) {system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_CORE_VERSION); version = (int)(p1);}
+	int core_version = 0;
+	if(syscall8_state>=0) {system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_CORE_VERSION); core_version = (int)(p1);}
 	int versionfw = 0;
 	if(syscall8_state>=0) {system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_FW_VERSION); versionfw = (int)(p1);}
 	char fwtype[32]; memset(fwtype, 0, 32);
 	if(syscall8_state>=0) {system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_FW_TYPE, (u64)(u32)fwtype);}
+
+	if(!versionfw)
+		syscall8_state = NONE;
 
 	//---------------------------------------------
 	//PS3 Commands---------------------------------
@@ -133,7 +136,7 @@ static void ps3mapi_home(char *buffer, char *templn)
 	if (syscall8_state >= 0 && syscall8_state < 3)
 	{
 		//IDPS/PSID
-		if(version >= 0x0120)
+		if(core_version >= 0x0120)
 		{
 			ps3mapi_setidps(buffer, templn, (char*)" ");
 		}
@@ -162,13 +165,13 @@ static void ps3mapi_home(char *buffer, char *templn)
 		ps3mapi_gameplugin(buffer, templn, (char*)" ");
 
 		sprintf(templn, HTML_RED_SEPARATOR
-						"Firmware: %X %s | PS3MAPI: webUI v%X, Server v%X, Core v%X | By NzV, modified by OsirisX", versionfw, fwtype, PS3MAPI_WEBUI_VERSION, PS3MAPI_SERVER_VERSION, version);
+						"Firmware: %X %s | PS3MAPI: webUI v%X, Server v%X, Core v%X | By NzV, modified by OsirisX", versionfw, fwtype, PS3MAPI_WEBUI_VERSION, PS3MAPI_SERVER_VERSION, core_version);
 		concat(buffer, templn);
 	}
 	else
 	{
 		sprintf(templn, "</table><br>" HTML_RED_SEPARATOR
-						"[SYSCALL8 %sDISABLED] | PS3MAPI: webUI v%X, Server v%X | By NzV", (syscall8_state==3)?"PARTIALY ":"", PS3MAPI_WEBUI_VERSION, PS3MAPI_SERVER_VERSION);
+						"[SYSCALL8 %sDISABLED] | PS3MAPI: webUI v%X, Server v%X | By NzV", (syscall8_state == 3) ? "PARTIALLY ":"", PS3MAPI_WEBUI_VERSION, PS3MAPI_SERVER_VERSION);
 		concat(buffer, templn);
 	}
 }
