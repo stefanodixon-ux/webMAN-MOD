@@ -843,7 +843,9 @@ static void set_apphome(const char *game_path)
 	else
 		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD
 
+	sys_map_path("/app_home/USRDIR/", NULL);
 	sys_map_path("/app_home/USRDIR", NULL);
+	sys_map_path("/app_home/PS3_GAME/", game_path);
 	sys_map_path("/app_home/PS3_GAME", game_path);
 }
 

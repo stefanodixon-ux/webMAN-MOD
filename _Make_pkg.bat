@@ -24,7 +24,7 @@ title Building webMAN_MOD_1.47.xx_Updater_metalification_theme.pkg ...
 rem call Make_PKG_metalification_theme.bat
 
 set ver=1.47
-set rev=23
+set rev=24
 
 move webMAN_MOD_%ver%.xx_Updater.pkg                      ..\..\webMAN_MOD_%ver%.%rev%_Installer.pkg
 move webMAN_MOD_%ver%.xx_Updater_rebugification_theme.pkg ..\..\webMAN_MOD_%ver%.%rev%_Installer_rebugification_theme.pkg

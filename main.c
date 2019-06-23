@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.23.11 MOD"
+#define WM_VERSION			"1.47.24 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -1034,7 +1034,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 								"</script>",                 STR_MYGAMES);  _concat(&sbuffer, templn);
 			}
 			#endif
-			if(webman_config->homeb && *webman_config->home_url)
+			if(webman_config->homeb && islike(webman_config->home_url, "http"))
 			{
 				sprintf(templn, "<script>hurl=\"%s\";</script>", webman_config->home_url);  _concat(&sbuffer, templn);
 			}

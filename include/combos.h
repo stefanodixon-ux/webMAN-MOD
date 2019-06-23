@@ -6,6 +6,7 @@
  UNLOAD WM    : L3+R3+R2
 
  PLAY_DISC    : L2+START                        *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_start
+ PLAY_DISC    : R2+START                        *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_r2_start
 
  PREV GAME    : SELECT+L1                       *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_l1
  NEXT GAME    : SELECT+R1                       *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_r1
@@ -116,15 +117,38 @@
 						break;
 					}
 #endif
-					if(!(webman_config->combo2 & PLAY_DISC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2))
+					if(!(webman_config->combo2 & PLAY_DISC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START))
 					{
 						// L2+START = Play Disc
+						// R2+START = Play app_home/PS3_GAME
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2)
+						{
 #ifdef WM_CUSTOM_COMBO
-						if(do_custom_combo("l2_start")) continue;
+							if(do_custom_combo("l2_start")) continue;
 #endif
-						char category[16], seg_name[40]; *category = *seg_name = NULL;
-						launch_disc(category, seg_name, true); // L2+START
-						break;
+							char category[8], seg_name[20]; *category = *seg_name = NULL;
+							launch_disc(category, seg_name, true); // L2+START
+							break;
+						}
+#ifdef COBRA_ONLY
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)
+						{
+#ifdef WM_CUSTOM_COMBO
+							if(do_custom_combo("r2_start")) continue;
+#endif
+							if(file_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN") == false)
+							{
+								if(isDir(webman_config->home_url)) set_apphome(webman_config->home_url);
+								else if(islike(webman_config->home_url, "http")) open_browser(webman_config->home_url, 0);
+#ifdef WM_REQUEST
+								else if(*webman_config->home_url == '/') handle_file_request(webman_config->home_url);
+#endif
+							}
+							char category[8], seg_name[16]; *category = *seg_name = NULL;
+							if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(category, seg_name, true);}
+							break;
+						}
+#endif
 					}
 
 					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_SELECT))
