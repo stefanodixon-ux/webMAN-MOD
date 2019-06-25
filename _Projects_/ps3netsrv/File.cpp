@@ -3,12 +3,15 @@
 #include <stdio.h>
 #include <cstring>
 
+static const int FAILED		= -1;
+static const int SUCCEEDED	=  0;
+
 File::File()
 {
 	fd = INVALID_FD;
 
 	is_multipart = index = 0;
-	for(int i = 0; i < 64; i++) fp[i] = INVALID_FD;
+	for(uint8_t i = 0; i < 64; i++) fp[i] = INVALID_FD;
 }
 
 File::~File()
@@ -21,12 +24,15 @@ File::~File()
 
 int File::open(const char *path, int flags)
 {
+	if(!path)
+		return FAILED;
+
 	if (FD_OK(fd))
 		this->close();
 	
 	fd = open_file(path, flags);
 	if (!FD_OK(fd))
-		return -1;
+		return FAILED;
 
 	// multi part
 	int plen = strlen(path), flen = plen - 6;
@@ -35,7 +41,7 @@ int File::open(const char *path, int flags)
 	else
 		is_multipart = (strstr(path + flen, ".iso.0") != NULL) || (strstr(path + flen, ".ISO.0") != NULL);
 
-	if(!is_multipart) return 0;
+	if(!is_multipart) return SUCCEEDED;
 
 	char *filepath = (char *)malloc(plen + 2); strcpy(filepath, path);
 
@@ -44,7 +50,7 @@ int File::open(const char *path, int flags)
 
 	is_multipart = 1; // count parts
 
-	for(int i = 1; i < 64; i++)
+	for(uint8_t i = 1; i < 64; i++)
 	{
 		filepath[flen + 4] = 0; sprintf(filepath, "%s.%i", filepath, i);
 
@@ -56,18 +62,18 @@ int File::open(const char *path, int flags)
 
 	fp[0] = fd; free(filepath);
 
-	return 0;
+	return SUCCEEDED;
 }
 
 int File::close(void)
 {
-	int ret = (FD_OK(fd)) ? close_file(fd) : -1; fd = INVALID_FD;
+	int ret = (FD_OK(fd)) ? close_file(fd) : FAILED; fd = INVALID_FD;
 
 	if(!is_multipart)
 		return ret;
 
 	// multi part
-	for(int i = 1; i < 64; i++)
+	for(uint8_t i = 1; i < 64; i++)
 	{
 		if(FD_OK(fp[i])) close_file(fp[i]); fp[i] = INVALID_FD;
 	}
@@ -85,7 +91,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 	// multi part
 	ssize_t ret2 = 0, ret = read_file(fp[index], buf, nbyte);
 
-	if(ret < nbyte && index < (is_multipart-1))
+	if(ret < nbyte && index < (is_multipart - 1))
 	{
 		void *buf2 = (int8_t*)buf + ret;
 		ret2 = read_file(fp[index+1], buf2, nbyte - ret);
@@ -116,7 +122,7 @@ int64_t File::seek(int64_t offset, int whence)
 
 int File::fstat(file_stat_t *fs)
 {
-	if (!FD_OK(fd)) return -1;
+	if (!FD_OK(fd)) return FAILED;
 
 	if(!is_multipart)
 		return fstat_file(fd, fs);
@@ -125,7 +131,7 @@ int File::fstat(file_stat_t *fs)
 	int64_t size = 0;
 	file_stat_t statbuf;
 
-	for(int i = 0; i < is_multipart; i++)
+	for(uint8_t i = 0; i < is_multipart; i++)
 	{
 		fstat_file(fp[i], &statbuf);
 		size += statbuf.file_size;

@@ -390,7 +390,8 @@ static void netiso_thread(__attribute__((unused)) u64 arg)
 
 		is_cd2352 = 1;
 
-		if(CD_SECTOR_SIZE_2352 != 2352) cd_sector_size_param = CD_SECTOR_SIZE_2352<<4;
+		if(CD_SECTOR_SIZE_2352 & 0xf) cd_sector_size_param = CD_SECTOR_SIZE_2352<<8;
+		else if(CD_SECTOR_SIZE_2352 != 2352) cd_sector_size_param = CD_SECTOR_SIZE_2352<<4;
 	}
 	else
 	{

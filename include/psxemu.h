@@ -4,10 +4,11 @@
 
 static u32 detect_cd_sector_size(char *buffer)
 {
-	int sec_size[4] = {2048, 2336, 2368, 2448};
-	for(int n = 0; n < 4; n++)
+	u16 sec_size[7] = {2352, 2048, 2336, 2448, 2328, 2340, 2368};
+	for(u8 n = 0; n < 7; n++)
 	{
-		if(!strncmp(buffer + ((sec_size[n]<<4) + 0x20), PLAYSTATION, 0xC)) return sec_size[n];
+		if( (!strncmp(buffer + ((sec_size[n]<<4) + 0x20), PLAYSTATION, 0xC)) ||
+			(!strncmp(buffer + ((sec_size[n]<<4) + 0x19), "CD001", 5) && buffer[(sec_size[n]<<4) + 0x18] == 0x01) ) return sec_size[n];
 	}
 
 	return 2352;

@@ -388,12 +388,15 @@ next_ntfs_entry:
 										fd = ps3ntfs_open(path, O_RDONLY, 0);
 										if(fd >= 0)
 										{
-											char buffer[0x10]; buffer[0xD] = '\0';
-											ps3ntfs_seek64(fd, 0x9320LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2352; else {
-											ps3ntfs_seek64(fd, 0x8020LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2048; else {
-											ps3ntfs_seek64(fd, 0x9220LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2336; else {
-											ps3ntfs_seek64(fd, 0x9420LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2368; else {
-											ps3ntfs_seek64(fd, 0x9920LL, SEEK_SET); ps3ntfs_read(fd, (void *)buffer, 0xC); if(memcmp(buffer, "PLAYSTATION ", 0xC) == 0) cd_sector_size = 2448; }}}}
+											char buffer[20];
+											u16 sec_size[7] = {2352, 2048, 2336, 2448, 2328, 2340, 2368};
+											for(u8 n = 0; n < 7; n++)
+											{
+												ps3ntfs_seek64(fd, ((sec_size[n]<<4) + 0x18), SEEK_SET);
+												ps3ntfs_read(fd, (void *)buffer, 20);
+												if(  (memcmp(buffer + 8, "PLAYSTATION ", 0xC) == 0) ||
+													((memcmp(buffer + 1, "CD001", 5) == 0) && buffer[0] == 0x01) ) {cd_sector_size = sec_size[n]; break;}
+											}
 											ps3ntfs_close(fd);
 										}
 

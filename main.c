@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.24 MOD"
+#define WM_VERSION			"1.47.24.1 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -354,6 +354,7 @@ int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MAPI, 3=P
 #define  _12KB_		    12288UL
 #define  _16KB_		    16384UL
 #define  _32KB_		    32768UL
+#define  _48KB_		    49152UL
 #define  _64KB_		    65536UL
 #define _128KB_		   131072UL
 #define _192KB_		   196608UL
@@ -3816,6 +3817,7 @@ retry_response:
 								sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
 								goto html_response;
 							}
+							is_mounting = false;
 						}
 						else if(!islike(param + 10, "/net"))
 						{

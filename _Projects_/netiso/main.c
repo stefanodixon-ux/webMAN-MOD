@@ -427,10 +427,11 @@ int strncmp(const char *s1, const char *s2, size_t n)
 
 static int detect_cd_sector_size(char *buffer)
 {
-	int sec_size[3] = {2048, 2336, 2448};
-	for(int n = 0; n < 3; n++)
+	uint16_t sec_size[7] = {2352, 2048, 2336, 2448, 2328, 2340, 2368};
+	for(uint8_t n = 0; n < 7; n++)
 	{
-		if(!strncmp(buffer + ((sec_size[n]<<4) + 0x20), PLAYSTATION, 0xC)) return sec_size[n];
+		if( (!strncmp(buffer + ((sec_size[n]<<4) + 0x20), PLAYSTATION, 0xC)) ||
+			(!strncmp(buffer + ((sec_size[n]<<4) + 0x19), "CD001", 5) && buffer[(sec_size[n]<<4) + 0x18] == 0x01) ) return sec_size[n];
 	}
 
 	return 2352;
@@ -525,7 +526,8 @@ static void netiso_thread(uint64_t arg)
 		numtracks = args->numtracks;
 		tracks = &args->tracks[0];
 		is_cd2352 = 1;
-		cd_sec_size_param = (cd_sec_size<<4);
+		if(cd_sec_size & 0xf) cd_sec_size_param = cd_sec_size<<8;
+		else cd_sec_size_param = (cd_sec_size<<4);
 	}
 	else
 	{

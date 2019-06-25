@@ -862,6 +862,8 @@ continue_reading_folder_xml:
 	{
 		if(!add_xmbm_plus) _concat(&myxml_ngp, ADD_XMB_ITEM("eject"));
 
+		_concat(&myxml, QUERY_XMB("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
+
 		if( ADD_SETUP )
 		{
 			if(add_xmbm_plus)
@@ -1116,6 +1118,7 @@ continue_reading_folder_xml:
 		if(  c_roms                     ) _concat(&myxml, QUERY_XMB("wm_rom", "xmb://localhost" HTML_BASE_PATH "/ROMS.xml#seg_wm_rom_items"));
 		#endif
 	 #endif
+		_concat(&myxml, QUERY_XMB("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
 		_concat(&myxml, "</Items></View>");
 	}
 

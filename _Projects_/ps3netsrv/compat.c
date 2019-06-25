@@ -1,5 +1,8 @@
 #include "compat.h"
 
+static const int FAILED		= -1;
+static const int SUCCEEDED	=  0;
+
 #ifdef WIN32
 
 int create_start_thread(thread_t *thread, void *(*start_routine)(void*), void *arg)
@@ -9,7 +12,7 @@ int create_start_thread(thread_t *thread, void *(*start_routine)(void*), void *a
 		return GetLastError();
 	
 	*thread = t;
-	return 0;
+	return SUCCEEDED;
 }
 
 int join_thread(thread_t thread)
@@ -18,13 +21,16 @@ int join_thread(thread_t thread)
 	if (ret == 0xFFFFFFFF)
 		return (int)ret;
 	
-	return 0;
+	return SUCCEEDED;
 }
 
 // Files
 
 file_t open_file(const char *path, int oflag)
 {
+	if(!path)
+		return INVALID_HANDLE_VALUE;
+
 	file_t f;
 	DWORD dwDesiredAccess;
 	DWORD dwCreationDisposition;
@@ -88,9 +94,9 @@ file_t open_file(const char *path, int oflag)
 int close_file(file_t fd)
 {
 	if (!CloseHandle(fd))
-		return -1;
+		return FAILED;
 	
-	return 0;
+	return SUCCEEDED;
 }
 
 ssize_t read_file(file_t fd, void *buf, size_t nbyte)
@@ -99,7 +105,7 @@ ssize_t read_file(file_t fd, void *buf, size_t nbyte)
 	
 	if (!ReadFile(fd, buf, nbyte, &rd, NULL))
 	{
-		return -1;
+		return FAILED;
 	}
 	
 	return rd;
@@ -111,7 +117,7 @@ ssize_t write_file(file_t fd, void *buf, size_t nbyte)
 	
 	if (!WriteFile(fd, buf, nbyte, &wr, NULL))
 	{
-		return -1;
+		return FAILED;
 	}
 	
 	return wr;
@@ -139,14 +145,14 @@ int64_t seek_file(file_t fd, int64_t offset, int whence)
 	}
 	else
 	{
-		return -1;
+		return FAILED;
 	}
 	
 	low = SetFilePointer(fd, low, &high, whence);
 	if (low == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 	{
 		//printf("SetFilePointer failed: %x\n", GetLastError());
-		return -1;
+		return FAILED;
 	}
 	
 	uint64_t low64 = (uint64_t)low;
@@ -256,7 +262,7 @@ int fstat_file(file_t fd, file_stat_t *fs)
 	BY_HANDLE_FILE_INFORMATION  FileInformation;
 	 
 	if (!GetFileInformationByHandle(fd, &FileInformation)) 
-		return -1;
+		return FAILED;
 	
 	fs->file_size = ((uint64_t)FileInformation.nFileSizeHigh << 32) | FileInformation.nFileSizeLow; 
 	
@@ -279,11 +285,14 @@ int fstat_file(file_t fd, file_stat_t *fs)
 	if (!(FileInformation.dwFileAttributes & FILE_ATTRIBUTE_READONLY))
 		fs->mode |= S_IWRITE;
 	
-	return 0;
+	return SUCCEEDED;
 }
 
 int stat_file(const char *path, file_stat_t *fs)
 {
+	if(!path)
+		return FAILED;
+
 	WIN32_FIND_DATA wfd;
 	HANDLE fh;
 	
@@ -291,7 +300,7 @@ int stat_file(const char *path, file_stat_t *fs)
 	if (fh == INVALID_HANDLE_VALUE)
 	{
 		//printf("Stat failed here: %d\n", GetLastError());
-		return -1;
+		return FAILED;
 	}
 	
 	fs->file_size = ((uint64_t)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow; 
@@ -300,9 +309,9 @@ int stat_file(const char *path, file_stat_t *fs)
 	fs->atime = FileTimeToUnixTime(&wfd.ftLastAccessTime, NULL);
 	fs->mtime = FileTimeToUnixTime(&wfd.ftLastWriteTime, NULL);
 	
-	if (fs->atime ==0)
+	if (fs->atime == 0)
 		fs->atime = fs->mtime;
-	if (fs->ctime ==0)
+	if (fs->ctime == 0)
 		fs->ctime = fs->mtime;
 
 	fs->mode = S_IREAD;
@@ -318,11 +327,11 @@ int stat_file(const char *path, file_stat_t *fs)
 	{		
 		FindClose(fh);
 		//printf("Stat failed here.\n");
-		return -1;
+		return FAILED;
 	}
 	
 	FindClose(fh);	
-	return 0;
+	return SUCCEEDED;
 }
 
 #else
@@ -339,6 +348,9 @@ int join_thread(thread_t thread)
 
 file_t open_file(const char *path, int oflag)
 {
+	if(!path)
+		return INVALID_HANDLE_VALUE;
+
 	return open(path, oflag);
 }
 
@@ -367,7 +379,7 @@ int fstat_file(file_t fd, file_stat_t *fs)
 	struct stat st;
 	
 	int ret = fstat(fd, &st);
-	if (ret < 0)
+	if (ret < SUCCEEDED)
 		return ret;
 	
 	fs->file_size = st.st_size;
@@ -375,15 +387,18 @@ int fstat_file(file_t fd, file_stat_t *fs)
 	fs->ctime = st.st_ctime;
 	fs->atime = st.st_atime;
 	fs->mode = st.st_mode;
-	return 0;
+	return SUCCEEDED;
 }
 
 int stat_file(const char *path, file_stat_t *fs)
 {
+	if(!path)
+		return FAILED;
+
 	struct stat st;
 	
 	int ret = stat(path, &st);
-	if (ret < 0)
+	if (ret < SUCCEEDED)
 		return ret;
 	
 	fs->file_size = st.st_size;
@@ -391,7 +406,7 @@ int stat_file(const char *path, file_stat_t *fs)
 	fs->ctime = st.st_ctime;
 	fs->atime = st.st_atime;
 	fs->mode = st.st_mode;
-	return 0;
+	return SUCCEEDED;
 }
 
 #endif
