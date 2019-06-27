@@ -278,7 +278,7 @@ static bool is_app_home_onxmb(void)
 	{
 		char *buffer = (char*)sysmem;
 		size_t read_e = read_file((char*)"/dev_flash/vsh/resource/explore/xmb/category_game.xml", buffer, _8KB_, 0);
-		has_app_home = ((read_e > 100) && (!strstr(buffer, "<!--")) && (strstr(buffer, "seg_gamedebug") != NULL));
+		has_app_home = ((read_e > 100) && (strstr(buffer, "seg_gamedebug") != NULL));
 		sys_memory_free(sysmem);
 	}
 

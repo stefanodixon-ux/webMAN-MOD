@@ -1015,7 +1015,8 @@ static void rawseciso_thread(u64 arg)
 
 		if(num_tracks > 0xFF)
 		{
-			CD_SECTOR_SIZE_2352 = (num_tracks & 0xFF00)>>4;
+			CD_SECTOR_SIZE_2352 = (num_tracks & 0xFFF00)>>4;
+			if(CD_SECTOR_SIZE_2352 > 2448) CD_SECTOR_SIZE_2352 = (num_tracks & 0xFFF00)>>8;
 		}
 
 		num_tracks &= 0xFF;
@@ -1032,13 +1033,8 @@ static void rawseciso_thread(u64 arg)
 
 		is_cd2352 = 1;
 
-		discsize = discsize * sec_size;
-
-		if(discsize % CD_SECTOR_SIZE_2352)
-		{
-			CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
-			discsize = discsize - (discsize % CD_SECTOR_SIZE_2352);
-		}
+		discsize *= sec_size;
+		CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
 
 		sys_addr_t addr;
 
@@ -1052,6 +1048,11 @@ static void rawseciso_thread(u64 arg)
 			}
 
 			sys_memory_free(addr); cd_cache = 0;
+		}
+
+		if(discsize % CD_SECTOR_SIZE_2352)
+		{
+			discsize -= (discsize % CD_SECTOR_SIZE_2352);
 		}
 
 		//if(CD_SECTOR_SIZE_2352 != 2352 && CD_SECTOR_SIZE_2352 != 2048 && CD_SECTOR_SIZE_2352 != 2336 && CD_SECTOR_SIZE_2352 != 2448) CD_SECTOR_SIZE_2352 = 2352;

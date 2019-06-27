@@ -97,7 +97,7 @@ int main(int argc, const char* argv[])
 	char direntry[MAX_PATH_LEN];
 	char filename[MAX_PATH_LEN];
 	bool has_dirs, is_iso = false;
-	int cd_sector_size; 
+	int cd_sector_size, cd_sector_size_param; 
 	char *ext;
 	u16 flen;
 
@@ -374,6 +374,7 @@ next_ntfs_entry:
 								if (parts > 0)
 								{
 									cd_sector_size = 2352;
+									cd_sector_size_param = 0;
 
 									num_tracks = 1;
 									if(m == PS3ISO) emu_mode = EMU_PS3; else
@@ -398,6 +399,9 @@ next_ntfs_entry:
 													((memcmp(buffer + 1, "CD001", 5) == 0) && buffer[0] == 0x01) ) {cd_sector_size = sec_size[n]; break;}
 											}
 											ps3ntfs_close(fd);
+
+											if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
+											else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 										}
 
 										// parse CUE file
@@ -443,10 +447,7 @@ next_ntfs_entry:
 
 										if (parts == max) continue;
 
-										if(cd_sector_size == 2352)
-											p_args->num_tracks = num_tracks;
-										else
-											p_args->num_tracks = num_tracks | (cd_sector_size<<4);
+										p_args->num_tracks = num_tracks | cd_sector_size_param;
 
 										scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * parts * sizeof(uint32_t)));
 

@@ -171,7 +171,7 @@ next_ntfs_entry:
 								else if(parts > 0)
 								{
 									num_tracks = 1;
-									struct stat bufn; size_t cd_sector_size = 0;
+									struct stat bufn; int cd_sector_size = 0, cd_sector_size_param = 0;
 
 										 if(m == mPS3) emu_mode = EMU_PS3;
 									else if(m == mBLU) emu_mode = EMU_BD;
@@ -196,6 +196,9 @@ next_ntfs_entry:
 											}
 											ps3ntfs_close(fd);
 										}
+
+										if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
+										else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 
 										strcpy(path + plen - 3, "CUE");
 
@@ -236,7 +239,7 @@ next_ntfs_entry:
 											continue;
 										}
 
-										p_args->num_tracks = num_tracks | (cd_sector_size<<4);
+										p_args->num_tracks = num_tracks | cd_sector_size_param;
 
 										scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * (parts * sizeof(u32))));
 

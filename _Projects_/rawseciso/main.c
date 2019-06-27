@@ -1137,13 +1137,8 @@ static void rawseciso_thread(uint64_t arg)
 
 		is_cd2352 = 1;
 
-		discsize = discsize * size_sector;
-
-		if(discsize % CD_SECTOR_SIZE_2352)
-		{
-			CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
-			discsize = discsize - (discsize % CD_SECTOR_SIZE_2352);
-		}
+		discsize *= size_sector;
+		CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
 
 		sys_addr_t addr;
 
@@ -1157,6 +1152,11 @@ static void rawseciso_thread(uint64_t arg)
 			}
 
 			sys_memory_free(addr); cd_cache = 0;
+		}
+
+		if(discsize % CD_SECTOR_SIZE_2352)
+		{
+			discsize -= (discsize % CD_SECTOR_SIZE_2352);
 		}
 
 		//if(CD_SECTOR_SIZE_2352 != 2368 && CD_SECTOR_SIZE_2352 != 2048 && CD_SECTOR_SIZE_2352 != 2336 && CD_SECTOR_SIZE_2352 != 2448) CD_SECTOR_SIZE_2352 = 2352;

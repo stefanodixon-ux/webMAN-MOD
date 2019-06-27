@@ -29,10 +29,10 @@ static int netiso_svrid = NONE;
 
 static int read_remote_file(int s, void *buf, u64 offset, u32 size, int *abort_connection)
 {
+	*abort_connection = 1;
+
 	netiso_read_file_cmd cmd;
 	netiso_read_file_result res;
-
-	*abort_connection = 1;
 
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_READ_FILE);
@@ -69,11 +69,16 @@ static int read_remote_file(int s, void *buf, u64 offset, u32 size, int *abort_c
 
 static s64 open_remote_file(int s, const char *path, int *abort_connection)
 {
+	*abort_connection = 1;
+
+	s32 net_enabled = 0;
+	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+
+	if(!net_enabled) return FAILED;
+
 	netiso_open_cmd cmd;
 	netiso_open_result res;
 	int len, emu_mode = *abort_connection;
-
-	*abort_connection = 1;
 
 	len = strlen(path);
 
@@ -108,6 +113,8 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 	// detect CD sector size
 	if((emu_mode == EMU_PSX) && (res.file_size >= _64KB_) && (res.file_size <= 0x35000000UL))
 	{
+		CD_SECTOR_SIZE_2352 = default_cd_sector_size(res.file_size);
+
 		sys_addr_t sysmem = NULL; u64 chunk_size = _64KB_;
 		if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 		{
@@ -132,11 +139,16 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 
 static int remote_stat(int s, const char *path, int *is_directory, s64 *file_size, u64 *mtime, u64 *ctime, u64 *atime, int *abort_connection)
 {
+	*abort_connection = 1;
+
+	s32 net_enabled = 0;
+	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+
+	if(!net_enabled) return FAILED;
+
 	netiso_stat_cmd cmd;
 	netiso_stat_result res;
 	int len;
-
-	*abort_connection = 1;
 
 	len = strlen(path);
 	memset(&cmd, 0, sizeof(cmd));
@@ -337,7 +349,6 @@ static void netiso_thread(__attribute__((unused)) u64 arg)
 	unsigned int real_disctype;
 	ScsiTrackDescriptor *tracks;
 	int emu_mode, num_tracks;
-	unsigned int cd_sector_size_param = 0;
 	sys_event_port_t result_port = (sys_event_port_t)(NONE);
 
 	emu_mode = netiso_args.emu_mode & 0xF;
@@ -383,12 +394,19 @@ static void netiso_thread(__attribute__((unused)) u64 arg)
 		goto exit_netiso;
 	}
 
+	unsigned int cd_sector_size_param = 0;
+
 	if(emu_mode == EMU_PSX)
 	{
 		num_tracks = netiso_args.num_tracks;
 		tracks = netiso_args.tracks;
 
 		is_cd2352 = 1;
+
+		if(discsize % CD_SECTOR_SIZE_2352)
+		{
+			discsize -= (discsize % CD_SECTOR_SIZE_2352);
+		}
 
 		if(CD_SECTOR_SIZE_2352 & 0xf) cd_sector_size_param = CD_SECTOR_SIZE_2352<<8;
 		else if(CD_SECTOR_SIZE_2352 != 2352) cd_sector_size_param = CD_SECTOR_SIZE_2352<<4;
@@ -405,15 +423,6 @@ static void netiso_thread(__attribute__((unused)) u64 arg)
 	if(real_disctype != DISC_TYPE_NONE)
 	{
 		fake_eject_event(BDVD_DRIVE);
-	}
-
-	if(is_cd2352)
-	{
-		if(discsize % CD_SECTOR_SIZE_2352)
-		{
-			CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
-			discsize = discsize - (discsize % CD_SECTOR_SIZE_2352);
-		}
 	}
 
 	ret = sys_storage_ext_mount_discfile_proxy(result_port, command_queue_net, emu_mode, discsize, _256KB_, (num_tracks | cd_sector_size_param), tracks);
@@ -562,6 +571,11 @@ static bool is_netsrv_enabled(u8 server_id)
 
 	if(server_id > 4) return false;
 
+	s32 net_enabled = 0;
+	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+
+	if(!net_enabled) return false;
+
 	return( (webman_config->netd[server_id] == 1) && // is enabled
 			(webman_config->neth[server_id][0] != NULL) && // has host
 			(webman_config->netp[server_id] > 0) && // has port
@@ -611,11 +625,19 @@ static int connect_to_remote_server(u8 server_id)
 
 static int open_remote_dir(int s, const char *path, int *abort_connection)
 {
+	*abort_connection = 1;
+
+	s32 net_enabled = 0;
+	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+
+	if(!net_enabled) 
+	{
+		return FAILED;
+	}
+
 	netiso_open_dir_cmd cmd;
 	netiso_open_dir_result res;
 	int len;
-
-	*abort_connection = 0;
 
 	len = strlen(path);
 	memset(&cmd, 0, sizeof(cmd));
@@ -625,34 +647,32 @@ static int open_remote_dir(int s, const char *path, int *abort_connection)
 	if(send(s, &cmd, sizeof(cmd), 0) != sizeof(cmd))
 	{
 		//DPRINTF("send failed (open_remote_dir) (errno=%d)!\n", get_network_error());
-		*abort_connection = 1;
 		return FAILED;
 	}
 
 	if(send(s, path, len, 0) != len)
 	{
 		//DPRINTF("send failed (open_remote_dir) (errno=%d)!\n", get_network_error());
-		*abort_connection = 1;
 		return FAILED;
 	}
 
 	if(recv(s, &res, sizeof(res), MSG_WAITALL) != sizeof(res))
 	{
 		//DPRINTF("recv failed (open_remote_dir) (errno=%d)!\n", get_network_error());
-		*abort_connection = 1;
 		return FAILED;
 	}
+
+	*abort_connection = 0;
 
 	return (res.open_result);
 }
 
 static int read_remote_dir(int s, sys_addr_t *data /*netiso_read_dir_result_data **data*/, int *abort_connection)
 {
+	*abort_connection = 1;
+
 	netiso_read_dir_entry_cmd cmd;
 	netiso_read_dir_result res;
-	int len;
-
-	*abort_connection = 1;
 
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_READ_DIR);
@@ -673,8 +693,9 @@ static int read_remote_dir(int s, sys_addr_t *data /*netiso_read_dir_result_data
 	//MM_LOG("OK (%i entries)\n", res.dir_size );
 	if(res.dir_size > 0)
 	{
+		int len;
 		sys_addr_t data1 = NULL;
-		for(s64 retry = 25; retry > 0; retry--)
+		for(int retry = 25; retry > 0; retry--)
 		{
 			if(res.dir_size > (retry * 123)) res.dir_size = retry * 123;
 			len = (sizeof(netiso_read_dir_result_data)*res.dir_size);

@@ -218,25 +218,29 @@ static int download_file(const char *param, char *msg)
 {
 	int ret = FAILED;
 
+	s32 net_enabled = 0;
+	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+
+	if(!net_enabled)
+	{
+		sprintf(msg, "ERROR: %s", "network disabled");
+		return ret;
+	}
+
 	if(IS_INGAME)
 	{
-		sprintf(msg, "ERROR: download from XMB");
+		sprintf(msg, "ERROR: %s", "download from XMB");
 		return ret;
 	}
 
 	char *msg_durl = msg;
 	char *msg_dpath = msg + MAX_URL_LEN + 16;
 
+	sprintf(msg_durl,  "ERROR: %s", "Invalid URL");
+	sprintf(msg_dpath, "Download canceled");
+
 	char pdurl[MAX_URL_LEN];
 	char pdpath[MAX_DLPATH_LEN];
-
-	size_t conv_num_durl = 0;
-	size_t conv_num_dpath = 0;
-
-	int pdurl_len;
-
-	size_t dparam_len;
-	int pdpath_len;
 
 	wmemset(pkg_durl, 0, MAX_URL_LEN); // Use wmemset from stdc.h instead of reinitialising wchar_t with a loop.
 	wmemset(pkg_dpath, 0, MAX_DLPATH_LEN);
@@ -244,85 +248,61 @@ static int download_file(const char *param, char *msg)
 	memset(pdurl, 0, MAX_URL_LEN);
 	memset(pdpath, 0, MAX_DLPATH_LEN);
 
-	sprintf(msg_durl,  "ERROR: Invalid URL");
-	sprintf(msg_dpath, "Download canceled");
+	int len;
+	size_t conv_num = 0;
 
 	if(islike(param, "?to="))  //Use of the optional parameter
 	{
-		char *ptemp = strstr((char*)param + 4, "&url=");
+		len = get_param("&url=", pdurl, param, MAX_DLPATH_LEN); if(!islike(pdurl, "http")) goto end_download_process;
+		conv_num = mbstowcs((wchar_t *)pkg_durl, (const char *)pdurl, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
-		if(ptemp != NULL)
-		{
-			pdurl_len = strlen(ptemp + 5);
-
-			if((pdurl_len > 0) && (pdurl_len < MAX_URL_LEN))
-			{
-				strncpy(pdurl, ptemp + 5, pdurl_len);
-			}
-			else
-				goto end_download_process;
-		}
-		else
-			goto end_download_process;
-
-		dparam_len = strlen(param);
-		pdpath_len = dparam_len - pdurl_len - 5 - 4;
-
-		if(pdpath_len > 0) strncpy(pdpath, param + 4, pdpath_len);
-
+		len = get_param("?to=", pdpath, param, MAX_DLPATH_LEN); if(*pdpath != '/') goto end_download_process; 
 		filepath_check(pdpath);
-
-		conv_num_durl = mbstowcs((wchar_t *)pkg_durl, (const char *)pdurl, pdurl_len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
-
 	}
 	else if(islike(param, "?url="))
 	{
-		pdurl_len = strlen(param + 5);
-		if((pdurl_len > 0) && (pdurl_len < MAX_URL_LEN))
-		{
-			pdpath_len = strlen(DEFAULT_PKG_PATH);
-			strncpy(pdpath, DEFAULT_PKG_PATH, pdpath_len);
-			strncpy(pdurl, param + 5, pdurl_len);
-			conv_num_durl = mbstowcs((wchar_t *)pkg_durl,(const char *)pdurl, pdurl_len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
-		}
+		len = get_param("?url=", pdurl, param, MAX_DLPATH_LEN); if(!islike(pdurl, "http")) goto end_download_process;
+		conv_num = mbstowcs((wchar_t *)pkg_durl,(const char *)pdurl, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
+
+		len = sprintf(pdpath, "%s", DEFAULT_PKG_PATH);
 	}
 
-	if(conv_num_durl > 0)
+	if(conv_num)
 	{
 		mkdir_tree(pdpath);
 
-		if((pdpath_len > 0) && (pdpath_len < MAX_DLPATH_LEN) && (isDir(pdpath) || cellFsMkdir(pdpath, DMODE) == CELL_FS_SUCCEEDED)) ;
+		if(isDir(pdpath) || (cellFsMkdir(pdpath, DMODE) == CELL_FS_SUCCEEDED)) ;
 
 		else if(isDir(DEFAULT_PKG_PATH) || cellFsMkdir(DEFAULT_PKG_PATH, DMODE) == CELL_FS_SUCCEEDED)
 		{
-			pdpath_len = sprintf(pdpath, DEFAULT_PKG_PATH);
+			len = sprintf(pdpath, DEFAULT_PKG_PATH);
 		}
 		else
 		{
-			pdpath_len = sprintf(pdpath, INT_HDD_ROOT_PATH);
+			len = sprintf(pdpath, INT_HDD_ROOT_PATH);
 		}
 
-		sprintf(msg_dpath, "To: %s", pdpath, pdpath_len);
+		sprintf(msg_dpath, "To: %s", pdpath);
 		if(IS(pdpath, DEFAULT_PKG_PATH) && (strstr(pdurl, ".pkg") != NULL))
 		{
-			pdpath_len = sprintf(pdpath, TEMP_DOWNLOAD_PATH); pkg_dcount++;
+			len = sprintf(pdpath, TEMP_DOWNLOAD_PATH); pkg_dcount++;
 		}
 
-		conv_num_dpath = mbstowcs((wchar_t *)pkg_dpath, (const char *)pdpath, pdpath_len + 1);
+		conv_num = mbstowcs((wchar_t *)pkg_dpath, (const char *)pdpath, len + 1);
 
-		if(conv_num_dpath > 0)
+		if(conv_num)
 		{
 			unload_web_plugins();
 
 			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
-			sprintf(msg_durl, "%s%s", "Downloading ", pdurl);
+			sprintf(msg_durl, "Downloading %s", pdurl);
 
 			LoadPluginById(0x29, (void *)downloadPKG_thread);
 			ret = CELL_OK;
 		}
 		else
-			sprintf(msg_durl, "ERROR: Setting storage location");
+			sprintf(msg_durl, "ERROR: %s", "Setting storage location");
 	}
 
 end_download_process:
@@ -342,7 +322,7 @@ static int installPKG(const char *pkgpath, char *msg)
 
 		if(IS_INGAME)
 		{
-			sprintf(msg, "ERROR: install from XMB");
+			sprintf(msg, "ERROR: %s", "install from XMB");
 			return ret;
 		}
 	}
