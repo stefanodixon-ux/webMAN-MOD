@@ -688,7 +688,6 @@
 					{
 						// L3+R2+X     = Shutdown
 						// L3+R2+O     = Lpar restart
-						// L3+R2+START = Enable/disable fancontrol
 
 						if(!(webman_config->combo & SHUT_DOWN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CROSS))) // L3+R2+X (shutdown)
 						{
@@ -710,14 +709,14 @@
 
 							sys_ppu_thread_exit(0);
 						}
-						else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_START))) // L3+R2+START (enable/disable fancontrol)
-						{
-							// L3+R2+START = Enable/disable fancontrol
-							enable_fan_control(TOGGLE_MODE, msg);
+					}
+					else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2 )) // L3+R2+START (enable/disable fancontrol)
+					{
+						// L3+R2+START = Enable/disable fancontrol
+						enable_fan_control(TOGGLE_MODE, msg);
 
-							n = 0;
-							break;
-						}
+						n = 0;
+						break;
 					}
 					else
 					if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1))

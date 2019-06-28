@@ -5,7 +5,7 @@ static int ssend(int socket, const char *str)
 	return send(socket, str, strlen(str), 0);
 }
 
-static int connect_to_server_ex(const char *server_ip, u16 port, bool rcv_timeout)
+static int connect_to_server_ex(const char *server_ip, u16 port, u8 rcv_timeout)
 {
 	int s = socket(AF_INET, SOCK_STREAM, 0);
 	if(s < 0)
@@ -41,7 +41,7 @@ static int connect_to_server_ex(const char *server_ip, u16 port, bool rcv_timeou
 
 	struct timeval tv;
 	tv.tv_usec = 0;
-	tv.tv_sec = 30;
+	tv.tv_sec = rcv_timeout ? rcv_timeout : 30;
 	setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
 
 	if(rcv_timeout)

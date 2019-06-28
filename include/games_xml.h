@@ -1,6 +1,7 @@
 #define AVG_ITEM_SIZE			420
 
 #define QUERY_XMB(key, src) 	"<Query class=\"type:x-xmb/folder-pixmap\" key=\"" key "\" attr=\"" key "\" src=\"" src "\"/>"
+#define QUERY_XMB2(key, src) 	"<Query class=\"type:x-xmb/folder-pixmap\" key=\"" key "\" src=\"" src "\"/>"
 #define ADD_XMB_ITEM(key)		"<Item class=\"type:x-xmb/module-action\" key=\"" key "\" attr=\"" key "\"/>"
 
 #define XML_HEADER				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><XMBML version=\"1.0\">"
@@ -229,7 +230,7 @@ static bool add_xmb_entry(u8 f0, u8 f1, int plen, const char *tempstr, char *tem
 {
 	set_sort_key(skey, templn, key, subfolder, f1);
 
-	#define ITEMS_BUFFER(a)  (64 * (item_count[a] + 8))
+	#define ITEMS_BUFFER(a)  (64 * (item_count[a] + 10))
 
 	if( !scanning_roms && XMB_GROUPS )
 	{
@@ -862,7 +863,8 @@ continue_reading_folder_xml:
 	{
 		if(!add_xmbm_plus) _concat(&myxml_ngp, ADD_XMB_ITEM("eject"));
 
-		_concat(&myxml, QUERY_XMB("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
+		if(file_exists("/dev_usb000/wm_custom.xml"))
+			_concat(&myxml, QUERY_XMB2("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
 
 		if( ADD_SETUP )
 		{
@@ -1118,7 +1120,8 @@ continue_reading_folder_xml:
 		if(  c_roms                     ) _concat(&myxml, QUERY_XMB("wm_rom", "xmb://localhost" HTML_BASE_PATH "/ROMS.xml#seg_wm_rom_items"));
 		#endif
 	 #endif
-		_concat(&myxml, QUERY_XMB("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
+		if(file_exists("/dev_usb000/wm_custom.xml"))
+			_concat(&myxml, QUERY_XMB2("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
 		_concat(&myxml, "</Items></View>");
 	}
 

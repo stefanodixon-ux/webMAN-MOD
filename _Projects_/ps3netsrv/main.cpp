@@ -25,11 +25,11 @@ static const int NONE		= -1;
 #define MAX_ENTRIES  4096
 #define MAX_PATH_LEN 510
 
-#define MIN(a, b)         ((a) <= (b) ? (a) : (b))
+#define MIN(a, b)		 ((a) <= (b) ? (a) : (b))
 #define IS_RANGE(a, b, c) (((a) >= (b)) && ((a) <= (c)))
 #define IS_PARENT_DIR(a)  ((a[0] == '.') && ((a[1] == 0) || ((a[1] == '.') && (a[2] == 0))))
 
-//#define MERGE_DRIVES 1
+#define MERGE_DRIVES 1
 
 enum
 {
@@ -271,11 +271,11 @@ static char *translate_path(char *path, int *viso)
 	}
 
 #ifdef WIN32
-	file_stat_t st;
 	path_len = strlen(p);
-	for(int i = 0; i < path_len; i++) if(p[i] == '\\') p[i] = '/';
+	for(unsigned int i = 0; i < path_len; i++) if(p[i] == '\\') p[i] = '/';
 
 	#ifdef MERGE_DRIVES
+	file_stat_t st;
 	if(stat_file(p, &st) < 0)
 	{
 		for(int drive = 'C'; drive <= 'Z'; drive++)
@@ -538,13 +538,15 @@ static int process_read_file_critical(client_t *client, netiso_read_file_critica
 			read_size = remaining;
 		}
 
-		if(client->ro_file->read(client->buf, read_size) != read_size)
+		ssize_t read_ret = client->ro_file->read(client->buf, read_size);
+		if (read_ret < 0 || static_cast<size_t>(read_ret) != read_size)
 		{
 			DPRINTF("read_file failed on read file critical command!\n");
 			return FAILED;
 		}
 
-		if(send(client->s, (char *)client->buf, read_size, 0) != read_size)
+		int send_ret = send(client->s, (char *)client->buf, read_size, 0);
+		if (send_ret < 0 || static_cast<unsigned int>(send_ret) != read_size)
 		{
 			DPRINTF("send failed on read file critical command!\n");
 			return FAILED;
@@ -588,10 +590,11 @@ static int process_read_cd_2048_critical_cmd(client_t *client, netiso_read_cd_20
 		}
 
 		buf += 2048;
-		offset += client->CD_SECTOR_SIZE;
+		offset += client->CD_SECTOR_SIZE; // skip subchannel data
 	}
 
-	if(send(client->s, (char *)client->buf, sector_count * 2048, 0) != (sector_count * 2048))
+	int send_ret = send(client->s, (char *)client->buf, sector_count * 2048, 0);
+	if (send_ret < 0 || static_cast<unsigned int>(send_ret) != (sector_count * 2048))
 	{
 		DPRINTF("send failed on read cd 2048 critical command!\n");
 		return FAILED;
@@ -743,7 +746,7 @@ static int process_write_file_cmd(client_t *client, netiso_write_file_cmd *cmd)
 	if(write_size > 0)
 	{
 		int ret = recv_all(client->s, (void *)client->buf, write_size);
-		if(ret != write_size)
+		if (ret < 0 || static_cast<unsigned int>(ret) != write_size)
 		{
 			DPRINTF("recv failed on write file: %d %d\n", ret, get_network_error());
 			return FAILED;
@@ -999,9 +1002,9 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 
 static int process_read_dir_entry_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd, int version)
 {
-	char *path;
+	char *path = NULL;
 	file_stat_t st;
-	struct dirent *entry;
+	struct dirent *entry = NULL;
 	size_t d_name_len = 0;
 	netiso_read_dir_entry_result result_v1;
 	netiso_read_dir_entry_result_v2 result_v2;
@@ -1151,9 +1154,10 @@ send_result_read_dir:
 		}
 	}
 
-	if((version == 1 && result_v1.file_size != BE64(NONE)) || (version == 2 && result_v2.file_size != BE64(NONE)))
+	if ((version == 1 && static_cast<uint64_t>(result_v1.file_size) != BE64(NONE)) || (version == 2 && static_cast<uint64_t>(result_v2.file_size) != BE64(NONE)))
 	{
-		if(send(client->s, (char *)entry->d_name, d_name_len, 0) != d_name_len)
+		int send_ret = send(client->s, (char *)entry->d_name, d_name_len, 0);
+		if (send_ret < 0 || static_cast<unsigned int>(send_ret) != d_name_len)
 		{
 			DPRINTF("send file name error on read dir entry (%d)\n", get_network_error());
 			return FAILED;
@@ -1555,7 +1559,7 @@ int main(int argc, char *argv[])
 {
 	int s;
 	uint32_t whitelist_start = 0;
-	uint32_t whitelist_end = 0;
+	uint32_t whitelist_end   = 0;
 	uint16_t port = NETISO_PORT;
 
 #ifdef WIN32
@@ -1565,10 +1569,10 @@ int main(int argc, char *argv[])
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
 #endif
 
-	printf("ps3netsrv build 20190624");
+	printf("ps3netsrv build 20190628");
 
 #ifdef WIN32
-	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x04 );
+	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
 #endif
 
 	printf(" (mod by aldostools)\n");
@@ -1592,7 +1596,15 @@ int main(int argc, char *argv[])
 		char *filename = strrchr(argv[0], '/');
 		if(filename) filename++; else {filename = strrchr(argv[0], '\\'); if(filename) filename++;}
 
-		if((stat_file("./PS3ISO", &fs) >= 0) || (stat_file("./PSXISO", &fs) >= 0) || (stat_file("./GAMES", &fs) >= 0) || (stat_file("./GAMEZ", &fs) >= 0)  || (stat_file("./DVDISO", &fs) >= 0) || (stat_file("./BDISO", &fs) >= 0) || (stat_file("./PS3_NET_Server.cfg", &fs) >= 0))
+		if( (filename != NULL) && (
+			(stat_file("./PS3ISO", &fs) >= 0) ||
+			(stat_file("./PSXISO", &fs) >= 0) ||
+			(stat_file("./GAMES",  &fs) >= 0) ||
+			(stat_file("./GAMEZ",  &fs) >= 0) ||
+			(stat_file("./DVDISO", &fs) >= 0) ||
+			(stat_file("./BDISO",  &fs) >= 0) ||
+			(stat_file("./PS3_NET_Server.cfg", &fs) >= 0)
+			))
 		{
 			argv[1] = argv[0];
 			*(filename - 1) = 0;
@@ -1847,7 +1859,7 @@ int main(int argc, char *argv[])
 		if(initialize_client(&clients[i]) != SUCCEEDED)
 		{
 			printf("System seems low in resources.\n");
-			break;
+			continue;
 		}
 
 		clients[i].s = cs;

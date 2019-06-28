@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <dirent.h>
 #include <ctype.h>
 #include <time.h>
 
@@ -18,6 +17,7 @@ extern "C" int scandir(const char *dirname, struct dirent2 ***ret_namelist,
 			int (*compar)(const struct dirent2 **, const struct dirent2 **));
 
 #else
+#include <dirent.h>
 #define dirent2 dirent
 #endif
 
@@ -1188,7 +1188,6 @@ bool VIsoFile::build(char *inDir)
 void VIsoFile::write(const char *volumeName, const char *gameCode)
 {
 	DirList *dirList;
-	off64_t written;
 	Iso9660PVD *pvd;
 	uint8_t *p;
 
@@ -1481,7 +1480,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 	if (vFilePtr < fsBufSize)
 	{
 		// Read FS structure from RAM
-		to_read = MIN(fsBufSize-vFilePtr, remaining);
+		to_read = MIN(fsBufSize - static_cast<uint64_t>(vFilePtr), remaining);
 		memcpy(p, fsBuf+vFilePtr, to_read);
 
 		remaining -= to_read;
@@ -1507,7 +1506,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 				uint64_t fEnd = fStart + fileList->size;
 				uint64_t fEndSector = ((fEnd + 0x7ffULL) & ~0x7ffULL);
 
-				if (vFilePtr >= fStart && vFilePtr < fEndSector)
+				if (static_cast<uint64_t>(vFilePtr) >= fStart && static_cast<uint64_t>(vFilePtr) < fEndSector)
 				{
 					if (fileList->multipart)
 					{
@@ -1515,7 +1514,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 						return r;
 					}
 
-					if (vFilePtr < fEnd)
+					if (static_cast<uint64_t>(vFilePtr) < fEnd)
 					{
 						file_t fd;
 						ssize_t this_r;
@@ -1539,7 +1538,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 							return r;
 						}
 
-						if (this_r != to_read)
+						if (static_cast<size_t>(this_r) != to_read)
 						{
 							fprintf(stderr, "VISO: read on file %s returned less data than expected (file modified?)\n", fileList->path);
 							return r;
@@ -1577,7 +1576,12 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 	if (vFilePtr >= padAreaStart && vFilePtr < totalSize)
 	{
 		// Pad at the end
-		to_read = MIN(padAreaSize-(vFilePtr-padAreaStart), remaining);
+		off64_t read_size = padAreaSize - (vFilePtr - padAreaStart);
+		if (read_size > 0)
+			to_read = MIN(static_cast<uint64_t>(read_size), remaining);
+		else
+			return r; // to_read = 0;
+
 		memset(p, 0, to_read);
 
 		remaining -= to_read;

@@ -17,7 +17,7 @@
 *   @file   dirent.c
 *
 *   @brief  This file contains an implementation on readdir and friends
-*           which works under Win32.
+*		   which works under Win32.
 *
 *****************************************************************************/
 

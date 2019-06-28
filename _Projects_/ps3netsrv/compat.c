@@ -191,7 +191,7 @@ uint64_t FileTimeToUnixTime(const FILETIME *filetime, DWORD *remainder)
 
 #else  /* ISO version */
 
-	UINT32 a0;			/* 16 bit, low    bits */
+	UINT32 a0;			/* 16 bit, low	bits */
 	UINT32 a1;			/* 16 bit, medium bits */
 	UINT32 a2;			/* 32 bit, high   bits */
 	UINT32 r;			/* remainder of division */
@@ -204,14 +204,14 @@ uint64_t FileTimeToUnixTime(const FILETIME *filetime, DWORD *remainder)
 	a0 = ((UINT32)filetime->dwLowDateTime ) & 0xffff;
 
 	/* Subtract the time difference */
-	if (a0 >= 32768           ) a0 -=             32768        , carry = 0;
-	else                        a0 += (1 << 16) - 32768        , carry = 1;
+	if (a0 >= 32768		   ) a0 -=			 32768		, carry = 0;
+	else						a0 += (1 << 16) - 32768		, carry = 1;
 
-	if (a1 >= 54590    + carry) a1 -=             54590 + carry, carry = 0;
-	else                        a1 += (1 << 16) - 54590 - carry, carry = 1;
+	if (a1 >= 54590	+ carry) a1 -=			 54590 + carry, carry = 0;
+	else						a1 += (1 << 16) - 54590 - carry, carry = 1;
 
 	a2 -= 27111902 + carry;
-    
+	
 	/* If a is negative, replace a by (-1-a) */
 	negative = (a2 >= ((UINT32)1) << 31);
 	if (negative)
@@ -225,18 +225,18 @@ uint64_t FileTimeToUnixTime(const FILETIME *filetime, DWORD *remainder)
 	/* Divide a by 10000000 (a = a2/a1/a0), put the rest into r.
 	   Split the divisor into 10000 * 1000 which are both less than 0xffff. */
 	a1 += (a2 % 10000) << 16;
-	a2 /=       10000;
+	a2 /=	   10000;
 	a0 += (a1 % 10000) << 16;
-	a1 /=       10000;
+	a1 /=	   10000;
 	r   =  a0 % 10000;
-	a0 /=       10000;
+	a0 /=	   10000;
 
 	a1 += (a2 % 1000) << 16;
-	a2 /=       1000;
+	a2 /=	   1000;
 	a0 += (a1 % 1000) << 16;
-	a1 /=       1000;
+	a1 /=	   1000;
 	r  += (a0 % 1000) * 10000;
-	a0 /=       1000;
+	a0 /=	   1000;
 
 	/* If a was negative, replace a by (-1-a) and r by (9999999 - r) */
 	if (negative)
@@ -349,7 +349,7 @@ int join_thread(thread_t thread)
 file_t open_file(const char *path, int oflag)
 {
 	if(!path)
-		return INVALID_HANDLE_VALUE;
+		return INVALID_FD;
 
 	return open(path, oflag);
 }

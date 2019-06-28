@@ -595,20 +595,28 @@ static int connect_to_remote_server(u8 server_id)
 		for(u8 n = 0; n < server_id; n++)
 			if((webman_config->netd[n] == 1) && IS(webman_config->neth[n], webman_config->neth[server_id]) && webman_config->netp[n] == webman_config->netp[server_id]) return FAILED;
 
-		u8 retries = 0;
+		u8 retries = 0, rcv_timeout = 30, max_tries = MAX_RETRIES;
+
+		if(refreshing_xml)
+		{
+			rcv_timeout = 5, max_tries = 1;
+		}
 
 	reconnect:
 
-		ns = connect_to_server_ex(webman_config->neth[server_id], webman_config->netp[server_id], true);
+		ns = connect_to_server_ex(webman_config->neth[server_id], webman_config->netp[server_id], rcv_timeout);
 
 		if(ns < 0)
 		{
-			if(retries < MAX_RETRIES)
+			if(retries < max_tries)
 			{
 				retries++;
 				sys_ppu_thread_sleep(1);
 				goto reconnect;
 			}
+
+			if(refreshing_xml)
+				webman_config->netd[server_id] = 0; // disable connection to offline server
 
 			if(server_id > 0 || !webman_config->netd[0] || islike(webman_config->allow_ip, "127.") || IS(webman_config->allow_ip, "localhost")) return ns;
 
@@ -616,7 +624,7 @@ static int connect_to_remote_server(u8 server_id)
 				if(IS(webman_config->neth[n], webman_config->allow_ip)) return ns;
 
 			// retry using IP of client (/net0 only) - update IP in neth[0] if connection is successful
-			ns = connect_to_server_ex(webman_config->allow_ip, webman_config->netp[0], true);
+			ns = connect_to_server_ex(webman_config->allow_ip, webman_config->netp[0], rcv_timeout);
 			if(ns >= 0) strcpy(webman_config->neth[0], webman_config->allow_ip);
 		}
 	}
