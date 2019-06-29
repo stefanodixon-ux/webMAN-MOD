@@ -582,7 +582,7 @@ static void setup_form(char *buffer, char *templn)
 	//fan control settings
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR "<table width=\"900\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td>");
 
-	add_check_box("fc\" onchange=\"temp[fc.checked?0:2].checked=1;" , false, STR_FANCTRL, " </td><td>", (webman_config->fanc), buffer);
+	add_check_box("fc\" onchange=\"temp[fc.checked?0:3].checked=1;" , false, STR_FANCTRL, " </td><td>", (webman_config->fanc), buffer);
 	add_check_box("warn", false , STR_NOWARN, " </td></tr>", (webman_config->nowarn), buffer);
 
 	concat(buffer, "<tr><td>");
