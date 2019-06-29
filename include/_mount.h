@@ -1101,7 +1101,7 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 
 static void mount_autoboot(void)
 {
-	char path[STD_PATH_LEN+1]; bool is_last_game = false;
+	char path[STD_PATH_LEN + 1]; bool is_last_game = false;
 
 	// get autoboot path
 	if(webman_config->autob && (

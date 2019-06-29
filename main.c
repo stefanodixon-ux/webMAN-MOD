@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.24.4 MOD"
+#define WM_VERSION			"1.47.24.5 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -3996,6 +3996,9 @@ static void wwwd_thread(u64 arg)
 #endif
 
 #ifdef COBRA_ONLY
+	if(isDir(webman_config->home_url))
+		set_apphome(webman_config->home_url);
+
 	{sys_map_path((char*)"/app_home", NULL);}
 #endif
 

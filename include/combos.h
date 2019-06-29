@@ -141,7 +141,7 @@
 								if(isDir(webman_config->home_url)) set_apphome(webman_config->home_url);
 								else if(islike(webman_config->home_url, "http")) open_browser(webman_config->home_url, 0);
 #ifdef WM_REQUEST
-								else if(*webman_config->home_url == '/') handle_file_request(webman_config->home_url);
+								else if(*webman_config->home_url == '/') handle_file_request(webman_config->home_url); // web command
 #endif
 							}
 							char category[8], seg_name[16]; *category = *seg_name = NULL;
@@ -705,7 +705,10 @@
 							working = 0;
 							{ del_turnoff(2); } // 2 beeps
 
-							{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);}
+							if(is_mamba)
+								vsh_reboot();
+							else
+								{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);}
 
 							sys_ppu_thread_exit(0);
 						}
