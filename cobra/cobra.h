@@ -5,6 +5,23 @@
 extern "C" {
 #endif
 
+enum DiscEmu
+{
+	EMU_OFF = 0,
+	EMU_PS3,
+	EMU_PS2_DVD,
+	EMU_PS2_CD,
+	EMU_PSX,
+	EMU_BD,
+	EMU_DVD,
+	EMU_MAX,
+	EMU_PSP,   // not a DiscEmu
+	EMU_ROMS,  // not a DiscEmu
+	EMU_GAMEI, // not a DiscEmu
+};
+
+#ifdef COBRA_ONLY
+
 enum DiscType
 {
 	DISC_TYPE_NONE, /* No disc inserted */
@@ -83,26 +100,12 @@ enum PSPEmu
 	EMU_400
 };
 
-enum DiscEmu
-{
-	EMU_OFF = 0,
-	EMU_PS3,
-	EMU_PS2_DVD,
-	EMU_PS2_CD,
-	EMU_PSX,
-	EMU_BD,
-	EMU_DVD,
-	EMU_MAX,
-	EMU_PSP, // not a DiscEmu
-	EMU_ROMS,   // not a DiscEmu
-	EMU_GAMEI, // not a DiscEmu
-};
-
 typedef struct
 {
 	uint32_t lba;
 	int is_audio;
 } TrackDef;
+
 /*
 // This structure represents the Disc structure format 0 as defined in MMC-6 document
 typedef struct
@@ -784,3 +787,4 @@ int cobra_unload_vsh_plugin(unsigned int slot);
 
 #endif /* _COBRA_H */
 
+#endif //#ifdef COBRA_ONLY

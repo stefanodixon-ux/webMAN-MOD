@@ -65,22 +65,22 @@ int File::open(const char *path, int flags)
 	if(flen < 0)
 		flen = is_multipart = 0;
 	else
-		is_multipart = (strstr(path + flen, ".iso.0") != NULL) || (strstr(path + flen, ".ISO.0") != NULL);
+		is_multipart = (strstr((const char*)(path + flen), ".iso.0") != NULL) || (strstr((const char*)(path + flen), ".ISO.0") != NULL);
 
 	///// check path for encrypted-3k3yredump-isos by NvrBst ///////
 
 #ifndef NOSSL
 	// Gather some path information to check if encryption makes sense, and help us find the dkey if so.
-	char *path_ps3iso_loc = strstr(path, "PS3ISO");
+	char *path_ps3iso_loc = strstr((const char*)path, "PS3ISO");
 	if (path_ps3iso_loc == NULL)
-		path_ps3iso_loc = strstr(path, "ps3iso");
+		path_ps3iso_loc = strstr((const char*)path, "ps3iso");
 
 	char *path_ext_loc = NULL;
 	if (path_ps3iso_loc)
 	{
-		path_ext_loc = strstr(path + flen, ".iso");
+		path_ext_loc = strstr((const char*)(path + flen), ".iso");
 		if (path_ext_loc == NULL)
-			path_ext_loc = strstr(path + flen, ".ISO");
+			path_ext_loc = strstr((const char*)(path + flen), ".ISO");
 	}
 
 	// Encryption only makes sense for .iso or .ISO files in the .../PS3ISO/ folder so exit quick if req is is not related.
@@ -105,7 +105,7 @@ int File::open(const char *path, int flags)
 
 			is_multipart = 1; // count parts
 
-			for(uint8_t i = 1; i < 64; i++)
+			for(int i = 1; i < 64; i++)
 			{
 				filepath[flen + 4] = 0; sprintf(filepath, "%s.%i", filepath, i);
 
@@ -247,7 +247,9 @@ int File::close(void)
 	// close multi part isos (2015 AV)
 	for(uint8_t i = 1; i < 64; i++)
 	{
-		if(FD_OK(fp[i])) close_file(fp[i]); fp[i] = INVALID_FD;
+		if(FD_OK(fp[i])) close_file(fp[i]);
+
+		fp[i] = INVALID_FD;
 	}
 
 	is_multipart = index = 0;

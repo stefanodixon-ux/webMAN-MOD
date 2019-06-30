@@ -9,6 +9,7 @@
 // #include <string.h>
 // #include <cell/hash/libmd5.h>
 
+#define COBRA_ONLY
 #define _COBRA_C
 
 #include "cobra.h"

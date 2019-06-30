@@ -108,6 +108,8 @@ typedef struct
 	char firstfile_path[MAX_PATH];
 } __attribute__((packed)) sys_emu_state_t;
 
+#ifdef COBRA_ONLY
+
 static int sys_storage_ext_get_disc_type(unsigned int *real_disctype, unsigned int *effective_disctype, unsigned int *fake_disctype)
 {
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_DISC_TYPE, (uint64_t)(uint32_t)real_disctype, (uint64_t)(uint32_t)effective_disctype, (uint64_t)(uint32_t)fake_disctype);
@@ -295,6 +297,8 @@ static int sys_map_path(const char *oldpath, const char *newpath)
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MAP_PATHS, (uint64_t)(uint32_t)paths, (uint64_t)(uint32_t)new_paths, num);
 	return (int)p1;
 } */
+
+#endif //#ifdef COBRA_ONLY
 
 #ifdef __cplusplus
 }

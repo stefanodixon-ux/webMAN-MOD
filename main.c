@@ -892,6 +892,8 @@ static u8 mount_unk = EMU_OFF;
 
 static void http_response(int conn_s, char *header, const char *url, int code, const char *msg)
 {
+	if(conn_s == (int)WM_FILE_REQUEST) return;
+
 	u16 slen; *header = NULL;
 
 	if(code == CODE_VIRTUALPAD || code == CODE_GOBACK || code == CODE_CLOSE_BROWSER)
@@ -1739,16 +1741,6 @@ parse_request:
 											  "<a href=\"%s\" target=\"_parent\" style=\"text-decoration:none;\">"
 											  "<font color=\"#fff\">%s</a>",
 											  "/cpursx_ps3", HTML_BODY, "/cpursx.ps3", cpursx);
- #ifndef EMBED_JS
-				if(css_exists)
-				{
-					sprintf(buffer + buf_len, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS);
-				}
-				if(common_js_exists)
-				{
-					sprintf(buffer + buf_len, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS);
-				}
- #endif
 				buf_len = sprintf(header, HTML_RESPONSE_FMT,
 										  CODE_HTTP_OK, "/cpursx_ps3", HTML_HEADER, buffer, HTML_BODY_END);
 
@@ -3075,7 +3067,8 @@ retry_response:
 
 				if(mount_ps3 && IS_INGAME) {mount_ps3 = false, forced_mount = true, param[6] = '.';}
 
-				sbuffer.size = prepare_html(buffer, templn, param, is_ps3_http, is_cpursx, mount_ps3);
+				if(conn_s != (int)WM_FILE_REQUEST)
+					sbuffer.size = prepare_html(buffer, templn, param, is_ps3_http, is_cpursx, mount_ps3);
 
 				char *pbuffer = buffer + sbuffer.size;
 
@@ -3090,7 +3083,7 @@ retry_response:
 					//CellGcmConfig config; cellGcmGetConfiguration(&config);
 					//sprintf(templn, "localAddr: %x", (u32) config.localAddress); _concat(&sbuffer, templn);
 				}
-				else if(webman_config->sman || strstr(param, "/sman.ps3")) ;
+				else if(webman_config->sman || (conn_s == (int)WM_FILE_REQUEST) || strstr(param, "/sman.ps3")) ;
 				else if(!mount_ps3)
 				{
 					{

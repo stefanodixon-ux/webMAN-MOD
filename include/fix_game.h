@@ -334,6 +334,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 				if(lba)
 				{
 					lba*=0x800ULL, fix_sfo = false;
+
 					cellFsLseek(fd, lba, CELL_FS_SEEK_SET, &bytes_read);
 					cellFsRead(fd, (void *)&chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 
@@ -388,6 +389,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 						if(IS_EBOOT) fix_eboot = false;
 
 						lba *= 0x800ULL;
+
 						cellFsLseek(fd, lba, CELL_FS_SEEK_SET, &bytes_read);
 						cellFsRead(fd, (void *)&chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 

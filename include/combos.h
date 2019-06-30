@@ -705,9 +705,11 @@
 							working = 0;
 							{ del_turnoff(2); } // 2 beeps
 
+#ifdef COBRA_ONLY
 							if(is_mamba)
 								vsh_reboot();
 							else
+#endif
 								{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);}
 
 							sys_ppu_thread_exit(0);

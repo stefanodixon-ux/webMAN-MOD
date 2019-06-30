@@ -29,7 +29,7 @@ static const int NONE		= -1;
 #define IS_RANGE(a, b, c) (((a) >= (b)) && ((a) <= (c)))
 #define IS_PARENT_DIR(a)  ((a[0] == '.') && ((a[1] == 0) || ((a[1] == '.') && (a[2] == 0))))
 
-#define MERGE_DRIVES 1
+//#define MERGE_DRIVES 1
 
 enum
 {
@@ -1569,7 +1569,7 @@ int main(int argc, char *argv[])
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
 #endif
 
-	printf("ps3netsrv build 20190628");
+	printf("ps3netsrv build 20190630");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
