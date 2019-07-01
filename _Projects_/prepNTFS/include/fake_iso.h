@@ -261,7 +261,7 @@ static int build_fake_iso(char *iso_path, char *src_path, int ioType, char *file
 
 
 				memcpy(plugin_args + sizeof(rawseciso_args), sections, parts * sizeof(uint32_t) + 0x200);
-				memcpy(plugin_args + sizeof(rawseciso_args) + (parts*sizeof(uint32_t) + 0x200), sections_size, parts * sizeof(uint32_t));
+				memcpy(plugin_args + sizeof(rawseciso_args) + (parts * sizeof(uint32_t) + 0x200), sections_size, parts * sizeof(uint32_t));
 
 				// save sectors file
 				iso_path[iso_path_len] = 0; strcat(iso_path, file_ext);

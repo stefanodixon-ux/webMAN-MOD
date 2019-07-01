@@ -65,22 +65,22 @@ int File::open(const char *path, int flags)
 	if(flen < 0)
 		flen = is_multipart = 0;
 	else
-		is_multipart = (strstr((const char*)(path + flen), ".iso.0") != NULL) || (strstr((const char*)(path + flen), ".ISO.0") != NULL);
+		is_multipart = (strstr((char *)(path + flen), (char *)".iso.0") != NULL) || (strstr((char *)(path + flen), (char *)".ISO.0") != NULL);
 
 	///// check path for encrypted-3k3yredump-isos by NvrBst ///////
 
 #ifndef NOSSL
 	// Gather some path information to check if encryption makes sense, and help us find the dkey if so.
-	char *path_ps3iso_loc = strstr((const char*)path, "PS3ISO");
+	char *path_ps3iso_loc = strstr((char *)path, (char *)"PS3ISO");
 	if (path_ps3iso_loc == NULL)
-		path_ps3iso_loc = strstr((const char*)path, "ps3iso");
+		path_ps3iso_loc = strstr((char *)path, (char *)"ps3iso");
 
 	char *path_ext_loc = NULL;
 	if (path_ps3iso_loc)
 	{
-		path_ext_loc = strstr((const char*)(path + flen), ".iso");
+		path_ext_loc = strstr((char *)(path + flen), (char *)".iso");
 		if (path_ext_loc == NULL)
-			path_ext_loc = strstr((const char*)(path + flen), ".ISO");
+			path_ext_loc = strstr((char *)(path + flen), (char *)".ISO");
 	}
 
 	// Encryption only makes sense for .iso or .ISO files in the .../PS3ISO/ folder so exit quick if req is is not related.
