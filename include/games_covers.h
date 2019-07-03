@@ -67,6 +67,8 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	if((flen > 2) && name[flen - 2] == '.' ) {flen -= 2; name[flen] = NULL;} // remove file extension (split iso)
 	if((flen > 4) && name[flen - 4] == '.' ) {flen -= 4; name[flen] = NULL;} // remove file extension
 	else
+	if((flen > 3) && name[flen - 3] == '.' ) {flen -= 3; name[flen] = NULL;} // remove file extension for roms (.gb .gg .vb)
+	else
 	if(strstr(filename + pos, ".ntfs["))
 	{
 		while(name[flen] != '.') flen--; name[flen] = NULL; pos = flen - 4;
@@ -220,8 +222,10 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 				if(flen > 12 && icon[flen-12] == '.' &&  !extcmp(icon, ".ntfs[BDISO]" , 12)) flen -= 12;
 			}
 #endif
-			if(flen > 2 && icon[flen-2] == '.') flen -= 2; // remove file extension (split iso)
-			if(flen > 4 && icon[flen-4] == '.') flen -= 4; // remove file extension
+			if(flen > 2 && icon[flen - 2] == '.') flen -= 2; // remove file extension (split iso)
+			if(flen > 4 && icon[flen - 4] == '.') flen -= 4; // remove file extension
+			else					   
+			if(flen > 3 && icon[flen - 3] == '.') flen -= 3; // remove file extension for roms (.gb .gg .vb)
 
 			// get covers from iso folder
 			if((f0 < 7 || f0 > NTFS) || (f0 == NTFS && (webman_config->nocov == SHOW_ICON0)))
@@ -298,6 +302,8 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 
 	if((flen > 2) && icon[flen - 2] == '.' ) {flen -= 2, icon[flen] = NULL;} // remove file extension (split iso)
 	if((flen > 4) && icon[flen - 4] == '.' ) {flen -= 4, icon[flen] = NULL;} // remove file extension
+	else
+	if((flen > 3) && icon[flen - 3] == '.' ) {flen -= 3, icon[flen] = NULL;} // remove file extension
 
 	//file name + ext
 	if(get_image_file(icon, flen)) return;

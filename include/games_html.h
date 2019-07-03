@@ -305,11 +305,11 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 {
 #if defined(COBRA_ONLY) || defined(MOUNT_ROMS)
-	char *ext = entry_name + flen - 4;
+	char *ext = entry_name + flen - 4; if(ext[1] == '.') ++ext;
 #endif
 #ifdef MOUNT_ROMS
 	if(IS_ROMS_FOLDER)
-		return (flen > 4) && (strcasestr(ROMS_EXTENSIONS, ext) != NULL);
+		return (flen > 4) && (*ext == '.') && (strcasestr(ROMS_EXTENSIONS, ext) != NULL);
 	else
 #endif
 #ifdef COBRA_ONLY
