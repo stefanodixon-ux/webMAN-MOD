@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.24.6 MOD"
+#define WM_VERSION			"1.47.24.7 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -3775,6 +3775,9 @@ retry_response:
 									focus_first_item();
 								else
  #endif
+								if(webman_config->ps2l && !extcmp(param, ".BIN.ENC", 8))
+									focus_first_item();
+								else 
 									explore_close_all(param);
 							}
 						}

@@ -44,6 +44,30 @@ static inline void copy_ps2icon(char *temp, const char *_path)
 		_file_copy(temp, (char*)PS2_CLASSIC_ISO_ICON);
 	else
 		_file_copy((char*)(PS2_CLASSIC_ISO_ICON ".bak"), (char*)PS2_CLASSIC_ISO_ICON);
+
+	char pic[64];
+	sprintf(temp, "%s/PIC1.PNG.bak", PS2_CLASSIC_LAUCHER_DIR);
+	if(file_exists(temp) == false)
+	{
+		sprintf(pic, "%s.PIC1.PNG", PS2_CLASSIC_LAUCHER_DIR);
+		_file_copy(pic, temp);
+	}
+
+	for(u8 i = 1; i <= 2; i++)
+	{
+		sprintf(temp, "%s.PIC%i.PNG", _path, i);
+		if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".PIC%i.PNG", i); // remove .BIN.ENC
+
+		sprintf(pic, "%s/PIC%i.PNG", PS2_CLASSIC_LAUCHER_DIR, i);
+		cellFsUnlink(pic);
+		if(file_exists(temp))
+			_file_copy(temp, pic);
+		else if(i == 1)
+		{
+			sprintf(temp, "%s/PIC1.PNG.bak", PS2_CLASSIC_LAUCHER_DIR);
+			_file_copy(temp, pic);
+		}
+	}
 }
 
 static void get_ps_titleid_from_path(char *title_id, const char *_path)
@@ -106,7 +130,7 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 
 static inline void copy_ps2config(char *temp, const char *_path)
 {
-	size_t len = sprintf(temp, "%s.CONFIG", _path);
+	size_t len = sprintf(temp, "%s.CONFIG", _path); // <name>.BIN.ENC.CONFIG
 	if(file_exists(temp) == false && len > 15) strcpy(temp + len - 15, ".CONFIG\0"); // remove .BIN.ENC
 	if(file_exists(temp) == false)
 	{
@@ -124,6 +148,37 @@ static inline void copy_ps2config(char *temp, const char *_path)
 
 	cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
 	_file_copy(temp, (char*)PS2_CLASSIC_ISO_CONFIG);
+}
+
+static inline void copy_ps2savedata(char *temp, const char *_path)
+{
+	char savedata_vme[64], savedata_bak[64];
+
+	for(u8 len, i = 0; i < 2; i++)
+	{
+		len = sprintf(temp, "%s.SCEVMC%i.VME", _path, i); // <name>.BIN.ENC.SCEVMC0.VME
+		if(file_exists(temp) == false && len > 20) sprintf(temp + len - 20, ".SCEVMC%i.VME", i); // remove .BIN.ENC
+
+		for(u8 v = 0; v < 2; v++)
+		{
+			if(v)
+				sprintf(savedata_vme, "%s/SCEVMC%i.VME", "/dev_hdd0/savedata/vmc", i);
+			else
+				sprintf(savedata_vme, "%s/SAVEDATA/SCEVMC%i.VME", PS2_CLASSIC_PLACEHOLDER, i);
+
+			sprintf(savedata_bak, "%s.bak", savedata_vme);
+			if(file_exists(temp))
+			{
+				cellFsRename(savedata_vme, savedata_bak); // backup default vme
+				_file_copy(temp, savedata_vme);
+			}
+			else if(file_exists(savedata_bak))
+			{
+				cellFsUnlink(savedata_vme);
+				cellFsRename(savedata_bak, savedata_vme); // restore backup vme
+			}
+		}
+	}
 }
 
 #ifndef LITE_EDITION

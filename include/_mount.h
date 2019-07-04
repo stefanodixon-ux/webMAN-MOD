@@ -55,7 +55,7 @@ static void auto_play(char *param)
 #ifdef OFFLINE_INGAME
 	if((strstr(param, OFFLINE_TAG) != NULL)) net_status = 0;
 #endif
-	if(IS_ON_XMB && (extcmp(param, ".BIN.ENC", 8) != 0))
+	if(IS_ON_XMB)
 	{
 		u8 autoplay = webman_config->autoplay;
 
@@ -69,11 +69,14 @@ static void auto_play(char *param)
 
  #if defined(FAKEISO) || defined(PKG_LAUNCHER)
 		int view = View_Find("explore_plugin");
-		if(view) explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
+		if(view) 
+			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
+		else
+			return;
 
 		if(!l2 && strstr(param, "/PSPISO"))
 		{
-			if(!(webman_config->nogrp) && webman_config->pspl && (view != 0) && (strstr(param, "_ps3") != NULL) && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
+			if(XMB_GROUPS && webman_config->pspl && (strstr(param, "_ps3") != NULL) && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
 				if(explore_exec_push(250000, true))	// move to psp_launcher folder and open it
 				if(autoplay && !explore_exec_push(500000, false))	// start psp_launcher
@@ -85,7 +88,7 @@ static void auto_play(char *param)
  #ifdef PKG_LAUNCHER
 		if(strstr(param, "/GAMEI/"))
 		{
-			if(!(webman_config->nogrp) && webman_config->ps3l && (view != 0))
+			if(XMB_GROUPS && webman_config->ps3l)
 			{
 				explore_interface->ExecXMBcommand("focus_index pkg_launcher", 0, 0);
 				explore_exec_push(200000, true); // open pkg_launcher folder
@@ -96,7 +99,7 @@ static void auto_play(char *param)
  #ifdef FAKEISO
 		if(!l2 && !extcmp(param, ".ntfs[BDFILE]", 13))
 		{
-			if(!(webman_config->nogrp) && webman_config->rxvid && (view != 0))
+			if(XMB_GROUPS && webman_config->rxvid)
 			{
 				if(strcasestr(param, ".pkg"))
 				{

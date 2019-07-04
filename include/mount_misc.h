@@ -96,10 +96,12 @@
 
 				copy_ps2config(temp, _path);
 
+				copy_ps2savedata(temp, _path);
+
 				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
-				save_file(WMNOSCAN, NULL, 0);
+				save_file(WMNOSCAN, NULL, 0); ret = true;
 
 				sprintf(temp, "\"%s\" %s", strrchr(_path, '/') + 1, STR_LOADED2);
 			}
