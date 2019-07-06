@@ -29,42 +29,48 @@ static void enable_ps2netemu_cobra(int param)
 #endif
 
 // called from mount_misc.h
-static inline void copy_ps2icon(char *temp, const char *_path)
+static void copy_ps2icon(char *temp, const char *_path)
 {
-	if(file_exists(PS2_CLASSIC_ISO_ICON ".bak") == false)
-		_file_copy((char*)PS2_CLASSIC_ISO_ICON, (char*)(PS2_CLASSIC_ISO_ICON ".bak"));
+	char pic[64]; sprintf(pic, PS2_CLASSIC_ISO_ICON);
+	sprintf(temp, "%s.bak", PS2_CLASSIC_ISO_ICON);
 
-	size_t len = sprintf(temp, "%s.png", _path);
-	if(file_exists(temp) == false) sprintf(temp, "%s.PNG", _path);
-	if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".png"); // remove .BIN.ENC
-	if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".PNG");
-
-	cellFsUnlink(PS2_CLASSIC_ISO_ICON);
-	if(file_exists(temp))
-		_file_copy(temp, (char*)PS2_CLASSIC_ISO_ICON);
-	else
-		_file_copy((char*)(PS2_CLASSIC_ISO_ICON ".bak"), (char*)PS2_CLASSIC_ISO_ICON);
-
-	char pic[64];
-	sprintf(temp, "%s/PIC1.PNG.bak", PS2_CLASSIC_LAUCHER_DIR);
 	if(file_exists(temp) == false)
-	{
-		sprintf(pic, "%s.PIC1.PNG", PS2_CLASSIC_LAUCHER_DIR);
 		_file_copy(pic, temp);
-	}
 
-	for(u8 i = 1; i <= 2; i++)
+	int len = sprintf(temp, "%s.png", _path); len -= 12;
+	if(file_exists(temp) == false) sprintf(temp, "%s.PNG", _path);
+	if(file_exists(temp) == false && (len > 0)) sprintf(temp + len, ".png"); // remove .BIN.ENC
+	if(file_exists(temp) == false && (len > 0)) sprintf(temp + len, ".PNG");
+
+	if(file_exists(temp))
+		cellFsUnlink(pic);
+	else
+		sprintf(temp, "%s.bak", PS2_CLASSIC_ISO_ICON);
+
+	_file_copy(temp, pic);
+
+	for(u8 i = 0; i <= 2; i++)
 	{
-		sprintf(temp, "%s.PIC%i.PNG", _path, i);
-		if(file_exists(temp) == false && len > 12) sprintf(temp + len - 12, ".PIC%i.PNG", i); // remove .BIN.ENC
+		// backup original picture
+		sprintf(temp, "%s/PIC%i.PNG.bak", PS2_CLASSIC_LAUCHER_DIR, i);
+		if(file_exists(temp) == false)
+		{
+			sprintf(pic, "%s.PIC%i.PNG", PS2_CLASSIC_LAUCHER_DIR, i);
+			_file_copy(pic, temp);
+		}
 
+		// get game picture from /PS2ISO
+		sprintf(temp, "%s.PIC%i.PNG", _path, i);
+		if(file_exists(temp) == false && (len > 0)) sprintf(temp + len, ".PIC%i.PNG", i); // remove .BIN.ENC
+
+		// replace picture in PS2 Classic Launcher
 		sprintf(pic, "%s/PIC%i.PNG", PS2_CLASSIC_LAUCHER_DIR, i);
 		cellFsUnlink(pic);
 		if(file_exists(temp))
 			_file_copy(temp, pic);
-		else if(i == 1)
+		else if(i <= 1)
 		{
-			sprintf(temp, "%s/PIC1.PNG.bak", PS2_CLASSIC_LAUCHER_DIR);
+			sprintf(temp, "%s/PIC%i.PNG.bak", PS2_CLASSIC_LAUCHER_DIR, i); // restore original
 			_file_copy(temp, pic);
 		}
 	}
@@ -95,18 +101,12 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 		}
 	}
 
-	// SLES 5052 games
-	// SLUS 2325 games
-	// SLPS 2119 games
-	// SLPM 3488 games
-	// SLKA  481 games
-	// SLAJ  175 games
-
-	// SCES 5003 games
-	// SCPS  735 games
-	// SCUS  604 games
-	// SCAJ  397 games
-	// SCKA  151 games
+	// SLES 5052 games		// SCES 5003 games
+	// SLUS 2325 games		// SCUS  604 games
+	// SLPS 2119 games		// SCPS  735 games
+	// SLPM 3488 games		// SCPM  ??? games
+	// SLKA  481 games		// SCKA  151 games
+	// SLAJ  175 games		// SCAJ  397 games
 
 	// TCPS  178 games
 
@@ -114,9 +114,11 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 	if(!game_id)
 		game_id = strstr(path, "SC"); // 6890 games SCES/SCUS/SCPS/SCAJ/SCKA
 	if(!game_id)
-		game_id = strstr(path, "TCPS"); // 178 games
+		game_id = strstr(path, "TC"); // 178 games TCPS/ ??? TCES
+	if(!game_id)
+		game_id = strstr(path, "TL"); // ??? games TLES
 
-	u16 len = 0; for(;game_id[len] && ++len < 12;);
+	u16 len = 0; if(game_id) while(game_id[len] && ++len < 12);
 
 	if(!game_id || len < 9 || game_id[5] < '0' || game_id[5] > '9' || !strchr("EUPKA", game_id[2]))
 		*title_id = NULL;
@@ -128,7 +130,7 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 		sprintf(title_id, "%.9s", game_id); // SLxS00000
 }
 
-static inline void copy_ps2config(char *temp, const char *_path)
+static void copy_ps2config(char *temp, const char *_path)
 {
 	size_t len = sprintf(temp, "%s.CONFIG", _path); // <name>.BIN.ENC.CONFIG
 	if(file_exists(temp) == false && len > 15) strcpy(temp + len - 15, ".CONFIG\0"); // remove .BIN.ENC
@@ -150,7 +152,7 @@ static inline void copy_ps2config(char *temp, const char *_path)
 	_file_copy(temp, (char*)PS2_CLASSIC_ISO_CONFIG);
 }
 
-static inline void copy_ps2savedata(char *temp, const char *_path)
+static void copy_ps2savedata(char *temp, const char *_path)
 {
 	char savedata_vme[64], savedata_bak[64];
 
@@ -177,6 +179,11 @@ static inline void copy_ps2savedata(char *temp, const char *_path)
 				cellFsUnlink(savedata_vme);
 				cellFsRename(savedata_bak, savedata_vme); // restore backup vme
 			}
+
+			len = sprintf(temp, "%s", savedata_vme); temp[len - 5] = '1' - i;
+
+			if(file_exists(temp) == false)
+				_file_copy(savedata_vme, temp);
 		}
 	}
 }

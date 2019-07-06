@@ -17,43 +17,43 @@
 #define ENABLE_SC8		(3)
 #define PS2_MODE_OFF	(4)
 
-#define SET_PS2_MODE	(1)
-#define SYSCON_MODE		(0)
+#define SET_PS2_MODE	(0)
+#define SYSCON_MODE		(1)
+#define MANUAL_MODE		(2)
 
 static u8 fan_speed = 0x33;
 static u8 old_fan = 0x33;
-static u32 max_temp = 0; //syscon
+static u8 max_temp = 0; //syscon
 
-#define SC_SET_FAN_POLICY				(389)
-#define SC_GET_FAN_POLICY				(409)
-#define SC_GET_TEMPERATURE				(383)
+#define SC_SET_FAN_POLICY		(389)
+#define SC_GET_FAN_POLICY		(409)
+#define SC_GET_TEMPERATURE		(383)
 
-u64 get_fan_policy_offset = 0;
-u64 set_fan_policy_offset = 0;
+u64 get_fan_policy_offset  = 0;
+u64 set_fan_policy_offset  = 0;
+u64 restore_set_fan_policy = 0; // set in main.c
 
 static bool fan_ps2_mode = false; // temporary disable dynamic fan control
 
-static void get_temperature(u32 _dev, u32 *_temp)
+static void get_temperature(u32 _dev, u8 *temp)
 {
-	system_call_2(SC_GET_TEMPERATURE, (u64)(u32) _dev, (u64)(u32) _temp); *_temp >>= 24; // return °C
+	u32 _temp;
+	system_call_2(SC_GET_TEMPERATURE, (u64)(u32) _dev, (u64)(u32)&_temp); *temp = _temp >> 24; // return °C
 }
 
-static int sys_sm_set_fan_policy(u8 unknown , u8 fan_mode, u8 fan_speed)
+static void sys_sm_set_fan_policy(u8 unknown , u8 fan_mode, u8 fan_speed)
 {
 	// syscon mode: 0, 1, 0x0
 	// manual mode: 0, 2, fan_speed (0x33 - 0xFF)
 
-	u64 restore_set_fan_policy = peekq(set_fan_policy_offset); // sys 389 get_fan_policy
 	u64 enable_set_fan_policy = 0x3860000100000000ULL | (restore_set_fan_policy & 0xffffffffULL);
 
 	lv2_poke_fan(set_fan_policy_offset, enable_set_fan_policy);
 	system_call_3(SC_SET_FAN_POLICY, (u64) unknown, (u64) fan_mode, (u64) fan_speed);
-	lv2_poke_fan(set_fan_policy_offset, restore_set_fan_policy);
-
-	return_to_user_prog(int);
+	if(fan_mode == SYSCON_MODE || payload_ps3hen) lv2_poke_fan(set_fan_policy_offset, restore_set_fan_policy);
 }
 
-static int sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknown)
+static void sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknown)
 {
 	u64 restore_get_fan_policy = peekq(get_fan_policy_offset); // sys 409 get_fan_policy
 	u64 enable_get_fan_policy = 0x3860000100000000ULL | (restore_get_fan_policy & 0xffffffffULL);
@@ -61,8 +61,6 @@ static int sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknown
 	lv2_poke_fan(get_fan_policy_offset, enable_get_fan_policy);
 	system_call_5(SC_GET_FAN_POLICY, (u64) id, (u64)(u32) st, (u64)(u32) mode, (u64)(u32) speed, (u64)(u32) unknown);
 	lv2_poke_fan(get_fan_policy_offset, restore_get_fan_policy);
-
-	return_to_user_prog(int);
 }
 
 static void set_fan_speed(u8 new_fan_speed)
@@ -86,13 +84,13 @@ static void set_fan_speed(u8 new_fan_speed)
 			fan_speed = RANGE(new_fan_speed, min_fan_speed , 0xFC);
 
 		old_fan = fan_speed;
-		sys_sm_set_fan_policy(0, 2, fan_speed);
+		sys_sm_set_fan_policy(0, MANUAL_MODE, fan_speed);
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
 }
 
-static void restore_fan(u8 set_ps2_temp)
+static void restore_fan(u8 set_syscon_mode)
 {
 	if(get_fan_policy_offset > 0)
 	{
@@ -102,13 +100,14 @@ static void restore_fan(u8 set_ps2_temp)
 
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
-		if(set_ps2_temp)
+		if(set_syscon_mode)
+			sys_sm_set_fan_policy(0, SYSCON_MODE, 0); //syscon
+		else
 		{
-			webman_config->ps2_rate = RANGE(webman_config->ps2_rate, 20, 99); //%
-			sys_sm_set_fan_policy(0, 2, PERCENT_TO_8BIT(webman_config->ps2_rate));
+			webman_config->ps2_rate = RANGE(webman_config->ps2_rate, MIN_FANSPEED, 99); //%
+			sys_sm_set_fan_policy(0, MANUAL_MODE, PERCENT_TO_8BIT(webman_config->ps2_rate)); // PS2_MODE
 			fan_ps2_mode = true;
 		}
-		else sys_sm_set_fan_policy(0, 1, 0); //syscon
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}

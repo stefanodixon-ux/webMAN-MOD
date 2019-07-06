@@ -1220,8 +1220,8 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else if(_IS(cmd, "GETTEMP"))
 					{
-						u32 cpu_temp = 0;
-						u32 rsx_temp = 0;
+						u8 cpu_temp = 0;
+						u8 rsx_temp = 0;
 						get_temperature(0, &cpu_temp);
 						get_temperature(1, &rsx_temp);
 						sprintf(buffer, "200 %i|%i\r\n", cpu_temp, rsx_temp);

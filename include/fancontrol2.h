@@ -122,7 +122,7 @@
 			get_temperature(0, &t1); // CPU
 			get_temperature(1, &t2); // RSX
 
-			u32 t = t1; if(t2 > t) t = t2;
+			u8 t = t1; if(t2 > t) t = t2;
 
 			if(t > (MAX_TEMPERATURE - 2))
 			{

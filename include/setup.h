@@ -874,7 +874,7 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item(3, "3 - fg",     (value == 3), buffer);
 	add_option_item(2, "2 - debug",  (value == 2), buffer);
 	add_option_item(1, "1 - app"  ,  (value == 1), buffer);
-	concat(buffer, "</select><br>");
+	concat(buffer, "</select><p>");
 
 
 #ifndef LITE_EDITION
@@ -1216,6 +1216,8 @@ static void read_settings(void)
 	webman_config->dyn_temp = MY_TEMP; //°C target temperature for dynamic fan control
 	webman_config->man_rate = 35;      //% manual fan speed
 	webman_config->ps2_rate = 40;      //% ps2 fan speed
+
+	if(payload_ps3hen) webman_config->man_speed = 0x5A; // ps3hen default is 35% manual
 
 	webman_config->minfan = DEFAULT_MIN_FANSPEED; // %
 

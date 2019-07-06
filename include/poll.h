@@ -77,7 +77,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 	u8 sec = 0;
 
 	// fancontrol2.h
-	u32 t1 = 0, t2 = 0;
+	u8 t1 = 0, t2 = 0;
 	u8 lasttemp = 0;
 	const u8 step = 3; // polling every 3 seconds
 	const u8 step_up = 5;

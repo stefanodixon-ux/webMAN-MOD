@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.24.7 MOD"
+#define WM_VERSION			"1.47.24.8 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -985,7 +985,7 @@ static void restore_settings(void)
 
 	if(webman_config->fanc == DISABLED || webman_config->man_speed == FAN_AUTO)
 	{
-		bool set_ps2mode = (webman_config->fanc == ENABLED) && (webman_config->ps2_rate >= 33);
+		bool set_ps2mode = (webman_config->fanc == ENABLED) && (webman_config->ps2_rate >= MIN_FANSPEED);
 
 		if(set_ps2mode)
 			restore_fan(SET_PS2_MODE); //set ps2 fan control mode
@@ -4117,6 +4117,8 @@ int wwwd_start(size_t args, void *argp)
 	cellRtcGetCurrentTick(&rTick); gTick = rTick;
 
 	detect_firmware();
+
+	if(set_fan_policy_offset) restore_set_fan_policy = peekq(set_fan_policy_offset); // sys 389 get_fan_policy
 
 #ifdef PS3MAPI
  #ifdef REMOVE_SYSCALLS

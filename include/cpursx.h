@@ -123,7 +123,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 {
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
-	u32 t1 = 0, t2 = 0, t1f, t2f;
+	u8 t1 = 0, t2 = 0, t1f, t2f;
 	get_temperature(0, &t1); // CPU // 3E030000 -> 3E.03°C -> 62.(03/256)°C
 	get_temperature(1, &t2); // RSX
 
@@ -364,7 +364,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 static void get_cpursx(char *cpursx)
 {
-	u32 t1 = 0, t2 = 0;
+	u8 t1 = 0, t2 = 0;
 	get_temperature(0, &t1); // CPU // 3E030000 -> 3E.03°C -> 62.(03/256)°C
 	get_temperature(1, &t2); // RSX
 
