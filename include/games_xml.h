@@ -1187,7 +1187,7 @@ save_xml:
 		_concat(&myxml, XML_HEADER);
 		_concat(&myxml, "<View id=\"seg_wm_rom_items\"><Attributes>");
 
-		#ifndef LITE_EDITION
+		#ifndef ENGLISH_ONLY
 		close_language(); lang_roms = 1;
 		#endif
 
@@ -1196,7 +1196,7 @@ save_xml:
 		{
 			if(roms_count[i])
 			{
-				#ifndef LITE_EDITION
+				#ifndef ENGLISH_ONLY
 				language(roms_path[i], tempstr, roms_path[i]);
 				#endif
 
@@ -1208,14 +1208,14 @@ save_xml:
 								roms_path[i],
 								covers_exist[7] ? "" : "_rsc",
 								covers_exist[7] ? WM_ICONS_PATH "/icon_wm_album_emu.png" : "item_tex_ps3util",
-								#ifndef LITE_EDITION
+								#ifndef ENGLISH_ONLY
 								fh ? tempstr : 
 								#endif
 								roms_path[i], roms_count[i], (roms_count[i] == 1) ? "ROM" : "ROMS"); _concat(&myxml, templn);
 			}
 		}
 
-		#ifndef LITE_EDITION
+		#ifndef ENGLISH_ONLY
 		close_language();
 		#endif
 

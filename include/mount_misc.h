@@ -24,6 +24,20 @@
  #endif
 
 	// ------------------
+	// mount NPDRM game
+	// ------------------
+	if(islike(_path, HDD0_GAME_DIR))
+	{
+		set_apphome(_path);
+
+		char col[8], seg[16]; *col = NULL, *seg = NULL; ret = isDir(_path);
+		if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(col, seg, true); ret = true;}
+
+		mount_unk = EMU_MAX;
+		goto exit_mount;
+	}
+
+	// ------------------
 	// mount ROMS game
 	// ------------------
  #ifdef MOUNT_ROMS
@@ -104,26 +118,6 @@
 
 		show_msg(temp);
 
-		if(ret & webman_config->autoplay)
-		{
-			if(explore_exec_push(250000, true))		// move to ps2_launcher folder and open it
-				explore_exec_push(500000, false);	// start ps2_launcher
-		}
-
-		goto exit_mount;
-	}
-
-	// ------------------
-	// mount NPDRM game
-	// ------------------
-	if(islike(_path, HDD0_GAME_DIR))
-	{
-		set_apphome(_path);
-
-		char col[8], seg[16]; *col = NULL, *seg = NULL; ret = isDir(_path);
-		if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(col, seg, true); ret = true;}
-
-		mount_unk = EMU_MAX;
 		goto exit_mount;
 	}
 

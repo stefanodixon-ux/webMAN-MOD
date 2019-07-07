@@ -55,7 +55,7 @@ static void copy_ps2icon(char *temp, const char *_path)
 		sprintf(temp, "%s/PIC%i.PNG.bak", PS2_CLASSIC_LAUCHER_DIR, i);
 		if(file_exists(temp) == false)
 		{
-			sprintf(pic, "%s.PIC%i.PNG", PS2_CLASSIC_LAUCHER_DIR, i);
+			sprintf(pic, "%s/PIC%i.PNG", PS2_CLASSIC_LAUCHER_DIR, i);
 			_file_copy(pic, temp);
 		}
 
@@ -68,7 +68,7 @@ static void copy_ps2icon(char *temp, const char *_path)
 		cellFsUnlink(pic);
 		if(file_exists(temp))
 			_file_copy(temp, pic);
-		else if(i <= 1)
+		else
 		{
 			sprintf(temp, "%s/PIC%i.PNG.bak", PS2_CLASSIC_LAUCHER_DIR, i); // restore original
 			_file_copy(temp, pic);

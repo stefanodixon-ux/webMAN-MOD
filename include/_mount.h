@@ -67,16 +67,28 @@ static void auto_play(char *param)
 		bool l2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)));
  #endif
 
- #if defined(FAKEISO) || defined(PKG_LAUNCHER)
 		int view = View_Find("explore_plugin");
 		if(view) 
 			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
 		else
 			return;
 
+		bool mount_ps3 = (strstr(param, "_ps3") != NULL);
+
+		if(!l2 && !extcmp(param, ".BIN.ENC", 8))
+		{
+			if(mount_ps3 && XMB_GROUPS && webman_config->ps2l && file_exists(PS2_CLASSIC_ISO_PATH))
+			{
+				if(explore_exec_push(250000, true))	// move to ps2_launcher folder and open it
+				if(autoplay && !explore_exec_push(500000, false))	// start ps2_launcher
+					autoplay = false;
+			}
+		}
+		else
+ #if defined(FAKEISO) || defined(PKG_LAUNCHER)
 		if(!l2 && strstr(param, "/PSPISO"))
 		{
-			if(XMB_GROUPS && webman_config->pspl && (strstr(param, "_ps3") != NULL) && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
+			if(mount_ps3 && XMB_GROUPS && webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
 				if(explore_exec_push(250000, true))	// move to psp_launcher folder and open it
 				if(autoplay && !explore_exec_push(500000, false))	// start psp_launcher

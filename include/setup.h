@@ -209,7 +209,7 @@ static void setup_parse_settings(char *param)
 	webman_config->netsrvp = get_port(param, "netp=", NETPORT);
 
 #ifdef FIX_GAME
-	webman_config->fixgame = get_valuen(param, "fm=", 0, 2)
+	webman_config->fixgame = get_valuen(param, "fm=", 0, 2);
 	if(IS_MARKED("nf=1")) webman_config->fixgame = FIX_GAME_DISABLED;
 #endif
 
