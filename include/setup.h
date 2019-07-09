@@ -506,7 +506,7 @@ static void setup_form(char *buffer, char *templn)
 
 	//Scan these devices
 	if(!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb())
-		add_check_box("np", false, "/dev_hdd0/game", "</label><br>", (webman_config->npdrm), buffer);
+		add_check_box("np", false, "/dev_hdd0/game", _BR_, (webman_config->npdrm), buffer);
 	add_check_box("u0", false, drives[1], _BR_, (webman_config->usb0), buffer);
 	add_check_box("u1", false, drives[2], _BR_, (webman_config->usb1), buffer);
 	add_check_box("u2", false, drives[3], _BR_, (webman_config->usb2), buffer);
@@ -520,7 +520,7 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef USE_NTFS
 	concat(buffer, "<label title=\"internal prepNTFS\">");
-	add_check_box("xn", false, "/dev_ntfs", "</label><br>", (webman_config->ntfs), buffer);
+	add_check_box("xn", false, "/dev_ntfs", _BR_, (webman_config->ntfs), buffer);
 #endif
 
 	//Scan for content

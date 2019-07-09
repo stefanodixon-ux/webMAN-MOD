@@ -1,5 +1,5 @@
-#define ITEM_CHECKED			" checked"
-#define ITEM_SELECTED			" selected"
+#define ITEM_CHECKED			" checked=\"checked\""
+#define ITEM_SELECTED			" selected=\"selected\""
 
 #define IS_MARKED(key)			(strstr(param, key) != NULL)
 #define IS_UNMARKED(key)		!strstr(param, key)

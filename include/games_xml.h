@@ -226,6 +226,20 @@ static void set_buffer_sizes(u8 footprint)
 	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD);
 }
 
+static void add_custom_xml(t_string *myxml, char *custom_xml, char *query_xmb)
+{
+	for(u8 d = 1; d < 7; d++)
+	{
+		sprintf(custom_xml,  "%s/wm_custom.xml", drives[d]);
+		if(file_exists(custom_xml))
+		{
+			sprintf(query_xmb, QUERY_XMB2("wm_custom", "xmb://localhost%s#wm_root"), custom_xml);
+			_concat(myxml, query_xmb);
+			return;
+		}
+	}
+}
+
 static bool add_xmb_entry(u8 f0, u8 f1, int plen, const char *tempstr, char *templn, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u16 *item_count, u8 subfolder)
 {
 	set_sort_key(skey, templn, key, subfolder, f1);
@@ -390,7 +404,7 @@ scan_roms:
 	t_string myxml_ngp; _alloc(&myxml_ngp, (char*)sysmem_dvd);
 
 	// --- build group headers ---
-	char *tempstr, *folder_name, *url; tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB), url = sysmem_xml + _2KB_;
+	char *tempstr, *folder_name; tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB);
 
 	if( !scanning_roms && XMB_GROUPS )
 	{
@@ -863,8 +877,7 @@ continue_reading_folder_xml:
 	{
 		if(!add_xmbm_plus) _concat(&myxml_ngp, ADD_XMB_ITEM("eject"));
 
-		if(file_exists("/dev_usb000/wm_custom.xml"))
-			_concat(&myxml, QUERY_XMB2("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
+		add_custom_xml(&myxml, templn, tempstr);
 
 		if( ADD_SETUP )
 		{
@@ -1120,8 +1133,7 @@ continue_reading_folder_xml:
 		if(  c_roms                     ) _concat(&myxml, QUERY_XMB("wm_rom", "xmb://localhost" HTML_BASE_PATH "/ROMS.xml#seg_wm_rom_items"));
 		#endif
 	 #endif
-		if(file_exists("/dev_usb000/wm_custom.xml"))
-			_concat(&myxml, QUERY_XMB2("wm_custom", "xmb://localhost/dev_usb000/wm_custom.xml#wm_root"));
+		add_custom_xml(&myxml, templn, tempstr);
 		_concat(&myxml, "</Items></View>");
 	}
 

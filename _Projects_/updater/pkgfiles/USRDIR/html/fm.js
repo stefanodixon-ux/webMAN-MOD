@@ -63,7 +63,7 @@ window.addEventListener('contextmenu',function(e){
 
 	if(s)s.color='#ccc';
 	t=e.target,s=t.style,c=t.className,m=mnu.style;if(c=='gi'){p=t.parentNode.pathname}else{p=t.pathname}if(typeof(p)!='string')return;p=p.replace('/mount.ps3','');
-	if(c=='w'||c=='d'||c=='gi'||t.parentNode.className=='gn'){
+	if(c.charAt(0)=='w'||c=='w'||c=='d'||c=='gi'||t.parentNode.className=='gn'){
 		e.preventDefault();
 		s.color='#fff',b='block',n='none';
 		m.display=b;

@@ -342,18 +342,19 @@ size_t strcspn(const char *s1, const char *s2)
 	return ret;
 }
 
-int extcmp(const char *s1, const char *s2, size_t n);
-int extcmp(const char *s1, const char *s2, size_t n)
-{
-	size_t s = strlen(s1);
-	if(n > s) return -1;
-	return memcmp(s1 + (s - n), s2, n);
-}
-
 int extcasecmp(const char *s1, const char *s2, size_t n);
 int extcasecmp(const char *s1, const char *s2, size_t n)
 {
 	size_t s = strlen(s1);
 	if(n > s) return -1;
 	return strncasecmp(s1 + (s - n), s2, n);
+}
+
+int extcmp(const char *s1, const char *s2, size_t n);
+int extcmp(const char *s1, const char *s2, size_t n)
+{
+	size_t s = strlen(s1);
+	if(n > s) return -1;
+	if(n == 8 && !memcmp(s2, ".BIN.ENC", n)) return strncasecmp(s1 + (s - n), s2, n);
+	return memcmp(s1 + (s - n), s2, n);
 }

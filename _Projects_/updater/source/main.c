@@ -564,6 +564,10 @@ int main()
 	file_copy(APP_USRDIR "/icons/icon_wm_settings.png" , ICONS_DIR "/icon_wm_settings.png");
 	file_copy(APP_USRDIR "/icons/icon_wm_eject.png"    , ICONS_DIR "/icon_wm_eject.png"   );
 
+	file_copy(APP_USRDIR "/icons/video.png" , ICONS_DIR "/video.png");
+	file_copy(APP_USRDIR "/icons/photo.png" , ICONS_DIR "/photo.png");
+	file_copy(APP_USRDIR "/icons/music.png" , ICONS_DIR "/music.png");
+
 	if((sysLv2FsStat(APP_USRDIR "/multiman.png", &stat) == SUCCESS) && (stat.st_size == 9894))
 		file_copy(APP_USRDIR "/icons/icon_wm_root.png" , ICONS_DIR "/icon_wm_root.png"    );
 	else

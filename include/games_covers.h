@@ -34,9 +34,47 @@ static const char ext[4][5] = {".jpg\0", ".png\0", ".PNG\0", ".JPG\0"};
 
 static const char *cpath[6] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"};
 
+static bool wm_icons_exists = false;
+
 static bool HAS(char *icon)
 {
 	return ((*icon == 'h') || ((*icon == '/') && file_exists(icon) && (icon[strlen(icon) - 1] | 0x20) == 'g' ));
+}
+
+static void check_cover_folders(char *buffer)
+{
+#ifndef ENGLISH_ONLY
+													covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
+#endif
+		for(u8 p = 0; p < 6; p++)
+		{
+			sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
+		}
+													covers_exist[6] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
+
+#ifndef ENGLISH_ONLY
+	if(!covers_exist[0]) {use_custom_icon_path = strstr(COVERS_PATH, "%s"); use_icon_region = strstr(COVERS_PATH, "%s/%s");} else {use_icon_region = use_custom_icon_path = false;}
+
+	// disable custom icon from web repository if network is disabled //
+	if(use_custom_icon_path && islike(COVERS_PATH, "http"))
+	{
+		char ip[ip_size] = "";
+		netctl_main_9A528B81(ip_size, ip);
+		if(*ip == NULL) use_custom_icon_path = false;
+
+		is_xmbmods_server = islike(COVERS_PATH, LAUNCHPAD_COVER_SVR);
+	}
+#endif
+
+	wm_icons_exists = file_exists(WM_ICONS_PATH "/icon_wm_ps3.png");
+
+#ifdef MOUNT_ROMS
+	covers_exist[7] = file_exists(WM_ICONS_PATH "/icon_wm_album_emu.png");
+#endif
+
+#ifdef LAUNCHPAD
+	nocover_exists = file_exists(WM_ICONS_PATH "/icon_lp_nocover.png");
+#endif
 }
 
 static bool get_image_file(char *icon, int flen)
