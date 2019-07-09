@@ -582,7 +582,7 @@ int main()
 	// webMAN ADD-ONS
 	file_copy(APP_USRDIR "/addons/boot_mamba.pkg", RES_DIR "/boot_mamba.pkg");
 	file_copy(APP_USRDIR "/addons/prepNTFS.pkg", RES_DIR "/prepNTFS.pkg");
-	file_copy(APP_USRDIR "/addons/PS2_CONFIG.pkg", RES_DIR "/PS2_CONFIG.pkg");
+//	file_copy(APP_USRDIR "/addons/PS2_CONFIG.pkg", RES_DIR "/PS2_CONFIG.pkg");
 	file_copy(APP_USRDIR "/addons/PSP_Minis_Launcher.pkg", RES_DIR "/PSP_Minis_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/PSP_Remasters_Launcher.pkg"	, RES_DIR "/PSP_Remasters_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/Reload_XMB.pkg", RES_DIR "/Reload_XMB.pkg");
@@ -606,6 +606,9 @@ int main()
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/ENC", DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/SOFT", DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/CUSTOM", DMODE);
+
+		file_copy(APP_USRDIR "/CONFIG/ICON0.PNG", PS2CONFIG_DIR "/ICON0.PNG");
+		file_copy(APP_USRDIR "/CONFIG/PARAM.SFO", PS2CONFIG_DIR "/PARAM.SFO");
 
 		if(sysLv2FsOpenDir(APP_USRDIR "/CONFIG/GX", &fd) == SUCCESS)
 		{
