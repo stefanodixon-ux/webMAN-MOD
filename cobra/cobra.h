@@ -38,7 +38,7 @@ enum DiscType
 	DISC_TYPE_CD, /* Any kind of CD (ROM, CDDA, -R, -RW) that is not a PS game. No idea how to distinguish the type :) */
 	DISC_TYPE_UNKNOWN /* You shouldn't see this value. There is a posibility of this value to be reported on SCDA, since I don't have any, I haven't been able to verify */
 };
-
+/*
 enum BookType
 {
 	DVD_ROM,
@@ -58,14 +58,14 @@ enum BookType
 	DVD_PR_DL,
 	RESERVED4
 };
-
+*/
 enum PS2EmuType
 {
 	PS2_EMU_HW, // the so called "full" bc models, CECHA and CECHB
 	PS2_EMU_GX, // the so called partial bc models, CECHC and CECHE
 	PS2_EMU_SW, // the non bc models
 };
-
+/*
 enum DVDRegion
 {
 	DVD_VIDEO_REGION_1 = 1,
@@ -99,7 +99,7 @@ enum PSPEmu
 	EMU_355,
 	EMU_400
 };
-
+*/
 typedef struct
 {
 	uint32_t lba;

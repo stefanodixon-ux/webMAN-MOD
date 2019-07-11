@@ -795,7 +795,6 @@ int cobra_get_disc_type(unsigned int *real_disctype, unsigned int *effective_dis
 
 					default:
 						*iso_disctype = DISC_TYPE_UNKNOWN;
-
 				}
 			}
 		}
@@ -1630,7 +1629,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 		uint32_t header[0xD4/4];
 		if (read_file(umd_file, (char*)&header, sizeof(header), 0) == sizeof(header))
 		{
-			if (header[0] == 0x7E505350) /* "~PSP" */
+			if (header[0] == 0x7E505350) // "~PSP"
 			{
 				unsigned int i;
 
@@ -1802,7 +1801,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 				cellFsRead(fd, header, sizeof(header), &read);
 				if (read == sizeof(header))
 				{
-					if (header[0] == 0x7E505350)
+					if (header[0] == 0x7E505350) // "~PSP"
 					{
 						unsigned int i;
 
