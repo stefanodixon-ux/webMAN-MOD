@@ -87,9 +87,9 @@ static void eject_insert(u8 eject, u8 insert)
 	if(eject)
 	{
 		memset(atapi_cmnd, 0, 56);
-		atapi_cmnd[0x00] = 0x1b;
-		atapi_cmnd[0x01] = 0x01;
-		atapi_cmnd[0x04] = 0x02;
+		atapi_cmnd[0x00] = 0x1b; // OPERATION CODE (1Bh)
+		atapi_cmnd[0x01] = 0x01; // IMMED (Immediate) bit
+		atapi_cmnd[0x04] = 0x02; // LOEJ (2) + START (0) = Eject Disc
 		atapi_cmnd[0x23] = 0x0c;
 
 		// Eject disc
@@ -101,9 +101,9 @@ static void eject_insert(u8 eject, u8 insert)
 	if(insert)
 	{
 		memset(atapi_cmnd, 0, 56);
-		atapi_cmnd[0x00] = 0x1b;
-		atapi_cmnd[0x01] = 0x01;
-		atapi_cmnd[0x04] = 0x03;
+		atapi_cmnd[0x00] = 0x1b; // OPERATION CODE (1Bh)
+		atapi_cmnd[0x01] = 0x01; // IMMED (Immediate) bit
+		atapi_cmnd[0x04] = 0x03; // LOEJ (2) + START (1) = Load Disc
 		atapi_cmnd[0x23] = 0x0c;
 
 		// Insert disc

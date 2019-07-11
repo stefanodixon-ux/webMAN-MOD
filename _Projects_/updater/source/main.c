@@ -592,23 +592,23 @@ int main()
 	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_flowerification.pkg"	, RES_DIR "/wm_theme_flowerification.pkg");
 
+	sysLv2FsMkdir(PS2CONFIG_DIR, DMODE);
+	sysLv2FsMkdir(PS2CONFIG_USRDIR, DMODE);
+	file_copy(APP_USRDIR "/CONFIG/ICON0.PNG", PS2CONFIG_DIR "/ICON0.PNG");
+	file_copy(APP_USRDIR "/CONFIG/PARAM.SFO", PS2CONFIG_DIR "/PARAM.SFO");
+
 	if(sysLv2FsStat(PS2CONFIG_USRDIR "/CONFIG/ENC", &stat) != SUCCESS)
 	{
 		// copy PS2 CONFIG files
 		char path1[80], path2[80];
 		int fd; sysFSDirent dir; u64 read_e;
 
-		sysLv2FsMkdir(PS2CONFIG_DIR, DMODE);
-		sysLv2FsMkdir(PS2CONFIG_USRDIR, DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG", DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/GX", DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/NET", DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/ENC", DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/SOFT", DMODE);
 		sysLv2FsMkdir(PS2CONFIG_USRDIR "/CONFIG/CUSTOM", DMODE);
-
-		file_copy(APP_USRDIR "/CONFIG/ICON0.PNG", PS2CONFIG_DIR "/ICON0.PNG");
-		file_copy(APP_USRDIR "/CONFIG/PARAM.SFO", PS2CONFIG_DIR "/PARAM.SFO");
 
 		if(sysLv2FsOpenDir(APP_USRDIR "/CONFIG/GX", &fd) == SUCCESS)
 		{

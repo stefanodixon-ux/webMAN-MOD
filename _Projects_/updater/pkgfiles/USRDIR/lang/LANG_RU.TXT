@@ -84,7 +84,7 @@ STR_SETTINGSUPD		[Настройки изменены<hr/>Нажмите <a href
 STR_ERROR			[Ошибка!]
 
 STR_MYGAMES			[Игры]
-STR_LOADGAMES		[Управление играми через webMAN]
+STR_LOADGAMES		[Управление играми]
 STR_FIXING			[Исправление]
 
 STR_WMSETUP			[Инструменты webMAN]
