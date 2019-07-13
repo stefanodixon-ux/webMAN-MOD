@@ -558,7 +558,7 @@ next_part:
 					else
 						sprintf(file2 + flen - 2, "%02i", part);
 
-					part++; part_size = 0xFFFF0000ULL;
+					part++; part_size = 0xFFFF0000ULL; pos = 0;
 					goto next_part;
 				}
 				else
@@ -1028,7 +1028,7 @@ static bool do_custom_combo(const char *filename)
 
 	if(file_exists(combo_file))
 	{
-		_file_copy(combo_file, (char*)WMREQUEST_FILE);
+		_file_copy((char*)combo_file, (char*)WMREQUEST_FILE);
 
 		handle_file_request(NULL);
 		return true;

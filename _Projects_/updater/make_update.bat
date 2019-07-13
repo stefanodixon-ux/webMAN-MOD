@@ -12,5 +12,3 @@ set PKG_DIR=./update/
 set PKG_NAME=webMAN_MOD_latest.pkg
 
 make_package_custom.exe --contentid %CID% %PKG_DIR% %PKG_NAME%
-
-pause
