@@ -775,7 +775,7 @@ static void sys_get_cobra_version(void);
 
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
-static void _file_copy(const char *file1, char *file2);
+static void _file_copy(char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, char *param);
 
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
@@ -2660,14 +2660,14 @@ parse_request:
 				else
 				if(mode == 'h')
 					{system_call_3(SC_SYS_POWER, SYS_HARD_REBOOT, NULL, 0);} // hard reboot
-				else
-				if(mode == 'v' || is_restart)
-					vsh_reboot(); // VSH reboot
-				else
  #ifndef LITE_EDITION
+				else
 				if(mode == 'm')
 					reboot_show_min_version(""); // show min version
  #endif
+				else //if(mode == 'v' || is_restart)
+					vsh_reboot(); // VSH reboot
+
 				goto exit_handleclient_www;
 			}
 

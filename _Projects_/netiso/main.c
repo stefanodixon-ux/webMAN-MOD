@@ -418,13 +418,6 @@ static int process_read_cd_2352_cmd(uint8_t *buf, uint32_t sector, uint32_t rema
 	return 0;
 }
 
-int strncmp(const char *s1, const char *s2, size_t n)
-{
-	while((n > 0) && *s1 && (*s1==*s2)) {s1++, s2++, n--;} if(n == 0) return 0;
-
-	return *(const unsigned char*)s1-*(const unsigned char*)s2;
-}
-
 static int detect_cd_sector_size(char *buffer)
 {
 	uint16_t sec_size[7] = {2352, 2048, 2336, 2448, 2328, 2340, 2368};

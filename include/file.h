@@ -4,7 +4,7 @@
 
 #define NO_MSG							NULL
 
-int file_copy(const char *file1, char *file2, u64 maxbytes);
+int file_copy(char *file1, char *file2, u64 maxbytes);
 
 static bool copy_in_progress = false;
 static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
@@ -355,7 +355,7 @@ static int file_concat(const char *file1, char *file2)
 }
 */
 
-int file_copy(const char *file1, char *file2, u64 maxbytes)
+int file_copy(char *file1, char *file2, u64 maxbytes)
 {
 	struct CellFsStat buf, buf2;
 	int fd1, fd2;
@@ -401,12 +401,23 @@ int file_copy(const char *file1, char *file2, u64 maxbytes)
 		return FAILED;
 	}
 
+	u16 flen1 = 0;
+	bool check_666 = false;
+
 	if(islike(file2, "/dev_hdd0/"))
 	{
 		if(islike(file1, "/dev_hdd0/"))
 		{
 			cellFsUnlink(file2); copied_count++;
 			return sysLv2FsLink(file1, file2);
+		}
+		else
+			check_666 = islike(file1, "/dev_usb");
+
+		if(check_666)
+		{
+			flen1 = strlen(file1) - 6;
+			check_666 = islike(file1 + flen1, ".666"); if(check_666 && !islike(file1 + flen1, ".66600")) return 0;
 		}
 
 		if(buf.st_size > get_free_space("/dev_hdd0")) return FAILED;
@@ -429,6 +440,11 @@ int file_copy(const char *file1, char *file2, u64 maxbytes)
 		copied_count++;
 		return buf.st_size;
 	}
+
+	u64 pos = 0;
+	u8 merge_part = 0;
+
+merge_next:
 
 	if(is_ntfs1 || cellFsOpen(file1, CELL_FS_O_RDONLY, &fd1, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
@@ -453,7 +469,7 @@ int file_copy(const char *file1, char *file2, u64 maxbytes)
 				part++; part_size = 0xFFFF0000ULL; //4Gb - 64kb
 			}
 
-			u64 read = 0, written = 0, pos = 0;
+			u64 read = 0, written = 0;
 			char *chunk = (char*)sysmem;
 			u16 flen = strlen(file2);
 next_part:
@@ -510,6 +526,16 @@ next_part:
 					sys_ppu_thread_usleep(1000);
 				}
 
+				if(check_666 && !copy_aborted && (merge_part < 99)) 
+				{
+					sprintf(file1 + flen1, ".666%02i", ++merge_part);
+
+					if(file_exists(file1))
+					{
+						cellFsClose(fd1);
+						goto merge_next;
+					}
+				}
 
 #ifdef USE_NTFS
 				if(is_ntfs2) ps3ntfs_close(fd2);
@@ -527,19 +553,11 @@ next_part:
 				}
 				else if((part > 0) && (size > 0))
 				{
-					if(part < 10)
-						file2[flen-1] = '0' + part;
-					else if(file2[flen-2] == '.')
-					{
-						file2[flen-1] = '0' + (u8)(part / 10);
-						file2[flen  ] = '0' + (u8)(part % 10);
-						file2[flen+1] = 0;
-					}
+					if(file2[flen - 2] == '.')
+						sprintf(file2 + flen - 2, ".%i", part);
 					else
-					{
-						file2[flen-2] = '0' + (u8)(part / 10);
-						file2[flen-1] = '0' + (u8)(part % 10);
-					}
+						sprintf(file2 + flen - 2, "%02i", part);
+
 					part++; part_size = 0xFFFF0000ULL;
 					goto next_part;
 				}
@@ -553,7 +571,7 @@ next_part:
 		}
 
 #ifdef USE_NTFS
-		if(is_ntfs2) ps3ntfs_close(fd2);
+		if(is_ntfs1) ps3ntfs_close(fd1);
 		else
 #endif
 		cellFsClose(fd1);
@@ -562,7 +580,7 @@ next_part:
 	return ret;
 }
 
-static void _file_copy(const char *file1, char *file2)
+static void _file_copy(char *file1, char *file2)
 {
 	if(file_exists(file1) == false) return;
 	dont_copy_same_size = false; // force copy file with the same size than existing file

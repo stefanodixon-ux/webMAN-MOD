@@ -4,7 +4,7 @@ __README IS STILL IN PROGRESS, IF YOU SEE ANY ERROR PLEASE TELL ME OR PUSH A COM
 
 webMAN MOD is a homebrew plugin with many features added on the original webMAN/sMAN by Deank.
 
-Or goal was to create an AIO plugin all that integrates all existing features available on the PS3 Scene
+Our goal was to create an AIO plugin all that integrates all existing features available on the PS3 Scene
 in an intuitive way, and webMAN MOD was born.
 
 ## Current functionality
@@ -62,7 +62,7 @@ in an intuitive way, and webMAN MOD was born.
 - Support for user defined combos (pad shortcuts)
 - Enable screen capture on CFW that don't has the feature.
 - Enable selection of emulator for PS1 and PS2 on B/C consoles
-- Various improvements on File Manager (links to navigate faster, mount ISO, mount net0/ or net1/, preview images, copy/paste/delete files & folders)
+- Various improvements on File Manager (file & folder icons, links to navigate faster, mount ISO, mount net0/ or net1/, preview images, copy/paste/delete files & folders)
 - MIN+ memory profile (same as MIN but uses 512K and 2.5X more buffer for PS3 games)
 - MAX+ memory profile (same as MAX 1280K for PS3 games, others buffer is reduced, eg: 2X less buffer for ftp and 4X for DVD etc...)
 - Copy operations use shadow copy on hdd0 for faster copy operations
@@ -92,6 +92,7 @@ in an intuitive way, and webMAN MOD was born.
 - Support edition of small text files (<2KB) via web
 - Download files & install PKG remotely or with pad shortcuts
 - Support batch script automation at startup (boot_init.txt or autoexec.bat) or played at any time (/play.ps3/<script-file>.bat)
+- Use "home" path to define default path for /app_home/PS3_GAME on start up and for R2+START (e.g. make app_home start multiMAN or IRISMAN)
 
 ## How to build
 Requirements for Windows:

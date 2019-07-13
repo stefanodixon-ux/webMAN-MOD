@@ -1029,7 +1029,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
-			if(file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, _4KB_) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy((char*)"/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, _4KB_) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}
@@ -1040,7 +1040,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
-			if(file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy((char*)"/dev_bdvd/PS3_GAME/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}
