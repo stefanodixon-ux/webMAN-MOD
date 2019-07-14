@@ -9,6 +9,12 @@ static u32 in_cobra(u32 *mode)
 }
 */
 
+static s32 sys_sm_request_be_count(s32 *arg_1, s32 *total_time_in_sec, s32 *power_on_ctr, s32 *power_off_ctr)
+{
+	system_call_4(0x187, (u32)arg_1, (u32)total_time_in_sec, (u32)power_on_ctr, (u32)power_off_ctr);
+	return_to_user_prog(s32);
+}
+
 static void sys_get_cobra_version(void)
 {
 #ifdef COBRA_ONLY
@@ -294,11 +300,20 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	}
 	///////////////////////
 
+	// get runtime data by @3141card
+	int32_t arg_1, total_time_in_sec, power_on_ctr, power_off_ctr;
+	sys_sm_request_be_count(&arg_1, &total_time_in_sec, &power_on_ctr, &power_off_ctr);
+
 	//// startup time /////
-	ss = (u32)((pTick.tick - rTick.tick)/1000000);
+	ss = (u32)((pTick.tick - rTick.tick)/1000000); total_time_in_sec += ss;
 	dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
 	sprintf( templn, "<a href=\"/dev_hdd0/home/%08i\"><label title=\"Startup\">&#8986;</label> %id %02d:%02d:%02d</a>", xsetting_CC56EB2D()->GetCurrentUserNumber(), dd, hh, mm, ss); buffer += concat(buffer, templn);
 	///////////////////////
+
+	ss = (u32)total_time_in_sec;
+	dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+
+	sprintf(templn, "</font><H1>&#x26A1; %'id %02d:%02d:%02d • %'i ON • %'i OFF (%i)</H1>", dd, hh, mm, ss, power_on_ctr, power_off_ctr, power_on_ctr - power_off_ctr); buffer += concat(buffer, templn);
 
 	if(isDir("/dev_bdvd"))
 	{
@@ -319,7 +334,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		char net_type[8] = "", ip[ip_size] = "-";
 		get_net_info(net_type, ip);
 
-		sprintf(templn, "<hr></font><h2>"
+		sprintf(templn, "<hr><h2>"
 						"<input type=button onclick=\"document.getElementById('ht').style.display='block';\" value='&#x25BC;'> "
 						"<a class=\"s\" href=\"/setup.ps3\">"
 						"Firmware : %s %s<br>"
