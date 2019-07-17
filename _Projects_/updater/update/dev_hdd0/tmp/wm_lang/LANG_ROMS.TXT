@@ -1,5 +1,5 @@
 2048	[2048]
-MAME	[Arcade (MAME]
+MAME	[Arcade (MAME)]
 MAME078	[Arcade (MAME 0.78)]
 MAME2000	[Arcade (MAME 2000)]
 MAME2003	[Arcade (MAME 2003)]

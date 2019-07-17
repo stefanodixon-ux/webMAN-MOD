@@ -185,35 +185,42 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 			pos = strstr(param, "max=");
 			if(pos) 
 				max_temp = get_valuen(param, "max=", 40, MAX_TEMPERATURE);
-			else if(strstr(param, "?m"))
+			else 
 			{
-				if((max_temp && !strstr(param, "dyn")) || strstr(param, "man"))
-					max_temp = FAN_MANUAL;
-				else
-					max_temp = webman_config->dyn_temp;
+				pos = strstr(param, "?m");
+				if(pos)
+				{
+					if((max_temp && !strstr(param, "dyn")) || strstr(param, "man"))
+						max_temp = FAN_MANUAL;
+					else
+						max_temp = webman_config->dyn_temp;
 
-				if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);
+					if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);
+				}
 			}
 		}
 
-		if(max_temp) //auto mode
+		if(pos)
 		{
-			if(strstr(param, "?u")) max_temp++;
-			if(strstr(param, "?d")) max_temp--;
-			webman_config->dyn_temp = RANGE(max_temp, 40, MAX_TEMPERATURE); // dynamic fan max temperature in °C
-			webman_config->man_speed = FAN_AUTO;
+			if(max_temp) //auto mode
+			{
+				if(strstr(param, "?u")) max_temp++;
+				if(strstr(param, "?d")) max_temp--;
+				webman_config->dyn_temp = RANGE(max_temp, 40, MAX_TEMPERATURE); // dynamic fan max temperature in °C
+				webman_config->man_speed = FAN_AUTO;
 
-			fan_ps2_mode=false;
-		}
-		else
-		{
-			if(strstr(param, "?u")) webman_config->man_rate++;
-			if(strstr(param, "?d")) webman_config->man_rate--;
-			webman_config->man_rate = RANGE(webman_config->man_rate, 20, 95); //%
+				fan_ps2_mode=false;
+			}
+			else
+			{
+				if(strstr(param, "?u")) webman_config->man_rate++;
+				if(strstr(param, "?d")) webman_config->man_rate--;
+				webman_config->man_rate = RANGE(webman_config->man_rate, 20, 95); //%
 
-			reset_fan_mode();
+				reset_fan_mode();
+			}
+			save_settings();
 		}
-		save_settings();
 	}
 
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
