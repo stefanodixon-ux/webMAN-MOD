@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25 MOD"
+#define WM_VERSION			"1.47.25.1 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -624,8 +624,9 @@ typedef struct
 	u8 autoplay;
 	u8 ps2emu;
 	u8 ps2config;
+	u8 minfo;
 
-	u8 padding9[10];
+	u8 padding9[9];
 
 	// profile settings
 
@@ -906,7 +907,7 @@ static void http_response(int conn_s, char *header, const char *url, int code, c
 		char body[_2KB_];
 
 		if(*msg == '/')
-			{sprintf(body, "%s : OK", msg+1); show_msg(body);}
+			{sprintf(body, "%s : OK", msg + 1); if(!(webman_config->minfo & 2)) show_msg(body);}
 		else if(islike(msg, "http"))
 			sprintf(body, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE, msg, msg);
 #ifdef PKG_HANDLER
@@ -1469,7 +1470,7 @@ parse_request:
 								}
 								cellFsClose(fsl);
 							}
-							show_msg(filename);
+							if(!(webman_config->minfo & 1)) show_msg(filename);
 							sprintf(header, "%s", filename);
 							init_delay = -10; // prevent show Not in XMB message
 						}
@@ -1794,7 +1795,7 @@ parse_request:
 					if(!mc) http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : CODE_DOWNLOAD_FILE, msg);
 				}
 
-				show_msg(msg);
+				if(!(webman_config->minfo & 1)) show_msg(msg);
 
 				wait_for_xml_download(filename, param);
 
@@ -1852,7 +1853,7 @@ parse_request:
 					if(!mc) http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : CODE_INSTALL_PKG, msg);
 				}
 
-				show_msg(msg);
+				if(!(webman_config->minfo & 1)) show_msg(msg);
 
 				if(pkg_delete_after_install || do_restart)
 				{
@@ -2055,7 +2056,7 @@ parse_request:
 						if(*param2 == '?' ) {do_umount(false);  open_browser(url, 0);} else
 											{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23
 
-						show_msg(url);
+						if(!(webman_config->minfo & 1)) show_msg(url);
 					}
 				}
 				else
@@ -3889,7 +3890,7 @@ retry_response:
 
 					is_busy = false;
 #ifdef LAUNCHPAD
-					if(mobile_mode == LAUNCHPAD_MODE) {sprintf(templn, "%s LaunchPad: OK", STR_REFRESH); if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, templn); show_msg(templn); goto exit_handleclient_www;}
+					if(mobile_mode == LAUNCHPAD_MODE) {sprintf(templn, "%s LaunchPad: OK", STR_REFRESH); if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, templn); if(!(webman_config->minfo & 1)) show_msg(templn); goto exit_handleclient_www;}
 #endif
 				}
 

@@ -391,7 +391,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 				sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, dir.d_name);
 
 				char msg[MAX_PATH_LEN];
-				ret = installPKG(pkgfile, msg); show_msg(msg);
+				ret = installPKG(pkgfile, msg); if(!(webman_config->minfo & 1)) show_msg(msg);
 				if(ret == CELL_OK) wait_for_pkg_install();
 
 				ret = CELL_OK; 

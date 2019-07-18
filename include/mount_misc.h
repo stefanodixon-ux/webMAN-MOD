@@ -77,8 +77,11 @@
 		{
 			copy_in_progress = true, copied_count = 0;
 
-			sprintf(temp, "PS2 Classic\n%s", strrchr(_path, '/') + 1);
-			show_msg(temp);
+			if(!(webman_config->minfo & 1))
+			{
+				sprintf(temp, "PS2 Classic\n%s", strrchr(_path, '/') + 1);
+				show_msg(temp);
+			}
 
  #ifndef LITE_EDITION
 			if(c_firmware >= 4.65f)
@@ -116,7 +119,7 @@
 			ret = false;
 		}
 
-		show_msg(temp);
+		if(!(webman_config->minfo & 2)) show_msg(temp);
 
 		goto exit_mount;
 	}

@@ -177,7 +177,8 @@ static void setup_parse_settings(char *param)
 	if(IS_UNMARKED("vrc=1")) webman_config->combo2|=VIDRECORD;
 #endif
 
-	webman_config->info = get_valuen(param, "xi=", 0, 3); // XMB info level
+	webman_config->info  = get_valuen(param, "xi=", 0, 3); // XMB info level
+	webman_config->minfo = get_valuen(param, "mi=", 0, 3); // Mount info level
 
 	webman_config->wmstart = IS_MARKED("wn=1");
 	webman_config->tid     = IS_MARKED("tid=1");
@@ -737,12 +738,19 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item(2, "ID",   (value == 2), buffer);
 	add_option_item(0, "Path", (value == 0), buffer);
 	add_option_item(1, "Path + ID", (value == 1), buffer);
+
+	value = webman_config->minfo;
+	concat(buffer, "</select> • Mount Info <select name=\"mi\">");
+	add_option_item(3, "None",   (value == 3), buffer);
+	add_option_item(2, "Info 1", (value == 2), buffer);
+	add_option_item(1, "Info 2", (value == 1), buffer);
+	add_option_item(0, "Info 1 + 2", (value == 0), buffer);
 	concat(buffer, "</select><br>");
 
 #ifdef LAUNCHPAD
 	if(file_exists(LAUNCHPAD_FILE_XML))
 		add_check_box("lx", false, "LaunchPad.xml | PhotoGUI (USB0/PICTURE)", _BR_, !(webman_config->launchpad_xml), buffer);
-	else
+	else if(payload_ps3hen || cobra_version >= 0x0820)
 		add_check_box("lx", false, "PhotoGUI (USB0/PICTURE)", _BR_, !(webman_config->launchpad_xml), buffer);
 #endif
 
