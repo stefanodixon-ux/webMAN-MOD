@@ -558,7 +558,7 @@
 						if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 						{
 							char *cue_buf = (char*)sysmem;
-							int cue_size = read_file(_path, cue_buf, _4KB_, 0);
+							int cue_size = read_file(_path, cue_buf, _8KB_, 0);
 
 							if(cue_size > 16)
 							{

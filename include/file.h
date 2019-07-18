@@ -417,7 +417,13 @@ int file_copy(char *file1, char *file2, u64 maxbytes)
 		if(check_666)
 		{
 			flen1 = strlen(file1) - 6;
-			check_666 = islike(file1 + flen1, ".666"); if(check_666 && !islike(file1 + flen1, ".66600")) return 0;
+			check_666 = islike(file1 + flen1, ".666");
+			if(check_666)
+			{
+				if(!islike(file1 + flen1, ".66600")) return 0; // ignore .666xx
+				u16 flen2 = strlen(file2) - 6;
+				if(islike(file2 + flen2, ".66600")) file2[flen2] = NULL; // remove .66600
+			}
 		}
 
 		if(buf.st_size > get_free_space("/dev_hdd0")) return FAILED;
@@ -483,7 +489,7 @@ next_part:
 			}
 #endif
 			// copy_file
-			if(is_ntfs2 || cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd2, 0, 0) == CELL_FS_SUCCEEDED)
+			if(is_ntfs2 || merge_part || cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd2, 0, 0) == CELL_FS_SUCCEEDED)
 			{
 				while(size > 0)
 				{
@@ -532,7 +538,7 @@ next_part:
 
 					if(file_exists(file1))
 					{
-						cellFsClose(fd1);
+						cellFsClose(fd1); pos = 0;
 						goto merge_next;
 					}
 				}

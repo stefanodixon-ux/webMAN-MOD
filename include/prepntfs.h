@@ -214,7 +214,7 @@ next_ntfs_entry:
 											if(sysmem || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 											{
 												char *cue_buf = (char*)sysmem;
-												int cue_size = ps3ntfs_read(fd, (void *)cue_buf, _4KB_);
+												int cue_size = ps3ntfs_read(fd, (void *)cue_buf, _8KB_);
 
 												char *templn = path;
 												num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);
