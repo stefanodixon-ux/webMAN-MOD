@@ -77,12 +77,6 @@
 		{
 			copy_in_progress = true, copied_count = 0;
 
-			if(!(webman_config->minfo & 1))
-			{
-				sprintf(temp, "PS2 Classic\n%s", strrchr(_path, '/') + 1);
-				show_msg(temp);
-			}
-
  #ifndef LITE_EDITION
 			if(c_firmware >= 4.65f)
 			{   // Auto create "classic_ps2 flag" for PS2 Classic (.BIN.ENC) on rebug 4.65.2

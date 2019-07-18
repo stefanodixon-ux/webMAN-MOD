@@ -113,10 +113,8 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	if(urlenc(tempstr, templn)) {tempstr[_MAX_LINE_LEN] = NULL; sprintf(templn, "%s", tempstr);}
 
-#ifndef LITE_EDITION
 	// is image?
 	u8 show_img = !is_ps3_http && (!is_dir && (_IS(ext, ".png") || _IS(ext, ".jpg") || _IS(ext, ".bmp")));
-#endif
 
 	char sclass = ' ', dclass = 'w'; // file class
 
@@ -283,13 +281,21 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	}
 #endif
 
+#ifndef LITE_EDITION
+	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !is_net && !islike(templn, DEV_NTFS) )
+	{
+		sprintf(fsize, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
+		if(wm_icons_exists) sprintf(ftype, " pkg");
+	}
+#endif
+
 #ifdef PKG_HANDLER
 	else if( (f1_len > 11) && (strcasestr(templn, ".SELF") != NULL) )
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 	else if( (f1_len > 11) && ((strstr(templn, "/ROMS/") != NULL) || (strcasestr(ROMS_EXTENSIONS, ext) != NULL)) )
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
-		if(wm_icons_exists) sprintf(ftype, " rom");
+		if(wm_icons_exists) sprintf(ftype, show_img ? " pic" : " rom");
 	}
 	else if( IS(ext, ".pkg") || IS(ext, ".PKG") || IS(ext, ".p3t") )
 	{
@@ -324,14 +330,6 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			)
 		sprintf(fsize, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
 #endif //#ifdef COPY_PS3
-
-#ifndef LITE_EDITION
-	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !islike(templn, "/net") && !islike(templn, DEV_NTFS) )
-	{
-		sprintf(fsize, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
-		if(wm_icons_exists) sprintf(ftype, " pkg");
-	}
-#endif
 
 #ifdef LOAD_PRX
 	else if(!is_net && ( IS(ext5, ".sprx")))

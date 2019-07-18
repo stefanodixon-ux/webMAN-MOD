@@ -38,7 +38,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 
 	_slaunch slaunch; memset(&slaunch, 0, sizeof(_slaunch));
 
-	char enc_filename[MAX_PATH_LEN];
+	char c, enc_filename[MAX_PATH_LEN];
 
 	slaunch.type = IS_ROMS_FOLDER ? TYPE_ROM : IS_PS3_TYPE ? TYPE_PS3 : IS_PSX_FOLDER ? TYPE_PS1 : IS_PS2_FOLDER ? TYPE_PS2 : IS_PSP_FOLDER ? TYPE_PSP : TYPE_VID;
 
@@ -62,7 +62,10 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 	snprintf(slaunch.id, sizeof(slaunch.id), "%s", id); urlenc_ex(enc_filename, filename, false);
 
 	slaunch.path_pos = snprintf(slaunch.name, 128, "%s", name) + 1;
-	slaunch.icon_pos = snprintf(slaunch.name + slaunch.path_pos, 454 - slaunch.path_pos, "/mount_ps3%s%s/%s", neth, path, enc_filename) + slaunch.path_pos + 1;
+
+	if(slaunch.type == TYPE_PS2 && strcasestr(filename, ".BIN.ENC")) c = '.'; else c = '_';
+
+	slaunch.icon_pos = snprintf(slaunch.name + slaunch.path_pos, 454 - slaunch.path_pos, "/mount%cps3%s%s/%s", c, neth, path, enc_filename) + slaunch.path_pos + 1;
 					   snprintf(slaunch.name + slaunch.icon_pos, 507 - slaunch.icon_pos, "%s", icon);
 
 	cellFsWrite(fd, (void *)&slaunch, sizeof(_slaunch), NULL);
