@@ -614,9 +614,10 @@
 							}
  #ifdef PKG_HANDLER
 							else
-							if(!(webman_config->combo2 & INSTALPKG) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_CIRCLE | CELL_PAD_CTRL_R2)) ) // SELECT+R2+O (Install PKG)
+							if(!(webman_config->combo2 & INSTALPKG) && ( pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CIRCLE_BTN | CELL_PAD_CTRL_R2) ))  // SELECT+R2+O (Install PKG)
 							{
 								// SELECT+R2+O = Install PKG
+								// SELECT+R2+X = Install PKG (JAP)
   #ifdef WM_CUSTOM_COMBO
 								if(do_custom_combo("select_r2_circle")) break;
 								else
@@ -632,9 +633,10 @@
 							}
  #endif //#ifdef PKG_HANDLER
 							else
-							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CIRCLE) ) // SELECT+O (unmount)
+							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CIRCLE_BTN)) // SELECT+O (unmount)
 							{
 								// SELECT+O = unmount
+								// SELECT+X = unmount (JAP)
  #ifdef WM_CUSTOM_COMBO
 								if(do_custom_combo("select_circle")) break;
 								else
@@ -781,9 +783,10 @@
 						}
 						else
  #endif
-						if(!(webman_config->combo & SHOW_IDPS) && ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE)) == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE)) && IS_ON_XMB) // L2+R2+O
+						if(!(webman_config->combo & SHOW_IDPS) && ( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN)) == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN) ) && IS_ON_XMB) // L2+R2+O
 						{
-							// L2+R2+O  +  [L1/R1/R1+R1] = Open Browser file manager / cpursx / games / setup
+							// L2+R2+O + [L1/R1/R1+R1] = Open Browser file manager / cpursx / games / setup
+							// L2+R2+X + [L1/R1/R1+R1] = Open Browser file manager / cpursx / games / setup (JAP)
 #ifdef WM_CUSTOM_COMBO
 								 if(do_custom_combo("l2_r2_circle")) ;
 							else if(do_custom_combo("l2_r2_l1_circle")) ;
@@ -795,19 +798,19 @@
 #ifdef PS3_BROWSER
 								do_umount(false); // prevent system freeze on disc icon
 
-								if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE))
-									{open_browser((char*)"http://127.0.0.1/setup.ps3", 0); show_msg((char*)STR_WMSETUP);}     // L2+R2+L1+R1+O
+								if( pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN) )
+									{open_browser((char*)"http://127.0.0.1/setup.ps3", 0); show_msg((char*)STR_WMSETUP);}     // L2+R2+L1+R1+O  ||  L2+R2+L1+R1+X (JAP)
 								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1)
-									{open_browser((char*)"http://127.0.0.1/index.ps3", 0); show_msg((char*)STR_MYGAMES);}     // L2+R2+R1+O
+									{open_browser((char*)"http://127.0.0.1/index.ps3", 0); show_msg((char*)STR_MYGAMES);}     // L2+R2+R1+O  ||  L2+R2+R1+X (JAP)
 								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1)
-									{open_browser((char*)"http://127.0.0.1/cpursx.ps3", 0); show_msg((char*)WM_APPNAME " Info");}  // L2+R2+L1+O
+									{open_browser((char*)"http://127.0.0.1/cpursx.ps3", 0); show_msg((char*)WM_APPNAME " Info");}  // L2+R2+L1+O || L2+R2+L1+X (JAP)
 								else
-									{open_browser((char*)"http://127.0.0.1/", 0); show_msg((char*)WM_APP_VERSION);}           // L2+R2+O
+									{open_browser((char*)"http://127.0.0.1/", 0); show_msg((char*)WM_APP_VERSION);}           // L2+R2+O || L2+R2+X (JAP)
 #endif
 							}
 						}
 						else
-						if((copy_in_progress || fix_in_progress) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE))) // R2+O Abort copy process
+						if((copy_in_progress || fix_in_progress) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN)) )  // R2+O Abort copy process
 						{
 							fix_aborted = copy_aborted = true;
 						}
@@ -840,16 +843,13 @@
 							}
 						}
 						else
-						if(!(webman_config->combo & SHOW_IDPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_CIRCLE))) // R2+O Show IDPS EID0+LV2
+						if(!(webman_config->combo & SHOW_IDPS) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN)) )  // R2+O Show IDPS EID0+LV2 (JAP)
 						{
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_circle")) break;
 							else
 #endif
 							{
-#ifndef LITE_EDITION
-								if(!payload_ps3hen) enable_ingame_screenshot();
-#endif
 #ifdef SPOOF_CONSOLEID
 								show_idps(msg);
 #endif

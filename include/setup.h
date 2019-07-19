@@ -952,7 +952,8 @@ static void setup_form(char *buffer, char *templn)
 	add_check_box("pnx", false, STR_NEXTGAME,   " : <b>SELECT+R1</b><br>"        , !(webman_config->combo & NEXT_GAME),  buffer);
 	add_check_box("pdf", false, STR_FANCTRL4,   " : <b>L3+R2+START</b><br>"      , !(webman_config->combo & DISABLEFC),  buffer);
 
-	add_check_box("umt", false, STR_UNMOUNT,    " : <b>SELECT+O</b><br>"         , !(webman_config->combo2 & UMNT_GAME), buffer);
+	sprintf(templn, " : <b>SELECT+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_check_box("umt", false, STR_UNMOUNT,    templn                           , !(webman_config->combo2 & UMNT_GAME), buffer);
 	add_check_box("pgd", false, "gameDATA",     " : <b>SELECT+&#9633;</b><br>"   , !(webman_config->combo2 & EXTGAMDAT), buffer);
 
 	sprintf(templn, "%s XML", STR_REFRESH);
@@ -963,7 +964,8 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef REX_ONLY
-	add_check_box("pid", false, STR_SHOWIDPS,   " : <b>R2+O</b><br>"             , !(webman_config->combo & SHOW_IDPS),  buffer);
+	sprintf(templn, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_check_box("pid", false, STR_SHOWIDPS,   templn                           , !(webman_config->combo & SHOW_IDPS),  buffer);
 	add_check_box("psd", false, STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"          , !(webman_config->combo & SHUT_DOWN),  buffer);
 	add_check_box("prs", false, STR_RESTART2,   " : <b>L3+R2+O</b><br>"          , !(webman_config->combo & RESTARTPS),  buffer);
  #ifdef WM_REQUEST
@@ -973,7 +975,8 @@ static void setup_form(char *buffer, char *templn)
  #endif
 #else
  #ifdef SPOOF_CONSOLEID
-	add_check_box("pid", false, STR_SHOWIDPS,   " : <b>R2+O</b><br>"             , !(webman_config->combo & SHOW_IDPS),  buffer);
+	sprintf(templn, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_check_box("pid", false, STR_SHOWIDPS,   templn                         ,   !(webman_config->combo & SHOW_IDPS),  buffer);
  #endif
  #ifdef WM_REQUEST
 	add_check_box("psv", false, "CUSTOM COMBO", " : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
@@ -1023,7 +1026,8 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef PKG_HANDLER
-	add_check_box("pkg", false, "INSTALL PKG", " : <b>SELECT+R2+O</b><br>"      , !(webman_config->combo2 & INSTALPKG), buffer);
+	sprintf(templn, " : <b>SELECT+R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_check_box("pkg", false, "INSTALL PKG", templn                           , !(webman_config->combo2 & INSTALPKG), buffer);
 #endif
 	add_check_box("pld", false, "PLAY DISC",   " : <b>L2+START</b><br>"
 							  "</td></tr></table>"                              , !(webman_config->combo2 & PLAY_DISC), buffer);

@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.1 MOD"
+#define WM_VERSION			"1.47.25.2 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -459,6 +459,8 @@ static volatile u8 wm_unload_combo = 0;
 static volatile u8 working = 1;
 static u8 max_mapped = 0;
 static int init_delay = 0;
+
+static u8 CELL_PAD_CIRCLE_BTN = CELL_PAD_CTRL_CIRCLE;
 
 static bool syscalls_removed = false;
 
@@ -1221,6 +1223,11 @@ static void handleclient_www(u64 conn_s_p)
 			}
 
 			if(webman_config->bootd) wait_for("/dev_usb", webman_config->bootd); // wait for any usb
+
+			// is JAP?
+			int enter_button = 1;
+			xsetting_0AF1F161()->GetEnterButtonAssign(&enter_button);
+			CELL_PAD_CIRCLE_BTN = enter_button ? CELL_PAD_CTRL_CIRCLE : CELL_PAD_CTRL_CROSS;
 		}
 		else //if(conn_s_p == REFRESH_CONTENT)
 		{
