@@ -25,7 +25,7 @@ in an intuitive way, and webMAN MOD was born.
 - FTP server with remote control functions (shutdown/restart)
 - WWW server with remote control functions (scroll down for the complete list of shortcuts)
 - Support for loading and browsing of [local] PS3 games in ISO and folder format, DVD videos in ISO format, Blu-ray movies in ISO format, PS1/PS2/PSP games in ISO format with cover display
-- NETISO support for network loading and browsing of PS3 games in ISO and folder format, DVD videos in ISO format, Blu-ray movies in ISO format, PS1 and PSP games
+- NETISO support for network loading and browsing of PS3 games in ISO and folder format, DVD videos in ISO format, Blu-ray movies in ISO format, and PS1 games in ISO format.
 - NTFS support for PS3 and PS1 games in ISO format, Blu-ray movies in ISO format and DVD Video in ISO format
 - Dynamic Fan Control and in-game temperature monitoring
 - PAD shortcuts (*open include/combos.h for a complete list of shortcuts)
