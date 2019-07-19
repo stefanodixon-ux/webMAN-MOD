@@ -246,7 +246,7 @@
 				if(islike(netpath, "/DVDISO")) mount_unk = netiso_args.emu_mode = EMU_DVD; else
 				if(islike(netpath, "/PSX")   )
 				{
-					TrackDef tracks[32];
+					TrackDef tracks[MAX_TRACKS];
 					unsigned int num_tracks = 1;
 
 					int ns = connect_to_remote_server(netiso_svrid);
@@ -562,7 +562,7 @@
 
 							if(cue_size > 16)
 							{
-								TrackDef tracks[32];
+								TrackDef tracks[MAX_TRACKS];
 								unsigned int num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);
 
 								cobra_mount_psx_disc_image(cobra_iso_list[0], tracks, num_tracks);

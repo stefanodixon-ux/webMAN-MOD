@@ -1,3 +1,5 @@
+#define MAX_TRACKS	32
+
 #ifdef COBRA_ONLY
 static int parse_lba(const char *templn, bool use_pregap)
 {
@@ -26,18 +28,16 @@ static int get_line(char *templn, const char *cue_buf, const int buf_size, const
 	for(int l = 0; l < MAX_LINE_LEN; l++)
 	{
 		if(l>=buf_size) break;
-		if(lp<buf_size && cue_buf[lp] && cue_buf[lp]!='\n' && cue_buf[lp]!='\r')
+		if(lp<buf_size && cue_buf[lp]>0 && cue_buf[lp]!='\n' && cue_buf[lp]!='\r')
 		{
-			templn[l] = cue_buf[lp];
+			templn[l] = cue_buf[lp++];
 			templn[l + 1] = NULL;
 		}
 		else
 		{
-			templn[l] = NULL;
+			while(cue_buf[lp]=='\n' || cue_buf[lp]=='\r') {line_found = 1; if(lp<buf_size) lp++; else break;}
+			break; //EOF
 		}
-		while(cue_buf[lp]=='\n' || cue_buf[lp]=='\r') {line_found = 1, lp++;}
-
-		if(templn[l] == NULL) break; //EOF
 	}
 
 	if(!line_found) return NONE;
@@ -63,14 +63,14 @@ static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_s
 			if(lp < 1) break;
 
 			if(strstr(templn, "PREGAP")) {use_pregap = 1; continue;}
-			if(!strstr(templn, "INDEX 01") && !strstr(templn, "INDEX 1 ")) continue;
+			if(!(strstr(templn, "INDEX 01") || strstr(templn, "INDEX 1 "))) continue;
 
 			lba = parse_lba(templn, use_pregap && num_tracks); if(lba < 0) continue;
 
 			tracks[num_tracks].lba = lba;
 			if(num_tracks) tracks[num_tracks].is_audio = 1;
 
-			num_tracks++; if(num_tracks >= 32) break;
+			num_tracks++; if(num_tracks >= MAX_TRACKS) break;
 		}
 	}
 

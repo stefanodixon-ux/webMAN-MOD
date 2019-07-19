@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.2 MOD"
+#define WM_VERSION			"1.47.25.3 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -848,6 +848,7 @@ static u8 mount_unk = EMU_OFF;
 
 #ifdef COBRA_ONLY
 
+#include "include/cue_file.h"
 #include "include/psxemu.h"
 #include "include/rawseciso.h"
 #include "include/netclient.h"
@@ -874,7 +875,6 @@ static u8 mount_unk = EMU_OFF;
 #include "include/process.h"
 #include "include/video_rec.h"
 #include "include/secure_file_id.h"
-#include "include/cue_file.h"
 
 #include "include/games_html.h"
 #include "include/games_xml.h"

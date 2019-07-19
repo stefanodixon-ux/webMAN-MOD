@@ -14,7 +14,7 @@ typedef struct
 	u32 num_tracks;
 	u16 port;
 	u8 pad[6];
-	ScsiTrackDescriptor tracks[32];
+	ScsiTrackDescriptor tracks[MAX_TRACKS];
 } __attribute__((packed)) _netiso_args;
 
 _netiso_args netiso_args;
