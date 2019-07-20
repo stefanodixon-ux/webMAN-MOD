@@ -564,14 +564,22 @@ int main()
 	file_copy(APP_USRDIR "/icons/icon_wm_settings.png" , ICONS_DIR "/icon_wm_settings.png");
 	file_copy(APP_USRDIR "/icons/icon_wm_eject.png"    , ICONS_DIR "/icon_wm_eject.png"   );
 
-	file_copy(APP_USRDIR "/icons/video.png" , ICONS_DIR "/video.png");
-	file_copy(APP_USRDIR "/icons/photo.png" , ICONS_DIR "/photo.png");
-	file_copy(APP_USRDIR "/icons/music.png" , ICONS_DIR "/music.png");
-
 	if((sysLv2FsStat(APP_USRDIR "/multiman.png", &stat) == SUCCESS) && (stat.st_size == 9894))
 		file_copy(APP_USRDIR "/icons/icon_wm_root.png" , ICONS_DIR "/icon_wm_root.png"    );
 	else
 		sysLv2FsUnlink(ICONS_DIR "/icon_wm_root.png");
+
+	// file manager icons
+	file_copy(APP_USRDIR "/icons/psx.png"     , ICONS_DIR "/psx.png");
+	file_copy(APP_USRDIR "/icons/ps2.png"     , ICONS_DIR "/ps2.png");
+	file_copy(APP_USRDIR "/icons/ps3.png"     , ICONS_DIR "/ps3.png");
+	file_copy(APP_USRDIR "/icons/psp.png"     , ICONS_DIR "/psp.png");
+	file_copy(APP_USRDIR "/icons/dvd.png"     , ICONS_DIR "/dvd.png");
+	file_copy(APP_USRDIR "/icons/retro.png"   , ICONS_DIR "/retro.png");
+	file_copy(APP_USRDIR "/icons/video.png"   , ICONS_DIR "/video.png");
+	file_copy(APP_USRDIR "/icons/photo.png"   , ICONS_DIR "/photo.png");
+	file_copy(APP_USRDIR "/icons/music.png"   , ICONS_DIR "/music.png");
+	file_copy(APP_USRDIR "/icons/settings.png", ICONS_DIR "/settings.png");
 
 	file_copy(APP_USRDIR "/icons/blank.png", ICONS_DIR "/blank.png");
 

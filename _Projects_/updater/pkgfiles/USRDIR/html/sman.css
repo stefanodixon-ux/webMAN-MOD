@@ -17,13 +17,13 @@ a.f:active{color:#F8F8F8;}
 a,a.f:link,a:visited{color:#D0D0D0;}
 a.d:link,a.d:visited{background-position:0px 2px;background-image:url('data:image/gif;base64,R0lGODlhEAAMAIMAAOenIumzLbmOWOuxN++9Me+1Pe+9QvDAUtWxaffKXvPOcfTWc/fWe/fWhPfckgAAACH5BAMAAA8ALAAAAAAQAAwAAARQMI1Agzk4n5Sa+84CVNUwHAz4KWzLMo3SzDStOkrHMO8O2zmXsAXD5DjIJEdxyRie0KfzYChYr1jpYVAweb/cwrMbAJjP54AXwRa433A2IgIAOw == ');padding:0 0 0 20px;background-repeat:no-repeat;margin-left:auto;margin-right:auto;}
 a.w:link,a.w:visited{background-image:url('data:image/gif;base64,R0lGODlhDgAQAIMAAAAAAOfn5+/v7/f39////////////////////////////////////////////wAAACH5BAMAAA8ALAAAAAAOABAAAAQx8D0xqh0iSHl70FxnfaDohWYloOk6papEwa5g37gt5/zO475fJvgDCW8gknIpWToDEQA7');padding:0 0 0 20px;background-repeat:no-repeat;margin-left:auto;margin-right:auto;}
-a.w.dvd:link,a.w.dvd:visited{background-image:url('/dev_hdd0/tmp/wm_icons/icon_wm_dvd.png');background-size: 18px 18px;padding:0 2px 0 20px;}
-a.w.psx:link,a.w.psx:visited{background-image:url('/dev_hdd0/tmp/wm_icons/icon_wm_psx.png');background-size: 18px 18px;padding:0 2px 0 20px;}
-a.w.ps2:link,a.w.ps2:visited{background-image:url('/dev_hdd0/tmp/wm_icons/icon_wm_ps2.png');background-size: 18px 18px;padding:0 2px 0 20px;}
-a.w.ps3:link,a.w.ps3:visited{background-image:url('/dev_hdd0/tmp/wm_icons/icon_wm_ps3.png');background-size: 18px 18px;padding:0 2px 0 20px;}
-a.w.psp:link,a.w.psp:visited{background-image:url('/dev_hdd0/tmp/wm_icons/icon_wm_psp.png');background-size: 18px 18px;padding:0 2px 0 20px;}
-a.w.pkg:link,a.w.pkg:visited{background-image:url('/dev_hdd0/tmp/wm_icons/icon_wm_settings.png');background-size: 18px 18px;padding:0 2px 0 20px;}
-a.w.rom:link,a.w.rom:visited{background-image:url('/dev_hdd0/tmp/wm_icons/icon_wm_retro.png');background-size: 18px 18px;padding:0 2px 0 20px;}
+a.w.dvd:link,a.w.dvd:visited{background-image:url('/dev_hdd0/tmp/wm_icons/dvd.png');background-size: 18px 18px;padding:0 2px 0 20px;}
+a.w.psx:link,a.w.psx:visited{background-image:url('/dev_hdd0/tmp/wm_icons/psx.png');background-size: 18px 18px;padding:0 2px 0 20px;}
+a.w.ps2:link,a.w.ps2:visited{background-image:url('/dev_hdd0/tmp/wm_icons/ps2.png');background-size: 18px 18px;padding:0 2px 0 20px;}
+a.w.ps3:link,a.w.ps3:visited{background-image:url('/dev_hdd0/tmp/wm_icons/ps3.png');background-size: 18px 18px;padding:0 2px 0 20px;}
+a.w.psp:link,a.w.psp:visited{background-image:url('/dev_hdd0/tmp/wm_icons/psp.png');background-size: 18px 18px;padding:0 2px 0 20px;}
+a.w.rom:link,a.w.rom:visited{background-image:url('/dev_hdd0/tmp/wm_icons/retro.png');background-size: 18px 18px;padding:0 2px 0 20px;}
+a.w.pkg:link,a.w.pkg:visited{background-image:url('/dev_hdd0/tmp/wm_icons/settings.png');background-size: 18px 18px;padding:0 2px 0 20px;}
 a.w.vid:link,a.w.vid:visited{background-image:url('/dev_hdd0/tmp/wm_icons/video.png');background-size: 18px 18px;padding:0 2px 0 20px;}
 a.w.pic:link,a.w.pic:visited{background-image:url('/dev_hdd0/tmp/wm_icons/photo.png');background-size: 18px 18px;padding:0 2px 0 20px;}
 a.w.snd:link,a.w.snd:visited{background-image:url('/dev_hdd0/tmp/wm_icons/music.png');background-size: 18px 18px;padding:0 2px 0 20px;}

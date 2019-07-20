@@ -946,9 +946,10 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
  #endif // #ifdef EMBED_JS
 #endif // #ifdef COPY_PS3
 
+			*tempstr = NULL;
+
 #ifdef COBRA_ONLY
 			// show last mounted game
-			memset(tempstr, 0, _4KB_);
 			if(effective_disctype != DISC_TYPE_NONE && IS(param, "/dev_bdvd"))
 			{
 				// get last game path

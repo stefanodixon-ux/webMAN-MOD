@@ -62,6 +62,9 @@ static void get_cobra_version(char *cfw_info)
 #else
 		sprintf(cfw_info, "CEX");
 #endif
+#ifndef COBRA_ONLY
+		sprintf(cfw_info, " nonCobra");
+#endif
 }
 
 static void get_net_info(char *net_type, char *ip)
