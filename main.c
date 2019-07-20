@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.4 MOD"
+#define WM_VERSION			"1.47.25.5 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -362,6 +362,7 @@ int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MAPI, 3=P
 #define _384KB_		   393216UL
 #define _512KB_		   524288UL
 #define _640KB_		   655360UL
+#define _768KB_		   786432UL
 #define  _1MB_		0x0100000UL
 #define  _2MB_		0x0200000UL
 #define  _3MB_		0x0300000UL

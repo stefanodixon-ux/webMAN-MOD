@@ -114,7 +114,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	if(urlenc(tempstr, templn)) {tempstr[_MAX_LINE_LEN] = NULL; sprintf(templn, "%s", tempstr);}
 
 	// is image?
-	u8 show_img = !is_ps3_http && (!is_dir && (_IS(ext, ".png") || _IS(ext, ".jpg") || _IS(ext, ".bmp")));
+	u8 show_img = (!is_dir && (_IS(ext, ".png") || _IS(ext, ".jpg") || _IS(ext, ".bmp")));
 
 	char sclass = ' ', dclass = 'w'; // file class
 

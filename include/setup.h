@@ -255,7 +255,7 @@ static void setup_parse_settings(char *param)
 
 	webman_config->nowarn = IS_MARKED("warn=1");
 
-	webman_config->foot=get_valuen(param, "fp=", 0, 7); set_buffer_sizes(webman_config->foot);
+	webman_config->foot=get_valuen(param, "fp=", 0, 8); set_buffer_sizes(webman_config->foot);
 	webman_config->vsh_mc = get_valuen(param, "mc=", 0, 4);
 
 #ifdef REMOVE_SYSCALLS
@@ -861,11 +861,8 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item(4, "Max PS3+ (1088K PS3)"            , (value == 4), buffer);
 	add_option_item(5, "Max PSX+ ( 368K PS3 + 768K PSX)" , (value == 5), buffer);
 	add_option_item(6, "Max BLU+ ( 368K PS3 + 768K BLU)" , (value == 6), buffer);
-#ifdef MOUNT_ROMS
-	add_option_item(7, "Max PSP+ ( 368K PS3 + 768K PSP/ROMS)", (value == 7), buffer);
-#else
 	add_option_item(7, "Max PSP+ ( 368K PS3 + 768K PSP)" , (value == 7), buffer);
-#endif
+	add_option_item(8, "Max PS2+ ( 368K PS3 + 768K PS2)" , (value == 8), buffer);
 	concat(buffer, "</select>");
 
 	//memory container
