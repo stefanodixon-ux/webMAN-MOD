@@ -68,6 +68,8 @@ SYS_MODULE_STOP(netiso_stop);
 
 #define DISC_TYPE_NONE		0
 
+#define MAX_TRACKS	80
+
 #define DEVICE_TYPE_PS3_DVD	0xFF70
 #define DEVICE_TYPE_PS3_BD	0xFF71
 #define DEVICE_TYPE_PS2_CD	0xFF60
@@ -111,7 +113,7 @@ typedef struct
 	uint32_t numtracks;
 	uint16_t port;
 	uint8_t pad[6];
-	ScsiTrackDescriptor tracks[32];
+	ScsiTrackDescriptor tracks[MAX_TRACKS];
 } __attribute__((packed)) netiso_args;
 
 static sys_ppu_thread_t thread_id = 1;
@@ -516,8 +518,9 @@ static void netiso_thread(uint64_t arg)
 
 	if(emu_mode == EMU_PSX)
 	{
-		numtracks = args->numtracks;
 		tracks = &args->tracks[0];
+		numtracks = MIN(args->numtracks, MAX_TRACKS);
+
 		is_cd2352 = 1;
 		if(cd_sec_size & 0xf) cd_sec_size_param = cd_sec_size<<8;
 		else cd_sec_size_param = (cd_sec_size<<4);

@@ -121,10 +121,10 @@ static int discfd = NONE;
 
 volatile u8 eject_running = 0;
 
-u32 real_disctype;
-ScsiTrackDescriptor tracks[64];
-int emu_mode, num_tracks;
-sys_event_port_t result_port;
+static u32 real_disctype;
+static ScsiTrackDescriptor tracks[MAX_TRACKS];
+static u32 emu_mode, num_tracks;
+static sys_event_port_t result_port;
 
 static u8 rawseciso_loaded = 0;
 
@@ -750,7 +750,7 @@ static void get_psx_track_data(void)
 			tracks[num_tracks].track_number = num_tracks+1;
 			tracks[num_tracks].track_start_addr = ((u32) buff[k + 4] << 24) | ((u32) buff[k + 5] << 16) |
 												  ((u32) buff[k + 6] << 8)  | ((u32) buff[k + 7]);
-			num_tracks++; if(num_tracks >= 64) break;
+			num_tracks++; if(num_tracks >= MAX_TRACKS) break;
 			k+= 8;
 		}
 
@@ -1019,7 +1019,7 @@ static void rawseciso_thread(u64 arg)
 			if(CD_SECTOR_SIZE_2352 > 2448) CD_SECTOR_SIZE_2352 = (num_tracks & 0xFFF00)>>8;
 		}
 
-		num_tracks &= 0xFF;
+		num_tracks &= 0xFF; if(num_tracks > sizeof(tracks)) num_tracks = sizeof(tracks);
 
 		if(num_tracks)
 			memcpy((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));

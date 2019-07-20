@@ -108,8 +108,8 @@ STR_PS2FORMAT		[PS2 Игры]
 STR_PS1FORMAT		[PS1 Игры]
 STR_PSPFORMAT		[PSP Игры]
 
-STR_VIDFORMAT		[BD и DVD]
 STR_VIDEO			[Видео контент]
+STR_VIDFORMAT		[BD и DVD]
 
 STR_LAUNCHPSP		[Запуск PSP ISO смонтированную через webMAN или mmCM]
 STR_LAUNCHPS2		[Запуск PS2 Classic]

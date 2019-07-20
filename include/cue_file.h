@@ -1,10 +1,10 @@
-#define MAX_TRACKS	32
+#define MAX_TRACKS	80
 
 #ifdef COBRA_ONLY
 static int parse_lba(const char *templn, bool use_pregap)
 {
 	char *time = strrchr(templn, ' '); if(!time) return FAILED;
-	char tcode[10];
+	char tcode[10]; // mm:ss:ff
 
 	int tcode_len = snprintf(tcode, 9, "%s", time + 1); tcode[8] = NULL;
 	if((tcode_len != 8) || tcode[2]!=':' || tcode[5]!=':') return FAILED;
@@ -16,7 +16,7 @@ static int parse_lba(const char *templn, bool use_pregap)
 
 	if(use_pregap) tsec += 2;
 
-	return ((tmin * 60 + tsec) * 75 + tfrm);
+	return ((tmin * 60 + tsec) * 75 + tfrm); // msf_to_lba
 }
 
 static int get_line(char *templn, const char *cue_buf, const int buf_size, const int start)
@@ -62,10 +62,13 @@ static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_s
 			lp = get_line(templn, cue_buf, cue_size, lp);
 			if(lp < 1) break;
 
-			if(strstr(templn, "PREGAP")) {use_pregap = 1; continue;}
-			if(!(strstr(templn, "INDEX 01") || strstr(templn, "INDEX 1 "))) continue;
+			lba = NONE; if(*templn == NULL) continue;
 
-			lba = parse_lba(templn, use_pregap && num_tracks); if(lba < 0) continue;
+			if(strstr(templn, "PREGAP")) {use_pregap = 1; continue;}
+			if(strstr(templn, "INDEX 1=")) lba = get_valuen32(templn, "INDEX 1="); else // ccd frames
+			if(strstr(templn, "INDEX 01") || strstr(templn, "INDEX 1 ")) lba = parse_lba(templn, use_pregap && num_tracks); // cue msf
+
+			if(lba < 0) continue;
 
 			tracks[num_tracks].lba = lba;
 			if(num_tracks) tracks[num_tracks].is_audio = 1;

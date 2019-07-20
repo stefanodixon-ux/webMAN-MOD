@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.3 MOD"
+#define WM_VERSION			"1.47.25.4 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -690,7 +690,7 @@ static void restore_settings(void);
 #endif
 
 #define MAX_ISO_PARTS				(16)
-#define ISO_EXTENSIONS				".cue|.iso.0|.bin|.img|.mdf"
+#define ISO_EXTENSIONS				".cue|.ccd|.iso.0|.bin|.img|.mdf"
 
 static CellRtcTick rTick, gTick;
 

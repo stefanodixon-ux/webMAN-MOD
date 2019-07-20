@@ -43,6 +43,8 @@ SYS_MODULE_STOP(rawseciso_stop);
 
 #define DISC_TYPE_NONE			0
 
+#define MAX_TRACKS	80
+
 enum EMU_TYPE
 {
 	EMU_OFF = 0,
@@ -173,8 +175,8 @@ typedef struct
 volatile int eject_running = 1;
 
 uint32_t real_disctype;
-ScsiTrackDescriptor tracks[64];
-int emu_mode, num_tracks;
+ScsiTrackDescriptor tracks[MAX_TRACKS];
+uint32_t emu_mode, num_tracks;
 sys_event_port_t result_port;
 
 
@@ -1123,7 +1125,7 @@ static void rawseciso_thread(uint64_t arg)
 			CD_SECTOR_SIZE_2352 = (num_tracks & 0xffff00)>>4;
 		}
 
-		num_tracks &= 0xff;
+		num_tracks &= 0xff; if(num_tracks > MAX_TRACKS) num_tracks = MAX_TRACKS;
 
 		if(num_tracks)
 			memcpy((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));

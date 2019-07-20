@@ -24,7 +24,7 @@ static int prepNTFS(u8 clear)
 
 	unsigned int num_tracks;
 	int emu_mode = 0;
-	TrackDef tracks[32];
+	TrackDef tracks[MAX_TRACKS];
 	ScsiTrackDescriptor *scsi_tracks;
 
 	rawseciso_args *p_args;
@@ -200,13 +200,12 @@ next_ntfs_entry:
 										if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
 										else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 
-										strcpy(path + plen - 3, "CUE");
-
-										fd = ps3ntfs_open(path, O_RDONLY, 0);
-										if(fd < 0)
+										const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
+										for(u8 e = 0; e < 4; e++)
 										{
-											strcpy(path + plen - 3, "cue");
+											strcpy(path + plen - 4, cue_ext[e]);
 											fd = ps3ntfs_open(path, O_RDONLY, 0);
+											if(fd >= 0) break;
 										}
 
 										if(fd >= 0)

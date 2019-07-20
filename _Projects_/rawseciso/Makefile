@@ -17,7 +17,7 @@ CRT_TAIL                += $(shell ppu-lv2-gcc -print-file-name'='crtend.o)
 CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='ecrtn.o)
 
 PPU_SRCS = libc.c main.c printf.c asmcode.s
-PPU_PRX_TARGET = rawseciso.prx
+PPU_PRX_TARGET = raw_iso.prx
 PPU_PRX_LDFLAGS += $(PRX_LDFLAGS_EXTRA)
 PPU_PRX_STRIP_FLAGS = -s
 PPU_PRX_LDLIBS 	+= -lfs_stub

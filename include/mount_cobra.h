@@ -253,11 +253,11 @@
 					if(ns >= 0)
 					{
 						cellFsUnlink(TEMP_NET_PSXCUE);
-						strcpy(netiso_args.path + len - 3, "CUE");
-						if(copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns, _4KB_) == FAILED)
+						const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
+						for(u8 e = 0; e < 4; e++)
 						{
-							strcpy(netiso_args.path + len - 3, "cue");
-							copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns, _4KB_);
+							strcpy(netiso_args.path + len - 4, cue_ext[e]);
+							if(copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns, _8KB_) == CELL_OK) break;
 						}
 						sclose(&ns);
 
@@ -534,25 +534,29 @@
 
 					if(flen < 0) ;
 
-					else if(!extcasecmp(_path, ".cue", 4))
+					else if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
 					{
-						const char *extensions[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
+						const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
 						for(u8 e = 0; e < 8; e++)
 						{
-							sprintf(cobra_iso_list[0] + flen, "%s", extensions[e]);
+							sprintf(cobra_iso_list[0] + flen, "%s", iso_ext[e]);
 							mount_iso = file_exists(cobra_iso_list[0]); if(mount_iso) break;
 						}
 					}
 					else if(_path[flen] == '.')
 					{
-						sprintf(_path + flen, "%s", ".cue");
-						if(file_exists(_path) == false) sprintf(_path + flen, "%s", ".CUE");
+						const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
+						for(u8 e = 0; e < 4; e++)
+						{
+							sprintf(_path + flen, "%s", cue_ext[e]);
+							if(file_exists(_path)) break;
+						}
 						if(file_exists(_path) == false) sprintf(_path, "%s", cobra_iso_list[0]);
 					}
 
 					mount_iso = mount_iso || file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = EMU_PSX;
 
-					if(!extcasecmp(_path, ".cue", 4))
+					if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
 					{
 						sys_addr_t sysmem = 0;
 						if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
