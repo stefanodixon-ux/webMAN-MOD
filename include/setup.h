@@ -91,7 +91,9 @@ static void setup_parse_settings(char *param)
 	webman_config->noss = IS_MARKED("nss=1");
 	no_singstar_icon();
 #endif
-
+#ifndef LITE_EDITION
+	webman_config->chart = IS_MARKED("ct=1");
+#endif
 #ifdef COBRA_ONLY
 	webman_config->cmask = 0;
 	if(IS_UNMARKED("ps1=1")) webman_config->cmask|=PS1;
@@ -577,7 +579,7 @@ static void setup_form(char *buffer, char *templn)
 	//fan control settings
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR "<table width=\"900\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td>");
 
-	add_check_box("fc\" onchange=\"temp[fc.checked?0:3].checked=1;" , false, STR_FANCTRL, " </td><td>", (webman_config->fanc), buffer);
+	add_check_box("fc\" onchange=\"temp[fc.checked?0:3].checked=1;" , false, STR_FANCTRL, "</td><td>", (webman_config->fanc), buffer);
 	add_check_box("warn", false , STR_NOWARN, " </td></tr>", (webman_config->nowarn), buffer);
 
 	concat(buffer, "<tr><td>");
@@ -595,7 +597,14 @@ static void setup_form(char *buffer, char *templn)
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 3, "t_3", "Auto #2", _BR_, (webman_config->fanc == FAN_AUTO2), buffer);
-	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "</table>", !(webman_config->fanc), buffer);
+	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "</td><td>", !(webman_config->fanc), buffer);
+
+#ifndef LITE_EDITION
+	concat(buffer, "<br>");
+	add_check_box("ct", false, "CPU/RSX/FAN Chart",  " ", (webman_config->chart), buffer);
+	if(file_exists(CPU_RSX_CHART)) {sprintf(templn, HTML_URL, CPU_RSX_CHART, "&#x1F453;"); concat(buffer, templn);}
+#endif
+	concat(buffer, "</table>");
 
 	//general settings
 	sprintf(templn,	HTML_BLU_SEPARATOR
@@ -653,7 +662,6 @@ static void setup_form(char *buffer, char *templn)
 #ifdef NOSINGSTAR
 	add_check_box("nss", false, STR_NOSINGSTAR,  _BR_, (webman_config->noss), buffer);
 #endif
-
 //	add_check_box("xp", false, STR_COMBOS,   _BR_, (webman_config->nopad), buffer);
 
 	//game listing

@@ -317,7 +317,13 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	//// startup time /////
 	ss = (u32)((pTick.tick - rTick.tick)/1000000); total_time_in_sec += ss;
 	dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
-	sprintf( templn, "<a href=\"/dev_hdd0/home/%08i\"><label title=\"Startup\">&#8986;</label> %id %02d:%02d:%02d</a>", xsetting_CC56EB2D()->GetCurrentUserNumber(), dd, hh, mm, ss); buffer += concat(buffer, templn);
+
+	if(webman_config->chart)
+		sprintf( templn, "<a href=\"%s\">", CPU_RSX_CHART);
+	else
+		sprintf( templn, "<a href=\"/dev_hdd0/home/%08i\">", xsetting_CC56EB2D()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
+
+	sprintf( templn, "<label title=\"Startup\">&#8986;</label> %id %02d:%02d:%02d</a>", dd, hh, mm, ss); buffer += concat(buffer, templn);
 	///////////////////////
 
 	ss = (u32)total_time_in_sec;

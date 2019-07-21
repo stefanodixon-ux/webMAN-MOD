@@ -7,6 +7,43 @@
 		get_temperature(0, &t1); // CPU: 3E030000 -> 3E.03°C -> 62.(03/256)°C
 		get_temperature(1, &t2); // RSX: 3E030000 -> 3E.03°C -> 62.(03/256)°C
 
+#ifndef LITE_EDITION
+		if(webman_config->chart && ++chart_count >= 4)
+		{
+			chart_count = 0;
+			CellRtcTick pTick; cellRtcGetCurrentTick(&pTick); u32 dd, hh, mm, ss;
+			ss = (u32)((pTick.tick - rTick.tick)/1000000);
+			dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+
+			if(!chart_init)
+			{
+				if(file_exists("/dev_hdd0/cpursx.html"))
+					_file_copy((char*)"/dev_hdd0/cpursx.html", (char*)(CPU_RSX_CHART));
+				else
+				{
+					sprintf(msg, "<meta http-equiv=\"refresh\" content=\"15\"><style>"
+								 ".canvas{background-color:gray;width:50%;text-align:left;padding:15px;font:12px arial;}"
+								 ".cpu{background-color:blue;text-align:right;}"
+								 ".rsx{background-color:cyan;text-align:right;}"
+								 ".fan{background-color:#fc0;text-align:right;}"
+								 "</style>"
+								 "<div class='canvas'>");
+					save_file(CPU_RSX_CHART, msg, SAVE_ALL); chart_init = 250;
+				}
+			}
+			else
+				--chart_init;
+
+			u8 fs = (old_fan * 100) / 255;
+			sprintf(msg, "%02d:%02d:%02d CPU: %i&deg;C  RSX: %i&deg;C FAN: %i%%"
+						 "<div class='cpu' style='width:%i%%'>%i&deg;</div>"
+						 "<div class='rsx' style='width:%i%%'>%i&deg;</div>"
+						 "<div class='fan' style='width:%i%%'>%i%%</div>",
+					hh, mm, ss, t1, t2, fs, t1, t1, t2, t2, fs, fs);
+			save_file(CPU_RSX_CHART, msg, APPEND_TEXT);
+		}
+#endif
+
 		if(t2 > t1) t1 = t2;
 
 		if(!lasttemp) lasttemp = t1;
@@ -33,7 +70,8 @@
 				if(fan_speed)
 				{
 					u8 min_speed = PERCENT_TO_8BIT(webman_config->minfan);
-					set_fan_speed(MAX(min_speed, fan_speed));
+					old_fan = MAX(min_speed, fan_speed);
+					set_fan_speed(old_fan);
 				}
 				else
 					sys_sm_set_fan_policy(0, 1, 0); // SYSCON < 60°C

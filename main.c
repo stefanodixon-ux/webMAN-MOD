@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.5 MOD"
+#define WM_VERSION			"1.47.25.6 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -253,7 +253,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 #define THREAD_STACK_SIZE_STOP_THREAD	THREAD_STACK_SIZE_6KB
 #define THREAD_STACK_SIZE_INSTALL_PKG	THREAD_STACK_SIZE_6KB
-#define THREAD_STACK_SIZE_POLL_THREAD	THREAD_STACK_SIZE_32KB
+#define THREAD_STACK_SIZE_POLL_THREAD	THREAD_STACK_SIZE_48KB
 #define THREAD_STACK_SIZE_UPDATE_XML	THREAD_STACK_SIZE_128KB
 #define THREAD_STACK_SIZE_MOUNT_GAME	THREAD_STACK_SIZE_128KB
 
@@ -296,6 +296,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #endif
 #define MOBILE_HTML				HTML_BASE_PATH "/mobile.html"
 #define GAMELIST_JS				HTML_BASE_PATH "/gamelist.js"
+#define CPU_RSX_CHART			HTML_BASE_PATH "/cpursx.html"
 
 #ifndef EMBED_JS
 #define COMMON_CSS				HTML_BASE_PATH "/common.css"
@@ -468,6 +469,11 @@ static bool syscalls_removed = false;
 static float c_firmware = 0.0f;
 static u8 dex_mode = 0;
 
+#ifndef LITE_EDITION
+static u8 chart_init = 0;
+static u8 chart_count = 0;
+#endif
+
 #ifdef SYS_ADMIN_MODE
 static u8 sys_admin = 0;
 static u8 pwd_tries = 0;
@@ -579,8 +585,9 @@ typedef struct
 	u8 ps2_rate;  // % ps2 fan speed
 	u8 nowarn;
 	u8 minfan;
+	u8 chart;
 
-	u8 padding4[9];
+	u8 padding4[8];
 
 	// combo settings
 
@@ -1276,7 +1283,9 @@ static void handleclient_www(u64 conn_s_p)
 #ifdef NOSINGSTAR
 		no_singstar_icon();
 #endif
-
+#ifndef LITE_EDITION
+		chart_init = 0;
+#endif
 		sys_ppu_thread_t t_id;
 		sys_ppu_thread_create(&t_id, update_xml_thread, conn_s_p, THREAD_PRIO, THREAD_STACK_SIZE_UPDATE_XML, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
 
