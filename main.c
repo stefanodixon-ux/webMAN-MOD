@@ -137,10 +137,10 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define ORG_LIBFS_PATH		"/dev_flash/sys/external/libfs.sprx"
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
-
+#define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.6 MOD"
+#define WM_VERSION			"1.47.25.7 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -635,8 +635,9 @@ typedef struct
 	u8 ps2emu;
 	u8 ps2config;
 	u8 minfo;
+	u8 deliso;
 
-	u8 padding9[9];
+	u8 padding9[8];
 
 	// profile settings
 

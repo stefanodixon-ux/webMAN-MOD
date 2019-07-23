@@ -146,6 +146,7 @@ static void setup_parse_settings(char *param)
 	if(IS_MARKED("sc8=0")) webman_config->sc8mode = 4; else webman_config->sc8mode = 1;
 
 	webman_config->bus = IS_MARKED("bus=1");
+	webman_config->deliso = IS_MARKED("dx=1"); if(!webman_config->deliso) cellFsUnlink(DEL_CACHED_ISO);
 #endif
 	webman_config->autoplay = IS_MARKED("apd=1");
 #ifdef REX_ONLY
@@ -763,6 +764,8 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 	//game mounting
+	sprintf(templn, "%s + %s net/ntfs cached ISO", STR_UNMOUNT, STR_DELETE);
+	add_check_box("dx", false,  templn, _BR_, (webman_config->deliso), buffer);
 #ifdef FIX_GAME
 	if(c_firmware >= 4.20f && c_firmware < LATEST_CFW)
 	{
