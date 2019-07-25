@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.7 MOD"
+#define WM_VERSION			"1.47.25.8 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 

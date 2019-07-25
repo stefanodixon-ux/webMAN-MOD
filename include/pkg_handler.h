@@ -117,7 +117,6 @@ static void wait_for_pkg_install(void)
 	sys_ppu_thread_sleep(5);
 
 	while (working && IS_INSTALLING) sys_ppu_thread_sleep(2);
-	while (working && IS_INSTALLING_NAS) sys_ppu_thread_sleep(2);
 
 	time_t install_time = pkg_install_time;  // set time before install
 	get_pkg_size_and_install_time(pkg_path); // get time after install
