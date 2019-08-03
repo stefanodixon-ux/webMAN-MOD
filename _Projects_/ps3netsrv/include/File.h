@@ -40,8 +40,11 @@ ps3netsrv-src-nvrbst information:
 EDIT: Also I didn't look into the g++ 4.8.1 problem much. If anyone knows why, able to confirm the problem, or has built ps3netsrv (origional or modified) with g++ 4.8.1 for win32 (and jb format games still work) then please let me know smile, thanks.
 */
 
+#ifdef POLARSSL
 #include <polarssl/aes.h>
-
+#else
+#include <mbedtls/aes.h>
+#endif
 #include "AbstractFile.h"
 
 
@@ -100,15 +103,21 @@ class File : public AbstractFile
 	void keystr_to_keyarr(const char (&str)[32], unsigned char (&arr)[16]);
 	unsigned int char_arr_BE_to_uint(unsigned char *arr);
 	void reset_iv(unsigned char (&iv)[16], unsigned int lba);
-	void decrypt_data(aes_context &aes, unsigned char *data, int sector_count, unsigned int start_lba);
 	void init_region_info(void);
-
+#ifdef POLARSSL
+	void decrypt_data(aes_context &aes, unsigned char *data, int sector_count, unsigned int start_lba);
+#else
+	void decrypt_data(mbedtls_aes_context &aes, unsigned char *data, int sector_count, unsigned int start_lba);
+#endif
 	// Decryption related variables.
 	PS3EncDiscType enc_type_;
-	aes_context aes_dec_;
 	size_t region_count_;
 	PS3RegionInfo *region_info_;
-
+#ifdef POLARSSL
+	aes_context aes_dec_;
+#else
+	mbedtls_aes_context aes_dec_;
+#endif
 	// Micro optimization, only ever used by decrypt_data(...).
 	unsigned char iv_[16];
 #endif
