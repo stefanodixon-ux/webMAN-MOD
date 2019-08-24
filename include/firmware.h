@@ -60,7 +60,7 @@ static inline int get_kernel_type(void)
 	return (int)(type - 1);
 }
 
-static inline u64 find_syscall_table(void)
+static u64 find_syscall_table(void)
 {
 	#ifdef LAST_FIRMWARE_ONLY
 	for(u64 addr = dex_mode ? SYSCALL_TABLE_421D : SYSCALL_TABLE_421; addr < 0x8000000000400000ULL; addr += 4)
@@ -157,10 +157,12 @@ static void detect_firmware(void)
 	  //if(peek(0x32B270) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_450H; c_firmware = 4.50f; dex_mode = 1;}	else
 		if(peek(0x32EDC8) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_460H; c_firmware = 4.60f; dex_mode = 1;}	else
  #endif // #ifndef LAST_FIRMWARE_ONLY
-		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FH482) ? 4.82f :
+		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW484) ? 4.84f :
+																					(peek(0x344B70) == FW483) ? 4.83f :
+																					(peek(0x344B70) == FH482) ? 4.82f :
 																					(peek(0x344B70) == FW481) ? 4.81f :
-																					(peek(0x344B70) == FW480) ? 4.80f :
  #ifndef LAST_FIRMWARE_ONLY
+																					(peek(0x344B70) == FW480) ? 4.80f :
 																					(peek(0x344B70) == FW478) ? 4.78f :
 																					(peek(0x344B70) == FW476) ? 4.76f :
 																					(peek(0x344B70) == FW475) ? 4.75f :
@@ -200,7 +202,7 @@ static void detect_firmware(void)
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355;
 			#endif
 			*/
-			LV2_OFFSET_ON_LV1 = 0x01000000ULL;
+			LV2_OFFSET_ON_LV1 = 0x01000000ULL; SYSCALL_TABLE = find_syscall_table();
 		}
 		else if(IS_DEX)
 		{
@@ -220,10 +222,8 @@ static void detect_firmware(void)
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355D;
 			#endif
 			*/
-			LV2_OFFSET_ON_LV1 = 0x08000000ULL;
+			LV2_OFFSET_ON_LV1 = 0x08000000ULL; SYSCALL_TABLE = find_syscall_table();
 		}
-
-		if(dex_mode < 2) SYSCALL_TABLE = find_syscall_table();
 	}
 
 	if(!SYSCALL_TABLE) {c_firmware = 0.00f; return;}

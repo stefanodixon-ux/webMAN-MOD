@@ -13,7 +13,7 @@
 			chart_count = 0;
 			CellRtcTick pTick; cellRtcGetCurrentTick(&pTick); u32 dd, hh, mm, ss;
 			ss = (u32)((pTick.tick - rTick.tick)/1000000);
-			dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+			dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
 			if(!chart_init)
 			{

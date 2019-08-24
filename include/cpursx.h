@@ -302,10 +302,10 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	if(IS_ON_XMB) gTick=rTick; else if(gTick.tick==rTick.tick) cellRtcGetCurrentTick(&gTick);
 
 	////// play time //////
-	if(gTick.tick>rTick.tick)
+	if(gTick.tick > rTick.tick)
 	{
-		ss = (u32)((pTick.tick - gTick.tick)/1000000);
-		dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+		ss = (u32)((pTick.tick - gTick.tick) / 1000000);
+		dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 		if(dd<100) {sprintf( templn, "<label title=\"Play\">&#9737;</label> %id %02d:%02d:%02d<br>", dd, hh, mm, ss); buffer += concat(buffer, templn);}
 	}
 	///////////////////////
@@ -315,8 +315,8 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	sys_sm_request_be_count(&arg_1, &total_time_in_sec, &power_on_ctr, &power_off_ctr);
 
 	//// startup time /////
-	ss = (u32)((pTick.tick - rTick.tick)/1000000); total_time_in_sec += ss;
-	dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+	ss = (u32)((pTick.tick - rTick.tick) / 1000000); total_time_in_sec += ss;
+	dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
 	if(webman_config->chart)
 		sprintf( templn, "<a href=\"%s\">", CPU_RSX_CHART);
@@ -327,7 +327,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	///////////////////////
 
 	ss = (u32)total_time_in_sec;
-	dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+	dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
 	sprintf(templn, "</font><H1>&#x26A1; %'id %02d:%02d:%02d • %'i ON • %'i OFF (%i)</H1>", dd, hh, mm, ss, power_on_ctr, power_off_ctr, power_on_ctr - power_off_ctr); buffer += concat(buffer, templn);
 

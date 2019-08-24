@@ -447,7 +447,7 @@ int file_copy(char *file1, char *file2, u64 maxbytes)
 		return buf.st_size;
 	}
 
-	u64 pos = 0;
+	u64 pos;
 	u8 merge_part = 0;
 
 merge_next:
@@ -491,6 +491,7 @@ next_part:
 			// copy_file
 			if(is_ntfs2 || merge_part || cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd2, 0, 0) == CELL_FS_SUCCEEDED)
 			{
+				pos = 0;
 				while(size > 0)
 				{
 					if(copy_aborted) break;
@@ -538,7 +539,7 @@ next_part:
 
 					if(file_exists(file1))
 					{
-						cellFsClose(fd1); pos = 0;
+						cellFsClose(fd1);
 						goto merge_next;
 					}
 				}
@@ -564,7 +565,7 @@ next_part:
 					else
 						sprintf(file2 + flen - 2, "%02i", part);
 
-					part++; part_size = 0xFFFF0000ULL; pos = 0;
+					part++; part_size = 0xFFFF0000ULL;
 					goto next_part;
 				}
 				else

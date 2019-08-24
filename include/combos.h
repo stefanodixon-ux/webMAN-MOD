@@ -377,10 +377,10 @@
 								bool R2 = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2), bb;
 
 								///// startup/play time /////
-								bb = (!R2 && gTick.tick>rTick.tick); // show play time
-								ss = (u32)((pTick.tick-(bb?gTick.tick:rTick.tick))/1000000); dd = (u32)(ss / 86400);
-								if(dd>100) {bb=false; ss = (u32)((pTick.tick-rTick.tick)/1000000); dd = (u32)(ss / 86400);}
-								ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+								bb = (!R2 && gTick.tick > rTick.tick); // show play time
+								ss = (u32)((pTick.tick - (bb ? gTick.tick : rTick.tick)) / 1000000); dd = (u32)(ss / 86400);
+								if(dd > 100) {bb = false; ss = (u32)((pTick.tick-rTick.tick)/1000000); dd = (u32)(ss / 86400);}
+								ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 								/////////////////////////////
 
 								char net_type[8] = "", ip[ip_size] = "-";
@@ -406,7 +406,7 @@
 											 "Firmware : %s %s\n"
 											 "IP: %s  %s%s",
 											 t1, t2, (int)(((int)speed*100)/255),
-											 bb ? "Play":"Startup", dd, hh, mm, ss, smax,
+											 bb ? "Play" : "Startup", dd, hh, mm, ss, smax,
 											 fw_version, cfw_info, ip, net_type, syscalls_removed ? "  [noSC]" : "");
 
 								int hdd_free = (int)(get_free_space("/dev_hdd0")>>20);
@@ -420,7 +420,7 @@
 								{
 									////// play time //////
 									ss = (u32)((pTick.tick-gTick.tick)/1000000);
-									dd = (u32)(ss / 86400); ss = ss % 86400; hh = (u32)(ss / 3600); ss = ss % 3600; mm = (u32)(ss / 60); ss = ss % 60;
+									dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
 									if(dd<100) {char gname[200]; get_game_info(); sprintf(gname, "%s %s\n\n", _game_TitleID, _game_Title); sprintf(msg, "%sPlay: %id %02d:%02d:%02d\n%s", gname, dd, hh, mm, ss, tmp); }
 								}
