@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.8 MOD"
+#define WM_VERSION			"1.47.25.9 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -1303,8 +1303,8 @@ static void handleclient_www(u64 conn_s_p)
 			}
 			else
 			{
-				cobra_config->spoof_version = 0x0484;
-				cobra_config->spoof_revision = 67805;
+				cobra_config->spoof_version = 0x0485;
+				cobra_config->spoof_revision = 67869; // 0x0001091d
 			}
 
 			if( cobra_config->ps2softemu == 0 && cobra_get_ps2_emu_type() == PS2_EMU_SW )

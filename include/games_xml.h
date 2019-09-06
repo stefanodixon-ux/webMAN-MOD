@@ -142,27 +142,27 @@ static u32 get_buffer_size(u8 footprint)
 static void set_buffer_sizes(u8 footprint)
 {
 	BUFFER_SIZE_ALL = get_buffer_size(footprint);
-	BUFFER_SIZE_FTP	= ( _128KB_);
+	BUFFER_SIZE_FTP = ( _128KB_);
 
-	BUFFER_SIZE_PSP	= ( _32KB_);
-	BUFFER_SIZE_PS2	= ( _64KB_);
-	BUFFER_SIZE_DVD	= ( _64KB_);
+	BUFFER_SIZE_PSP = ( _32KB_);
+	BUFFER_SIZE_PS2 = ( _64KB_);
+	BUFFER_SIZE_DVD = ( _64KB_);
 
 	if(footprint == USE_MC) //vsh_mc
 	{
-		//BUFFER_SIZE_FTP	= ( _256KB_);
+		//BUFFER_SIZE_FTP = ( _256KB_);
 
 		//BUFFER_SIZE	= (1792*KB);
-		BUFFER_SIZE_PSX	= (webman_config->foot == 5) ? _768KB_ : _384KB_;
-		BUFFER_SIZE_PSP	= (webman_config->foot == 7) ? _768KB_ : _128KB_;
-		BUFFER_SIZE_PS2	= (webman_config->foot == 8) ? _768KB_ : _256KB_;
-		BUFFER_SIZE_DVD	= (webman_config->foot == 6) ? _768KB_ : _512KB_;
+		BUFFER_SIZE_PSX = (webman_config->foot == 5) ? _768KB_ : _384KB_;
+		BUFFER_SIZE_PSP = (webman_config->foot == 7) ? _768KB_ : _128KB_;
+		BUFFER_SIZE_PS2 = (webman_config->foot == 8) ? _768KB_ : _256KB_;
+		BUFFER_SIZE_DVD = (webman_config->foot == 6) ? _768KB_ : _512KB_;
 	}
 	else
 	if(footprint == 1) //MIN
 	{
 		//BUFFER_SIZE	= ( _128KB_);
-		BUFFER_SIZE_PSX	= (  _32KB_);
+		BUFFER_SIZE_PSX = (  _32KB_);
 	}
 	else
 	if(footprint == 2) //MAX
@@ -170,65 +170,65 @@ static void set_buffer_sizes(u8 footprint)
 		BUFFER_SIZE_FTP	= ( _256KB_);
 
 		//BUFFER_SIZE	= ( _512KB_);
-		BUFFER_SIZE_PSX	= ( _256KB_);
-		BUFFER_SIZE_PSP	= (  _64KB_);
-		BUFFER_SIZE_PS2	= ( _128KB_);
-		BUFFER_SIZE_DVD	= ( _192KB_);
+		BUFFER_SIZE_PSX = ( _256KB_);
+		BUFFER_SIZE_PSP = (  _64KB_);
+		BUFFER_SIZE_PS2 = ( _128KB_);
+		BUFFER_SIZE_DVD = ( _192KB_);
 	}
 	else
 	if(footprint == 3) //MIN+
 	{
 		//BUFFER_SIZE	= ( 320*KB);
-		BUFFER_SIZE_PSX	= (  _32KB_);
+		BUFFER_SIZE_PSX = (  _32KB_);
 	}
 	else
 	if(footprint == 4) //MAX PS3+
 	{
 		//BUFFER_SIZE	= ( 1088*KB);
-		BUFFER_SIZE_PSX	= (  _32KB_);
+		BUFFER_SIZE_PSX = (  _32KB_);
 	}
 	else
 	if(footprint == 5) //MAX PSX+
 	{
 		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX	= ( _768KB_);
-		BUFFER_SIZE_PSP	= (  _64KB_);
+		BUFFER_SIZE_PSX = ( _768KB_);
+		BUFFER_SIZE_PSP = (  _64KB_);
 	}
 	else
 	if(footprint == 6) //MAX BLU+
 	{
 		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX	= (  _64KB_);
-		BUFFER_SIZE_PSP	= (  _64KB_);
-		BUFFER_SIZE_DVD	= ( _768KB_);
+		BUFFER_SIZE_PSX = (  _64KB_);
+		BUFFER_SIZE_PSP = (  _64KB_);
+		BUFFER_SIZE_DVD = ( _768KB_);
 	}
 	else
 	if(footprint == 7) //MAX PSP+
 	{
 		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX	= (  _64KB_);
-		BUFFER_SIZE_PSP	= ( _768KB_);
-		BUFFER_SIZE_DVD	= (  _64KB_);
+		BUFFER_SIZE_PSX = (  _64KB_);
+		BUFFER_SIZE_PSP = ( _768KB_);
+		BUFFER_SIZE_DVD = (  _64KB_);
 	}
 	else
 	if(footprint == 8) //MAX PS2+
 	{
 		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX	= (  _64KB_);
-		BUFFER_SIZE_PS2	= ( _768KB_);
-		BUFFER_SIZE_DVD	= (  _64KB_);
+		BUFFER_SIZE_PSX = (  _64KB_);
+		BUFFER_SIZE_PS2 = ( _768KB_);
+		BUFFER_SIZE_DVD = (  _64KB_);
 	}
 	else	// if(footprint == 0) STANDARD
 	{
 		BUFFER_SIZE_ALL = ( 896*KB);
 		//BUFFER_SIZE	= ( 448*KB);
-		BUFFER_SIZE_PSX	= ( 160*KB);
-		BUFFER_SIZE_DVD	= ( _192KB_);
+		BUFFER_SIZE_PSX = ( 160*KB);
+		BUFFER_SIZE_DVD = ( _192KB_);
 	}
 
-	if((webman_config->cmask & PS1)) BUFFER_SIZE_PSX	= (_8KB_);
-	if((webman_config->cmask & PS2)) BUFFER_SIZE_PS2	= (_8KB_);
-	if((webman_config->cmask & PSP)) BUFFER_SIZE_PSP	= (_8KB_);
+	if((webman_config->cmask & PS1)) BUFFER_SIZE_PSX = (_8KB_);
+	if((webman_config->cmask & PS2)) BUFFER_SIZE_PS2 = (_8KB_);
+	if((webman_config->cmask & PSP)) BUFFER_SIZE_PSP = (_8KB_);
 	if((webman_config->cmask & (BLU | DVD)) == (BLU | DVD)) BUFFER_SIZE_DVD = (_8KB_);
 
 	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD);
@@ -885,8 +885,6 @@ continue_reading_folder_xml:
 	{
 		if(!add_xmbm_plus) _concat(&myxml_ngp, ADD_XMB_ITEM("eject"));
 
-		add_custom_xml(&myxml, templn, tempstr);
-
 		if( ADD_SETUP )
 		{
 			if(add_xmbm_plus)
@@ -901,6 +899,8 @@ continue_reading_folder_xml:
 			else
 				_concat(&myxml_ngp, ADD_XMB_ITEM("setup"));
 		}
+
+		add_custom_xml(&myxml, templn, tempstr);
 	}
 
 	// --- add sorted items to xml
