@@ -122,10 +122,10 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 	if(data[v3_entry].is_directory && IS_ISO_FOLDER)
 	{
-		const char *iso_ext[8] = {"iso", "ISO", "bin", "BIN", "mdf", "MDF", "img", "IMG"};
-		for(u8 e = 0; e < 10; e++)
+		const char *iso_ext[10] = {"iso", "ISO", "iso.0", "ISO.0", "bin", "BIN", "mdf", "MDF", "img", "IMG"};
+		for(u8 e = 0; e < 12; e++)
 		{
-			if(e >= 8) return FAILED;
+			if(e >= 10) return FAILED;
 
 			sprintf(tempstr, "%s/%s/%s.%s", param, data[v3_entry].name, data[v3_entry].name, iso_ext[e]);
 			if(remote_stat(ns, tempstr, &is_directory, &file_size, &mtime, &ctime, &atime, &abort_connection) == CELL_OK) break;
