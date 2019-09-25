@@ -516,6 +516,7 @@ int main()
 	file_copy(APP_USRDIR "/html/sman.htm",       XMLHOST_DIR "/sman.htm");
 	file_copy(APP_USRDIR "/html/sman.css",       XMLHOST_DIR "/sman.css");
 	file_copy(APP_USRDIR "/html/sman.js",        XMLHOST_DIR "/sman.js");
+	file_copy(APP_USRDIR "/html/help.html",      XMLHOST_DIR "/help.html");
 
 	// copy javascripts
 	file_copy(APP_USRDIR "/html/jquery.min.js",    XMLHOST_DIR "/jquery.min.js");  // jQuery v3.1.1
@@ -528,6 +529,9 @@ int main()
 
 	// copy css
 	file_copy(APP_USRDIR "/html/common.css",  XMLHOST_DIR "/common.css");
+
+	// crossdomain.xml
+	file_copy(APP_USRDIR "/html/crossdomain.xml", XMLHOST_DIR "/crossdomain.xml");
 
 	// fb.xml
 	if(is_ps3hen() == 0x1337)

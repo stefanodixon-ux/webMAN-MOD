@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.9 MOD"
+#define WM_VERSION			"1.47.25.10 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -1724,6 +1724,11 @@ parse_request:
 				reload_xmb();
 				sprintf(param, "/index.ps3");
 			}
+			else
+			if(islike(param, "/crossdomain.xml"))
+			{
+				sprintf(param, "%s%s", HTML_BASE_PATH, "/crossdomain.xml");
+			}
 
  #ifdef SYS_ADMIN_MODE
 			if(islike(param, "/admin.ps3"))
@@ -2889,7 +2894,13 @@ retry_response:
 					if(is_net) goto html_response;
 
 					if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);} else
-					if((file_exists(param) == false) && !islike(param, "/dev_") && (*html_base_path == '/')) {strcpy(header, param); sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
+					if(file_exists(param) == false) 
+					{
+						strcpy(header, param);
+
+						if(!islike(param, "/dev_") && (*html_base_path == '/')) {sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
+						if(file_exists(param) == false) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
+					}
 
 					is_binary = is_ntfs || (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED); allow_retry_response = true;
 				}

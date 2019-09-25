@@ -897,9 +897,14 @@ static void setup_form(char *buffer, char *templn)
 #ifdef BDVD_REGION
 	cobra_read_config(cobra_config);
 
+	cobra_config->bd_video_region = cconfig[5]; // One of BDRegion, or 0 for default
+	cobra_config->dvd_video_region = cconfig[6]; // One of DVDRegion or 0 for default
+	cobra_config->fan_speed = cconfig[15]; // 0 = SYSCON, 1 = Dynamic Fan Controller, 0x33 to 0xFF = Set manual fan speed
+
 	//BD Region
 	concat(buffer, "BD Region: <select name=\"bdr\">");
 	value = cobra_config->bd_video_region;
+
 	add_option_item(0, STR_DEFAULT , (value == 0) , buffer);
 	add_option_item(1, "A- America", (value == 1) , buffer);
 	add_option_item(2, "B- Europe" , (value == 2) , buffer);
@@ -908,6 +913,7 @@ static void setup_form(char *buffer, char *templn)
 	//DVD Region
 	concat(buffer, "</select> • DVD Region: <select name=\"dvr\">");
 	value = cobra_config->dvd_video_region;
+
 	add_option_item(0,  STR_DEFAULT          , (value == 0)  , buffer);
 	add_option_item(1,  "1- US/Canada"       , (value == 1)  , buffer);
 	add_option_item(2,  "2- Europe/Japan"    , (value == 2)  , buffer);

@@ -603,8 +603,6 @@ static int sys_get_version2(uint16_t *version)
 */
 static int sys_read_cobra_config(CobraConfig *cfg)
 {
-	cfg->size = sizeof(CobraConfig);
-	memset((uint8_t*)cfg, 0, cfg->size);
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_READ_COBRA_CONFIG, (uint64_t)(uint32_t)cfg);
 	return (int)p1;
 }
@@ -2359,6 +2357,8 @@ int cobra_get_ps2_emu_type(void)
 int cobra_read_config(CobraConfig *cfg)
 {
 	if(!cfg) return EINVAL;
+
+	memset((uint8_t*)cfg, 0, sizeof(CobraConfig));
 
 	cfg->size = sizeof(CobraConfig);
 	return sys_read_cobra_config(cfg);
