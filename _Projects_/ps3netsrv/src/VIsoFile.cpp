@@ -793,19 +793,18 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 
 			char *fileName = strrchr(fileList->path, '/') + 1;
 
+			char *s = new char[strlen(fileName) + 3];
+			strcpy(s, fileName);
+			strcat(s, ";1");
 			if (!joliet)
 			{
-				record->len_fi = strncpy_upper(&record->fi, fileName, MAX_ISONAME - 2) + 2;
-				strcat(&record->fi, ";1");
+				record->len_fi = strncpy_upper(&record->fi, s, MAX_ISONAME - 2);
 			}
 			else
 			{
-				char *s = new char[strlen(fileName) + 3];
-				strcpy(s, fileName);
-				strcat(s, ";1");
 				record->len_fi = utf8_to_ucs2((const unsigned char *)s, (uint16_t *)&record->fi, MAX_ISONAME/2) * 2;
-				delete[] s;
 			}
+			delete[] s;
 
 			record->len_dr = 0x27 + record->len_fi;
 			if (record->len_dr & 1)
