@@ -236,6 +236,7 @@ static u64 convertH(char *val)
 	for(u8 buff, i = 0, n = 0; i < 16 + n; i++)
 	{
 		if(val[i]==' ') {n++; continue;}
+		if(val[i]=='x') {val[i] = '0', n += 2;}
 
 		c = (val[i] | 0x20);
 		if(c >= '0' && c <= '9') buff = (c - '0');      else

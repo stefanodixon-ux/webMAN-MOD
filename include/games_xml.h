@@ -65,7 +65,7 @@ static void make_fb_xml(void)
 								  "<View id=\"seg_fb\">"
 								  "<Attributes>"
 								  "<Table key=\"mgames\">%s"
-								//XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
+								  XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
 								  XML_PAIR("ingame","disable")
 								  XML_PAIR("title","%s%s")
 								  XML_PAIR("info","%s")

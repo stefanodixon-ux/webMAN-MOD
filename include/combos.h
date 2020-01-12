@@ -633,7 +633,7 @@
 							}
  #endif //#ifdef PKG_HANDLER
 							else
-							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CIRCLE_BTN)) // SELECT+O (unmount)
+							if(!(webman_config->combo2 & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CIRCLE_BTN)) // SELECT+O (unmount)
 							{
 								// SELECT+O = unmount
 								// SELECT+X = unmount (JAP)
@@ -648,7 +648,7 @@
 							}
  #ifdef WM_CUSTOM_COMBO
 							else
-							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_TRIANGLE) ) // SELECT+TRIANGLE
+							if(!(webman_config->combo2 & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_TRIANGLE) ) // SELECT+TRIANGLE
 							{
 								// SELECT+TRIANGLE = RESERVED for custom combos
 
@@ -657,7 +657,7 @@
 								if(do_custom_combo("select_triangle")) break;    // RESERVED
 							}
 							else
-							if(!(webman_config->combo & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS) ) // SELECT+CROSS
+							if(!(webman_config->combo2 & UMNT_GAME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS) ) // SELECT+CROSS
 							{
 								// SELECT+CROSS = RESERVED for custom combos
 

@@ -140,7 +140,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.25.10 MOD"
+#define WM_VERSION			"1.47.26 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -2575,6 +2575,43 @@ parse_request:
 				goto exit_handleclient_www;
 			}
 	#endif
+
+			if(islike(param, "/syscall.ps3"))
+			{
+				// /syscall.ps3?<syscall-number>|0x<hex-value>|<decimal-value>|<string-value>
+				// e.g. http://localhost/syscall.ps3?392|0x1004|0x07|0x036
+				//      http://localhost/syscall.ps3?837|CELL_FS_UTILITY:HDD1|CELL_FS_FAT|/dev_hdd1|0|0|0|0
+				//      http://localhost/syscall.ps3?838|/dev_hdd1|0|1
+
+				char *p, *params = param + 13;
+				u64 sp[10], ret = 0; u8 n;
+				u16 sc = (u16)val(params);
+
+				for(n = 0; n <= 8; n++)
+				{
+					sp[n] = 0, p = strstr(params, "|"); if(!p) break;
+					params = p + 1, p[0] = NULL;
+					sp[n] = (*params == '0') ? convertH(params) : (u64)val(params); if(!sp[n] && (*params != '0')) sp[n] = (u64)(u32)(params);
+				}
+
+				switch (n)
+				{
+					case 0: {system_call_0(sc); ret = p1;} break;
+					case 1: {system_call_1(sc, sp[0]); ret = p1;} break;
+					case 2: {system_call_2(sc, sp[0], sp[1]); ret = p1;} break;
+					case 3: {system_call_3(sc, sp[0], sp[1], sp[2]); ret = p1;} break;
+					case 4: {system_call_4(sc, sp[0], sp[1], sp[2], sp[3]); ret = p1;} break;
+					case 5: {system_call_5(sc, sp[0], sp[1], sp[2], sp[3], sp[4]); ret = p1;} break;
+					case 6: {system_call_6(sc, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5]); ret = p1;} break;
+					case 7: {system_call_7(sc, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5], sp[6]); ret = p1;} break;
+					case 8: {system_call_8(sc, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5], sp[6], sp[7]); ret = p1;} break;
+				}
+
+				sprintf(param, "syscall%i(%i) => 0x%x", n, sc, ret);
+
+				http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				goto exit_handleclient_www;
+			}
 
  #endif //#ifndef LITE_EDITION
 
