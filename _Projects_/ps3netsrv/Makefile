@@ -19,6 +19,8 @@ LIBS += -lpthread
 endif
 
 ifeq ($(OS), windows)
+CFLAGS += -D_OS_WINDOWS
+CPPFLAGS += -D_OS_WINDOWS
 OBJS += src/scandir.o src/dirent.o
 CC = gcc
 CXX = g++
