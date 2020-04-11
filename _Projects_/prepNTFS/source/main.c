@@ -34,7 +34,7 @@ enum emu_modes
 
 #define PKGFILE 6 || m == 7 || m == 8
 
-#define FW_VERSION 4.85f
+#define FW_VERSION 4.86f
 
 typedef struct
 {
@@ -97,7 +97,7 @@ int main(int argc, const char* argv[])
 	char direntry[MAX_PATH_LEN];
 	char filename[MAX_PATH_LEN];
 	bool has_dirs, is_iso = false;
-	int cd_sector_size, cd_sector_size_param; 
+	int cd_sector_size, cd_sector_size_param;
 	char *ext;
 	u16 flen;
 

@@ -43,13 +43,14 @@ enum paths_ids
 #define IS_NTFS          (f0 == NTFS)
 #define IS_NET           (f0 >= 7 && f0 < NTFS)
 
-#define PS3 (1<<0)
-#define PS2 (1<<1)
-#define PS1 (1<<2)
-#define PSP (1<<3)
-#define BLU (1<<4)
-#define DVD (1<<5)
-#define ROM (1<<6)
+#define TYPE_ALL 0
+#define TYPE_PS1 1
+#define TYPE_PS2 2
+#define TYPE_PS3 3
+#define TYPE_PSP 4
+#define TYPE_VID 5
+#define TYPE_ROM 6
+#define TYPE_MAX 7
 
 #define PS3_ '3'
 

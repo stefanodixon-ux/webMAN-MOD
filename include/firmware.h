@@ -1,4 +1,4 @@
-#define LATEST_CFW	4.85f
+#define LATEST_CFW	4.86f
 
 #ifndef COBRA_ONLY
 static u64 base_addr = 0;
@@ -29,6 +29,7 @@ static u64 sc_142 = 0;
 #define FW483	0x323031382F30392FULL // 2018/09/
 #define FW484	0x323031392F30312FULL // 2019/01/
 #define FW485	0x323031392F30382FULL // 2019/08/
+#define FW486	0x323032302F30312FULL // 2020/01/
 
 #define SC_GET_PLATFORM_INFO		(387)
 #define SC_GET_CONSOLE_TYPE			(985)
@@ -87,6 +88,8 @@ static void detect_firmware(void)
 		peekq = lv2_peek_hen;
 		pokeq = lv2_poke_hen;
 		lv2_poke_fan = lv2_poke_fan_hen;
+		peek_lv1 = lv1_peek_hen;
+		poke_lv1 = lv1_poke_hen;
 	}
 
 	// get payload type & cobra_version
@@ -98,12 +101,13 @@ static void detect_firmware(void)
 		if(SYSCALL_TABLE) break;
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
 
-		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW485) ? 4.85f :
+		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW486) ? 4.86f :
+																					(peek(0x2FCB68) == FW485) ? 4.85f :
 																					(peek(0x2FCB68) == FW484) ? 4.84f :
+#ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x2FCB68) == FW483) ? 4.83f :
 																					(peek(0x2FCB68) == FW482) ? 4.82f :
 																					(peek(0x2FCB68) == FW481) ? 4.81f :
-#ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x2FCB68) == FW478) ? 4.78f :
 																					(peek(0x2FCB68) == FW476) ? 4.76f :
 																					(peek(0x2FCB68) == FW475) ? 4.75f :
@@ -129,10 +133,13 @@ static void detect_firmware(void)
 #endif  // #ifndef LAST_FIRMWARE_ONLY
 
 #ifdef DEX_SUPPORT
-		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW485) ? 4.85f :
+		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW486) ? 4.86f :
+																					(peek(0x31F028) == FW485) ? 4.85f :
 																					(peek(0x31F028) == FW484) ? 4.84f :
+ #ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x31F028) == FW482) ? 4.82f :
 																					(peek(0x31F028) == FW481) ? 4.81f :
+ #endif
 																					get_firmware_version(); dex_mode = 2;} else
  #ifndef LAST_FIRMWARE_ONLY
 		if(peek(0x30F3A0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_480D; c_firmware = 4.80f; dex_mode = 2;}	else
@@ -160,12 +167,13 @@ static void detect_firmware(void)
 	  //if(peek(0x32B270) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_450H; c_firmware = 4.50f; dex_mode = 1;}	else
 		if(peek(0x32EDC8) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_460H; c_firmware = 4.60f; dex_mode = 1;}	else
  #endif // #ifndef LAST_FIRMWARE_ONLY
-		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW485) ? 4.85f :
+		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW486) ? 4.86f :
+																					(peek(0x344B70) == FW485) ? 4.85f :
 																					(peek(0x344B70) == FW484) ? 4.84f :
+ #ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x344B70) == FW483) ? 4.83f :
 																					(peek(0x344B70) == FH482) ? 4.82f :
 																					(peek(0x344B70) == FW481) ? 4.81f :
- #ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x344B70) == FW480) ? 4.80f :
 																					(peek(0x344B70) == FW478) ? 4.78f :
 																					(peek(0x344B70) == FW476) ? 4.76f :

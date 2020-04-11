@@ -615,8 +615,8 @@ static int connect_to_remote_server(u8 server_id)
 				goto reconnect;
 			}
 
-			if(refreshing_xml)
-				webman_config->netd[server_id] = 0; // disable connection to offline server
+			if(refreshing_xml && (webman_config->refr))
+				webman_config->netd[server_id] = 0; // disable connection to offline servers (only when content scan on startup is disabled)
 
 			if(server_id > 0 || !webman_config->netd[0] || islike(webman_config->allow_ip, "127.") || IS(webman_config->allow_ip, "localhost")) return ns;
 

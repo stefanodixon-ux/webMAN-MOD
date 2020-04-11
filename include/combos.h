@@ -575,7 +575,10 @@
  #endif
 									{
  #ifdef EXT_GDATA
-										set_gamedata_status(extgd^1, true); // SELECT+SQUARE
+										if((extgd == 0) && isDir("/dev_bdvd/GAMEI")) 
+											set_gamedata_status(2, true); // enable external gameDATA (if GAMEI exists on /bdvd)
+										else
+											set_gamedata_status(extgd^1, true); // SELECT+SQUARE
  #endif
 										n = 0;
 										break;

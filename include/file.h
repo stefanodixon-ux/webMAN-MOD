@@ -1094,3 +1094,25 @@ static void del_turnoff(u8 beeps)
 		if(beeps == 2) { BEEP2 }
 	}
 }
+#ifdef COBRA_ONLY
+static void map_earth(u8 id, char *param)
+{
+	if(isDir("/dev_hdd0/tmp/earth"))
+	{
+		if(id)
+			webman_config->earth_id = id;
+		else
+			id = ++(webman_config->earth_id);
+
+		sprintf(param, "/dev_hdd0/tmp/earth/%i.qrc", id);
+		if(file_exists(param))
+			{sys_map_path((char*)"/dev_flash/vsh/resource/qgl/earth.qrc",  param);}
+		else
+		{
+			webman_config->earth_id = 0;
+			sprintf(param, "/dev_flash/vsh/resource/qgl/earth.qrc");
+		}
+		save_settings();
+	}
+}
+#endif

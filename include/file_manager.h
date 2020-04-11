@@ -714,6 +714,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			CellFsDirent entry_s; u64 read_e; // list root folder using the slower readdir
 			char *entry_name = (is_root) ? entry_s.d_name : entry.entry_name.d_name;
 
+#ifdef USE_NTFS
 			if(is_ntfs && !param[11])
 			{
 				flen = sprintf(line_entry[idx].path,  "!     "
@@ -723,7 +724,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				idx++, dirs++;
 				tlen += flen;
 			}
-
+#endif
 			while(working)
 			{
 #ifdef USE_NTFS
@@ -795,9 +796,13 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			}
 
 #ifdef USE_NTFS
-			if(is_ntfs && pdir) ps3ntfs_dirclose(pdir);
+			if(is_ntfs)
+			{
+				if(pdir) ps3ntfs_dirclose(pdir);
+			}
+			else
 #endif
-			if(!is_ntfs) cellFsClosedir(fd);
+			cellFsClosedir(fd);
 		}
 
 		/////////////////////////////

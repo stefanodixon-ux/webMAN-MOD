@@ -1,5 +1,7 @@
 #ifdef SLAUNCH_FILE
 
+#define MAX_SLAUNCH_ITEMS	2000
+
 static bool custom_icon = false; // override default cover mode using index.ps3?cover=<cover type> (icon0, mm, disc, online)
 static int create_slaunch_file(void);
 static void add_slaunch_entry(int fd, const char *neth, const char *path, const char *filename, const char *icon, const char *name, const char *id, u8 f1);

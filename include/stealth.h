@@ -227,7 +227,6 @@ static void block_online_servers(bool notify)
 			u64 mem = 0; u8 pcount = 0;
 
 			// LV1
-
 			for(u64 addr = 0x880000; addr < 0xE1FFFFULL; addr += 4)//16MB
 			{
 				mem = peek_lv1(addr);

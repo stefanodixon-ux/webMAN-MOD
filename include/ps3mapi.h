@@ -28,6 +28,9 @@
 #define PS3MAPI_OPCODE_UNLOAD_PROC_MODULE			0x0045
 #define PS3MAPI_OPCODE_UNLOAD_VSH_PLUGIN			0x0046
 #define PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO			0x0047
+#define PS3MAPI_OPCODE_GET_PROC_MODULE_SEGMENTS		0x0048 // TheRouletteBoi
+#define PS3MAPI_OPCODE_GET_VSH_PLUGIN_BY_NAME		0x004F
+
 #define PS3MAPI_OPCODE_GET_IDPS 					0x0081
 #define PS3MAPI_OPCODE_SET_IDPS 					0x0082
 #define PS3MAPI_OPCODE_GET_PSID 					0x0083
@@ -53,7 +56,7 @@
 #define PS3MAPI_FIND_FREE_SLOT						NULL
 
 #define unload_vsh_plugin(a) get_vsh_plugin_slot_by_name(a, true)
-#define get_free_slot(a)     get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, false)
+#define get_free_slot(a)	 get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, false)
 
 ///////////// PS3MAPI END //////////////
 
@@ -244,14 +247,14 @@ static void ps3mapi_led(char *buffer, char *templn, char *param)
 	sprintf(templn, "<form id=\"led\" action=\"/led%s<br>"
 					"<b>%s:</b>  <select name=\"color\">", HTML_FORM_METHOD,  "Color"); concat(buffer, templn);
 
-	add_option_item(0, "Red",                IS_MARKED("color=0"), buffer);
-	add_option_item(1, "Green",              IS_MARKED("color=1"), buffer);
+	add_option_item(0, "Red",				IS_MARKED("color=0"), buffer);
+	add_option_item(1, "Green",			  IS_MARKED("color=1"), buffer);
 	add_option_item(2, "Yellow (Red+Green)", IS_MARKED("color=2"), buffer);
 
 	sprintf(templn, "</select>   <b>%s:</b>  <select name=\"mode\">", "Mode"); concat(buffer, templn);
 
-	add_option_item(0, "Off",        IS_MARKED("mode=0"), buffer);
-	add_option_item(1, "On",         IS_MARKED("mode=1"), buffer);
+	add_option_item(0, "Off",		IS_MARKED("mode=0"), buffer);
+	add_option_item(1, "On",		 IS_MARKED("mode=1"), buffer);
 	add_option_item(2, "Blink fast", IS_MARKED("mode=2"), buffer);
 	add_option_item(3, "Blink slow", IS_MARKED("mode=3"), buffer);
 
@@ -492,6 +495,17 @@ static void add_proc_list(char *buffer, char *templn, u32 *proc_id)
 		memset(templn, 0, MAX_LINE_LEN);
 		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_NAME_BY_PID, (u64)pid, (u64)(u32)templn); }
 		concat(buffer, templn);
+
+		char url[32]; sprintf(url, "/syscall.ps3?19|%i", pid);
+		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Kill", HTML_ONCLICK, url);
+		concat(buffer, templn);
+
+		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Pause", HTML_ONCLICK, "/browser.ps3$rsx_pause");
+		concat(buffer, templn);
+
+		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Continue", HTML_ONCLICK, "/browser.ps3$rsx_continue");
+		concat(buffer, templn);
+
 		sprintf(templn, "<input name=\"proc\" type=\"hidden\" value=\"%u\"><br><br>", pid);
 		concat(buffer, templn);
 
@@ -903,7 +917,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 		HTML_BUTTON, dex_mode ?
 					"boot_plugins_dex.txt" :
 					"boot_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
-		HTML_BUTTON, dex_mode ? 
+		HTML_BUTTON, dex_mode ?
 					"boot_plugins_nocobra_dex.txt" :
 					"boot_plugins_nocobra.txt",		HTML_ONCLICK, "/vshplugin.ps3mapi?s=4",
 		HTML_BUTTON, "mamba_plugins.txt",			HTML_ONCLICK, "/vshplugin.ps3mapi?s=1",
@@ -916,6 +930,51 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR);
 	concat(buffer, templn);
+}
+
+static sys_prx_id_t load_start(const char *path)
+{
+	int modres, res;
+	sys_prx_id_t id;
+	id = sys_prx_load_module(path, 0, NULL);
+	if (id < CELL_OK)
+	{
+		BEEP3;
+		return id;
+	}
+	res = sys_prx_start_module(id, 0, NULL, &modres, 0, NULL);
+	if (res < CELL_OK)
+	{
+		BEEP3;
+		return res;
+	}
+	else
+	{
+		BEEP1;
+		return id;
+	}
+}
+
+static sys_prx_id_t stop_unload(sys_prx_id_t id)
+{
+	int modres, res;
+	res = sys_prx_stop_module(id, 0, NULL, &modres, 0, NULL);
+	if (res < CELL_OK)
+	{
+		BEEP3;
+		return res;
+	}
+	res = sys_prx_unload_module(id, 0, NULL);
+	if (res < CELL_OK)
+	{
+		BEEP3;
+		return res;
+	}
+	else
+	{
+		BEEP1;
+		return id;
+	}
 }
 
 static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
@@ -934,14 +993,18 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 			if(pos)
 			{
 				unsigned int prx_id = get_valuen32(pos, "unload_slot=");
-				{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); }
+				//{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); }
+				stop_unload(prx_id); // <- unload system modules
 			}
 			else
 			{
 				char prx_path[STD_PATH_LEN];
 				if(get_param("prx=", prx_path, param, STD_PATH_LEN))
 				{
-					system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)prx_path, NULL, 0);
+					if(strstr(prx_path, "/dev_flash"))
+						load_start(prx_path); // <- load system modules from flash to process
+					else
+						{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)prx_path, NULL, 0); } // <- load custom modules to process
 				}
 			}
 		}
@@ -963,7 +1026,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 
 	add_proc_list(buffer, templn, &pid);
 
-	if(is_ps3mapi_home)
+	if(is_ps3mapi_home || !pid)
 		sprintf(templn, "<input class=\"bs\" type=\"submit\" value=\" Set \" /></form>");
 	else
 		sprintf(templn, "</form>");
@@ -1003,7 +1066,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						"<tr>"
 						 "<td width=\"75\" class=\"la\">%i</td>"
 						 "<td width=\"300\" class=\"la\">%s</td>"
-						 "<td width=\"500\" class=\"la\">", 
+						 "<td width=\"500\" class=\"la\">",
 						slot, tmp_name); buffer += concat(buffer, templn);
 
 				buffer += add_breadcrumb_trail(buffer, tmp_filename);
@@ -1029,10 +1092,10 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						 "<td width=\"100\" class=\"ra\">"
 						  "<form action=\"/gameplugin" HTML_FORM_METHOD_FMT
 						   "<td width=\"500\" class=\"la\">"
-						     "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
-						     HTML_INPUT("prx\" list=\"plugins", "", "128", "75")
-						     "<input name=\"load_slot\" type=\"hidden\" value=\"%i\">"
-						     "<input type=\"submit\" value=\" Load \">"
+							 "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
+							 HTML_INPUT("prx\" list=\"plugins", "", "128", "75")
+							 "<input name=\"load_slot\" type=\"hidden\" value=\"%i\">"
+							 "<input type=\"submit\" value=\" Load \">"
 						   "</td>"
 						  "</form>"
 						 "</td>"
@@ -1061,7 +1124,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 
 #define PS3MAPI_RECV_SIZE  2048
 
-#define PS3MAPI_MAX_LEN    383
+#define PS3MAPI_MAX_LEN	383
 
 static u32 BUFFER_SIZE_PS3MAPI = (_64KB_);
 
@@ -1079,12 +1142,12 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 	char buffer[PS3MAPI_RECV_SIZE];
 	char cmd[20], param1[PS3MAPI_MAX_LEN + 1], param2[PS3MAPI_MAX_LEN + 1];
 
-	#define PS3MAPI_OK_150    "150 OK: Binary status okay; about to open data connection.\r\n"
-	#define PS3MAPI_OK_200    "200 OK: The requested action has been successfully completed.\r\n"
-	#define PS3MAPI_OK_220    "220 OK: PS3 Manager API Server v1.\r\n"
-	#define PS3MAPI_OK_221    "221 OK: Service closing control connection.\r\n"
-	#define PS3MAPI_OK_226    "226 OK: Closing data connection. Requested binary action successful.\r\n"
-	#define PS3MAPI_OK_230    "230 OK: Connected to PS3 Manager API Server.\r\n"
+	#define PS3MAPI_OK_150	"150 OK: Binary status okay; about to open data connection.\r\n"
+	#define PS3MAPI_OK_200	"200 OK: The requested action has been successfully completed.\r\n"
+	#define PS3MAPI_OK_220	"220 OK: PS3 Manager API Server v1.\r\n"
+	#define PS3MAPI_OK_221	"221 OK: Service closing control connection.\r\n"
+	#define PS3MAPI_OK_226	"226 OK: Closing data connection. Requested binary action successful.\r\n"
+	#define PS3MAPI_OK_230	"230 OK: Connected to PS3 Manager API Server.\r\n"
 
 	#define PS3MAPI_ERROR_425 "425 Error: Can't open data connection.\r\n"
 	#define PS3MAPI_ERROR_451 "451 Error: Requested action aborted. Local error in processing.\r\n"
@@ -1164,7 +1227,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 						setPluginExit();
 
-						if(_IS(cmd, "REBOOT"))     {system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0); }
+						if(_IS(cmd, "REBOOT"))	 {system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0); }
 						if(_IS(cmd, "SOFTREBOOT")) {system_call_3(SC_SYS_POWER, SYS_SOFT_REBOOT, NULL, 0); }
 						if(_IS(cmd, "HARDREBOOT")) {system_call_3(SC_SYS_POWER, SYS_HARD_REBOOT, NULL, 0); }
 						if(_IS(cmd, "SHUTDOWN"))   {system_call_4(SC_SYS_POWER, SYS_SHUTDOWN, 0, 0, 0); }
@@ -1622,7 +1685,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					if(pasv_s >= 0) sclose(&pasv_s);
 
 					p1x = ( (pasv_port & 0xff00) >> 8) | 0x80; // use ports 32768 -> 65528 (0x8000 -> 0xFFF8)
-					p2x = ( (pasv_port & 0x00ff)     );
+					p2x = ( (pasv_port & 0x00ff)	 );
 
 					pasv_s = slisten(getPort(p1x, p2x), 1);
 

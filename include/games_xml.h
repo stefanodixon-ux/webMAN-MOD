@@ -14,8 +14,6 @@
 
 #define XML_KEY_LEN				7 /* 1 + 6 = Group + 6 chars */
 
-#define USE_MC					99
-
 #define XMB_GROUPS				(!webman_config->nogrp)
 #define ADD_SETUP				(!webman_config->nosetup)
 
@@ -106,132 +104,6 @@ static void make_fb_xml(void)
 			}
 		}
 	}
-}
-
-static u32 get_buffer_size(u8 footprint)
-{
-	if(webman_config->vsh_mc && (footprint == USE_MC)) //vsh_mc
-	{
-		return _3MB_;
-	}
-
-	if(footprint == 1) //MIN
-	{
-#ifndef LITE_EDITION
-		return ( 320*KB);
-#else
-		return ( _256KB_);
-#endif
-	}
-	else
-	if(footprint == 2 || footprint >= 4) //MAX
-	{
-		return ( 1280*KB);
-	}
-	else
-	if(footprint == 3) //MIN+
-	{
-		return (_512KB_);
-	}
-	else	//STANDARD
-	{
-		return ( 896*KB);
-	}
-}
-
-static void set_buffer_sizes(u8 footprint)
-{
-	BUFFER_SIZE_ALL = get_buffer_size(footprint);
-	BUFFER_SIZE_FTP = ( _128KB_);
-
-	BUFFER_SIZE_PSP = ( _32KB_);
-	BUFFER_SIZE_PS2 = ( _64KB_);
-	BUFFER_SIZE_DVD = ( _64KB_);
-
-	if(footprint == USE_MC) //vsh_mc
-	{
-		//BUFFER_SIZE_FTP = ( _256KB_);
-
-		//BUFFER_SIZE	= (1792*KB);
-		BUFFER_SIZE_PSX = (webman_config->foot == 5) ? _768KB_ : _384KB_;
-		BUFFER_SIZE_PSP = (webman_config->foot == 7) ? _768KB_ : _128KB_;
-		BUFFER_SIZE_PS2 = (webman_config->foot == 8) ? _768KB_ : _256KB_;
-		BUFFER_SIZE_DVD = (webman_config->foot == 6) ? _768KB_ : _512KB_;
-	}
-	else
-	if(footprint == 1) //MIN
-	{
-		//BUFFER_SIZE	= ( _128KB_);
-		BUFFER_SIZE_PSX = (  _32KB_);
-	}
-	else
-	if(footprint == 2) //MAX
-	{
-		BUFFER_SIZE_FTP	= ( _256KB_);
-
-		//BUFFER_SIZE	= ( _512KB_);
-		BUFFER_SIZE_PSX = ( _256KB_);
-		BUFFER_SIZE_PSP = (  _64KB_);
-		BUFFER_SIZE_PS2 = ( _128KB_);
-		BUFFER_SIZE_DVD = ( _192KB_);
-	}
-	else
-	if(footprint == 3) //MIN+
-	{
-		//BUFFER_SIZE	= ( 320*KB);
-		BUFFER_SIZE_PSX = (  _32KB_);
-	}
-	else
-	if(footprint == 4) //MAX PS3+
-	{
-		//BUFFER_SIZE	= ( 1088*KB);
-		BUFFER_SIZE_PSX = (  _32KB_);
-	}
-	else
-	if(footprint == 5) //MAX PSX+
-	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = ( _768KB_);
-		BUFFER_SIZE_PSP = (  _64KB_);
-	}
-	else
-	if(footprint == 6) //MAX BLU+
-	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = (  _64KB_);
-		BUFFER_SIZE_PSP = (  _64KB_);
-		BUFFER_SIZE_DVD = ( _768KB_);
-	}
-	else
-	if(footprint == 7) //MAX PSP+
-	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = (  _64KB_);
-		BUFFER_SIZE_PSP = ( _768KB_);
-		BUFFER_SIZE_DVD = (  _64KB_);
-	}
-	else
-	if(footprint == 8) //MAX PS2+
-	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = (  _64KB_);
-		BUFFER_SIZE_PS2 = ( _768KB_);
-		BUFFER_SIZE_DVD = (  _64KB_);
-	}
-	else	// if(footprint == 0) STANDARD
-	{
-		BUFFER_SIZE_ALL = ( 896*KB);
-		//BUFFER_SIZE	= ( 448*KB);
-		BUFFER_SIZE_PSX = ( 160*KB);
-		BUFFER_SIZE_DVD = ( _192KB_);
-	}
-
-	if((webman_config->cmask & PS1)) BUFFER_SIZE_PSX = (_8KB_);
-	if((webman_config->cmask & PS2)) BUFFER_SIZE_PS2 = (_8KB_);
-	if((webman_config->cmask & PSP)) BUFFER_SIZE_PSP = (_8KB_);
-	if((webman_config->cmask & (BLU | DVD)) == (BLU | DVD)) BUFFER_SIZE_DVD = (_8KB_);
-
-	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD);
 }
 
 static void add_custom_xml(t_string *myxml, char *custom_xml, char *query_xmb)
@@ -494,7 +366,7 @@ scan_roms:
 	char localhost[24]; sprintf(localhost, "http://%s", local_ip);
 	char *proxy_plugin = (char*)WEB_LINK_PAIR;
 	#ifdef WM_PROXY_SPRX
-	if(file_exists(WM_RES_PATH "/wm_proxy.sprx")) {proxy_plugin = (char*)XAI_LINK_PAIR, *localhost = NULL;}
+	if(file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_plugin = (char*)XAI_LINK_PAIR, *localhost = NULL;}
 	#endif
 
 	#if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)

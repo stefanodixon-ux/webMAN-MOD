@@ -40,6 +40,8 @@ input[type="submit"],.bs,input[type="button"]{border:1px;padding:6px 10px;border
 #left_action a{color:#e0e0e0;cursor:pointer;}
 
 body,td,th{color:#f0f0f0;}
+select,input {border-radius: 8px; padding: 2px;}
+textarea {border-radius: 8px; padding: 5px; margin-bottom: 5px;}
 
 .propfont{font-family:"Courier New",Courier,monospace;font-size:16px;}
 
@@ -254,4 +256,4 @@ iframe {
 	40%	{bottom:0px;}
 }
 
-#rcpy,#rxml,#rhtm,#wmsg{position:fixed;top:40%;left:30%;width:40%;height:90px;z-index:5;border:5px solid #ccc;border-radius:25px;padding:10px;color:#fff;text-align:center;background-image:-webkit-gradient(linear,0 0,0 100%,color-stop(0,#999),color-stop(0.02,#666),color-stop(1,#222));background-image:-moz-linear-gradient(top,#999,#666 2%,#222);animation-name:msg;animation-duration: 6s;animation-iteration-count:infinite;display:none;}
+#rcpy,#rxml,#rhtm,#wmsg{position:fixed;top:40%;left:30%;width:40%;height:90px;z-index:5;box-shadow:20px 20px 50px #333;border:5px solid #ccc;border-radius:25px;padding:10px;color:#fff;text-align:center;background-image:-webkit-gradient(linear,0 0,0 100%,color-stop(0,#999),color-stop(0.02,#666),color-stop(1,#222));background-image:-moz-linear-gradient(top,#999,#666 2%,#222);animation-name:msg;animation-duration: 6s;animation-iteration-count:infinite;display:none;}

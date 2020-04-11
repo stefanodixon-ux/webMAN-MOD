@@ -70,6 +70,7 @@ static void setup_parse_settings(char *param)
 #endif
 
 	webman_config->nobeep = IS_UNMARKED("nb=1");
+	webman_config->wm_proxy = IS_UNMARKED("wp=1");
 
 	//Wait for any USB device to be ready
 	webman_config->bootd=get_valuen(param, "&b=", 0, 30);
@@ -163,6 +164,8 @@ static void setup_parse_settings(char *param)
 	if(IS_UNMARKED("pgd=1")) webman_config->combo2|=EXTGAMDAT;
 #ifndef LITE_EDITION
 	if(IS_UNMARKED("p2s=1")) webman_config->combo2|=PS2SWITCH;
+#endif
+#ifdef NET_SUPPORT
 	if(IS_UNMARKED("pn0=1")) webman_config->combo2|=MOUNTNET0;
 	if(IS_UNMARKED("pn1=1")) webman_config->combo2|=MOUNTNET1;
 #endif
@@ -203,8 +206,10 @@ static void setup_parse_settings(char *param)
 	webman_config->ftp_port = get_port(param, "ff=", 21);
 	webman_config->ftp_timeout = get_valuen(param, "tm=", 0, 255); //mins
 
+#ifdef PS3NET_SERVER
 	webman_config->netsrvd = IS_MARKED("nd=1" );
 	webman_config->netsrvp = get_port(param, "netp=", NETPORT);
+#endif
 
 #ifdef FIX_GAME
 	webman_config->fixgame = get_valuen(param, "fm=", 0, 2);
@@ -313,7 +318,7 @@ static void setup_parse_settings(char *param)
 #endif
 
 #ifdef COBRA_ONLY
- #ifndef LITE_EDITION
+ #ifdef NET_SUPPORT
 	char field[8];
 	for(u8 id = 0; id < netsrvs; id++)
 	{
@@ -559,7 +564,7 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, "</td></tr></table>" HTML_BLU_SEPARATOR);
 
 #ifdef COBRA_ONLY
- #ifndef LITE_EDITION
+ #ifdef NET_SUPPORT
 	//ps3netsvr settings
 	char _nd[4], _neth[6], _netp[6], PS3NETSRV[88];
 	sprintf(PS3NETSRV, " &nbsp; <a href=\"/net0\" style=\"%s\">PS3NETSRV#1 IP:</a>", HTML_URL_STYLE);
@@ -612,12 +617,11 @@ static void setup_form(char *buffer, char *templn)
 					"<b><a class=\"tg\" href=\"javascript:tgl(cfg);\"> " WM_APPNAME " MOD %s </a></b><br><div id=\"cfg\">", STR_SETUP); concat(buffer, templn);
 
 	add_check_box("lp", false, STR_LPG   , " • ",   (webman_config->lastp),  buffer);
-#ifdef COBRA_ONLY
 	add_check_box("nb", false, "BEEP", " • ",      !(webman_config->nobeep), buffer);
-	add_check_box("sn", false, "No SND0.AT3", _BR_, (webman_config->nosnd0), buffer);
-#else
-	add_check_box("nb", false, "BEEP", _BR_,       !(webman_config->nobeep), buffer);
+#ifdef COBRA_ONLY
+	add_check_box("sn", false, "No SND0.AT3", " • ", (webman_config->nosnd0), buffer);
 #endif
+	add_check_box("wp", false, "wm_proxy", _BR_, !(webman_config->wm_proxy), buffer);
 
 	add_check_box("ab", false, STR_AUTOB  , _BR_, (webman_config->autob), buffer);
 	add_check_box("dy", false, STR_DELAYAB, _BR_, (webman_config->delay), buffer);
@@ -640,11 +644,11 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(templn, HTML_NUMBER("tm", "%i", "0", "255") " mins<br>", webman_config->ftp_timeout); concat(buffer, templn);
 #endif
 
- #ifdef PS3NET_SERVER
+#ifdef PS3NET_SERVER
 	sprintf(templn, "%s", STR_FTPSVC); char *pos = strcasestr(templn, "FTP"); if(pos) {pos[0] = 'N', pos[1] = 'E', pos[2] = 'T';}
 	add_check_box("nd", false, templn,   " : ", (webman_config->netsrvd) , buffer);
 	sprintf(templn, HTML_PORT("ndp", "%i") "<br>", webman_config->netsrvp); concat(buffer, templn);
- #endif
+#endif
 
 #ifdef LITE_EDITION
 	add_check_box("bn", false,  STR_ACCESS,   _BR_, (webman_config->bind) , buffer);
@@ -1022,8 +1026,10 @@ static void setup_form(char *buffer, char *templn)
  #ifdef COBRA_ONLY
 	add_check_box("pdc", false, STR_DISCOBRA,   " : <b>L3+L2+&#8710;</b><br>"    , !(webman_config->combo & DISACOBRA),  buffer);
  #endif
+ #ifdef NET_SUPPORT
 	add_check_box("pn0", false, "NET0",        " : <b>SELECT+R2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET0), buffer);
 	add_check_box("pn1", false, "NET1",        " : <b>SELECT+L2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET1), buffer);
+ #endif
 #endif
 
 #ifdef REX_ONLY

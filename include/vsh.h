@@ -185,7 +185,7 @@ static bool explore_exec_push(u32 usecs, u8 focus_first)
 		else
 		{
 			gTick.tick =  rTick.tick + 1; // notify in-game
-			explore_interface->ExecXMBcommand("exec_push", 0, 0); 
+			explore_interface->ExecXMBcommand("exec_push", 0, 0);
 		}
 
 		return true;
@@ -203,7 +203,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 	for(n = 0; n < 15; n++) {view = View_Find("explore_plugin"); if(view) break; if(wait_for_abort(2000000)) return;}
 
-	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 10); if(n) {if(wait_for_abort(3000000)) return;}
+	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 15); if(n) {if(wait_for_abort(3000000)) return;}
 
 	if(view)
 	{

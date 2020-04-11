@@ -1,3 +1,7 @@
+#define IS_INSTALLING		(View_Find("game_plugin") != 0)
+#define IS_INSTALLING_NAS	(View_Find("nas_plugin")  != 0)
+#define IS_DOWNLOADING		(View_Find("download_plugin") != 0)
+
 #ifdef PKG_HANDLER
 
 // /install_ps3<pkg-path>             Keeps pkg after installation
@@ -40,10 +44,6 @@ static bool install_in_progress = false;
 
 #define PKG_MAGIC				0x7F504B47
 #define XMM0					0x584d4d30
-
-#define IS_INSTALLING		(View_Find("game_plugin") != 0)
-#define IS_INSTALLING_NAS	(View_Find("nas_plugin")  != 0)
-#define IS_DOWNLOADING		(View_Find("download_plugin") != 0)
 
 typedef struct {
 	u32 magic; // 0x7F504B47 //

@@ -93,7 +93,7 @@ static void send_reply(int conn_s_ftp, int err)
 	else if(err == FTP_OUT_OF_MEMORY)
 	{
 		ssend(conn_s_ftp, "451 ERR, Out of memory\r\n");	// Requested action aborted. Local error in processing.
-	}	
+	}
 	else
 	{
 		ssend(conn_s_ftp, FTP_ERROR_451);	// Requested action aborted. Local error in processing.
@@ -828,6 +828,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							if(sysmem)
 							{
+#ifdef COPY_PS3
+								if(!copy_in_progress) {ftp_state = 1; strcpy(current_file, filename);}
+#endif
 								char *buffer2 = (char*)sysmem;
 #ifdef USE_NTFS
 								if(is_ntfs_path(filename))
@@ -890,6 +893,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									}
 									cellFsClose(fd);
 								}
+								ftp_state = 0;
 							}
 							else
 								err = FTP_OUT_OF_MEMORY;
@@ -923,11 +927,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							if(sysmem)
 							{
-								char *buffer2 = (char*)sysmem;
+								char *buffer2 = (char*)sysmem; int read_e = 0;
 
 								setsockopt(data_s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
-
-								int read_e = 0;
+#ifdef COPY_PS3
+								if(!copy_in_progress) {ftp_state = 2; strcpy(current_file, filename);}
+#endif
 #ifdef USE_NTFS
 								if(is_ntfs_path(filename))
 								{
@@ -1010,6 +1015,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										}
 									}
 								}
+								ftp_state = 0;
 							}
 							else
 								err = FTP_OUT_OF_MEMORY;

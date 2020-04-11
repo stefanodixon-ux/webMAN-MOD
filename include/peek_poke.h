@@ -26,7 +26,7 @@ static u64 lv1_peek_ps3mapi(u64 addr)
 }
 #endif
 
-/////////////////// LV1 PEEK //////////////////////
+/////////////////// LV1 POKE //////////////////////
 static void lv1_poke_cfw( u64 addr, u64 value)
 {
 	system_call_2(SC_POKE_LV1, addr, value);
@@ -91,12 +91,27 @@ static u64 peek(u64 addr)
 {
 	return peekq(addr | 0x8000000000000000ULL);
 }
-///////////////// LV2 POKE32 //////////////////////
+///////////////// LV1/LV2 POKE HEN ////////////////
 static void lv2_poke_fan_hen(u64 addr, u64 value)
 {
 	system_call_2(SC_POKE_LV2, addr, value); //{system_call_3(SC_COBRA_SYSCALL8, 0x7003ULL, addr, value);} // advanced poke (requires restore original value)
 }
 
+static void lv1_poke_hen(u64 addr, u64 value)
+{
+	if(addr >= LV2_OFFSET_ON_LV1)
+		pokeq((addr - LV2_OFFSET_ON_LV1) | 0x8000000000000000ULL, value);
+	else
+		poke_lv1(addr, value);
+}
+
+static u64 lv1_peek_hen(u64 addr)
+{
+	if(addr >= LV2_OFFSET_ON_LV1)
+		return peek(addr - LV2_OFFSET_ON_LV1);
+	else
+		return peek_lv1(addr);
+}
 ///////////////////////////////////////////////////
 
 /*

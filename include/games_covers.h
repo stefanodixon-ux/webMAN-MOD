@@ -1,5 +1,24 @@
 #define TITLEID_LEN  10
 
+static char wm_icons[14][60] = {WM_ICONS_PATH "/icon_wm_album_ps3.png", //024.png  [0]
+								WM_ICONS_PATH "/icon_wm_album_psx.png", //026.png  [1]
+								WM_ICONS_PATH "/icon_wm_album_ps2.png", //025.png  [2]
+								WM_ICONS_PATH "/icon_wm_album_psp.png", //022.png  [3]
+								WM_ICONS_PATH "/icon_wm_album_dvd.png", //023.png  [4]
+
+								WM_ICONS_PATH "/icon_wm_ps3.png",       //024.png  [5]
+								WM_ICONS_PATH "/icon_wm_psx.png",       //026.png  [6]
+								WM_ICONS_PATH "/icon_wm_ps2.png",       //025.png  [7]
+								WM_ICONS_PATH "/icon_wm_psp.png",       //022.png  [8]
+								WM_ICONS_PATH "/icon_wm_dvd.png",       //023.png  [9]
+
+								WM_ICONS_PATH "/icon_wm_settings.png",  //icon/icon_home.png  [10]
+								WM_ICONS_PATH "/icon_wm_eject.png",     //icon/icon_home.png  [11]
+
+								WM_ICONS_PATH "/icon_wm_bdv.png",       //024.png  [12]
+								WM_ICONS_PATH "/icon_wm_retro.png",     //023.png  [13]
+								};
+
 enum nocov_options
 {
 	SHOW_MMCOVERS = 0,
@@ -28,12 +47,16 @@ enum icon_type
 #define SHOW_COVERS_OR_ICON0  (webman_config->nocov != SHOW_DISC)
 #define SHOW_COVERS          ((webman_config->nocov == SHOW_MMCOVERS) || (webman_config->nocov == ONLINE_COVERS))
 
-static u8 ex[4] = {0, 1, 2, 3};
-
 static const char ext[4][5] = {".jpg\0", ".png\0", ".PNG\0", ".JPG\0"};
 
 static const char *cpath[6] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"};
 
+#ifndef ENGLISH_ONLY
+static bool use_custom_icon_path = false, use_icon_region = false;
+static bool is_xmbmods_server = false;
+#endif
+
+static bool covers_exist[8];
 static bool wm_icons_exists = false;
 
 static bool HAS(char *icon)
@@ -77,12 +100,21 @@ static void check_cover_folders(char *buffer)
 #endif
 }
 
+static u8 ex[4] = {0, 1, 2, 3};
+
+static void swap_ex(u8 e)
+{
+	u8 s  = ex[e];
+	ex[e] = ex[0];
+	ex[0] = s;
+}
+
 static bool get_image_file(char *icon, int flen)
 {
 	for(u8 e = 0; e < 4; e++)
 	{
 		strcpy(icon + flen, ext[ex[e]]);
-		if(file_exists(icon)) {if(e>0) {u8 s=ex[e];ex[e]=ex[0],ex[0]=s;}; return true;}
+		if(file_exists(icon)) {swap_ex(e); return true;}
 	}
 	return false;
 }

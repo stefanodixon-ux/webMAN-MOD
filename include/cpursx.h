@@ -167,7 +167,18 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	{
 		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/fixgame.ps3", STR_FIXING, current_file, fixed_count, STR_FILES); buffer += concat(buffer, templn);
 	}
+	else
+	if(ftp_state)
+	{
+		sprintf(templn, "<hr><font size=2>FTP: %s %s</font>", (ftp_state == 1) ? "Sending " : "Receiving ", current_file); buffer += concat(buffer, templn);
+	}
+	else
 #endif
+	if(IS_ON_XMB && ((View_Find("game_plugin") != 0) || (View_Find("download_plugin") != 0)) )
+	{
+		sprintf(templn, "<hr><font size=2>&starf; Status: %s %s</font>", (View_Find("download_plugin") != 0) ? "Downloading file" : "",
+																		 (View_Find("game_plugin") != 0) ? "Installing PKG" : ""); buffer += concat(buffer, templn);
+	}
 
 	if(strstr(param, "?"))
 	{
@@ -176,7 +187,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		{
 			u32 new_speed = get_valuen(param, "fan=", 0, 99); max_temp = 0;
 			if(!new_speed)
-				enable_fan_control(DISABLED, templn); 
+				enable_fan_control(DISABLED, templn);
 			else
 			{
 				webman_config->man_rate = new_speed;
@@ -186,9 +197,9 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		else
 		{
 			pos = strstr(param, "max=");
-			if(pos) 
+			if(pos)
 				max_temp = get_valuen(param, "max=", 40, MAX_TEMPERATURE);
-			else 
+			else
 			{
 				pos = strstr(param, "?m");
 				if(pos)

@@ -50,25 +50,37 @@ typedef struct
 u8 usb = 1; // first connected usb drive [used by /copy.ps3 & in the tooltips for /copy.ps3 links in the file manager]. 1 = /dev_usb000
 #endif
 
-static void auto_play(char *param)
+static void auto_play(char *param, u8 play_ps3)
 {
 #ifdef OFFLINE_INGAME
 	if((strstr(param, OFFLINE_TAG) != NULL)) net_status = 0;
 #endif
+	u8 autoplay = webman_config->autoplay || play_ps3;
+
+	if(autoplay)
+	{
+		u8 timeout = 0;
+		while(IS_INGAME)
+		{
+			sys_ppu_thread_sleep(1);
+			if(++timeout > 15) break; // wait until 15 seconds to return to XMB
+		}
+	}
+
 	if(IS_ON_XMB)
 	{
-		u8 autoplay = webman_config->autoplay;
-
 		CellPadData pad_data = pad_read();
-		bool atag = (strcasestr(param, AUTOPLAY_TAG)!=NULL) || (autoplay);
+		bool atag = (strcasestr(param, AUTOPLAY_TAG) != NULL) || (autoplay);
  #ifdef REMOVE_SYSCALLS
 		bool l2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2));
  #else
 		bool l2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)));
  #endif
 
+		if(autoplay && wait_for_abort(webman_config->boots * 1000000)) return;
+
 		int view = View_Find("explore_plugin");
-		if(view) 
+		if(view)
 			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
 		else
 			return;
@@ -1188,7 +1200,7 @@ static void mount_autoboot(void)
 		}
 		else
 		{
-			if(mount_game(path, MOUNT_NORMAL)) auto_play(path);
+			if(mount_game(path, MOUNT_NORMAL)) auto_play(path, 0);
 		}
 	}
 }

@@ -14,7 +14,7 @@ static void poll_start_play_time(void)
 		//if(gTick.tick != rTick.tick) vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // re-apply redirection of custom update file returning to XMB
 #ifdef COBRA_ONLY
  #ifdef WM_PROXY_SPRX
-		if(gTick.tick != rTick.tick) apply_remaps(); // re-apply remaps returning to XMB
+		if(gTick.tick != rTick.tick) {apply_remaps();} // re-apply remaps returning to XMB
  #endif
 #endif
 		gTick = rTick;
