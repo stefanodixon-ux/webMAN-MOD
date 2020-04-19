@@ -1,11 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <XMBML version="1.0">
 	<View id="root">
 		<Attributes>
-<!--		<Table key="seg_multiman">
-				<Pair key="focus_priority"><String>-6</String></Pair>
-			</Table>-->
 			<Table key="seg_device">
 				<Pair key="focus_detect"><String>enable</String></Pair>
 				<Pair key="focus_priority"><String>-5</String></Pair>
@@ -28,13 +25,13 @@
 		<Items>
 			<Query
 				class="type:x-xmb/folder-pixmap"
-				key="seg_gamedata"
-				src="#seg_gamedata"
+				key="seg_psp2appdata"
+				src="#seg_psp2appdata"
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
-				key="seg_psp2appdata"
-				src="#seg_psp2appdata"
+				key="seg_gamedata"
+				src="#seg_gamedata"
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
@@ -43,23 +40,19 @@
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
-				key="seg_sdpsp"
-				src="#seg_sdpsp"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
 				key="seg_sdps2"
 				src="sel://localhost/ps2emusave?category_game.xml#seg_sdps2"
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
-				key="seg_sdps3"
-				src="#seg_sdps3"
+				key="seg_sdpsp"
+				src="#seg_sdpsp"
 				/>
+
 			<Query
 				class="type:x-xmb/folder-pixmap"
-				key="seg_gamedebug"
-				src="#seg_gamedebug"
+				key="seg_sdps3"
+				src="#seg_sdps3"
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
@@ -69,8 +62,13 @@
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
-				key="hen_xmb"
-				src="#hen_xmb"
+				key="seg_gamedebug"
+				src="#seg_gamedebug"
+				/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="seg_package_files"
+				src="#seg_package_files"
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
@@ -89,37 +87,8 @@
 				/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
-				key="pett_xmb"
-				src="xmb://localhost/dev_hdd0/game/PS3PETXMB/USRDIR/pett_xmb.xml#pett_xmb_main"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="han_xmb_addon1"
-				src="xmb://localhost/dev_hdd0/game/HANXMBA01/USRDIR/han_xmb_addon1.xml#han_xmb_addon1_main"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="han_xmb_addon2"
-				src="xmb://localhost/dev_hdd0/game/HANXMBA02/USRDIR/han_xmb_addon2.xml#han_xmb_addon2_main"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="han_xmb_addon3"
-				src="xmb://localhost/dev_hdd0/game/HANXMBA03/USRDIR/han_xmb_addon3.xml#han_xmb_addon3_main"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="han_xmb_addon4"
-				src="xmb://localhost/dev_hdd0/game/HANXMBA04/USRDIR/han_xmb_addon4.xml#han_xmb_addon4_main"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="han_xmb_addon5"
-				src="xmb://localhost/dev_hdd0/game/HANXMBA05/USRDIR/han_xmb_addon5.xml#han_xmb_addon5_main"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="xmb_my_games"
+				key="xmb_app3"
+				attr="xmb_app3"
 				src="xmb://localhost/dev_hdd0/xmlhost/game_plugin/fb.xml#seg_fb"
 				/>
 			<Query
@@ -127,12 +96,6 @@
 				key="seg_gameexit"
 				src="sel://localhost/ingame?path=category_game.xml#seg_gameexit&type=game"
 				/>
-<!--		<Query
-				class="type:x-xmb/folder-pixmap"
-				key="seg_multiman"
-				attr="seg_multiman"
-				src="xcb://localhost/query?limit=1&cond=Ae+Game:Common.dirPath /dev_hdd0/game+Ae+Game:Common.fileName BLES80608"
-				/>-->
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_manual"
@@ -143,19 +106,19 @@
 				key="seg_device"
 				attr="seg_device"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type+StorageMedia:Common.timeCreated&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+An+StorageMedia:Common.fileName BDV"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_device_bdv"
 				attr="seg_device_bdv"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type+StorageMedia:Common.timeCreated&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+Ae+StorageMedia:Common.fileName BDV"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_device2"
 				attr="seg_device2"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+Ae+StorageMedia:StorageMedia.hybrid HYBRID&opt=option_hybrid"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_add_content_device"
@@ -168,28 +131,19 @@
 				attr="seg_mv_content_device"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_DVDPRW+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3CONTENT_BD %xCB_MEDIA_FORMAT_PS3CONTENT_DVD+Ae+StorageMedia:Common.fileName THEMEDIR"
 				/>
+
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="gameDir"
 				attr="gameDir"
 				src="xil://localhost/list?t=game"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="seg_hdd_install"
-				src="ese://localhost/query?type=install_game"
-				/>
-			<Query
-				class="type:x-xmb/folder-pixmap"
-				key="seg_pkg_install"
-				src="ese://localhost/query?type=install_pkg"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="gameDir2"
 				attr="gameDir2"
 				src="sel://localhost/ex?root.view_selected.game"
-				/>
+			/>
 		</Items>
 	</View>
 
@@ -220,11 +174,13 @@
 				key="seg_gamedata"
 				src="#seg_gamedata"
 				/>
+
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_sdps3"
 				src="#seg_sdps3"
 				/>
+
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_gameexit"
@@ -240,19 +196,19 @@
 				key="seg_device"
 				attr="seg_device"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type+StorageMedia:Common.timeCreated&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+An+StorageMedia:Common.fileName BDV"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_device_bdv"
 				attr="seg_device_bdv"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type+StorageMedia:Common.timeCreated&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+Ae+StorageMedia:Common.fileName BDV"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_device2"
 				attr="seg_device2"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+Ae+StorageMedia:StorageMedia.hybrid HYBRID&opt=option_hybrid"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_add_content_device"
@@ -265,28 +221,29 @@
 				attr="seg_mv_content_device"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_DVDPRW+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3CONTENT_BD %xCB_MEDIA_FORMAT_PS3CONTENT_DVD+Ae+StorageMedia:Common.fileName THEMEDIR"
 				/>
+
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="gameDir"
 				attr="gameDir"
 				src="xcb://localhost/query?limit=2048&table=MMS_MEDIA_TYPE_HDD&sort=-Game:Common.stat.rating-Game:Common.timeCreated&cond=Aa+Game:Common.title+An+Game:Game.category GD+An+Game:Game.category 2D+An+Game:Game.category CB+An+Game:Game.category HM+An+Game:Game.category AT+An+Game:Game.category AV+An+Game:Game.category AM+An+Game:Game.category VF+An+Game:Game.category AP+An+Game:Game.category BV+An+Game:Game.category WT+An+Game:Game.category SF+An+Game:Game.category AS+AG+Game:Common.stat.rating 300"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_hdd_install"
 				src="ese://localhost/query?type=install_game"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_pkg_install"
 				src="ese://localhost/query?type=install_pkg"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="gameDir2"
 				attr="gameDir2"
 				src="sel://localhost/ex?root.view_selected.game"
-				/>
+			/>
 		</Items>
 	</View>
 
@@ -508,7 +465,7 @@
 				key="vmc_device_usbmass"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&subclass=x-xcb/storagemedia-psv&sort=+StorageMedia:StorageMedia.sortOrder+StorageMedia:StorageMedia.timeInserted&genre=Game&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.deviceType %xCB_DEVICE_TYPE_USBMASS %xCB_DEVICE_TYPE_USBWM+An+StorageMedia:StorageMedia.deviceType %xCB_DEVICE_TYPE_ETHER+Ae+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_DATA"
 				/>
-			<!-- for PS1/PS2 MemoryCard Adapter -->
+			<!-- for PS1/PS2 MemoryCard Adpter -->
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="vmc_seg_device_usb_ps2mc"
@@ -606,25 +563,25 @@
 				key="seg_device"
 				attr="seg_device"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type+StorageMedia:Common.timeCreated&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+An+StorageMedia:Common.fileName BDV"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_device_bdv"
 				attr="seg_device_bdv"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type+StorageMedia:Common.timeCreated&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+Ae+StorageMedia:Common.fileName BDV"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_device2"
 				attr="seg_device2"
 				src="xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&sort=+StorageMedia:StorageMedia.type&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_PS3_BD %xCB_MEDIA_TYPE_PS1_CD+AGL+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_PS3GAME_BD %xCB_MEDIA_FORMAT_PS1GAME_CD+Ae+StorageMedia:StorageMedia.hybrid HYBRID&opt=option_hybrid"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="gameDir"
 				attr="gameDir"
 				src="xcb://localhost/query?limit=2048&table=MMS_MEDIA_TYPE_HDD&sort=-Game:Common.stat.rating-Game:Common.timeCreated&cond=Aa+Game:Common.title+An+Game:Game.category GD+An+Game:Game.category 2D+An+Game:Game.category CB+An+Game:Game.category HM+An+Game:Game.category AT+An+Game:Game.category AV+An+Game:Game.category AM+An+Game:Game.category VF+An+Game:Game.category AP+An+Game:Game.category BV+An+Game:Game.category WT+An+Game:Game.category SF+An+Game:Game.category AS+An+Game:Common.fileName SCEAPPS01+An+Game:Common.fileName SCEAPPS02+An+Game:Common.fileName SCEAPPS03+AG+Game:Common.stat.rating 300"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="seg_hdd_install"
@@ -634,13 +591,13 @@
 				class="type:x-xmb/folder-pixmap"
 				key="seg_pkg_install"
 				src="ese://localhost/query?type=install_pkg"
-				/>
+			/>
 			<Query
 				class="type:x-xmb/folder-pixmap"
 				key="gameDir2"
 				attr="gameDir2"
 				src="sel://localhost/ex?root.view_selected.game"
-				/>
+			/>
 		</Items>
 	</View>
 
@@ -717,6 +674,7 @@
 		</Items>
 	</View>
 
+<!--
 	<View id="hen_xmb">
 		<Attributes>
 			<Table key="hen_enable">
@@ -730,6 +688,7 @@
 			<Item class="type:x-xmb/module-action" key="hen_enable" attr="hen_enable"/>
 		</Items>
 	</View>
+-->
 
 	<View id="seg_gamedebug">
 		<Attributes>
@@ -744,7 +703,6 @@
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager -->
 	<View id="seg_package_files">
 		<Attributes>
 			<Table key="package_files">
@@ -767,9 +725,9 @@
 
 	<View id="seg_package_fixed">
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="hdd0_install"	src="#seg_package_files_install"/>
-			<Query class="type:x-xmb/folder-pixmap" key="hdd0_delete"	src="#seg_package_files_delete"/>
-			<Query class="type:x-xmb/folder-pixmap" key="host_psn"		src="#seg_install_files_psn"/>
+			<Query class="type:x-xmb/folder-pixmap" key="hdd0_install" attr="hdd0_install" src="#seg_package_files_install"/>
+			<Query class="type:x-xmb/folder-pixmap" key="hdd0_delete" attr="hdd0_delete" src="#seg_package_files_delete"/>
+			<Query class="type:x-xmb/folder-pixmap" key="host_psn" attr="host_psn" src="#seg_install_files_psn"/>
 			<Query class="type:x-xmb/folder-pixmap" key="pkg_link0"		src="xmb://localhost/dev_usb000/package_link.xml#package_link"/>
 			<Query class="type:x-xmb/folder-pixmap" key="pkg_link1"		src="xmb://localhost/dev_usb001/package_link.xml#package_link"/>
 			<Query class="type:x-xmb/folder-pixmap" key="pkg_link2"		src="xmb://localhost/dev_hdd0/game/PKGLINKER/USRDIR/package_link.xml#package_link_game"/>
@@ -799,9 +757,16 @@
 
 	<View id="seg_install_files_psn_path">
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="seg_hdd_install"	src="ese://localhost/query?type=install_game"/>
-			<Query class="type:x-xmb/folder-pixmap" key="seg_pkg_install"	src="ese://localhost/query?type=install_pkg"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_flash"	src="host://localhost/q?path=/dev_flash/rebug/packages&suffix=.pkg&subclass=x-host/package"/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="seg_hdd_install"
+				src="ese://localhost/query?type=install_game"
+				/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="seg_pkg_install"
+				src="ese://localhost/query?type=install_pkg"
+				/>
 		</Items>
 	</View>
 
@@ -828,9 +793,9 @@
 	<View id="seg_install_package">
 		<Items>
 			<Query class="type:x-xmb/folder-pixmap" key="alldev_install" attr="alldev_install"	src="#seg_install_files_alldev"/>
-			<Query class="type:x-xmb/folder-pixmap" key="hdd0_install" attr="hdd0_install"	src="#seg_install_files_hdd0"/>
-			<Query class="type:x-xmb/folder-pixmap" key="og_install" attr="og_install"	src="#seg_install_files_og"/>
-			<Query class="type:x-xmb/folder-pixmap" key="usb_install" attr="usb_install"	src="#seg_install_files_usb"/>
+			<Query class="type:x-xmb/folder-pixmap" key="hdd0_install" attr="hdd0_install" src="#seg_install_files_hdd0"/>
+			<Query class="type:x-xmb/folder-pixmap" key="usb_install" attr="usb_install" src="#seg_install_files_usb"/>
+			<Query class="type:x-xmb/folder-pixmap" key="og_install" attr="og_install" src="#seg_install_files_og"/>
 			<Query class="type:x-xmb/folder-pixmap" key="web_install" attr="web_install"	src="#seg_install_files_web"/>
 		</Items>
 	</View>
@@ -903,7 +868,6 @@
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager > INSTALL Package Files > PS3™ HDD packages Folder -->
 	<View id="seg_install_files_hdd0">
 		<Attributes>
 			<Table key="host_device">
@@ -916,20 +880,23 @@
 				<Pair key="ingame"><String>disable</String></Pair>
 			</Table>
 		</Attributes>
+
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="host_device" attr="host_device" src="#seg_install_files_hdd0_path"/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="host_device" attr="host_device"
+				src="#seg_install_files_hdd0_path"
+				/>
 		</Items>
 	</View>
 
 	<View id="seg_install_files_hdd0_path">
 		<Items>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_hdd0_1" src="host://localhost/q?path=/dev_hdd0/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_hdd0_2" src="host://localhost/q?path=/dev_hdd0/PKG&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_hdd0_3" src="host://localhost/q?path=/dev_hdd0/tmp/wm_res&suffix=.pkg&subclass=x-host/package"/>
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_flash" src="host://localhost/q?path=/dev_flash/rebug/packages&suffix=.pkg&subclass=x-host/package"/>
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_hdd0" src="host://localhost/q?path=/dev_hdd0/packages&suffix=.pkg&subclass=x-host/package"/>
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager > INSTALL Package Files > USB packages Folder -->
 	<View id="seg_install_files_usb">
 		<Attributes>
 			<Table key="host_device">
@@ -943,29 +910,30 @@
 			</Table>
 		</Attributes>
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="host_device" attr="host_device" src="#seg_install_usb_path"/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="host_device" attr="host_device"
+				src="#seg_install_usb_path"
+			/>
 		</Items>
 	</View>
 
 	<View id="seg_install_usb_path">
 		<Items>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb0"	src="host://localhost/q?path=/dev_usb000/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb1"	src="host://localhost/q?path=/dev_usb001/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb2"	src="host://localhost/q?path=/dev_usb002/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb3"	src="host://localhost/q?path=/dev_usb003/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb4"	src="host://localhost/q?path=/dev_usb004/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb5"	src="host://localhost/q?path=/dev_usb005/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb6"	src="host://localhost/q?path=/dev_usb006/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb7"	src="host://localhost/q?path=/dev_usb007/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usbX"	src="host://localhost/q?path=/dev_usb071/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_ms"	src="host://localhost/q?path=/dev_ms/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_sd"	src="host://localhost/q?path=/dev_sd/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_cf"	src="host://localhost/q?path=/dev_cf/packages&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_bdvd"	src="host://localhost/q?path=/dev_bdvd&suffix=.pkg&subclass=x-host/package"/>
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_host" src="host://localhost/q?path=/app_home/packages/&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_bdvd" src="host://localhost/q?path=/dev_bdvd/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_ms" 	src="host://localhost/q?path=/dev_ms/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb0" src="host://localhost/q?path=/dev_usb000/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb1" src="host://localhost/q?path=/dev_usb001/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb2" src="host://localhost/q?path=/dev_usb002/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb3" src="host://localhost/q?path=/dev_usb003/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb4" src="host://localhost/q?path=/dev_usb004/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb5" src="host://localhost/q?path=/dev_usb005/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb6" src="host://localhost/q?path=/dev_usb006/packages&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb7" src="host://localhost/q?path=/dev_usb007/packages&suffix=.pkg&subclass=x-host/package" />
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager > INSTALL Package Files > Standard Package Files locations -->
 	<View id="seg_install_files_og">
 		<Attributes>
 			<Table key="host_device">
@@ -980,25 +948,27 @@
 		</Attributes>
 
 		<Items>
-			<Query class="type:x-xmb/xmlpackagefolder" key="host_device" attr="host_device" src="#seg_install_files_og_path"/>
+			<Query
+				class="type:x-xmb/xmlpackagefolder"
+				key="host_device" attr="host_device"
+				src="#seg_install_files_og_path"
+				/>
 		</Items>
 	</View>
 
 	<View id="seg_install_files_og_path">
 		<Items>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_host"	src="host://localhost/q?path=/app_home/&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb0"	src="host://localhost/q?path=/dev_usb000&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb1"	src="host://localhost/q?path=/dev_usb001&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb2"	src="host://localhost/q?path=/dev_usb002&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb3"	src="host://localhost/q?path=/dev_usb003&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb4"	src="host://localhost/q?path=/dev_usb004&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb5"	src="host://localhost/q?path=/dev_usb005&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb6"	src="host://localhost/q?path=/dev_usb006&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usb7"	src="host://localhost/q?path=/dev_usb007&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_usbX"	src="host://localhost/q?path=/dev_usb071&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_ms"	src="host://localhost/q?path=/dev_ms&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_sd"	src="host://localhost/q?path=/dev_sd&suffix=.pkg&subclass=x-host/package"/>
-			<Query class="type:x-xmb/xmlpackagefolder" key="pkg_files_cf"	src="host://localhost/q?path=/dev_cf&suffix=.pkg&subclass=x-host/package"/>
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_host" src="host://localhost/q?path=/app_home/&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_bdvd" src="host://localhost/q?path=/dev_bdvd&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_ms" 	src="host://localhost/q?path=/dev_ms&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb0" src="host://localhost/q?path=/dev_usb000&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb1" src="host://localhost/q?path=/dev_usb001&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb2" src="host://localhost/q?path=/dev_usb002&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb3" src="host://localhost/q?path=/dev_usb003&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb4" src="host://localhost/q?path=/dev_usb004&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb5" src="host://localhost/q?path=/dev_usb005&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb6" src="host://localhost/q?path=/dev_usb006&suffix=.pkg&subclass=x-host/package" />
+			<Query class="type:x-xmb/xmlpackagefolder" key="host_provider_usb7" src="host://localhost/q?path=/dev_usb007&suffix=.pkg&subclass=x-host/package" />
 		</Items>
 	</View>
 
@@ -1025,7 +995,6 @@
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager > DELETE Package Files -->
 	<View id="seg_package_files_delete">
 		<Attributes>
 			<Table key="seg_package_files_delete">
@@ -1038,16 +1007,20 @@
 			</Table>
 		</Attributes>
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="seg_package_files_delete" attr="seg_package_files_delete" src="#seg_delete_package"/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="seg_package_files_delete" attr="seg_package_files_delete"
+				src="#seg_delete_package"
+				/>
 		</Items>
 	</View>
 
 	<View id="seg_delete_package">
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="all_devs_delete"	src="#seg_all_devs_delete"/>
-			<Query class="type:x-xmb/folder-pixmap" key="hdd0_delete"		src="#seg_delete_files_hdd0"/>
-			<Query class="type:x-xmb/folder-pixmap" key="og_delete"			src="#seg_delete_files_og"/>
-			<Query class="type:x-xmb/folder-pixmap" key="usb_delete"		src="#seg_delete_files_usb"/>
+			<Query class="type:x-xmb/folder-pixmap" key="all_devs_delete" src="#seg_all_devs_delete"/>
+			<Query class="type:x-xmb/folder-pixmap" key="hdd0_install" attr="hdd0_install" src="#seg_delete_files_hdd0"/>
+			<Query class="type:x-xmb/folder-pixmap" key="usb_install" attr="usb_install" src="#seg_delete_files_usb"/>
+			<Query class="type:x-xmb/folder-pixmap" key="og_install" attr="og_install" src="#seg_delete_files_og"/>
 		</Items>
 	</View>
 
@@ -1112,7 +1085,6 @@
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager > DELETE Package Files > PS3™ HDD packages Folder -->
 	<View id="seg_delete_files_hdd0">
 		<Attributes>
 			<Table key="host_device">
@@ -1126,7 +1098,11 @@
 			</Table>
 		</Attributes>
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="host_device" attr="host_device" src="#seg_delete_files_hdd0_path"/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="host_device" attr="host_device"
+				src="#seg_delete_files_hdd0_path"
+			/>
 		</Items>
 	</View>
 
@@ -1139,7 +1115,6 @@
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager > DELETE Package Files > USB packages Folder -->
 		<View id="seg_delete_files_usb">
 		<Attributes>
 			<Table key="host_device">
@@ -1153,7 +1128,11 @@
 			</Table>
 		</Attributes>
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="host_device" attr="host_device" src="#seg_delete_usb_path"/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="host_device" attr="host_device"
+				src="#seg_delete_usb_path"
+			/>
 		</Items>
 	</View>
 
@@ -1175,7 +1154,6 @@
 		</Items>
 	</View>
 
-	<!-- Main > Package Manager > DELETE Package Files > Standard Package Files locations -->
 	<View id="seg_delete_files_og">
 		<Attributes>
 			<Table key="host_device">
@@ -1189,7 +1167,11 @@
 			</Table>
 		</Attributes>
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="host_device" attr="host_device" src="#seg_delete_files_og_path"/>
+			<Query
+				class="type:x-xmb/folder-pixmap"
+				key="host_device" attr="host_device"
+				src="#seg_delete_files_og_path"
+			/>
 		</Items>
 	</View>
 

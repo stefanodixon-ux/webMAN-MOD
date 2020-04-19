@@ -1,4 +1,4 @@
-#define IS_INSTALLING		(View_Find("game_plugin") != 0)
+#define IS_INSTALLING		installing_pkg /* (View_Find("game_plugin") != 0) */
 #define IS_INSTALLING_NAS	(View_Find("nas_plugin")  != 0)
 #define IS_DOWNLOADING		(View_Find("download_plugin") != 0)
 
@@ -37,6 +37,7 @@ static char install_path[64];
 static time_t pkg_install_time = 0;
 
 static bool install_in_progress = false;
+static bool installing_pkg = false;
 
 #define INT_HDD_ROOT_PATH		"/dev_hdd0/"
 #define DEFAULT_PKG_PATH		"/dev_hdd0/packages/"
@@ -178,7 +179,7 @@ static void unload_web_plugins(void)
 	}
 #endif
 
-	if(explore_interface == 0) 
+	if(explore_interface == 0)
 	{
 		explore_interface = (explore_plugin_interface *)plugin_GetInterface(View_Find("explore_plugin"), 1);
 		if(explore_interface == 0) return;
@@ -205,12 +206,14 @@ static void installPKG_thread(void)
 		if(game_ext_interface == 0) return;
 	}
 
+	installing_pkg = true;
 	game_ext_interface->LoadPage();
 
 	if(!extcasecmp(pkg_path, ".p3t", 4))
 		game_ext_interface->installTheme(pkg_path, (char*)"");
 	else
 		game_ext_interface->installPKG(pkg_path);
+	installing_pkg = false;
 }
 
 static int download_file(const char *param, char *msg)
@@ -255,7 +258,7 @@ static int download_file(const char *param, char *msg)
 		len = get_param("&url=", pdurl, param, MAX_DLPATH_LEN); if(!islike(pdurl, "http")) goto end_download_process;
 		conv_num = mbstowcs((wchar_t *)pkg_durl, (const char *)pdurl, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
-		len = get_param("?to=", pdpath, param, MAX_DLPATH_LEN); if(*pdpath != '/') goto end_download_process; 
+		len = get_param("?to=", pdpath, param, MAX_DLPATH_LEN); if(*pdpath != '/') goto end_download_process;
 		filepath_check(pdpath);
 	}
 	else if(islike(param, "?url="))
@@ -393,7 +396,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 				ret = installPKG(pkgfile, msg); if(!(webman_config->minfo & 1)) show_msg(msg);
 				if(ret == CELL_OK) wait_for_pkg_install();
 
-				ret = CELL_OK; 
+				ret = CELL_OK;
 			}
 		}
 		cellFsClosedir(fd);
@@ -402,7 +405,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 	}
 
 	sys_ppu_thread_sleep(2);
-	install_in_progress = false; 
+	install_in_progress = false;
 
 	sys_ppu_thread_exit(0);
 }
