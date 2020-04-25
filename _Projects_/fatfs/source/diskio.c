@@ -16,56 +16,50 @@
 #define DEV_USB		2	/* Example: Map USB MSD to physical drive 2 */
 
 /* PS3 I/O support */
-typedef struct {
-    int device;
-    void *dirStruct;
-} DIR_ITER;
+#define SYSIO_RETRY	10
 
 #include "types.h"
-#include "iosupport.h"
 #include "storage.h"
 #include <malloc.h>
 #include <sys/file.h>
 #include <lv2/mutex.h> 
 #include <sys/errno.h>
 
-static u64 ff_ps3id[8] = {
-	0x010300000000000AULL, 0x010300000000000BULL, 0x010300000000000CULL, 0x010300000000000DULL,
-	0x010300000000000EULL, 0x010300000000000FULL, 0x010300000000001FULL, 0x0103000000000020ULL 
-	};
-static int dev_fd[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
-static int dev_sectsize[8] = {512, 512, 512, 512, 512, 512, 512, 512};
+#include "fflib.h"
+
+//extern void NPrintf(const char* fmt, ...);
+#define NPrintf(...)
 # if 0
 DWORD get_fattime (void)
 {
 	return ((DWORD)(FF_NORTC_YEAR - 1980) << 25 | (DWORD)FF_NORTC_MON << 21 | (DWORD)FF_NORTC_MDAY << 16);
 }
 #endif
-static DSTATUS ps3fatfs_init(int fd)
+static DSTATUS fatfs_dev_init(int idx)
 {
     int rr;
 	static device_info_t disc_info;
 	disc_info.unknown03 = 0x12345678; // hack for Iris Manager Disc Less
 	disc_info.sector_size = 0;
-	rr=sys_storage_get_device_info(ff_ps3id[fd], &disc_info);
+	u64 id = fflib_id_get (idx);
+	if (id == 0)
+		return RES_PARERR;
+	rr = sys_storage_get_device_info (id, &disc_info);
 	if(rr != 0)  
 	{
-		dev_sectsize[fd] = 512; 
-		//return STA_NOINIT;
+		disc_info.sector_size = 512; 
 	}
 
-	dev_sectsize[fd]  = disc_info.sector_size;
-
-	if(dev_fd[fd] >= 0)
+	if(fflib_fd_get (idx) >= 0)
 		return RES_OK;
-
-	if(sys_storage_open(ff_ps3id[fd], &dev_fd[fd])<0) 
+	int fd;
+	if(sys_storage_open (id, &fd) < 0) 
 	{
-		dev_fd[fd] = -1; 
-		return STA_NOINIT;
+		return RES_NOTRDY;
 	}
+	fflib_fd_set (idx, fd);
+	fflib_ss_set (idx, disc_info.sector_size);
 
-	dev_sectsize[fd] = disc_info.sector_size;
 	return RES_OK;
 }
 
@@ -77,10 +71,10 @@ DSTATUS disk_status (
 	BYTE pdrv		/* Physical drive nmuber to identify the drive */
 )
 {
-	if(dev_fd[pdrv] >= 0)
-		return 0;
+	if (fflib_fd_get (pdrv) > 0)
+		return RES_OK;
 	//
-	return STA_NOINIT;
+	return RES_ERROR;
 }
 
 
@@ -92,7 +86,7 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-	return ps3fatfs_init (pdrv);
+	return fatfs_dev_init (pdrv);
 }
 
 /*-----------------------------------------------------------------------*/
@@ -107,48 +101,67 @@ DRESULT disk_read (
 )
 {
 	DRESULT res = RES_PARERR;
-	int fd = pdrv;
+	int fd = fflib_fd_get (pdrv);
+	int ss = fflib_ss_get (pdrv);
     int flag = ((int) (s64) buff) & 31;
+	NPrintf ("disk_read d %d s %d c %d, df %d ss %d\n", pdrv, sector, count, fd, ss);
 
-    if(dev_fd[fd] < 0 || !buff) 
+    if (fd < 0 || !buff || ss < 0)
 		return RES_PARERR;
 
     void *my_buff;
     
     if(flag) 
-		my_buff = memalign(16, dev_sectsize[fd] * count); 
+		my_buff = memalign (16, ss * count); 
 	else 
 		my_buff = buff;
 
-    if(!my_buff) 
+    if(!my_buff)
 		return RES_ERROR;
 
-    int r;
     uint32_t sectors_read;
-
+    int r, k;
 	res = RES_OK;
-	r = sys_storage_read(dev_fd[fd], (uint32_t) sector, (uint32_t) count, 
-		(uint8_t *) my_buff, &sectors_read); 
-
-	if(r == 0x80010002) 
+	for (k = 0; k < SYSIO_RETRY; k++)
 	{
-		return RES_NOTRDY;//PS3_NTFS_Shutdown(fd);
+		r = sys_storage_read (fd, (uint32_t) sector, (uint32_t) count, 
+			(uint8_t *) my_buff, &sectors_read); 
+
+		if(r == 0x80010002 || r == 0)
+		{
+			break;
+		}
+
+		usleep (62500);
 	}
-
-	usleep(62500);
-
+	NPrintf ("disk_read r %d sr %d, d %d s %d c %d, df %d ss %d\n", r, sectors_read, pdrv, sector, count, fd, ss);
+	if(r == 0x80010002) //sys error
+	{
+		if(flag) 
+		{
+			free(my_buff);
+		}
+		//drive unplugged? detach?
+		NPrintf ("!disk_read RES_NOTRDY res %d, d %d s %d c %d, df %d ss %d\n", r, pdrv, sector, count, fd, ss);
+		return RES_NOTRDY;
+	}
+	
     if(flag) 
 	{
 		if(r>=0)
-			memcpy(buff, my_buff, dev_sectsize[fd] * count);
-        free(my_buff);
+			memcpy (buff, my_buff, ss * count);
+        free (my_buff);
     }
 
     if(r < 0) 
 		return RES_ERROR;
 
     if(sectors_read != count) 
+	{
+		NPrintf ("!disk_read RES_ERROR res %d, d %d s %d c %d, df %d ss %d\n", r, pdrv, sector, count, fd, ss);
 		return RES_ERROR;
+	}
+
 	return res;
 }
 
@@ -168,6 +181,61 @@ DRESULT disk_write (
 )
 {
 	DRESULT res = RES_PARERR;
+    int flag = ((int) (s64) buff) & 31;
+	int fd = fflib_fd_get (pdrv);
+	int ss = fflib_ss_get (pdrv);
+
+    if (fd < 0  || !buff || ss < 0)
+	{
+		return RES_PARERR;
+	}
+    void *my_buff;
+    
+    if (flag) 
+		my_buff = memalign (32, ss * count);
+	else
+		my_buff = (void *) buff;
+
+    uint32_t sectors_read;
+
+    if (!my_buff)
+	{
+		return RES_ERROR;
+	}
+    if (flag)
+		memcpy (my_buff, buff, ss * count);
+
+    int r, k;
+	res = RES_OK;
+	for (k = 0; k < SYSIO_RETRY; k++)
+	{
+		r = sys_storage_write (fd, (uint32_t) sector, (uint32_t) count, 
+			(uint8_t *) my_buff, &sectors_read);
+
+		if (r == 0x80010002 || r ==0)
+		{
+			break;
+		}
+
+		usleep (62500);
+	}
+    if (flag)
+		free (my_buff);
+	
+	if (r == 0x80010002) //sys error
+	{
+		return RES_NOTRDY;//drive unplugged? detach from FS?
+	}
+
+    if (r < 0)
+	{
+		return RES_ERROR;
+	}
+
+    if (sectors_read != count)
+	{
+		return RES_ERROR;
+	}
 
 	return res;
 }
@@ -186,7 +254,52 @@ DRESULT disk_ioctl (
 )
 {
 	DRESULT res = RES_PARERR;
+	int fd = fflib_fd_get (pdrv);
+	u64 id = fflib_id_get (pdrv);
+	if (fd < 0 || id == 0)
+	{
+		return RES_NOTRDY;
+	}
+	res = RES_PARERR;
+	switch (cmd) 
+	{
+		case CTRL_SYNC:			/* Nothing to do */
+			res = RES_OK;
+			break;
 
+		case GET_SECTOR_COUNT:	/* Get number of sectors on the drive */
+		{
+			static device_info_t disc_info;
+			disc_info.total_sectors = 0;
+			int rr = sys_storage_get_device_info (id, &disc_info);
+			if (rr != 0)
+			{
+				return RES_ERROR;
+			}
+			*(LBA_t*)buff = disc_info.total_sectors;
+			res = RES_OK;
+		}
+			break;
+
+		case GET_SECTOR_SIZE:	/* Get size of sector for generic read/write */
+		{
+			static device_info_t disc_info;
+			disc_info.sector_size = 0;
+			int rr = sys_storage_get_device_info (id, &disc_info);
+			if (rr != 0)
+			{
+				return RES_ERROR;
+			}
+			*(WORD*)buff = disc_info.sector_size;
+			res = RES_OK;
+		}
+			break;
+
+		case GET_BLOCK_SIZE:	/* Get internal block size in unit of sector */
+			//*(DWORD*)buff = SZ_BLOCK;
+			res = RES_PARERR;
+			break;
+	}
 	return res;
 }
 

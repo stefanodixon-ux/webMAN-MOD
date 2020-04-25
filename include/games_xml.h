@@ -223,7 +223,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
 	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
 
-#if defined(LAUNCHPAD) || defined(MOUNT_ROMS) 
+#if defined(LAUNCHPAD) || defined(MOUNT_ROMS)
 	char *sysmem_buf = (char*)sysmem;
 #endif
 	char *sysmem_xml = (char*)sysmem + (BUFFER_SIZE) - 4300;
@@ -386,7 +386,7 @@ scan_roms:
 	{
 		if(check_drive(f0)) continue;
 
-		i0 = f0, is_net = IS_NET; 
+		i0 = f0, is_net = IS_NET;
 
 		#ifdef MOUNT_ROMS
 		if(scanning_roms && is_net) continue;
@@ -651,7 +651,6 @@ next_xml_entry:
 											 key, icon,
 											 templn, proxy_plugin, localhost, "", param, enc_dir_name);
 
-
 							// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
 							if(webman_config->info <= 1)
 							{
@@ -819,7 +818,7 @@ continue_reading_folder_xml:
 						"<View id=\"%s%s\">"
 						"<Attributes>", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "" );
 
-	if(scanning_roms) 
+	if(scanning_roms)
 	{
 		xml_file = enc_dir_name;
 		sprintf(xml_file, "%s/ROMS_%s.xml", HTML_BASE_PATH, roms_path[roms_index]);
@@ -1020,7 +1019,7 @@ continue_reading_folder_xml:
 #ifdef MOUNT_ROMS
 save_xml:
 	if(scanning_roms && (key == 0)) ; // do not create empty xml
-	else 
+	else
 #endif
 	// --- save xml file
 	if(cellFsOpen(xml_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdxml, NULL, 0) == CELL_FS_SUCCEEDED)
@@ -1059,7 +1058,7 @@ save_xml:
 #ifdef MOUNT_ROMS
 	if(scanning_roms || (c_roms && XMB_GROUPS))
 	{
-		if(scanning_roms) 
+		if(scanning_roms)
 		{
 			roms_count[roms_index] = key;
 			roms_index++;
@@ -1096,12 +1095,12 @@ save_xml:
 								XML_PAIR("icon%s", "%s")
 								XML_PAIR("title","%s")
 								XML_PAIR("info","%'i %s")
-								"</Table>", 
+								"</Table>",
 								roms_path[i],
 								covers_exist[7] ? "" : "_rsc",
 								covers_exist[7] ? WM_ICONS_PATH "/icon_wm_album_emu.png" : "item_tex_ps3util",
 								#ifndef ENGLISH_ONLY
-								fh ? tempstr : 
+								fh ? tempstr :
 								#endif
 								roms_path[i], roms_count[i], (roms_count[i] == 1) ? "ROM" : "ROMS"); _concat(&myxml, templn);
 			}
