@@ -213,9 +213,10 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 {
 	int type = EMU_BD;
 
-	bool is_exfat = (size > 0);
+	bool is_exfat = (*src_path >= '0' && *src_path <= '9');
 
-	//if(file_exists(src_path) == false) return FAILED;
+	if(is_exfat) ; else
+	if(file_exists(src_path) == false) return FAILED;
 
 	int iso_path_len = strlen(iso_path) - 4; if(iso_path_len < 0) return FAILED;
 
@@ -223,11 +224,11 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 
 	if(plugin_args)
 	{
-		if(size <= 0)
+		if(size == 0)
 			size = get_filesize(src_path);
 
 		char filename[MAXPATHLEN]; //name only
-		sprintf(filename, "%s", get_filename(src_path));;
+		sprintf(filename, "%s", get_filename(src_path));
 		create_fake_file_iso(iso_path, filename, size);
 
 		if(file_exists(iso_path) == false) {free(plugin_args); return FAILED;}
@@ -271,7 +272,6 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 				p_args->emu_mode = type | 0x800;
 				p_args->num_sections = parts;
 				p_args->num_tracks = 0;
-
 
 				memcpy(plugin_args + sizeof(rawseciso_args), sections, parts * sizeof(uint32_t) + 0x200);
 				memcpy(plugin_args + sizeof(rawseciso_args) + (parts*sizeof(uint32_t) + 0x200), sections_size, parts * sizeof(uint32_t));
@@ -317,23 +317,23 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 	return FAILED;
 }
 
-void make_fake_iso(uint8_t m, char *ext, char *isofile, char *src_path, uint64_t device_id, uint64_t file_size)
+void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, uint64_t device_id, uint64_t file_size)
 {
 	//if(m >= 4)
 	{
 		if((m == VIDEO || m == MOVIES) && !strcasestr(".mp4|.mkv|.avi|.wmv|.flv|.mpg|mpeg|.mov|m2ts|.vob|.asf|divx|xvid|.pam|.bik|bink|.vp6|.mth|.3gp|rmvb|.ogm|.ogv|.m2t|.mts|.tsv|.tsa|.tts|.vp3|.vp5|.vp8|.264|.m1v|.m2v|.m4b|.m4p|.m4r|.m4v|mp4v|.mpe|bdmv|.dvb|webm|.nsv", ext)) return;
 		if((m == PKGFILE) && !strstr(".pkg", ext)) return;
-		if((m == BDFILE)  && (isofile[0] == '.' || strstr(isofile, ".") == NULL)) return;
+		if((m == BDFILE)  && (iso_name[0] == '.' || strstr(iso_name, ".") == NULL)) return;
 		if((m == PS2ISO) && !strcasestr(".iso", ext)) return;
 		if((m == PSPISO) && !strcasestr(".iso", ext)) return;
 
-		sprintf(path, "/dev_hdd0/tmp/wmtmp/[%s] %s.iso", c_path[m], isofile);
+		sprintf(path, "/dev_hdd0/tmp/wmtmp/[%s] %s.iso", c_path[m], iso_name);
 		if(file_exists(path)) return;
 
 		char file_ext[16];
 		if(m == PS2ISO) sprintf(file_ext, ".ntfs[PS2ISO]"); else
 		if(m == PSPISO) sprintf(file_ext, ".ntfs[PSPISO]"); else
-							 sprintf(file_ext, ".ntfs[BDFILE]");
+						sprintf(file_ext, ".ntfs[BDFILE]");
 
 		build_fake_iso(path, src_path, device_id, file_ext, file_size);
 		return;

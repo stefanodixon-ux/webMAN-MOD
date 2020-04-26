@@ -1,4 +1,4 @@
-/* 
+/*
    TINY3D sample / (c) 2010 Hermes  <www.elotrolado.net>
 
 */
@@ -42,7 +42,7 @@ typedef struct {
 #include "storage.h"
 #include <malloc.h>
 #include <sys/file.h>
-#include <lv2/mutex.h> 
+#include <lv2/mutex.h>
 #include <sys/errno.h>
 
 #include <sys/file.h>
@@ -87,7 +87,7 @@ char dn[256] = {0};
 int ffd = -1;
 static u64 ff_ps3id[8] = {
 	0x010300000000000AULL, 0x010300000000000BULL, 0x010300000000000CULL, 0x010300000000000DULL,
-	0x010300000000000EULL, 0x010300000000000FULL, 0x010300000000001FULL, 0x0103000000000020ULL 
+	0x010300000000000EULL, 0x010300000000000FULL, 0x010300000000001FULL, 0x0103000000000020ULL
 	};
 #if 0
 static int dev_fd[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
@@ -117,25 +117,25 @@ FRESULT scan_files2 (
 
 
     res = f_opendir(&dir, path);                       /* Open the directory */
-    if (res == FR_OK) 
+    if (res == FR_OK)
     {
-        for (;;) 
+        for (;;)
         {
             FRESULT res1 = f_readdir(&dir, &fno);                   /* Read a directory item */
-            if (res1 != FR_OK || fno.fname[0] == 0) 
+            if (res1 != FR_OK || fno.fname[0] == 0)
                 break;  /* Break on error or end of dir */
             i++;
             if (i > 7)
                 break;
-            if (fno.fattrib & AM_DIR) 
+            if (fno.fattrib & AM_DIR)
             {                    /* It is a directory */
                 snprintf (fdld[i], 255, "/%s", fno.fname);
                 //sprintf(&path[i], "/%s", fno.fname);
                 //res = scan_files(path);                    /* Enter the directory */
                 //if (res != FR_OK) break;
                 //path[i] = 0;
-            } 
-            else 
+            }
+            else
             {                                       /* It is a file. */
                 snprintf (fdld[i], 255, "%s", fno.fname);
                 //printf("%s/%s\n", path, fno.fname);
@@ -161,18 +161,18 @@ FRESULT scan_files (
         for (;;)
         {
             FRESULT res1 = f_readdir(&dir, &fno);                   /* Read a directory item */
-            if (res1 != FR_OK || fno.fname[0] == 0) 
+            if (res1 != FR_OK || fno.fname[0] == 0)
             {
                 f_closedir(&dir);
                 return res;  /* Break on error or end of dir */
             }
-            if (fno.fattrib & AM_DIR) 
+            if (fno.fattrib & AM_DIR)
             {                    /* It is a directory */
                 DPrintf("/%s\n", fno.fname);
                 snprintf (dn, 255, "%s%s", path, fno.fname);
                 snprintf (wn, 255, "%s%s/fatfs.tst", path, fno.fname);
-            } 
-            else 
+            }
+            else
             {                                       /* It is a file. */
                 DPrintf("%s\n", fno.fname);
                 snprintf (fn, 255, "%s%s", path, fno.fname);
@@ -274,7 +274,7 @@ int record_add(unsigned int sect, unsigned int nsec)
             }
         }
     }
-    
+
     return 0;
 }
 
@@ -296,7 +296,7 @@ void cobra_MountISO()
     uint8_t *plugin_args = malloc(0x20000);
     uint32_t *sections = malloc(MAX_SECTIONS * sizeof(uint32_t));
     uint32_t *sections_size = malloc(MAX_SECTIONS * sizeof(uint32_t));
-    rawseciso_args *p_args;  
+    rawseciso_args *p_args;
     memset(sections, 0, MAX_SECTIONS * sizeof(uint32_t));
     memset(sections_size, 0, MAX_SECTIONS * sizeof(uint32_t));
     memset(plugin_args, 0, 0x10000);
@@ -306,7 +306,7 @@ void cobra_MountISO()
     memcpy (sections, sects, sizeof(uint32_t) * parts);
     memcpy (sections_size, nsect, sizeof(uint32_t) * parts);
 
-    if (parts > 0 && parts < MAX_SECTIONS) 
+    if (parts > 0 && parts < MAX_SECTIONS)
     {
         p_args = (rawseciso_args *)plugin_args;
         p_args->device = 0x10300000000000a;//USB_MASS_STORAGE(NTFS_Test_Device(&GamPath[1]));
@@ -314,7 +314,7 @@ void cobra_MountISO()
         p_args->num_sections = parts;
         p_args->num_tracks = 0;
         memcpy (plugin_args + sizeof(rawseciso_args), sections, parts * sizeof (uint32_t));
-        memcpy (plugin_args + sizeof(rawseciso_args) + (parts * sizeof (uint32_t)), sections_size, parts * sizeof(uint32_t)); 
+        memcpy (plugin_args + sizeof(rawseciso_args) + (parts * sizeof (uint32_t)), sections_size, parts * sizeof(uint32_t));
         cobra_unload_vsh_plugin(0);
         if (cobra_load_vsh_plugin (0, "/dev_hdd0/game/MANAGUNZ0/USRDIR/sys/sprx_iso", plugin_args, 0x10000) == 0) return;
     }
@@ -360,7 +360,7 @@ int file_scan_sectors (int i)
     FILINFO fno;
     if (f_stat (lfn, &fno) == FR_OK)
         DPrintf ("FS: '%s' size: %luMB, %luB\n", lfn, fno.fsize/MSZ, fno.fsize);
-    
+
     #if 0
     UINT csect, lsect, sktr = 0, sk = 0, k, bw = 0;
     fr = f_open_sectors (&fdst, lfn, FA_READ, &record_add);
@@ -525,7 +525,7 @@ int fatfs_init()
 
 void LoadTexture()
 {
-    u32 * texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)    
+    u32 * texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)
 
     u32 * texture_pointer; // use to asign texture space without changes texture_mem
 
@@ -729,17 +729,17 @@ int dir_read (char *dname)
         for (;;)
         {
             FRESULT res1 = f_readdir(&dir, &fno);                   /* Read a directory item */
-            if (res1 != FR_OK || fno.fname[0] == 0) 
+            if (res1 != FR_OK || fno.fname[0] == 0)
             {
                 f_closedir(&dir);
                 return res;  /* Break on error or end of dir */
             }
-            if (fno.fattrib & AM_DIR) 
+            if (fno.fattrib & AM_DIR)
             {                    /* It is a directory */
                 DPrintf("/%s\n", fno.fname);
                 snprintf (dn, 255, "%s%s/", dname, fno.fname);
-            } 
-            else 
+            }
+            else
             {                                       /* It is a file. */
                 DPrintf("%s\n", fno.fname);
                 snprintf (fn, 255, "%s%s", dname, fno.fname);
@@ -810,7 +810,7 @@ int file_read(char *fname)
     }
 
     /* Read every line and display it */
-    while (f_gets(line, sizeof (line), &fil)) 
+    while (f_gets(line, sizeof (line), &fil))
     {
         DPrintf(line);
     }
@@ -888,8 +888,8 @@ unsigned int BTN_TRIANGLE : 1;  /*!< \brief triangle button */
 unsigned int BTN_R1 : 1;        /*!< \brief R1 button */
 unsigned int BTN_L1 : 1;        /*!< \brief L1 button */
 unsigned int BTN_R2 : 1;        /*!< \brief R2 button */
-unsigned int BTN_L2 : 1;        /*!< \brief L2 button */ 
-to 
+unsigned int BTN_L2 : 1;        /*!< \brief L2 button */
+to
 #define PAD_R1_MASK         0x0001
 #define PAD_L1_MASK         0x0002
 #define PAD_R2_MASK         0x0004
@@ -994,7 +994,7 @@ s32 main(s32 argc, const char* argv[])
     _app_restore (0);
     int btn = app_input (0);
 	// Ok, everything is setup. Now for the main loop.
-	while(1) 
+	while(1)
     {
         //2 input
         btn = app_input (0);

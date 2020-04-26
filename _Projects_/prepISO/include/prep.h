@@ -15,8 +15,10 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 		p_args->emu_mode = emu_mode;
 		p_args->num_sections = parts;
 
-		memcpy(plugin_args + sizeof(rawseciso_args), sections, parts*sizeof(uint32_t));
-		memcpy(plugin_args + sizeof(rawseciso_args) + (parts * sizeof(uint32_t)), sections_size, parts * sizeof(uint32_t));
+		uint32_t array_len = parts * sizeof(uint32_t);
+
+		memcpy(plugin_args + sizeof(rawseciso_args), sections, array_len);
+		memcpy(plugin_args + sizeof(rawseciso_args) + array_len, sections_size, array_len);
 
 		if(emu_mode == EMU_PSX)
 		{
@@ -28,7 +30,7 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 
 			p_args->num_tracks = num_tracks | cd_sector_size_param;
 
-			scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * parts * sizeof(uint32_t)));
+			scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * array_len));
 
 			if(num_tracks <= 1)
 			{
@@ -56,7 +58,7 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 		if(flistW!=NULL)
 		{
 			//fwrite(plugin_args, sizeof(plugin_args), 1, flistW);
-			fwrite(plugin_args, (sizeof(rawseciso_args) + (2 * (parts * sizeof(uint32_t))) + (num_tracks * sizeof(ScsiTrackDescriptor))), 1, flistW);
+			fwrite(plugin_args, (sizeof(rawseciso_args) + (2 * array_len) + (num_tracks * sizeof(ScsiTrackDescriptor))), 1, flistW);
 			fclose(flistW);
 			sysFsChmod(path, 0666);
 		}

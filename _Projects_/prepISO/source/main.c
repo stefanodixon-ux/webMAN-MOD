@@ -32,7 +32,7 @@ enum emu_modes
 	PSPISO = 11,
 };
 
-#define PKGFILE 6 || m == 7 || m == 8
+#define PKGFILE 6 || (m == 7) || (m == 8)
 
 #define FW_VERSION 4.86f
 
@@ -185,7 +185,7 @@ int main(int argc, const char* argv[])
 			device_id = USB_MASS_STORAGE((mounts[i].interface->ioType & 0xff) - '0');
 			if (strncmp(mounts[i].name, "ntfs", 4) == 0 || strncmp(mounts[i].name, "ext", 3) == 0)
 			{
-				for(u8 m = 0; m < 12; m++) //0="PS3ISO", 1="BDISO", 2="DVDISO", 3="PSXISO", 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 10="PSPISO"
+				for(u8 m = 0; m < 12; m++) //0="PS3ISO", 1="BDISO", 2="DVDISO", 3="PSXISO", 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO"
 				{
 					has_dirs = false;
 
@@ -201,13 +201,14 @@ int main(int argc, const char* argv[])
 							ext_len = 4;
 							if(flen < ext_len) continue; ext = filename + flen - ext_len;
 
-							//--- create .ntfs[BDFILES] for 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 10="PSPISO"
-							if(m >= 4 && m < 10)
+							//--- create .ntfs[BDFILES] for 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO"
+							if(m >= 4)
 							{
-								snprintf(filename, sizeof(filename), "%s:/%s%s/%s", mounts[i].name, c_path[m], SUFIX(profile), dir.d_name);
+								flen = snprintf(filename, sizeof(filename), "%s:/%s%s/%s", mounts[i].name, c_path[m], SUFIX(profile), dir.d_name);
 
-								u64 size = 0;
-								make_fake_iso(m, ext, dir.d_name, filename, device_id, size);
+								ext = filename + flen - ext_len;
+
+								make_fake_iso(m, ext, dir.d_name, filename, device_id, get_filesize(filename));
 								continue;
 							}
 							//---------------

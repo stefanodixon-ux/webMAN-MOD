@@ -11,7 +11,7 @@ endif
 #  TITLE, APPID, CONTENTID, ICON0 SFOXML before ppu_rules.
 #---------------------------------------------------------------------------------
 
-TITLE		:=	Prepare exFAT/NTFS Drives 1.22   (Hold X to keep existing cache files)
+TITLE		:=	Prepare exFAT/NTFS Drives 1.23   (Hold X to keep existing cache files)
 APPID		:=	BLES80616
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 
