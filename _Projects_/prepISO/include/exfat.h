@@ -1,39 +1,94 @@
+#define MAX_ISOS 2000
+
+static int  nn = 0;
+static int  nt[MAX_ISOS];
+static char ff[MAX_ISOS][255];
+
 static char subpath[MAX_PATH_LEN];
+/*
+void addlog(char *msg1, char *msg2)
+{
+	FILE* f;
+	f = fopen("/dev_hdd0/prepiso2.log", "a+b");
+	if(f)
+	{
+		char msg[300];
+		sprintf(msg, "%s %s\r\n", msg1, msg2);
+		fwrite(msg, 1, strlen(msg), f);
+		fclose (f);
+	}
+}
+*/
+static int s_mode;
+
+int copy_exfat(char *src_file, char *out_file, u64 size)
+{
+	if(size == 0) return FAILED;
+
+	FIL fd;	   // File objects
+
+	if (!f_open (&fd, src_file, FA_READ))
+	{
+		char *mem = NULL;
+
+		if((mem = malloc(size)) != NULL)
+		{
+			f_lseek (&fd, 0);
+			UINT re;
+			f_read (&fd, (void *)mem, size, &re);
+			f_close (&fd);
+
+			SaveFile(out_file, mem, re);
+
+			free(mem);
+
+			return (re == size) ? SUCCESS : FAILED;
+		}
+		else
+		{
+			f_close (&fd);
+		}
+	}
+	return FAILED;
+}
 
 //dir contents
 static int dir_read (char *dpath)
 {
-    /* Register work area to the default drive */
-    FATFS fs;   /* Work area (filesystem object) for logical drive */
-    char drn[5];
-    snprintf(drn, 4, "%.3s", dpath);
-    f_mount(&fs, drn, 0);
+	nn = 0;
 
-    char fn[256];
+	/* Register work area to the default drive */
+	FATFS fs;   /* Work area (filesystem object) for logical drive */
+	char drn[5];
+	snprintf(drn, 4, "%.3s", dpath);
+	f_mount(&fs, drn, 0);
 
-    FDIR dir;
-    FRESULT res;
-    res = f_opendir(&dir, dpath);                       /* Open the directory */
-    if (res == FR_OK)
-    {
-        bool is_iso;
-        static FILINFO fno;
-        for (;;)
-        {
-            FRESULT res1 = f_readdir(&dir, &fno);                   /* Read a directory item */
-            if (res1 != FR_OK || fno.fname[0] == 0)
-            {
-                f_closedir(&dir);
-                return res;  /* Break on error or end of dir */
-            }
-            if (fno.fattrib & AM_DIR)
-            {                /* scan directories recursively */
-                snprintf (subpath, 255, "%s", fno.fname);
-                snprintf (fn, 255, "%s/%s", dpath, fno.fname);
-                dir_read (fn);
-            }
-            else
-            {
+	char fn[256];
+
+	FDIR dir;
+	FRESULT res;
+
+	res = f_opendir(&dir, dpath);					   /* Open the directory */
+	if (res == FR_OK)
+	{
+		bool is_iso;
+		static FILINFO fno;
+		for(;;)
+		{
+			FRESULT res1 = f_readdir(&dir, &fno);	   /* Read a directory item */
+			if (res1 != FR_OK || fno.fname[0] == 0)
+			{
+				break;
+			}
+			if (fno.fattrib & AM_DIR)
+			{				/* scan directories recursively */
+				if(fno.fname[0] == '.') continue;
+				snprintf (subpath, 255, "%s", fno.fname);
+				snprintf (fn, 255, "%s/%s", dpath, fno.fname);
+				dir_read (fn);
+			}
+			else if(s_mode == 1)
+			{
 				int flen = strlen(fno.fname);
 				if(flen < 4) continue; flen -= 4;
 				char *ext = fno.fname + flen;
@@ -57,7 +112,7 @@ static int dir_read (char *dpath)
 				{
 					cd_sector_size = 2352;
 					cd_sector_size_param = 0;
-					num_tracks = 1; // TO-DO: detect number of tracks for psx_emu
+					num_tracks = 1;
 
 					if(g_mode == PSXISO)
 					{
@@ -110,27 +165,64 @@ static int dir_read (char *dpath)
 						}
 					}
 
-					snprintf (fn, 255, "%s/%s", dpath, fno.fname);
-					int parts = fflib_file_to_sectors (fn, sections, sections_size, MAX_SECTIONS, 1);
-					if (parts >= MAX_SECTIONS) continue;
-
-					snprintf (fno.fname + flen, 255, " [exFAT]%s", ext);
-
-					if(*subpath)
-						snprintf (fn, 255, "[%s] %s", subpath, fno.fname);
-					else
-						snprintf (fn, 255, "%s", fno.fname);
-
-					build_file(fn, parts, num_tracks, device_id, g_profile, g_mode);
+					// store path for conversion after the directory scan (fflib_file_to_sectors breaks the scan)
+					nt[nn] = num_tracks;
+					snprintf (ff[nn], 255, "%s", fno.fname);
+					nn++; if(nn >= MAX_ISOS) break;
 				}
-            }
-        }
-        f_closedir(&dir);
-    }
-    //
-    f_mount(0, drn, 0);
-    //
-    return res;
+			}
+			else if(s_mode == 0)
+			{
+				if(strstr(fno.fname, ".png") || strstr(fno.fname, ".PNG") || strstr(fno.fname, ".jpg") || strstr(fno.fname, ".JPG") || strstr(fno.fname, ".SFO"))
+				{
+					if(*subpath)
+						snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/[%s] %s", subpath, fno.fname);
+					else
+						snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/%s", fno.fname);
+
+					if((file_exists(wm_path) == false) && (fno.fsize < 4194304))
+					{
+						snprintf(fn, 255, "%s/%s", dpath, fno.fname);
+						copy_exfat(fn, wm_path, fno.fsize);
+					}
+				}
+			}
+		}
+		f_closedir(&dir);
+	}
+	//
+	if(nn)
+	{
+		int flen, dlen;
+		for(dlen = strlen(dpath); dlen; dlen--) if(dpath[dlen] == '/') break; // find subdir name
+
+		char *subdir = &dpath[dlen + 1]; sprintf(subpath, "%s", dpath);
+
+		for(int f = 0; f < nn; f++)
+		{
+			for(int i = 0; i < MAX_SECTIONS; i++) sections[i] = sections_size[i] = 0;
+
+			flen = snprintf (fn, 255, "%s/%s", subpath, ff[f]);
+
+			int parts = fflib_file_to_sectors (fn, sections, sections_size, MAX_SECTIONS, 1);
+			if (parts >= MAX_SECTIONS) continue;
+
+			if(dlen >= 10)
+				flen = snprintf (wm_path, 255, "[%s] %s", subdir, ff[f]);
+			else
+				flen = snprintf (wm_path, 255, "%s", ff[f]);
+
+			wm_path[flen - 4] = 0;
+
+			num_tracks = nt[f];
+			build_file(wm_path, parts, num_tracks, device_id, g_profile, g_mode);
+		}
+		nn = 0;
+	}
+	//
+	f_mount(0, drn, 0);
+	//
+	return res;
 }
 
 static void scan_exfat(void)
@@ -151,7 +243,8 @@ static void scan_exfat(void)
 					*subpath = 0;
 
 					snprintf(path, sizeof(path), "%u:/%s%s", port, c_path[m], SUFIX(profile));
-					dir_read (path);
+					for(s_mode = 0; s_mode < 2; s_mode++)
+						dir_read (path);
 				}
 			}
 		}

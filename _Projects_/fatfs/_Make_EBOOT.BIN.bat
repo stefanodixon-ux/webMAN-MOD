@@ -9,16 +9,7 @@ set PATH=%WIN_PS3SDK%/mingw/msys/1.0/bin;%WIN_PS3SDK%/mingw/bin;%WIN_PS3SDK%/ps3
 set PSL1GHT=%PS3SDK%/psl1ght
 set PS3DEV=%PS3SDK%/ps3dev
 
-rem make npdrm
-make pkg
-
-rem del EBOOT.BIN>nul
-del *.elf>nul
-del /s/q build>nul
-rd /s/q build>nul
-
-if exist prepNTFS.self del prepNTFS.self>nul
-ren prepISO.self prepNTFS.self
+make install
 
 :quit
 pause

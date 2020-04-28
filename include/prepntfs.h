@@ -53,10 +53,10 @@ static int prepNTFS(u8 clear)
 	{
 		dlen = sprintf(path, "%s/", WMTMP);
 		char *ext, *path_file = path + dlen;
-		
+
 		CellFsDirectoryEntry dir; u32 read_f;
 		char *entry_name = dir.entry_name.d_name;
-		
+
 		while(!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_f) && read_f)
 		{
 			ext = strstr(entry_name, ".ntfs[");
@@ -227,7 +227,9 @@ next_ntfs_entry:
 									p_args->emu_mode = emu_mode;
 									p_args->num_sections = parts;
 
-									memcpy(plugin_args + sizeof(rawseciso_args) + (parts * sizeof(u32)), sections_sizeP, parts * sizeof(u32));
+									uint32_t array_len = parts * sizeof(uint32_t);
+
+									memcpy(plugin_args + sizeof(rawseciso_args) + array_len, sections_sizeP, array_len);
 
 									if(emu_mode == EMU_PSX)
 									{
@@ -240,7 +242,7 @@ next_ntfs_entry:
 
 										p_args->num_tracks = num_tracks | cd_sector_size_param;
 
-										scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * (parts * sizeof(u32))));
+										scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * array_len));
 
 										if(num_tracks <= 1)
 										{
@@ -262,7 +264,7 @@ next_ntfs_entry:
 									filename[strlen(filename) - extlen] = NULL;
 									snprintf(path, sizeof(path), "%s/%s%s.ntfs[%s]", WMTMP, filename, SUFIX2(profile), paths[m]);
 
-									save_file(path, (char*)plugin_args, (sizeof(rawseciso_args) + (2 * (parts * sizeof(u32))) + (num_tracks * sizeof(ScsiTrackDescriptor)))); count++;
+									save_file(path, (char*)plugin_args, (sizeof(rawseciso_args) + (2 * array_len) + (num_tracks * sizeof(ScsiTrackDescriptor)))); count++;
 
 									nlen = snprintf(path0, sizeof(path0), "%s:%s%s%s/%s", mounts[i].name, prefix[n], paths[m], sufix, dir.d_name);
 									if(!get_image_file(path0, nlen - extlen)) goto next_entry; // not found image in NTFS

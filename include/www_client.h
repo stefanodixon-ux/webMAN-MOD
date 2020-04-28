@@ -2318,7 +2318,8 @@ retry_response:
 					//CellGcmConfig config; cellGcmGetConfiguration(&config);
 					//sprintf(templn, "localAddr: %x", (u32) config.localAddress); _concat(&sbuffer, templn);
 				}
-				else if(webman_config->sman || (conn_s == (int)WM_FILE_REQUEST) || strstr(param, "/sman.ps3")) ;
+				else if((conn_s == (int)WM_FILE_REQUEST)) ;
+				else if(webman_config->sman || strstr(param, "/sman.ps3")) {_concat(&sbuffer, "<div id='toolbox'>"); goto skip_code;}
 				else if(!mount_ps3)
 				{
 					{
@@ -2363,6 +2364,7 @@ retry_response:
 
 					_concat(&sbuffer, templn);
 
+ skip_code:
  #ifdef COPY_PS3
 					if(((islike(param, "/dev_") && strlen(param) > 12 && !strstr(param,"?")) || islike(param, "/dev_bdvd")) && !strstr(param,".ps3/") && !strstr(param,".ps3?"))
 					{
@@ -2401,6 +2403,7 @@ retry_response:
 					}
 
  #endif // #ifdef COPY_PS3
+					if(webman_config->sman || strstr(param, "/sman.ps3")) {_concat(&sbuffer, "</div>"); goto continue_rendering;}
 
 					sprintf(templn,  "%s%s XML%s\" %s'%s';\"> "
 									 "%s%s HTML%s\" %s'%s';\">",
@@ -2427,6 +2430,7 @@ retry_response:
  #endif
 					sprintf( templn, "</form><hr>");
 					_concat(&sbuffer, templn);
+ continue_rendering:
  #ifdef COPY_PS3
 					if(copy_in_progress)
 					{

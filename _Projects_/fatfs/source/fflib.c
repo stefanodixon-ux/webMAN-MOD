@@ -4,7 +4,7 @@
 #include "storage.h"
 #include <malloc.h>
 #include <sys/file.h>
-#include <lv2/mutex.h> 
+#include <lv2/mutex.h>
 #include <sys/errno.h>
 #include <stdio.h>
 
@@ -16,8 +16,8 @@
 /*
 you'll need these in the Makefile of your app in order to have actual access to raw devices
 # aditional scetool flags (--self-ctrl-flags, --self-cap-flags...)
-SCETOOL_FLAGS	+=	--self-ctrl-flags 4000000000000000000000000000000000000000000000000000000000000002
-SCETOOL_FLAGS	+=	--self-cap-flags 00000000000000000000000000000000000000000000007B0000000100000000
+SCETOOL_FLAGS   +=  --self-ctrl-flags 4000000000000000000000000000000000000000000000000000000000000002
+SCETOOL_FLAGS   +=  --self-cap-flags 00000000000000000000000000000000000000000000007B0000000100000000
 
 **file_to_sectors**
 @Zar, thanks!
@@ -30,7 +30,7 @@ input : MAX_SECTIONS : number max of sections (allocated in memory). For example
 
 output : parts : number of sections. For example, parts = 2
 output : sections : offset of section used by the file . For example, sections[0] = 0x00223344, sections[1]=0x11223344
-output : sections_size : size of each sections. For example, sections[0] = 0x800, sections[1]=0x800 
+output : sections_size : size of each sections. For example, sections[0] = 0x800, sections[1]=0x800
 "
 
 @aldostools, thanks!
@@ -292,17 +292,17 @@ int sector_record_add (unsigned int sect, unsigned int nsec)
 
 //!!USE THESE WITH CARE!
 FRESULT f_open_sectors (
-	FIL* fp,			/* Pointer to the blank file object */
-	const TCHAR* path,	/* Pointer to the file name */
-	BYTE mode,			/* Access mode and file open mode flags */
-	int (*record_cbk)(unsigned int sect, unsigned int nsect)	//callback to run on disk access call
+    FIL* fp,            /* Pointer to the blank file object */
+    const TCHAR* path,  /* Pointer to the file name */
+    BYTE mode,          /* Access mode and file open mode flags */
+    int (*record_cbk)(unsigned int sect, unsigned int nsect)    //callback to run on disk access call
 );
 FRESULT f_read_sectors (
-	FIL* fp, 	/* Pointer to the file object */
-	void* buff,	/* Pointer to data buffer */
-	UINT btr,	/* Number of bytes to read */
-	UINT* br,	/* Pointer to number of bytes read */
-	int (*record_cbk)(unsigned int sect, unsigned int nsect)	//callback to run on disk access call
+    FIL* fp,    /* Pointer to the file object */
+    void* buff, /* Pointer to data buffer */
+    UINT btr,   /* Number of bytes to read */
+    UINT* br,   /* Pointer to number of bytes read */
+    int (*record_cbk)(unsigned int sect, unsigned int nsect)    //callback to run on disk access call
 );
 
 int fflib_file_to_sectors(const char *path, uint32_t *sec_out, uint32_t *size_out, int max, int phys)
@@ -321,7 +321,7 @@ int fflib_file_to_sectors(const char *path, uint32_t *sec_out, uint32_t *size_ou
     fr = f_open_sectors (&fdst, path, FA_READ, &sector_record_add);
     if (fr != FR_OK)
         return -1;
-    while (1)
+    for(;;)
     {
         //simulate reading 300MB at a time to pick up the sections accessed by driver
         //might require tuning but it seems we cannot read ALL file at once.. I tried ;-)=
