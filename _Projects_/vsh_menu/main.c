@@ -1469,7 +1469,7 @@ static void vsh_menu_thread(uint64_t arg)
 				sys_ppu_thread_exit(0);
 			}
 
-			if(!gui_allowed(true)) {sys_timer_sleep(5); continue;} sys_timer_usleep(300000);
+			if(!gui_allowed(true)) {sys_timer_sleep(5); if(arg) running = 0; continue;} sys_timer_usleep(300000);
 
 			pdata.len = 0;
 			for(uint8_t p = 0; p < 8; p++)

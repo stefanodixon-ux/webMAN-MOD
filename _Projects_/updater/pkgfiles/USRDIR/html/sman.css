@@ -43,7 +43,7 @@ body,td,th{color:#f0f0f0;}
 select,input {border-radius: 8px; padding: 2px;}
 textarea {border-radius: 8px; padding: 5px; margin-bottom: 5px;}
 
-#toolbox{position:absolute;bottom:2px;left:510px;z-index:-1;}
+#toolbox{position:absolute;bottom:8px;left:680px;z-index:-1;zoom:0.8}
 .propfont{font-family:"Courier New",Courier,monospace;font-size:16px;}
 
 .smv {

@@ -1212,7 +1212,7 @@ parse_request:
 					}
 				}
 				else
- 					sprintf(url, "ERROR: Not in XMB!");
+					sprintf(url, "ERROR: Not in XMB!");
 
 				if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, url);
 
@@ -2430,7 +2430,9 @@ retry_response:
  #endif
 					sprintf( templn, "</form><hr>");
 					_concat(&sbuffer, templn);
+ #ifndef LITE_EDITION
  continue_rendering:
+ #endif
  #ifdef COPY_PS3
 					if(copy_in_progress)
 					{
@@ -2555,6 +2557,8 @@ retry_response:
 					{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
  #ifndef LITE_EDITION
 					if(!strstr(param, "$nobypass")) { PS3MAPI_REENABLE_SYSCALL8 }
+ #else
+ continue_rendering:
  #endif
 					is_busy = true;
 

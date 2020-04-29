@@ -833,7 +833,7 @@ static void slaunch_thread(uint64_t arg)
 			if(arg)
 			{
 				unload_mode = 5;
-				if(!gui_allowed(1)) continue;
+				if(!gui_allowed(1)) {running = 0; continue;}
 
 				start_VSH_Menu();
 				init_delay = 0;
