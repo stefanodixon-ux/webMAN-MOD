@@ -5,7 +5,7 @@
 	<View id="seg_webman_links">
 		<Attributes>
 			<Table key="links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/tools.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/tools.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>webMAN</String></Pair>
 				<Pair key="info"><String>Инструменты webMAN</String></Pair>
@@ -55,7 +55,7 @@
 	<View id="seg_webman_redirect_usb_links">
 		<Attributes>
 			<Table key="redirect_usb_links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Монтирование USB-накопителя</String></Pair>
 				<Pair key="info"><String></String></Pair>
@@ -76,14 +76,14 @@
 	<View id="seg_webman_redirect_usb_items">
 		<Attributes>
 			<Table key="remap_usb0">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
 				<Pair key="title"><String>Монтировать USB на HDD</String></Pair>
 				<Pair key="info"><String>Монтировать 'dev_usb0' в 'dev_hdd0/packages'</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
 				<Pair key="module_action"><String>http://localhost/remap.ps3/dev_usb000&to=/dev_hdd0/packages</String></Pair>
 			</Table>
 			<Table key="unmap_usb0">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
 				<Pair key="title"><String>Отменить монтирование USB</String></Pair>
 				<Pair key="info"><String>Восстановить прямой доступ к 'dev_usb0'</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
@@ -100,7 +100,7 @@
 	<View id="seg_webman_nethost_links">
 		<Attributes>
 			<Table key="nethost_links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Сетевые папки</String></Pair>
 				<Pair key="info"><String>Монтирование сетевых '/nethost' папок в виде привода '/dev_bdvd'</String></Pair>
@@ -126,7 +126,7 @@
 	<View id="seg_webman_system_files">
 		<Attributes>
 			<Table key="webman_system_files">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/sysfiles.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/sysfiles.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Файл-менеджер</String></Pair>
 				<Pair key="info"><String>Просмотр и удаление файлов PS3 в XMB</String></Pair>
@@ -139,7 +139,7 @@
 	<View id="seg_webman_nethost_links_items0">
 		<Attributes>
 			<Table key="nethost0_links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Сетевые папки /net0</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0' как '/dev_bdvd'</String></Pair>
@@ -154,7 +154,7 @@
 	<View id="seg_webman_nethost_links_items1">
 		<Attributes>
 			<Table key="nethost1_links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Сетевые папки /net1</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1' как '/dev_bdvd'</String></Pair>
@@ -169,7 +169,7 @@
 	<View id="seg_webman_nethost_links_items2">
 		<Attributes>
 			<Table key="nethost2_links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Сетевые папки /net2</String></Pair>
 				<Pair key="info"><String>Монтировать '/net2' как '/dev_bdvd'</String></Pair>
@@ -184,7 +184,7 @@
 	<View id="seg_webman_nethost_links_items3">
 		<Attributes>
 			<Table key="nethost3_links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Сетевые папки /net3</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3' как '/dev_bdvd'</String></Pair>
@@ -199,7 +199,7 @@
 	<View id="seg_webman_nethost_links_items4">
 		<Attributes>
 			<Table key="nethost4_links">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Сетевые папки /net4</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4' как '/dev_bdvd'</String></Pair>
@@ -275,7 +275,7 @@
 	<View id="seg_webman_refresh_xml">
 		<Attributes>
 			<Table key="webman_refresh_xml">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/refreshxml.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshxml.png</String></Pair>
 				<Pair key="title"><String>Обновить меню 'Игры'</String></Pair>
 				<Pair key="info"><String>Обновить список игр в XMB, потребуется перезагрузка [Select+R3]</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -290,7 +290,7 @@
 	<View id="seg_webman_refresh_html">
 		<Attributes>
 			<Table key="webman_refresh_html">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/refreshhtml.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshhtml.png</String></Pair>
 				<Pair key="title"><String>Обновить меню 'Игры' [Web-браузер]</String></Pair>
 				<Pair key="info"><String>Обновить список игр в браузере, перезагрузка не требуется</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
@@ -304,7 +304,7 @@
 	<View id="seg_webman_cpursx">
 		<Attributes>
 			<Table key="webman_cpursx">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/sysinfo.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/sysinfo.png</String></Pair>
 				<Pair key="title"><String>Системная информация</String></Pair>
 				<Pair key="info"><String>Температура CELL/RSX, объём памяти, PSID/IDPS, данные о CFW и др. [Select+Start]</String></Pair>
 				<Pair key="module_name"><String>webbrowser_plugin</String></Pair>
@@ -318,7 +318,7 @@
 	<View id="seg_webman_games">
 		<Attributes>
 			<Table key="webman_games">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/gamesbrowser.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamesbrowser.png</String></Pair>
 				<Pair key="title"><String>Игры</String></Pair>
 				<Pair key="info"><String>Просмотр и управление играми в Web-браузере</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
@@ -332,7 +332,7 @@
 	<View id="seg_webman_files">
 		<Attributes>
 			<Table key="webman_files">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/filemanager.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/filemanager.png</String></Pair>
 				<Pair key="title"><String>Файл-менеджер [Web-браузер]</String></Pair>
 				<Pair key="info"><String>Просмотр файлов PS3 в Web-браузере</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
@@ -346,7 +346,7 @@
 	<View id="seg_webman_cache">
 		<Attributes>
 			<Table key="seg_webman_cache">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/cachefiles.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/cachefiles.png</String></Pair>
 				<Pair key="title"><String>Временные файлы</String></Pair>
 				<Pair key="info"><String>Просмотр и удаление временных файлов из /dev_hdd0/tmp/wmtmp</String></Pair>
 				<Pair key="child"><String>segment</String></Pair>
@@ -361,7 +361,7 @@
 	<View id="seg_webman_setup">
 		<Attributes>
 			<Table key="webman_setup">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/settings.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/settings.png</String></Pair>
 				<Pair key="title"><String>Настройки</String></Pair>
 				<Pair key="info"><String>Настройки функций сканирования, параметров запуска и др.</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
@@ -375,7 +375,7 @@
 	<View id="seg_webman_nethost0">
 		<Attributes>
 			<Table key="webman_nethost0">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать net0</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -390,7 +390,7 @@
 	<View id="seg_webman_nethost0_pkg">
 		<Attributes>
 			<Table key="webman_nethost0_pkg">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PKG</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0/PKG' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -405,7 +405,7 @@
 	<View id="seg_webman_nethost0_video">
 		<Attributes>
 			<Table key="webman_nethost0_video">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать VIDEO</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0/VIDEO' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -420,7 +420,7 @@
 	<View id="seg_webman_nethost0_music">
 		<Attributes>
 			<Table key="webman_nethost0_music">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать MUSIC</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0/MUSIC' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -435,7 +435,7 @@
 	<View id="seg_webman_nethost0_picture">
 		<Attributes>
 			<Table key="webman_nethost0_picture">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PICTURE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0/PICTURE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -450,7 +450,7 @@
 	<View id="seg_webman_nethost0_roms">
 		<Attributes>
 			<Table key="webman_nethost0_roms">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать ROMS</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0/ROMS' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -465,7 +465,7 @@
 	<View id="seg_webman_nethost0_pup">
 		<Attributes>
 			<Table key="webman_nethost0_pup">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать FIRMWARE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net0/FIRMWARE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -480,7 +480,7 @@
 	<View id="seg_webman_nethost1">
 		<Attributes>
 			<Table key="webman_nethost1">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать net1</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -495,7 +495,7 @@
 	<View id="seg_webman_nethost1_pkg">
 		<Attributes>
 			<Table key="webman_nethost1_pkg">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PKG</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1/PKG' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -510,7 +510,7 @@
 	<View id="seg_webman_nethost1_video">
 		<Attributes>
 			<Table key="webman_nethost1_video">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать VIDEO</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1/VIDEO' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -525,7 +525,7 @@
 	<View id="seg_webman_nethost1_music">
 		<Attributes>
 			<Table key="webman_nethost1_music">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать MUSIC</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1/MUSIC' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -540,7 +540,7 @@
 	<View id="seg_webman_nethost1_picture">
 		<Attributes>
 			<Table key="webman_nethost1_picture">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PICTURE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1/PICTURE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -555,7 +555,7 @@
 	<View id="seg_webman_nethost1_roms">
 		<Attributes>
 			<Table key="webman_nethost1_roms">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать ROMS</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1/ROMS' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -570,7 +570,7 @@
 	<View id="seg_webman_nethost1_pup">
 		<Attributes>
 			<Table key="webman_nethost1_pup">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать FIRMWARE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net1/FIRMWARE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -585,7 +585,7 @@
 	<View id="seg_webman_nethost2">
 		<Attributes>
 			<Table key="webman_nethost2">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать net2</String></Pair>
 				<Pair key="info"><String>Монтировать '/net2' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -600,7 +600,7 @@
 	<View id="seg_webman_nethost2_pkg">
 		<Attributes>
 			<Table key="webman_nethost2_pkg">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PKG</String></Pair>
 				<Pair key="info"><String>Монтировать '/net2/PKG' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -615,7 +615,7 @@
 	<View id="seg_webman_nethost2_video">
 		<Attributes>
 			<Table key="webman_nethost2_video">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать VIDEO</String></Pair>
 				<Pair key="info"><String>Монтировать '/net2/VIDEO' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -630,7 +630,7 @@
 	<View id="seg_webman_nethost2_music">
 		<Attributes>
 			<Table key="webman_nethost2_music">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать MUSIC</String></Pair>
 				<Pair key="info"><String>Монтировать '/net2/MUSIC' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -645,7 +645,7 @@
 	<View id="seg_webman_nethost2_picture">
 		<Attributes>
 			<Table key="webman_nethost2_picture">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PICTURE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net2/PICTURE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -660,7 +660,7 @@
 	<View id="seg_webman_nethost2_roms">
 		<Attributes>
 			<Table key="webman_nethost2_roms">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать ROMS</String></Pair>
 				<Pair key="info"><String>Монтировать '/net2/ROMS' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -675,7 +675,7 @@
 	<View id="seg_webman_nethost2_pup">
 		<Attributes>
 			<Table key="webman_nethost2_pup">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String></String>Монтировать FIRMWARE</Pair>
 				<Pair key="info"><String>Монтировать '/net2/FIRMWARE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -690,7 +690,7 @@
 	<View id="seg_webman_nethost3">
 		<Attributes>
 			<Table key="webman_nethost3">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать net3</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -705,7 +705,7 @@
 	<View id="seg_webman_nethost3_pkg">
 		<Attributes>
 			<Table key="webman_nethost3_pkg">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PKG</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3/PKG' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -720,7 +720,7 @@
 	<View id="seg_webman_nethost3_video">
 		<Attributes>
 			<Table key="webman_nethost3_video">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать VIDEO</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3/VIDEO' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -735,7 +735,7 @@
 	<View id="seg_webman_nethost3_music">
 		<Attributes>
 			<Table key="webman_nethost3_music">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать MUSIC</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3/MUSIC' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -750,7 +750,7 @@
 	<View id="seg_webman_nethost3_picture">
 		<Attributes>
 			<Table key="webman_nethost3_picture">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PICTURE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3/PICTURE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -765,7 +765,7 @@
 	<View id="seg_webman_nethost3_roms">
 		<Attributes>
 			<Table key="webman_nethost3_roms">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать ROMS</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3/ROMS' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -780,7 +780,7 @@
 	<View id="seg_webman_nethost3_pup">
 		<Attributes>
 			<Table key="webman_nethost3_pup">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать FIRMWARE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net3/FIRMWARE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -795,7 +795,7 @@
 	<View id="seg_webman_nethost4">
 		<Attributes>
 			<Table key="webman_nethost4">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать net4</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -810,7 +810,7 @@
 	<View id="seg_webman_nethost4_pkg">
 		<Attributes>
 			<Table key="webman_nethost4_pkg">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PKG</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4/PKG' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -825,7 +825,7 @@
 	<View id="seg_webman_nethost4_video">
 		<Attributes>
 			<Table key="webman_nethost4_video">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать VIDEO</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4/VIDEO' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -840,7 +840,7 @@
 	<View id="seg_webman_nethost4_music">
 		<Attributes>
 			<Table key="webman_nethost4_music">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать MUSIC</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4/MUSIC' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -855,7 +855,7 @@
 	<View id="seg_webman_nethost4_picture">
 		<Attributes>
 			<Table key="webman_nethost4_picture">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать PICTURE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4/PICTURE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -870,7 +870,7 @@
 	<View id="seg_webman_nethost4_roms">
 		<Attributes>
 			<Table key="webman_nethost4_roms">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать ROMS</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4/ROMS' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -885,7 +885,7 @@
 	<View id="seg_webman_nethost4_pup">
 		<Attributes>
 			<Table key="webman_nethost4_pup">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</String></Pair>
 				<Pair key="title"><String>Монтировать FIRMWARE</String></Pair>
 				<Pair key="info"><String>Монтировать '/net4/FIRMWARE' как '/dev_bdvd'</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -900,7 +900,7 @@
 	<View id="seg_webman_block_psn">
 		<Attributes>
 			<Table key="webman_block_psn">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/blockpsn.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/blockpsn.png</String></Pair>
 				<Pair key="title"><String>Offline-режим</String></Pair>
 				<Pair key="info"><String>Блокировка доступа к серверам PSN в LV1/LV2</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -915,7 +915,7 @@
 	<View id="seg_webman_gamedata">
 		<Attributes>
 			<Table key="webman_gamedata">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</String></Pair>
 				<Pair key="title"><String>Расположение gameDATA</String></Pair>
 				<Pair key="info"><String>Изменить место сохранение игровых данных на внешнее USB-устройство и обратно, данные не переносятся [Select+■]</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -930,7 +930,7 @@
 	<View id="seg_webman_gamefix">
 		<Attributes>
 			<Table key="webman_gamefix">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/gamefix.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamefix.png</String></Pair>
 				<Pair key="title"><String>Автофикс игры</String></Pair>
 				<Pair key="info"><String>Исправление смонтированной игры под CFW4.21+, только для JB-папок на 'dev_hdd0'</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
@@ -944,7 +944,7 @@
 	<View id="seg_webman_unmount">
 		<Attributes>
 			<Table key="webman_unmount">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/icon_wm_eject.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/icon_wm_eject.png</String></Pair>
 				<Pair key="title"><String>Размонтировать</String></Pair>
 				<Pair key="info"><String>Текущая смонтированная игра/папка будет выгружена [Select+O]</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -959,7 +959,7 @@
 	<View id="seg_webman_insert">
 		<Attributes>
 			<Table key="webman_insert">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/icon_wm_insert.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/icon_wm_insert.png</String></Pair>
 				<Pair key="title"><String>Вставить диск</String></Pair>
 				<Pair key="info"><String>Диск, извлечённый из привода PS3, будет вставлен</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -974,7 +974,7 @@
 	<View id="seg_webman_uninstall">
 		<Attributes>
 			<Table key="webman_uninstall">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/multiman.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</String></Pair>
 				<Pair key="title"><String>Удалить webMAN MOD</String></Pair>
 				<Pair key="info"><String></String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -989,7 +989,7 @@
 	<View id="seg_webman_unload">
 		<Attributes>
 			<Table key="webman_unload">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/unload.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/unload.png</String></Pair>
 				<Pair key="title"><String>Выгрузить webMAN</String></Pair>
 				<Pair key="info"><String>webMAN будет выгружен из памяти [R2+L3+R3]</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -1004,7 +1004,7 @@
 	<View id="seg_wm_vsh_menu">
 		<Attributes>
 			<Table key="wm_vsh_menu_load">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/vshmenu.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/vshmenu.png</String></Pair>
 				<Pair key="title"><String>VSH Меню</String></Pair>
 				<Pair key="info"><String>Отобразить VSH Меню [Select - 3сек]</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -1019,7 +1019,7 @@
 	<View id="seg_webman_restart">
 		<Attributes>
 			<Table key="webman_restart">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/restartps3.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/restartps3.png</String></Pair>
 				<Pair key="title"><String>Перезагрузить PS3</String></Pair>
 				<Pair key="info"><String>Консоль будет перезагружена [L3+R2+O]</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -1034,7 +1034,7 @@
 	<View id="seg_webman_shutdown">
 		<Attributes>
 			<Table key="webman_shutdown">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/shutdownps3.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/shutdownps3.png</String></Pair>
 				<Pair key="title"><String>Выключить PS3</String></Pair>
 				<Pair key="info"><String>Консоль будет выключена [L3+R2+X]</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
@@ -1049,7 +1049,7 @@
 	<View id="seg_webman_update">
 		<Attributes>
 			<Table key="wm_update_link">
-				<Pair key="icon"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/webman.png</String></Pair>
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</String></Pair>
 				<Pair key="icon_notation"><String>WNT_XmbItemBrowser</String></Pair>
 				<Pair key="title"><String>Обновите webMAN MOD</String></Pair>
 				<Pair key="info"><String>Загрузите и установите последнюю версию. Перезагрузите вручную после установки.</String></Pair>
@@ -1075,7 +1075,7 @@
 				<Pair key="pkg_src_qa"><String>http://aldostools.org/ps3/webMAN_MOD_latest.pkg</String></Pair>
 				<Pair key="content_name"><String>msg_install</String></Pair>
 				<Pair key="content_id"><String>EP0001-UPDWEBMOD_00-0000000000000000</String></Pair>
-				<Pair key="prod_pict_path"><String>/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/webman.png</String></Pair>
+				<Pair key="prod_pict_path"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</String></Pair>
 			</Table>
 		</Attributes>
 		<Items>

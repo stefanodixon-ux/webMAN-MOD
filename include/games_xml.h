@@ -333,7 +333,7 @@ scan_roms:
 				language("STR_LAUNCHPSP", STR_LAUNCHPSP, "Launch PSP ISO mounted through webMAN or mmCM");
 				#endif
 				sprintf(templn, "<Table key=\"cobra_psp_launcher\">"
-								XML_PAIR("icon","/dev_hdd0/game/%s/ICON0.PNG")
+								XML_PAIR("icon","/dev_hdd0//game/%s/ICON0.PNG")
 								XML_PAIR("title","PSP Launcher")
 								XML_PAIR("info","%s") "%s",
 								isDir(PSP_LAUNCHER_REMASTERS) ? PSP_LAUNCHER_REMASTERS_ID : PSP_LAUNCHER_MINIS_ID,
@@ -705,7 +705,7 @@ continue_reading_folder_xml:
 #ifndef PKG_LAUNCHER
 		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</Attributes><Items>");}
 #else
-		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</Attributes><Items>"); if(pkg_launcher) _concat(&myxml_ps3, QUERY_XMB("pkg_launcher", "xcb://localhost/query?limit=1&cond=Ae+Game:Common.dirPath /dev_hdd0/game+Ae+Game:Common.fileName " PKGLAUNCH_ID));}
+		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</Attributes><Items>"); if(pkg_launcher) _concat(&myxml_ps3, QUERY_XMB("pkg_launcher", "xcb://localhost/query?limit=1&cond=Ae+Game:Common.dirPath /dev_hdd0//game+Ae+Game:Common.fileName " PKGLAUNCH_ID));}
 #endif
 		if(!(webman_config->cmask & PS2)) {_concat(&myxml_ps2, "</Attributes><Items>"); if(ps2_launcher) _concat(&myxml_ps2, QUERY_XMB("ps2_classic_launcher", "xcb://127.0.0.1/query?limit=1&cond=Ae+Game:Game.titleId PS2U10000"));}
 
@@ -740,13 +740,13 @@ continue_reading_folder_xml:
 
 	// --- add eject & setup/xmbm+ menu
 #ifdef ENGLISH_ONLY
-	bool add_xmbm_plus = file_exists("/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml");
+	bool add_xmbm_plus = file_exists("/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml");
 #else
 	bool add_xmbm_plus = false;
 
 	while(true)
 	{
-		sprintf(templn, "/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/webMAN%s.xml", lang_code);
+		sprintf(templn, "/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN%s.xml", lang_code);
 		add_xmbm_plus = file_exists(templn);
 		if(add_xmbm_plus || *lang_code == NULL) break; *lang_code = NULL;
 	}
@@ -760,7 +760,7 @@ continue_reading_folder_xml:
 		{
 			if(add_xmbm_plus)
 #ifdef ENGLISH_ONLY
-				_concat(&myxml_ngp, QUERY_XMB("setup", "xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml#seg_webman_links_items"));
+				_concat(&myxml_ngp, QUERY_XMB("setup", "xmb://localhost/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml#seg_webman_links_items"));
 #else
 			{
 				sprintf(tempstr, QUERY_XMB("setup", "xmb://localhost%s#seg_webman_links_items"), templn);
@@ -965,7 +965,7 @@ continue_reading_folder_xml:
 						 XML_PAIR("icon","%s")
 						 XML_PAIR("title","%s")
 						 XML_PAIR("info","%s") "%s",
-						 add_xmbm_plus ? "/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/multiman.png" : wm_icons[10],
+						 add_xmbm_plus ? "/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png" : wm_icons[10],
 						 STR_WMSETUP, STR_WMSETUP2, WEB_LINK_PAIR); _concat(&myxml, templn);
 
 		if(add_xmbm_plus)
@@ -988,10 +988,10 @@ continue_reading_folder_xml:
 		{
 			if(add_xmbm_plus)
 			#ifdef ENGLISH_ONLY
-				_concat(&myxml, QUERY_XMB("setup", "xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml#seg_webman_links_items"));
+				_concat(&myxml, QUERY_XMB("setup", "xmb://localhost/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml#seg_webman_links_items"));
 			#else
 			{
-				sprintf(templn, QUERY_XMB("setup", "xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/webMAN%s.xml#seg_webman_links_items"), lang_code);
+				sprintf(templn, QUERY_XMB("setup", "xmb://localhost/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN%s.xml#seg_webman_links_items"), lang_code);
 				_concat(&myxml, templn);
 			}
 			#endif
