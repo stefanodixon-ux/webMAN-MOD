@@ -93,7 +93,7 @@ int main(int argc, const char* argv[])
 {
 	detect_firmware();
 
-	int i, parts, dlen;
+	int i, parts, slen = 0;
 	int ext_len = 4;
 
 	sysFSDirent dir;
@@ -229,18 +229,21 @@ int main(int argc, const char* argv[])
 							{
 								sprintf(subpath, "%s:/%s%s/%s", mounts[i].name, c_path[m], SUFIX(profile), dir.d_name);
 								psubdir = ps3ntfs_diropen(subpath);
-								if(psubdir==NULL) continue;
-								sprintf(subpath, "%s", filename); has_dirs=true;
+								if(psubdir == NULL) continue;
+								slen = sprintf(subpath, "%s", filename); has_dirs = true;
 next_ntfs_entry:
-								if(ps3ntfs_dirnext(psubdir, dir.d_name, &st) < 0) {has_dirs=false; continue;}
-								if(dir.d_name[0]=='.') goto next_ntfs_entry;
+								if(ps3ntfs_dirnext(psubdir, dir.d_name, &st) < 0) {ps3ntfs_dirclose(psubdir); has_dirs = false; continue;}
+								if(dir.d_name[0] == '.') goto next_ntfs_entry;
 
 								sprintf(direntry, "%s/%s", subpath, dir.d_name);
 
-								dlen = strlen(dir.d_name) - ext_len;
-
-								if((dlen < 0) || strncmp(subpath, dir.d_name, dlen))
+								if(strncmp(subpath, dir.d_name, slen))
+								{
 									flen = sprintf(filename, "[%s] %s", subpath, dir.d_name);
+									for(int c = 1; c <= slen; c++)
+										if(filename[c] == '[') filename[c] = '('; else
+										if(filename[c] == ']') filename[c] = ')';
+								}
 								else
 									flen = sprintf(filename, "%s", dir.d_name);
 

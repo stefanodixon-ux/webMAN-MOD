@@ -175,8 +175,10 @@ static int dir_read (char *dpath)
 			{
 				if(strstr(fno.fname, ".png") || strstr(fno.fname, ".PNG") || strstr(fno.fname, ".jpg") || strstr(fno.fname, ".JPG") || strstr(fno.fname, ".SFO"))
 				{
-					if(*subpath)
+					if(*subpath && (strncmp(subpath, fno.fname, strlen(fno.fname)) != 0))
+					{
 						snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/[%s] %s", subpath, fno.fname);
+					}
 					else
 						snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/%s", fno.fname);
 
@@ -197,6 +199,9 @@ static int dir_read (char *dpath)
 		for(dlen = strlen(dpath); dlen; dlen--) if(dpath[dlen] == '/') break; // find subdir name
 
 		char *subdir = &dpath[dlen + 1]; sprintf(subpath, "%s", dpath);
+		for(int c = 0; subpath[c]; c++)
+			if(subpath[c] == '[') subpath[c] = '('; else
+			if(subpath[c] == ']') subpath[c] = ')';
 
 		for(int f = 0; f < nn; f++)
 		{
