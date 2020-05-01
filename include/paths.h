@@ -5,17 +5,17 @@
 #define REBUG_COBRA_PATH	"/dev_blind/rebug/cobra/"
 #define HABIB_COBRA_PATH	"/dev_blind/habib/cobra/"
 #define SYS_COBRA_PATH		"/dev_blind/sys/"
-#define REBUG_TOOLBOX		"/dev_hdd0/game/RBGTLBOX2/USRDIR/"
+#define REBUG_TOOLBOX		"/dev_hdd0//game/RBGTLBOX2/USRDIR/"
 #define COLDBOOT_PATH		"/dev_blind/vsh/resource/coldboot.raf"
 #define ORG_LIBFS_PATH		"/dev_flash/sys/external/libfs.sprx"
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 #define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
-#define MM_ROOT_STD			"/dev_hdd0/game/BLES80608/USRDIR"	// multiMAN root folder
-#define MM_ROOT_SSTL		"/dev_hdd0/game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
+#define MM_ROOT_STD			"/dev_hdd0//game/BLES80608/USRDIR"	// multiMAN root folder
+#define MM_ROOT_SSTL		"/dev_hdd0//game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
 #define MM_ROOT_STL			"/dev_hdd0/tmp/game_repo/main"		// stealthMAN root folder
-#define MANAGUNZ			"/dev_hdd0/game/MANAGUNZ0/USRDIR"	// ManaGunZ folder
+#define MANAGUNZ			"/dev_hdd0//game/MANAGUNZ0/USRDIR"	// ManaGunZ folder
 
 #define TMP_DIR				"/dev_hdd0/tmp"
 

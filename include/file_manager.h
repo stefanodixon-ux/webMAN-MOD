@@ -26,14 +26,14 @@ static void set_file_type(const char *path, const char *filename, char *ftype)
 	if(strstr(path, "/PSX") || strstr(filename, ".ntfs[PSX"))
 		sprintf(ftype, " psx");
 #ifdef MOUNT_ROMS
-	else if(strstr(path, "/ROMS/")) 
+	else if(strstr(path, "/ROMS/"))
 		sprintf(ftype, " rom");
 #endif
-	else if(!extcmp(filename, ".BIN.ENC", 8) || strstr(path, "/PS2") || strstr(filename, ".ntfs[PS2")) 
+	else if(!extcmp(filename, ".BIN.ENC", 8) || strstr(path, "/PS2") || strstr(filename, ".ntfs[PS2"))
 		sprintf(ftype, " ps2");
-	else if(strstr(path, "/PSP") || strstr(filename, ".ntfs[PSP")) 
+	else if(strstr(path, "/PSP") || strstr(filename, ".ntfs[PSP"))
 		sprintf(ftype, " psp");
-	else if(strstr(path, "/DVD") || strstr(filename, ".ntfs[DVD")) 
+	else if(strstr(path, "/DVD") || strstr(filename, ".ntfs[DVD"))
 		sprintf(ftype, " dvd");
 	else
 		sprintf(ftype, " ps3");

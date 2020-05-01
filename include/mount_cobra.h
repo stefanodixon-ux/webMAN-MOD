@@ -471,8 +471,8 @@
 										char *tempID = to_upper(entry_name);
 										if (
 											(tempID[1] == 'L' || tempID[1] == 'C') &&
-											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') && 
-											(tempID[3] == 'S' || tempID[3] == 'M' || tempID[3] == 'J' || tempID[3] == 'A') && 
+											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') &&
+											(tempID[3] == 'S' || tempID[3] == 'M' || tempID[3] == 'J' || tempID[3] == 'A') &&
 											(tempID[4] == '_' && tempID[8] == '.') &&
 											(tempID[5] >= '0' && tempID[5] <= '9') &&
 											(tempID[6] >= '0' && tempID[6] <= '9') &&
@@ -481,7 +481,7 @@
 										   )
 										{
 											char temp[STD_PATH_LEN];
-											sprintf(temp, "%sPS2CONFIG/USRDIR/%s.CONFIG", HDD0_GAME_DIR, tempID);
+											sprintf(temp, "%sPS2CONFIG/USRDIR/%s.CONFIG", _HDD0_GAME_DIR, tempID);
 											if(file_exists(temp))
 												_file_copy(temp, _path);
 											else
@@ -489,11 +489,11 @@
 												char config_path[4][8] = {"CUSTOM", "NET", "GX", "SOFT"};
 												for(u8 i = 0; i < 4; i++)
 												{
-													sprintf(temp, "%sPS2CONFIG/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
+													sprintf(temp, "%sPS2CONFIG/USRDIR/CONFIG/%s/%s.CONFIG", _HDD0_GAME_DIR, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
-													sprintf(temp, "%sMANAGUNZ0/USRDIR/sys/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
+													sprintf(temp, "%sMANAGUNZ0/USRDIR/sys/CONFIG/%s/%s.CONFIG", _HDD0_GAME_DIR, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
-													sprintf(temp, "%sUPDWEBMOD/USRDIR/CONFIG/%s/%s.CONFIG", HDD0_GAME_DIR, config_path[i], tempID);
+													sprintf(temp, "%sUPDWEBMOD/USRDIR/CONFIG/%s/%s.CONFIG", _HDD0_GAME_DIR, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
 												}
 											}

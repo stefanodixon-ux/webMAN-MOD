@@ -1400,7 +1400,7 @@ exit_mount:
 		sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
 		getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 
-		// check update folder
+		// check for PARAM.SFO in hdd0/game folder
 		sprintf(filename, "%s%s%s", HDD0_GAME_DIR, title_id, "/PARAM.SFO");
 
 		if(file_exists(filename) == false)

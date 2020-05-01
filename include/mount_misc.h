@@ -26,7 +26,7 @@
 	// ------------------
 	// mount NPDRM game
 	// ------------------
-	if(islike(_path, HDD0_GAME_DIR))
+	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
 		set_apphome(_path);
 
