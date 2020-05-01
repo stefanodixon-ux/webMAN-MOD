@@ -294,7 +294,7 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 #endif
 			if(flen > 2 && icon[flen - 2] == '.') flen -= 2; // remove file extension (split iso)
 			if(flen > 4 && icon[flen - 4] == '.') flen -= 4; // remove file extension
-			else					   
+			else
 			if(flen > 3 && icon[flen - 3] == '.') flen -= 3; // remove file extension for roms (.gb .gg .vb)
 
 			// get covers from iso folder
@@ -316,8 +316,8 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 				char titleid[STD_PATH_LEN];
 				char *pos = strchr(entry_name, '/');
 				if(pos)
-					{*pos = NULL; sprintf(titleid, "%s/%s", entry_name, title_id); *pos = '/';} 
-				else 
+					{*pos = NULL; sprintf(titleid, "%s/%s", entry_name, title_id); *pos = '/';}
+				else
 					sprintf(titleid, "%s", title_id);
 
 				sprintf(icon, "%s/%s.JPG", param, titleid); if(file_exists(icon)) return;
@@ -469,7 +469,7 @@ no_icon0:
 
 	//show the default icon by type
 	{
-		sprintf(icon, "%s/%s", param + 6, file);
+		sprintf(icon, "%s/%s", param + (IS_NET ? 0 : 6), file);
 
 			 if(strstr(icon, "PSX")) //if(strstr(param, "/PSX") || !extcmp(file, ".ntfs[PSXISO]", 13))
 			default_icon = iPSX;

@@ -255,7 +255,7 @@ int save_file(const char *file, const char *mem, s64 size)
 
 	cellFsChmod(file, MODE); // set permissions for overwrite
 
-	int fd = 0; 
+	int fd = 0;
 	if(cellFsOpen(file, flags, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
 		if((size <= SAVE_ALL) && mem) size = strlen(mem);
@@ -271,7 +271,14 @@ int save_file(const char *file, const char *mem, s64 size)
 
 	return FAILED;
 }
-
+/*
+static void addlog(const char *msg1, const char *msg2)
+{
+	char msg[200];
+	sprintf(msg, "%s %s", msg1, msg2);
+	save_file("/dev_hdd0/wmm.log", msg, APPEND_TEXT);
+}
+*/
 static void filepath_check(char *file)
 {
 	if((file[5] == 'u' && islike(file, "/dev_usb"))
@@ -533,7 +540,7 @@ next_part:
 					sys_ppu_thread_usleep(1000);
 				}
 
-				if(check_666 && !copy_aborted && (merge_part < 99)) 
+				if(check_666 && !copy_aborted && (merge_part < 99))
 				{
 					sprintf(file1 + flen1, ".666%02i", ++merge_part);
 
@@ -835,7 +842,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if((recursive > 0) && (fop == SCAN_DELETE))
 	{
 #ifdef USE_NTFS
-		if(is_ntfs) 
+		if(is_ntfs)
 			ps3ntfs_unlink(path + 5);
 		else
 #endif

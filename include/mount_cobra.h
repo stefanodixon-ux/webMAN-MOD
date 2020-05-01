@@ -304,6 +304,16 @@
 					mount_unk = netiso_args.emu_mode = EMU_PS3;
 					sprintf(netiso_args.path, "/***PS3***%s", netpath);
 				}
+				else if(islike(netpath, "/ROMS/"))
+				{
+					netiso_args.emu_mode = EMU_BD;
+					mount_unk = EMU_ROMS;
+
+					sprintf(netiso_args.path, "/***DVD***%s", "/ROMS");
+
+					sprintf(templn, "/dev_bdvd/%s", netpath + 6);
+					save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", templn, 0);
+				}
 				else
 				{
 					mount_unk = netiso_args.emu_mode = EMU_DVD;
@@ -342,6 +352,16 @@
 					#ifdef FIX_GAME
 					fix_game(_path, title_id, webman_config->fixgame);
 					#endif
+				}
+
+				if(ret && islike(netpath, "/ROMS/"))
+				{
+					wait_for("/dev_bdvd", 15);
+
+					sys_map_path(PKGLAUNCH_DIR, NULL);
+					sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR "/USRDIR/cores");
+
+					set_apphome(PKGLAUNCH_DIR "/PS3_GAME");
 				}
 
 				goto exit_mount;

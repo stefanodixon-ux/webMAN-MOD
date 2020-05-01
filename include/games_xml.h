@@ -388,10 +388,6 @@ scan_roms:
 
 		i0 = f0, is_net = IS_NET;
 
-		#ifdef MOUNT_ROMS
-		if(scanning_roms && is_net) continue;
-		#endif
-
 		if(conn_s_p == START_DAEMON)
 		{
 			if(webman_config->boots && (f0 >= 1 && f0 <= 6)) // usb000->007
@@ -440,13 +436,13 @@ scan_roms:
 				}
 #endif
 				if(check_content_type(f1)) continue;
+			}
 
 #ifdef NET_SUPPORT
-				if(is_net && (netiso_svrid == (f0-7)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
-				if(is_net && (ns<0)) ns = connect_to_remote_server(f0-7);
+			if(is_net && (netiso_svrid == (f0-7)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
+			if(is_net && (ns<0)) ns = connect_to_remote_server(f0-7);
 #endif
-				if(is_net && (ns<0)) break;
-			}
+			if(is_net && (ns<0)) break;
 
 			bool ls; u8 li, subfolder; li=subfolder=0; ls=false; // single letter folder
 
@@ -457,10 +453,12 @@ scan_roms:
 			#ifdef MOUNT_ROMS
 			if(scanning_roms)
 			{
-				if(IS_NTFS)
+				if(is_net)
+					{sprintf(param, "/ROMS%s/%s", SUFIX(uprofile), roms_path[roms_index]);}
+				else if(IS_NTFS)
 					{sprintf(param, "%s/USRDIR/cores/roms/%s", RETROARCH_DIR, roms_path[roms_index]); i0 = 0;}
 				else
-					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);
+					{sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);}
 			}
 			else
 			#endif
@@ -1069,7 +1067,7 @@ save_xml:
 			cellFsUnlink(HTML_BASE_PATH "/ROMS.xml");
 		}
 
-		if(roms_index < ROM_PATHS) goto scan_roms; // loop
+		if(roms_index < ROM_PATHS) goto scan_roms; // loop scanning_roms
 		scanning_roms = false;
 
 

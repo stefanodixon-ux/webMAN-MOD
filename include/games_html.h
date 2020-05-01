@@ -77,15 +77,22 @@ static u8 loading_games = 0;
 
 #ifdef COBRA_ONLY
 #ifdef NET_SUPPORT
+//static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0);
 static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *templn, char *tempstr, char *enc_dir_name, char *icon, char *title_id, u8 f1, u8 is_html)
 {
 	int abort_connection = 0, is_directory = 0; s64 file_size; u64 mtime, ctime, atime;
 
-	if(!data[v3_entry].is_directory)
+	if(data[v3_entry].is_directory == false)
 	{
-		int flen = strlen(data[v3_entry].name) - 4;
-		if(flen < 0) return FAILED;
-		if(!strcasestr(ISO_EXTENSIONS + 10, data[v3_entry].name + flen)) return FAILED;
+		int flen = strlen(data[v3_entry].name); if(flen < 4) return FAILED;
+
+		char *ext = data[v3_entry].name + flen - 4; if(ext[1] == '.') ++ext;
+		if(IS_ROMS_FOLDER)
+		{
+			if(!strcasestr(ROMS_EXTENSIONS, ext)) return FAILED;
+		}
+		else
+			if(!strcasestr(ISO_EXTENSIONS + 10, ext)) return FAILED;
 	}
 	else
 	{
@@ -276,7 +283,9 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 #endif
 #ifdef MOUNT_ROMS
 	if(IS_ROMS_FOLDER)
+	{
 		return (flen > 4) && (*ext == '.') && (strcasestr(ROMS_EXTENSIONS, ext) != NULL);
+	}
 	else
 #endif
 #ifdef COBRA_ONLY
@@ -436,7 +445,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			if(!b1 && strstr(param, "?ps3"))  {filter1 = 0, b1 = 3;}
 			if(!b1 && strstr(param, "npdrm")) {filter1 = 0, b1 = id_NPDRM;}
 #ifdef NET_SUPPORT
-			if(!b0 && strstr(param, "net" ))  {filter0 = 7, b0=3;}
+			if(!b0 && strstr(param, "net" ))  {filter0 = 7, b0 = 3;}
 #endif
 			if(strstr(param, "?") != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && strstr(param, "?html") == NULL && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
 		}
@@ -577,8 +586,8 @@ list_games:
 					if(f1 >= id_ISO) break; // ignore 9="ISO", 10="video", 11="GAMEI"
 				}
 #endif
-				if(b0) {if((b0 == 2) && (f0 < 7)); else if((b0 == 3) && (!IS_NTFS)); else if(filter0!=f0) continue;}
-				if(b1) {if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1!=f1) continue;}
+				if(b0) {if((b0 == 2) && (f0 < 7)); else if((b0 == 3) && (!IS_NTFS)); else if(filter0 != f0) continue;}
+				if(b1) {if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1 != f1) continue;}
 				else
 					if(check_content_type(f1)) continue;
 
@@ -680,7 +689,7 @@ list_games:
 
 							for(size_t c = 0; templn[c]; c++) {if(templn[c] == '"' || templn[c] < ' ') templn[c] = ' ';} // replace invalid chars
 
-							int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320; h = 176;} else if(strstr(icon, "icon_wm_")) {w = 280; h = 280;}
+							int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320; h = 176;} else if(strstr(icon, "icon_wm_")) {w = 320; h = 280;}
 
 							flen = sprintf(tempstr + HTML_KEY_LEN, "{img:\"%s\",width:%i,height:%i,desc:\"%s\",url:\"%s%s/%s\"},",
 											*icon ? icon : wm_icons[default_icon], w, h, templn, neth, param, enc_dir_name);
