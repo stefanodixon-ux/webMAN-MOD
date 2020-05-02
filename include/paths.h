@@ -12,6 +12,9 @@
 #define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
 #define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
+#define XMB_DISC_ICON		"/dev_hdd0/tmp/game/ICON0.PNG"
+#define CATEGORY_GAME_XML	"/dev_flash/vsh/resource/explore/xmb/category_game.xml"
+
 #define MM_ROOT_STD			"/dev_hdd0//game/BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		"/dev_hdd0//game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
 #define MM_ROOT_STL			"/dev_hdd0/tmp/game_repo/main"		// stealthMAN root folder
@@ -45,6 +48,9 @@
 #define PKGLAUNCH_ICON		PKGLAUNCH_DIR "/ICON0.PNG"
 
 #define RETROARCH_DIR		_HDD0_GAME_DIR "SSNE10000"
+
+#define RELOADXMB_DIR		_HDD0_GAME_DIR "RELOADXMB"
+#define RELOADXMB_EBOOT		RELOADXMB_DIR "/USRDIR/EBOOT.BIN"
 
 #define VSH_RESOURCE_DIR	"/dev_flash/vsh/resource/"
 #define SYSMAP_EMPTY_DIR	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")

@@ -247,7 +247,7 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 			{
 				if(abort_autoplay() || IS_INGAME) return;
 
-				if((n < icon_found) && file_exists("/dev_hdd0/tmp/game/ICON0.PNG")) {n = icon_found;}
+				if((n < icon_found) && file_exists(XMB_DISC_ICON)) {n = icon_found;}
 				wait = (n < icon_found) || execute;
 
 				if(wait) {if(wait_for_abort(50000)) return;}
@@ -277,7 +277,7 @@ static bool is_app_home_onxmb(void)
 	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 	{
 		char *buffer = (char*)sysmem;
-		size_t read_e = read_file((char*)"/dev_flash/vsh/resource/explore/xmb/category_game.xml", buffer, _8KB_, 0);
+		size_t read_e = read_file((char*)CATEGORY_GAME_XML, buffer, _8KB_, 0);
 		has_app_home = ((read_e > 100) && (strstr(buffer, "seg_gamedebug") != NULL));
 		sys_memory_free(sysmem);
 	}
@@ -288,12 +288,12 @@ static bool is_app_home_onxmb(void)
 #ifdef COBRA_ONLY
 static void reload_xmb(void)
 {
-	if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+	if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
 	{
 		if(is_app_home_onxmb())
 		{
 			char col[8] = "network", seg[16] ="-1";
-			set_apphome((char*)"/dev_hdd0/game/RELOADXMB");
+			set_apphome((char*)RELOADXMB_DIR);
 			mount_unk = APP_GAME; *col = NULL, *seg = NULL;
 			launch_disc(col, seg, true);
 			mount_unk = EMU_OFF;
@@ -306,7 +306,7 @@ static void reload_xmb(void)
 	CellPadData pad_data = pad_read();
 	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
 
-	if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+	if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
 	{
 		int view = View_Find("explore_plugin");
 		if(view) explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);

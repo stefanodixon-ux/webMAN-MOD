@@ -3,6 +3,7 @@
  RESET SAFE   : SELECT+R3+L2+R2
 
  REFRESH XML  : SELECT+L3 (+R2=profile1, +L2=profile2, +R1=profile3, +L1=profile4, +L1+R1=Reload XMB, +R2+L2=FAIL SAFE)
+                                                *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_l3
  UNLOAD WM    : L3+R3+R2
 
  PLAY_DISC    : L2+START                        *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_start
@@ -26,14 +27,18 @@
 
  FAN CNTRL    : L3+R2+START  (enable/disable fancontrol)
  SHOW TEMP    : SELECT+START (SELECT+START+R2 will show only copy progress) / SELECT+R3 (if rec video flag is disabled)
- DYNAMIC TEMP : SELECT+LEFT/RIGHT
- MANUAL TEMP  : SELECT+UP/DOWN
+
+ DYNAMIC TEMP : SELECT+LEFT/RIGHT               *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_left
+                                                *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_right
+ MANUAL TEMP  : SELECT+UP/DOWN                  *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_up
+                                                *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_down
 
  REC VIDEO    : SELECT+R3          Record video using internal plugin (IN-GAME ONLY)
+                                   *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_r3
  REC VIDEO PLG: SELECT+R3+L2+R2    Unload webMAN & Record video with video_rec plugin (IN-GAME ONLY)
  REC VIDEO SET: SELECT+R3+L2       Select video rec setting
  REC VIDEO VAL: SELECT+R3+R2       Change value of video rec setting
- XMB SCRNSHOT : L2+R2+SELECT+START
+ XMB SCRNSHOT : L2+R2+SELECT+START              *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_r2_select_start
 
  USER/ADMIN   : L2+R2+TRIANGLE                  *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_r2_triangle
 
@@ -237,6 +242,9 @@
 							// SELECT+L3+R1    = refresh XML profile 3
 							// SELECT+L3+L1    = refresh XML profile 4
 							// SELECT+L3+L1+R1 = refresh XML + Reload XMB
+ #ifdef WM_CUSTOM_COMBO
+							if(do_custom_combo("select_l3")) break;
+ #endif
 
 							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2) profile = 1; else
 							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2) profile = 2; else
@@ -256,6 +264,10 @@
 							// SELECT+R3+L2     = Select video rec setting
 							// SELECT+R3+R2     = Change value of video rec setting
 							// SELECT+R3        = Toggle Record Video
+  #ifdef WM_CUSTOM_COMBO
+							if(do_custom_combo("select_r3")) break;
+							else
+  #endif
   #ifdef COBRA_ONLY
 							if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // SELECT+R3+L2+R2  Record video with video_rec plugin (IN-GAME ONLY)
 							{
@@ -327,7 +339,13 @@
 							// SELECT+R3          = show temp (if no VIDEO_REC)
  #ifdef XMB_SCREENSHOT
 							if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_L2)) && IS_ON_XMB)
+							{
+  #ifdef WM_CUSTOM_COMBO
+							if(do_custom_combo("l2_r2_select_start")) break;
+							else
+  #endif
 								{memset(msg, 0, 256); saveBMP(msg, true); n = 0; break;} // L2 + R2 + SELECT + START
+							}
 							else
  #endif
 							{

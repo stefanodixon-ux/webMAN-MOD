@@ -322,9 +322,9 @@ void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, uint64_
 	//if(m >= 4)
 	{
 		if((m == VIDEO || m == MOVIES) && !strcasestr(".mp4|.mkv|.avi|.wmv|.flv|.mpg|mpeg|.mov|m2ts|.vob|.asf|divx|xvid|.pam|.bik|bink|.vp6|.mth|.3gp|rmvb|.ogm|.ogv|.m2t|.mts|.tsv|.tsa|.tts|.vp3|.vp5|.vp8|.264|.m1v|.m2v|.m4b|.m4p|.m4r|.m4v|mp4v|.mpe|bdmv|.dvb|webm|.nsv", ext)) return;
-		if((m == PKGFILE) && !strstr(".pkg", ext)) return;
+		if((m == PKGFILE) && !strcasestr(".pkg|.pup|.zip", ext)) return;
 		if((m == BDFILE)  && (iso_name[0] == '.' || strstr(iso_name, ".") == NULL)) return;
-		if((m == PS2ISO) && !strcasestr(".iso", ext)) return;
+		if((m == PS2ISO) && !strcasestr(".iso|.enc", ext)) return;
 		if((m == PSPISO) && !strcasestr(".iso", ext)) return;
 
 		sprintf(path, "/dev_hdd0/tmp/wmtmp/[%s] %s.iso", c_path[m], iso_name);

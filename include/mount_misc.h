@@ -28,9 +28,17 @@
 	// ------------------
 	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
+		ret = isDir(_path);
+
+		if(!ret && islike(_path0, HDD0_GAME_DIR))
+		{
+			sprintf(_path, "%s%s", _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
+			ret = isDir(_path);
+		}
+
 		set_apphome(_path);
 
-		char col[8], seg[16]; *col = NULL, *seg = NULL; ret = isDir(_path);
+		char col[8], seg[16]; *col = NULL, *seg = NULL;
 		if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(col, seg, true); ret = true;}
 
 		mount_unk = EMU_MAX;

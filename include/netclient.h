@@ -638,7 +638,7 @@ static int open_remote_dir(int s, const char *path, int *abort_connection)
 	s32 net_enabled = 0;
 	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
 
-	if(!net_enabled) 
+	if(!net_enabled)
 	{
 		return FAILED;
 	}
@@ -788,7 +788,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 		}
 	}
 
-	open_remote_file(ns, "/CLOSEFILE", &abort_connection);
+	//open_remote_file(ns, "/CLOSEFILE", &abort_connection); // <- cause of bug: only 1 remote file is copied during refresh xml
 
 	return ret;
 }
