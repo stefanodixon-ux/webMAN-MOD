@@ -163,7 +163,7 @@ static char STR_HOME[8] = "Home";
 
 #define STR_NOTFOUND	"Not found!"
 
-#define COVERS_PATH		"http://xmbmods.co/wmlp/covers/%s.JPG"
+#define COVERS_PATH		"http://devil303.com/wmlp/covers/%s.JPG"
 
 #else
 static int fh;

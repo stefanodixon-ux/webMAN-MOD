@@ -313,7 +313,7 @@ static void sys_get_cobra_version(void);
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
 static void _file_copy(char *file1, char *file2);
-static int add_breadcrumb_trail(char *pbuffer, char *param);
+static int add_breadcrumb_trail(char *pbuffer, const char *param);
 
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);

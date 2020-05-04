@@ -77,9 +77,9 @@ static void restore_settings(void)
 	sys_ppu_thread_usleep(500000);
 }
 
-static void http_response(int conn_s, char *header, const char *url, int code, const char *msg)
+static int http_response(int conn_s, char *header, const char *url, int code, const char *msg)
 {
-	if(conn_s == (int)WM_FILE_REQUEST) return;
+	if(conn_s == (int)WM_FILE_REQUEST) return 0;
 
 	u16 slen; *header = NULL;
 
@@ -129,6 +129,11 @@ static void http_response(int conn_s, char *header, const char *url, int code, c
 		else
 			sprintf(body, "%s", msg);
 
+		if(code == CODE_PATH_NOT_FOUND)
+		{
+			strcat(body, "<p>"); add_breadcrumb_trail(body, url + (islike(url, "/mount") ? MOUNT_CMD : 0));
+		}
+
 		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg((char*)body + 4);
 
 #ifndef EMBED_JS
@@ -151,6 +156,8 @@ static void http_response(int conn_s, char *header, const char *url, int code, c
 
 	send(conn_s, header, slen, 0);
 	sclose(&conn_s);
+	if(loading_html) loading_html--;
+	return 0;
 }
 
 static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_http, u8 is_cpursx, bool mount_ps3)
@@ -495,6 +502,7 @@ static void handleclient_www(u64 conn_s_p)
 
 	u8 max_cc = 0; // count client connections per persistent connection
 	u8 keep_alive = 0;
+	u8 ap_param = 0; // 0 = do nothing, 1 = use webman_config->autoplay, 2 = force auto_play
 
 	char cmd[16], header[HTML_RECV_SIZE], *mc = NULL;
 
@@ -512,7 +520,7 @@ static void handleclient_www(u64 conn_s_p)
 		sprintf(ip_address, "%s", inet_ntoa(conn_info_main.remote_adr));
 		if(webman_config->bind && (!is_local) && !islike(ip_address, webman_config->allow_ip))
 		{
-			http_response(conn_s, header, param, CODE_BAD_REQUEST, STR_ERROR);
+			keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, STR_ERROR);
 
 			goto exit_handleclient_www;
 		}
@@ -540,7 +548,7 @@ again3:
 			sys_ppu_thread_sleep(1);
 			if((retries < 5) && working) goto again3;
 
-			http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR); BEEP3;
+			keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR); BEEP3;
 
 			#ifdef WM_REQUEST
 			if(wm_request) cellFsUnlink(WMREQUEST_FILE);
@@ -630,7 +638,7 @@ parse_request:
 
 					if(*header == '/') {strcpy(param, header); buf.st_size = sprintf(header, "GET %s", param);}
 					for(size_t n = buf.st_size; n > 4; n--) if(header[n] == ' ') header[n] = '+';
-					if(islike(header, "GET /play.ps3")) {if(IS_INGAME) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}
+					if(islike(header, "GET /play.ps3")) {if(IS_INGAME && (++retry < 30)) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}
 				}
 				cellFsUnlink(WMREQUEST_FILE);
 			}
@@ -677,7 +685,7 @@ parse_request:
 					#ifdef WM_REQUEST
 					if(!wm_request)
 					#endif
-					http_response(conn_s, header, param, CODE_HTTP_OK, param); keep_alive = 0;
+					keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 					goto exit_handleclient_www;
 				}
 
@@ -762,7 +770,7 @@ parse_request:
 				if(!accept)
 				{
 					sprintf(param, "%s\nADMIN %s", STR_ERROR, STR_DISABLED);
-					http_response(conn_s, header, param, CODE_BAD_REQUEST, param); keep_alive = 0;
+					keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, param);
 					goto exit_handleclient_www;
 				}
 			}
@@ -796,13 +804,15 @@ parse_request:
 
 				char *buttons = param + 9 + is_combo;
 
-				if(is_combo != 1) {if(!webman_config->nopad) ret = parse_pad_command(buttons, is_combo);}
-				else
+				if(is_combo != 1) {if(!webman_config->nopad) ret = parse_pad_command(buttons, is_combo);} // do /pad.ps3 || /combo.ps3
+				else // do /play.ps3
 				{
+					// check /play.ps3<path>
 					if(file_exists(param + 9))
 					{
-						mount_game(param + 9, EXPLORE_CLOSE_ALL);
-						auto_play(param, 1);
+						strcpy(header, param); sprintf(param, "/mount.ps3%s", header + 9); ap_param = 2;
+						is_binary = WEB_COMMAND;
+						goto html_response;
 					}
 
 					// default: play.ps3?col=game&seg=seg_device
@@ -839,7 +849,7 @@ parse_request:
 				{
 					if((ret == 'X') && IS_ON_XMB) goto reboot;
 
-					if(!mc) http_response(conn_s, header, param, CODE_VIRTUALPAD, buttons);
+					if(!mc) keep_alive = http_response(conn_s, header, param, CODE_VIRTUALPAD, buttons);
 
 					goto exit_handleclient_www;
 				}
@@ -883,7 +893,7 @@ parse_request:
 
 				sprintf(param, "ADMIN %s", sys_admin ? STR_ENABLED : STR_DISABLED);
 
-				if(!mc) http_response(conn_s, header, param, CODE_RETURN_TO_ROOT, param); keep_alive = 0;
+				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_RETURN_TO_ROOT, param);
 
 				goto exit_handleclient_www;
 			}
@@ -953,7 +963,7 @@ parse_request:
 				if(!wm_request)
 				#endif
 				{
-					if(!mc) http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : CODE_DOWNLOAD_FILE, msg);
+					if(!mc) keep_alive = http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : CODE_DOWNLOAD_FILE, msg);
 				}
 
 				if(!(webman_config->minfo & 1)) show_msg(msg);
@@ -1011,7 +1021,7 @@ parse_request:
 				if(!wm_request)
 				#endif
 				{
-					if(!mc) http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : CODE_INSTALL_PKG, msg);
+					if(!mc) keep_alive = http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : CODE_INSTALL_PKG, msg);
 				}
 
 				if(!(webman_config->minfo & 1)) show_msg(msg);
@@ -1208,7 +1218,7 @@ parse_request:
 					else
    #endif
    #ifdef XMB_SCREENSHOT
-					if(islike(param2, "$screenshot_xmb")) {sprintf(header, "%s", param + 27); saveBMP(header, false); sprintf(url, HTML_URL, header, header);} else
+					if(islike(param2, "$screenshot_xmb")) {sprintf(header, "%s", param + 27); saveBMP(header, false); *url = 0; add_breadcrumb_trail(url, header);} else
    #endif
 					{
 						if(*param2 == NULL) sprintf(param2, "/");
@@ -1223,7 +1233,7 @@ parse_request:
 				else
 					sprintf(url, "ERROR: Not in XMB!");
 
-				if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, url);
+				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, url);
 
 				goto exit_handleclient_www;
 			}
@@ -1273,7 +1283,7 @@ parse_request:
 
 				if((klic_polling_status == KL_OFF) && (klic_polling == KL_AUTO))
 				{
-					if(IS_ON_XMB) http_response(conn_s, header, param, CODE_HTTP_OK, (char*)"/KLIC: Waiting for game...");
+					if(IS_ON_XMB) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, (char*)"/KLIC: Waiting for game...");
 
 					// wait until game start
 					while((klic_polling == KL_AUTO) && IS_ON_XMB && working) sys_ppu_thread_usleep(500000);
@@ -1309,7 +1319,7 @@ parse_request:
 							(klic_polling_status > 0 && klic_polling > 0) ? "klic.ps3?off"  :
 							( (klic_polling_status | klic_polling)  == 0) ? "klic.ps3?auto" : "dev_hdd0/klic.log", prev); strcat(buffer, header);
 
-				http_response(conn_s, header, param, CODE_HTTP_OK, buffer);
+				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, buffer);
 
 				if(*kl && (klic_polling != KL_OFF))
 				{
@@ -1416,7 +1426,7 @@ parse_request:
 				else
 					sprintf(param, "%s: %s %s", STR_ERROR, (isremap ? path2 : path1), STR_NOTFOUND);
 
-				if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 
 				goto exit_handleclient_www;
 			}
@@ -1427,7 +1437,7 @@ parse_request:
 				else
 					map_earth(0, param);
 
-				http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
 			}
 #endif
@@ -1441,7 +1451,7 @@ parse_request:
 				else
 					sys_ppu_thread_sleep(val(param + 10));
 
-				if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 
 				goto exit_handleclient_www;
 			}
@@ -1497,7 +1507,7 @@ parse_request:
 				if(!wm_request)
 				#endif
 				{
-					if(!mc) http_response(conn_s, header, "/netstatus.ps3", CODE_HTTP_OK, param);
+					if(!mc) keep_alive = http_response(conn_s, header, "/netstatus.ps3", CODE_HTTP_OK, param);
 				}
 
 				show_msg(param);
@@ -1599,7 +1609,7 @@ parse_request:
 							save_file(filename, data, SAVE_ALL);
 					}
 				}
-				http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
 				goto exit_handleclient_www;
 			}
 			if(islike(param, "/rename.ps3") || islike(param, "/swap.ps3") || islike(param, "/move.ps3"))
@@ -1721,7 +1731,7 @@ parse_request:
 					goto html_response;
 				}
 				else
-					if(!mc) {http_response(conn_s, header, "/", CODE_GOBACK, HTML_REDIRECT_TO_BACK); goto exit_handleclient_www;}
+					if(!mc) {keep_alive = http_response(conn_s, header, "/", CODE_GOBACK, HTML_REDIRECT_TO_BACK); goto exit_handleclient_www;}
 			}
 	#endif // #ifdef COPY_PS3
 
@@ -1736,7 +1746,7 @@ parse_request:
 				else
 					sprintf(param, "Minimum Downgrade: %x.%02x", data[1], data[3]);
 
-				http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
 			}
 	#ifdef SPOOF_CONSOLEID
@@ -1755,7 +1765,7 @@ parse_request:
 
 				save_idps_psid(is_psid, is_idps, header, param);
 
-				http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
 			}
 	#endif
@@ -1767,7 +1777,7 @@ parse_request:
 
 				if(file_exists("/dev_hdd0/secureid.log") {sprintf(header, HTML_URL, "/dev_hdd0/secureid.log", "/dev_hdd0/secureid.log"); strcat(param, "<p>Download: "); strcat(param, header);}
 
-				http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
 			}
 	#endif
@@ -1828,7 +1838,7 @@ parse_request:
 						sprintf(param, "syscall%i(%i) => 0x%x", n, sc, ret);
 				}
 
-				http_response(conn_s, header, "/syscall.ps3", is_plain ? CODE_PLAIN_TEXT : CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, "/syscall.ps3", is_plain ? CODE_PLAIN_TEXT : CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
 			}
 
@@ -1968,7 +1978,7 @@ parse_request:
 
 				sprintf(param, "%s<p>Size: %llu bytes<p>MD5: %s<p>", buffer, sz, md5);
 
-				http_response(conn_s, header, "/md5.ps3", CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, "/md5.ps3", CODE_HTTP_OK, param);
 
 				goto exit_handleclient_www;
 			}
@@ -1997,7 +2007,7 @@ parse_request:
 				{
 					char *url  = param + 11;
 					do_umount(false);  open_browser(url, 0);
-					http_response(conn_s, header, param, CODE_HTTP_OK, url); keep_alive = 0;
+					keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, url);
 					goto exit_handleclient_www;
 				}
 				else
@@ -2063,10 +2073,9 @@ retry_response:
  #ifdef COPY_PS3
 							|| islike(param, "/copy.ps3/")
  #endif
-			)) ;
+			)) keep_alive = 0;
 
 			else if(islike(param, "/cpursx.ps3")
-				||  islike(param, "/index.ps3")
 				||  islike(param, "/sman.ps3")
 				||  islike(param, "/mount_ps3/")
 				||  islike(param, "/mount.ps3/")
@@ -2092,8 +2101,8 @@ retry_response:
 				||  islike(param, "/unloadprx.ps3")
  #endif
 				||  islike(param, "/eject.ps3")
-				||  islike(param, "/insert.ps3")) ;
-
+				||  islike(param, "/insert.ps3")) keep_alive = 0;
+			else if(islike(param, "/index.ps3")) ;
 			else
 			{
 				struct CellFsStat buf; bool is_net = false;
@@ -2123,7 +2132,7 @@ retry_response:
 
 					if(ps3ntfs_stat(param + 5, &bufn) < 0)
 					{
-						http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found");
+						keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found");
 						goto exit_handleclient_www;
 					}
 
@@ -2161,10 +2170,15 @@ retry_response:
 					if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);} else
 					if(file_exists(param) == false)
 					{
-						strcpy(header, param);
-
-						if(!islike(param, "/dev_") && (*html_base_path == '/')) {sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
-						if(file_exists(param) == false) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
+						if(!islike(param, "/dev_"))
+						{
+							strcpy(header, param + 1);
+							if(*html_base_path == '/') {sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
+							if(file_exists(param) == false) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
+							if(file_exists(param) == false) {sprintf(param, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
+							if(file_exists(param) == false) {sprintf(param, "%s%s", HDD0_GAME_DIR, header);} // try /dev_hdd0/game
+							if(file_exists(param) == false) {sprintf(param, "%s/%s", "/dev_hdd0", header);} // try hdd0
+						}
 					}
 
 					is_binary = is_ntfs || (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED); allow_retry_response = true;
@@ -2212,6 +2226,7 @@ retry_response:
 										 (code == CODE_PATH_NOT_FOUND) ? "404 Not found" :
 																		 "400 Bad Request");
 
+					keep_alive = 0;
 					goto exit_handleclient_www;
 				}
 			}
@@ -2264,7 +2279,7 @@ retry_response:
 				//if(!sysmem && sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)!=0)
 				if(buffer_size < _64KB_)
 				{
-					http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
+					keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
 					goto exit_handleclient_www;
 				}
 
@@ -2344,7 +2359,7 @@ retry_response:
 
 			if(!sysmem)
 			{
-				http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR); keep_alive = 0;
+				keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
 				goto exit_handleclient_www;
 			}
 
@@ -2373,7 +2388,7 @@ retry_response:
 				{
 					cpu_rsx_stats(pbuffer, templn, param, is_ps3_http);
 
-					is_cpursx = 0; goto send_response;
+					loading_html = keep_alive = is_cpursx = 0; goto send_response;
 
 					//CellGcmConfig config; cellGcmGetConfiguration(&config);
 					//sprintf(templn, "localAddr: %x", (u32) config.localAddress); _concat(&sbuffer, templn);
@@ -2507,6 +2522,7 @@ retry_response:
 						strcat(templn, "</font><p></div><script>setTimeout(function(){cps.style.display='none'},15000);</script>"); _concat(&sbuffer, templn);
 					}
  #endif
+					keep_alive = 0;
 				}
 
  #ifndef LITE_EDITION
@@ -2561,10 +2577,8 @@ retry_response:
 							if(!extcmp(p, ".bat", 4)) {sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
 							strcpy(txt, p); *p = NULL; sprintf(tempstr," &nbsp; " HTML_URL HTML_URL2 "</form>", filename, filename, filename, txt, txt); _concat(&sbuffer, tempstr);
 						}
-
-						is_popup = 0; goto send_response;
 					}
-
+					else
   #ifdef WEB_CHAT
 					if(islike(param, "/chat.ps3"))
 					{
@@ -2597,7 +2611,7 @@ retry_response:
 						sprintf(templn, "Message sent: %s", msg); _concat(&sbuffer, templn);
 					}
 
-					is_popup = 0; goto send_response;
+					loading_html = keep_alive = is_popup = 0; goto send_response;
 				}
  #endif // #ifndef LITE_EDITION
 
@@ -2612,7 +2626,7 @@ retry_response:
 						goto exit_handleclient_www;
 					}
 				}
-				else
+				else // process web command
 				{
 					{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
  #ifndef LITE_EDITION
@@ -2644,7 +2658,7 @@ retry_response:
 
 							sprintf(param, "NTFS VOLUMES: %i%s", mountCount, header); is_busy = false;
 
-							http_response(conn_s, header, param, CODE_HTTP_OK, param);
+							keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 							goto exit_handleclient_www;
 						}
 #endif
@@ -3063,7 +3077,7 @@ retry_response:
 						tv.tv_sec = 3;
 						setsockopt(conn_s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
 
-						if(!mc) http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser (don't wait for mount)
+						if(!mc) keep_alive = http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser (don't wait for mount)
 
 						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL))
 						{
@@ -3087,7 +3101,9 @@ retry_response:
 
 						if(sysmem) {sys_memory_free(sysmem); sysmem = NULL;}
 
-						if(game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount)) auto_play(param, 0);
+						if(game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount)) ap_param = 1;
+
+						is_busy = false; keep_alive = 0;
 
 						goto exit_handleclient_www;
 					}
@@ -3107,8 +3123,12 @@ retry_response:
 						// /copy.ps3/<path>[&to=<destination>]
 						// /copy.ps3/<path>[&to=<destination>]?restart.ps3
 
+						keep_alive = 0;
+
 						if(islike(param, "/mount.ps3/unmount"))
 						{
+							is_mounting = false;
+
 							char *dev_name = (param + 18); // /mount.ps3/unmount<dev_path>
 							if(*dev_name == '/')
 							{
@@ -3116,7 +3136,6 @@ retry_response:
 								sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
 								goto html_response;
 							}
-							is_mounting = false;
 						}
 						else if(!islike(param + 10, "/net"))
 						{
@@ -3141,13 +3160,15 @@ retry_response:
 								}
 								else
 								{
-									http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found"); is_busy = false;
+									keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found"); is_busy = false;
 									goto exit_handleclient_www;
 								}
 							}
 						}
 
 						game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
+
+						is_busy = false;
 					}
 
 					else
@@ -3171,7 +3192,7 @@ retry_response:
 							{ PS3MAPI_RESTORE_SC8_DISABLE_STATUS }
 							{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 
-							http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
+							keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
 
 							is_busy = false;
 
@@ -3192,7 +3213,7 @@ retry_response:
 
 					is_busy = false;
 #ifdef LAUNCHPAD
-					if(mobile_mode == LAUNCHPAD_MODE) {sprintf(templn, "%s LaunchPad: OK", STR_REFRESH); if(!mc) http_response(conn_s, header, param, CODE_HTTP_OK, templn); if(!(webman_config->minfo & 1)) show_msg(templn); goto exit_handleclient_www;}
+					if(mobile_mode == LAUNCHPAD_MODE) {sprintf(templn, "%s LaunchPad: OK", STR_REFRESH); if(!mc) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, templn); if(!(webman_config->minfo & 1)) show_msg(templn); goto exit_handleclient_www;}
 #endif
 				}
 
@@ -3200,7 +3221,7 @@ send_response:
 				if(mobile_mode && allow_retry_response) {allow_retry_response = false; *buffer = NULL; sprintf(param, "/games.ps3"); goto mobile_response;}
 
 				if(islike(param, "/mount.ps3?http"))
-					{http_response(conn_s, header, param, CODE_HTTP_OK, param + 11); break;}
+					{keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param + 11); break;}
 				else
 				{
 					// add bdvd & go to top links to the footer
@@ -3231,16 +3252,16 @@ send_response:
 				*buffer = NULL;
 			}
 		}
-		else if(*header == 0 && retry < 5)
+		else if(loading_html && (*header == 0) && (++retry < 5))
 		{
-			served = 0, retry++; // data no received
+			served = 0; // data no received
 			continue;
 		}
 		else
 		#ifdef WM_REQUEST
 		if(!wm_request)
 		#endif
-			http_response(conn_s, header, param, CODE_BAD_REQUEST, STR_ERROR);
+			keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, STR_ERROR);
 
 		break;
 	}
@@ -3250,7 +3271,10 @@ exit_handleclient_www:
 
 	if(sysmem) {sys_memory_free(sysmem); sysmem = NULL;}
 
-	if(mc || (keep_alive && (++max_cc < MAX_WWW_CC))) goto parse_request;
+	if(mc || (keep_alive && loading_html && (++max_cc < MAX_WWW_CC))) goto parse_request;
+
+	if(ap_param)
+		auto_play(param, --ap_param); // ap_param: 1=from /mount.ps3, 2=from /play.ps3
 
 	#ifdef USE_DEBUG
 	ssend(debug_s, "Request served.\r\n");

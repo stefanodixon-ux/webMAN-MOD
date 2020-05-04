@@ -424,7 +424,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	return flen;
 }
 
-static int add_breadcrumb_trail(char *pbuffer, char *param)
+static int add_breadcrumb_trail(char *pbuffer, const char *param)
 {
 	int slen, tlen = 0;
 

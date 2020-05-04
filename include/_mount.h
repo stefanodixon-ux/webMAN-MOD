@@ -188,7 +188,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	}
 #endif
 
-	if(umounted) {strcat(buffer, STR_GAMEUM); sprintf(templn, HTML_REDIRECT_TO_URL, "javascript:window.history.back();", HTML_REDIRECT_WAIT); strcat(buffer, templn);}
+	if(umounted)
+	{
+		strcat(buffer, STR_GAMEUM);
+		sprintf(templn, HTML_REDIRECT_TO_URL, "/cpursx.ps3", HTML_REDIRECT_WAIT);
+		strcat(buffer, templn);
+	}
 
 
 	// -----------------------
@@ -236,6 +241,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		if(purl) net_status = (*(purl + 8) == '0') ? 1 : 0;
 #endif
 		purl = strstr(source, "?random=");
+		if(purl) *purl = NULL;
+
+		purl = strstr(source, "?/sman.ps3");
 		if(purl) *purl = NULL;
 
 		// -------------------------
@@ -735,7 +743,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					language("STR_GAMELOADED", STR_GAMELOADED, STR_GAMELOADED);
 #endif
 					mlen = sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
-											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[default_icon], mounted ? STR_GAMELOADED : STR_ERROR);
+											"<hr><a href=\"/dev_bdvd\">%s</a>", (!mounted && IS_INGAME) ? XMB_DISC_ICON : enc_dir_name, wm_icons[default_icon], mounted ? STR_GAMELOADED : STR_ERROR);
 				}
 
 				if(!mounted)
@@ -743,13 +751,21 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 #ifndef ENGLISH_ONLY
 					if(webman_config->lang == 0)
 #endif
-						if(is_mounting) mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
+					{
+						if(is_mounting)
+							mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
+						else if(IS_INGAME)
+							mlen += sprintf(tempstr + mlen, " To quit the game click");
+					}
 #ifndef LITE_EDITION
  #ifdef COBRA_ONLY
 					if(islike(param + MOUNT_CMD, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
  #endif
 #endif
-					if(!forced_mount && IS_INGAME) sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + MOUNT_CMD, param + MOUNT_CMD);
+					if(!forced_mount && IS_INGAME)
+					{
+						sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + MOUNT_CMD, param + MOUNT_CMD);
+					}
 				}
 #ifndef ENGLISH_ONLY
 				close_language();
