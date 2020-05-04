@@ -25,10 +25,10 @@
 #define MODE                 0777
 #define DMODE                (CELL_FS_S_IFDIR | MODE)
 
-#define APP_DIR              "/dev_hdd0/game/UPDWEBMOD"
+#define APP_DIR              "/dev_hdd0//game/UPDWEBMOD"
 #define APP_USRDIR           APP_DIR "/USRDIR"
 
-#define PS2CONFIG_DIR        "/dev_hdd0/game/PS2CONFIG"
+#define PS2CONFIG_DIR        "/dev_hdd0//game/PS2CONFIG"
 #define PS2CONFIG_USRDIR     PS2CONFIG_DIR "/USRDIR"
 
 #define HDDROOT_DIR          "/dev_hdd0"
@@ -44,12 +44,12 @@
 
 #define XMLHOST_DIR          "/dev_hdd0/xmlhost/game_plugin"
 
-#define XMLMANPLS_DIR        "/dev_hdd0/game/XMBMANPLS"
+#define XMLMANPLS_DIR        "/dev_hdd0//game/XMBMANPLS"
 #define XMLMANPLS_FEATS_DIR  XMLMANPLS_DIR "/USRDIR/FEATURES"
 #define XMLMANPLS_IMAGES_DIR XMLMANPLS_DIR "/USRDIR/IMAGES"
 
-#define IRISMAN_USRDIR       "/dev_hdd0/game/IRISMAN01/USRDIR"
-#define PRXLOADER_USRDIR     "/dev_hdd0/game/PRXLOADER/USRDIR"
+#define IRISMAN_USRDIR       "/dev_hdd0//game/IRISMAN01/USRDIR"
+#define PRXLOADER_USRDIR     "/dev_hdd0//game/PRXLOADER/USRDIR"
 
 #define REBUG_DIR            "/dev_flash/rebug"
 #define FLASH_VSH_MODULE_DIR "/dev_flash/vsh/module"
@@ -378,7 +378,7 @@ int main()
 	if(button & (BUTTON_L1)) full = true; else
 	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite = true; else
 	if(	(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 285000)) ||
-		(is_ps3hen() == 0x1337) || 
+		(is_ps3hen() == 0x1337) ||
 		(sysLv2FsStat("/dev_flash/hen/PS3HEN.BIN", &stat) == SUCCESS) ||
 		(sysLv2FsStat(HDDROOT_DIR "/hen/PS3HEN.BIN", &stat) == SUCCESS) ||
 		(sysLv2FsStat("/dev_usb000/PS3HEN.BIN", &stat) == SUCCESS) ||
@@ -387,7 +387,7 @@ int main()
 	if(button & (BUTTON_L2 | BUTTON_R2)) update_images = true;
 //---
 
-	full_on_nocobra = (sysLv2FsStat(HDDROOT_DIR "/kernel/mamba_484C.bin", &stat) == SUCCESS) && 
+	full_on_nocobra = (sysLv2FsStat(HDDROOT_DIR "/kernel/mamba_484C.bin", &stat) == SUCCESS) &&
 					 ((sysLv2FsStat(HDDROOT_DIR "/boot_plugins_kernel_nocobra.txt", &stat) == SUCCESS) || (sysLv2FsStat(PLUGINS_DIR "/boot_plugins_kernel_nocobra _dex.txt", &stat) == SUCCESS));
 
 	// Create webman folders

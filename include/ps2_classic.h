@@ -87,7 +87,7 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 	char *path = strrchr(_path, '/');
 	char *game_id = strstr(path, " [S"); // title id enclosed in square brackets
 
-	if(game_id) 
+	if(game_id)
 		path = game_id + 2;
 	else
 	{
@@ -141,7 +141,7 @@ static void copy_ps2config(char *temp, const char *_path)
 
 		if(strlen(title_id) == TITLE_ID_LEN)
 		{
-			sprintf(temp, "%s/%.4s_%3s.%.2s.ENC", "/dev_hdd0/game/PS2CONFIG/USRDIR/CONFIG/ENC",
+			sprintf(temp, "%s%s/%.4s_%3s.%.2s.ENC", PS2CONFIG_PATH, "/CONFIG/ENC",
 							title_id,      // SLES, SLUS, SLPM, SLPS, SCES, SCUS, SCPS
 							title_id + 4,  // _000.00
 							title_id + 7); // SLxS00000

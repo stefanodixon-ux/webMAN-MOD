@@ -117,7 +117,7 @@
 					u8 n;
 					const char *rawseciso_sprx[4] = { WM_RES_PATH "/raw_iso.sprx",
 													  VSH_MODULE_DIR "raw_iso.sprx",
-													  "/dev_hdd0/game/IRISMAN00/sprx_iso",
+													  _HDD0_GAME_DIR "IRISMAN00/sprx_iso",
 													  WMTMP "/res/sman.ntf" };
 
 					for(n = 0; n < 4; n++)
@@ -501,7 +501,7 @@
 										   )
 										{
 											char temp[STD_PATH_LEN];
-											sprintf(temp, "%sPS2CONFIG/USRDIR/%s.CONFIG", _HDD0_GAME_DIR, tempID);
+											sprintf(temp, "%s/%s.CONFIG", PS2CONFIG_PATH, tempID);
 											if(file_exists(temp))
 												_file_copy(temp, _path);
 											else
@@ -509,11 +509,11 @@
 												char config_path[4][8] = {"CUSTOM", "NET", "GX", "SOFT"};
 												for(u8 i = 0; i < 4; i++)
 												{
-													sprintf(temp, "%sPS2CONFIG/USRDIR/CONFIG/%s/%s.CONFIG", _HDD0_GAME_DIR, config_path[i], tempID);
+													sprintf(temp, "%s/CONFIG/%s/%s.CONFIG", PS2CONFIG_PATH, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
-													sprintf(temp, "%sMANAGUNZ0/USRDIR/sys/CONFIG/%s/%s.CONFIG", _HDD0_GAME_DIR, config_path[i], tempID);
+													sprintf(temp, "%s/sys/CONFIG/%s/%s.CONFIG", MANAGUNZ, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
-													sprintf(temp, "%sUPDWEBMOD/USRDIR/CONFIG/%s/%s.CONFIG", _HDD0_GAME_DIR, config_path[i], tempID);
+													sprintf(temp, "%s/CONFIG/%s/%s.CONFIG", WM_INSTALLER_PATH, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
 												}
 											}

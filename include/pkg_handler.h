@@ -1,4 +1,4 @@
-#define IS_INSTALLING		installing_pkg /* (View_Find("game_plugin") != 0) */
+#define IS_INSTALLING		(View_Find("game_plugin") != 0)
 #define IS_INSTALLING_NAS	(View_Find("nas_plugin")  != 0)
 #define IS_DOWNLOADING		(View_Find("download_plugin") != 0)
 
@@ -117,7 +117,10 @@ static void wait_for_pkg_install(void)
 {
 	sys_ppu_thread_sleep(5);
 
-	while (working && IS_INSTALLING) sys_ppu_thread_sleep(2);
+	if(payload_ps3hen)
+		while (working && installing_pkg) sys_ppu_thread_sleep(2); //HEN
+	else
+		while (working && IS_INSTALLING) sys_ppu_thread_sleep(2);  // CFW
 
 	time_t install_time = pkg_install_time;  // set time before install
 	get_pkg_size_and_install_time(pkg_path); // get time after install

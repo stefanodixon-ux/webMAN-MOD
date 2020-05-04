@@ -3,17 +3,18 @@
 #define HTML_RECV_SIZE	2048
 #define HTML_RECV_LAST	2047
 
-#define CODE_HTTP_OK         200
-#define CODE_BAD_REQUEST     400
-#define CODE_PATH_NOT_FOUND  404
-#define CODE_SERVER_BUSY     503
-#define CODE_VIRTUALPAD     1200
-#define CODE_INSTALL_PKG    1201
-#define CODE_DOWNLOAD_FILE  1202
-#define CODE_RETURN_TO_ROOT 1203
-#define CODE_GOBACK         1222
-#define CODE_CLOSE_BROWSER  1223
-#define CODE_PLAIN_TEXT     1224
+#define CODE_HTTP_OK            200
+#define CODE_BAD_REQUEST        400
+#define CODE_PATH_NOT_FOUND     404
+#define CODE_SERVER_BUSY        503
+#define CODE_VIRTUALPAD        1200
+#define CODE_INSTALL_PKG       1201
+#define CODE_DOWNLOAD_FILE     1202
+#define CODE_RETURN_TO_ROOT    1203
+#define CODE_BREADCRUMB_TRAIL  1220
+#define CODE_GOBACK            1222
+#define CODE_CLOSE_BROWSER     1223
+#define CODE_PLAIN_TEXT        1224
 
 ////////////////////////////////
 #ifndef EMBED_JS
@@ -97,7 +98,15 @@ static void http_response(int conn_s, char *header, const char *url, int code, c
 		char body[_2KB_];
 
 		if(*msg == '/')
-			{sprintf(body, "%s : OK", msg + 1); if(!(webman_config->minfo & 2)) show_msg(body);}
+		{
+			char *cmd = (char*)msg + 1;
+			sprintf(body, "%s : OK", cmd); if(!(webman_config->minfo & 2)) show_msg(body);
+			if(code == CODE_BREADCRUMB_TRAIL)
+			{
+				char *p = strchr(cmd, '/');
+				if(p) {body[p - cmd] = NULL; add_breadcrumb_trail(body, p);}
+			}
+		}
 		else if(islike(msg, "http"))
 			sprintf(body, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE, msg, msg);
 #ifdef PKG_HANDLER
@@ -660,7 +669,7 @@ parse_request:
 				{
 					refresh_xml(param);
 
-					if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+					if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
 					{
 						reload_xmb();
 					}
@@ -1550,6 +1559,49 @@ parse_request:
 				goto html_response;
 			}
 			else
+			if(islike(param, "/write.ps3") || islike(param, "/write_ps3"))
+			{
+				// /write.ps3<path>&t=<text> use | for line break (create text file)
+				// /write_ps3<path>&t=<text> use | for line break (add text to file)
+				// /write.ps3<path>&t=<hex>&pos=<offset>          (patch file)
+				// /write.ps3?f=<path>&t=<text> use | for line break (create text file)
+				// /write_ps3?f=<path>&t=<text> use | for line break (add to file)
+				// /write.ps3?f=<path>&t=<hex>&pos=<offset>       (patch file)
+				u64 offset = 0; u16 size = 0;
+				char *filename = param + ((param[10] == '/') ? 10 : 13);
+				char *pos = strstr(filename, "&t=");
+				if(pos)
+				{
+					*pos = NULL;
+					char *data = pos + 3;
+					filepath_check(filename);
+
+					pos = strstr(data, "&pos=");
+					if(pos) {*pos = NULL, pos += 5;}
+
+					if(pos)
+					{
+						if(islike(pos, "0x"))
+							offset = convertH(pos);
+						else
+							offset = val(pos);
+
+						size = Hex2Bin(data, header);
+						write_file(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, header, offset, size, false);
+					}
+					else
+					{
+						for(pos = data; *pos; ++pos) if(*pos == '|') *pos = '\n';
+
+						if(islike(param, "/write_ps3"))
+							save_file(filename, data, APPEND_TEXT);
+						else
+							save_file(filename, data, SAVE_ALL);
+					}
+				}
+				http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				goto exit_handleclient_www;
+			}
 			if(islike(param, "/rename.ps3") || islike(param, "/swap.ps3") || islike(param, "/move.ps3"))
 			{
 				// /rename.ps3<path>|<dest>       rename <path> to <dest>
@@ -1707,7 +1759,7 @@ parse_request:
 				goto exit_handleclient_www;
 			}
 	#endif
-	#ifdef SECURE_FILE_ID
+	#ifdef SECURE_FILE_ID // TO-DO: this feature is broken
 			if(islike(param, "/secureid.ps3"))
 			{
 				hook_savedata_plugin();
@@ -1941,7 +1993,15 @@ parse_request:
 			{
 				// /mount.ps3?<query>  search game & mount if only 1 match is found
 
-				if(!islike(param, "/mount.ps3?http")) {memcpy(param, "/index.ps3", 10); auto_mount = true;}
+				if(islike(param, "/mount.ps3?http"))
+				{
+					char *url  = param + 11;
+					do_umount(false);  open_browser(url, 0);
+					http_response(conn_s, header, param, CODE_HTTP_OK, url); keep_alive = 0;
+					goto exit_handleclient_www;
+				}
+				else
+					{memcpy(header, "/index.ps3", 10); memcpy(param, "/index.ps3", 10); auto_mount = true;}
 			}
  #endif
 
@@ -2607,7 +2667,7 @@ retry_response:
  #else
 						sprintf(templn,  "<br>%s", STR_XMLRF); _concat(&sbuffer, templn);
  #endif
-						if(IS_ON_XMB && file_exists("/dev_hdd0/game/RELOADXMB/USRDIR/EBOOT.BIN"))
+						if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
 						{
 							sprintf(templn, " [<a href=\"/reloadxmb.ps3\">%s XMB</a>]", STR_REFRESH);
 							_concat(&sbuffer, templn);

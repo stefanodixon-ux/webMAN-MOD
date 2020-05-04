@@ -530,7 +530,7 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, "<td nowrap valign=top>");
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
-	b = isDir("/dev_hdd0/game/PKGLAUNCH");
+	b = isDir(PKGLAUNCH_DIR);
 	add_check_box("ps3", false, "PLAYSTATION\xC2\xAE\x33"    , b ? " (" : _BR_, !(webman_config->cmask & PS3), buffer);
 	if(b) add_check_box("p3l", false, "PKG Launcher"         ,     " & "      ,  (webman_config->ps3l)       , buffer);
 	if(b) add_check_box("rom", false, "ROMS"                 ,     ")<br>"    ,  (webman_config->roms)       , buffer);
@@ -1202,7 +1202,7 @@ static void read_settings(void)
 #endif
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
-	bool is_pkg_launcher_installed = isDir("/dev_hdd0/game/PKGLAUNCH");
+	bool is_pkg_launcher_installed = isDir(PKGLAUNCH_DIR);
 	if(is_pkg_launcher_installed) {webman_config->ps3l = webman_config->roms = 1; f1_len = 13;}
 #endif
 

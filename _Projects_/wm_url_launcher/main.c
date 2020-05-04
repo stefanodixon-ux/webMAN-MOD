@@ -5,8 +5,8 @@
 #include <sys/file.h>
 #include <sys/process.h>
 
-#define RETROARCH	"/dev_hdd0/game/SSNE10000/USRDIR/cores"
-#define SHOWTIME	"/dev_hdd0/game/HTSS00003/USRDIR/movian.self"
+#define RETROARCH	"/dev_hdd0//game/SSNE10000/USRDIR/cores"
+#define SHOWTIME	"/dev_hdd0//game/HTSS00003/USRDIR/movian.self"
 
 #define VIDEO_EXTENSIONS ".MKV|.MP4|.AVI|.MPG|.MPEG|.MOV|.M2TS|.VOB|.FLV|.WMV|.ASF|.DIVX|.XVID|.PAM|.BIK|.BINK|.VP6|.MTH|.3GP|.RMVB|.OGM|.OGV|.M2T|.MTS|.TS|.TSV|.TSA|.TTS|.RM|.RV|.VP3|.VP5|.VP8|.264|.M1V|.M2V|.M4B|.M4P|.M4R|.M4V|.MP4V|.MPE|.BDMV|.DVB|.WEBM|.NSV"
 #define AUDIO_EXTENSIONS ".MP3|.WAV|.WMA|.AAC|.AC3|.AT3|.OGG|.OGA|.MP2|.MPA|.M4A|.FLAC|.RA|.RAM|.AIF|.AIFF|.MOD|.S3M|.XM|.IT|.MTM|.STM|.UMX|.MO3|.NED|.669|.MP1|.M1A|.M2A|.M4B|.AA3|.OMA|.AIFC"
@@ -72,6 +72,12 @@ static void urlenc(char *dst, char *src)
 	sprintf(src, "%s", dst);
 }
 
+static bool file_exists(const char *path)
+{
+	struct stat s;
+	return (stat(path, &s) != 0);
+}
+
 int main(int argc, const char* argv[])
 {
 	char path[2048], param[2048], url[2048];
@@ -79,7 +85,7 @@ int main(int argc, const char* argv[])
 	FILE *fp;
 
 	fp = fopen("/dev_bdvd/PS3_GAME/USRDIR/launch.txt", "rb");
-	if(!fp) fp = fopen("/dev_hdd0/game/PKGLAUNCH/USRDIR/launch.txt", "rb");
+	if(!fp) fp = fopen("/dev_hdd0//game/PKGLAUNCH/USRDIR/launch.txt", "rb");
 
 	memset(path, 2048, 0);
 	memset(param, 2048, 0);
@@ -126,7 +132,7 @@ int main(int argc, const char* argv[])
 		int s = connect_to_webman();
 		if(s >= 0) ssend(s, url);
 
-		fp = fopen("/dev_hdd0/game/PKGLAUNCH/USRDIR/url.txt", "wb");
+		fp = fopen("/dev_hdd0//game/PKGLAUNCH/USRDIR/url.txt", "wb");
 		fwrite((void *) url, 1, strlen(url), fp);
 		fclose(fp);
 
@@ -137,13 +143,12 @@ int main(int argc, const char* argv[])
 	{
 		if(strcasestr(path, "/ROMS/SNES/"))
 		{
-			struct stat s;
 			sprintf(param, "%s", path); sprintf(path, "%s/snes9x2010_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/snes9x_next_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/snes9x2005_plus_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/snes9x2005_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/snes9x_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/mednafen_snes_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/snes9x_next_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/snes9x2005_plus_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/snes9x2005_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/snes9x_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/mednafen_snes_libretro_ps3.SELF", RETROARCH);
 		}
 		else
 		if(strcasestr(path, "/ROMS/SNES9X/"))  {sprintf(param, "%s", path); sprintf(path, "%s/snes9x_libretro_ps3.SELF", RETROARCH);}           else
@@ -154,10 +159,9 @@ int main(int argc, const char* argv[])
 
 		if(strcasestr(path, "/ROMS/NES/"))
 		{
-			struct stat s;
 			sprintf(param, "%s", path); sprintf(path, "%s/fceumm_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/nestopia_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/quicknes_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/nestopia_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/quicknes_libretro_ps3.SELF", RETROARCH);
 		}
 		else
 		if(strcasestr(path, "/ROMS/FCEUMM/"))   {sprintf(param, "%s", path); sprintf(path, "%s/fceumm_libretro_ps3.SELF", RETROARCH);}          else
@@ -170,9 +174,8 @@ int main(int argc, const char* argv[])
 
 		if(strcasestr(path, "/ROMS/GBA/"))
 		{
-			struct stat s;
 			sprintf(param, "%s", path); sprintf(path, "%s/vba_next_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/mgba_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/mgba_libretro_ps3.SELF", RETROARCH);
 		}
 		else
 		if(strcasestr(path, "/ROMS/VBA/"))   {sprintf(param, "%s", path); sprintf(path, "%s/vba_next_libretro_ps3.SELF", RETROARCH);}           else
@@ -180,10 +183,9 @@ int main(int argc, const char* argv[])
 
 		if(strcasestr(path, "/ROMS/GB/"))
 		{
-			struct stat s;
 			sprintf(param, "%s", path); sprintf(path, "%s/gambatte_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/gearboy_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/tgbdual_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/gearboy_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/tgbdual_libretro_ps3.SELF", RETROARCH);
 		}
 		else
 		if(strcasestr(path, "/ROMS/GBC/"))  {sprintf(param, "%s", path); sprintf(path, "%s/gambatte_libretro_ps3.SELF", RETROARCH);}            else
@@ -191,22 +193,20 @@ int main(int argc, const char* argv[])
 		if(strcasestr(path, "/ROMS/GAMBATTE/")) {sprintf(param, "%s", path); sprintf(path, "%s/gambatte_libretro_ps3.SELF", RETROARCH);}        else
 		if(strcasestr(path, "/ROMS/TGBDUAL/"))  {sprintf(param, "%s", path); sprintf(path, "%s/tgbdual_libretro_ps3.SELF", RETROARCH);}         else
 
-		if(strcasestr(path, "/ROMS/ATARI/")){sprintf(param, "%s", path); sprintf(path, "%s/stella_libretro_ps3.SELF", RETROARCH);}              else
+		if(strcasestr(path, "/ROMS/ATARI/")) {sprintf(param, "%s", path); sprintf(path, "%s/stella_libretro_ps3.SELF", RETROARCH);}              else
 		if(strcasestr(path, "/ROMS/FBA/"))
 		{
-			struct stat s;
 			sprintf(param, "%s", path); sprintf(path, "%s/fb_alpha_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/fbalpha_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/fbalpha2012_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/fbalpha_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/fbalpha2012_libretro_ps3.SELF", RETROARCH);
 		}
 		else
 		if(strcasestr(path, "/ROMS/FBA2012/")) {sprintf(param, "%s", path); sprintf(path, "%s/fbalpha2012_libretro_ps3.SELF", RETROARCH);}      else
 		if(strcasestr(path, "/ROMS/MAME/"))
 		{
-			struct stat s;
 			sprintf(param, "%s", path); sprintf(path, "%s/mame078_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/mame2000_libretro_ps3.SELF", RETROARCH);
-			if(stat(path, &s) != 0) sprintf(path, "%s/mame2003_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/mame2000_libretro_ps3.SELF", RETROARCH);
+			if(file_exists(path)) sprintf(path, "%s/mame2003_libretro_ps3.SELF", RETROARCH);
 		}
 		else
 		if(strcasestr(path, "/ROMS/MAME078/")) {sprintf(param, "%s", path); sprintf(path, "%s/mame078_libretro_ps3.SELF", RETROARCH);}          else
@@ -260,37 +260,33 @@ int main(int argc, const char* argv[])
 
 				if(strcasestr(".SMC|.SWC|.FIG|.SFC|.ZIP|.GD3|.GD7|.DX2|.BSX", extension))
 				{
-					struct stat s;
 					sprintf(param, "%s", path); sprintf(path, "%s/snes9x2010_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/snes9x_next_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/snes9x2005_plus_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/snes9x2005_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/snes9x_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/mednafen_snes_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/snes9x_next_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/snes9x2005_plus_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/snes9x2005_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/snes9x_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/mednafen_snes_libretro_ps3.SELF", RETROARCH);
 				}
 				else
 				if(strcasestr(".NES|.UNIF|.FDS", extension))
 				{
-					struct stat s;
 					sprintf(param, "%s", path); sprintf(path, "%s/fceumm_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/nestopia_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/quicknes_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/nestopia_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/quicknes_libretro_ps3.SELF", RETROARCH);
 				}
 				else
 				if(strcasestr(".MD|.MDX|.SMD|.GEN|.SMS|.GG|.SG|.BIN", extension)) {sprintf(param, "%s", path); sprintf(path, "%s/genesis_plus_gx_libretro_ps3.SELF", RETROARCH);}   else
 				if(strcasestr(".GBA", extension))
 				{
-					struct stat s;
 					sprintf(param, "%s", path); sprintf(path, "%s/vba_next_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/mgba_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/mgba_libretro_ps3.SELF", RETROARCH);
 				}
 				else
 				if(strcasestr(".GB|.GBC|.DMG", extension))
 				{
-					struct stat s;
 					sprintf(param, "%s", path); sprintf(path, "%s/gambatte_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/gearboy_libretro_ps3.SELF", RETROARCH);
-					if(stat(path, &s) != 0) sprintf(path, "%s/tgbdual_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/gearboy_libretro_ps3.SELF", RETROARCH);
+					if(file_exists(path)) sprintf(path, "%s/tgbdual_libretro_ps3.SELF", RETROARCH);
 				}
 				else
 				if(strcasestr(".PCE", extension)) {sprintf(param, "%s", path); sprintf(path, "%s/mednafen_pce_fast_libretro_ps3.SELF", RETROARCH);}  else

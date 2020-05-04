@@ -773,8 +773,8 @@ static void add_plugins_list(char *buffer, char *templn)
 									"/dev_hdd0/plugins/ps3xpad",
 									"/dev_hdd0/plugins/ps3_menu",
 									"/dev_hdd0/plugins/PS3Lock",
-									"/dev_hdd0/game/UPDWEBMOD/USRDIR",
-									"/dev_hdd0/tmp/wm_res"
+									WM_INSTALLER_PATH,
+									WM_RES_PATH
 								};
 
 		#define PLUGINS_PATH	(i < 3) ? drives[i] : paths[i - 3]

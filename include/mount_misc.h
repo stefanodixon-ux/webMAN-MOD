@@ -62,12 +62,26 @@
 		{
 			do_umount(false);
 
+			// map PKGLAUNCH cores folder to RETROARCH
 			sys_map_path(PKGLAUNCH_DIR, NULL);
 			sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR "/USRDIR/cores");
 
+			// mount PKGLAUNCH as disc
 			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", 0);
 
+			// store rom path for PKGLAUNCH
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, 0);
+
+			// copy rom icon to ICON0
+			char *name = strrchr(_path, '/') + 1;
+			char *ext  = strrchr(name, '.');
+			{strcpy(ext, ".png"); if(file_exists(_path)) {file_copy(_path, (char*)PKGLAUNCH_ICON0, COPY_WHOLE_FILE);} else
+			{strcpy(ext, ".PNG"); if(file_exists(_path)) {file_copy(_path, (char*)PKGLAUNCH_ICON0, COPY_WHOLE_FILE);} else
+														 {file_copy((char*)PKGLAUNCH_ICON, (char*)PKGLAUNCH_ICON0, COPY_WHOLE_FILE);}}}
+			// patch PARAM.SFO of PKGLAUNCH
+			if(ext) *ext = NULL;
+			write_file(PKGLAUNCH_SFO, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, name, 0x378, 0x80, false);
+
 			mount_unk = EMU_ROMS;
 			goto mounting_done; //goto exit_mount;
 		}

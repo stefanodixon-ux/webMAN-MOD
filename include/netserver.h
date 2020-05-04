@@ -303,18 +303,10 @@ static int process_read_file_cmd(u8 index, netiso_read_file_cmd *cmd)
 
 	if(remaining > buffer_size) goto send_result_read_file;
 
-	/// file seek ///
-
+	/// read file ///
 	offset = (s64)(cmd->offset);
 
-	if(cellFsLseek(clients[index].fd, offset, SEEK_SET, &bytes_read) != CELL_FS_SUCCEEDED)
-	{
-		goto send_result_read_file;
-	}
-
-	/// read file ///
-
-	cellFsRead(clients[index].fd, buffer, remaining, &bytes_read);
+	cellFsReadWithOffset(clients[index].fd, offset, buffer, remaining, &bytes_read);
 
 send_result_read_file:
 

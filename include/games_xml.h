@@ -623,7 +623,7 @@ next_xml_entry:
 #endif
 							}
 
-							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f1, f0);
+							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 #ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
 #endif
@@ -738,13 +738,13 @@ continue_reading_folder_xml:
 
 	// --- add eject & setup/xmbm+ menu
 #ifdef ENGLISH_ONLY
-	bool add_xmbm_plus = file_exists("/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml");
+	bool add_xmbm_plus = file_exists(XMBMANPLS_PATH "/FEATURES/webMAN.xml");
 #else
 	bool add_xmbm_plus = false;
 
 	while(true)
 	{
-		sprintf(templn, "/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN%s.xml", lang_code);
+		sprintf(templn, "%s/FEATURES/webMAN%s.xml", XMBMANPLS_PATH, lang_code);
 		add_xmbm_plus = file_exists(templn);
 		if(add_xmbm_plus || *lang_code == NULL) break; *lang_code = NULL;
 	}
@@ -758,7 +758,7 @@ continue_reading_folder_xml:
 		{
 			if(add_xmbm_plus)
 #ifdef ENGLISH_ONLY
-				_concat(&myxml_ngp, QUERY_XMB("setup", "xmb://localhost/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml#seg_webman_links_items"));
+				_concat(&myxml_ngp, QUERY_XMB("setup", "xmb://localhost" XMBMANPLS_PATH "/FEATURES/webMAN.xml#seg_webman_links_items"));
 #else
 			{
 				sprintf(tempstr, QUERY_XMB("setup", "xmb://localhost%s#seg_webman_links_items"), templn);
@@ -845,8 +845,15 @@ continue_reading_folder_xml:
 				_concat(&myxml_dvd,
 					"<View id=\"seg_wm_bdvd\">"
 					"<Items>"
-					QUERY_XMB("rx_video1", "xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM&genre=Video&sort=+StorageMedia:StorageMedia.sortOrder+StorageMedia:StorageMedia.timeInserted&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED+Ae+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_DATA+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_BDROM %xCB_MEDIA_TYPE_WM")
-					QUERY_XMB("rx_video2", "xcb://localhost/query?sort=+Game:Common.titleForSort&cond=AGL+Game:Game.titleId RXMOV0000 RXMOVZZZZ+An+Game:Game.category 2D+An+Game:Game.category BV+An+Game:Game.category HG")
+					QUERY_XMB("rx_video1",	"xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM"
+											"&genre=Video&sort=+StorageMedia:StorageMedia.sortOrder+StorageMedia:StorageMedia.timeInserted"
+											"&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED"
+												 "+Ae+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_DATA"
+												 "+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_BDROM %xCB_MEDIA_TYPE_WM")
+					QUERY_XMB("rx_video2",	"xcb://localhost/query?sort=+Game:Common.titleForSort"
+											"&cond=AGL+Game:Game.titleId RXMOV0000 RXMOVZZZZ+An+Game:Game.category 2D"
+												 "+An+Game:Game.category BV"
+												 "+An+Game:Game.category HG")
 					"</Items>"
 					"</View>");
 			}
@@ -963,7 +970,7 @@ continue_reading_folder_xml:
 						 XML_PAIR("icon","%s")
 						 XML_PAIR("title","%s")
 						 XML_PAIR("info","%s") "%s",
-						 add_xmbm_plus ? "/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png" : wm_icons[10],
+						 add_xmbm_plus ? XMBMANPLS_PATH "/IMAGES/multiman.png" : wm_icons[10],
 						 STR_WMSETUP, STR_WMSETUP2, WEB_LINK_PAIR); _concat(&myxml, templn);
 
 		if(add_xmbm_plus)
@@ -986,10 +993,10 @@ continue_reading_folder_xml:
 		{
 			if(add_xmbm_plus)
 			#ifdef ENGLISH_ONLY
-				_concat(&myxml, QUERY_XMB("setup", "xmb://localhost/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN.xml#seg_webman_links_items"));
+				_concat(&myxml, QUERY_XMB("setup", "xmb://localhost" XMBMANPLS_PATH "/FEATURES/webMAN.xml#seg_webman_links_items"));
 			#else
 			{
-				sprintf(templn, QUERY_XMB("setup", "xmb://localhost/dev_hdd0//game/XMBMANPLS/USRDIR/FEATURES/webMAN%s.xml#seg_webman_links_items"), lang_code);
+				sprintf(templn, QUERY_XMB("setup", "xmb://localhost" XMBMANPLS_PATH "/FEATURES/webMAN%s.xml#seg_webman_links_items"), lang_code);
 				_concat(&myxml, templn);
 			}
 			#endif

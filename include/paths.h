@@ -9,16 +9,21 @@
 #define COLDBOOT_PATH		"/dev_blind/vsh/resource/coldboot.raf"
 #define ORG_LIBFS_PATH		"/dev_flash/sys/external/libfs.sprx"
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
-#define SLAUNCH_FILE		"/dev_hdd0/tmp/wmtmp/slist.bin"
-#define DEL_CACHED_ISO		"/dev_hdd0/tmp/wmtmp/deliso.txt"
 
 #define XMB_DISC_ICON		"/dev_hdd0/tmp/game/ICON0.PNG"
 #define CATEGORY_GAME_XML	"/dev_flash/vsh/resource/explore/xmb/category_game.xml"
 
-#define MM_ROOT_STD			"/dev_hdd0//game/BLES80608/USRDIR"	// multiMAN root folder
-#define MM_ROOT_SSTL		"/dev_hdd0//game/NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
+#define HDD0_GAME_DIR		"/dev_hdd0/game/"
+#define _HDD0_GAME_DIR		"/dev_hdd0//game/"
+
+#define MANAGUNZ			_HDD0_GAME_DIR "MANAGUNZ0/USRDIR"	// ManaGunZ folder
+#define MM_ROOT_STD			_HDD0_GAME_DIR "BLES80608/USRDIR"	// multiMAN root folder
+#define MM_ROOT_SSTL		_HDD0_GAME_DIR "NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
 #define MM_ROOT_STL			"/dev_hdd0/tmp/game_repo/main"		// stealthMAN root folder
-#define MANAGUNZ			"/dev_hdd0//game/MANAGUNZ0/USRDIR"	// ManaGunZ folder
+
+#define WM_INSTALLER_PATH	_HDD0_GAME_DIR "UPDWEBMOD/USRDIR"
+#define XMBMANPLS_PATH		_HDD0_GAME_DIR "XMBMANPLS/USRDIR"
+#define PS2CONFIG_PATH		_HDD0_GAME_DIR "PS2CONFIG/USRDIR"
 
 #define TMP_DIR				"/dev_hdd0/tmp"
 
@@ -35,17 +40,19 @@
 #define WMONLINE_GAMES		WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
 #define WMOFFLINE_GAMES		WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
 
+#define SLAUNCH_FILE		WMTMP "/slist.bin"
+#define DEL_CACHED_ISO		WMTMP "/deliso.txt"
+
 #define LAST_GAME_TXT		WMTMP "/last_game.txt"
 #define LAST_GAMES_BIN		WMTMP "/last_games.bin"
 
 #define VSH_MENU_IMAGES		"/dev_hdd0/plugins/images"
 
-#define HDD0_GAME_DIR		"/dev_hdd0/game/"
-#define _HDD0_GAME_DIR		"/dev_hdd0//game/"
-
 #define PKGLAUNCH_ID		"PKGLAUNCH"
 #define PKGLAUNCH_DIR		_HDD0_GAME_DIR PKGLAUNCH_ID
 #define PKGLAUNCH_ICON		PKGLAUNCH_DIR "/ICON0.PNG"
+#define PKGLAUNCH_SFO		PKGLAUNCH_DIR "/PS3_GAME/PARAM.SFO"
+#define PKGLAUNCH_ICON0		PKGLAUNCH_DIR "/PS3_GAME/ICON0.PNG"
 
 #define RETROARCH_DIR		_HDD0_GAME_DIR "SSNE10000"
 

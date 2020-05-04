@@ -221,7 +221,7 @@ static void add_to_map(const char *path1, const char *path2)
 
 static u16 string_to_lv2(char* path, u64 addr)
 {
-	u16 plen = strlen(path); 
+	u16 plen = strlen(path);
 	u16 len  = (plen + 8) & 0x7f8;
 
 	len = RANGE(len, 8, MAX_PATH_MAP);
@@ -267,8 +267,9 @@ static u64 convertH(char *val)
 #endif
 #ifdef PS3MAPI
 
-static void Hex2Bin(const char* src, char* target)
+static u16 Hex2Bin(const char* src, char* out)
 {
+	char *target = out;
 	char value[3]; value[2] = NULL;
 	while(*src && src[1])
 	{
@@ -276,6 +277,7 @@ static void Hex2Bin(const char* src, char* target)
 		*(target++) = (u8)convertH(value);
 		src += 2;
 	}
+	return (target - out);
 }
 
 #endif

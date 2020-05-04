@@ -229,47 +229,65 @@ static void mkdirs(char *param)
 
 size_t read_file(const char *file, char *data, size_t size, s32 offset)
 {
-	int fd = 0; u64 pos, read_e = 0;
+	int fd = 0; u64 read_e = 0;
 
 	if(offset < 0) offset = 0; else memset(data, 0, size);
 
 	if(cellFsOpen(file, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
-		if(cellFsLseek(fd, offset, CELL_FS_SEEK_SET, &pos) == CELL_FS_SUCCEEDED)
-		{
-			if(cellFsRead(fd, (void *)data, size, &read_e) != CELL_FS_SUCCEEDED) read_e = 0;
-		}
+		if(cellFsReadWithOffset(fd, offset, (void *)data, size, &read_e) != CELL_FS_SUCCEEDED) read_e = 0;
 		cellFsClose(fd);
 	}
 
 	return read_e;
 }
 
-int save_file(const char *file, const char *mem, s64 size)
+static int write_file(const char *file, int flags, const char *data, u64 offset, int size, bool crlf)
 {
-	bool crlf = (size == APPEND_TEXT); // auto add new line
-
-	u32 flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;
-	if( size < 0 )  {flags = CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY; size = crlf ? SAVE_ALL : -size;} else
-	if(!extcmp(file, "/PARAM.SFO", 10)) flags = CELL_FS_O_CREAT | CELL_FS_O_WRONLY;
-
 	cellFsChmod(file, MODE); // set permissions for overwrite
 
 	int fd = 0;
 	if(cellFsOpen(file, flags, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
-		if((size <= SAVE_ALL) && mem) size = strlen(mem);
-
-		if(size) cellFsWrite(fd, (void *)mem, size, NULL);
-		if(crlf) cellFsWrite(fd, (void *)"\r\n", 2, NULL);
+		if(offset) cellFsLseek(fd, offset, CELL_FS_SEEK_SET, &offset);
+		if((size <= SAVE_ALL) && data) size = strlen(data);
+		if( size ) cellFsWrite(fd, (void *)data, size, NULL);
+		if( crlf ) cellFsWrite(fd, (void *)"\r\n", 2, NULL);
 		cellFsClose(fd);
 
-		cellFsChmod(file, MODE);
+		cellFsChmod(file, MODE); // set permissions if created
 
 		return CELL_FS_SUCCEEDED;
 	}
 
 	return FAILED;
+}
+
+int save_file(const char *file, const char *mem, s64 size)
+{
+	bool crlf = (size == APPEND_TEXT); // auto add new line
+
+	int flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;
+	if( size < 0 )  {flags = CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY; size = crlf ? SAVE_ALL : -size;} else
+	if(!extcmp(file, "/PARAM.SFO", 10)) flags = CELL_FS_O_CREAT | CELL_FS_O_WRONLY;
+
+/*
+	cellFsChmod(file, MODE); // set permissions for overwrite
+
+	int fd = 0;
+	if(cellFsOpen(file, flags, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+	{
+		if(size) cellFsWrite(fd, (void *)mem, size, NULL);
+		if(crlf) cellFsWrite(fd, (void *)"\r\n", 2, NULL);
+		cellFsClose(fd);
+
+		cellFsChmod(file, MODE); // set permissions if created
+
+		return CELL_FS_SUCCEEDED;
+	}
+	return FAILED;
+*/
+	return write_file(file, flags, mem, 0, (int)size, crlf);
 }
 /*
 static void addlog(const char *msg1, const char *msg2)
@@ -512,8 +530,7 @@ next_part:
 					else
 #endif
 					{
-						cellFsLseek(fd1, pos, CELL_FS_SEEK_SET, &read);
-						cellFsRead(fd1, chunk, chunk_size, &read);
+						cellFsReadWithOffset(fd1, pos, chunk, chunk_size, &read);
 					}
 
 					if(!read) break;

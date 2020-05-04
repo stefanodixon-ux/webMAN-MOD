@@ -470,8 +470,7 @@ static int process_read_file_cmd_iso(u8 *buf, u64 offset, u64 size)
 			}
 
 			u64 p = 0;
-			ret = cellFsLseek(discfd, pos, SEEK_SET, &p);
-			if(!ret) ret = cellFsRead(discfd, buf, readsize, &p);
+			ret = cellFsReadWithOffset(discfd, pos, buf, readsize, &p);
 			if(ret != CELL_OK)
 			{
 				last_index = NONE;
@@ -568,8 +567,7 @@ static int process_read_psx_cmd_iso(u8 *buf, u64 offset, u64 size, u32 ssector)
 
 		if(!psx_isos_desc[psx_indx * 2 + 0])
 		{
-			ret = cellFsLseek(discfd, pos, SEEK_SET, &p);
-			if(!ret) ret = cellFsRead(discfd, buf + rel, readsize, &p);
+			ret = cellFsReadWithOffset(discfd, pos, buf + rel, readsize, &p);
 			if(ret != CELL_OK)
 			{
 				if(ret == (int) 0x8001002B) return (int) 0x8001000A; // EBUSY

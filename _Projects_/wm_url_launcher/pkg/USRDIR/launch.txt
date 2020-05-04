@@ -1,1 +1,1 @@
-/dev_hdd0/game/HTSS00003/USRDIR/movian.self
+/dev_hdd0//game/SSNE10000/USRDIR/EBOOT.BIN

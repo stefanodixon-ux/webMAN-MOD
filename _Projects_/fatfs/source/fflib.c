@@ -341,7 +341,7 @@ int fflib_file_to_sectors(const char *path, uint32_t *sec_out, uint32_t *size_ou
     }
     f_close(&fdst);
     //
-    f_mount (NULL, path, 0);                    /* UnMount the default drive */
+    if(!phys) f_mount (NULL, path, 0);                    /* UnMount the default drive */
     //
     return pidx;
 }

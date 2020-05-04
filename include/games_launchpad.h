@@ -42,7 +42,7 @@ static int add_launchpad_entry(char *tempstr, char *templn, const char *url, cha
 	char *pos = strstr(icon + 22, "/icon_wm_");
 	if(pos) {pos[6] = 'l', pos[7] = 'p'; if(pos[9] != 'a') {if(strstr(url, paths[3]) || strstr(url, ".ntfs[BDFILE]")) strcpy(pos + 9, "blu.png");}}
 
-	if(*icon == NULL || ((title_id[0] == 'B' || title_id[1] == 'P') && (islike(icon, "/dev_flash") || strstr(icon, "/icon_wm_")))) sprintf(icon, "/dev_hdd0/game/XMBMANPLS/USRDIR/IMAGES/%s", title_id);
+	if(*icon == NULL || ((title_id[0] == 'B' || title_id[1] == 'P') && (islike(icon, "/dev_flash") || strstr(icon, "/icon_wm_")))) sprintf(icon, "%s/IMAGES/%s", XMBMANPLS_PATH, title_id);
 
 	if(file_exists(icon)) {urlenc(tempstr, icon); sprintf(icon, "http://%s%s", local_ip, tempstr);}
 	else if(nocover_exists && IS(title_id, "NOID")) sprintf(icon, "http://%s%s", local_ip, WM_ICONS_PATH "/icon_lp_nocover.png");

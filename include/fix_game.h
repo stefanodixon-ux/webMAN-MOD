@@ -242,13 +242,11 @@ static void fix_game_folder(char *path)
 
 				if(cellFsOpen(fix_game_path[plevel], CELL_FS_O_RDWR, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
 				{
-					cellFsLseek(fdw, 0xC, CELL_FS_SEEK_SET, &bytes_read);
-					cellFsRead(fdw, (void *)&offset, 4, &bytes_read); offset-=0x78;
+					cellFsReadWithOffset(fdw, 0xC, (void *)&offset, 4, &bytes_read); offset-=0x78;
 
 				retry_offset:
 					if(offset < 0x90 || offset > 0x800) offset=!extcasecmp(entry_name, ".sprx", 5) ? 0x258 : 0x428;
-					cellFsLseek(fdw, offset, CELL_FS_SEEK_SET, &bytes_read);
-					cellFsRead(fdw, (void *)&ps3_sys_version, 8, NULL);
+					cellFsReadWithOffset(fdw, offset, (void *)&ps3_sys_version, 8, NULL);
 
 					if(ps3_sys_version > CFW_420 && ps3_sys_version < MAX_CFW)
 					{
@@ -259,8 +257,7 @@ static void fix_game_folder(char *path)
 
 						ps3_sys_version = CFW_420;
 
-						cellFsLseek(fdw, offset, CELL_FS_SEEK_SET, &bytes_read);
-						cellFsWrite(fdw, (void *)(&ps3_sys_version), 8, NULL);
+						cellFsWriteWithOffset(fdw, offset, (void *)(&ps3_sys_version), 8, NULL);
 					}
 					cellFsClose(fdw);
 				}
@@ -326,17 +323,15 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 
 			if(fix_sfo)
 			{
-				cellFsLseek(fd, pos, CELL_FS_SEEK_SET, &bytes_read);
-				cellFsRead(fd, chunk, chunk_size, &bytes_read); if(!bytes_read) break;
+				cellFsReadWithOffset(fd, pos, chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 
 				start = 0, lba = getlba(chunk, chunk_size, "PARAM.SFO;1", 11, &start);
 
 				if(lba)
 				{
-					lba*=0x800ULL, fix_sfo = false;
+					lba *= 0x800ULL, fix_sfo = false;
 
-					cellFsLseek(fd, lba, CELL_FS_SEEK_SET, &bytes_read);
-					cellFsRead(fd, (void *)&chunk, chunk_size, &bytes_read); if(!bytes_read) break;
+					cellFsReadWithOffset(fd, lba, (void *)&chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 
 					fix_ver = fix_param_sfo((unsigned char *)chunk, title_id, FIX_SFO, (u16)bytes_read);
 
@@ -348,8 +343,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 
 					if(fix_ver)
 					{
-						cellFsLseek(fd, lba, CELL_FS_SEEK_SET, &bytes_read);
-						cellFsWrite(fd, chunk, chunk_size, &bytes_read);
+						cellFsWriteWithOffset(fd, lba, chunk, chunk_size, &bytes_read);
 					}
 					else goto exit_fix; //do not fix if sfo version is ok
 
@@ -365,8 +359,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 
 			for(u8 t = (fix_eboot ? 0 : 1); t < 5; t++)
 			{
-				cellFsLseek(fd, pos, CELL_FS_SEEK_SET, &bytes_read);
-				cellFsRead(fd, chunk, chunk_size, &bytes_read); if(!bytes_read) break;
+				cellFsReadWithOffset(fd, pos, chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 
 				lba = start = 0;
 
@@ -390,8 +383,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 
 						lba *= 0x800ULL;
 
-						cellFsLseek(fd, lba, CELL_FS_SEEK_SET, &bytes_read);
-						cellFsRead(fd, (void *)&chunk, chunk_size, &bytes_read); if(!bytes_read) break;
+						cellFsReadWithOffset(fd, lba, (void *)&chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 
 						memcpy(&offset, chunk + 0xC, 4); offset -= 0x78;
 
@@ -406,8 +398,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 						if(ps3_sys_version > CFW_420 && ps3_sys_version < MAX_CFW)
 						{
 							ps3_sys_version = CFW_420;
-							cellFsLseek(fd, lba + offset, CELL_FS_SEEK_SET, &bytes_read);
-							cellFsWrite(fd, (void *)(&ps3_sys_version), 8, NULL);
+							cellFsWriteWithOffset(fd, lba + offset, (void *)(&ps3_sys_version), 8, NULL);
 						}
 						else goto exit_fix;
 

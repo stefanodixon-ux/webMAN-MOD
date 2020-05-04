@@ -3648,16 +3648,20 @@ FRESULT f_mount (
 	BYTE opt			/* Mode option 0:Do not mount (delayed mount), 1:Mount immediately */
 )
 {
+	if(!path) return FR_INVALID_DRIVE;
+
 	FATFS *cfs;
 	int vol;
 	FRESULT res;
 	const TCHAR *rp = path;
 
-
 	/* Get logical drive number */
 	vol = get_ldnumber(&rp);
 	if (vol < 0) return FR_INVALID_DRIVE;
 	cfs = FatFs[vol];					/* Pointer to fs object */
+
+	if(!fs && !cfs) return FR_OK; // device is already unmounted
+	if( fs &&  cfs) return FR_OK; // device is already mounted
 
 	if (cfs) {
 #if FF_FS_LOCK != 0

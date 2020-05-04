@@ -967,10 +967,11 @@ next_html_entry:
 #ifndef LITE_EDITION
 		if(sortable) _concat(&sout, "</div>");
 #endif
-
 		if(auto_mount && idx == 1)
 		{
-			char *p = strstr(line_entry[0].path + HTML_KEY_LEN, "?random="); *p = NULL;
+			char  *p = strstr(line_entry[0].path + HTML_KEY_LEN, "?random=");
+			if(!p) p = strstr(line_entry[0].path + HTML_KEY_LEN, "\">");
+			if(p) *p = NULL;
 			sprintf(buffer, "/mount.ps3%s", line_entry[0].path + HTML_KEY_LEN);
 		}
 		else if(mobile_mode)

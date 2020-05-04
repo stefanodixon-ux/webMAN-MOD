@@ -291,20 +291,17 @@ static u32 get_xreg_value(const char *key, u32 default_value)
 		off_string += 0x12;
 
 		//string length
-		cellFsLseek(reg, off_string, 0, &pos);
-		cellFsRead(reg, &len_string, 2, &read);
+		cellFsReadWithOffset(reg, off_string, &len_string, 2, &read);
 		off_string += 3;
 
 		//string
 		memset(string, 0, sizeof(string));
-		cellFsLseek(reg, off_string, 0, &pos);
-		cellFsRead(reg, string, len_string, &read);
+		cellFsReadWithOffset(reg, off_string, string, len_string, &read);
 
 		//Find language
 		if(IS(string, key))
 		{
-			cellFsLseek(reg, off_val_data, 0, &pos);
-			cellFsRead(reg, &reg_value, 4, &read);
+			cellFsReadWithOffset(reg, off_val_data, &reg_value, 4, &read);
 			break;
 		}
 
