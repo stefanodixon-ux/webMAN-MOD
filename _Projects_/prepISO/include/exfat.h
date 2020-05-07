@@ -233,8 +233,12 @@ static int dir_read (char *dpath)
 static void scan_exfat(void)
 {
 	fflib_init();
-	for(u8 port = 0; port < 8; port++)
+	for(u8 port = 0; port <= 8; port++)
 	{
+		if(port == 8) port = 71;
+		sprintf(path, "/dev_usb%03u/", port);
+		if(file_exists(path)) continue; // skip scanning of this USB port if it is readable by PS3 file system
+
 		device_id = USB_MASS_STORAGE(port);
 		int ret = fflib_attach (port, device_id, 1);
 		if (ret == FR_OK)

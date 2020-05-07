@@ -3271,10 +3271,10 @@ exit_handleclient_www:
 
 	if(sysmem) {sys_memory_free(sysmem); sysmem = NULL;}
 
-	if(mc || (keep_alive && loading_html && (++max_cc < MAX_WWW_CC))) goto parse_request;
-
 	if(ap_param)
-		auto_play(param, --ap_param); // ap_param: 1=from /mount.ps3, 2=from /play.ps3
+		{auto_play(param, --ap_param); ap_param = 0;} // ap_param: 1=from /mount.ps3, 2=from /play.ps3
+
+	if(mc || (keep_alive && loading_html && (++max_cc < MAX_WWW_CC))) goto parse_request;
 
 	#ifdef USE_DEBUG
 	ssend(debug_s, "Request served.\r\n");

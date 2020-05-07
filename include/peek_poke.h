@@ -242,7 +242,7 @@ static u16 string_to_lv2(char* path, u64 addr)
 }
 #endif
 
-#if defined(PS3MAPI) || defined(DEBUG_MEM) || defined(SPOOF_CONSOLEID)
+#if defined(DEBUG_MEM) || defined(SPOOF_CONSOLEID)
 
 static u64 convertH(char *val)
 {
@@ -265,8 +265,8 @@ static u64 convertH(char *val)
 }
 
 #endif
-#ifdef PS3MAPI
 
+#ifndef LITE_EDITION
 static u16 Hex2Bin(const char* src, char* out)
 {
 	char *target = out;
@@ -279,5 +279,4 @@ static u16 Hex2Bin(const char* src, char* out)
 	}
 	return (target - out);
 }
-
 #endif

@@ -23,7 +23,7 @@ $ meson buildrelease --buildtype=release
 Then build using ninja:
 
 ```bash
-$ ninja -C builddir
+$ ninja -C buildrelease
 ```
 
 For further information see [Running Meson](https://mesonbuild.com/Running-Meson.html).

@@ -5,6 +5,8 @@ then
 	mv polarssl-1.3.2/bin/libpolarssl-linux.a polarssl-1.3.2/library/libpolarssl.a
 fi
 
+make -C polarssl-1.3.2/library
+
 if [ -f Makefile.linux ] 
 then
 	mv Makefile Makefile.win

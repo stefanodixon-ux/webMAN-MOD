@@ -458,6 +458,8 @@ static void wwwd_thread(u64 arg)
 		set_fan_speed(webman_config->man_speed);
 	}
 
+	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
+
 #ifdef WM_REQUEST
 	cellFsUnlink(WMREQUEST_FILE);
 #endif
@@ -482,8 +484,6 @@ static void wwwd_thread(u64 arg)
 
 	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, handleclient_www, (u64)START_DAEMON, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
-
-	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 
 #ifdef PS3NET_SERVER
 	if(!webman_config->netsrvd && (webman_config->ftp_port != NETPORT))

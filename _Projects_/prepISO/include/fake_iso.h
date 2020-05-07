@@ -93,32 +93,60 @@ void UTF8_to_UTF16(u8 *stb, u16 *stw)
 	*stw++ = 0;
 }
 
+
+static void *create_directory_record(struct iso_directory_record *idr, char *name, u16 name_len, u64 size, u8 flags, u32 last_lba)
+{
+	memcpy(idr->name, name, name_len);
+
+	idr->name_len[0] = name_len;
+	idr->length[0] = (name_len + sizeof(struct iso_directory_record) + 1) & ~1;
+	idr->ext_attr_length[0] = 0;
+
+	set733(idr->extent, last_lba);
+	set733(idr->size, size);
+
+	idr->date[0] = 0x71; idr->date[1] = 0x0B;
+	idr->date[2] = 0x0A; idr->date[3] = 0x0D;
+	idr->date[4] = 0x38; idr->date[5] = 0x00;
+	idr->date[6] = 0x04;
+
+	idr->flags[0] = flags;
+	idr->file_unit_size[0] = 0;
+	idr->interleave[0] = 0;
+
+	set723(idr->volume_sequence_number, 1);
+
+	return (struct iso_directory_record *) (((char *) idr) + idr->length[0]);
+}
+
 u8 *create_fake_file_iso_mem(char *filename, u64 size)
 {
-	int len_string;
+	u16 len_string;
 
-	u8 *mem = malloc(sizeof(build_iso_data));
+	u8 *mem = malloc(build_iso_size);
 	if(!mem) return NULL;
 	u16 *string = (u16 *) malloc(256);
 	if(!string) {free(mem); return NULL;}
 
 	char name[65];
-	strncpy(name, filename, 64);
+	len_string = snprintf(name, 64, "%s", filename);
 	name[64] = 0;
 
-	if(strlen(filename) > 64)
+	if(len_string > 64)
 	{
+		char *ext = get_extension(filename);
 		// break the string
-		int pos = 63 - strlen(get_extension(filename));
+		int pos = 63 - strlen(ext);
 		while(pos > 0 && (name[pos] & 192) == 128) pos--; // skip UTF extra codes
-		strcpy(&name[pos], get_extension(filename));
+		strcpy(&name[pos], ext);
 	}
 
 	UTF8_to_UTF16((u8 *) name, string);
 
-	for(len_string = 0; len_string < 512; len_string++) if(string[len_string] == 0) break;
+	for(len_string = 0; len_string < 0x200; len_string++) if(string[len_string] == 0) break; // get string length
 
-	memcpy(mem, build_iso_data, sizeof(build_iso_data));
+	memset(mem, 0, build_iso_size);
+	memcpy(mem + 0x8000, build_iso_data, sizeof(build_iso_data));
 
 	struct iso_primary_descriptor *ipd = (struct iso_primary_descriptor *) &mem[0x8000];
 	struct iso_primary_descriptor *ipd2 = (struct iso_primary_descriptor *) &mem[0x8800];
@@ -134,50 +162,14 @@ u8 *create_fake_file_iso_mem(char *filename, u64 size)
 		u8 flags = 0;
 
 		if(size > 0xFFFFF800ULL) {flags = 0x80; size0 = 0xFFFFF800ULL;} else size0 = size;
-		idr->name_len[0] = strlen(name);
-		memcpy(idr->name, name, idr->name_len[0]);
-		idr->length[0] = (idr->name_len[0] + sizeof(struct iso_directory_record) + 1) & ~1;
-		idr->ext_attr_length[0] = 0;
 
-		set733(idr->extent, last_lba);
-		set733(idr->size, size0);
+		idr = create_directory_record(idr, name, strlen(name), size0, flags, last_lba);
 
-		idr->date[0] = 0x71; idr->date[1] = 0x0B;
-		idr->date[2] = 0x0A; idr->date[3] = 0x0D;
-		idr->date[4] = 0x38; idr->date[5] = 0x00;
-		idr->date[6] = 0x04;
-		idr->flags[0] = flags;
-		idr->file_unit_size[0] = 0;
-		idr->interleave[0] = 0;
-
-		set723(idr->volume_sequence_number, 1);
-
-		idr = (struct iso_directory_record *) (((char *) idr) + idr->length[0]);
-
-		/////////////////////
-
-		idr2->name_len[0] = len_string * 2;
-
-		memcpy(idr2->name, string, idr2->name_len[0]);
-
-		idr2->length[0] = (idr2->name_len[0] + sizeof(struct iso_directory_record) + 1) & ~1;
-		idr2->ext_attr_length[0] = 0;
-		set733(idr2->extent, last_lba);
-		set733(idr2->size, size0);
-		idr2->date[0] = 0x71; idr2->date[1] = 0x0B;
-		idr2->date[2] = 0x0A; idr2->date[3] = 0x0D;
-		idr2->date[4] = 0x38; idr2->date[5] = 0x00;
-		idr2->date[6] = 0x04;
-		idr2->flags[0] = flags;
-		idr2->file_unit_size[0] = 0;
-		idr2->interleave[0] = 0;
-		set723(idr2->volume_sequence_number, 1);
-
-		idr2 = (struct iso_directory_record *) (((char *) idr2) + idr2->length[0]);
+		idr2 = create_directory_record(idr2, (char*)string, len_string * 2, size0, flags, last_lba);
 
 		/////////////////////
 		last_lba += (size0 + 0x7ffULL)/ 0x800ULL;
-		size-= size0;
+		size -= size0;
 	}
 
 	last_lba += (size + SECTOR_FILL) / SECTOR_SIZE;
@@ -199,7 +191,7 @@ int create_fake_file_iso(char *path, char *filename, u64 size)
 
 	if(fp2)
 	{
-		fwrite((void *) mem, 1, sizeof(build_iso_data), fp2);
+		fwrite((void *) mem, 1, build_iso_size, fp2);
 		fclose(fp2);
 	}
 	else ret = FAILED;
@@ -220,7 +212,7 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 
 	int iso_path_len = strlen(iso_path) - 4; if(iso_path_len < 0) return FAILED;
 
-	uint8_t *plugin_args = malloc(0x20000);
+	uint8_t *plugin_args = malloc(PLUGIN_ARGS_SIZE);
 
 	if(plugin_args)
 	{
@@ -235,83 +227,57 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 
 		int r = FAILED;
 
-		uint32_t *sections      = malloc(MAX_SECTIONS * sizeof(uint32_t));
-		uint32_t *sections_size = malloc(MAX_SECTIONS * sizeof(uint32_t));
+		memset(plugin_args, 0, PLUGIN_ARGS_SIZE);
 
-		if(plugin_args && sections && sections_size)
+		uint32_t *sections      = (uint32_t *)(plugin_args + sizeof(rawseciso_args));
+		uint32_t *sections_size = (uint32_t *)(plugin_args + sizeof(rawseciso_args) + (MAX_SECTIONS * sizeof(uint32_t)));
+
+		// create file section
+		strncpy((char *) sections, iso_path, 0x1ff);
+		((char *) sections)[0x1ff] = 0;
+
+		size = get_filesize(iso_path);
+		if (size == 0) goto skip_load_ntfs;
+		sections_size[0] = size / 2048ULL;
+		sections[0x200/4] = 0;
+		int parts = 1;
+
+		if(parts < MAX_SECTIONS)
+		{
+			if(is_exfat)
+				parts += fflib_file_to_sectors  (src_path, sections + parts + 0x200/4, sections_size + parts, MAX_SECTIONS - parts - 0x200/4, 1);
+			else
+				parts += ps3ntfs_file_to_sectors(src_path, sections + parts + 0x200/4, sections_size + parts, MAX_SECTIONS - parts - 0x200/4, 1);
+		}
+
+		if (parts > 0 && parts < (MAX_SECTIONS - 0x200/4))
 		{
 			rawseciso_args *p_args;
+			p_args = (rawseciso_args *)plugin_args;
+			p_args->device = device_id;
+			p_args->emu_mode = type | 0x800;
+			p_args->num_sections = parts;
+			p_args->num_tracks = 0;
 
-			memset(sections, 0, MAX_SECTIONS * sizeof(uint32_t));
-			memset(sections_size, 0, MAX_SECTIONS * sizeof(uint32_t));
+			//memcpy(plugin_args + sizeof(rawseciso_args), sections, parts * sizeof(uint32_t) + 0x200);
+			memcpy(plugin_args + sizeof(rawseciso_args) + ((parts * sizeof(uint32_t)) + 0x200), sections_size, parts * sizeof(uint32_t));
 
-			memset(plugin_args, 0, 0x10000);
+			// save sectors file
+			iso_path[iso_path_len] = 0; strcat(iso_path, file_ext);
 
-			// create file section
-			strncpy((char *) sections, iso_path, 0x1ff);
-			((char *) sections)[0x1ff] = 0;
-
-			size = get_filesize(iso_path);
-			if (size == 0) goto skip_load_ntfs;
-			sections_size[0] = size / 2048ULL;
-			sections[0x200/4] = 0;
-			int parts = 1;
-
-			if(parts < MAX_SECTIONS)
+			int fd = ps3ntfs_open(iso_path, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+			if(fd >= 0)
 			{
-				if(is_exfat)
-					parts += fflib_file_to_sectors  (src_path, sections + parts + 0x200/4, sections_size + parts, MAX_SECTIONS - parts - 0x200/4, 1);
-				else
-					parts += ps3ntfs_file_to_sectors(src_path, sections + parts + 0x200/4, sections_size + parts, MAX_SECTIONS - parts - 0x200/4, 1);
+				size = sizeof(rawseciso_args) + ((2 * parts * sizeof(uint32_t)) + 0x200);
+				if(ps3ntfs_write(fd, (void *) plugin_args, size) == size) r = SUCCESS;
+				ps3ntfs_close(fd);
 			}
-
-			if (parts > 0 && parts < (MAX_SECTIONS - 0x200/4))
-			{
-				p_args = (rawseciso_args *)plugin_args;
-				p_args->device = device_id;
-				p_args->emu_mode = type | 0x800;
-				p_args->num_sections = parts;
-				p_args->num_tracks = 0;
-
-				memcpy(plugin_args + sizeof(rawseciso_args), sections, parts * sizeof(uint32_t) + 0x200);
-				memcpy(plugin_args + sizeof(rawseciso_args) + (parts*sizeof(uint32_t) + 0x200), sections_size, parts * sizeof(uint32_t));
-
-				// save sectors file
-				iso_path[iso_path_len] = 0; strcat(iso_path, file_ext);
-
-				int fd = ps3ntfs_open(iso_path, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-				if(fd >= 0)
-				{
-					if(ps3ntfs_write(fd, (void *) plugin_args, 0x10000) == 0x10000) r = SUCCESS;
-					ps3ntfs_close(fd);
-				}
-			}
-
-		skip_load_ntfs:
-			if(sections) free(sections);
-			if(sections_size) free(sections_size);
 		}
 
-
+	skip_load_ntfs:
 		if(plugin_args) free(plugin_args); plugin_args = NULL;
 
-		if(r == SUCCESS)
-		{
-			char name[65];
-			strncpy(name, filename, 64);
-			name[64] = 0;
-
-			if(strlen(src_path) > 64)
-			{
-				// break the string
-				int pos = 63 - strlen(get_extension(filename));
-				while(pos > 0 && (name[pos] & 192) == 128) pos--; // skip UTF extra codes
-				strcpy(&name[pos], get_extension(filename));
-			}
-		}
-
 		if(r == 0) return SUCCESS;
-
 	}
 
 	return FAILED;
@@ -322,6 +288,8 @@ void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, uint64_
 	//if(m >= 4)
 	{
 		if((m == VIDEO || m == MOVIES) && !strcasestr(".mp4|.mkv|.avi|.wmv|.flv|.mpg|mpeg|.mov|m2ts|.vob|.asf|divx|xvid|.pam|.bik|bink|.vp6|.mth|.3gp|rmvb|.ogm|.ogv|.m2t|.mts|.tsv|.tsa|.tts|.vp3|.vp5|.vp8|.264|.m1v|.m2v|.m4b|.m4p|.m4r|.m4v|mp4v|.mpe|bdmv|.dvb|webm|.nsv", ext)) return;
+		if((m == MUSIC) && !strcasestr(".mp3|.mp2|.wma|.wav|.aac|.ac3|.ogg", ext)) return;
+		if((m == THEMES) && !strcasestr(".p3t", ext)) return;
 		if((m == PKGFILE) && !strcasestr(".pkg|.pup|.zip", ext)) return;
 		if((m == BDFILE)  && (iso_name[0] == '.' || strstr(iso_name, ".") == NULL)) return;
 		if((m == PS2ISO) && !strcasestr(".iso|.enc", ext)) return;
@@ -336,6 +304,14 @@ void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, uint64_
 						sprintf(file_ext, ".ntfs[BDFILE]");
 
 		build_fake_iso(path, src_path, device_id, file_ext, file_size);
+
+		sprintf(path, "/dev_hdd0/tmp/wmtmp/[%s] %s.png", c_path[m], iso_name);
+		if(file_exists(path)) return;
+
+		if(m == PKGFILE) copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/pkg.png", path);
+		if(m == VIDEO || m == MOVIES) copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/video.png", path);
+		if(m == MUSIC) copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/music.png", path);
+		if(m == THEMES) copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/theme.png", path);
 		return;
 	}
 }
