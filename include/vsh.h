@@ -285,6 +285,13 @@ static bool is_app_home_onxmb(void)
 	return has_app_home;
 }
 
+static bool launch_app_home_icon(void)
+{
+	char category[8], seg_name[16]; *category = *seg_name = NULL;
+	if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(category, seg_name, true); return true;}
+	return false;
+}
+
 #ifdef COBRA_ONLY
 static void reload_xmb(void)
 {

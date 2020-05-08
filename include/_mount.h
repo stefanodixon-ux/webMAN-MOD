@@ -305,6 +305,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -------------------
 		if(mount_ps3)
 		{
+			if(mounted && islike(source, "/net") && (strstr(source, "/ROMS/") != NULL)) launch_app_home_icon();
+
 			is_busy = false;
 			return mounted;
 		}

@@ -149,8 +149,8 @@
 								else if(*webman_config->home_url == '/') handle_file_request(webman_config->home_url); // web command
 #endif
 							}
-							char category[8], seg_name[16]; *category = *seg_name = NULL;
-							if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(category, seg_name, true);}
+
+							launch_app_home_icon();
 							break;
 						}
 #endif

@@ -1140,3 +1140,56 @@ static void map_earth(u8 id, char *param)
 	}
 }
 #endif
+
+#ifdef MOUNT_ROMS
+static void copy_rom_media(char *_path)
+{
+	// get rom name & file extension
+	char *name = strrchr(_path, '/');
+	if(!name) return;
+
+	char media_file[64];
+
+	char *ext  = strrchr(++name, '.');
+	if(ext)
+	{
+		// copy rom icon to ICON0.PNG
+		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON0.PNG");
+		{strcpy(ext, ".png"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);} else
+		{strcpy(ext, ".PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);} else
+		{
+			char templn[MAX_LINE_LEN];
+			sprintf(templn, "%s/%s", WMTMP, name);
+			char *ext2 = strrchr(templn, '.');
+			{strcpy(ext2, ".png"); if(file_exists(templn)) {file_copy(templn, media_file, COPY_WHOLE_FILE);} else
+			{strcpy(ext2, ".PNG"); if(file_exists(templn)) {file_copy(templn, media_file, COPY_WHOLE_FILE);} else
+														   {file_copy((char*)PKGLAUNCH_ICON, media_file, COPY_WHOLE_FILE);}}}
+		}}}
+
+		// copy rom icon to PIC0.PNG
+		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PIC0.PNG");
+		{strcpy(ext + 1, "PIC0.PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
+										else				 {cellFsUnlink(media_file);}}
+
+		// copy rom icon to PIC1.PNG
+		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PIC1.PNG");
+		{strcpy(ext + 1, "PIC1.PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
+										else				 {cellFsUnlink(media_file);}}
+
+		// copy rom icon to SND0.AT3
+		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "SND0.AT3");
+		{strcpy(ext + 1, "SND0.AT3"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
+										else				 {cellFsUnlink(media_file);}}
+
+		// copy rom icon to ICON1.PAM
+		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON1.PAM");
+		{strcpy(ext + 1, "ICON1.PAM"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
+										else				 {cellFsUnlink(media_file);}}
+		*ext = NULL;
+	}
+
+	// patch title name in PARAM.SFO of PKGLAUNCH
+	sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
+	write_file(media_file, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, name, 0x378, 0x80, false);
+}
+#endif // #ifdef MOUNT_ROMS

@@ -313,6 +313,7 @@
 
 					sprintf(templn, "/dev_bdvd/%s", netpath + 6);
 					save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", templn, 0);
+					copy_rom_media(templn);
 				}
 				else
 				{

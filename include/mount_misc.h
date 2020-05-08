@@ -38,8 +38,7 @@
 
 		set_apphome(_path);
 
-		char col[8], seg[16]; *col = NULL, *seg = NULL;
-		if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(col, seg, true); ret = true;}
+		if(launch_app_home_icon()) ret =true;
 
 		mount_unk = EMU_MAX;
 		goto exit_mount;
@@ -71,42 +70,7 @@
 
 			// store rom path for PKGLAUNCH
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, 0);
-
-			// get rom name & file extension
-			char *name = strrchr(_path, '/') + 1;
-			char *ext  = strrchr(name, '.');
-
-			// copy rom icon to ICON0.PNG
-			char media_file[64];
-			sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON0.PNG");
-			{strcpy(ext, ".png"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);} else
-			{strcpy(ext, ".PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);} else
-														 {file_copy((char*)PKGLAUNCH_ICON, media_file, COPY_WHOLE_FILE);}}}
-
-			// copy rom icon to PIC0.PNG
-			sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PIC0.PNG");
-			{strcpy(ext + 1, "PIC0.PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-											else				 {cellFsUnlink(media_file);}}
-
-			// copy rom icon to PIC1.PNG
-			sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PIC1.PNG");
-			{strcpy(ext + 1, "PIC1.PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-											else				 {cellFsUnlink(media_file);}}
-
-			// copy rom icon to SND0.AT3
-			sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "SND0.AT3");
-			{strcpy(ext + 1, "SND0.AT3"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-											else				 {cellFsUnlink(media_file);}}
-
-			// copy rom icon to ICON1.PAM
-			sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON1.PAM");
-			{strcpy(ext + 1, "ICON1.PAM"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-											else				 {cellFsUnlink(media_file);}}
-
-			// patch title name in PARAM.SFO of PKGLAUNCH
-			if(ext) *ext = NULL;
-			sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
-			write_file(media_file, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, name, 0x378, 0x80, false);
+			copy_rom_media(_path);
 
 			mount_unk = EMU_ROMS;
 			goto mounting_done; //goto exit_mount;
