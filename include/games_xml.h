@@ -222,6 +222,17 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX);
 	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
 	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
+#ifdef MOUNT_ROMS
+	sys_addr_t sysmem_igf = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2) + (BUFFER_SIZE_DVD);
+
+	char *ignore_files = NULL;
+	if(file_exists(WMIGNORE_FILES))
+	{
+		ignore_files = (char*)sysmem_igf;
+		read_file(WMIGNORE_FILES, ignore_files, _2KB_, 0);
+		ignore_files[_2KB_] = NULL;
+	}
+#endif
 
 #if defined(LAUNCHPAD) || defined(MOUNT_ROMS)
 	char *sysmem_buf = (char*)sysmem;
@@ -237,7 +248,12 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	#if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
 	bool c_roms = webman_config->roms;
-	if(c_roms) c_roms = isDir(PKGLAUNCH_DIR) && isDir(RETROARCH_DIR);
+	char *RETROARCH_DIR = NULL;
+	if(c_roms)
+	{
+		RETROARCH_DIR = file_exists(RETROARCH_DIR1) ? (char*)RETROARCH_DIR1 : (char*)RETROARCH_DIR2;
+		c_roms = isDir(PKGLAUNCH_DIR) && isDir(RETROARCH_DIR);
+	}
 	#endif
 
 	u16 key;
@@ -257,8 +273,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	check_cover_folders(templn);
 
 	#ifdef MOUNT_ROMS
-	#define ROM_PATHS	60
-	const char roms_path[ROM_PATHS][12] = { "2048", "MAME", "MAME078", "MAME2000", "MAME2003", "FBA", "FBA2012", "ATARI", "ATARI2600", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBOY", "VBA", "MGBA", "POKEMINI", "GENESIS", "GEN", "MEGAD", "GG", "GEARBOY", "ZX81", "FUSE", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM" };
+	#define ROM_PATHS	70
+	const char roms_path[ROM_PATHS][12] = { "2048", "CAP32", "MAME", "MAME078", "MAME2000", "MAME2003", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "BOMBER", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "QUAKE2", "JAVAME", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "NEOCD", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "GPSP", "VBOY", "VBA", "MGBA", "PALM", "POKEMINI", "GENESIS", "GEN", "MEGAD", "PICO", "GG", "GEARBOY", "ZX81", "FUSE", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "UZEM", "VECX", "WSWAM" };
 	u16 roms_count[ROM_PATHS];
 	u8 roms_index = 0;
 	#endif
@@ -517,7 +533,11 @@ scan_roms:
 #ifdef NET_SUPPORT
 					if(is_net)
 					{
-						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1]==NULL)) ls=true; // single letter folder was found
+						#ifdef MOUNT_ROMS
+						if(scanning_roms && ignore_files && (strstr(ignore_files, data[v3_entry].name) != NULL)) continue;
+						#endif
+
+						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, f1, 0) == FAILED) {v3_entry++; continue;}
 #ifdef SLAUNCH_FILE
@@ -556,6 +576,10 @@ scan_roms:
 #endif // #ifdef NET_SUPPORT
 					{
 						if(entry.entry_name.d_name[0] == '.') continue;
+
+						#ifdef MOUNT_ROMS
+						if(scanning_roms && ignore_files && (strstr(ignore_files, entry.entry_name.d_name) != NULL)) continue;
+						#endif
 
 //////////////////////////////
 						subfolder = 0;

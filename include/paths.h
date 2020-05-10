@@ -40,6 +40,8 @@
 #define WMONLINE_GAMES		WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
 #define WMOFFLINE_GAMES		WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
 
+#define WMIGNORE_FILES		WM_RES_PATH "/wm_ignore.txt"	// webMAN config file to ignore files during content scanning
+
 #define SLAUNCH_FILE		WMTMP "/slist.bin"
 #define DEL_CACHED_ISO		WMTMP "/deliso.txt"
 
@@ -52,7 +54,8 @@
 #define PKGLAUNCH_DIR		_HDD0_GAME_DIR PKGLAUNCH_ID
 #define PKGLAUNCH_ICON		PKGLAUNCH_DIR "/ICON0.PNG"
 
-#define RETROARCH_DIR		_HDD0_GAME_DIR "SSNE10000"
+#define RETROARCH_DIR1		_HDD0_GAME_DIR "SSNE10000"
+#define RETROARCH_DIR2		_HDD0_GAME_DIR "SSNE10001"
 
 #define RELOADXMB_DIR		_HDD0_GAME_DIR "RELOADXMB"
 #define RELOADXMB_EBOOT		RELOADXMB_DIR "/USRDIR/EBOOT.BIN"

@@ -1,8 +1,5 @@
 #define MAX_WWW_CC		(255)
 
-#define HTML_RECV_SIZE	2048
-#define HTML_RECV_LAST	2047
-
 #define CODE_HTTP_OK            200
 #define CODE_BAD_REQUEST        400
 #define CODE_PATH_NOT_FOUND     404
@@ -986,10 +983,17 @@ parse_request:
 				// /install.ps3<p3t-path>  install ps3 theme
 				// /install.ps3<directory> install pkgs in directory (GUI)
 				// /install.ps3$           install webman addons (GUI)
+				// /install.ps3$all        install pkg files in /dev_hdd0/packages
 
 				char *pkg_file = param + 12;
-				if(!*pkg_file) strcpy(pkg_file, "/dev_hdd0/packages"); else
-				if( *pkg_file == '$' ) strcpy(pkg_file, WM_RES_PATH);
+
+				if(!*pkg_file || islike(pkg_file, "$all"))
+				{
+					strcpy(pkg_file, DEFAULT_PKG_PATH);
+					if(!*pkg_file) ; else installPKG_all();
+				}
+				else if( *pkg_file == '$' ) strcpy(pkg_file, WM_RES_PATH);
+
 				if(isDir(pkg_file))
 				{
 					is_binary = WEB_COMMAND;
@@ -2176,7 +2180,8 @@ retry_response:
 							if(*html_base_path == '/') {sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
 							if(file_exists(param) == false) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
 							if(file_exists(param) == false) {sprintf(param, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
-							if(file_exists(param) == false) {sprintf(param, "%s%s", HDD0_GAME_DIR, header);} // try /dev_hdd0/game
+							if(file_exists(param) == false) {sprintf(param, "%s%s",  HDD0_GAME_DIR, header);} // try /dev_hdd0/game
+							if(file_exists(param) == false) {sprintf(param, "%s%s", _HDD0_GAME_DIR, header);} // try /dev_hdd0//game
 							if(file_exists(param) == false) {sprintf(param, "%s/%s", "/dev_hdd0", header);} // try hdd0
 						}
 					}

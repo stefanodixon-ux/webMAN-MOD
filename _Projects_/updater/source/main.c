@@ -590,6 +590,7 @@ int main()
 	sysLv2FsUnlink(RES_DIR "/reloadxmb.pkg");
 	sysLv2FsUnlink(TMP_DIR "/wm_online_ids.txt");
 	file_copy(APP_USRDIR "/res/wm_online_ids.txt", RES_DIR "/wm_online_ids.txt");
+	file_copy(APP_USRDIR "/res/wm_ignore.txt",     RES_DIR "/wm_ignore.txt");
 
 	// webMAN ADD-ONS
 	file_copy(APP_USRDIR "/addons/boot_mamba.pkg", RES_DIR "/boot_mamba.pkg");

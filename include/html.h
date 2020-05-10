@@ -1,3 +1,6 @@
+#define HTML_RECV_SIZE	2048
+#define HTML_RECV_LAST	2047
+
 #define ITEM_CHECKED			" checked=\"checked\""
 #define ITEM_SELECTED			" selected=\"selected\""
 
@@ -179,6 +182,8 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 
 	for(i = 0; src[i]; i++, j++)
 	{
+		if(j >= HTML_RECV_LAST) {j = HTML_RECV_LAST; break;}
+
 		if((unsigned char)src[i] & 0x80)
 		{
 			dst[j++] = '%';
@@ -562,7 +567,7 @@ static u16 get_param(const char *name, char *value, const char *url, u16 max_siz
 	if(name_len)
 	{
 		char *pos = strstr(url, name);
-		if(pos) 
+		if(pos)
 		{
 			if(name[name_len - 1] != '=') name_len++;
 			return get_value(value, pos + name_len, max_size);

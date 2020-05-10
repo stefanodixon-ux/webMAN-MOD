@@ -30,15 +30,32 @@
 	{
 		ret = isDir(_path);
 
-		if(!ret && islike(_path0, HDD0_GAME_DIR))
+		if(!ret)
 		{
-			sprintf(_path, "%s%s", _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
+ #ifdef PKG_LAUNCHER
+			if(strcasestr(_path, ".self"))
+			{
+				ret = file_exists(_path);
+				cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", 0);
+				save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, 0);
+				if(ret) launch_app_home_icon();
+				goto mounting_done; //goto exit_mount;
+			}
+ #endif
+			if(islike(_path0, HDD0_GAME_DIR))
+			{
+				sprintf(_path, "%s%s", HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0/game/
+			}
+			if(file_exists(_path) == false)
+			{
+				sprintf(_path, "%s%s", _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
+			}
 			ret = isDir(_path);
 		}
 
 		set_apphome(_path);
 
-		if(launch_app_home_icon()) ret =true;
+		if(launch_app_home_icon()) ret = true;
 
 		mount_unk = EMU_MAX;
 		goto exit_mount;
@@ -63,7 +80,11 @@
 
 			// map PKGLAUNCH cores folder to RETROARCH
 			sys_map_path(PKGLAUNCH_DIR, NULL);
-			sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR "/USRDIR/cores");
+
+			if(file_exists(RETROARCH_DIR1))
+				sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
+			else
+				sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
 
 			// mount PKGLAUNCH as disc
 			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", 0);

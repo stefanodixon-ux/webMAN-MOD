@@ -42,6 +42,10 @@ static u32 BUFFER_SIZE_PS2;
 static u32 BUFFER_SIZE_DVD;
 static u32 BUFFER_SIZE_ALL;
 
+#ifdef MOUNT_ROMS
+static const u32 BUFFER_SIZE_IGN = _4KB_;
+#endif
+
 #define MAX_PAGES   ((BUFFER_SIZE_ALL / (_64KB_ * MAX_WWW_THREADS)) + 1)
 
 typedef struct {
@@ -161,16 +165,19 @@ static void set_buffer_sizes(u8 footprint)
 	}
 	else	// if(footprint == 0) STANDARD
 	{
-		BUFFER_SIZE_ALL = ( 896*KB);
 		//BUFFER_SIZE	= ( 448*KB);
 		BUFFER_SIZE_PSX = ( 160*KB);
 		BUFFER_SIZE_DVD = ( _192KB_);
 	}
 
-	if((webman_config->cmask & PS1)) BUFFER_SIZE_PSX = (_8KB_);
-	if((webman_config->cmask & PS2)) BUFFER_SIZE_PS2 = (_8KB_);
-	if((webman_config->cmask & PSP)) BUFFER_SIZE_PSP = (_8KB_);
-	if((webman_config->cmask & (BLU | DVD)) == (BLU | DVD)) BUFFER_SIZE_DVD = (_8KB_);
+	if((webman_config->cmask & PS1)) BUFFER_SIZE_PSX = (_4KB_);
+	if((webman_config->cmask & PS2)) BUFFER_SIZE_PS2 = (_4KB_);
+	if((webman_config->cmask & PSP)) BUFFER_SIZE_PSP = (_4KB_);
+	if((webman_config->cmask & (BLU | DVD)) == (BLU | DVD)) BUFFER_SIZE_DVD = (_4KB_);
 
+#ifdef MOUNT_ROMS
+	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD + BUFFER_SIZE_IGN);
+#else
 	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD);
+#endif
 }
