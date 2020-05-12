@@ -643,7 +643,7 @@
 								if(do_custom_combo("select_r2_circle")) break;
 								else
   #endif
-								installPKG_all();
+								installPKG_all((char*)DEFAULT_PKG_PATH, true);
 
 								n = 0;
 								break;

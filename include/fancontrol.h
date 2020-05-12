@@ -71,17 +71,18 @@ static void set_fan_speed(u8 new_fan_speed)
 	{
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
-		u8 min_fan_speed = PERCENT_TO_8BIT(webman_config->minfan);
+		u8 min_fan_speed = PERCENT_TO_8BIT(webman_config->minfan); if(min_fan_speed < 0x33) min_fan_speed = 0x33; // 20%
+		u8 max_fan_speed = PERCENT_TO_8BIT(webman_config->maxfan); if(max_fan_speed < 0x80) max_fan_speed = 0xCC; // 80%
 
 		if(new_fan_speed < 0x33)
 		{
 			u8 st, mode, unknown;
 			u8 fan_speed8 = 0;
 			sys_sm_get_fan_policy(0, &st, &mode, &fan_speed8, &unknown);
-			fan_speed = RANGE(fan_speed8, min_fan_speed , 0xFC);
+			fan_speed = RANGE(fan_speed8, min_fan_speed, max_fan_speed);
 		}
 		else
-			fan_speed = RANGE(new_fan_speed, min_fan_speed , 0xFC);
+			fan_speed = RANGE(new_fan_speed, min_fan_speed , max_fan_speed);
 
 		old_fan = fan_speed;
 		sys_sm_set_fan_policy(0, MANUAL_MODE, fan_speed);

@@ -70,6 +70,8 @@ static void show_msg(char* msg)
 
 static int get_game_info(void)
 {
+	if(IS_ON_XMB) return 0; // prevents game_plugin detection during PKG installation
+
 	int h = View_Find("game_plugin");
 
 	if(h)

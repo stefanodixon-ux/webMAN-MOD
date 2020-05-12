@@ -76,8 +76,9 @@ typedef struct
 	u8 nowarn;
 	u8 minfan;
 	u8 chart;
-
-	u8 padding4[8];
+	u8 maxfan;
+	
+	u8 padding4[7];
 
 	// combo settings
 

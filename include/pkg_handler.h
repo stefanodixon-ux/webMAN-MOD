@@ -61,7 +61,7 @@ typedef struct {
 	char title_id[9];
 } _pkg_header;
 
-static u64 get_pkg_size_and_install_time(char *pkgfile)
+static u64 get_pkg_size_and_install_time(const char *pkgfile)
 {
 	_pkg_header pkg_header;
 
@@ -369,19 +369,22 @@ static int installPKG(const char *pkgpath, char *msg)
 	return ret;
 }
 
+static char *INSTALL_PKG_PATH; // input parameter of installPKG_combo_thread
+
 static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 {
-	if(install_in_progress) return;
+	if(install_in_progress && installing_pkg && IS_INSTALLING) return;
 
 	install_in_progress = true;
 
 	int fd, ret = FAILED;
 
-	if(cellFsOpendir(DEFAULT_PKG_PATH, &fd) == CELL_FS_SUCCEEDED)
+	char pkgfile[MAX_PKGPATH_LEN];
+	u16 plen = sprintf(pkgfile, "%s/", INSTALL_PKG_PATH);
+
+	if(cellFsOpendir(pkgfile, &fd) == CELL_FS_SUCCEEDED)
 	{
 		CellFsDirent dir; u64 read_e;
-
-		pkg_delete_after_install = true;
 
 		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 		{
@@ -389,8 +392,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 			{
 				if(!webman_config->nobeep) { BEEP1 }
 
-				char pkgfile[MAX_PKGPATH_LEN];
-				sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, dir.d_name);
+				sprintf(pkgfile + plen, "%s", dir.d_name);
 
 				char msg[MAX_PATH_LEN];
 				ret = installPKG(pkgfile, msg); if(!(webman_config->minfo & 1)) show_msg(msg);
@@ -410,12 +412,18 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 	sys_ppu_thread_exit(0);
 }
 
-static void installPKG_all(void)
+static void installPKG_all(char *path, bool delete_after_install)
 {
+	pkg_delete_after_install = delete_after_install;
+
 	if(!install_in_progress && IS_ON_XMB)
 	{
-		sys_ppu_thread_t thread_id;
-		sys_ppu_thread_create(&thread_id, installPKG_combo_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_INSTALL_PKG, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_INSTALLPKG);
+		if(isDir(path))
+		{
+			INSTALL_PKG_PATH = path;
+			sys_ppu_thread_t thread_id;
+			sys_ppu_thread_create(&thread_id, installPKG_combo_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_INSTALL_PKG, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_INSTALLPKG);
+		}
 	}
 }
 
@@ -428,6 +436,8 @@ static void poll_downloaded_pkg_files(char *msg)
 		if(cellFsOpendir(TEMP_DOWNLOAD_PATH, &fd) == CELL_FS_SUCCEEDED)
 		{
 			char *dlfile = msg;
+
+			sprintf(dlfile, "%s%s", TEMP_DOWNLOAD_PATH, entry.d_name);
 
 			while(working && (cellFsReaddir(fd, &entry, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 			{

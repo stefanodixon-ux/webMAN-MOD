@@ -983,19 +983,33 @@ parse_request:
 				// /install.ps3<p3t-path>  install ps3 theme
 				// /install.ps3<directory> install pkgs in directory (GUI)
 				// /install.ps3$           install webman addons (GUI)
-				// /install.ps3$all        install pkg files in /dev_hdd0/packages
+				// /install.ps3$all        install all pkg files in /dev_hdd0/packages & delete pkg
+				// /install_ps3            install all pkg files in /dev_hdd0/packages
+				// /install_ps3$           install all webman addons
+				// /install_ps3<path>      install pkg files in <path>
 
 				char *pkg_file = param + 12;
 
-				if(!*pkg_file || islike(pkg_file, "$all"))
+				bool install_ps3 = (param[8] == '_');
+
+				pkg_delete_after_install = islike(pkg_file, "$all");
+
+				if(!*pkg_file || pkg_delete_after_install)
 				{
 					strcpy(pkg_file, DEFAULT_PKG_PATH);
-					if(!*pkg_file) ; else installPKG_all();
 				}
-				else if( *pkg_file == '$' ) strcpy(pkg_file, WM_RES_PATH);
+				else if( *pkg_file == '$' )
+				{
+					strcpy(pkg_file, WM_RES_PATH);
+				}
 
 				if(isDir(pkg_file))
 				{
+					if(install_ps3) // /install_ps3/<path> = install all files
+					{
+						installPKG_all(pkg_file, false); // keep files
+						sys_ppu_thread_sleep(1); // wait to copy "pkgfile" variable in installPKG_combo_thread
+					}
 					is_binary = WEB_COMMAND;
 					goto html_response;
 				}
@@ -1013,11 +1027,11 @@ parse_request:
 					}
 				}
 
-				pkg_delete_after_install = (param[8] == '.');
-
 				char msg[MAX_LINE_LEN]; memset(msg, 0, MAX_LINE_LEN);
 
 				setPluginActive();
+
+				pkg_delete_after_install = (install_ps3 == false);
 
 				int ret = installPKG(param + 12, msg);
 
@@ -1577,11 +1591,13 @@ parse_request:
 			{
 				// /write.ps3<path>&t=<text> use | for line break (create text file)
 				// /write_ps3<path>&t=<text> use | for line break (add text to file)
+				// /write_ps3<path>&t=<text>&line=<num> insert line(s) to text file in line position
 				// /write.ps3<path>&t=<hex>&pos=<offset>          (patch file)
 				// /write.ps3?f=<path>&t=<text> use | for line break (create text file)
-				// /write_ps3?f=<path>&t=<text> use | for line break (add to file)
+				// /write_ps3?f=<path>&t=<text> use | for line break (add text to file)
+				// /write_ps3?f=<path>&t=<text>&line=<num> insert line(s) to text file in line position
 				// /write.ps3?f=<path>&t=<hex>&pos=<offset>       (patch file)
-				u64 offset = 0; u16 size = 0;
+				u64 offset = 0; u32 size = 0;
 				char *filename = param + ((param[10] == '/') ? 10 : 13);
 				char *pos = strstr(filename, "&t=");
 				if(pos)
@@ -1607,7 +1623,38 @@ parse_request:
 					{
 						for(pos = data; *pos; ++pos) if(*pos == '|') *pos = '\n';
 
-						if(islike(param, "/write_ps3"))
+						pos = strstr(data, "&line=");
+						if(pos) {*pos = NULL, pos += 6;}
+
+						if(pos)
+						{
+							sys_addr_t sysmem = NULL;
+							if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+							{
+								strcat(data, "\n");
+								u16 len = strlen(data);
+								u16 line = val(pos);
+
+								char *buffer = (char*)sysmem;
+								size = read_file(filename, buffer, _64KB_, 0);
+
+								if(line <= 1)
+								{
+									save_file(filename, data, SAVE_ALL); // create
+									save_file(filename, buffer, -size);  // append
+								}
+								else if(size + len < _64KB_)
+								{
+									u16 i, c = 0; --line;
+									for(i = 0; i < size; i++) if(buffer[i] == '\n' && (++c >= line)) {i++; break;}
+									for(c = size; c >= i; c--) buffer[c + len] = buffer[c];
+									for(c = 0; c < len; c++) buffer[i + c] = data[c];
+									save_file(filename, buffer, SAVE_ALL);
+								}
+								sys_memory_free(sysmem);
+							}
+						}
+						else if(islike(param, "/write_ps3"))
 							save_file(filename, data, APPEND_TEXT);
 						else
 							save_file(filename, data, SAVE_ALL);
