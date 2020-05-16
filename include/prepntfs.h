@@ -276,7 +276,7 @@ static int prepNTFS(u8 clear)
 	prepntfs_working = true;
 
 
-	char prefix[2][8]={"/", "/PS3/"};
+	const char *prefix[2] = {"/", "/PS3/"};
 
 	cellFsMkdir(WMTMP, S_IRWXO | S_IRWXU | S_IRWXG | S_IFDIR);
 	cellFsChmod(WMTMP, S_IFDIR | 0777);

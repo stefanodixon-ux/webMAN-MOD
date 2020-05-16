@@ -90,10 +90,25 @@ static DIR_ITER *ps3ntfs_opendir(char *path)
 }
 #endif
 
-static int sysLv2FsLink(const char *oldpath, const char *newpath)
+static void filepath_check(char *file)
 {
-	system_call_2(SC_FS_LINK, (u64)(u32)oldpath, (u64)(u32)newpath);
-	return_to_user_prog(int);
+	if((file[5] == 'u' && islike(file, "/dev_usb"))
+#ifdef USE_NTFS
+	|| (file[5] == 'n' && is_ntfs_path(file))
+#endif
+	)
+	{
+
+		// remove invalid chars
+		for(u16 n = 11, c = 11; file[c]; c++)
+		{
+			if(file[c] == '\\') file[c] = '/';
+			if(!strchr("\"<|>:*?", file[c])) file[n++] = file[c];
+		}
+	}
+#ifdef USE_NTFS
+	if(is_ntfs_path(file)) {file[10] = ':'; if(mountCount == NTFS_UNMOUNTED) check_ntfs_volumes();}
+#endif
 }
 
 static u64 get_free_space(const char *dev_name)
@@ -167,7 +182,7 @@ static bool file_exists(const char* path)
 }
 */
 
-static bool file_exists(const char* path)
+static bool file_exists(const char *path)
 {
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))
@@ -297,26 +312,11 @@ static void addlog(const char *msg1, const char *msg2)
 	save_file("/dev_hdd0/wmm.log", msg, APPEND_TEXT);
 }
 */
-static void filepath_check(char *file)
+
+static int sysLv2FsLink(const char *oldpath, const char *newpath)
 {
-	if((file[5] == 'u' && islike(file, "/dev_usb"))
-#ifdef USE_NTFS
-	|| (file[5] == 'n' && is_ntfs_path(file))
-#endif
-	)
-	{
-		u16 n = 11, c = 11;
-		// remove invalid chars
-		while(true)
-		{
-			if(file[c] == '\\') file[c] = '/';
-			if(strchr("\"<|>:*?", file[c]) == NULL) file[n++] = file[c];
-			if(!file[c++]) break;
-		}
-	}
-#ifdef USE_NTFS
-	if(is_ntfs_path(file)) {file[10] = ':'; if(mountCount == NTFS_UNMOUNTED) check_ntfs_volumes();}
-#endif
+	system_call_2(SC_FS_LINK, (u64)(u32)oldpath, (u64)(u32)newpath);
+	return_to_user_prog(int);
 }
 
 /*
@@ -380,6 +380,8 @@ static int file_concat(const char *file1, char *file2)
 }
 */
 
+//////////////////////////////////////////////////////////////
+
 int file_copy(char *file1, char *file2, u64 maxbytes)
 {
 	struct CellFsStat buf, buf2;
@@ -417,7 +419,7 @@ int file_copy(char *file1, char *file2, u64 maxbytes)
 		{
 			int ns = connect_to_remote_server((file1[4] & 0x0F));
 			copy_net_file(file2, (char*)file1 + 5, ns, maxbytes);
-			if(ns>=0) sclose(&ns);
+			if(ns >= 0) sclose(&ns);
 
 			if(file_exists(file2)) return 0;
 		}
@@ -719,6 +721,8 @@ static int folder_copy(const char *path1, char *path2)
 }
 #endif
 
+//////////////////////////////////////////////////////////////
+
 #ifdef COPY_PS3
 static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, char *dest)
 {
@@ -965,108 +969,11 @@ static int del(const char *path, u8 recursive)
 }*/
 #endif
 
-static int wait_path(const char *path, u8 timeout, bool found)
-{
-	if(*path!='/') return FAILED;
-
-	for(u8 n = 0; n < (timeout * 20); n++)
-	{
-		if(file_exists(path) == found) return CELL_FS_SUCCEEDED;
-		if(!working) break;
-		sys_ppu_thread_usleep(50000);
-	}
-	return FAILED;
-}
-
-int wait_for(const char *path, u8 timeout)
-{
-	return wait_path(path, timeout, true);
-}
-
-/*
-static u64 syscall_837(const char *device, const char *format, const char *point, u32 a, u32 b, u32 c, void *buffer, u32 len)
-{
-	system_call_8(SC_FS_MOUNT, (u64)device, (u64)format, (u64)point, a, b, c, (u64)buffer, len);
-	return_to_user_prog(u64);
-}
-*/
-
-static void mount_device(const char *dev_name, const char *sys_dev_name, const char *file_system)
-{
-	if(!sys_admin) return;
-
-	if(!dev_name || isDir(dev_name)) return;
-
-	if(islike(dev_name, "/dev_blind"))
-		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_IOS:BUILTIN_FLSH1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_blind", 0, 0, 0, 0, 0);}
-	else if(islike(dev_name, "/dev_hdd1"))
-		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_UTILITY:HDD1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_hdd1", 0, 0, 0, 0, 0);}
-	else if(!sys_dev_name || !file_system) return;
-	else if((*dev_name == '/') && islike(sys_dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
-		{system_call_8(SC_FS_MOUNT, (uint32_t)sys_dev_name, (uint32_t)file_system, (uint32_t)dev_name, 0, 0, 0, 0, 0);}
-}
-
-static void enable_dev_blind(const char *msg)
-{
-	if(!sys_admin) return;
-
-	mount_device("/dev_blind", NULL, NULL);
-
-	if(!msg) return;
-
-	show_msg((char*)msg);
-	sys_ppu_thread_sleep(2);
-}
-
-static void disable_dev_blind(void)
-{
-	system_call_3(SC_FS_UMOUNT, (u64)(char*)"/dev_blind", 0, 1);
-}
-
 static void unlink_file(const char *drive, const char *path, const char *file)
 {
 	char filename[64];
 	sprintf(filename, "%s/%s%s", drive, path, file); cellFsUnlink(filename);
 }
-
-#if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
-static void handle_file_request(const char *url)
-{
-	if(url) save_file(WMREQUEST_FILE, url, SAVE_ALL);
-
-	if(file_exists(WMREQUEST_FILE))
-	{
-		loading_html++;
-		sys_ppu_thread_t t_id;
-		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
-	}
-
-	if(url) wait_path(WMREQUEST_FILE, 3, false);
-}
-
-static bool do_custom_combo(const char *filename)
-{
- #if defined(WM_CUSTOM_COMBO)
-	char combo_file[STD_PATH_LEN];
-
-	if(*filename == '/')
-		sprintf(combo_file, "%s", filename);
-	else
-		sprintf(combo_file, "%s%s", WM_CUSTOM_COMBO, filename); // use default path
- #else
-	const char *combo_file = filename;
- #endif
-
-	if(file_exists(combo_file))
-	{
-		_file_copy((char*)combo_file, (char*)WMREQUEST_FILE);
-
-		handle_file_request(NULL);
-		return true;
-	}
-	return false;
-}
-#endif
 
 static void delete_history(bool delete_folders)
 {
@@ -1118,6 +1025,108 @@ static void del_turnoff(u8 beeps)
 		if(beeps == 2) { BEEP2 }
 	}
 }
+
+//////////////////////////////////////////////////////////////
+
+static int wait_path(const char *path, u8 timeout, bool found)
+{
+	if(*path!='/') return FAILED;
+
+	for(u8 n = 0; n < (timeout * 20); n++)
+	{
+		if(file_exists(path) == found) return CELL_FS_SUCCEEDED;
+		if(!working) break;
+		sys_ppu_thread_usleep(50000);
+	}
+	return FAILED;
+}
+
+int wait_for(const char *path, u8 timeout)
+{
+	return wait_path(path, timeout, true);
+}
+
+//////////////////////////////////////////////////////////////
+
+/*
+static u64 syscall_837(const char *device, const char *format, const char *point, u32 a, u32 b, u32 c, void *buffer, u32 len)
+{
+	system_call_8(SC_FS_MOUNT, (u64)device, (u64)format, (u64)point, a, b, c, (u64)buffer, len);
+	return_to_user_prog(u64);
+}
+*/
+
+static void mount_device(const char *dev_name, const char *sys_dev_name, const char *file_system)
+{
+	if(!sys_admin) return;
+
+	if(!dev_name || isDir(dev_name)) return;
+
+	if(islike(dev_name, "/dev_blind"))
+		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_IOS:BUILTIN_FLSH1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_blind", 0, 0, 0, 0, 0);}
+	else if(islike(dev_name, "/dev_hdd1"))
+		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_UTILITY:HDD1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_hdd1", 0, 0, 0, 0, 0);}
+	else if(!sys_dev_name || !file_system) return;
+	else if((*dev_name == '/') && islike(sys_dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
+		{system_call_8(SC_FS_MOUNT, (uint32_t)sys_dev_name, (uint32_t)file_system, (uint32_t)dev_name, 0, 0, 0, 0, 0);}
+}
+
+static void enable_dev_blind(const char *msg)
+{
+	if(!sys_admin) return;
+
+	mount_device("/dev_blind", NULL, NULL);
+
+	if(!msg) return;
+
+	show_msg((char*)msg);
+	sys_ppu_thread_sleep(2);
+}
+
+static void disable_dev_blind(void)
+{
+	system_call_3(SC_FS_UMOUNT, (u64)(char*)"/dev_blind", 0, 1);
+}
+
+#if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
+static void handle_file_request(const char *url)
+{
+	if(url) save_file(WMREQUEST_FILE, url, SAVE_ALL);
+
+	if(file_exists(WMREQUEST_FILE))
+	{
+		loading_html++;
+		sys_ppu_thread_t t_id;
+		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
+	}
+
+	if(url) wait_path(WMREQUEST_FILE, 3, false);
+}
+
+static bool do_custom_combo(const char *filename)
+{
+ #if defined(WM_CUSTOM_COMBO)
+	char combo_file[STD_PATH_LEN];
+
+	if(*filename == '/')
+		sprintf(combo_file, "%s", filename);
+	else
+		sprintf(combo_file, "%s%s", WM_CUSTOM_COMBO, filename); // use default path
+ #else
+	const char *combo_file = filename;
+ #endif
+
+	if(file_exists(combo_file))
+	{
+		_file_copy((char*)combo_file, (char*)WMREQUEST_FILE);
+
+		handle_file_request(NULL);
+		return true;
+	}
+	return false;
+}
+#endif
+
 #ifdef COBRA_ONLY
 static void map_earth(u8 id, char *param)
 {

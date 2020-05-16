@@ -39,9 +39,9 @@ static void parse_script(const char *script_file)
 	if(file_exists(script_file))
 	{
 		sys_addr_t sysmem = NULL;
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)) return; 
+		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)) return;
 
-		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0; 
+		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0;
 		u8 exec_mode = true, enable_db = true, do_else = true;
 		size_t buffer_size = read_file(script_file, buffer, _64KB_, 0); buffer[buffer_size] = 0;
 		char log_file[STD_PATH_LEN + 1] = TMP_DIR "/log.txt";

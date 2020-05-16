@@ -26,8 +26,8 @@
 			{
 				if(lastgames.last >= LAST_GAMES_UPPER_BOUND) lastgames.last = 0; else lastgames.last++;
 			}
-			if(*lastgames.game[lastgames.last].path!='/') lastgames.last = 0;
-			if(*lastgames.game[lastgames.last].path!='/' || strlen(lastgames.game[lastgames.last].path) < 7) goto exit_mount;
+			if(*lastgames.game[lastgames.last].path != '/') lastgames.last = 0;
+			if(*lastgames.game[lastgames.last].path != '/' || strlen(lastgames.game[lastgames.last].path) < 7) goto exit_mount;
 
 			sprintf(_path, "%s", lastgames.game[lastgames.last].path);
 		}

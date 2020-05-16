@@ -33,7 +33,7 @@ static int get_line(char *templn, const char *cue_buf, const int buf_size, const
 		}
 		else
 		{
-			while(cue_buf[lp]=='\n' || cue_buf[lp]=='\r') {line_found = 1; if(lp<buf_size) lp++; else break;}
+			while(cue_buf[lp]=='\n' || cue_buf[lp]=='\r') {line_found = 1; if(lp < buf_size) lp++; else break;}
 			break; //EOF
 		}
 	}
@@ -58,9 +58,11 @@ static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_s
 		while(lp < cue_size)
 		{
 			lp = get_line(templn, cue_buf, cue_size, lp);
-			if(lp < 1) break;
 
-			lba = NONE; if(*templn == NULL) continue;
+			if(lp < 1) break;
+			if(*templn == NULL) continue;
+
+			lba = NONE;
 
 			if(strstr(templn, "PREGAP")) {use_pregap = parse_lba(templn, 0, 2); continue;}
 			if(strstr(templn, "INDEX 1=")) lba = get_valuen32(templn, "INDEX 1="); else // ccd frames

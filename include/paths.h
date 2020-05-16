@@ -118,7 +118,7 @@
 #define MAX_ISO_PARTS				(16)
 #define ISO_EXTENSIONS				".cue|.ccd|.iso.0|.bin|.img|.mdf"
 
-static const char smonth[12][4]  = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+static const char *smonth[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 static char drives[17][12] = {"/dev_hdd0", "/dev_usb000", "/dev_usb001", "/dev_usb002", "/dev_usb003", "/dev_usb006", "/dev_usb007", "/net0", "/net1", "/net2", "/net3", "/net4", "/dev_ntfs", "/dev_sd", "/dev_ms", "/dev_cf", "/dev_blind"};
 static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
 

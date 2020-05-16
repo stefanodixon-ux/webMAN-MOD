@@ -1592,10 +1592,12 @@ parse_request:
 				// /write.ps3<path>&t=<text> use | for line break (create text file)
 				// /write_ps3<path>&t=<text> use | for line break (add text to file)
 				// /write_ps3<path>&t=<text>&line=<num> insert line(s) to text file in line position
+				// /write.ps3<path>&t=<text>&line=<num> replace line of text file in line position
 				// /write.ps3<path>&t=<hex>&pos=<offset>          (patch file)
 				// /write.ps3?f=<path>&t=<text> use | for line break (create text file)
 				// /write_ps3?f=<path>&t=<text> use | for line break (add text to file)
 				// /write_ps3?f=<path>&t=<text>&line=<num> insert line(s) to text file in line position
+				// /write.ps3?f=<path>&t=<text>&line=<num> replace line of text file in line position
 				// /write.ps3?f=<path>&t=<hex>&pos=<offset>       (patch file)
 				u64 offset = 0; u32 size = 0;
 				char *filename = param + ((param[10] == '/') ? 10 : 13);
@@ -1607,57 +1609,84 @@ parse_request:
 					filepath_check(filename);
 
 					pos = strstr(data, "&pos=");
-					if(pos) {*pos = NULL, pos += 5;}
 
 					if(pos)
 					{
+						*pos = NULL, pos += 5;
+
+						//  get data offset
 						if(islike(pos, "0x"))
 							offset = convertH(pos);
 						else
 							offset = val(pos);
 
+						//  write binary data
 						size = Hex2Bin(data, header);
 						write_file(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, header, offset, size, false);
 					}
 					else
 					{
+						bool overwrite = islike(param, "/write.ps3");
+
+						// convert pipes to line breaks
 						for(pos = data; *pos; ++pos) if(*pos == '|') *pos = '\n';
 
 						pos = strstr(data, "&line=");
-						if(pos) {*pos = NULL, pos += 6;}
 
 						if(pos)
 						{
+							// write or insert data at line number
 							sys_addr_t sysmem = NULL;
 							if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 							{
+								*pos = NULL, pos += 6;
+								u16 line = val(pos);
+
 								strcat(data, "\n");
 								u16 len = strlen(data);
-								u16 line = val(pos);
 
 								char *buffer = (char*)sysmem;
 								size = read_file(filename, buffer, _64KB_, 0);
 
 								if(line <= 1)
 								{
-									save_file(filename, data, SAVE_ALL); // create
-									save_file(filename, buffer, -size);  // append
+									save_file(filename, data, SAVE_ALL); // write line data
+									if(overwrite)
+									{
+										pos = strstr(buffer, "\n");
+										if(pos) {size -= ++pos - buffer; buffer = pos;} // skip first line
+									}
+									write_file(filename, CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY, buffer, len + 1, size, false);
+									//save_file(filename, buffer, -size);  // append rest of file
 								}
 								else if(size + len < _64KB_)
 								{
-									u16 i, c = 0; --line;
+									u16 i, c = 0, w = 0; --line;
+									// find offset of line to write
 									for(i = 0; i < size; i++) if(buffer[i] == '\n' && (++c >= line)) {i++; break;}
+									// skip line to overwrite
+									if(overwrite)
+									{
+										// find end of current line
+										for(w = i; w < size; w++) if(buffer[w] == '\n') {w++; break;}
+										// remove current line
+										for(c = i; c < size; c++, w++) buffer[c] = buffer[w];
+										size -= (w - c);
+									}
+									// move forward rest of file
 									for(c = size; c >= i; c--) buffer[c + len] = buffer[c];
+									// set line data
 									for(c = 0; c < len; c++) buffer[i + c] = data[c];
+									// write file data
 									save_file(filename, buffer, SAVE_ALL);
 								}
 								sys_memory_free(sysmem);
 							}
 						}
-						else if(islike(param, "/write_ps3"))
-							save_file(filename, data, APPEND_TEXT);
+						else if(overwrite)
+							save_file(filename, data, SAVE_ALL); // write.ps3 (write file)
 						else
-							save_file(filename, data, SAVE_ALL);
+							save_file(filename, data, APPEND_TEXT); // write_ps3 (add line)
 					}
 				}
 				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);

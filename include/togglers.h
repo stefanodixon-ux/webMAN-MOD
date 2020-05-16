@@ -266,16 +266,16 @@ static void toggle_ps2emu(void)
 		show_msg((char*)"Switch to custom ps2emu...");
 
 		swap_file(PS2_EMU_PATH, "ps2_netemu.self", "ps2_netemu.tmp", "ps2_netemu.self.swap");
-		swap_file(PS2_EMU_PATH, "ps2_gxemu.self", "ps2_gxemu.tmp", "ps2_gxemu.self.swap");
-		swap_file(PS2_EMU_PATH, "ps2_emu.self", "ps2_emu.tmp", "ps2_emu.self.swap");
+		swap_file(PS2_EMU_PATH, "ps2_gxemu.self",  "ps2_gxemu.tmp",  "ps2_gxemu.self.swap");
+		swap_file(PS2_EMU_PATH, "ps2_emu.self",    "ps2_emu.tmp",    "ps2_emu.self.swap");
 	}
 	else if(file_exists(PS2_EMU_PATH "ps2_netemu.self.sp"))
 	{
 		show_msg((char*)"Switching to custom ps2emu...");
 
 		swap_file(PS2_EMU_PATH, "ps2_netemu.self", "ps2_netemu.tmp", "ps2_netemu.self.sp");
-		swap_file(PS2_EMU_PATH, "ps2_gxemu.self", "ps2_gxemu.tmp", "ps2_gxemu.self.sp");
-		swap_file(PS2_EMU_PATH, "ps2_emu.self", "ps2_emu.tmp", "ps2_emu.self.sp");
+		swap_file(PS2_EMU_PATH, "ps2_gxemu.self",  "ps2_gxemu.tmp",  "ps2_gxemu.self.sp");
+		swap_file(PS2_EMU_PATH, "ps2_emu.self",    "ps2_emu.tmp",    "ps2_emu.self.sp");
 	}
 	else if(file_exists(PS2_EMU_PATH "ps2_netemu.tmp"))
 	{
@@ -284,14 +284,14 @@ static void toggle_ps2emu(void)
 		if(c_firmware >= 4.65f)
 		{
 			swap_file(PS2_EMU_PATH, "ps2_netemu.self", "ps2_netemu.self.swap", "ps2_netemu.tmp");
-			swap_file(PS2_EMU_PATH, "ps2_gxemu.self", "ps2_gxemu.self.swap", "ps2_gxemu.tmp");
-			swap_file(PS2_EMU_PATH, "ps2_emu.self", "ps2_emu.self.swap", "ps2_emu.tmp");
+			swap_file(PS2_EMU_PATH, "ps2_gxemu.self",  "ps2_gxemu.self.swap",  "ps2_gxemu.tmp");
+			swap_file(PS2_EMU_PATH, "ps2_emu.self",    "ps2_emu.self.swap",    "ps2_emu.tmp");
 		}
 		else
 		{
 			swap_file(PS2_EMU_PATH, "ps2_netemu.self", "ps2_netemu.self.sp", "ps2_netemu.tmp");
-			swap_file(PS2_EMU_PATH, "ps2_gxemu.self", "ps2_gxemu.self.sp", "ps2_gxemu.tmp");
-			swap_file(PS2_EMU_PATH, "ps2_emu.self", "ps2_emu.self.sp", "ps2_emu.tmp");
+			swap_file(PS2_EMU_PATH, "ps2_gxemu.self",  "ps2_gxemu.self.sp",  "ps2_gxemu.tmp");
+			swap_file(PS2_EMU_PATH, "ps2_emu.self",    "ps2_emu.self.sp",    "ps2_emu.tmp");
 		}
 	}
 }

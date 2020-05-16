@@ -81,6 +81,7 @@ static void detect_firmware(void)
 
 	dex_mode = 0;
 
+#ifdef COBRA_ONLY
 	// detect ps3hen payload
 	payload_ps3hen = (lv1_peek_cfw(0x1337) == 0x1337); // <= {system_call_1(SC_COBRA_SYSCALL8, 0x1337); payload_ps3hen = (p1 == 0x1337);}
 	if(payload_ps3hen)
@@ -91,6 +92,7 @@ static void detect_firmware(void)
 		peek_lv1 = lv1_peek_hen;
 		poke_lv1 = lv1_poke_hen;
 	}
+#endif
 
 	// get payload type & cobra_version
 	sys_get_cobra_version();

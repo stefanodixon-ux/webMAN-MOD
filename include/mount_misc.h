@@ -45,10 +45,10 @@
 			if(islike(_path0, HDD0_GAME_DIR))
 			{
 				sprintf(_path, "%s%s", HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0/game/
-			}
-			if(file_exists(_path) == false)
-			{
-				sprintf(_path, "%s%s", _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
+				if(file_exists(_path) == false)
+				{
+					sprintf(_path, "%s%s", _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
+				}
 			}
 			ret = isDir(_path);
 		}

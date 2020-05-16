@@ -89,7 +89,7 @@ static bool _IS(const char *a, const char *b)
 	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
 }
 
-static char *last_dest = NULL; // for fast concat (avoids find last byte)
+static char *last_dest = NULL; // for fast concat -avoids find last byte
 static char *prev_dest = NULL;
 
 static size_t concat(char *dest, const char *src)
