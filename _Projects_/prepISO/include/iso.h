@@ -164,12 +164,14 @@ int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
 	folder_split[nfolder_split][2] = 0;
 	int i = 0;
 
-	while(path[i] != 0 && i < strlen(path))
+	int len = strlen(path);
+
+	while((i < len) && (path[i] != 0))
 	{
 		if(path[i] == '/')
 		{
 			folder_split[nfolder_split][2] = i - folder_split[nfolder_split][1];
-			while(path[i] =='/' && i < strlen(path)) i++;
+			while(path[i] =='/' && i < len) i++;
 			if(folder_split[nfolder_split][2] == 0) {folder_split[nfolder_split][1] = i; continue;}
 			folder_split[nfolder_split][0] = 1;
 			nfolder_split++;
@@ -197,42 +199,51 @@ int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
 	// PSP ISO
 	if(sect_descriptor.type[0] == 0xFF)
 	{
+		uint64_t offset;
 		unsigned char dir_entry[0x38];
 		char entry_name[0x20];
 
-		#ifdef USE_64BITS_LSEEK
-		if(ps3ntfs_seek64(fd, 0xB860LL, SEEK_SET) != 0xB860LL) goto err;
-		#else
-		if(fseek(fp, 0xB860, SEEK_SET) != 0) goto err;
-		#endif
+		char *name = strrchr(path, '/'); if(!name) goto err; ++name;
 
-		int c;
-
-		for(int i = 0; i < 8; i++)
+		for(offset = 0xB860LL; offset < 0xC800ULL; offset += 0x800ULL)
 		{
 			#ifdef USE_64BITS_LSEEK
-			if(ps3ntfs_read(fd, (void *) &dir_entry, 0x38) != 0x38) goto err;
+			if(ps3ntfs_seek64(fd, offset, SEEK_SET) != offset) goto err;
 			#else
-			if(fread((void *) &dir_entry, 1, 0x38, fp) != 0x38) goto err;
+			if(fseek(fp, offset, SEEK_SET) != 0) goto err;
 			#endif
 
-			for(c = 0; c < dir_entry[0x20]; c++) entry_name[c] = dir_entry[0x21 + c];
-			for( ; c < 0x20; c++) entry_name[c] = 0;
+			int c;
 
-			if(strstr(path, entry_name))
+			for(int i = 0; i < 8; i++)
 			{
-				file_lba = isonum_731(&dir_entry[2]);
-				*flba = file_lba;
-
-				*size = isonum_731(&dir_entry[10]);
-
 				#ifdef USE_64BITS_LSEEK
-				if(ps3ntfs_seek64(fd, ((s64) file_lba) * SECTOR_SIZELL, SEEK_SET) != ((s64) file_lba) * SECTOR_SIZELL) goto err;
+				if(ps3ntfs_read(fd, (void *) &dir_entry, 0x38) != 0x38) goto err;
 				#else
-				if(fseek(fp, file_lba * SECTOR_SIZE, SEEK_SET) != 0) goto err;
+				if(fread((void *) &dir_entry, 1, 0x38, fp) != 0x38) goto err;
 				#endif
 
-				return SUCCESS;
+				for(c = 0; c < dir_entry[0x20]; c++) entry_name[c] = dir_entry[0x21 + c];
+				for( ; c < 0x20; c++) entry_name[c] = 0;
+
+				if(strcmp(name, entry_name) == 0)
+				{
+					file_lba = isonum_731(&dir_entry[2]);
+					*flba = file_lba;
+
+					if(strstr(name, "EBOOT"))
+						*size = 0xD4; // truncate file size to header needed by Cobra
+					else
+						*size = isonum_731(&dir_entry[10]);
+
+					#ifdef USE_64BITS_LSEEK
+					if(ps3ntfs_seek64(fd, ((s64) file_lba) * SECTOR_SIZELL, SEEK_SET) != ((s64) file_lba) * SECTOR_SIZELL) goto err;
+					#else
+					if(fseek(fp, file_lba * SECTOR_SIZE, SEEK_SET) != 0) goto err;
+					#endif
+
+					return SUCCESS;
+				}
 			}
 		}
 
@@ -408,18 +419,19 @@ int ExtractFileFromISO(char *iso_file, char *file, char *outfile)
 		u64 size;
 		char *mem = NULL;
 
-		int re = get_iso_file_pos(fd, file, &flba, &size);
+		int ret = get_iso_file_pos(fd, file, &flba, &size);
 
-		if(!re && (mem = malloc(size)) != NULL)
+		if((ret == SUCCESS) && (mem = malloc(size)) != NULL)
 		{
-			re = ps3ntfs_read(fd, (void *) mem, size);
+			ret = ps3ntfs_read(fd, (void *) mem, size);
 			ps3ntfs_close(fd);
-			if(re == size)
+
+			if(ret == size)
 				SaveFile(outfile, mem, size);
 
 			free(mem);
 
-			return (re == size) ? SUCCESS : FAILED;
+			return (ret == size) ? SUCCESS : FAILED;
 		}
 		else
 			ps3ntfs_close(fd);

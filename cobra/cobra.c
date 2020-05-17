@@ -1508,8 +1508,6 @@ int cobra_unset_psp_umd(void)
 
 int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 {
-	int ret;
-
 	if (!path || !icon_save_path)
 		return EINVAL;
 
@@ -1537,7 +1535,15 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 	//memcpy(title_id, sector + 0x373, 10); title_id[10] = 0;
 
-	 uint8_t do_eject = 0;
+	uint8_t is_dir = 1;
+	uint8_t do_mount = 0;
+	uint8_t do_eject = 0;
+	uint8_t prometheus = 0;
+
+	uint8_t pspl1 = (cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED);
+	uint8_t pspl2 = (cellFsStat(PSPL_PATH2, &stat) == CELL_FS_SUCCEEDED);
+
+	char umd_file[256];
 
 	char *root = umd_root;
 
@@ -1553,6 +1559,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 			cobra_send_fake_disc_eject_event();
 		}
 
+		int ret;
 		char *files[1];
 
 		files[0] = (char *)path;
@@ -1583,44 +1590,92 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	else
 	{
 		real_disctype = DISC_TYPE_NONE;
+
+		int ext = strlen(root) - 4; if(ext < 0) ext = 0;
+
+		char *is_iso = strstr(root + ext, ".iso");
+		if(is_iso)
+		{
+			// check EBOOT exists before copy images
+			sprintf(umd_file, "%s.EBOOT.OLD", root);
+			if(cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED)
+			{
+				do_mount = prometheus = 1;
+			}
+			else
+			{
+				sprintf(umd_file, "%s.EBOOT.BIN", root);
+				do_mount = (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED);
+			}
+
+			// copy images to psp launcher
+			if(do_mount)
+			{
+				sprintf(umd_file, "%s.PNG", root); // ICON0.PNG
+				do_mount = (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED);
+
+				if(!do_mount) return EIO;
+
+				if(pspl1) sys_map_path(PSPL_ICON1, umd_file);
+				if(pspl2) sys_map_path(PSPL_ICON2, umd_file);
+
+				sprintf(umd_file, "%s.PIC1.PNG", root);
+				if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);
+				if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
+
+				sprintf(umd_file, "%s.PIC0.PNG", root);
+				if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG", 0);
+				if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG", 0);
+
+				// get EBOOT.OLD or EBOOT.BIN to find decryption keys
+				if(prometheus)
+					sprintf(umd_file, "%s.EBOOT.OLD", root);
+				else
+					sprintf(umd_file, "%s.EBOOT.BIN", root);
+			}
+
+			is_dir = 0; // Using cached files in /dev_hdd0/tmp/wmtmp
+		}
 	}
 
-	int prometheus = 0;
-	int decrypt_patch = 1;
-
-	uint32_t tag = 0;
-	uint8_t *keys = NULL;
-	uint8_t code = 0;
-
-	char umd_file[256];
-	sprintf(umd_file, "%s/ICON0.PNG", root);
-
-	uint8_t pspl1 = (cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED);
-	uint8_t pspl2 = (cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED);
-
-	if(file_copy(umd_file, icon_save_path, 0) >= CELL_FS_SUCCEEDED)
+	if(is_dir)
 	{
-		if(pspl1) sys_map_path(PSPL_ICON1, icon_save_path);
-		if(pspl2) sys_map_path(PSPL_ICON2, icon_save_path);
+		sprintf(umd_file, "%s/ICON0.PNG", root);
+		do_mount = (file_copy(umd_file, icon_save_path, 0) >= CELL_FS_SUCCEEDED);
+	}
 
-		sprintf(umd_file, "%s/PIC1.PNG", root);
+	if(do_mount)
+	{
+		uint8_t decrypt_patch = 1;
 
-		if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);
-		if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
+		uint32_t tag = 0;
+		uint8_t *keys = NULL;
+		uint8_t code = 0;
 
-		sprintf(umd_file, "%s/PIC0.PNG", root);
-
-		if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG", 0);
-		if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG", 0);
-
-		sprintf(umd_file, "%s/SYSDIR/EBOOT.OLD", root);
-		if (cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
+		if(is_dir)
 		{
-			sprintf(umd_file, "%s/SYSDIR/EBOOT.BIN", root);
-		}
-		else
-		{
-			prometheus = 1;
+			if(pspl1) sys_map_path(PSPL_ICON1, icon_save_path);
+			if(pspl2) sys_map_path(PSPL_ICON2, icon_save_path);
+
+			sprintf(umd_file, "%s/PIC1.PNG", root);
+
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
+
+			sprintf(umd_file, "%s/PIC0.PNG", root);
+
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG", 0);
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG", 0);
+
+			sprintf(umd_file, "%s/SYSDIR/EBOOT.OLD", root);
+			if (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED)
+			{
+				prometheus = 1;
+			}
+			else
+			{
+				sprintf(umd_file, "%s/SYSDIR/EBOOT.BIN", root);
+			}
 		}
 
 		uint32_t header[0xD4/4];
@@ -1643,7 +1698,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 					{
 						if (psp_extra_keys[i].tag == header[0xD0/4])
 						{
-							tag = psp_extra_keys[i].tag;
+							tag  = psp_extra_keys[i].tag;
 							code = psp_extra_keys[i].code;
 							keys = psp_extra_keys[i].keys;
 							break;
@@ -1651,28 +1706,24 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 					}
 				}
 			}
+
+			if (do_eject)
+			{
+				cobra_send_fake_disc_eject_event();
+				sys_storage_ext_umount_discfile();
+
+				if (real_disctype != DISC_TYPE_NONE)
+					cobra_send_fake_disc_insert_event();
+			}
+
+			sys_psp_set_umdfile(path, title_id, prometheus);
+			sys_psp_set_decrypt_options(decrypt_patch, tag, keys, code, 0, NULL, 0);
+
+			return CELL_FS_SUCCEEDED;
 		}
-
-		if (do_eject)
-		{
-			cobra_send_fake_disc_eject_event();
-			sys_storage_ext_umount_discfile();
-
-			if (real_disctype != DISC_TYPE_NONE)
-				cobra_send_fake_disc_insert_event();
-		}
-
-		sys_psp_set_umdfile(path, title_id, prometheus);
-		sys_psp_set_decrypt_options(decrypt_patch, tag, keys, code, 0, NULL, 0);
-
-		ret = CELL_FS_SUCCEEDED;
-	}
-	else
-	{
-		ret = EIO;
 	}
 
-	return ret;
+	return EIO;
 }
 
 /*

@@ -31,3 +31,9 @@ For further information see [Running Meson](https://mesonbuild.com/Running-Meson
 ## Notes
 Use _make.bat in Windows or Make.sh in linux to build ps3netsrv using POLARSSL library instead of mbed TLS and without Meson
 
+
+## Docker Container
+Docker Engine enables applications built in containers packages to run anywhere consistently on any infrastructure.
+
+Docker container packages for ps3netsrv are available at:
+https://hub.docker.com/search?q=ps3netsrv

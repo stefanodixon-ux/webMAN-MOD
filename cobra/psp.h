@@ -82,8 +82,8 @@ static PSPKey psp_extra_keys[] =
 };
 
 
-#define NUM_SUPPORTED_TAGS	(sizeof(emulator_supported_tags355)/sizeof(uint32_t))
-#define NUM_EXTRA_KEYS		(sizeof(psp_extra_keys)/sizeof(PSPKey))
+#define NUM_SUPPORTED_TAGS	(sizeof(emulator_supported_tags355) / sizeof(uint32_t))
+#define NUM_EXTRA_KEYS		(sizeof(psp_extra_keys) / sizeof(PSPKey))
 
 static int sys_psp_set_umdfile(char *file, char *id, int prometheus)
 {

@@ -202,14 +202,25 @@
 
 							if(entry.d_name[0] == NULL) goto exit_mount;
 
+							if(is_psp)
+							{
+								*ntfs_ext = 0;
+								sprintf(templn, "%s", _path);
+								*ntfs_ext = '.';
+							}
+
 							sprintf(_path, "/dev_bdvd/%s", entry.d_name);
 
 							if(file_exists(_path) == false) goto exit_mount;
 
-							if(is_ps2)
+							if(is_psp)
+							{
+								cobra_unset_psp_umd();
+								ret = (cobra_set_psp_umd(_path, (char*)templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+								//goto copy_pspiso_to_hdd0;
+							}
+							else //if(is_ps2)
 								goto copy_ps2iso_to_hdd0;
-							else
-								goto copy_pspiso_to_hdd0;
 						}
 					}
 				}

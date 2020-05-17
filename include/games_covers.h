@@ -290,6 +290,7 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 			{
 				if(flen > 13 && icon[flen-13] == '.' && (!extcmp(icon, ".ntfs[PS3ISO]", 13) || !extcmp(icon, ".ntfs[PS2ISO]", 13)  || !extcmp(icon, ".ntfs[PSPISO]", 13) || !extcmp(icon, ".ntfs[DVDISO]", 13) || !extcmp(icon, ".ntfs[PSXISO]", 13) || !extcmp(icon, ".ntfs[BDFILE]", 13))) flen -= 13; else
 				if(flen > 12 && icon[flen-12] == '.' &&  !extcmp(icon, ".ntfs[BDISO]" , 12)) flen -= 12;
+				if(get_image_file(icon, flen)) return;
 			}
 #endif
 			if(flen > 2 && icon[flen - 2] == '.') flen -= 2; // remove file extension (split iso)

@@ -121,15 +121,13 @@ static void *create_directory_record(struct iso_directory_record *idr, char *nam
 
 u8 *create_fake_file_iso_mem(char *filename, u64 size)
 {
-	u16 len_string;
-
 	u8 *mem = malloc(build_iso_size);
 	if(!mem) return NULL;
 	u16 *string = (u16 *) malloc(256);
 	if(!string) {free(mem); return NULL;}
 
 	char name[65];
-	len_string = snprintf(name, 64, "%s", filename);
+	u16 len_string = snprintf(name, 64, "%s", filename);
 	name[64] = 0;
 
 	if(len_string > 64)

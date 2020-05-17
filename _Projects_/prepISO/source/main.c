@@ -212,6 +212,24 @@ int main(int argc, const char* argv[])
 
 								ext = filename + flen - ext_len;
 
+								if((m == PSPISO) && (strcasestr(ext, ".iso") != NULL))
+								{
+									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.PNG", dir.d_name);
+									ExtractFileFromISO(filename, "/PSP_GAME/ICON0.PNG", wm_path);
+
+									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.PIC1.PNG", dir.d_name);
+									ExtractFileFromISO(filename, "/PSP_GAME/PIC1.PNG", wm_path);
+
+									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.PIC0.PNG", dir.d_name);
+									ExtractFileFromISO(filename, "/PSP_GAME/PIC0.PNG", wm_path);
+
+									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.EBOOT.BIN", dir.d_name);
+									ExtractFileFromISO(filename, "/PSP_GAME/SYSDIR/EBOOT.BIN", wm_path);
+
+									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.EBOOT.OLD", dir.d_name);
+									ExtractFileFromISO(filename, "/PSP_GAME/SYSDIR/EBOOT.OLD", wm_path);
+								}
+
 								make_fake_iso(m, ext, dir.d_name, filename, device_id, get_filesize(filename));
 								continue;
 							}

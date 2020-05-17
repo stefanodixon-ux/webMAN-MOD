@@ -2987,7 +2987,7 @@ retry_response:
 						bool is_reset = false; char *param2 = param + 11; int ret = 0;
 						if(islike(param2, "?wmreset")) is_reset=true;
 						if(is_reset || islike(param2, "?wmconfig")) {reset_settings(); sprintf(param, "/delete_ps3%s", WMCONFIG);}
-						if(is_reset || islike(param2, "?wmtmp")) sprintf(param, "/delete_ps3%s", WMTMP);
+						if(is_reset || islike(param2, "?wmtmp")) {do_umount(true); sprintf(param, "/delete_ps3%s", WMTMP);}
 
 						bool is_dir = isDir(param2);
 
@@ -3160,7 +3160,7 @@ retry_response:
 
 						if(!mc) keep_alive = http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser (don't wait for mount)
 
-						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL))
+						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL) && (strstr(param, ".ntfs[PSPISO]") == NULL))
 						{
 							sys_ppu_thread_sleep(1);
 							int view = View_Find("explore_plugin");

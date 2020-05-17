@@ -285,7 +285,6 @@ int save_file(const char *file, const char *mem, s64 size)
 	int flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;
 	if( size < 0 )  {flags = CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY; size = crlf ? SAVE_ALL : -size;} else
 	if(!extcmp(file, "/PARAM.SFO", 10)) flags = CELL_FS_O_CREAT | CELL_FS_O_WRONLY;
-
 /*
 	cellFsChmod(file, MODE); // set permissions for overwrite
 
@@ -304,8 +303,9 @@ int save_file(const char *file, const char *mem, s64 size)
 */
 	return write_file(file, flags, mem, 0, (int)size, crlf);
 }
+
 /*
-static void addlog(const char *msg1, const char *msg2)
+void addlog(const char *msg1, const char *msg2)
 {
 	char msg[200];
 	sprintf(msg, "%s %s", msg1, msg2);

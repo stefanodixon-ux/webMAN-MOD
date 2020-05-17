@@ -98,7 +98,7 @@ static void auto_play(char *param, u8 play_ps3)
 		}
 		else
  #if defined(FAKEISO) || defined(PKG_LAUNCHER)
-		if(!l2 && strstr(param, "/PSPISO"))
+		if(!l2 && ((strstr(param, "/PSPISO") != NULL) || (strstr(param, ".ntfs[PSPISO]") != NULL)))
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
