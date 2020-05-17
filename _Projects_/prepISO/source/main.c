@@ -223,6 +223,12 @@ int main(int argc, const char* argv[])
 									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.PIC0.PNG", dir.d_name);
 									ExtractFileFromISO(filename, "/PSP_GAME/PIC0.PNG", wm_path);
 
+									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.SND0.AT3", dir.d_name);
+									ExtractFileFromISO(filename, "/PSP_GAME/SND0.AT3", wm_path);
+
+									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.ICON1.PAM", dir.d_name);
+									ExtractFileFromISO(filename, "/PSP_GAME/ICON1.PAM", wm_path);
+
 									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.EBOOT.BIN", dir.d_name);
 									ExtractFileFromISO(filename, "/PSP_GAME/SYSDIR/EBOOT.BIN", wm_path);
 

@@ -1493,6 +1493,12 @@ int cobra_unset_psp_umd(void)
 	cellFsUnlink(PSPL_PATH1 "/PIC0.PNG");
 	cellFsUnlink(PSPL_PATH2 "/PIC0.PNG");
 
+	cellFsUnlink(PSPL_PATH1 "/ICON1.PAM");
+	cellFsUnlink(PSPL_PATH2 "/ICON1.PAM");
+
+	cellFsUnlink(PSPL_PATH1 "/SND0.AT3");
+	cellFsUnlink(PSPL_PATH2 "/SND0.AT3");
+
 	sys_map_path(PSPL_PATH1 "/USRDIR/MINIS.EDAT", NULL);
 	sys_map_path(PSPL_PATH2 "/USRDIR/MINIS.EDAT", NULL);
 	sys_map_path(PSPL_PATH1 "/USRDIR/MINIS2.EDAT", NULL);
@@ -1539,11 +1545,13 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	uint8_t do_mount = 0;
 	uint8_t do_eject = 0;
 	uint8_t prometheus = 0;
+	uint8_t has_header = 0;
 
 	uint8_t pspl1 = (cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED);
 	uint8_t pspl2 = (cellFsStat(PSPL_PATH2, &stat) == CELL_FS_SUCCEEDED);
 
 	char umd_file[256];
+	uint32_t header[0xD4/4];
 
 	char *root = umd_root;
 
@@ -1593,8 +1601,8 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 		int ext = strlen(root) - 4; if(ext < 0) ext = 0;
 
-		char       *is_iso = strstr(root + ext, ".iso");
-		if(!is_iso) is_iso = strstr(root + ext, ".ISO");
+		uint8_t is_iso = (strstr(root + ext, ".iso") != NULL) ||
+						 (strstr(root + ext, ".ISO") != NULL);
 
 		if(is_iso)
 		{
@@ -1610,13 +1618,43 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 				do_mount = (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED);
 			}
 
+			if(!do_mount)
+			{
+				const uint32_t buf_size = 4096;
+				char *buf = (char *)malloc(buf_size);
+				if(buf)
+				{
+					if (read_file(root, (char*)buf, buf_size, 0xC000) == buf_size)
+					{
+						uint32_t pos;
+						for(pos = 0x80; pos < buf_size; pos++)
+							if(!strncmp(&buf[pos], "EBOOT.OLD", 9)) break; // find offset of directory entry
+						if(pos >= buf_size)
+							for(pos = 0x80; pos < buf_size; pos++)
+								if(!strncmp(&buf[pos], "EBOOT.BIN", 9)) break; // find alternate file
+						if(pos < buf_size)
+						{
+							pos -= 0x1B; // get lba offset
+							uint32_t lba = (buf[pos] << 24) + (buf[pos + 1] << 16) + (buf[pos + 2] << 8) + buf[pos + 3];
+							pos = (2048UL * lba); // sector size * lba
+							do_mount = has_header = (read_file(root, (char*)&header, sizeof(header), pos) == sizeof(header));
+						}
+					}
+					free(buf);
+				}
+			}
 			// copy images to psp launcher
 			if(do_mount)
 			{
 				sprintf(umd_file, "%s.PNG", root);  // game.iso.PNG
 				if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
 				{
+					ext -= 4;
 					sprintf(umd_file, "%s.png", root);  // game.iso.png
+					if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
+						sprintf(umd_file + ext, "%s.png", root); // game.png
+					if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
+						sprintf(umd_file + ext, "%s.PNG", root); // game.PNG
 					if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
 						sprintf(umd_file, "%s.ICON0.PNG", root); // game.ICON0.PNG
 				}
@@ -1626,14 +1664,6 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 					if(pspl1) sys_map_path(PSPL_ICON1, umd_file);
 					if(pspl2) sys_map_path(PSPL_ICON2, umd_file);
 				}
-
-				sprintf(umd_file, "%s.PIC1.PNG", root);
-				if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);
-				if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
-
-				sprintf(umd_file, "%s.PIC0.PNG", root);
-				if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG", 0);
-				if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG", 0);
 
 				// get EBOOT.OLD or EBOOT.BIN to find decryption keys
 				if(prometheus)
@@ -1656,24 +1686,14 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	{
 		uint8_t decrypt_patch = 1;
 
-		uint32_t tag = 0;
+		uint32_t tag  = 0;
 		uint8_t *keys = NULL;
-		uint8_t code = 0;
+		uint8_t  code = 0;
 
 		if(is_dir)
 		{
 			if(pspl1) sys_map_path(PSPL_ICON1, icon_save_path);
 			if(pspl2) sys_map_path(PSPL_ICON2, icon_save_path);
-
-			sprintf(umd_file, "%s/PIC1.PNG", root);
-
-			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);
-			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
-
-			sprintf(umd_file, "%s/PIC0.PNG", root);
-
-			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG", 0);
-			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG", 0);
 
 			sprintf(umd_file, "%s/SYSDIR/EBOOT.OLD", root);
 			if (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED)
@@ -1686,9 +1706,30 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 			}
 		}
 
-		uint32_t header[0xD4/4];
-		if (read_file(umd_file, (char*)&header, sizeof(header), 0) == sizeof(header))
+		if (has_header || (read_file(umd_file, (char*)&header, sizeof(header), 0) == sizeof(header)))
 		{
+			int len;
+			if(is_dir)
+				len = sprintf(umd_file, "%s/", root);
+			else
+				len = sprintf(umd_file, "%s.", root);
+
+			sprintf(umd_file + len, "PIC1.PNG");
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
+
+			sprintf(umd_file + len, "PIC0.PNG");
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG", 0);
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG", 0);
+
+			sprintf(umd_file + len, "SND0.AT3");
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/SND0.AT3", 0);
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/SND0.AT3", 0);
+
+			sprintf(umd_file + len, "ICON1.PAM");
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/ICON1.PAM", 0);
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/ICON1.PAM", 0);
+
 			if (header[0] == 0x7E505350) // "~PSP"
 			{
 				unsigned int i;
