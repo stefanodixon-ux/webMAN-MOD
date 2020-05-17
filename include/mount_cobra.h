@@ -215,7 +215,6 @@
 
 							if(is_psp)
 							{
-								cobra_unset_psp_umd();
 								ret = (cobra_set_psp_umd(_path, (char*)templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 								//goto copy_pspiso_to_hdd0;
 							}
@@ -251,11 +250,16 @@
 				size_t len = sprintf(netiso_args.path, "%s", netpath);
 
 				if(islike(netpath, "/PS3ISO")) mount_unk = netiso_args.emu_mode = EMU_PS3; else
-				if(islike(netpath, "/PS2ISO")) goto copy_ps2iso_to_hdd0;                   else
-				if(islike(netpath, "/PSPISO")) goto copy_pspiso_to_hdd0;                   else
 				if(islike(netpath, "/BDISO" )) mount_unk = netiso_args.emu_mode = EMU_BD;  else
 				if(islike(netpath, "/DVDISO")) mount_unk = netiso_args.emu_mode = EMU_DVD; else
-				if(islike(netpath, "/PSX")   )
+				if(islike(netpath, "/PS2ISO")) goto copy_ps2iso_to_hdd0;                   else
+			//	if(islike(netpath, "/PSPISO")) goto copy_pspiso_to_hdd0;                   else
+				if(islike(netpath, "/PSPISO"))
+				{
+					mount_unk = netiso_args.emu_mode = EMU_BD;
+					sprintf(netiso_args.path, "/***DVD***%s", "/PSPISO");
+				}
+				else if(islike(netpath, "/PSX"))
 				{
 					TrackDef tracks[MAX_TRACKS];
 					unsigned int num_tracks = 1;
@@ -366,6 +370,16 @@
 					#endif
 				}
 
+				if(ret && islike(netpath, "/PSPISO"))
+				{
+					sprintf(templn, "/dev_bdvd/%s", netpath + 8);
+					sprintf(_path,  "/dev_bdvd/%s", netpath + 8);
+
+					sys_ppu_thread_sleep(1);
+
+					ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+				}
+
 				if(ret && islike(netpath, "/ROMS/"))
 				{
 					wait_for("/dev_bdvd", 15);
@@ -423,7 +437,7 @@
 				{
 					if(netid)
 					{
-	copy_pspiso_to_hdd0:
+	//copy_pspiso_to_hdd0:
 						cache_file_to_hdd(_path, iso_list[0], "/PSPISO", templn);
 					}
 

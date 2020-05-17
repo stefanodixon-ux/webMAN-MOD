@@ -103,7 +103,7 @@ static int isonum_721 (unsigned char * p)
 	return ((p[0] & 0xff) | ((p[1] & 0xff) << 8));
 }
 
-void UTF16_to_UTF8(u16 *stw, u8 *stb)
+static void UTF16_to_UTF8(u16 *stw, u8 *stb)
 {
 	while(stw[0])
 	{
@@ -137,9 +137,9 @@ void UTF16_to_UTF8(u16 *stw, u8 *stb)
 }
 
 #ifdef USE_64BITS_LSEEK
-int get_iso_file_pos(int fd, char *path, u32 *flba, u64 *size)
+static int get_iso_file_pos(int fd, char *path, u32 *flba, u64 *size)
 #else
-int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
+static int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
 #endif
 {
 	static struct iso_primary_descriptor sect_descriptor;
@@ -410,7 +410,7 @@ err:
 
 int SaveFile(char *path, char *mem, int file_size);
 
-int ExtractFileFromISO(char *iso_file, char *file, char *outfile)
+static int ExtractFileFromISO(char *iso_file, char *file, char *outfile)
 {
 	int fd = ps3ntfs_open(iso_file, O_RDONLY, 0);
 	if(fd >= 0)

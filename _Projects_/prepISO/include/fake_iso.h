@@ -1,6 +1,6 @@
 #include "fake_iso_data.h"
 
-char * get_extension(char *path)
+static char * get_extension(char *path)
 {
 	int n = strlen(path);
 	int m = n;
@@ -15,7 +15,7 @@ char * get_extension(char *path)
 	return &path[n];
 }
 
-char * get_filename(char *path)
+static char * get_filename(char *path)
 {
 	int n = strlen(path);
 	int m = n;
@@ -38,7 +38,7 @@ static void set723(unsigned char *p,int n)
 	*p++=(n & 0xff);*p++=((n>>8) & 0xff);*p++=((n>>8) & 0xff);*p++=(n & 0xff);
 }
 
-void UTF8_to_UTF16(u8 *stb, u16 *stw)
+static void UTF8_to_UTF16(u8 *stb, u16 *stw)
 {
 	int n, m;
 	u32 UTF32;
@@ -119,7 +119,7 @@ static void *create_directory_record(struct iso_directory_record *idr, char *nam
 	return (struct iso_directory_record *) (((char *) idr) + idr->length[0]);
 }
 
-u8 *create_fake_file_iso_mem(char *filename, u64 size)
+static u8 *create_fake_file_iso_mem(char *filename, u64 size)
 {
 	u8 *mem = malloc(build_iso_size);
 	if(!mem) return NULL;
@@ -178,7 +178,7 @@ u8 *create_fake_file_iso_mem(char *filename, u64 size)
 	return mem;
 }
 
-int create_fake_file_iso(char *path, char *filename, u64 size)
+static int create_fake_file_iso(char *path, char *filename, u64 size)
 {
 	u8 *mem = create_fake_file_iso_mem(filename, size);
 	if(!mem) return FAILED;
@@ -281,7 +281,7 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 	return FAILED;
 }
 
-void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, uint64_t device_id, uint64_t file_size)
+static void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, uint64_t device_id, uint64_t file_size)
 {
 	//if(m >= 4)
 	{

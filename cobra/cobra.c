@@ -1593,7 +1593,9 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 		int ext = strlen(root) - 4; if(ext < 0) ext = 0;
 
-		char *is_iso = strstr(root + ext, ".iso");
+		char       *is_iso = strstr(root + ext, ".iso");
+		if(!is_iso) is_iso = strstr(root + ext, ".ISO");
+
 		if(is_iso)
 		{
 			// check EBOOT exists before copy images
@@ -1611,13 +1613,19 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 			// copy images to psp launcher
 			if(do_mount)
 			{
-				sprintf(umd_file, "%s.PNG", root); // ICON0.PNG
-				do_mount = (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED);
+				sprintf(umd_file, "%s.PNG", root);  // game.iso.PNG
+				if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
+				{
+					sprintf(umd_file, "%s.png", root);  // game.iso.png
+					if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
+						sprintf(umd_file, "%s.ICON0.PNG", root); // game.ICON0.PNG
+				}
 
-				if(!do_mount) return EIO;
-
-				if(pspl1) sys_map_path(PSPL_ICON1, umd_file);
-				if(pspl2) sys_map_path(PSPL_ICON2, umd_file);
+				if(cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED)
+				{
+					if(pspl1) sys_map_path(PSPL_ICON1, umd_file);
+					if(pspl2) sys_map_path(PSPL_ICON2, umd_file);
+				}
 
 				sprintf(umd_file, "%s.PIC1.PNG", root);
 				if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);

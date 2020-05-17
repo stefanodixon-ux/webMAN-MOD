@@ -1622,7 +1622,7 @@ int main(int argc, char *argv[])
 	if(sizeof(off_t) < 8)
 	{
 		DPRINTF("off_t too small!\n");
-		return FAILED;
+		goto exit_error;
 	}
 #endif
 
@@ -1672,18 +1672,14 @@ int main(int argc, char *argv[])
 					" Whitelist: x.x.x.x, where x is 0-255 or *\n"
 					" (e.g 192.168.1.* to allow only connections from 192.168.1.0-192.168.1.255)\n", filename, NETISO_PORT);
 
-			#ifdef WIN32
-			printf("\n\nPress ENTER to continue...");
-			getchar();
-			#endif
-			return FAILED;
+			goto exit_error;
 		}
 	}
 
 	if(strlen(argv[1]) >= sizeof(root_directory))
 	{
 		printf("Directory name too long!\n");
-		return FAILED;
+		goto exit_error;
 	}
 
 	strcpy(root_directory, argv[1]);
@@ -1696,14 +1692,21 @@ int main(int argc, char *argv[])
 			break;
 	}
 
-	printf("Path: %s\n\n", root_directory);
-
 	root_len = strlen(root_directory);
 
 	if(root_len == 0)
 	{
+		strcpy(root_directory, argv[0]);
+		char *filename = strrchr(root_directory, '/'); if(filename) *(++filename) = 0;
+		root_len = strlen(root_directory);
+	}
+
+	printf("Path: %s\n\n", root_directory);
+
+	if(strcmp(root_directory, "/") == 0)
+	{
 		printf("/ can't be specified as root directory!\n");
-		return FAILED;
+		goto exit_error;
 	}
 
 	if(argc > 2)
@@ -1713,7 +1716,7 @@ int main(int argc, char *argv[])
 		if(sscanf(argv[2], "%u", &u) != 1)
 		{
 			printf("Wrong port specified.\n");
-			return FAILED;
+			goto exit_error;
 		}
 
 #ifdef WIN32
@@ -1725,7 +1728,7 @@ int main(int argc, char *argv[])
 		if(u < min || u > 65535)
 		{
 			printf("Port must be in %d-65535 range.\n", min);
-			return FAILED;
+			goto exit_error;
 		}
 
 		port = u;
@@ -1747,7 +1750,7 @@ int main(int argc, char *argv[])
 					if(strcmp(p, "*") != SUCCEEDED)
 					{
 						printf("Wrong whitelist format.\n");
-						return FAILED;
+						goto exit_error;
 					}
 
 				}
@@ -1756,7 +1759,7 @@ int main(int argc, char *argv[])
 					if(p[0] != '*' || p[1] != '.')
 					{
 						printf("Wrong whitelist format.\n");
-						return FAILED;
+						goto exit_error;
 					}
 				}
 
@@ -1767,7 +1770,7 @@ int main(int argc, char *argv[])
 				if(u > 0xFF)
 				{
 					printf("Wrong whitelist format.\n");
-					return FAILED;
+					goto exit_error;
 				}
 			}
 
@@ -1787,7 +1790,7 @@ int main(int argc, char *argv[])
 				if(!p)
 				{
 					printf("Wrong whitelist format.\n");
-					return FAILED;
+					goto exit_error;
 				}
 
 				p++;
@@ -1801,7 +1804,7 @@ int main(int argc, char *argv[])
 	if(s < 0)
 	{
 		printf("Error in initialization.\n");
-		return FAILED;
+		goto exit_error;
 	}
 
 	memset(clients, 0, sizeof(clients));
@@ -1884,4 +1887,11 @@ int main(int argc, char *argv[])
 #endif
 
 	return SUCCEEDED;
+
+exit_error:
+	#ifdef WIN32
+	printf("\n\nPress ENTER to continue...");
+	getchar();
+	#endif
+	return FAILED;
 }

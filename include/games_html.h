@@ -91,6 +91,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		{
 			if(!strcasestr(ROMS_EXTENSIONS, ext)) return FAILED;
 		}
+		else if(IS_PSP_FOLDER && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
 		else
 			if(!strcasestr(ISO_EXTENSIONS + 10, ext)) return FAILED;
 	}
