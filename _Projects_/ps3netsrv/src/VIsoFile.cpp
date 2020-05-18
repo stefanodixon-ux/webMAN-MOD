@@ -54,7 +54,7 @@ static char *dupString(const char *str)
 
 static size_t strncpy_upper(char *s1, const char *s2, size_t n)
 {
-	if(n < 1) return 0;
+	if(!s1 || !s2 || (n < 1)) return 0;
 
 	strncpy(s1, s2, n);
 
@@ -584,11 +584,11 @@ Iso9660DirectoryRecord *VIsoFile::findDirRecord(const char *dirName, Iso9660Dire
 
 	if (!joliet)
 	{
-		strCheckSize = strncpy_upper((char *)strCheck, dirName, MAX_ISONAME-2);
+		strCheckSize = strncpy_upper((char *)strCheck, dirName, MAX_ISONAME - 2);
 	}
 	else
 	{
-		strCheckSize = utf8_to_ucs2((const unsigned char *)dirName, (uint16_t *)strCheck, MAX_ISODIR/2) * 2;
+		strCheckSize = utf8_to_ucs2((const unsigned char *)dirName, (uint16_t *)strCheck, MAX_ISODIR / 2) * 2;
 	}
 
 	buf = p = (uint8_t *)parentRecord;
@@ -657,7 +657,7 @@ uint8_t *VIsoFile::buildPathTable(bool msb, bool joliet, size_t *retSize)
 		{
 			DirList *parent;
 
-			char *fileName = dirList->path + dirList->path_len; //strrchr(dirList->path, '/') + 1;
+			char *fileName = strrchr(dirList->path, '/') + 1;
 
 			if (!joliet)
 			{
@@ -839,30 +839,21 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 			record->lsbVolSetSeqNum = LE16(1);
 			record->msbVolSetSeqNum = BE16(1);
 
-			char *fileName = strrchr(fileList->path, '/');
-			if(fileName)
+			char *fileName = strrchr(fileList->path, '/') + 1;
+
+			if (!joliet)
 			{
-				fileName++;
-				char *s = new char[strlen(fileName) + 3];
-				if(s)
-				{
-					strcpy(s, fileName);
-					strcat(s, ";1");
-					if (!joliet)
-					{
-						record->len_fi = strncpy_upper(&record->fi, s, MAX_ISONAME - 2);
-					}
-					else
-					{
-						record->len_fi = utf8_to_ucs2((const unsigned char *)s, (uint16_t *)&record->fi, MAX_ISONAME / 2) * 2;
-					}
-					delete[] s;
-				}
+				record->len_fi = strncpy_upper(&record->fi, fileName, MAX_ISONAME - 2);
+				strcpy(&record->fi + record->len_fi, ";1");
+				record->len_fi += 2;
 			}
 			else
 			{
-				free(record);
-				return false;
+				size_t len = strlen(fileName);
+				char *s = new char[len  + 3];
+				strcpy(s, fileName); strcpy(s + len, ";1");
+				record->len_fi = utf8_to_ucs2((const unsigned char *)s, (uint16_t *)&record->fi, MAX_ISONAME / 2) * 2;
+				delete[] s;
 			}
 
 			record->len_dr = 0x27 + record->len_fi;
@@ -919,23 +910,15 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 			record->lsbVolSetSeqNum = LE16(1);
 			record->msbVolSetSeqNum = BE16(1);
 
-			char *fileName = strrchr(tempList->path, '/');
-			if(fileName)
+			char *fileName = strrchr(tempList->path, '/') + 1;
+
+			if (!joliet)
 			{
-				fileName++;
-				if (!joliet)
-				{
-					record->len_fi = strncpy_upper(&record->fi, fileName, MAX_ISODIR);
-				}
-				else
-				{
-					record->len_fi = utf8_to_ucs2((const unsigned char *)fileName, (uint16_t *)&record->fi, MAX_ISODIR/2) * 2;
-				}
+				record->len_fi = strncpy_upper(&record->fi, fileName, MAX_ISODIR);
 			}
 			else
 			{
-				free(record);
-				return false;
+				record->len_fi = utf8_to_ucs2((const unsigned char *)fileName, (uint16_t *)&record->fi, MAX_ISODIR/2) * 2;
 			}
 
 			record->len_dr = 0x27 + record->len_fi;

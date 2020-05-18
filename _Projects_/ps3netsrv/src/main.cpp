@@ -1606,7 +1606,7 @@ int main(int argc, char *argv[])
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
 #endif
 
-	printf("ps3netsrv build 20200517A");
+	printf("ps3netsrv build 20200518");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );

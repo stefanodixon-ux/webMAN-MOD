@@ -824,7 +824,7 @@ parse_request:
 #endif
 #ifdef COBRA_ONLY
 					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
-					if(isDir(header))
+					if((*param2 != NULL) && isDir(header))
 					{
 						set_apphome(header);
 
