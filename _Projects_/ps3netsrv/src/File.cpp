@@ -52,7 +52,7 @@ int File::open(const char *path, int flags)
 
 	if(!path)
 	{
-		printf("file error: no path\n", path);
+		printf("file error: no path\n");
 		return FAILED;
 	}
 

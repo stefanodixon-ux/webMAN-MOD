@@ -104,7 +104,7 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 		return FAILED;
 	}
 
-	if(res.file_size == NONE)
+	if(res.file_size <= NONE)
 	{
 		//DPRINTF("Remote file %s doesn't exist!\n", path);
 		return FAILED;

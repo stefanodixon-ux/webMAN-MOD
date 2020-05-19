@@ -227,19 +227,8 @@ static char *translate_path(char *path, int *viso)
 
 	// check unsecure path
 	p = strstr(path, "/..");
-	if(p)
-	{
-		p += 3;
-		if(*p == 0 || *p == '/' || *p == '\\')
-		{
-			DPRINTF("The path \"%s\" is unsecure!\n", path);
-			if(path) free(path);
-			return NULL;
-		}
-	}
-
-	p = strstr(path, "\\..");
-	if(p)
+	if(!p) p = strstr(path, "\\.."); // not needed if path is normalized
+	if( p)
 	{
 		p += 3;
 		if(*p == 0 || *p == '/' || *p == '\\')
@@ -292,24 +281,28 @@ static char *translate_path(char *path, int *viso)
 	if(stat_file(p, &st) < 0)
 	{
 		// get path only (without file name)
-		char *dir_name = p;
-		char *sep = strrchr(dir_name, '/'); if(sep) *sep = 0;
+		//char *dir_name = p;
 		char lnk_file[MAX_LINK_LEN];
+		char *sep = NULL;
 
-		sprintf(lnk_file, "%s.INI", dir_name); // e.g. /BDISO.INI
+		for(size_t i = root_len + path_len; i >= root_len; i--)
+		{
+			if(p[i] == '/')
+			{
+				p[i] = 0;
+				sprintf(lnk_file, "%s.INI", p); // e.g. /BDISO.INI
+				p[i] = '/';
+
+				if(stat_file(lnk_file, &st) >= 0) {sep = p + i; break;}
+			}
+		}
 
 		if(sep)
 		{
-			*sep = '/'; // restore path
-
-			printf("checking file: %s\n", lnk_file);
-
 			file_t fd;
 			fd = open_file(lnk_file, O_RDONLY);
 			if (FD_OK(fd))
 			{
-				printf("link file: %s\n", lnk_file);
-
 				// read INI
 				memset(lnk_file, 0, MAX_LINK_LEN);
 				read_file(fd, lnk_file, MAX_LINK_LEN);
@@ -332,16 +325,14 @@ static char *translate_path(char *path, int *viso)
 					{
 						normalize_path(dir_path, 1);
 
-						printf("checking %s\n", dir_path);
-
 						// return filepath if found
 						sprintf(filepath, "%s%s", dir_path, filename);
+						normalize_path(filepath + dlen, 1);
+
 						if(stat_file(filepath, &st) >= 0)
 						{
 							if(p) free(p);
 							if(path) free(path);
-
-							printf("linked: %s\n", filepath);
 
 							return filepath;
 						}
@@ -506,8 +497,6 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 
 	client->CD_SECTOR_SIZE = 2352;
 
-	//normalize_path_win32(filepath);
-
 	if(client->ro_file->open(filepath, O_RDONLY) < 0)
 	{
 		printf("open error on \"%s\" (viso=%d)\n", filepath + rlen, viso);
@@ -531,7 +520,12 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 			result.file_size = BE64(st.file_size);
 			result.mtime = BE64(st.mtime);
 
-			if(viso != VISO_NONE || BE64(st.file_size) > 0x400000UL) printf("open %s\n", filepath + rlen);
+			fp_len = rlen + strlen(filepath + rlen);
+
+			if(fp_len > 4 && strstr(".PNG.JPG.png.jpg.SFO", filepath + fp_len - 4) != NULL)
+				; // don't cluther console with messages
+			else if(viso != VISO_NONE || BE64(st.file_size) > 0x400000UL)
+				printf("open %s\n", filepath + rlen);
 
 			// detect cd sector size if image is (2MB to 848MB)
 			if(IS_RANGE(st.file_size, 0x200000UL, 0x35000000UL))
@@ -1019,16 +1013,12 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 		return FAILED;
 	}
 
-	printf("listing %s\n", dirpath);
-
 	dirpath = translate_path(dirpath, NULL);
 	if(!dirpath)
 	{
 		printf("Path cannot be translated. Connection with this client will be aborted.\n");
 		return FAILED;
 	}
-
-	//DPRINTF("open dir %s\n", dirpath);
 
 	if(client->dir)
 	{
@@ -1043,17 +1033,18 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 
 	client->dirpath = NULL;
 
-	printf("open dir %s\n", dirpath);
-
+	normalize_path(dirpath, 1);
 	client->dir = opendir(dirpath);
 	if(!client->dir)
 	{
-		printf("open dir error on \"%s\"\n", dirpath);
+		//printf("open dir error on \"%s\"\n", dirpath);
 		result.open_result = BE32(NONE);
 	}
 	else
 	{
 		client->dirpath = dirpath;
+		printf("open dir %s\n", dirpath);
+		strcat(dirpath, "/");
 		result.open_result = BE32(0);
 	}
 
@@ -1264,8 +1255,6 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	size_t d_name_len, dirpath_len;
 	dirpath_len = sprintf(path, "%s/", client->dirpath);
 
-	printf("** listing %s\n", path);
-
 	// list dir
 	while ((entry = readdir(client->dir)))
 	{
@@ -1319,9 +1308,21 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	char *ini_file;
 
 	// get INI file for directory
+	char *p;
+	p = client->dirpath;
+	slen = strlen(p);
 	ini_file = path;
-	slen = sprintf(ini_file, "%s", client->dirpath); // e.g. /BDISO.INI
-	if(ini_file[--slen] == '/') sprintf(ini_file + slen, ".INI");
+	for(size_t i = slen; i >= root_len; i--)
+	{
+		if(p[i] == '/')
+		{
+			p[i] = 0;
+			sprintf(ini_file, "%s.INI", p); // e.g. /BDISO.INI
+			p[i] = '/';
+
+			if(stat_file(ini_file, &st) >= 0) break;
+		}
+	}
 
 	file_t fd;
 	fd = open_file(ini_file, O_RDONLY);
@@ -1653,7 +1654,7 @@ int main(int argc, char *argv[])
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
 #endif
 
-	printf("ps3netsrv build 20200519");
+	printf("ps3netsrv build 20200519A");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
@@ -1679,6 +1680,7 @@ int main(int argc, char *argv[])
 	{
 		char *filename = strrchr(argv[0], '/');
 		if(!filename) filename = strrchr(argv[0], '\\');
+		if(!filename) filename = root_directory;
 		if( filename) filename++;
 
 		if( (filename != NULL) && (
@@ -1715,6 +1717,8 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
+			if(!filename) filename = argv[0];
+
 			printf( "\nUsage: %s [rootdirectory] [port] [whitelist]\n\n"
 					" Default port: %d\n\n"
 					" Whitelist: x.x.x.x, where x is 0-255 or *\n"
@@ -1740,16 +1744,19 @@ int main(int argc, char *argv[])
 			break;
 	}
 
-	root_len = strlen(root_directory);
-
-	if(root_len == 0)
+	if(*root_directory == 0)
 	{
-		strcpy(root_directory, argv[0]);
+		if (getcwd(root_directory, sizeof(root_directory)) != NULL)
+			strcat(root_directory, "/");
+		else
+			strcpy(root_directory, argv[0]);
+
 		char *filename = strrchr(root_directory, '/'); if(filename) *(++filename) = 0;
-		root_len = strlen(root_directory);
 	}
 
-	normalize_path(root_directory, 0);
+	normalize_path(root_directory, 1);
+
+	root_len = strlen(root_directory);
 
 	printf("Path: %s\n\n", root_directory);
 
@@ -1860,6 +1867,9 @@ int main(int argc, char *argv[])
 	memset(clients, 0, sizeof(clients));
 	printf("Waiting for client...\n");
 
+	char last_ip[16], conn_ip[16];
+	memset(last_ip, 0, 16);
+
 	for (;;)
 	{
 		struct sockaddr_in addr;
@@ -1883,13 +1893,19 @@ int main(int argc, char *argv[])
 				break;
 		}
 
+		sprintf(conn_ip, "%s", inet_ntoa(addr.sin_addr));
+
 		if(i < MAX_CLIENTS)
 		{
 			// Shutdown socket and wait for thread to complete
 			shutdown(clients[i].s, SHUT_RDWR);
 			closesocket(clients[i].s);
 			join_thread(clients[i].thread);
-			printf("Reconnection from %s\n",  inet_ntoa(addr.sin_addr));
+
+			if(strcmp(last_ip, conn_ip))
+			{
+				printf("[%i] Reconnection from %s\n",  i, conn_ip);
+			}
 		}
 		else
 		{
@@ -1899,7 +1915,7 @@ int main(int argc, char *argv[])
 
 				if(ip < whitelist_start || ip > whitelist_end)
 				{
-					printf("Rejected connection from %s (not in whitelist)\n", inet_ntoa(addr.sin_addr));
+					printf("Rejected connection from %s (not in whitelist)\n", conn_ip);
 					closesocket(cs);
 					continue;
 				}
@@ -1918,7 +1934,11 @@ int main(int argc, char *argv[])
 				continue;
 			}
 
-			printf("Connection from %s\n",  inet_ntoa(addr.sin_addr));
+			if(strcmp(last_ip, conn_ip))
+			{
+				printf("[%i] Connection from %s\n", i, conn_ip);
+				sprintf(last_ip, "%s", conn_ip);
+			}
 		}
 
 		if(initialize_client(&clients[i]) != SUCCEEDED)
