@@ -131,6 +131,21 @@ static int recv_all(int s, void *buf, int size)
 }
 #endif
 
+static char *normalize_path(char *path, int8_t del_last_slash)
+{
+	if(!path) return path;
+
+	char *p = path;
+
+	while(*p)
+	{
+		if(*p == '\\') *p = '/';
+		p++;
+	}
+
+	if(del_last_slash) {if(p > path) {--p; if(*p == '/') *p = 0;}}
+	return path;
+}
 
 static int initialize_client(client_t *client)
 {
@@ -199,6 +214,8 @@ static char *translate_path(char *path, int *viso)
 	char *p;
 
 	if(!path) return NULL;
+
+	normalize_path(path, 0);
 
 	if(path[0] != '/')
 	{
@@ -275,19 +292,24 @@ static char *translate_path(char *path, int *viso)
 	if(stat_file(p, &st) < 0)
 	{
 		// get path only (without file name)
-		char *dir_name = path;
+		char *dir_name = p;
 		char *sep = strrchr(dir_name, '/'); if(sep) *sep = 0;
+		char lnk_file[MAX_LINK_LEN];
+
+		sprintf(lnk_file, "%s.INI", dir_name); // e.g. /BDISO.INI
 
 		if(sep)
 		{
-			char lnk_file[MAX_LINK_LEN];
-			sprintf(lnk_file, "%s%s.INI", root_directory, dir_name); // e.g. /BDISO.INI
 			*sep = '/'; // restore path
+
+			printf("checking file: %s\n", lnk_file);
 
 			file_t fd;
 			fd = open_file(lnk_file, O_RDONLY);
 			if (FD_OK(fd))
 			{
+				printf("link file: %s\n", lnk_file);
+
 				// read INI
 				memset(lnk_file, 0, MAX_LINK_LEN);
 				read_file(fd, lnk_file, MAX_LINK_LEN);
@@ -308,12 +330,18 @@ static char *translate_path(char *path, int *viso)
 
 					if(filepath)
 					{
+						normalize_path(dir_path, 1);
+
+						printf("checking %s\n", dir_path);
+
 						// return filepath if found
 						sprintf(filepath, "%s%s", dir_path, filename);
 						if(stat_file(filepath, &st) >= 0)
 						{
 							if(p) free(p);
 							if(path) free(path);
+
+							printf("linked: %s\n", filepath);
 
 							return filepath;
 						}
@@ -330,7 +358,7 @@ static char *translate_path(char *path, int *viso)
 
 	if(path) free(path);
 
-	return p;
+	return normalize_path(p, 0);
 }
 
 static int64_t calculate_directory_size(char *path)
@@ -408,22 +436,23 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 	netiso_open_result result;
 	char *filepath;
 	uint16_t fp_len;
-	int ret, viso = VISO_NONE;
+	uint16_t rlen;
+	int ret = FAILED, viso = VISO_NONE;
 
 	if(!client->buf)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
-		return FAILED;
+		goto send_result; // return FAILED;
 	}
 
-	result.file_size = BE64(NONE);
+	result.file_size = NONE;
 	result.mtime = BE64(0);
 
 	fp_len = BE16(cmd->fp_len);
 	if(fp_len == 0)
 	{
 		DPRINTF("ERROR: invalid path length for open command\n");
-		return FAILED;
+		goto send_result; // return FAILED;
 	}
 
 	//DPRINTF("fp_len = %d\n", fp_len);
@@ -431,17 +460,16 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 	if(!filepath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
-		return FAILED;
+		goto send_result; // return FAILED;
 	}
 
-	ret = recv_all(client->s, (void *)filepath, fp_len);
+	rlen = recv_all(client->s, (void *)filepath, fp_len);
 	filepath[fp_len] = 0;
 
-	if(ret != fp_len)
+	if(rlen != fp_len)
 	{
-		DPRINTF("recv failed, getting filename for open: %d %d\n", ret, get_network_error());
-		free(filepath);
-		return FAILED;
+		DPRINTF("recv failed, getting filename for open: %d %d\n", rlen, get_network_error());
+		goto send_result; // return FAILED;
 	}
 
 	if(client->ro_file)
@@ -452,15 +480,15 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 
 	if((fp_len == 10) && !strcmp(filepath, "/CLOSEFILE"))
 	{
-		free(filepath);
-		return FAILED;
+		ret = SUCCEEDED;
+		goto send_result; // return FAILED;
 	}
 
 	filepath = translate_path(filepath, &viso);
 	if(!filepath)
 	{
 		DPRINTF("Path cannot be translated. Connection with this client will be aborted.\n");
-		return FAILED;
+		goto send_result; // return FAILED;
 	}
 
 	if(viso == VISO_NONE)
@@ -473,10 +501,12 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 		client->ro_file = new VIsoFile((viso == VISO_PS3));
 	}
 
-	size_t rlen = 0;
+	rlen = 0;
 	if(!strncmp(filepath, root_directory, root_len)) rlen = root_len;
 
 	client->CD_SECTOR_SIZE = 2352;
+
+	//normalize_path_win32(filepath);
 
 	if(client->ro_file->open(filepath, O_RDONLY) < 0)
 	{
@@ -484,12 +514,17 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 
 		delete client->ro_file;
 		client->ro_file = NULL;
+		goto send_result; // return FAILED;
 	}
 	else
 	{
 		if(client->ro_file->fstat(&st) < 0)
 		{
-			DPRINTF("Error in fstat\n");
+			printf("fstat error on \"%s\" (viso=%d)\n", filepath + rlen, viso);
+
+			delete client->ro_file;
+			client->ro_file = NULL;
+			goto send_result; // return FAILED;
 		}
 		else
 		{
@@ -514,6 +549,8 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 
 				if(client->CD_SECTOR_SIZE != 2352) printf("CD sector size: %i\n", client->CD_SECTOR_SIZE);
 			}
+
+			ret = SUCCEEDED;
 		}
 	}
 
@@ -523,16 +560,17 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 	DPRINTF("File size: %llx\n", (long long unsigned int)st.file_size);
 #endif
 
-	free(filepath);
+send_result:
 
-	ret = send(client->s, (char *)&result, sizeof(result), 0);
-	if(ret != sizeof(result))
+	if(filepath) free(filepath);
+
+	if(send(client->s, (char *)&result, sizeof(result), 0) != sizeof(result))
 	{
-		DPRINTF("open, send result error: %d %d\n", ret, get_network_error());
+		printf("open error, send result error: %d %d\n", ret, get_network_error());
 		return FAILED;
 	}
 
-	return SUCCEEDED;
+	return ret;
 }
 
 static int process_read_file_critical(client_t *client, netiso_read_file_critical_cmd *cmd)
@@ -981,14 +1019,16 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 		return FAILED;
 	}
 
+	printf("listing %s\n", dirpath);
+
 	dirpath = translate_path(dirpath, NULL);
 	if(!dirpath)
 	{
-		DPRINTF("Path cannot be translated. Connection with this client will be aborted.\n");
+		printf("Path cannot be translated. Connection with this client will be aborted.\n");
 		return FAILED;
 	}
 
-	DPRINTF("open dir %s\n", dirpath);
+	//DPRINTF("open dir %s\n", dirpath);
 
 	if(client->dir)
 	{
@@ -1003,10 +1043,12 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 
 	client->dirpath = NULL;
 
+	printf("open dir %s\n", dirpath);
+
 	client->dir = opendir(dirpath);
 	if(!client->dir)
 	{
-		DPRINTF("open dir error on \"%s\"\n", dirpath);
+		printf("open dir error on \"%s\"\n", dirpath);
 		result.open_result = BE32(NONE);
 	}
 	else
@@ -1032,6 +1074,7 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 
 static int process_read_dir_entry_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd, int version)
 {
+	(void) cmd;
 	char *path = NULL;
 	file_stat_t st;
 	struct dirent *entry = NULL;
@@ -1221,6 +1264,8 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	size_t d_name_len, dirpath_len;
 	dirpath_len = sprintf(path, "%s/", client->dirpath);
 
+	printf("** listing %s\n", path);
+
 	// list dir
 	while ((entry = readdir(client->dir)))
 	{
@@ -1294,6 +1339,8 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 		{
 			while(*dir_path == '\r' || *dir_path == '\n' || *dir_path == '\t' || *dir_path == ' ') dir_path++;
 			char *eol = strstr(dir_path, "\n"); if(eol) *eol = 0;
+
+			normalize_path(dir_path, 1);
 
 			// check dir exists
 			if(stat_file(dir_path, &st) >= 0)
@@ -1421,7 +1468,7 @@ static int process_stat_cmd(client_t *client, netiso_stat_cmd *cmd)
 	if((stat_file(filepath, &st) < 0) && (!strstr(filepath, "/is_ps3_compat1/")))
 	{
 		DPRINTF("stat error on \"%s\"\n", filepath);
-		result.file_size = BE64(NONE);
+		result.file_size = NONE;
 	}
 	else
 	{
@@ -1606,7 +1653,7 @@ int main(int argc, char *argv[])
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
 #endif
 
-	printf("ps3netsrv build 20200518");
+	printf("ps3netsrv build 20200519");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
@@ -1631,7 +1678,8 @@ int main(int argc, char *argv[])
 	if(argc < 2)
 	{
 		char *filename = strrchr(argv[0], '/');
-		if(filename) filename++; else {filename = strrchr(argv[0], '\\'); if(filename) filename++;}
+		if(!filename) filename = strrchr(argv[0], '\\');
+		if( filename) filename++;
 
 		if( (filename != NULL) && (
 			(stat_file("./PS3ISO", &fs) >= 0) ||
@@ -1700,6 +1748,8 @@ int main(int argc, char *argv[])
 		char *filename = strrchr(root_directory, '/'); if(filename) *(++filename) = 0;
 		root_len = strlen(root_directory);
 	}
+
+	normalize_path(root_directory, 0);
 
 	printf("Path: %s\n\n", root_directory);
 

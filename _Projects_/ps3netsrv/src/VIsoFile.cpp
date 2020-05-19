@@ -94,7 +94,7 @@ static bool getFileSizeAndProcessMultipart(char *file, off64_t *size, bool multi
 	if (!p || (strcmp(p, ".66600") != SUCCEEDED))
 		return true;
 
-	off64_t prev_size;
+	off64_t prev_size = 0;
 
 	for (int i = 1; i < 100; i++)
 	{
@@ -164,11 +164,17 @@ static int get_ucs2_from_utf8(const unsigned char *input, const unsigned char **
 {
 	// We are not really getting utf8, but 8-bits local charset. We only support ansi in win32, atm
 	if(!input)
+	{
+		printf("viso error: no input in get_ucs2_from_utf8\n");
 		return FAILED;
+	}
 
 	*end_ptr = input;
 	if (input[0] == 0)
+	{
+		printf("viso error: blank input in get_ucs2_from_utf8\n");
 		return FAILED;
+	}
 
 	if (input[0] < 0x80)
 	{
@@ -185,11 +191,17 @@ static int get_ucs2_from_utf8(const unsigned char *input, const unsigned char **
 static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char ** end_ptr)
 {
 	if(!input)
+	{
+		printf("viso error: no input in get_ucs2_from_utf8\n");
 		return FAILED;
+	}
 
 	*end_ptr = input;
 	if (input[0] == 0)
+	{
+		printf("viso error: blank input in get_ucs2_from_utf8\n");
 		return FAILED;
+	}
 
 	if (input[0] < 0x80)
 	{
@@ -199,7 +211,10 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	if ((input[0] & 0xE0) == 0xC0)
 	{
 		if (input[1] == 0)
+		{
+			printf("viso error 0xE0: in get_ucs2_from_utf8\n");
 			return FAILED;
+		}
 
 		*end_ptr = input + 2;
 		return (input[0] & 0x1F)<<6 | (input[1] & 0x3F);
@@ -207,7 +222,10 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	if ((input[0] & 0xF0) == 0xE0)
 	{
 		if (input[1] == 0 || input[2] == 0)
+		{
+			printf("viso error 0xF0: in get_ucs2_from_utf8\n");
 			return FAILED;
+		}
 
 		*end_ptr = input + 3;
 		return (input[0] & 0x0F)<<12 | (input[1] & 0x3F)<<6 | (input[2] & 0x3F);
@@ -215,7 +233,10 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	if ((input[0] & 0xF8) == 0xF0)
 	{
 		if (input[1] == 0 || input[2] == 0 || input[3] == 0)
+		{
+			printf("viso error 0xF8: in get_ucs2_from_utf8\n");
 			return FAILED;
+		}
 
 		*end_ptr = input + 4;
 		return (input[0] & 0x07)<<18 | (input[1] & 0x3F)<<12 | (input[2] & 0x3F)<<6 | (input[3] & 0x3F);
@@ -223,7 +244,10 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	if ((input[0] & 0xFC) == 0xF8)
 	{
 		if (input[1] == 0 || input[2] == 0 || input[3] == 0 || input[4] == 0)
+		{
+			printf("viso error 0xFC: in get_ucs2_from_utf8\n");
 			return FAILED;
+		}
 
 		*end_ptr = input + 4;
 		return (input[0] & 0x03)<<24 | (input[1] & 0x3F)<<18 | (input[2] & 0x3F)<<12 | (input[3] & 0x3F)<<6 | (input[4] & 0x3F);
@@ -231,12 +255,16 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	if ((input[0] & 0xFE) == 0xFC)
 	{
 		if (input[1] == 0 || input[2] == 0 || input[3] == 0 || input[4] == 0 || input[5] == 0)
+		{
+			printf("viso error 0xFE: in get_ucs2_from_utf8\n");
 			return FAILED;
+		}
 
 		*end_ptr = input + 5;
 		return (input[0] & 0x01)<<30 | (input[1] & 0x3F)<<24 | (input[2] & 0x3F)<<18 | (input[3] & 0x3F)<<12 | (input[4] & 0x3F)<<6 | (input[5] & 0x3F);
 	}
 
+	printf("fatal viso error: in get_ucs2_from_utf8\n");
 	return FAILED;
 }
 
@@ -301,7 +329,10 @@ static void get_rand(void *bfr, uint32_t size)
 static int parse_param_sfo(file_t fd, const char *field, char *field_value, int field_len)
 {
 	if(!field || !field_len || !field_value || !field[0])
+	{
+		printf("viso error: failed to parse PARAM.SFO\n");
 		return FAILED;
+	}
 
 	if (FD_OK(fd))
 	{
@@ -351,6 +382,7 @@ static int parse_param_sfo(file_t fd, const char *field, char *field_value, int 
 			free(mem);
 	}
 
+	printf("viso error: failed to parse PARAM.SFO\n");
 	return FAILED;
 }
 
@@ -1050,7 +1082,7 @@ void VIsoFile::fixDirLba(Iso9660DirectoryRecord *record, size_t size, uint32_t d
 		p   += current->len_dr;
 		pos += current->len_dr;
 
-		if((p - buf) >= tempBufSize) break;
+		if(static_cast<size_t>(p - buf) >= tempBufSize) break;
 	}
 }
 
@@ -1447,6 +1479,7 @@ bool VIsoFile::generate(const char *inDir, const char *volumeName, const char *g
 	file_stat_t st;
 	if (stat_file(inDir, &st) != SUCCEEDED)
 	{
+		printf("viso error: path not found \"%s\"\n", inDir);
 		return FAILED;
 	}
 
@@ -1493,10 +1526,16 @@ bool VIsoFile::generate(const char *inDir, const char *volumeName, const char *g
 int VIsoFile::open(const char *path, int flags)
 {
 	if(!path)
+	{
+		printf("viso error: no path in open\n");
 		return FAILED;
+	}
 
 	if (flags != O_RDONLY)
+	{
+		printf("viso error: flags not read only\n");
 		return FAILED;
+	}
 
 	if (fsBuf)
 	{
@@ -1506,11 +1545,13 @@ int VIsoFile::open(const char *path, int flags)
 	file_stat_t st;
 	if (stat_file(path, &st) != SUCCEEDED)
 	{
+		printf("viso error: path not found \"%s\"\n", path);
 		return FAILED;
 	}
 
 	if ((st.mode & S_IFDIR) != S_IFDIR)
 	{
+		printf("viso error: not a directory \"%s\"\n", path);
 		return FAILED;
 	}
 
@@ -1520,7 +1561,10 @@ int VIsoFile::open(const char *path, int flags)
 	if (ps3Mode)
 	{
 		if (!get_title_id(path, gameCode))
+		{
+			printf("viso error: getting title id in PS3 MODE\n");
 			return FAILED;
+		}
 
 		strcpy(volumeName, "PS3VOLUME");
 	}
@@ -1537,7 +1581,10 @@ int VIsoFile::open(const char *path, int flags)
 	}
 
 	if (!generate((char *)path, volumeName, gameCode))
+	{
+		printf("viso error: failed to create virtual iso\n");
 		return FAILED;
+	}
 
 	return SUCCEEDED;
 }
@@ -1545,7 +1592,10 @@ int VIsoFile::open(const char *path, int flags)
 int VIsoFile::close(void)
 {
 	if (!fsBuf)
+	{
+		printf("viso error: closing viso\n");
 		return FAILED;
+	}
 
 	reset();
 	return SUCCEEDED;
@@ -1554,7 +1604,10 @@ int VIsoFile::close(void)
 ssize_t VIsoFile::read(void *buf, size_t nbyte)
 {
 	if(!buf)
+	{
+		printf("viso error: no read buffer\n");
 		return FAILED;
+	}
 
 	DirList *dirList;
 	uint64_t remaining, to_read;
@@ -1562,7 +1615,10 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 	uint8_t *p;
 
 	if (!fsBuf)
+	{
+		printf("viso error: file error in read\n");
 		return FAILED;
+	}
 
 	remaining = nbyte;
 	r = 0;
@@ -1574,10 +1630,11 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 	}
 	else if (vFilePtr < 0)
 	{
+		printf("viso error: pointer error in read\n");
 		return FAILED;
 	}
 
-	if (vFilePtr < fsBufSize)
+	if (static_cast<uint64_t>(vFilePtr) < fsBufSize)
 	{
 		// Read FS structure from RAM
 		to_read = MIN(fsBufSize - static_cast<uint64_t>(vFilePtr), remaining);
@@ -1695,13 +1752,19 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 
 ssize_t VIsoFile::write(void *buf, size_t nbyte)
 {
+	(void) buf;
+	(void) nbyte;
+	printf("viso error: write error\n");
 	return FAILED;
 }
 
 int64_t VIsoFile::seek(int64_t offset, int whence)
 {
 	if (!fsBuf)
+	{
+		printf("viso error: seek error\n");
 		return FAILED;
+	}
 
 	if (whence == SEEK_SET)
 	{
@@ -1722,7 +1785,10 @@ int64_t VIsoFile::seek(int64_t offset, int whence)
 int VIsoFile::fstat(file_stat_t *fs)
 {
 	if (!fsBuf || !fs)
+	{
+		printf("viso error: fstat error\n");
 		return FAILED;
+	}
 
 	fs->file_size = totalSize;
 	fs->mode = S_IFREG;

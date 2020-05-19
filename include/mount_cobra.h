@@ -249,17 +249,20 @@
 
 				size_t len = sprintf(netiso_args.path, "%s", netpath);
 
-				if(islike(netpath, "/PS3ISO")) mount_unk = netiso_args.emu_mode = EMU_PS3; else
-				if(islike(netpath, "/BDISO" )) mount_unk = netiso_args.emu_mode = EMU_BD;  else
-				if(islike(netpath, "/DVDISO")) mount_unk = netiso_args.emu_mode = EMU_DVD; else
-				if(islike(netpath, "/PS2ISO")) goto copy_ps2iso_to_hdd0;                   else
-			//	if(islike(netpath, "/PSPISO")) goto copy_pspiso_to_hdd0;                   else
-				if(islike(netpath, "/PSPISO"))
+				bool is_iso = false;
+				char *ext = strrchr(netpath, '.'); if(ext) is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
+
+				if(islike(netpath, "/PS3ISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_PS3; else
+				if(islike(netpath, "/BDISO" ) && is_iso) mount_unk = netiso_args.emu_mode = EMU_BD;  else
+				if(islike(netpath, "/DVDISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_DVD; else
+				if(islike(netpath, "/PS2ISO") && is_iso) goto copy_ps2iso_to_hdd0;                   else
+			//	if(islike(netpath, "/PSPISO") && is_iso) goto copy_pspiso_to_hdd0;                   else
+				if(islike(netpath, "/PSPISO") && is_iso)
 				{
 					mount_unk = netiso_args.emu_mode = EMU_BD;
 					sprintf(netiso_args.path, "/***DVD***%s", "/PSPISO");
 				}
-				else if(islike(netpath, "/PSX"))
+				else if(islike(netpath, "/PSX") && is_iso)
 				{
 					TrackDef tracks[MAX_TRACKS];
 					unsigned int num_tracks = 1;
@@ -314,7 +317,7 @@
 					}
 
 				}
-				else if(islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ"))
+				else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ")) && (strstr(netpath + 5, "/") != NULL))
 				{
 					mount_unk = netiso_args.emu_mode = EMU_PS3;
 					sprintf(netiso_args.path, "/***PS3***%s", netpath);
@@ -370,7 +373,7 @@
 					#endif
 				}
 
-				if(ret && islike(netpath, "/PSPISO"))
+				if(ret && is_iso && islike(netpath, "/PSPISO") )
 				{
 					sprintf(templn, "/dev_bdvd/%s", netpath + 8);
 					sprintf(_path,  "/dev_bdvd/%s", netpath + 8);

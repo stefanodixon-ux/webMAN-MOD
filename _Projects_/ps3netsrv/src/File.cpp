@@ -51,14 +51,20 @@ int File::open(const char *path, int flags)
 	init_region_info();
 
 	if(!path)
+	{
+		printf("file error: no path\n", path);
 		return FAILED;
+	}
 
 	if (FD_OK(fd))
 		this->close();
-	
+
 	fd = open_file(path, flags);
 	if (!FD_OK(fd))
+	{
+		printf("file error: opening \"%s\"\n", path);
 		return FAILED;
+	}
 
 	// is multi part? (2015-2019 AV)
 	int plen = strlen(path), flen = plen - 6;
@@ -165,7 +171,7 @@ int File::open(const char *path, int flags)
 #else
 			if (mbedtls_aes_setkey_dec(&aes_dec_, key, 128) == SUCCEEDED)
 				enc_type_ = kDiscTypeRedump; // SET ENCRYPTION TYPE: Redump
-#endif			
+#endif
 		}
 		close_file(key_fd);
 	}
@@ -198,7 +204,7 @@ int File::open(const char *path, int flags)
 				// Store the region information in address format.
 				region_info_[i].encrypted = (i % 2 == 1);
 				region_info_[i].regions_first_addr = (i == 0 ? 0LL : region_info_[i - 1].regions_last_addr + 1LL);
-				region_info_[i].regions_last_addr = static_cast<int64_t>(char_arr_BE_to_uint(sec0sec1 + 12 + (i * 4)) - (i % 2 == 1 ? 1LL : 0LL)) * kSectorSize + kSectorSize - 1LL;				
+				region_info_[i].regions_last_addr = static_cast<int64_t>(char_arr_BE_to_uint(sec0sec1 + 12 + (i * 4)) - (i % 2 == 1 ? 1LL : 0LL)) * kSectorSize + kSectorSize - 1LL;
 			}
 		}
 
@@ -213,13 +219,13 @@ int File::open(const char *path, int flags)
 		// The 3k3y watermarks located at 0xF70: (D|E)ncrypted 3K BLD.
 		static const unsigned char k3k3yEnWatermark[16]  = {0x45, 0x6E, 0x63, 0x72, 0x79, 0x70, 0x74, 0x65, 0x64, 0x20, 0x33, 0x4B, 0x20, 0x42, 0x4C, 0x44};
 		static const unsigned char k3k3yDecWatermark[16] = {0x44, 0x6E, 0x63, 0x72, 0x79, 0x70, 0x74, 0x65, 0x64, 0x20, 0x33, 0x4B, 0x20, 0x42, 0x4C, 0x44};
-		
+
 		if (memcmp(&k3k3yEnWatermark[0], &sec0sec1[0xF70], sizeof(k3k3yEnWatermark)) == SUCCEEDED)
 		{
 			// Grab the D1 from the 3k3y sector.
 			unsigned char key[16];
 			memcpy(key, &sec0sec1[0xF80], 0x10);
-  
+
 			// Convert D1 to KEY and generate the aes_dec_ context.
 			unsigned char key_d1[] = {0x38, 11, 0xcf, 11, 0x53, 0x45, 0x5b, 60, 120, 0x17, 0xab, 0x4f, 0xa3, 0xba, 0x90, 0xed};
 			unsigned char iv_d1[] = {0x69, 0x47, 0x47, 0x72, 0xaf, 0x6f, 0xda, 0xb3, 0x42, 0x74, 0x3a, 0xef, 170, 0x18, 0x62, 0x87};
@@ -236,7 +242,7 @@ int File::open(const char *path, int flags)
 				if (mbedtls_aes_crypt_cbc(&aes_d1, MBEDTLS_AES_ENCRYPT, 16, &iv_d1[0], key, key) == SUCCEEDED)
 					if (mbedtls_aes_setkey_dec(&aes_dec_, key, 128) == SUCCEEDED)
 						enc_type_ = kDiscType3k3yEnc; // SET ENCRYPTION TYPE: 3K3YEnc
-#endif						
+#endif
 		}
 		else if (memcmp(&k3k3yDecWatermark[0], &sec0sec1[0xF70], sizeof(k3k3yDecWatermark)) == SUCCEEDED)
 		{
