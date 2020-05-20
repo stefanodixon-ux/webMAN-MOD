@@ -231,7 +231,7 @@ static char *translate_path(char *path, int *viso)
 	if( p)
 	{
 		p += 3;
-		if(*p == 0 || *p == '/' || *p == '\\')
+		if ((*p == 0) || (*p == '/') || (*p == '\\'))
 		{
 			DPRINTF("The path \"%s\" is unsecure!\n", path);
 			if(path) free(path);
@@ -316,7 +316,7 @@ static char *translate_path(char *path, int *viso)
 				while(*dir_path)
 				{
 					int dlen;
-					while(*dir_path == '\r' || *dir_path == '\n' || *dir_path == '\t' || *dir_path == ' ') dir_path++;
+					while ((*dir_path == '\r') || (*dir_path == '\n') || (*dir_path == '\t') || (*dir_path == ' ')) dir_path++;
 					char *eol = strstr(dir_path, "\n"); if(eol) {*eol = 0, dlen = eol - dir_path;} else dlen = strlen(dir_path);
 
 					char *filepath = (char *)malloc(dlen + flen + 1);
@@ -425,7 +425,7 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 {
 	file_stat_t st;
 	netiso_open_result result;
-	char *filepath;
+	char *filepath = NULL;
 	uint16_t fp_len;
 	uint16_t rlen;
 	int ret = FAILED, viso = VISO_NONE;
@@ -469,7 +469,7 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 		client->ro_file = NULL;
 	}
 
-	if((fp_len == 10) && !strcmp(filepath, "/CLOSEFILE"))
+	if((fp_len == 10) && (!strcmp(filepath, "/CLOSEFILE")))
 	{
 		ret = SUCCEEDED;
 		goto send_result; // return FAILED;
@@ -522,9 +522,9 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 
 			fp_len = rlen + strlen(filepath + rlen);
 
-			if(fp_len > 4 && strstr(".PNG.JPG.png.jpg.SFO", filepath + fp_len - 4) != NULL)
+			if ((fp_len > 4) && (strstr(".PNG.JPG.png.jpg.SFO", filepath + fp_len - 4) != NULL))
 				; // don't cluther console with messages
-			else if(viso != VISO_NONE || BE64(st.file_size) > 0x400000UL)
+			else if ((viso != VISO_NONE) || (BE64(st.file_size) > 0x400000UL))
 				printf("open %s\n", filepath + rlen);
 
 			// detect cd sector size if image is (2MB to 848MB)
@@ -538,7 +538,7 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 					client->ro_file->seek((sec_size[n]<<4) + 0x18, SEEK_SET);
 
 					client->ro_file->read(buffer, 0xC); if(memcmp(buffer + 8, "PLAYSTATION ", 0xC) == 0) {client->CD_SECTOR_SIZE = sec_size[n]; break;}
-					client->ro_file->read(buffer, 5);   if(memcmp(buffer + 1, "CD001", 5) == 0 && buffer[0] == 0x01) {client->CD_SECTOR_SIZE = sec_size[n]; break;}
+					client->ro_file->read(buffer, 5);   if((memcmp(buffer + 1, "CD001", 5) == 0) && (buffer[0] == 0x01)) {client->CD_SECTOR_SIZE = sec_size[n]; break;}
 				}
 
 				if(client->CD_SECTOR_SIZE != 2352) printf("CD sector size: %i\n", client->CD_SECTOR_SIZE);
@@ -575,7 +575,7 @@ static int process_read_file_critical(client_t *client, netiso_read_file_critica
 	offset = BE64(cmd->offset);
 	remaining = BE32(cmd->num_bytes);
 
-	if(!client->ro_file || !client->buf)
+	if ((!client->ro_file) || (!client->buf))
 		return FAILED;
 
 #ifdef WIN32
@@ -601,14 +601,14 @@ static int process_read_file_critical(client_t *client, netiso_read_file_critica
 		}
 
 		ssize_t read_ret = client->ro_file->read(client->buf, read_size);
-		if (read_ret < 0 || static_cast<size_t>(read_ret) != read_size)
+		if ((read_ret < 0) || (static_cast<size_t>(read_ret) != read_size))
 		{
 			DPRINTF("read_file failed on read file critical command!\n");
 			return FAILED;
 		}
 
 		int send_ret = send(client->s, (char *)client->buf, read_size, 0);
-		if (send_ret < 0 || static_cast<unsigned int>(send_ret) != read_size)
+		if ((send_ret < 0) || (static_cast<unsigned int>(send_ret) != read_size))
 		{
 			DPRINTF("send failed on read file critical command!\n");
 			return FAILED;
@@ -631,7 +631,7 @@ static int process_read_cd_2048_critical_cmd(client_t *client, netiso_read_cd_20
 
 	DPRINTF("Read CD 2048 (%i) %x %x\n", client->CD_SECTOR_SIZE, BE32(cmd->start_sector), sector_count);
 
-	if(!client->ro_file || !client->buf)
+	if ((!client->ro_file) || (!client->buf))
 		return FAILED;
 
 	if((sector_count * 2048) > BUFFER_SIZE)
@@ -656,7 +656,7 @@ static int process_read_cd_2048_critical_cmd(client_t *client, netiso_read_cd_20
 	}
 
 	int send_ret = send(client->s, (char *)client->buf, sector_count * 2048, 0);
-	if (send_ret < 0 || static_cast<unsigned int>(send_ret) != (sector_count * 2048))
+	if ((send_ret < 0) || (static_cast<unsigned int>(send_ret) != (sector_count * 2048)))
 	{
 		DPRINTF("send failed on read cd 2048 critical command!\n");
 		return FAILED;
@@ -675,7 +675,7 @@ static int process_read_file_cmd(client_t *client, netiso_read_file_cmd *cmd)
 	offset = BE64(cmd->offset);
 	read_size = BE32(cmd->num_bytes);
 
-	if(!client->ro_file || !client->buf)
+	if ((!client->ro_file) || (!client->buf))
 	{
 		bytes_read = NONE;
 		goto send_result_read_file;
@@ -791,7 +791,7 @@ static int process_write_file_cmd(client_t *client, netiso_write_file_cmd *cmd)
 
 	write_size = BE32(cmd->num_bytes);
 
-	if(!client->wo_file || !client->buf)
+	if ((!client->wo_file) || (!client->buf))
 	{
 		bytes_written = NONE;
 		goto send_result_write_file;
@@ -808,7 +808,7 @@ static int process_write_file_cmd(client_t *client, netiso_write_file_cmd *cmd)
 	if(write_size > 0)
 	{
 		int ret = recv_all(client->s, (void *)client->buf, write_size);
-		if (ret < 0 || static_cast<unsigned int>(ret) != write_size)
+		if ((ret < 0) || (static_cast<unsigned int>(ret) != write_size))
 		{
 			DPRINTF("recv failed on write file: %d %d\n", ret, get_network_error());
 			return FAILED;
@@ -1082,7 +1082,7 @@ static int process_read_dir_entry_cmd(client_t *client, netiso_read_dir_entry_cm
 		memset(&result_v2, 0, sizeof(result_v2));
 	}
 
-	if(!client->dir || !client->dirpath)
+	if ((!client->dir) || (!client->dirpath))
 	{
 		if(version == 1)
 		{
@@ -1217,10 +1217,10 @@ send_result_read_dir:
 		}
 	}
 
-	if ((version == 1 && static_cast<uint64_t>(result_v1.file_size) != BE64(NONE)) || (version == 2 && static_cast<uint64_t>(result_v2.file_size) != BE64(NONE)))
+	if (((version == 1) && (static_cast<uint64_t>(result_v1.file_size) != BE64(NONE))) || ((version == 2) && (static_cast<uint64_t>(result_v2.file_size) != BE64(NONE))))
 	{
 		int send_ret = send(client->s, (char *)entry->d_name, d_name_len, 0);
-		if (send_ret < 0 || static_cast<unsigned int>(send_ret) != d_name_len)
+		if ((send_ret < 0) || (static_cast<unsigned int>(send_ret) != d_name_len))
 		{
 			DPRINTF("send file name error on read dir entry (%d)\n", get_network_error());
 			return FAILED;
@@ -1243,7 +1243,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 
 	char *path = (char*)malloc(root_len + strlen(client->dirpath + root_len) + MAX_FILE_LEN + 2);
 
-	if(!client->dir || !client->dirpath || !dir_entries || !path)
+	if ((!client->dir) || (!client->dirpath) || (!dir_entries) || (!path))
 	{
 		result.dir_size = (0);
 		goto send_result_read_dir_cmd;
@@ -1338,7 +1338,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 		char *dir_path = lnk_file;
 		while(*dir_path)
 		{
-			while(*dir_path == '\r' || *dir_path == '\n' || *dir_path == '\t' || *dir_path == ' ') dir_path++;
+			while ((*dir_path == '\r') || (*dir_path == '\n') || (*dir_path == '\t') || (*dir_path == ' ')) dir_path++;
 			char *eol = strstr(dir_path, "\n"); if(eol) *eol = 0;
 
 			normalize_path(dir_path, 1);
@@ -1654,7 +1654,7 @@ int main(int argc, char *argv[])
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
 #endif
 
-	printf("ps3netsrv build 20200519B");
+	printf("ps3netsrv build 20200520");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
@@ -1737,7 +1737,7 @@ int main(int argc, char *argv[])
 
 	for (int i = strlen(root_directory) - 1; i >= 0; i--)
 	{
-		if(root_directory[i] == '/' || root_directory[i] == '\\')
+		if ((root_directory[i] == '/') || (root_directory[i] == '\\'))
 			root_directory[i] = 0;
 		else
 			break;
@@ -1781,7 +1781,7 @@ int main(int argc, char *argv[])
 		uint32_t min = 1024;
 #endif
 
-		if(u < min || u > 65535)
+		if ((u < min) || (u > 65535))
 		{
 			printf("Port must be in %d-65535 range.\n", min);
 			goto exit_error;
@@ -1812,7 +1812,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					if(p[0] != '*' || p[1] != '.')
+					if ((p[0] != '*') || (p[1] != '.'))
 					{
 						printf("Wrong whitelist format.\n");
 						goto exit_error;
@@ -1888,7 +1888,7 @@ int main(int argc, char *argv[])
 		// Check for same client
 		for (i = 0; i < MAX_CLIENTS; i++)
 		{
-			if(clients[i].connected && clients[i].ip_addr.s_addr == addr.sin_addr.s_addr)
+			if((clients[i].connected) && (clients[i].ip_addr.s_addr == addr.sin_addr.s_addr))
 				break;
 		}
 
@@ -1912,7 +1912,7 @@ int main(int argc, char *argv[])
 			{
 				uint32_t ip = BE32(addr.sin_addr.s_addr);
 
-				if(ip < whitelist_start || ip > whitelist_end)
+				if ((ip < whitelist_start) || (ip > whitelist_end))
 				{
 					printf("Rejected connection from %s (not in whitelist)\n", conn_ip);
 					closesocket(cs);

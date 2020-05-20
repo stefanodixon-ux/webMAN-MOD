@@ -90,7 +90,7 @@ int File::open(const char *path, int flags)
 	}
 
 	// Encryption only makes sense for .iso or .ISO files in the .../PS3ISO/ folder so exit quick if req is is not related.
-	if (is_multipart || path_ps3iso_loc == NULL || path_ext_loc == NULL || path_ext_loc < path_ps3iso_loc)
+	if (is_multipart || (path_ps3iso_loc == NULL) || (path_ext_loc == NULL) || (path_ext_loc < path_ps3iso_loc))
 	{
 		// Clean-up old region_info_ (even-though it shouldn't be needed).
 		if (region_info_ != NULL)
@@ -179,7 +179,7 @@ int File::open(const char *path, int flags)
 	// Store the ps3 information sectors.
 	file_stat_t st;
 	unsigned char sec0sec1[kSectorSize * 2] = {0};
-	if (fstat(&st) >= 0 && st.file_size >= kSectorSize * 2)
+	if ((fstat(&st) >= 0) && (st.file_size >= kSectorSize * 2))
 	{
 		// Restore the original position even-though we just opened, it should be at 0... (can be safe here, no performance worries for open).
 		int64_t initial_read_position = seek(0, SEEK_CUR);
@@ -284,7 +284,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 		return read_file(fd, buf, nbyte);
 #else
 		// In non-encrypted mode just do what is normally done.
-		if (enc_type_ == kDiscTypeNone || region_count_ == 0 || region_info_ == NULL)
+		if ((enc_type_ == kDiscTypeNone) || (region_count_ == 0) || (region_info_ == NULL))
 		{
 			return read_file(fd, buf, nbyte);
 		}
@@ -299,9 +299,9 @@ ssize_t File::read(void *buf, size_t nbyte)
 		}
 
 		// If this is a 3k3y iso, and the 0xF70 data is being requests by ps3, we should null it out.
-		if (enc_type_ == kDiscType3k3yDec || enc_type_ == kDiscType3k3yEnc)
+		if ((enc_type_ == kDiscType3k3yDec) || (enc_type_ == kDiscType3k3yEnc))
 		{
-			if (read_position + ret >= 0xF70LL && read_position <= 0x1070LL)
+			if ((read_position + ret >= 0xF70LL) && (read_position <= 0x1070LL))
 			{
 				// Zero out the 0xF70 - 0x1070 overlap.
 				unsigned char *bufb = reinterpret_cast<unsigned char *>(buf);
@@ -319,7 +319,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 		// Encrypted mode, check if the request lies in an encrypted range.
 		for (size_t i = 0; i < region_count_; ++i)
 		{
-			if (read_position >= region_info_[i].regions_first_addr && read_position <= region_info_[i].regions_last_addr)
+			if ((read_position >= region_info_[i].regions_first_addr) && (read_position <= region_info_[i].regions_last_addr))
 			{
 				// We found the region, decrypt if needed.
 				if (!region_info_[i].encrypted)
@@ -332,7 +332,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 
 				// TODO(Temporary): Sanity check, we are assuming that reads always start at a beginning of a sector. And that all reads will be multiples of kSectorSize.
 				//				  Note: Both are easy fixes, but, code can be more simple + efficient if these two conditions are true (which they look to be from initial testing).
-				if (nbyte % kSectorSize != 0 || ret % kSectorSize != 0 || read_position % kSectorSize != 0)
+				if ((nbyte % kSectorSize != 0) || (ret % kSectorSize != 0) || (read_position % kSectorSize != 0))
 				{
 					printf("ERROR: encryption assumptions were not met, code needs to be updated, your game is probably about to crash: nbyte 0x%x, ret 0x%x, read_position 0x%I64x.\n", nbyte, ret, read_position);
 				}
@@ -349,7 +349,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 	// read multi part iso (2015 AV)
 	ssize_t ret2 = 0, ret = read_file(fp[index], buf, nbyte);
 
-	if(ret < (ssize_t)nbyte && index < (is_multipart - 1))
+	if ((ret < (ssize_t)nbyte) && (index < (is_multipart - 1)))
 	{
 		void *buf2 = (int8_t*)buf + ret;
 		ret2 = read_file(fp[index + 1], buf2, nbyte - ret); // data is split between 2 parts
@@ -369,7 +369,7 @@ ssize_t File::write(void *buf, size_t nbyte)
 
 int64_t File::seek(int64_t offset, int whence)
 {
-	if(!is_multipart || !part_size)
+	if ((!is_multipart) || (!part_size))
 		return seek_file(fd, offset, whence);
 
 	// seek multi part iso (2015 AV)
@@ -405,11 +405,11 @@ int File::fstat(file_stat_t *fs)
 // keystr_to_keyarr (&& asciischar_to_byte): Convert a hex string into a byte array.
 unsigned char File::asciischar_to_byte(char input)
 {
-	if(input >= '0' && input <= '9')
+	if ((input >= '0') && (input <= '9'))
 		return input - '0';
-	if(input >= 'A' && input <= 'F')
+	if ((input >= 'A') && (input <= 'F'))
 		return input - 'A' + 10;
-	if(input >= 'a' && input <= 'f')
+	if ((input >= 'a') && (input <= 'f'))
 		return input - 'a' + 10;
 
 	printf("ERROR: asciischar_to_byte.\n");

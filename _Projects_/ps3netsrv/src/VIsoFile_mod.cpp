@@ -56,7 +56,7 @@ static char *dupString(const char *str)
 
 static size_t strncpy_upper(char *s1, const char *s2, size_t n)
 {
-	if(!s1 || !s2 || (n < 1)) return 0;
+	if ((!s1) || (!s2) || (n < 1)) return 0;
 
 	strncpy(s1, s2, n);
 
@@ -65,7 +65,7 @@ static size_t strncpy_upper(char *s1, const char *s2, size_t n)
 		if (s1[i] == 0)
 			return i;
 
-		if (s1[i] >= 'a' && s1[i] <= 'z')
+		if ((s1[i] >= 'a') && (s1[i] <= 'z'))
 		{
 			s1[i] -= ('a'-'A');
 		}
@@ -93,7 +93,7 @@ static bool getFileSizeAndProcessMultipart(char *file, off64_t *size, bool multi
 	if(!multipart) return true;
 
 	char *p = strrchr(file, '.');
-	if (!p || (strcmp(p, ".66600") != SUCCEEDED))
+	if ((!p) || (strcmp(p, ".66600") != SUCCEEDED))
 		return true;
 
 	off64_t prev_size = 0;
@@ -223,7 +223,7 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	}
 	if ((input[0] & 0xF0) == 0xE0)
 	{
-		if (input[1] == 0 || input[2] == 0)
+		if ((input[1] == 0) || (input[2] == 0))
 		{
 			printf("viso error 0xF0: in get_ucs2_from_utf8\n");
 			return FAILED;
@@ -234,7 +234,7 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	}
 	if ((input[0] & 0xF8) == 0xF0)
 	{
-		if (input[1] == 0 || input[2] == 0 || input[3] == 0)
+		if ((input[1] == 0) || (input[2] == 0) || (input[3] == 0))
 		{
 			printf("viso error 0xF8: in get_ucs2_from_utf8\n");
 			return FAILED;
@@ -245,7 +245,7 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	}
 	if ((input[0] & 0xFC) == 0xF8)
 	{
-		if (input[1] == 0 || input[2] == 0 || input[3] == 0 || input[4] == 0)
+		if ((input[1] == 0) || (input[2] == 0) || (input[3] == 0) || (input[4] == 0))
 		{
 			printf("viso error 0xFC: in get_ucs2_from_utf8\n");
 			return FAILED;
@@ -256,7 +256,7 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 	}
 	if ((input[0] & 0xFE) == 0xFC)
 	{
-		if (input[1] == 0 || input[2] == 0 || input[3] == 0 || input[4] == 0 || input[5] == 0)
+		if ((input[1] == 0) || (input[2] == 0) || (input[3] == 0) || (input[4] == 0) || (input[5] == 0))
 		{
 			printf("viso error 0xFE: in get_ucs2_from_utf8\n");
 			return FAILED;
@@ -274,12 +274,12 @@ static int get_ucs2_from_utf8(const unsigned char * input, const unsigned char *
 
 static int utf8_to_ucs2(const unsigned char *utf8, uint16_t *ucs2, uint16_t maxLength)
 {
-	if(!utf8 || !ucs2 || !maxLength) return 0;
+	if((!utf8) || (!ucs2) || (!maxLength)) return 0;
 
 	const unsigned char *p = utf8;
 	int length = 0;
 
-	while (*p && length < maxLength)
+	while (*p && (length < maxLength))
 	{
 		int ch = get_ucs2_from_utf8(p, &p);
 		if (ch < 0)
@@ -296,7 +296,7 @@ static int utf8_to_ucs2(const unsigned char *utf8, uint16_t *ucs2, uint16_t maxL
 #include <wincrypt.h>
 static void get_rand(void *bfr, uint32_t size)
 {
-	if (!bfr || !size)
+	if ((!bfr) || (!size))
 		return;
 
 	HCRYPTPROV hProv;
@@ -312,7 +312,7 @@ static void get_rand(void *bfr, uint32_t size)
 #else
 static void get_rand(void *bfr, uint32_t size)
 {
-	if (!bfr || !size)
+	if ((!bfr) || (!size))
 		return;
 
 	FILE *fp;
@@ -330,7 +330,7 @@ static void get_rand(void *bfr, uint32_t size)
 
 static int parse_param_sfo(file_t fd, const char *field, char *field_value, int field_len)
 {
-	if(!field || !field_len || !field_value || !field[0])
+	if ((!field) || (!field_len) || (!field_value) || (!field[0]))
 	{
 		printf("viso error: failed to parse PARAM.SFO\n");
 		return FAILED;
@@ -390,7 +390,7 @@ static int parse_param_sfo(file_t fd, const char *field, char *field_value, int 
 
 static bool get_title_id(const char *dir, char *title_id)
 {
-	if(!dir || !title_id)
+	if ((!dir) || (!title_id))
 		return false;
 
 	char sfo_path[MAX_PATH];
@@ -588,7 +588,7 @@ DirList *VIsoFile::getParent(DirList *dirList)
 
 bool VIsoFile::isDirectChild(DirList *dir, DirList *parentCheck)
 {
-	if(!dir || !parentCheck) return false;
+	if ((!dir) || (!parentCheck)) return false;
 
 	if (strcmp(dir->path, parentCheck->path) == SUCCEEDED)
 		return false;
@@ -606,7 +606,7 @@ bool VIsoFile::isDirectChild(DirList *dir, DirList *parentCheck)
 
 Iso9660DirectoryRecord *VIsoFile::findDirRecord(const char *dirName, Iso9660DirectoryRecord *parentRecord, size_t size, bool joliet)
 {
-	if(!dirName || !parentRecord)
+	if ((!dirName) || (!parentRecord))
 		return NULL;
 
 	uint8_t *strCheck = new uint8_t[256]; if(!strCheck) return NULL;
@@ -645,7 +645,7 @@ Iso9660DirectoryRecord *VIsoFile::findDirRecord(const char *dirName, Iso9660Dire
 				break;
 		}
 
-		if (current->len_fi == strCheckSize && memcmp(&current->fi, strCheck, strCheckSize) == SUCCEEDED)
+		if ((current->len_fi == strCheckSize) && (memcmp(&current->fi, strCheck, strCheckSize) == SUCCEEDED))
 		{
 			delete[] strCheck;
 			return current;
@@ -662,7 +662,7 @@ Iso9660DirectoryRecord *VIsoFile::findDirRecord(const char *dirName, Iso9660Dire
 
 uint8_t *VIsoFile::buildPathTable(bool msb, bool joliet, size_t *retSize)
 {
-	if(!tempBuf || !tempBufSize) return 0;
+	if ((!tempBuf) || (!tempBufSize)) return 0;
 
 	DirList *dirList;
 	uint8_t *p;
@@ -736,7 +736,7 @@ uint8_t *VIsoFile::buildPathTable(bool msb, bool joliet, size_t *retSize)
 
 bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 {
-	if(!tempBuf || !tempBufSize || !dirList) return false;
+	if ((!tempBuf) || (!tempBufSize) || (!dirList)) return false;
 
 	Iso9660DirectoryRecord *record, *parentRecord = NULL;
 	DirList *tempList, *parent;
@@ -1045,7 +1045,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 
 void VIsoFile::fixDirLba(Iso9660DirectoryRecord *record, size_t size, uint32_t dirLba, uint32_t filesLba)
 {
-	if(!record || !size) return;
+	if ((!record) || (!size)) return;
 
 	uint8_t *p, *buf;
 	uint32_t pos = 0;
@@ -1090,7 +1090,7 @@ void VIsoFile::fixDirLba(Iso9660DirectoryRecord *record, size_t size, uint32_t d
 
 void VIsoFile::fixPathTableLba(uint8_t *pathTable, size_t size, uint32_t dirLba, bool msb)
 {
-	if(!pathTable || !size) return;
+	if ((!pathTable) || (!size)) return;
 
 	uint8_t *p = pathTable;
 
@@ -1162,7 +1162,7 @@ bool VIsoFile::build(const char *inDir)
 		else
 			count = NONE;
 
-		if (count < 0 || !dirs)
+		if ((count < 0) || (!dirs))
 			return false;
 
 		for (int i = 0; i < count; i++)
@@ -1211,13 +1211,13 @@ bool VIsoFile::build(const char *inDir)
 				ext_pos = name_len - 6; if(ext_pos < 1) ext_pos = 0;
 
 				char *p = files[i]->d_name + ext_pos;
-				if (p && p[0] == '.')
+				if (p && (p[0] == '.'))
 				{
-					if (p[1] == '6' && p[2] == '6' && p[3] == '6' && isdigit(p[4]) && isdigit(p[5]))
+					if ((p[1] == '6') && (p[2] == '6') && (p[3] == '6') && isdigit(p[4]) && isdigit(p[5]))
 					{
 						multipart = true;
 
-						if (p[4] != '0' || p[5] != '0')
+						if ((p[4] != '0') || (p[5] != '0'))
 						{
 							free(files[i]);
 							continue;
@@ -1305,7 +1305,7 @@ bool VIsoFile::build(const char *inDir)
 
 void VIsoFile::write(const char *volumeName, const char *gameCode)
 {
-	if(!volumeName || !gameCode) return;
+	if ((!volumeName) || (!gameCode)) return;
 
 	DirList *dirList;
 	Iso9660PVD *pvd;
@@ -1476,7 +1476,7 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 
 bool VIsoFile::generate(const char *inDir, const char *volumeName, const char *gameCode)
 {
-	if(!inDir || !volumeName || !gameCode) return false;
+	if ((!inDir) || (!volumeName) || (!gameCode)) return false;
 
 	file_stat_t st;
 	if (stat_file(inDir, &st) != SUCCEEDED)
@@ -1626,7 +1626,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 	r = 0;
 	p = (uint8_t *)buf;
 
-	if (vFilePtr >= totalSize || remaining == 0)
+	if ((vFilePtr >= totalSize) || (remaining == 0))
 	{
 		return SUCCEEDED;
 	}
@@ -1648,7 +1648,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 		vFilePtr += to_read;
 	}
 
-	if (remaining == 0 || vFilePtr >= totalSize)
+	if ((remaining == 0) || (vFilePtr >= totalSize))
 		return r;
 
 	if (vFilePtr < padAreaStart)
@@ -1665,7 +1665,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 				uint64_t fEnd = fStart + fileList->size;
 				uint64_t fEndSector = ((fEnd + SECTOR_MASK) & ~SECTOR_MASK);
 
-				if (static_cast<uint64_t>(vFilePtr) >= fStart && static_cast<uint64_t>(vFilePtr) < fEndSector)
+				if ((static_cast<uint64_t>(vFilePtr) >= fStart) && (static_cast<uint64_t>(vFilePtr) < fEndSector))
 				{
 					if (fileList->multipart)
 					{
@@ -1709,7 +1709,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 						vFilePtr += to_read;
 					}
 
-					if (remaining > 0 && fEnd != fEndSector)
+					if ((remaining > 0) && (fEnd != fEndSector))
 					{
 						// This is a zero area after the file to fill the sector
 						to_read = MIN((fEndSector-fEnd)-(vFilePtr-fEnd), remaining);
@@ -1732,7 +1732,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 		}
 	}
 
-	if (vFilePtr >= padAreaStart && vFilePtr < totalSize)
+	if ((vFilePtr >= padAreaStart) && (vFilePtr < totalSize))
 	{
 		// Pad at the end
 		off64_t read_size = padAreaSize - (vFilePtr - padAreaStart);
@@ -1786,7 +1786,7 @@ int64_t VIsoFile::seek(int64_t offset, int whence)
 
 int VIsoFile::fstat(file_stat_t *fs)
 {
-	if (!fsBuf || !fs)
+	if ((!fsBuf) || (!fs))
 	{
 		printf("viso error: fstat error\n");
 		return FAILED;
