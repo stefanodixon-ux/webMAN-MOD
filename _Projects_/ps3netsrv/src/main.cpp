@@ -1654,7 +1654,7 @@ int main(int argc, char *argv[])
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
 #endif
 
-	printf("ps3netsrv build 20200519A");
+	printf("ps3netsrv build 20200519B");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
@@ -1680,7 +1680,6 @@ int main(int argc, char *argv[])
 	{
 		char *filename = strrchr(argv[0], '/');
 		if(!filename) filename = strrchr(argv[0], '\\');
-		if(!filename) filename = root_directory;
 		if( filename) filename++;
 
 		if( (filename != NULL) && (
