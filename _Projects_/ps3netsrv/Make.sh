@@ -7,10 +7,11 @@ fi
 
 make -C polarssl-1.3.2/library
 
-if [ -f Makefile.linux ] 
+if [ -f Makefile.linux ]
 then
-	mv Makefile Makefile.win
-	mv Makefile.linux Makefile
+	make -f Makefile.linux
+#	mv Makefile Makefile.win
+#	mv Makefile.linux Makefile
+else
+	make
 fi
-
-make
