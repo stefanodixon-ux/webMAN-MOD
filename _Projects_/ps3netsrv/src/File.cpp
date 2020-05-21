@@ -334,14 +334,21 @@ ssize_t File::read(void *buf, size_t nbyte)
 				//				  Note: Both are easy fixes, but, code can be more simple + efficient if these two conditions are true (which they look to be from initial testing).
 				if ((nbyte % kSectorSize != 0) || (ret % kSectorSize != 0) || (read_position % kSectorSize != 0))
 				{
-					printf("ERROR: encryption assumptions were not met, code needs to be updated, your game is probably about to crash: nbyte 0x%x, ret 0x%x, read_position 0x%I64x.\n", nbyte, ret, read_position);
+					printf("ERROR: encryption assumptions were not met, code needs to be updated, your game is probably about to crash: nbyte 0x%lx, ret 0x%lx, read_position 0x%lx.\n",
+						(unsigned long int)nbyte,
+						(unsigned long int)ret,
+						(unsigned long int)read_position);
 				}
 
 				return ret;
 			}
 		}
 
-		printf("ERROR: LBA request wasn't in the region_info_ for an encrypted iso? RP: 0x%I64x, RC: 0x%x, LR (0x%I64x-0x%I64x).\n", read_position, region_count_, region_count_ > 0 ? region_info_[region_count_ - 1].regions_first_addr : 0LL, region_count_ > 0 ? region_info_[region_count_ - 1].regions_last_addr : 0LL);
+		printf("ERROR: LBA request wasn't in the region_info_ for an encrypted iso? RP: 0x%lx, RC: 0x%lx, LR (0x%016llx-0x%016llx).\n",
+			(unsigned long int)read_position,
+			(unsigned long int)region_count_,
+			(unsigned long long int)((region_count_ > 0) ? region_info_[region_count_ - 1].regions_first_addr : 0),
+			(unsigned long long int)((region_count_ > 0) ? region_info_[region_count_ - 1].regions_last_addr  : 0));
 		return ret;
 #endif
 	}

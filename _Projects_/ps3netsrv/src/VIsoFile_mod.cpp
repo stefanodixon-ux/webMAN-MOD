@@ -54,11 +54,11 @@ static char *dupString(const char *str)
 	return ret;
 }
 
-static size_t strncpy_upper(char *s1, const char *s2, size_t n)
+static unsigned int strncpy_upper(char *s1, const char *s2, unsigned int n)
 {
 	if ((!s1) || (!s2) || (n < 1)) return 0;
 
-	strncpy(s1, s2, n);
+	snprintf(s1, n, s2);
 
 	for (size_t i = 0; i < n; i++)
 	{
@@ -612,7 +612,7 @@ Iso9660DirectoryRecord *VIsoFile::findDirRecord(const char *dirName, Iso9660Dire
 	uint8_t *strCheck = new uint8_t[256]; if(!strCheck) return NULL;
 	uint8_t *buf, *p;
 	uint32_t pos = 0;
-	int strCheckSize;
+	unsigned int strCheckSize;
 
 	memset(strCheck, 0, 256);
 
@@ -695,7 +695,7 @@ uint8_t *VIsoFile::buildPathTable(bool msb, bool joliet, size_t *retSize)
 
 			if (!joliet)
 			{
-				table->len_di = strncpy_upper(&table->dirID, fileName, MAX_ISODIR);
+				table->len_di = (uint8_t)strncpy_upper(&table->dirID, fileName, MAX_ISODIR);
 			}
 			else
 			{
@@ -877,7 +877,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 
 			if (!joliet)
 			{
-				record->len_fi = strncpy_upper(&record->fi, fileName, MAX_ISONAME - 2);
+				record->len_fi = (uint8_t)strncpy_upper(&record->fi, fileName, MAX_ISONAME - 2);
 				strcpy(&record->fi + record->len_fi, ";1");
 				record->len_fi += 2;
 			}
@@ -948,7 +948,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 
 			if (!joliet)
 			{
-				record->len_fi = strncpy_upper(&record->fi, fileName, MAX_ISODIR);
+				record->len_fi = (uint8_t)strncpy_upper(&record->fi, fileName, MAX_ISODIR);
 			}
 			else
 			{

@@ -4,8 +4,8 @@ BUILD_TYPE = release_static
 OUTPUT := ps3netsrv
 OBJS = src/main.o src/compat.o src/File.o src/VIsoFile_mod.o
 
-CFLAGS = -Wall -I./include -I./polarssl-1.3.2/include -std=gnu99 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -DPOLARSSL
-CPPFLAGS += -Wall -I./include -I./polarssl-1.3.2/include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -DPOLARSSL
+CFLAGS = -Wall -Wno-format -I./include -I./polarssl-1.3.2/include -std=gnu99 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -DPOLARSSL
+CPPFLAGS += -Wall -Wno-format -I./include -I./polarssl-1.3.2/include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -DPOLARSSL
 
 #CFLAGS += -DNOSSL
 #CPPFLAGS +=-DNOSSL
