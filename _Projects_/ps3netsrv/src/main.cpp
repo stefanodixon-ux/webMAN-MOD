@@ -8,6 +8,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifndef WIN32
+#include <ifaddrs.h>
+#endif
+
 static const int FAILED		= -1;
 static const int SUCCEEDED	=  0;
 static const int NONE		= -1;
@@ -1652,18 +1656,24 @@ int main(int argc, char *argv[])
 	GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &console_info );
 
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
+#else
+	printf("\033[1;37m");
 #endif
 
-	printf("ps3netsrv build 20200520A");
+	printf("ps3netsrv build 20200521");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
+#else
+	printf("\033[1;31m");
 #endif
 
 	printf(" (mod by aldostools)\n");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), console_info.wAttributes );
+#else
+	printf("\033[0;37m");
 #endif
 
 #ifndef WIN32
@@ -1673,6 +1683,7 @@ int main(int argc, char *argv[])
 		goto exit_error;
 	}
 #endif
+
 
 	file_stat_t fs;
 
@@ -1859,9 +1870,34 @@ int main(int argc, char *argv[])
 	s = initialize_socket(port);
 	if(s < 0)
 	{
-		printf("Error in initialization.\n");
+		printf("Error in port initialization.\n");
 		goto exit_error;
 	}
+
+#ifndef WIN32
+	{
+		struct ifaddrs *addrs, *tmp;
+		getifaddrs(&addrs);
+		tmp = addrs;
+
+		printf("\033[1;30m");
+		int i = 0;
+		while (tmp)
+		{
+			if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET)
+			{
+				struct sockaddr_in *pAddr = (struct sockaddr_in *)tmp->ifa_addr;
+				if(!(!strcmp(inet_ntoa(pAddr->sin_addr), "0.0.0.0") || !strcmp(inet_ntoa(pAddr->sin_addr), "127.0.0.1")))
+					printf("Server IP #%x: %s:%i\n", ++i, inet_ntoa(pAddr->sin_addr), port);
+			}
+
+			tmp = tmp->ifa_next;
+		}
+		printf("\033[0;37m");
+
+		freeifaddrs(addrs);
+	}
+#endif
 
 	memset(clients, 0, sizeof(clients));
 	printf("Waiting for client...\n");
@@ -1958,9 +1994,8 @@ int main(int argc, char *argv[])
 	return SUCCEEDED;
 
 exit_error:
-	#ifdef WIN32
 	printf("\n\nPress ENTER to continue...");
 	getchar();
-	#endif
+
 	return FAILED;
 }
