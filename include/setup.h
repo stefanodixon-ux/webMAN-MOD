@@ -73,10 +73,10 @@ static void setup_parse_settings(char *param)
 	webman_config->wm_proxy = IS_UNMARKED("wp=1");
 
 	//Wait for any USB device to be ready
-	webman_config->bootd=get_valuen(param, "&b=", 0, 30);
+	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
 
 	//Wait additionally for each selected USB device to be ready
-	webman_config->boots=get_valuen(param, "&s=", 0, 30);
+	webman_config->boots = get_valuen(param, "&s=", 0, 30);
 
 	webman_config->blind = IS_MARKED("bl=1");
 	if(webman_config->blind)

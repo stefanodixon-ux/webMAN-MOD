@@ -94,8 +94,8 @@ static bool file_exists(const char *path)
 
 int main(int argc, const char* argv[])
 {
-	char path[BUF_LEN], url[BUF_LEN];
-	char *p, *param = NULL;
+	char path[BUF_LEN], url[BUF_LEN], param[BUF_LEN];
+	char *p;
 
 	FILE *fp;
 
@@ -103,8 +103,9 @@ int main(int argc, const char* argv[])
 	if(!fp)
 		fp = fopen("/dev_hdd0//game/PKGLAUNCH/USRDIR/launch.txt", "rb");
 
-	memset(path, BUF_LEN, 0);
-	memset(url,  BUF_LEN, 0);
+	memset(path,  BUF_LEN, 0);
+	memset(param, BUF_LEN, 0);
+	memset(url,   BUF_LEN, 0);
 
 	if (fp)
 	{
@@ -113,8 +114,8 @@ int main(int argc, const char* argv[])
 
 		if(*path)
 		{
-			p = strstr(path, "\n"); if(p) {param = p + 1, *p = 0;}
-			p = strstr(path, "\r"); if(p) {*p = 0; if(!param) param = p + 1;}
+			p = strstr(path, "\n"); if(p) {sprintf(param, "%s", p + 1); *p = 0;}
+			p = strstr(path, "\r"); if(p) {*p = 0; sprintf(param, "%s", p + 1);}
 
 			if(not_exists(path))
 			{
@@ -167,24 +168,19 @@ int main(int argc, const char* argv[])
 	///////////////////////
 	// process path + param
 	///////////////////////
-	if(!param)
-	{
-		param = url;
-		memset(param,  BUF_LEN, 0);
-	}
-
 	if(strstr(path, "/EBOOT.BIN") != NULL || strcasestr(path, ".self") != NULL) ; else
 
 	// find executable
 	if(*param == 0)
 	{
-		const char sufix[2][32] = {"_libretro_psl1ght.SELF", "_libretro_ps3.SELF"};
+		const char *sufix[2] = {"_libretro_ps3.SELF", "_libretro_psl1ght.SELF"};
 
 		sprintf(param, "%s", path);
 
+		char *RETROARCH;
 		for(int i = 0; i < 2; i++)
 		{
-			char *RETROARCH = i ? RETROARCH1 : RETROARCH2;
+			RETROARCH = (i == 0) ? RETROARCH1 : RETROARCH2;
 
 			if(strcasestr(path, "/ROMS/SNES/"))
 			{
@@ -430,8 +426,10 @@ int main(int argc, const char* argv[])
 					if(strcasestr(AUDIO_EXTENSIONS, extension)) {sprintf(path, "%s", SHOWTIME); break;}
 				}
 			}
-			if(file_exists(path)) break; else *param = 0;
+			if(file_exists(path)) break;
 		}
+
+		if(not_exists(path)) *param = 0;
 	}
 
 	if(*param)
