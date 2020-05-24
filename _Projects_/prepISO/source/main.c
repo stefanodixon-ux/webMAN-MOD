@@ -300,11 +300,11 @@ next_ntfs_entry:
 									titleID[0] = '\0';
 
 									sprintf(wm_path, "%s:/%s%s/%s.SFO", mounts[i].name, c_path[m], SUFIX(profile), filename);
-									if(file_exists(wm_path) == false)
+									if(not_exists(wm_path))
 										ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
 
 									sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.SFO", filename);
-									if(file_exists(wm_path) == false)
+									if(not_exists(wm_path))
 										ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
 
 									if(c_firmware < FW_VERSION && need_fix(wm_path))
@@ -320,7 +320,7 @@ next_ntfs_entry:
 									{
 										get_titleid(wm_path, titleID);
 										sprintf(mmCM_path, "%s/%s.SFO", mmCM_cache, titleID);
-										if(file_exists(mmCM_path) == false)
+										if(not_exists(mmCM_path))
 											sysLv2FsLink(wm_path, mmCM_path);
 									}
 
@@ -333,7 +333,7 @@ next_ntfs_entry:
 										if(file_exists(image_file))
 										{
 											sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s%s", filename, cover_ext[e]);
-											if(file_exists(wm_path) == false)
+											if(not_exists(wm_path))
 												copy_file(image_file, wm_path);
 											break;
 										}
@@ -342,22 +342,22 @@ next_ntfs_entry:
 									if(e >= 4)
 									{
 										sprintf(wm_path, "%s:/%s%s/%s.PNG", mounts[i].name, c_path[m], SUFIX(profile), filename);
-										if(file_exists(wm_path) == false)
+										if(not_exists(wm_path))
 											ExtractFileFromISO(path, "/PS3_GAME/ICON0.PNG;1", wm_path);
 
 										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.PNG", filename);
-										if(file_exists(wm_path) == false)
+										if(not_exists(wm_path))
 											ExtractFileFromISO(path, "/PS3_GAME/ICON0.PNG;1", wm_path);
 									}
 
 									if(mmCM_found && titleID[0]>' ' && file_exists(wm_path))
 									{
 										sprintf(mmCM_path, "%s/%s_320.PNG", mmCM_cache, titleID);
-										if(file_exists(mmCM_path) == false)
+										if(not_exists(mmCM_path))
 											sysLv2FsLink(wm_path, mmCM_path);
 
 										sprintf(mmCM_path, "%s/%s_1920.PNG", mmCM_cache, titleID);
-										if(file_exists(mmCM_path) == false)
+										if(not_exists(mmCM_path))
 											ExtractFileFromISO(path, "/PS3_GAME/PIC1.PNG;1", mmCM_path);
 									}
 								}
@@ -372,7 +372,7 @@ next_ntfs_entry:
 										if(file_exists(image_file))
 										{
 											sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s%s", filename, cover_ext[e]);
-											if(file_exists(wm_path) == false)
+											if(not_exists(wm_path))
 												copy_file(image_file, wm_path);
 											break;
 										}
@@ -395,7 +395,7 @@ next_ntfs_entry:
 										if(parts >= MAX_SECTIONS) break;
 
 										sprintf(iso_path, "%s%i", iso_name, o);
-										if(file_exists(iso_path) == false) break;
+										if(not_exists(iso_path)) break;
 
 										parts += ps3ntfs_file_to_sectors(iso_path, sections + parts, sections_size + parts, MAX_SECTIONS - parts, 1);
 									}

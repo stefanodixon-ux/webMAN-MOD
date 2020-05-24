@@ -45,7 +45,7 @@
 			if(islike(_path0, HDD0_GAME_DIR))
 			{
 				sprintf(_path, "%s%s", HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0/game/
-				if(file_exists(_path) == false)
+				if(not_exists(_path))
 				{
 					sprintf(_path, "%s%s", _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
 				}

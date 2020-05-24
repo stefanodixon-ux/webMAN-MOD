@@ -180,7 +180,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		}
 
 		// start a new thread for refresh xml content at start up
-		if(!webman_config->refr || file_exists(MY_GAMES_XML) == false)
+		if(!webman_config->refr || not_exists(MY_GAMES_XML))
 		{
 			sys_ppu_thread_t t_id;
 			sys_ppu_thread_create(&t_id, handleclient_www, (u64)REFRESH_CONTENT, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
@@ -609,16 +609,18 @@ next_xml_entry:
 							if(IS_GAMEI_FOLDER)
 							{
 								// create game folder in /dev_hdd0/game and copy PARAM.SFO to prevent deletion of XMB icon when gameDATA is disabled
-								sprintf(tempstr, "//%s/%s/PARAM.SFO", HDD0_GAME_DIR, entry.entry_name.d_name);
-								if(file_exists(tempstr) == false)
+								char *param_sfo = tempstr;
+								sprintf(param_sfo, "%s/%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name);
+								if(not_exists(param_sfo))
 								{
-									sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
-									mkdir_tree(tempstr); file_copy(templn, tempstr, COPY_WHOLE_FILE);
+									char *_param_sfo = templn; // GAMEI
+									sprintf(_param_sfo, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
+									mkdir_tree(param_sfo); file_copy(_param_sfo, param_sfo, COPY_WHOLE_FILE);
 								}
 
 								if(!webman_config->ps3l) continue;
 
-								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name); if(!file_exists(templn)) continue;
+								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name); if(not_exists(templn)) continue;
 								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
 							else

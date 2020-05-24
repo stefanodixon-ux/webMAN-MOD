@@ -1,14 +1,15 @@
 #ifndef __VISOFILE_H__
 #define __VISOFILE_H__
 
-#ifndef off64_t
-typedef long long off64_t;
-#endif
+#include <sys/types.h>
 
 #include "AbstractFile.h"
 #include "File.h"
 #include "compat.h"
 #include "iso9660.h"
+
+// uncomment if needed
+// typedef long long int off64_t;
 
 typedef struct _FileList
 {

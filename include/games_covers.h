@@ -363,7 +363,7 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 
 	flen = sprintf(icon, "%s/%s", param, file);
 
-	if(file_exists(icon) == false)
+	if(not_exists(icon))
 	{
 		flen = get_name(icon, file, GET_WMTMP); //wmtmp
 	}
@@ -380,7 +380,7 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 	if(get_image_file(icon, flen)) return;
 
 	//copy remote file
-	if(file_exists(icon) == false)
+	if(not_exists(icon))
 	{
 #ifdef NET_SUPPORT
 		if(ns < 0) {*icon = NULL; return;}
@@ -566,7 +566,7 @@ static int get_name_iso_or_sfo(char *templn, char *title_id, char *icon, const c
 	if(IS_PS3_FOLDER)
 	{
 		get_name(templn, entry_name, GET_WMTMP); strcat(templn, ".SFO\0"); // WMTMP
-		if( (!IS_NTFS) && file_exists(templn) == false)
+		if((!IS_NTFS) && not_exists(templn))
 		{
 			get_name(tempstr, entry_name, NO_EXT);
 			sprintf(templn, "%s/%s.SFO", param, tempstr); // /PS3ISO

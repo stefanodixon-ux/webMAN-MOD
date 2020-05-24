@@ -75,7 +75,7 @@ static char wm_icons[7][56] =	{
 									RB_ICONS_PATH "/icon_wm_ps3.png",       //023.png  [3]
 									RB_ICONS_PATH "/icon_wm_psp.png",       //024.png  [4]
 									RB_ICONS_PATH "/icon_wm_dvd.png",       //025.png  [5] (vid)
-									RB_ICONS_PATH "/icon_wm_dvd.png",       //026.png  [6] (roms)
+									RB_ICONS_PATH "/icon_wm_retro.png",     //026.png  [6] (roms)
 								};
 
 #define SLIST	"slist"
@@ -134,7 +134,7 @@ static uint8_t opt_mode=0;
 static uint8_t unload_mode=1;
 
 static uint64_t tick=0x80;
-static int8_t   delta=5;
+static int8_t   delta=10;
 
 #define SYS_PPU_THREAD_NONE        (sys_ppu_thread_t)NONE
 
@@ -176,10 +176,10 @@ static void load_background(void)
 	{
 		sprintf(path, "%s_%s.jpg", "/dev_hdd0/tmp/wm_res/images/slaunch", game_type[gmode]);
 
-		if(!gmode || !file_exists(path)) sprintf(path, "%s.jpg", "/dev_hdd0/plugins/images/slaunch");
+		if(!gmode || not_exists(path)) sprintf(path, "%s.jpg", "/dev_hdd0/plugins/images/slaunch");
 	}
 
-	if(file_exists(path) == false)
+	if(not_exists(path))
 	{
 		if(fav_mode)
 			sprintf(path, "/dev_flash/vsh/resource/explore/icon/cinfo-bg-%s","whatsnew.jpg");
@@ -261,7 +261,7 @@ static void draw_selection(uint16_t game_idx)
 		// game name
 		if(ISHD(disp_w))	set_font(32.f, 32.f, 1.0f, 1);
 		else				set_font(32.f, 32.f, 3.0f, 1);
-		ctx.fg_color=WHITE_TEXT;
+		ctx.fg_color = WHITE_TEXT;
 		print_text(ctx.menu, CANVAS_W, CENTER_TEXT, 0, slaunch[game_idx].name );
 
 
@@ -807,8 +807,8 @@ static void slaunch_thread(uint64_t arg)
 
 	for(uint8_t n = 0; n < 7; n++)
 	{
-		if(file_exists(wm_icons[n]) == false) {sprintf(wm_icons[n], WM_ICONS_PATH "%s", wm_icons[n] + 36); // /dev_hdd0/tmp/wm_icons/
-		if(file_exists(wm_icons[n]) == false)  sprintf(wm_icons[n], "/dev_flash/vsh/resource/explore/user/0%i.png", n + 20);} // 020.png - 026.png
+		if(not_exists(wm_icons[n])) {sprintf(wm_icons[n], WM_ICONS_PATH "%s", wm_icons[n] + 36); // /dev_hdd0/tmp/wm_icons/
+		if(not_exists(wm_icons[n]))  sprintf(wm_icons[n], "/dev_flash/vsh/resource/explore/user/0%i.png", n + 20);} // 020.png - 026.png
 	}
 
 	uint8_t gpl; uint16_t pg_idx; uint8_t p;
@@ -981,7 +981,7 @@ static void slaunch_thread(uint64_t arg)
 						break;
 					}
 
-					if(cur_game!=_cur_game && games)		// draw backgrop
+					if(cur_game!=_cur_game && games)		// draw backdrop
 					{
 						tick=0xc0;
 						play_rco_sound("snd_cursor");

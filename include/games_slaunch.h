@@ -57,7 +57,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 		strcat(enc_filename, filename);
 		strcat(enc_filename, strcasestr(icon, ".png") ? ".PNG" : ".JPG");
 
-		if(file_exists(enc_filename) == false) file_copy((char*)icon, enc_filename, COPY_WHOLE_FILE);
+		if(not_exists(enc_filename)) file_copy((char*)icon, enc_filename, COPY_WHOLE_FILE);
 	}
 #endif
 

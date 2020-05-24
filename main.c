@@ -310,6 +310,7 @@ static char local_ip[16] = "127.0.0.1";
 static void show_msg(char* msg);
 static void sys_get_cobra_version(void);
 
+static bool not_exists(const char* path);
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
 static void _file_copy(char *file1, char *file2);

@@ -182,7 +182,7 @@ static int dir_read (char *dpath)
 					else
 						snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/%s", fno.fname);
 
-					if((file_exists(wm_path) == false) && (fno.fsize < 4194304))
+					if((not_exists(wm_path)) && (fno.fsize < 4194304))
 					{
 						snprintf(fn, 255, "%s/%s", dpath, fno.fname);
 						copy_exfat(fn, wm_path, fno.fsize);

@@ -360,7 +360,7 @@ static void setup_parse_settings(char *param)
 		cobra_config->dvd_video_region = get_valuen(param, "dvr=", 0, 32); //DVD Region
 
 		if(webman_config->fanc)
-			cobra_config->fan_speed = (webman_config->man_speed < 0x33) ? 1 : webman_config->man_speed;
+			cobra_config->fan_speed = (webman_config->man_speed < MIN_FANSPEED_8BIT) ? 1 : webman_config->man_speed;
 		else
 			cobra_config->fan_speed = 0; // SYSCON
 
@@ -1242,7 +1242,7 @@ static void read_settings(void)
 
 	if(payload_ps3hen) webman_config->man_speed = 0x5A; // ps3hen default is 35% manual
 
-	webman_config->minfan = DEFAULT_MIN_FANSPEED; // %
+	webman_config->minfan = DEFAULT_MIN_FANSPEED; // 25% defined in fancontrol.h
 	webman_config->maxfan = 80; // %
 
 	//webman_config->bind = 0;        //enable remote access to FTP/WWW services
@@ -1313,7 +1313,7 @@ static void read_settings(void)
 	if((webman_config->autoboot_path[0] != '/') && !islike(webman_config->autoboot_path, "http")) sprintf(webman_config->autoboot_path, "%s", DEFAULT_AUTOBOOT_PATH);
 
 	// check stored data
-	if(webman_config->maxfan < 50) webman_config->maxfan = 80; // %
+	if(webman_config->maxfan < 50) webman_config->maxfan = 80; // % (0xCC)
 	if(webman_config->nowarn >  1) webman_config->nowarn = 0;
 
 	webman_config->minfan   = RANGE(webman_config->minfan, MIN_FANSPEED, 95);   // %

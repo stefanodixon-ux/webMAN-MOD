@@ -461,8 +461,8 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 			else
 				sprintf(filename, "%s/PARAM.SFO", game_path);
 
-			if(file_exists(filename) == false) sprintf(filename, "%s/PS3_GAME/PARAM.SFO", game_path);
-			if(file_exists(filename) == false) {wait_for("/dev_bdvd", 10); sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");}
+			if(not_exists(filename)) sprintf(filename, "%s/PS3_GAME/PARAM.SFO", game_path);
+			if(not_exists(filename)) {wait_for("/dev_bdvd", 10); sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");}
 
 			char paramsfo[_4KB_];
 			unsigned char *mem = (u8*)paramsfo;

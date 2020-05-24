@@ -27,7 +27,6 @@ static int32_t get_font_object(void)
 	int32_t pm_start = 0x10000;
 	uint64_t pat[2] = {0x3800001090810080ULL, 0x90A100849161008CULL};
 
-
 	while(pm_start < 0x700000)
 	{
 		if((*(uint64_t*)pm_start == pat[0]) && (*(uint64_t*)(pm_start+8) == pat[1]))
@@ -96,22 +95,37 @@ static void font_init(void)
 	// get current font style for the current logged in user
 	xsetting_CC56EB2D()->GetRegistryValue(user_id, 0x5C, &val);
 
+	// fix font selection
+	int val_lang = 1;
+	xsetting_0AF1F161()->GetSystemLanguage(&val_lang);
+	if(((val_lang >= 9) && (val_lang <= 11)) || (val_lang == 16) || (val_lang == 19))
+		val = 0;
+	if(val_lang == 7)
+		val = 4;
+	if(val_lang == 8)
+		val = 9;
+
 	// get sysfont
 	switch(val)
 	{
 		case 0:   // original
-			opened_font = (void*)(vsh_fonts[5]);
-			break;
+		  opened_font = (void*)(vsh_fonts[5]);
+		  break;
 		case 1:   // rounded
-			opened_font = (void*)(vsh_fonts[8]);
-			break;
+		  opened_font = (void*)(vsh_fonts[8]);
+		  break;
 		case 3:   // pop
-			opened_font = (void*)(vsh_fonts[10]);
-			break;
+		  opened_font = (void*)(vsh_fonts[10]);
+		  break;
+		case 4:   // russian
+		  opened_font = (void*)(vsh_fonts[1]);
+		  break;
 		default:  // better than nothing
-			opened_font = (void*)(vsh_fonts[0]);
-			break;
+		  opened_font = (void*)(vsh_fonts[9]);
+		  break;
 	}
+
+	if(!opened_font) return;
 
 	FontOpenFontInstance(opened_font, &ctx.font);
 
@@ -366,6 +380,8 @@ void init_graphic()
 	// get current display values
 	BASE_offset = (*(uint32_t*)0x60201104) + BASE;	  // start offset of current framebuffer
 
+	flip_frame((uint64_t*)ctx.canvas);
+
 	//getDisplayPitch(&pitch, &unk1);	   // framebuffer pitch size
 	//h = getDisplayHeight();			   // display height
 	//w = getDisplayWidth();				// display width
@@ -387,7 +403,7 @@ int32_t load_img_bitmap(int32_t idx, char *path, const char *default_img)
 
 	bool use_default = (*default_img == '/');
 
-	if(file_exists(path) == false)
+	if(not_exists(path))
 	{
 		strcpy(path, default_img); use_default = false;
 	}
@@ -486,40 +502,40 @@ static uint32_t mix_color(uint32_t bg, uint32_t fg)
 ***********************************************************************/
 void flip_frame(uint64_t *canvas)
 {
-	uint32_t i, k, CANVAS_WW = CANVAS_W/2;
+	uint32_t i, k, m, CANVAS_WW = CANVAS_W/2;
 
-	for(i = 0; i < CANVAS_H; i++)
+	for(m = i = 0; i < CANVAS_H; i++, m = i * CANVAS_WW)
 		for(k = 0; k < CANVAS_WW; k++)
 			*(uint64_t*)(OFFSET(k*2, i)) =
-				 canvas[k + i * CANVAS_WW];
+				 canvas[k + m];
 }
 
 void set_texture_direct(uint32_t *texture, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
-	uint32_t i, k, _width = width/2;
+	uint32_t i, k, m, _width = width/2;
 	uint64_t *canvas = (uint64_t*)texture;
-	for(i = 0; i < height; i++)
+	for(m = i = 0; i < height; i++, m = i * _width)
 		for(k = 0; k < _width; k++)
 			*(uint64_t*)(OFFSET(k*2+x, (i+y))) =
-				 canvas[k + i * _width];
+				 canvas[k + m];
 }
 
 void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 {
-	uint32_t i, k, _width = ctx.img[idx].w/2;
+	uint32_t i, k, m, _width = ctx.img[idx].w/2;
 	uint64_t *canvas = (uint64_t*)ctx.img[idx].addr;
 	if(!ctx.img[idx].b)	// jpeg - no transparency
-		for(i = 0; i < ctx.img[idx].h; i++)
+		for(m = i = 0; i < ctx.img[idx].h; i++, m = i * _width)
 			for(k = 0; k < _width; k++)
 				*(uint64_t*)(OFFSET(k*2+x, (i+y))) =
-					 canvas[k + i * _width];
+					 canvas[k + m];
 	else				// png - blend with 18% gray background
-		for(i = 0; i < ctx.img[idx].h; i++)
+		for(m = i = 0; i < ctx.img[idx].h; i++, m = i * _width)
 			for(k = 0; k < _width; k++)
 			{
 				*(uint64_t*)(OFFSET(k*2+x, (i+y))) =
-					 ((uint64_t)(mix_color(0x80303030, (canvas[k + i * _width])>>32))<<32)
-								| (mix_color(0x80303030, canvas[k + i * _width]));
+					 ((uint64_t)(mix_color(0x80303030, (canvas[k + m])>>32))<<32)
+								| (mix_color(0x80303030, canvas[k + m]));
 			}
 }
 
@@ -527,7 +543,7 @@ void set_backdrop(uint8_t idx, uint8_t restore)
 {
 	uint32_t i, k, CANVAS_WW = CANVAS_W/2;
 	uint64_t *canvas = (uint64_t*)ctx.canvas;
-	uint64_t new_pixel=0;
+	uint64_t new_pixel = 0;
 	uint64_t new_pixel_R0, new_pixel_G0, new_pixel_B0, new_pixel_R1, new_pixel_G1, new_pixel_B1;
 
 	float dim=0.70f;

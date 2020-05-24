@@ -123,16 +123,16 @@
 
 					fan_speed--;
 					for(u8 cc = 1; cc < 5; cc++)
-						if(t1 <= (max_temp - cc)) {fan_speed--; if(fan_speed>0x66) fan_speed -= 2;} // decrease fan speed faster if > 40% & cpu is very cool
+						if(t1 <= (max_temp - cc)) {fan_speed--; if(fan_speed > 0x66) fan_speed -= 2;} // decrease fan speed faster if > 40% & cpu is very cool
 				}
 			}
 
 			if((t1 > 76) && (old_fan < 0x66)) fan_speed += step_up; // increase fan speed faster if < 40% and cpu is too hot
 
 			if(fan_speed < PERCENT_TO_8BIT(webman_config->minfan)) fan_speed = PERCENT_TO_8BIT(webman_config->minfan);
-			if(fan_speed > MAX_FANSPEED) fan_speed = MAX_FANSPEED;
+			if(fan_speed > MAX_FANSPEED_8BIT) fan_speed = MAX_FANSPEED_8BIT;
 
-			if(old_fan!=fan_speed || stall > 35)
+			if((old_fan != fan_speed) || (stall > 35))
 			{
 				if(t1 > 78 && fan_speed < 0x50) fan_speed += 2; // <31%
 				if(old_fan != fan_speed)
@@ -184,7 +184,7 @@
 
 					if(fan_speed < 0xB0) fan_speed = 0xB0; // 69%
 					else
-						if(fan_speed < MAX_FANSPEED) fan_speed += 8;
+						if(fan_speed < MAX_FANSPEED_8BIT) fan_speed += 8;
 
 					old_fan = fan_speed;
 					set_fan_speed(fan_speed);

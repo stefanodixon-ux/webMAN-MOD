@@ -110,7 +110,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		else
 			{get_name(templn, data[v3_entry].name, GET_WMTMP); strcat(templn, ".SFO\0");}
 
-		if(file_exists(templn) == false)
+		if(not_exists(templn))
 		{
 			if(data[v3_entry].is_directory)
 				sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
@@ -154,7 +154,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			get_name(icon, data[v3_entry].name, GET_WMTMP); strcat(icon, ext[index]);
 			copy_net_file(icon, enc_dir_name, ns, COPY_WHOLE_FILE);
 
-			if(file_exists(icon) == false) *icon = NULL;
+			if(not_exists(icon)) *icon = NULL;
 		}
 
 		sprintf(data[v3_entry].name, "%s", tempstr + strlen(param) + 1);
@@ -257,8 +257,20 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 
 	templn[tlen] = NULL;
 
-	char *p = strstr(templn + 5, "CD");
-	if(p) {if(ISDIGIT(p[2])) skey[6] = p[2]; if(ISDIGIT(p[3])) skey[6] = p[3];} // sort by CD#
+	char *p = NULL, *nm = templn + 5;
+	if(f1 > id_PS3ISO)
+	{
+		       p = strstr(nm, "CD");
+		if(!p) p = strstr(nm, "Vol");
+		if(!p) p = strstr(nm, "Disc");
+		if( p) {while(*p && !ISDIGIT(*p)) ++p;}
+	}
+	if( p)
+	{
+		skey[6] = '0';
+		for(; nm < p; nm++) if(ISDIGIT(*nm)) {skey[6] += (*nm - '0')<<4; break;}
+		if(ISDIGIT(p[0])) skey[6] += (p[0] - '0'); if(ISDIGIT(p[1])) skey[6] += (p[1] - '0'); // sort by CD#
+	}
 	else
 	{
 		char w2 = 0;
@@ -738,7 +750,7 @@ next_html_entry:
 #ifdef PKG_LAUNCHER
 							if(IS_GAMEI_FOLDER)
 							{
-								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name); if(!file_exists(templn)) continue;
+								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name); if(not_exists(templn)) continue;
 								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
 							else

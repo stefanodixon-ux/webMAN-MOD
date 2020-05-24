@@ -83,7 +83,7 @@
 				for(; iso_parts < MAX_ISO_PARTS; iso_parts++)
 				{
 					sprintf(templn + path_len - 2, ".%i", iso_parts);
-					if(file_exists(templn) == false) break;
+					if(not_exists(templn)) break;
 				}
 				templn[path_len - 2] = NULL;
 			}
@@ -211,7 +211,7 @@
 
 							sprintf(_path, "/dev_bdvd/%s", entry.d_name);
 
-							if(file_exists(_path) == false) goto exit_mount;
+							if(not_exists(_path)) goto exit_mount;
 
 							if(is_psp)
 							{
@@ -500,7 +500,7 @@
 						#ifndef LITE_EDITION
 						// Auto-copy CONFIG from ManaGunZ
 						sprintf(_path, "%s.CONFIG", iso_list[0]);
-						if(!webman_config->ps2config && (file_exists(_path) == false))
+						if(!webman_config->ps2config && not_exists(_path))
 						{
 							cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
 							sys_ppu_thread_usleep(2500);
@@ -601,7 +601,7 @@
 							sprintf(_path + flen, "%s", cue_ext[e]);
 							if(file_exists(_path)) break;
 						}
-						if(file_exists(_path) == false) sprintf(_path, "%s", cobra_iso_list[0]);
+						if(not_exists(_path)) sprintf(_path, "%s", cobra_iso_list[0]);
 					}
 
 					mount_iso = mount_iso || file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = EMU_PSX;

@@ -1,6 +1,7 @@
 #include "File.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <cstring>
 
 #include "common.h"
@@ -113,7 +114,7 @@ int File::open(const char *path, int flags)
 
 			for(int i = 1; i < 64; i++)
 			{
-				filepath[flen + 4] = 0; sprintf(filepath, "%s.%i", filepath, i);
+				sprintf(filepath + flen + 4, ".%i", i);
 
 				fp[i] = open_file(filepath, flags);
 				if (!FD_OK(fp[i])) break;
@@ -133,7 +134,7 @@ int File::open(const char *path, int flags)
 	/////////////////////////////////////////////////
 
 	file_t key_fd;
-	char key_path[path_ext_loc - path + 5 + 1];
+	char *key_path = new char[path_ext_loc - path + 5 + 1];
 	strncpy(key_path, path, path_ext_loc - path + 5);
 
 	// Check for redump encrypted mode by looking for the ".dkey" is the same path of the ".iso".
@@ -156,6 +157,8 @@ int File::open(const char *path, int flags)
 
 		key_fd = open_file(key_path, flags);
 	}
+
+	delete[] key_path;
 
 	// Check if key_path exists, and create the aes_dec_ context if so.
 	if (FD_OK(key_fd))

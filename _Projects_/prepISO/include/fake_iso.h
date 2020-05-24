@@ -206,7 +206,7 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 	bool is_exfat = (*src_path >= '0' && *src_path <= '9');
 
 	if(is_exfat) ; else
-	if(file_exists(src_path) == false) return FAILED;
+	if(not_exists(src_path)) return FAILED;
 
 	int iso_path_len = strlen(iso_path) - 4; if(iso_path_len < 0) return FAILED;
 
@@ -221,7 +221,7 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 		sprintf(filename, "%s", get_filename(src_path));
 		create_fake_file_iso(iso_path, filename, size);
 
-		if(file_exists(iso_path) == false) {free(plugin_args); return FAILED;}
+		if(not_exists(iso_path)) {free(plugin_args); return FAILED;}
 
 		int r = FAILED;
 

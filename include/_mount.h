@@ -249,7 +249,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -------------------------
 		// use relative source path
 		// -------------------------
-		if(!islike(source, "/net") && file_exists(source) == false) {sprintf(templn, "%s/%s", html_base_path, source + 1); if(file_exists(templn)) sprintf(source, "%s", templn);}
+		if(!islike(source, "/net") && not_exists(source)) {sprintf(templn, "%s/%s", html_base_path, source + 1); if(file_exists(templn)) sprintf(source, "%s", templn);}
 
 		// --------------
 		// set mount url
@@ -417,7 +417,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 									sprintf(target, "%s/stage2.cex", "/dev_flash/rebug/cobra");
 							}
 
-							if(file_exists(target) == false)
+							if(not_exists(target))
 							{
 								sprintf(tempstr, "%s", source);
 								strcpy(strrchr(tempstr, '/'), "/stage2.bin");
@@ -595,9 +595,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					else if(strstr(source, "/webftp_server"))
 					{
 						sprintf(target, "%s/webftp_server.sprx", "/dev_hdd0/plugins");
-						if(file_exists(target) == false) sprintf(target + 31, "_ps3mapi.sprx");
-						if(file_exists(target) == false) sprintf(target + 10, "webftp_server.sprx");
-						if(file_exists(target) == false) sprintf(target + 23, "_ps3mapi.sprx");
+						if(not_exists(target)) sprintf(target + 31, "_ps3mapi.sprx");
+						if(not_exists(target)) sprintf(target + 10, "webftp_server.sprx");
+						if(not_exists(target)) sprintf(target + 23, "_ps3mapi.sprx");
 					}
 					else if(strstr(source, "/boot_plugins"))
 					{
@@ -827,7 +827,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		{
 			if(islike(target, source))
 				{sprintf(templn, "<hr>%s %s %s", STR_ERROR, STR_CPYDEST, source); strcat(buffer, templn);}
-			else if((!islike(source, "/net")) && file_exists(source) == false)
+			else if((!islike(source, "/net")) && not_exists(source))
 				{sprintf(templn, "<hr>%s %s %s", STR_ERROR, source, STR_NOTFOUND); strcat(buffer, templn);}
 			else
 			{
@@ -1031,7 +1031,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 
 		strcat(target, strrchr(source, '/')); // add file name
 
-		if((copy_in_progress || fix_in_progress) == false && file_exists(target) == false)
+		if((copy_in_progress || fix_in_progress) == false && not_exists(target))
 		{
 			sprintf(msg, "%s %s\n"
 						 "%s %s", STR_COPYING, source, STR_CPYDEST, basepath);
@@ -1068,7 +1068,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	dont_copy_same_size = false;
 
 	// cache PARAM.SFO
-	if(file_exists(destpath) == false)
+	if(not_exists(destpath))
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
@@ -1079,7 +1079,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 
 	// cache ICON0.PNG
 	strcpy(ext, ".PNG");
-	if((webman_config->nocov!=2) && file_exists(destpath) == false)
+	if((webman_config->nocov!=2) && not_exists(destpath))
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
@@ -1421,7 +1421,7 @@ exit_mount:
 		// check for PARAM.SFO in hdd0/game folder
 		sprintf(filename, "%s%s%s", HDD0_GAME_DIR, title_id, "/PARAM.SFO");
 
-		if(file_exists(filename) == false)
+		if(not_exists(filename))
 			sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
 
 		getTitleID(filename, title_id, SHOW_WARNING);

@@ -47,10 +47,11 @@ enum menus
 ////////////////////////////////
 typedef struct
 {
-	uint16_t  version;
+	uint16_t version;
 
-	uint8_t padding0[14];
+	uint8_t padding0[13];
 
+	uint8_t wm_proxy;
 	uint8_t lang; //0=EN, 1=FR, 2=IT, 3=ES, 4=DE, 5=NL, 6=PT, 7=RU, 8=HU, 9=PL, 10=GR, 11=HR, 12=BG, 13=IN, 14=TR, 15=AR, 16=CN, 17=KR, 18=JP, 19=ZH, 20=DK, 21=CZ, 22=SK, 99=XX
 
 	// scan devices settings
@@ -89,7 +90,7 @@ typedef struct
 	uint8_t noused; // formerly mc_app
 	uint8_t info;   // info level: 0=Path, 1=Path + ID, 2=ID, 3=None
 	uint8_t npdrm;
-	uint8_t mc_app; // allow allocation from app memory container
+	uint8_t vsh_mc; // allow allocation from vsh memory container
 
 	uint8_t padding2[13];
 
@@ -98,7 +99,7 @@ typedef struct
 	uint8_t wmstart; // 1=disable start up message (webMAN Loaded!)
 	uint8_t lastp;
 	uint8_t autob;
-	char    autoboot_path[256];
+	char autoboot_path[256];
 	uint8_t delay;
 	uint8_t bootd;
 	uint8_t boots;
@@ -120,15 +121,17 @@ typedef struct
 	uint8_t ps2_rate;  // % ps2 fan speed
 	uint8_t nowarn;
 	uint8_t minfan;
+	uint8_t chart;
+	uint8_t maxfan;
 
-	uint8_t padding4[9];
+	uint8_t padding4[7];
 
 	// combo settings
 
 	uint8_t  nopad;
 	uint8_t  keep_ccapi;
-	uint32_t  combo;
-	uint32_t  combo2;
+	uint32_t combo;
+	uint32_t combo2;
 	uint8_t  sc8mode; // 0/4=Remove cfw syscall disables syscall8 / PS3MAPI=disabled, 1=Keep syscall8 / PS3MAPI=enabled
 	uint8_t  nobeep;
 
@@ -138,7 +141,7 @@ typedef struct
 
 	uint8_t  bind;
 	uint8_t  ftpd;
-	uint16_t  ftp_port;
+	uint16_t ftp_port;
 	uint8_t  ftp_timeout;
 	char ftp_password[20];
 	char allow_ip[16];
@@ -148,14 +151,14 @@ typedef struct
 	// net server settings
 
 	uint8_t  netsrvd;
-	uint16_t  netsrvp;
+	uint16_t netsrvp;
 
 	uint8_t padding7[13];
 
 	// net client settings
 
 	uint8_t  netd[5];
-	uint16_t  netp[5];
+	uint16_t netp[5];
 	char neth[5][16];
 
 	uint8_t padding8[33];
@@ -168,8 +171,10 @@ typedef struct
 	uint8_t autoplay;
 	uint8_t ps2emu;
 	uint8_t ps2config;
+	uint8_t minfo;
+	uint8_t deliso;
 
-	uint8_t padding9[10];
+	uint8_t padding9[8];
 
 	// profile settings
 
@@ -184,8 +189,8 @@ typedef struct
 	uint8_t default_restart;
 	uint8_t poll; // poll usb
 
-	uint32_t  rec_video_format;
-	uint32_t  rec_audio_format;
+	uint32_t rec_video_format;
+	uint32_t rec_audio_format;
 
 	uint8_t auto_power_off; // 0 = prevent auto power off on ftp, 1 = allow auto power off on ftp (also on install.ps3, download.ps3)
 
@@ -195,7 +200,8 @@ typedef struct
 	char home_url[255];
 
 	uint8_t sman;
-	uint8_t padding11[31];
+	uint8_t earth_id;
+	uint8_t padding11[30];
 
 	// spoof console id
 
@@ -977,7 +983,7 @@ static void draw_background_and_title(void)
 																(view == FILE_MANAGER && !last_game_view) ? curdir + curdir_offset :
 																(view == PLUGINS_MANAGER) ? "Plugins Manager"		:
 																						    "VSH Menu for webMAN") );
-	set_font(14.f, 14.f, 1.f, 1); print_text(650, 8, "v1.16");
+	set_font(14.f, 14.f, 1.f, 1); print_text(650, 8, "v1.20");
 }
 
 static void draw_menu_options(void)

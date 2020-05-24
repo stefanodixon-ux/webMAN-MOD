@@ -456,7 +456,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 
 	// add link to file or folder
 	if(!param[1]) slen = sprintf(swap, "/");
-	else if(param[1] != 'n' && file_exists(param) == false) slen = sprintf(swap, "%s", strrchr(param, '/') + 1);
+	else if((param[1] != 'n') && not_exists(param)) slen = sprintf(swap, "%s", strrchr(param, '/') + 1);
 	else
 	{
 		tlen = strlen(param) - 4; if(tlen < 0) tlen = 0;
@@ -1007,7 +1007,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				u8 n, m;
 				for(n = 0; n < MAX_LAST_GAMES; n++)
 				{
-					if(lastgames.game[n].path[1] != 'n' && file_exists(lastgames.game[n].path) == false) *lastgames.game[n].path = NULL;
+					if((lastgames.game[n].path[1] != 'n') && not_exists(lastgames.game[n].path)) *lastgames.game[n].path = NULL;
 				}
 
 				t_path_entries swap;

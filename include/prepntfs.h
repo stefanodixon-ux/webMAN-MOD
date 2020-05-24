@@ -54,7 +54,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 			if(parts >= MAX_SECTIONS) break;
 
 			sprintf(tmp_path + nlen, "%i", o);
-			if(file_exists(tmp_path) == false) break;
+			if(not_exists(tmp_path)) break;
 
 			parts += ps3ntfs_file_to_sectors(tmp_path, sectionsP + (parts * sizeof(u32)), sections_sizeP + (parts * sizeof(u32)), MAX_SECTIONS - parts, 1);
 		}
@@ -187,7 +187,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		if(m == mPS3) // mount PS3ISO
 		{
 			strcpy(path + plen - 3, "SFO");
-			if(file_exists(path) == false)
+			if(not_exists(path))
 			{
 				if(isDir("/dev_bdvd")) do_umount(false);
 
@@ -200,7 +200,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 					file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", path, COPY_WHOLE_FILE);
 
 					strcpy(path + plen - 3, "PNG");
-					if(file_exists(path) == false)
+					if(not_exists(path))
 						file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", path, COPY_WHOLE_FILE);
 				}
 

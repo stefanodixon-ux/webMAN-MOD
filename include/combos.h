@@ -141,7 +141,7 @@
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_start")) continue;
 #endif
-							if(file_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN") == false)
+							if(not_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN"))
 							{
 								if(isDir(webman_config->home_url)) set_apphome(webman_config->home_url);
 								else if(islike(webman_config->home_url, "http")) open_browser(webman_config->home_url, 0);
@@ -473,7 +473,7 @@
 									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->man_rate += 5; else webman_config->man_rate += 1;
 									webman_config->man_rate = RANGE(webman_config->man_rate, 20, 95); //%
 									webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate);
-									webman_config->man_speed = RANGE(webman_config->man_speed, 0x33, MAX_FANSPEED);
+									webman_config->man_speed = RANGE(webman_config->man_speed, MIN_FANSPEED_8BIT, MAX_FANSPEED_8BIT);
 									set_fan_speed(webman_config->man_speed);
 									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 								}
@@ -506,7 +506,7 @@
 								{
 									if(webman_config->man_rate>20) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->man_rate -= 5; else webman_config->man_rate -= 1;}
 									webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate);
-									webman_config->man_speed = RANGE(webman_config->man_speed, 0x33, MAX_FANSPEED);
+									webman_config->man_speed = RANGE(webman_config->man_speed, MIN_FANSPEED_8BIT, MAX_FANSPEED_8BIT);
 									set_fan_speed(webman_config->man_speed);
 									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 								}

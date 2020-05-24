@@ -409,7 +409,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 		if(lang_roms)
 		{
 			sprintf(lang_path, "%s/LANG_EMUS.TXT", WM_LANG_PATH);
-			if(file_exists(lang_path) == false)
+			if(not_exists(lang_path))
 				sprintf(lang_path, "%s/LANG_ROMS.TXT", WM_LANG_PATH);
 		}
 		else

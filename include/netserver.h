@@ -365,7 +365,7 @@ static int process_stat_cmd(u8 index, netiso_stat_cmd *cmd)
 	struct CellFsStat st;
 	netiso_stat_result result;
 
-	if (file_exists(filepath) == false && !strstr(filepath, "/is_ps3_compat1/") && !strstr(filepath, "/is_ps3_compat2/"))
+	if (not_exists(filepath) && !strstr(filepath, "/is_ps3_compat1/") && !strstr(filepath, "/is_ps3_compat2/"))
 	{
 		result.file_size = (s64)(NONE);
 	}
@@ -514,7 +514,7 @@ static int process_read_dir_cmd(u8 index, netiso_read_dir_entry_cmd *cmd)
 
 		sprintf(dirpath, "%s%s", drives[i], clients[index].dirpath);
 
-		if(file_exists(dirpath) == false) continue;
+		if(not_exists(dirpath)) continue;
 
 		cellFsOpendir(dirpath, &dir); if(!dir) continue;
 

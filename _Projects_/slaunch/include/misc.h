@@ -26,6 +26,7 @@ void web_browser(void);
 //void web_browser_stop(void);
 
 uint64_t file_len(const char* path);
+uint8_t not_exists(const char* path);
 
 #endif // __MISC_H__
 

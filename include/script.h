@@ -124,8 +124,8 @@ static void parse_script(const char *script_file)
 
 						bool ret = false; u8 ifmode = (_islike(line, "if ")) ? 3 : ABORT_IF; line += ifmode; do_else = true;
 
-						if(_islike(line, "exist /"))     {path +=  6; ret =  file_exists(path);} else
-						if(_islike(line, "not exist /")) {path += 10; ret = !file_exists(path);}
+						if(_islike(line, "exist /"))     {path +=  6; ret = file_exists(path);} else
+						if(_islike(line, "not exist /")) {path += 10; ret = not_exists(path);}
 						else
 						{
 							CellPadData pad_data = pad_read();

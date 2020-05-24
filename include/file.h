@@ -198,6 +198,11 @@ static bool file_exists(const char *path)
 	return (cellFsStat(path, &s) == CELL_FS_SUCCEEDED);
 }
 
+static bool not_exists(const char *path)
+{
+	return !file_exists(path);
+}
+
 #if defined(COPY_PS3) || defined(PKG_HANDLER) || defined(PKG_LAUNCHER)
 static void mkdir_tree(char *path)
 {
@@ -615,7 +620,7 @@ next_part:
 
 static void _file_copy(char *file1, char *file2)
 {
-	if(file_exists(file1) == false) return;
+	if(not_exists(file1)) return;
 	dont_copy_same_size = false; // force copy file with the same size than existing file
 	file_copy(file1, file2, COPY_WHOLE_FILE);
 	dont_copy_same_size = true;  // restore default mode (assume file is already copied if existing file has same size)

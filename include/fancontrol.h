@@ -1,16 +1,18 @@
-#define MIN_FANSPEED			(20) /* % */
 #define DEFAULT_MIN_FANSPEED	(25) /* % */
-#define MAX_FANSPEED			(0xF4)
+#define MIN_FANSPEED			(20) /* % */
+#define MIN_FANSPEED_8BIT		(0x33) /* 20% */
+#define MAX_FANSPEED_8BIT		(0xF4) /* 95% */
 #define MAX_TEMPERATURE			(85) /* °C */
 #define MY_TEMP 				(68) /* °C */
 
-#define FAN_AUTO 				(0)
-#define FAN_MANUAL				(0)
+#define FAN_AUTO 				(0)	/* webman_config->man_speed: 0 = FAN_AUTO, > 0 = manual speed */
+#define FAN_MANUAL				(0)	/* webman_config->dyn_temp = max_temp: 0 = FAN_MANUAL, > 0 = target temp */
 
-#define FAN_AUTO2				(2)
+#define FAN_AUTO2				(2)	/* webman_config->fanc: 0 = SYSCON, 1 = DYNAMIC, 2 = FAN_AUTO2) */
 
 #define PERCENT_TO_8BIT(val)	((val * 255) / 100)
 
+/* enable_fan_control */
 #define DISABLED		(0)
 #define ENABLED			(1)
 #define TOGGLE_MODE		(2)
@@ -21,9 +23,9 @@
 #define SYSCON_MODE		(1)
 #define MANUAL_MODE		(2)
 
-static u8 fan_speed = 0x33;
-static u8 old_fan = 0x33;
-static u8 max_temp = 0; //syscon
+static u8 fan_speed = MIN_FANSPEED_8BIT; // 0x33
+static u8 old_fan   = MIN_FANSPEED_8BIT; // 0x33
+static u8 max_temp  = 0; //syscon
 
 #define SC_SET_FAN_POLICY		(389)
 #define SC_GET_FAN_POLICY		(409)
@@ -71,10 +73,10 @@ static void set_fan_speed(u8 new_fan_speed)
 	{
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
-		u8 min_fan_speed = PERCENT_TO_8BIT(webman_config->minfan); if(min_fan_speed < 0x33) min_fan_speed = 0x33; // 20%
-		u8 max_fan_speed = PERCENT_TO_8BIT(webman_config->maxfan); if(max_fan_speed < 0x80) max_fan_speed = 0xCC; // 80%
+		u8 min_fan_speed = PERCENT_TO_8BIT(webman_config->minfan); if(min_fan_speed < MIN_FANSPEED_8BIT) min_fan_speed = MIN_FANSPEED_8BIT; // 20%
+		u8 max_fan_speed = PERCENT_TO_8BIT(webman_config->maxfan); if(max_fan_speed < 0x80) max_fan_speed = 0xCC; // 80% (0xCC) if < 50% (0x80)
 
-		if(new_fan_speed < 0x33)
+		if(new_fan_speed < MIN_FANSPEED_8BIT)
 		{
 			u8 st, mode, unknown;
 			u8 fan_speed8 = 0;
@@ -119,9 +121,9 @@ static void enable_fan_control(u8 enable, char *msg)
 	if(enable == PS2_MODE_OFF) fan_ps2_mode = false;		else
 	if(enable == ENABLE_SC8) webman_config->fanc = ENABLED;	else
 	if(enable <= ENABLED)	 webman_config->fanc = enable;	else
-							 webman_config->fanc = (webman_config->fanc ? DISABLED : ENABLED);
+	/* enable==TOGGLE_MODE*/ webman_config->fanc = (webman_config->fanc ? DISABLED : ENABLED);
 
-	max_temp = 0;
+	max_temp = 0; // syscon
 	if(webman_config->fanc)
 	{
 		if(webman_config->man_speed == FAN_AUTO) max_temp = webman_config->dyn_temp;
@@ -144,7 +146,7 @@ static void reset_fan_mode(void)
 	fan_ps2_mode = false;
 
 	webman_config->man_speed = (u8)(((float)(webman_config->man_rate + 1) * 255.f) / 100.f); // manual fan speed
-	webman_config->man_speed = RANGE(webman_config->man_speed, 0x33, MAX_FANSPEED);
+	webman_config->man_speed = RANGE(webman_config->man_speed, MIN_FANSPEED_8BIT, MAX_FANSPEED_8BIT);
 	set_fan_speed(webman_config->man_speed);
 
 	if(max_temp) webman_config->man_speed = FAN_AUTO; // enable dynamic fan mode

@@ -90,10 +90,20 @@ static void font_init(void)
 
 	// get id of current logged in user for the xRegistry query we do next
 	user_id = xsetting_CC56EB2D()->GetCurrentUserNumber();
-	if(user_id > 255) user_id=1;
+	if(user_id > 255) user_id = 1;
 
 	// get current font style for the current logged in user
 	xsetting_CC56EB2D()->GetRegistryValue(user_id, 0x5C, &val);
+
+	// fix font selection
+	int val_lang = 1;
+	xsetting_0AF1F161()->GetSystemLanguage(&val_lang);
+	if(((val_lang >= 9) && (val_lang <= 11)) || (val_lang == 16) || (val_lang == 19))
+		val = 0;
+	if(val_lang == 7)
+		val = 4;
+	if(val_lang == 8)
+		val = 9;
 
 	// get sysfont
 	switch(val)
@@ -107,10 +117,15 @@ static void font_init(void)
 		case 3:   // pop
 		  opened_font = (void*)(vsh_fonts[10]);
 		  break;
+		case 4:   // russian
+		  opened_font = (void*)(vsh_fonts[1]);
+		  break;
 		default:  // better than nothing
-		  opened_font = (void*)(vsh_fonts[0]);
+		  opened_font = (void*)(vsh_fonts[9]);
 		  break;
 	}
+
+	if(!opened_font) return;
 
 	FontOpenFontInstance(opened_font, &ctx.font);
 
@@ -380,12 +395,12 @@ static uint32_t mix_color(uint32_t bg, uint32_t fg)
 ***********************************************************************/
 void flip_frame()
 {
-	int32_t i, k, CANVAS_WW = CANVAS_W/2;
+	int32_t i, k, m, CANVAS_WW = CANVAS_W/2;
 	uint64_t *canvas = (uint64_t*)ctx.canvas;
 
-	for(i = 0; i < CANVAS_H; i++)
+	for(m = i = 0; i < CANVAS_H; i++, m = i * CANVAS_WW)
 		for(k = 0; k < CANVAS_WW; k++)
-		  *(uint64_t*)(OFFSET(canvas_x + (k*2), canvas_y + (i))) = canvas[k + i * CANVAS_WW];
+		  *(uint64_t*)(OFFSET(canvas_x + (k*2), canvas_y + (i))) = canvas[k + m];
 
 	// after flip, clear frame buffer with background
 	memcpy((uint8_t *)ctx.canvas, (uint8_t *)ctx.bg, CANVAS_W * CANVAS_H * 4);
@@ -538,12 +553,14 @@ int32_t draw_png(int32_t idx, int32_t c_x, int32_t c_y, int32_t p_x, int32_t p_y
 
 	const uint32_t CANVAS_WW = CANVAS_W - c_x, CANVAS_HH = CANVAS_H - c_y;
 
+	if(hh > CANVAS_HH) hh = CANVAS_HH;
+	if(ww > CANVAS_WW) ww = CANVAS_WW;
+
 	for(i = 0; i < hh; i++)
 		for(k = 0; k < ww; k++)
-			if((k < CANVAS_WW) && (i < CANVAS_HH))
-				ctx.canvas[(c_y + i) * CANVAS_W + c_x + k] =
-				mix_color(ctx.canvas[(c_y + i) * CANVAS_W + c_x + k],
-				ctx.png[idx].addr[(p_x + p_y * ctx.png[idx].w) + (k + i * ctx.png[idx].w)]);
+			ctx.canvas[(c_y + i) * CANVAS_W + c_x + k] =
+			mix_color(ctx.canvas[(c_y + i) * CANVAS_W + c_x + k],
+			ctx.png[idx].addr[(p_x + p_y * ctx.png[idx].w) + (k + i * ctx.png[idx].w)]);
 
 	return (c_x + w);
 }
@@ -618,21 +635,15 @@ void screenshot(uint8_t mode)
 	// dump...
 	for(i = h; i > 0; i--)
 	{
+		for(k = 0; k < ww; k++)
+			line_frame[k] = *(uint64_t*)(OFFSET(k*2, i));
 
-		if(mode == 0)
+		if((mode == 0) && (i >= canvas_y) && (i < canvas_y_bottom))
 		{
-			for(k = 0; k < ww; k++)
+			for(k = canvas_x_left; k < canvas_x_right; k++)
 			{
-				line_frame[k] = *(uint64_t*)(OFFSET(k*2, i));
-
-				if((k >= canvas_x_left) && (k < canvas_x_right) && (i >= canvas_y) && (i < canvas_y_bottom))
-					line_frame[k] = bg[(((i - canvas_y) * CANVAS_W) + ((k*2) - canvas_x)) /2];
+				line_frame[k] = bg[(((i - canvas_y) * CANVAS_W) + ((k*2) - canvas_x)) /2];
 			}
-		}
-		else
-		{
-			for(k = 0; k < ww; k++)
-				line_frame[k] = *(uint64_t*)(OFFSET(k*2, i));
 		}
 
 		// convert line from ARGB to RGB
@@ -640,19 +651,16 @@ void screenshot(uint8_t mode)
 
 		idx = 0; //(h-1-i)*w*3;  // index into bmp buffer, ... f*****g bmp format
 
-		for(k = 0; k < w; k++)
+		for(k = 0; k < line_frame_size; k+=4, idx+=3)
 		{
-			bmp_buf[idx]   = tmp_buf[(k)*4+3];  // R
-			bmp_buf[idx+1] = tmp_buf[(k)*4+2];  // G
-			bmp_buf[idx+2] = tmp_buf[(k)*4+1];  // B
-
-			idx+=3;
+			bmp_buf[idx]   = tmp_buf[k + 3];  // R
+			bmp_buf[idx+1] = tmp_buf[k + 2];  // G
+			bmp_buf[idx+2] = tmp_buf[k + 1];  // B
 		}
 
 		// write bmp data
 		fwrite(bmp_buf, 1, idx, fd);
 	}
-
 
 	// padding
 	int32_t rest = (w*3) % 4, pad = 0;

@@ -374,7 +374,7 @@ static int64_t calculate_directory_size(char *path)
 	size_t d_name_len, path_len;
 	path_len = strlen(path);
 
-	char newpath[path_len + MAX_FILE_LEN + 2];
+	char *newpath = new char[path_len + MAX_FILE_LEN + 2];
 	path_len = sprintf(newpath, "%s/", path);
 
 	while ((entry = readdir(d)))
@@ -418,6 +418,7 @@ static int64_t calculate_directory_size(char *path)
 		}
 	}
 
+	delete[] newpath;
 	closedir(d);
 	return result;
 }
@@ -1660,7 +1661,7 @@ int main(int argc, char *argv[])
 	printf("\033[1;37m");
 #endif
 
-	printf("ps3netsrv build 20200521");
+	printf("ps3netsrv build 20200523");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );

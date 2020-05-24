@@ -4,6 +4,12 @@ bool file_exists( char* path )
 	return ps3ntfs_stat(path, &st) >= SUCCESS;
 }
 
+bool not_exists( char* path )
+{
+	struct stat st;
+	return ps3ntfs_stat(path, &st) < SUCCESS;
+}
+
 int SaveFile(char *path, char *mem, int file_size)
 {
 	sysLv2FsUnlink((char*)path);

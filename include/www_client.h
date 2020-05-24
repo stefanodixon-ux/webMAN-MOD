@@ -361,7 +361,7 @@ static void handleclient_www(u64 conn_s_p)
 				}
 				else
 				{
-					sys_ppu_thread_sleep(6);
+					sys_ppu_thread_sleep(9);
 					sprintf(param,	"%s\n"
 									"%s %s" EDITION, WM_APP_VERSION, fw_version, cfw_info);
 				}
@@ -397,7 +397,7 @@ static void handleclient_www(u64 conn_s_p)
 		// Use system icons if wm_icons don't exist
 		for(u8 i = 0; i < 14; i++)
 		{
-			if(file_exists(wm_icons[i]) == false)
+			if(not_exists(wm_icons[i]))
 			{
 				sprintf(param, VSH_RESOURCE_DIR "explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], param);
 				if(file_exists(param)) continue;
@@ -1789,7 +1789,7 @@ parse_request:
 				snprintf(cp_path, STD_PATH_LEN, "%s", param + 8);
 				sprintf(param, "%s", cp_path);
 				char *p = strrchr(param, '/'); *p = NULL;
-				if(file_exists(cp_path) == false) cp_mode = CP_MODE_NONE;
+				if(not_exists(cp_path)) cp_mode = CP_MODE_NONE;
 
 				is_binary = FOLDER_LISTING;
 				goto html_response;
@@ -2104,13 +2104,13 @@ parse_request:
  mobile_response:
 				mobile_mode = true; char *param2 = param + 10;
 
-				if(file_exists(MOBILE_HTML) == false)
+				if(not_exists(MOBILE_HTML))
 					{sprintf(param, "/index.ps3%s", param2); mobile_mode = false;}
 				else if(strstr(param, "?g="))
 					sprintf(param, MOBILE_HTML);
 				else if(strstr(param, "?"))
 					sprintf(param, "/index.ps3%s", param2);
-				else if(file_exists(GAMELIST_JS) == false)
+				else if(not_exists(GAMELIST_JS))
 					sprintf(param, "/index.ps3?mobile");
 				else
 					sprintf(param, MOBILE_HTML);
@@ -2239,7 +2239,7 @@ retry_response:
 						*sort = NULL;
 					}
 
-					if(is_net || file_exists(param) == false)
+					if(is_net || not_exists(param))
 					{
 						sort = strrchr(param, '#');
 						if(sort) *sort = NULL;
@@ -2248,17 +2248,17 @@ retry_response:
 					if(is_net) goto html_response;
 
 					if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);} else
-					if(file_exists(param) == false)
+					if(not_exists(param))
 					{
 						if(!islike(param, "/dev_"))
 						{
 							strcpy(header, param + 1);
 							if(*html_base_path == '/') {sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
-							if(file_exists(param) == false) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
-							if(file_exists(param) == false) {sprintf(param, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
-							if(file_exists(param) == false) {sprintf(param, "%s%s",  HDD0_GAME_DIR, header);} // try /dev_hdd0/game
-							if(file_exists(param) == false) {sprintf(param, "%s%s", _HDD0_GAME_DIR, header);} // try /dev_hdd0//game
-							if(file_exists(param) == false) {sprintf(param, "%s/%s", "/dev_hdd0", header);} // try hdd0
+							if(not_exists(param)) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
+							if(not_exists(param)) {sprintf(param, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
+							if(not_exists(param)) {sprintf(param, "%s%s",  HDD0_GAME_DIR, header);} // try /dev_hdd0/game
+							if(not_exists(param)) {sprintf(param, "%s%s", _HDD0_GAME_DIR, header);} // try /dev_hdd0//game
+							if(not_exists(param)) {sprintf(param, "%s/%s", "/dev_hdd0", header);} // try hdd0
 						}
 					}
 
@@ -2826,9 +2826,9 @@ retry_response:
 						if(param[14] == '/') sprintf(templn, "%s", param + 14); else
 						{
 							sprintf(templn, "%s/%s", "/dev_hdd0/plugins", "webftp_server.sprx");
-							if(file_exists(templn) == false) sprintf(templn + 31, "_ps3mapi.sprx");
-							if(file_exists(templn) == false) sprintf(templn + 10, "webftp_server.sprx");
-							if(file_exists(templn) == false) sprintf(templn + 23, "_ps3mapi.sprx");
+							if(not_exists(templn)) sprintf(templn + 31, "_ps3mapi.sprx");
+							if(not_exists(templn)) sprintf(templn + 10, "webftp_server.sprx");
+							if(not_exists(templn)) sprintf(templn + 23, "_ps3mapi.sprx");
 
 							get_param("prx=", templn, param, MAX_PATH_LEN);
 						}
@@ -3228,7 +3228,7 @@ retry_response:
 							if(pos1) {*pos1 = 0, sys_dev_name = (pos1 + 6);}
 							if(pos2) {*pos2 = 0, fs = (pos2 + 4);}
 
-							if(!file_exists(dev_name) || sys_dev_name)
+							if(not_exists(dev_name) || sys_dev_name)
 							{
 								mount_device(dev_name, sys_dev_name, fs);
 

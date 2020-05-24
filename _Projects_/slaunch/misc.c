@@ -73,9 +73,17 @@ uint64_t peek_lv1(uint64_t addr)
 uint64_t file_len(const char* path)
 {
 	struct CellFsStat s;
-	s.st_size=0;
-	cellFsStat(path, &s);
-	return(s.st_size);
+	s.st_size = 0;
+	if(cellFsStat(path, &s) == 0)
+		return(s.st_size);
+	else
+		return 0;
+}
+
+uint8_t not_exists(const char* path)
+{
+	struct CellFsStat s;
+	return(cellFsStat(path, &s) != 0);
 }
 
 ////////////////////////////////////////////////////////////////////////

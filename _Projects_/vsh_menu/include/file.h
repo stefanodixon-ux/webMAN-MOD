@@ -39,7 +39,7 @@ static int isDir(const char* path)
 
 static size_t read_file(const char *file, char *data, size_t size, int32_t offset)
 {
-	int fd = 0; uint64_t pos, read_e = 0;
+	int fd = 0; uint64_t read_e = 0;
 
 	if(offset < 0) offset = 0; else memset(data, 0, size);
 
