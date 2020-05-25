@@ -18,7 +18,7 @@ File::File() : enc_type_(kDiscTypeNone), region_count_(0), region_info_(NULL)
 {
 	fd = INVALID_FD;
 
-	is_multipart = index = 0;
+	last_seek = is_multipart = index = 0;
 	for(uint8_t i = 0; i < 64; i++) fp[i] = INVALID_FD;
 }
 
@@ -105,7 +105,9 @@ int File::open(const char *path, int flags)
 		/////////////////////////////////////////////////
 		if(is_multipart)
 		{
-			char *filepath = (char *)malloc(plen + 2); strcpy(filepath, path);
+			char *filepath = (char *)malloc(plen + 2); if(!filepath) return FAILED;
+
+			strcpy(filepath, path);
 
 			file_stat_t st;
 			fstat_file(fd, &st); part_size = st.file_size; // all parts (except last) must be the same size of size of .iso.0
@@ -261,7 +263,9 @@ int File::close(void)
 {
 	init_region_info();
 
-	int ret = (FD_OK(fd)) ? close_file(fd) : FAILED; fd = INVALID_FD;
+	int ret = (FD_OK(fd)) ? close_file(fd) : FAILED;
+
+	fd = INVALID_FD;
 
 	if(!is_multipart)
 		return ret;
@@ -274,7 +278,7 @@ int File::close(void)
 		fp[i] = INVALID_FD;
 	}
 
-	is_multipart = index = 0;
+	last_seek = is_multipart = index = 0;
 
 	return ret;
 }
@@ -283,6 +287,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 {
 	if(!is_multipart)
 	{
+		last_seek += nbyte;
 #ifdef NOSSL
 		return read_file(fd, buf, nbyte);
 #else
@@ -371,7 +376,10 @@ ssize_t File::read(void *buf, size_t nbyte)
 ssize_t File::write(void *buf, size_t nbyte)
 {
 	if(!is_multipart)
+	{
+		last_seek += nbyte;
 		return write_file(fd, buf, nbyte);
+	}
 
 	// write multi part iso (2015 AV)
 	return write_file(fp[index], buf, nbyte);
@@ -380,7 +388,13 @@ ssize_t File::write(void *buf, size_t nbyte)
 int64_t File::seek(int64_t offset, int whence)
 {
 	if ((!is_multipart) || (!part_size))
+	{
+		if(offset == last_seek) return SUCCEEDED;
+
+		last_seek = offset;
+
 		return seek_file(fd, offset, whence);
+	}
 
 	// seek multi part iso (2015 AV)
 	index = (int)(offset / part_size);
@@ -430,14 +444,14 @@ void File::keystr_to_keyarr(const char (&str)[32], unsigned char (&arr)[16])
 {
 	for (size_t i = 0; i < sizeof(arr); ++i)
 	{
-		arr[i] = asciischar_to_byte(str[i*2]) * 16 + asciischar_to_byte(str[i*2+1]);
+		arr[i] = (asciischar_to_byte(str[i * 2]) * 16) + asciischar_to_byte(str[(i * 2) + 1]);
 	}
 }
 
 // Convert 4 bytes in big-endian format, to an unsigned integer.
 unsigned int File::char_arr_BE_to_uint(unsigned char *arr)
 {
-	return arr[3] + 256*(arr[2] + 256*(arr[1] + 256*arr[0]));
+	return arr[3] + 256 * (arr[2] + 256 * (arr[1] + (256 * arr[0])));
 }
 
 // Reset the iv to a particular lba.

@@ -1,6 +1,7 @@
 #include "File.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <cstring>
 
 #include "common.h"
@@ -17,7 +18,7 @@ File::File() : enc_type_(kDiscTypeNone), region_count_(0), region_info_(NULL)
 {
 	fd = INVALID_FD;
 
-	is_multipart = index = 0;
+	last_seek = is_multipart = index = 0;
 	for(uint8_t i = 0; i < 64; i++) fp[i] = INVALID_FD;
 }
 
@@ -51,14 +52,20 @@ int File::open(const char *path, int flags)
 	init_region_info();
 
 	if(!path)
+	{
+		printf("file error: no path\n");
 		return FAILED;
+	}
 
 	if (FD_OK(fd))
 		this->close();
 
 	fd = open_file(path, flags);
 	if (!FD_OK(fd))
+	{
+		printf("file error: opening \"%s\"\n", path);
 		return FAILED;
+	}
 
 	// is multi part? (2015-2019 AV)
 	int plen = strlen(path), flen = plen - 6;
@@ -98,7 +105,9 @@ int File::open(const char *path, int flags)
 		/////////////////////////////////////////////////
 		if(is_multipart)
 		{
-			char *filepath = (char *)malloc(plen + 2); strcpy(filepath, path);
+			char *filepath = (char *)malloc(plen + 2); if(!filepath) return FAILED;
+
+			strcpy(filepath, path);
 
 			file_stat_t st;
 			fstat_file(fd, &st); part_size = st.file_size; // all parts (except last) must be the same size of size of .iso.0
@@ -107,7 +116,7 @@ int File::open(const char *path, int flags)
 
 			for(int i = 1; i < 64; i++)
 			{
-				filepath[flen + 4] = 0; sprintf(filepath, "%s.%i", filepath, i);
+				sprintf(filepath + flen + 4, ".%i", i);
 
 				fp[i] = open_file(filepath, flags);
 				if (!FD_OK(fp[i])) break;
@@ -127,7 +136,7 @@ int File::open(const char *path, int flags)
 	/////////////////////////////////////////////////
 
 	file_t key_fd;
-	char key_path[path_ext_loc - path + 5 + 1];
+	char *key_path = new char[path_ext_loc - path + 5 + 1];
 	strncpy(key_path, path, path_ext_loc - path + 5);
 
 	// Check for redump encrypted mode by looking for the ".dkey" is the same path of the ".iso".
@@ -150,6 +159,8 @@ int File::open(const char *path, int flags)
 
 		key_fd = open_file(key_path, flags);
 	}
+
+	delete[] key_path;
 
 	// Check if key_path exists, and create the aes_dec_ context if so.
 	if (FD_OK(key_fd))
@@ -239,7 +250,9 @@ int File::close(void)
 {
 	init_region_info();
 
-	int ret = (FD_OK(fd)) ? close_file(fd) : FAILED; fd = INVALID_FD;
+	int ret = (FD_OK(fd)) ? close_file(fd) : FAILED;
+
+	fd = INVALID_FD;
 
 	if(!is_multipart)
 		return ret;
@@ -252,7 +265,7 @@ int File::close(void)
 		fp[i] = INVALID_FD;
 	}
 
-	is_multipart = index = 0;
+	last_seek = is_multipart = index = 0;
 
 	return ret;
 }
@@ -261,6 +274,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 {
 	if(!is_multipart)
 	{
+		last_seek += nbyte;
 #ifdef NOSSL
 		return read_file(fd, buf, nbyte);
 #else
@@ -313,16 +327,23 @@ ssize_t File::read(void *buf, size_t nbyte)
 
 				// TODO(Temporary): Sanity check, we are assuming that reads always start at a beginning of a sector. And that all reads will be multiples of kSectorSize.
 				//				  Note: Both are easy fixes, but, code can be more simple + efficient if these two conditions are true (which they look to be from initial testing).
-				if ((nbyte % kSectorSize != 0) || (ret % kSectorSize != 0 || read_position % kSectorSize != 0))
+				if ((nbyte % kSectorSize != 0) || (ret % kSectorSize != 0) || (read_position % kSectorSize != 0))
 				{
-					printf("ERROR: encryption assumptions were not met, code needs to be updated, your game is probably about to crash: nbyte 0x%x, ret 0x%x, read_position 0x%I64x.\n", nbyte, ret, read_position);
+					printf("ERROR: encryption assumptions were not met, code needs to be updated, your game is probably about to crash: nbyte 0x%lx, ret 0x%lx, read_position 0x%lx.\n",
+						(unsigned long int)nbyte,
+						(unsigned long int)ret,
+						(unsigned long int)read_position);
 				}
 
 				return ret;
 			}
 		}
 
-		printf("ERROR: LBA request wasn't in the region_info_ for an encrypted iso? RP: 0x%I64x, RC: 0x%x, LR (0x%I64x-0x%I64x).\n", read_position, region_count_, region_count_ > 0 ? region_info_[region_count_ - 1].regions_first_addr : 0LL, region_count_ > 0 ? region_info_[region_count_ - 1].regions_last_addr : 0LL);
+		printf("ERROR: LBA request wasn't in the region_info_ for an encrypted iso? RP: 0x%lx, RC: 0x%lx, LR (0x%016llx-0x%016llx).\n",
+			(unsigned long int)read_position,
+			(unsigned long int)region_count_,
+			(unsigned long long int)((region_count_ > 0) ? region_info_[region_count_ - 1].regions_first_addr : 0),
+			(unsigned long long int)((region_count_ > 0) ? region_info_[region_count_ - 1].regions_last_addr  : 0));
 		return ret;
 #endif
 	}
@@ -342,7 +363,10 @@ ssize_t File::read(void *buf, size_t nbyte)
 ssize_t File::write(void *buf, size_t nbyte)
 {
 	if(!is_multipart)
+	{
+		last_seek += nbyte;
 		return write_file(fd, buf, nbyte);
+	}
 
 	// write multi part iso (2015 AV)
 	return write_file(fp[index], buf, nbyte);
@@ -351,7 +375,11 @@ ssize_t File::write(void *buf, size_t nbyte)
 int64_t File::seek(int64_t offset, int whence)
 {
 	if ((!is_multipart) || (!part_size))
+	{
+		if(offset == last_seek) return SUCCEEDED;
+
 		return seek_file(fd, offset, whence);
+	}
 
 	// seek multi part iso (2015 AV)
 	index = (int)(offset / part_size);
@@ -401,14 +429,14 @@ void File::keystr_to_keyarr(const char (&str)[32], unsigned char (&arr)[16])
 {
 	for (size_t i = 0; i < sizeof(arr); ++i)
 	{
-		arr[i] = asciischar_to_byte(str[i*2]) * 16 + asciischar_to_byte(str[i*2+1]);
+		arr[i] = (asciischar_to_byte(str[i * 2]) * 16) + asciischar_to_byte(str[(i * 2) + 1]);
 	}
 }
 
 // Convert 4 bytes in big-endian format, to an unsigned integer.
 unsigned int File::char_arr_BE_to_uint(unsigned char *arr)
 {
-	return arr[3] + 256*(arr[2] + 256*(arr[1] + 256*arr[0]));
+	return arr[3] + 256 * (arr[2] + 256 * (arr[1] + (256 * arr[0])));
 }
 
 // Reset the iv to a particular lba.

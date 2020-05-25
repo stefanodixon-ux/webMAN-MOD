@@ -1661,7 +1661,7 @@ int main(int argc, char *argv[])
 	printf("\033[1;37m");
 #endif
 
-	printf("ps3netsrv build 20200523");
+	printf("ps3netsrv build 20200524A");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
