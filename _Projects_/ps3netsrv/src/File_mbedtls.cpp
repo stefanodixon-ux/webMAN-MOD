@@ -60,6 +60,8 @@ int File::open(const char *path, int flags)
 	if (FD_OK(fd))
 		this->close();
 
+	last_seek = 0;
+
 	fd = open_file(path, flags);
 	if (!FD_OK(fd))
 	{
@@ -254,6 +256,8 @@ int File::close(void)
 
 	fd = INVALID_FD;
 
+	last_seek = 0;
+
 	if(!is_multipart)
 		return ret;
 
@@ -265,7 +269,7 @@ int File::close(void)
 		fp[i] = INVALID_FD;
 	}
 
-	last_seek = is_multipart = index = 0;
+	is_multipart = index = 0;
 
 	return ret;
 }
@@ -274,19 +278,23 @@ ssize_t File::read(void *buf, size_t nbyte)
 {
 	if(!is_multipart)
 	{
-		last_seek += nbyte;
 #ifdef NOSSL
-		return read_file(fd, buf, nbyte);
+		ssize_t ret = read_file(fd, buf, nbyte);
+		last_seek += ret;
+		return ret;
 #else
 		// In non-encrypted mode just do what is normally done.
 		if ((enc_type_ == kDiscTypeNone) || (region_count_ == 0) || (region_info_ == NULL))
 		{
-			return read_file(fd, buf, nbyte);
+			ssize_t ret = read_file(fd, buf, nbyte);
+			last_seek += ret;
+			return ret;
 		}
 
 		// read encrypted-3k3yredump-isos by NvrBst //
 		int64_t read_position = seek(0, SEEK_CUR);
 		ssize_t ret = read_file(fd, buf, nbyte);
+		last_seek += ret;
 		if (read_position < 0LL)
 		{
 			printf("ERROR: read > enc > seek: Returning decrypted data.\n");
@@ -351,10 +359,13 @@ ssize_t File::read(void *buf, size_t nbyte)
 	// read multi part iso (2015 AV)
 	ssize_t ret2 = 0, ret = read_file(fp[index], buf, nbyte);
 
-	if ((ret < (ssize_t)nbyte) && (index < (is_multipart - 1)))
+	// check if data is split between 2 parts
+	if ((ret < (ssize_t)nbyte) && ((index + 1) < is_multipart))
 	{
-		void *buf2 = (int8_t*)buf + ret;
-		ret2 = read_file(fp[index + 1], buf2, nbyte - ret); // data is split between 2 parts
+		index += 1;							// change default index to the next part
+		seek_file(fp[index], 0, SEEK_SET);	// reset seek pointer to beginning of the next part
+		void *buf2 = (int8_t*)buf + ret;	// complete filling the buffer
+		ret2 = read_file(fp[index], buf2, nbyte - ret);
 	}
 
 	return (ret + ret2);
@@ -377,6 +388,8 @@ int64_t File::seek(int64_t offset, int whence)
 	if ((!is_multipart) || (!part_size))
 	{
 		if(offset == last_seek) return SUCCEEDED;
+
+		last_seek = offset;
 
 		return seek_file(fd, offset, whence);
 	}

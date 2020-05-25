@@ -1661,7 +1661,7 @@ int main(int argc, char *argv[])
 	printf("\033[1;37m");
 #endif
 
-	printf("ps3netsrv build 20200524A");
+	printf("ps3netsrv build 20200525");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
@@ -1875,7 +1875,29 @@ int main(int argc, char *argv[])
 		goto exit_error;
 	}
 
-#ifndef WIN32
+#ifdef WIN32
+	{
+		char host[256];
+		struct hostent *host_entry;
+		int hostname = gethostname(host, sizeof(host)); //find the host name
+		if(hostname != FAILED)
+		{
+			printf("Current Host Name: %s\n", host);
+			host_entry = gethostbyname(host); //find host information
+			if(host_entry);
+			{
+				SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x08 );
+				for(int i = 0; host_entry->h_addr_list[i]; i++)
+				{
+					char *IP = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[i])); //Convert into IP string
+					printf("Host IP: %s\n", IP);
+				}
+			}
+			printf("\n");
+			SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), console_info.wAttributes );
+		}
+	}
+#else
 	{
 		struct ifaddrs *addrs, *tmp;
 		getifaddrs(&addrs);
@@ -1889,7 +1911,7 @@ int main(int argc, char *argv[])
 			{
 				struct sockaddr_in *pAddr = (struct sockaddr_in *)tmp->ifa_addr;
 				if(!(!strcmp(inet_ntoa(pAddr->sin_addr), "0.0.0.0") || !strcmp(inet_ntoa(pAddr->sin_addr), "127.0.0.1")))
-					printf("Server IP #%x: %s:%i\n", ++i, inet_ntoa(pAddr->sin_addr), port);
+					printf("Host IP #%x: %s:%i\n", ++i, inet_ntoa(pAddr->sin_addr), port);
 			}
 
 			tmp = tmp->ifa_next;
