@@ -64,6 +64,18 @@ bool full_on_nocobra = false;
 
 bool plugins_dir_exists = false;
 
+bool not_exists(const char *path)
+{
+	sysFSStat stat;
+	return (sysLv2FsStat(path, &stat) != SUCCESS);
+}
+
+bool file_exists(const char *path)
+{
+	sysFSStat stat;
+	return (sysLv2FsStat(path, &stat) == SUCCESS);
+}
+
 int is_ps3hen(void)
 {
 	lv2syscall1(8, 0x1337);
@@ -99,7 +111,7 @@ int file_copy(char* path, char* path2)
 	{
 		if(strcmp(path, path2)==0) return ret;
 
-		if(!update_images && (sysLv2FsStat(path2, &stat) == SUCCESS))
+		if(!update_images && (file_exists(path2)))
 		{
 			if(strstr(path, ".png")) return SUCCESS;
 			if(strstr(path, ".jpg")) return SUCCESS;
@@ -109,7 +121,7 @@ int file_copy(char* path, char* path2)
 		sysLv2FsUnlink(path2);
 		sysLv2FsLink(path, path2);
 
-		if (sysLv2FsStat(path2, &stat) == SUCCESS) return SUCCESS;
+		if (file_exists(path2)) return SUCCESS;
 	}
 
 	ret = sysLv2FsOpen(path, 0, &fd, S_IRWXU | S_IRWXG | S_IRWXO, NULL, 0);
@@ -168,8 +180,7 @@ int sys_get_mamba(void)
 
 bool is_mamba(void)
 {
-	sysFSStat stat;
-	if(sysLv2FsStat(HDDROOT_DIR "/mamba_plugins.txt", &stat) == SUCCESS) return true;
+	if(file_exists(HDDROOT_DIR "/mamba_plugins.txt")) return true;
 
 	u32 version = 0x99999999;
 	if (sys_get_version(&version) < 0) return false;
@@ -179,12 +190,10 @@ bool is_mamba(void)
 
 bool is_disabled(char *filename, char *filename2)
 {
-	sysFSStat stat;
-
-	if(sysLv2FsStat("/dev_blind", &stat) != SUCCESS)
+	if(not_exists("/dev_blind"))
 		sys_fs_mount("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_blind", 0);
 
-	if(sysLv2FsStat(filename, &stat) == SUCCESS)
+	if(file_exists(filename))
 	{
 		sysLv2FsRename(filename, filename2); // re-enable stage2.bin
 
@@ -196,7 +205,7 @@ bool is_disabled(char *filename, char *filename2)
 
 bool is_cobra(void)
 {
-	sysFSStat stat; bool ret = false;
+	bool ret = false;
 
 	if(is_disabled("/dev_blind/sys/stage2_disabled.bin", "/dev_blind/sys/stage2.bin")) return true;
 	if(is_disabled("/dev_blind/sys/stage2.bin.bak", "/dev_blind/sys/stage2.bin")) return true;
@@ -205,9 +214,9 @@ bool is_cobra(void)
 	if(is_disabled("/dev_blind/rebug/cobra/stage2.cex.bak", "/dev_blind/rebug/cobra/stage2.cex")) ret = true;
 	if(is_disabled("/dev_blind/rebug/cobra/stage2.dex.bak", "/dev_blind/rebug/cobra/stage2.dex")) ret = true;
 
-	if(sysLv2FsStat("/dev_flash/sys/stage2.bin", &stat) == SUCCESS) return true;
-	if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins.txt", &stat) == SUCCESS) return true;
-	if(sysLv2FsStat("/dev_flash/rebug/cobra", &stat) == SUCCESS) return true;
+	if(file_exists("/dev_flash/sys/stage2.bin")) return true;
+	if(file_exists(HDDROOT_DIR "/boot_plugins.txt")) return true;
+	if(file_exists("/dev_flash/rebug/cobra")) return true;
 
 	if (is_mamba()) return false;
 
@@ -241,36 +250,32 @@ int add_mygame()
 //  0 already
 //  1 done
 
-	char fb[] = {0x0d, 0x0a, 0x09, 0x09, 0x09, 0x3c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x20, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x3d, 0x22, 0x74, 0x79, 0x70, 0x65, 0x3a, 0x78, 0x2d, 0x78, 0x6d, 0x62, 0x2f, 0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x2d, 0x70, 0x69, 0x78, 0x6d, 0x61, 0x70, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x6b, 0x65, 0x79, 0x3d, 0x22, 0x78, 0x6d, 0x62, 0x5f, 0x61, 0x70, 0x70, 0x33, 0x22, 0x20, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x61, 0x74, 0x74, 0x72, 0x3d, 0x22, 0x78, 0x6d, 0x62, 0x5f, 0x61, 0x70, 0x70, 0x33, 0x22, 0x20, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x73, 0x72, 0x63, 0x3d, 0x22, 0x78, 0x6d, 0x62, 0x3a, 0x2f, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x64, 0x65, 0x76, 0x5f, 0x68, 0x64, 0x64, 0x30, 0x2f, 0x78, 0x6d, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x70, 0x6c, 0x75, 0x67, 0x69, 0x6e, 0x2f, 0x66, 0x62, 0x2e, 0x78, 0x6d, 0x6c, 0x23, 0x73, 0x65, 0x67, 0x5f, 0x66, 0x62, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x2f, 0x3e};
 	FILE* f;
 	long size, gexit_size, len;
-	char *cat;
-	char cat_path[255];
-	size_t result;
-	int i, j, pos=0;
-	sysFSStat stat;
 
 	//read original cat
 	f = fopen("/dev_flash" XMB_CATEGORY_GAME_XML, "r");
-	if(f==NULL) return FAILED;
+	if(f == NULL) return FAILED;
 	fseek (f , 0 , SEEK_END);
 	size = ftell (f);
 	fseek(f, 0, SEEK_SET);
 
-	cat = (char*) malloc (sizeof(char)*size);
-	if (cat == NULL) {free(cat); return FAILED;}
+	char *cat = (char*) malloc (sizeof(char)*size);
+	if (cat == NULL) {fclose (f); return FAILED;}
 
-	result = fread(cat,1,size, f);
-	if (result != size) {free (cat); fclose (f); return FAILED;}
+	size_t result = fread(cat, 1, size, f);
 	fclose (f);
 
+	if (result != size) {free (cat); return FAILED;}
+
 	// is fb.xml entry in cat file ?
-	if(strstr(cat, "fb.xml")!=NULL) {free(cat); return SUCCESS;}
+	if(strstr(cat, "fb.xml")!=NULL) {free (cat); return SUCCESS;}
 
 	// search position of game exit
-	char gameexit1[] = {0x0d, 0x0a, 0x09, 0x09, 0x09, 0x3c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x3d, 0x22, 0x74, 0x79, 0x70, 0x65, 0x3a, 0x78, 0x2d, 0x78, 0x6d, 0x62, 0x2f, 0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x2d, 0x70, 0x69, 0x78, 0x6d, 0x61, 0x70, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x6b, 0x65, 0x79, 0x3d, 0x22, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x73, 0x72, 0x63, 0x3d, 0x22, 0x73, 0x65, 0x6c, 0x3a, 0x2f, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x69, 0x6e, 0x67, 0x61, 0x6d, 0x65, 0x3f, 0x70, 0x61, 0x74, 0x68, 0x3d, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x23, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x26, 0x74, 0x79, 0x70, 0x65, 0x3d, 0x67, 0x61, 0x6d, 0x65, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x2f, 0x3e};
-	gexit_size=sizeof(gameexit1); len = gexit_size - 1;
+	char gameexit1[] = {0x73, 0x72, 0x63, 0x3d, 0x22, 0x73, 0x65, 0x6c, 0x3a, 0x2f, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x69, 0x6e, 0x67, 0x61, 0x6d, 0x65, 0x3f, 0x70, 0x61, 0x74, 0x68, 0x3d, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x23, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x26, 0x74, 0x79, 0x70, 0x65, 0x3d, 0x67, 0x61, 0x6d, 0x65, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x2f, 0x3e};
+	gexit_size = sizeof(gameexit1); len = gexit_size - 1;
 
+	int i, j, pos=0;
 	for(i = 0; i < size - gexit_size; i++)
 	{
 		for(j = 0; j < gexit_size; j++)
@@ -281,8 +286,8 @@ int add_mygame()
 	}
 
 	// search position of game exit (Unix style)
-	char gameexit2[] = {0x0a, 0x09, 0x09, 0x09, 0x3c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x3d, 0x22, 0x74, 0x79, 0x70, 0x65, 0x3a, 0x78, 0x2d, 0x78, 0x6d, 0x62, 0x2f, 0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x2d, 0x70, 0x69, 0x78, 0x6d, 0x61, 0x70, 0x22, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x6b, 0x65, 0x79, 0x3d, 0x22, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x22, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x73, 0x72, 0x63, 0x3d, 0x22, 0x73, 0x65, 0x6c, 0x3a, 0x2f, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x69, 0x6e, 0x67, 0x61, 0x6d, 0x65, 0x3f, 0x70, 0x61, 0x74, 0x68, 0x3d, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x23, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x26, 0x74, 0x79, 0x70, 0x65, 0x3d, 0x67, 0x61, 0x6d, 0x65, 0x22, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x2f, 0x3e};
-	gexit_size=sizeof(gameexit2); len = gexit_size - 1;
+	char gameexit2[] = {0x73, 0x72, 0x63, 0x3d, 0x22, 0x73, 0x65, 0x6c, 0x3a, 0x2f, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x69, 0x6e, 0x67, 0x61, 0x6d, 0x65, 0x3f, 0x70, 0x61, 0x74, 0x68, 0x3d, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x23, 0x73, 0x65, 0x67, 0x5f, 0x67, 0x61, 0x6d, 0x65, 0x65, 0x78, 0x69, 0x74, 0x26, 0x74, 0x79, 0x70, 0x65, 0x3d, 0x67, 0x61, 0x6d, 0x65, 0x22, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x2f, 0x3e};
+	gexit_size = sizeof(gameexit2); len = gexit_size - 1;
 
 	for(i = 0; i < size - gexit_size; i++)
 	{
@@ -300,7 +305,9 @@ patch_xml:
 
 	//write patched cat
 	f = fopen(APP_USRDIR "/category_game.xml", "w");
-	if(f==NULL) {free(cat); return FAILED;}
+	if(f == NULL) {free(cat); return FAILED;}
+
+	char fb[] = {0x0d, 0x0a, 0x09, 0x09, 0x09, 0x3c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x20, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x3d, 0x22, 0x74, 0x79, 0x70, 0x65, 0x3a, 0x78, 0x2d, 0x78, 0x6d, 0x62, 0x2f, 0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x2d, 0x70, 0x69, 0x78, 0x6d, 0x61, 0x70, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x6b, 0x65, 0x79, 0x3d, 0x22, 0x78, 0x6d, 0x62, 0x5f, 0x61, 0x70, 0x70, 0x33, 0x22, 0x20, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x61, 0x74, 0x74, 0x72, 0x3d, 0x22, 0x78, 0x6d, 0x62, 0x5f, 0x61, 0x70, 0x70, 0x33, 0x22, 0x20, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x73, 0x72, 0x63, 0x3d, 0x22, 0x78, 0x6d, 0x62, 0x3a, 0x2f, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x64, 0x65, 0x76, 0x5f, 0x68, 0x64, 0x64, 0x30, 0x2f, 0x78, 0x6d, 0x6c, 0x68, 0x6f, 0x73, 0x74, 0x2f, 0x67, 0x61, 0x6d, 0x65, 0x5f, 0x70, 0x6c, 0x75, 0x67, 0x69, 0x6e, 0x2f, 0x66, 0x62, 0x2e, 0x78, 0x6d, 0x6c, 0x23, 0x73, 0x65, 0x67, 0x5f, 0x66, 0x62, 0x22, 0x0d, 0x0a, 0x09, 0x09, 0x09, 0x09, 0x2f, 0x3e};
 	fwrite(cat, 1, pos, f);
 	fwrite(fb, 1, sizeof(fb), f);
 	fwrite(&cat[pos], 1, size-pos, f);
@@ -308,25 +315,26 @@ patch_xml:
 
 
 	// set target path for category_game.xml
+	char cat_path[80];
 	strcpy(cat_path, "/dev_blind" XMB_CATEGORY_GAME_XML);
-	if(sysLv2FsStat(cat_path, &stat) != SUCCESS) {
+	if(not_exists(cat_path)) {
 		strcpy(cat_path, "/dev_habib" XMB_CATEGORY_GAME_XML);
-		if(sysLv2FsStat(cat_path, &stat) != SUCCESS) {
+		if(not_exists(cat_path)) {
 			strcpy(cat_path, "/dev_rewrite" XMB_CATEGORY_GAME_XML);
 
 			// mount /dev_blind if category_game.xml is not found
-			if(sysLv2FsStat(cat_path, &stat) != SUCCESS) {
+			if(not_exists(cat_path)) {
 				if(sys_fs_mount("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_blind", 0) == SUCCESS) {
 					strcpy(cat_path, "/dev_blind" XMB_CATEGORY_GAME_XML);
-					if(sysLv2FsStat(cat_path, &stat) != SUCCESS) { free(cat); return FAILED;}
+					if(not_exists(cat_path)) { free(cat); return FAILED;}
 				} else { free(cat); return FAILED;}
 			}
 		}
 	}
 
 	// rename category_game.xml as category_game.xml.bak
-	char cat_path_bak[255];
-	strcpy(cat_path_bak, cat_path); strcat(cat_path_bak, ".bak");
+	char cat_path_bak[80];
+	sprintf(cat_path_bak, "%s.bak", cat_path);
 	sysLv2FsUnlink(cat_path_bak);
 	if(sysLv2FsRename(cat_path, cat_path_bak) != SUCCESS) {free(cat); return FAILED;} ;
 
@@ -359,7 +367,7 @@ int main()
 	ioPadInit(7);
 
 	int n, r;
-	for(r=0; r<10; r++)
+	for(r = 0; r < 10; r++)
 	{
 		ioPadGetInfo(&padinfo);
 		for(n = 0; n < 7; n++)
@@ -377,18 +385,18 @@ int main()
 
 	if(button & (BUTTON_L1)) full = true; else
 	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite = true; else
-	if(	(!(button & BUTTON_R1) && (sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 285000)) ||
+	if(	(!(button & BUTTON_R1) && (file_exists(PLUGINS_DIR "/webftp_server.sprx")) && (stat.st_size > 285000)) ||
 		(is_ps3hen() == 0x1337) ||
-		(sysLv2FsStat("/dev_flash/hen/PS3HEN.BIN", &stat) == SUCCESS) ||
-		(sysLv2FsStat(HDDROOT_DIR "/hen/PS3HEN.BIN", &stat) == SUCCESS) ||
-		(sysLv2FsStat("/dev_usb000/PS3HEN.BIN", &stat) == SUCCESS) ||
-		(sysLv2FsStat("/dev_usb001/PS3HEN.BIN", &stat) == SUCCESS)
+		(file_exists("/dev_flash/hen/PS3HEN.BIN")) ||
+		(file_exists(HDDROOT_DIR "/hen/PS3HEN.BIN")) ||
+		(file_exists("/dev_usb000/PS3HEN.BIN")) ||
+		(file_exists("/dev_usb001/PS3HEN.BIN"))
 		) full = true;
 	if(button & (BUTTON_L2 | BUTTON_R2)) update_images = true;
 //---
 
-	full_on_nocobra = (sysLv2FsStat(HDDROOT_DIR "/kernel/mamba_484C.bin", &stat) == SUCCESS) &&
-					 ((sysLv2FsStat(HDDROOT_DIR "/boot_plugins_kernel_nocobra.txt", &stat) == SUCCESS) || (sysLv2FsStat(PLUGINS_DIR "/boot_plugins_kernel_nocobra _dex.txt", &stat) == SUCCESS));
+	full_on_nocobra = (file_exists(HDDROOT_DIR "/kernel/mamba_484C.bin")) &&
+					 ((file_exists(HDDROOT_DIR "/boot_plugins_kernel_nocobra.txt")) || (file_exists(PLUGINS_DIR "/boot_plugins_kernel_nocobra _dex.txt")));
 
 	// Create webman folders
 	sysLv2FsMkdir(TMP_DIR,   DMODE);
@@ -538,12 +546,12 @@ int main()
 	{
 		sysLv2FsUnlink(XMLHOST_DIR "/fb.xml");
 
-		if((sysLv2FsStat(XMLHOST_DIR "/fb-hen.xml", &stat) != SUCCESS))
+		if((not_exists(XMLHOST_DIR "/fb-hen.xml")))
 			file_copy(APP_USRDIR "/xmb/fb.xml", XMLHOST_DIR "/fb-hen.xml");
 	}
 	else
 	{
-		if((sysLv2FsStat(XMLHOST_DIR "/fb.xml", &stat) != SUCCESS))
+		if((not_exists(XMLHOST_DIR "/fb.xml")))
 			file_copy(APP_USRDIR "/xmb/fb.xml", XMLHOST_DIR "/fb.xml");
 	}
 
@@ -590,9 +598,9 @@ int main()
 	sysLv2FsUnlink(RES_DIR "/reloadxmb.pkg");
 	sysLv2FsUnlink(TMP_DIR "/wm_online_ids.txt");
 
-	if(sysLv2FsStat(RES_DIR "/wm_online_ids.txt", &stat) != SUCCESS)
+	if(not_exists(RES_DIR "/wm_online_ids.txt"))
 		file_copy(APP_USRDIR "/res/wm_online_ids.txt", RES_DIR "/wm_online_ids.txt");
-	if(sysLv2FsStat(RES_DIR "/wm_ignore.txt", &stat) != SUCCESS)
+	if(not_exists(RES_DIR "/wm_ignore.txt"))
 		file_copy(APP_USRDIR "/res/wm_ignore.txt",     RES_DIR "/wm_ignore.txt");
 
 	// webMAN ADD-ONS
@@ -613,7 +621,7 @@ int main()
 	file_copy(APP_USRDIR "/CONFIG/ICON0.PNG", PS2CONFIG_DIR "/ICON0.PNG");
 	file_copy(APP_USRDIR "/CONFIG/PARAM.SFO", PS2CONFIG_DIR "/PARAM.SFO");
 
-	if(sysLv2FsStat(PS2CONFIG_USRDIR "/CONFIG/ENC", &stat) != SUCCESS)
+	if(not_exists(PS2CONFIG_USRDIR "/CONFIG/ENC"))
 	{
 		// copy PS2 CONFIG files
 		char path1[80], path2[80];
@@ -698,13 +706,13 @@ int main()
 	sysLv2FsMkdir(XMLMANPLS_IMAGES_DIR, DMODE);
 	sysLv2FsMkdir(XMLMANPLS_FEATS_DIR, DMODE);
 
-	if(sysLv2FsStat(XMLMANPLS_DIR "/PARAM.SFO", &stat) != SUCCESS)
+	if(not_exists(XMLMANPLS_DIR "/PARAM.SFO"))
 		file_copy(APP_USRDIR "/xmbm/PARAM.SFO", XMLMANPLS_DIR "/PARAM.SFO");
 
-	if(sysLv2FsStat(XMLMANPLS_DIR "/ICON0.PNG", &stat) != SUCCESS)
+	if(not_exists(XMLMANPLS_DIR "/ICON0.PNG"))
 		file_copy(APP_DIR "/ICON0.PNG", XMLMANPLS_DIR "/ICON0.PNG");
 
-	//if(sysLv2FsStat(HDDROOT_DIR "/boot_init.bak", &stat) != SUCCESS)
+	//if(not_exists(HDDROOT_DIR "/boot_init.bak"))
 	//	file_copy(APP_DIR "/boot_init.bak", HDDROOT_DIR "/boot_init.bak");
 
 	file_copy(APP_USRDIR "/xml/webMAN.xml"    , XMLMANPLS_FEATS_DIR "/webMAN.xml");
@@ -777,10 +785,10 @@ int main()
 
 	sysLv2FsMkdir(PLUGINS_DIR, DMODE);
 
-	plugins_dir_exists = (sysLv2FsStat(PLUGINS_DIR, &stat) == SUCCESS);
+	plugins_dir_exists = (file_exists(PLUGINS_DIR));
 
 	// install vsh menu
-	if(sysLv2FsStat(RES_DIR, &stat) == SUCCESS)
+	if(file_exists(RES_DIR))
 	{
 		// remove old resource path for images
 		sysLv2FsUnlink(PLUGINS_DIR "/images/wm_vsh_menu.png");
@@ -833,11 +841,11 @@ int main()
 	}
 
 	// skip update custom language file
-	if(sysLv2FsStat(LANG_DIR "/LANG_XX.TXT", &stat))
+	if(not_exists(LANG_DIR "/LANG_XX.TXT"))
 		file_copy(APP_USRDIR "/LANG_XX.TXT", LANG_DIR "/LANG_XX.TXT");
 
 	// skip update custom combo file
-	if(sysLv2FsStat(TMP_DIR "/wm_custom_combo", &stat))
+	if(not_exists(TMP_DIR "/wm_custom_combo"))
 		file_copy(APP_USRDIR "/wm_custom_combo", TMP_DIR "/wm_custom_combo");
 
 	// resource files sprx (wm_proxy, libfs, raw_iso, netiso, video_rec)
@@ -857,7 +865,7 @@ int main()
 	{
 		file_copy(APP_USRDIR "/res/raw_iso.sprx", RES_DIR "/raw_iso.sprx");
 
-		if(sysLv2FsStat(RES_DIR "/raw_iso.sprx", &stat) == SUCCESS)
+		if(file_exists(RES_DIR "/raw_iso.sprx"))
 		{
 			sysLv2FsUnlink(PLUGINS_DIR "/raw_iso.sprx");
 			sysLv2FsUnlink(HDDROOT_DIR "/raw_iso.sprx");
@@ -872,7 +880,7 @@ int main()
 	{
 		file_copy(APP_USRDIR "/res/netiso.sprx", RES_DIR "/netiso.sprx");
 
-		if(sysLv2FsStat(RES_DIR "/netiso.sprx", &stat) == SUCCESS)
+		if(file_exists(RES_DIR "/netiso.sprx"))
 		{
 			sysLv2FsUnlink(PLUGINS_DIR "/netiso.sprx");
 			sysLv2FsUnlink(HDDROOT_DIR "/netiso.sprx");
@@ -881,11 +889,11 @@ int main()
 
 	// copy standalone video recorder plugin (video_rec.sprx) to /wm_res folder
 	sysLv2FsUnlink(PLUGINS_DIR "/video_rec.sprx");
-	if((sysLv2FsStat(RES_DIR, &stat) == SUCCESS))
+	if((file_exists(RES_DIR)))
 		file_copy(APP_USRDIR "/res/video_rec.sprx", RES_DIR "/video_rec.sprx");
 
 	// update PRX+Mamba Loader
-	if((sysLv2FsStat(IRISMAN_USRDIR "/webftp_server.sprx", &stat) == SUCCESS) || (sysLv2FsStat(IRISMAN_USRDIR "/webftp_server_ps3mapi.sprx", &stat) == SUCCESS))
+	if((file_exists(IRISMAN_USRDIR "/webftp_server.sprx")) || (file_exists(IRISMAN_USRDIR "/webftp_server_ps3mapi.sprx")))
 	{
 		sysLv2FsChmod(IRISMAN_USRDIR "/webftp_server.sprx", MODE);
 		sysLv2FsUnlink(IRISMAN_USRDIR "/webftp_server.sprx");
@@ -904,7 +912,7 @@ int main()
 	char line[255];
 
 	// update PRX Loader
-	if(sysLv2FsStat(PRXLOADER_USRDIR "/plugins.txt", &stat) == SUCCESS)
+	if(file_exists(PRXLOADER_USRDIR "/plugins.txt"))
 	{
 		f = fopen(PRXLOADER_USRDIR "/plugins.txt", "r");
 		while(fgets(line, 255, f) != NULL)
@@ -933,9 +941,9 @@ cont:
 	is_cobra(); // re-enable cobra if it's disabled
 
 	// update dev_flash (rebug)
-	if(sysLv2FsStat(FLASH_VSH_MODULE_DIR "/webftp_server.sprx", &stat) == SUCCESS)
+	if(file_exists(FLASH_VSH_MODULE_DIR "/webftp_server.sprx"))
 	{
-		if(sysLv2FsStat("/dev_blind", &stat) != SUCCESS)
+		if(not_exists("/dev_blind"))
 			sys_fs_mount("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_blind", 0);
 
 		sysLv2FsChmod(REBUG_VSH_MODULE_DIR "/webftp_server.sprx", MODE);
@@ -953,7 +961,7 @@ cont:
 
 
 		// delete webMAN from hdd0
-		if((sysLv2FsStat(REBUG_VSH_MODULE_DIR "/webftp_server.sprx", &stat) == SUCCESS))
+		if((file_exists(REBUG_VSH_MODULE_DIR "/webftp_server.sprx")))
 		{
 			sysLv2FsChmod(HDDROOT_DIR "/webftp_server.sprx", MODE);
 			sysLv2FsUnlink(HDDROOT_DIR "/webftp_server.sprx");
@@ -961,7 +969,7 @@ cont:
 			sysLv2FsChmod(PLUGINS_DIR "/webftp_server.sprx", MODE);
 			sysLv2FsUnlink(PLUGINS_DIR "/webftp_server.sprx");
 
-			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins.txt", &stat) == SUCCESS)
+			if(file_exists(HDDROOT_DIR "/boot_plugins.txt"))
 			{
 				f = fopen(HDDROOT_DIR "/boot_plugins.txt", "r");
 				while(fgets(line, 255, f) != NULL)
@@ -977,7 +985,7 @@ cont:
 				fclose(f);
 			}
 
-			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra.txt", &stat) == SUCCESS)
+			if(file_exists(HDDROOT_DIR "/boot_plugins_nocobra.txt"))
 			{
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "r");
 				while(fgets(line, 255, f) != NULL)
@@ -993,7 +1001,7 @@ cont:
 				fclose(f);
 			}
 
-			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", &stat) == SUCCESS)
+			if(file_exists(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt"))
 			{
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "r");
 				while(fgets(line, 255, f) != NULL)
@@ -1020,9 +1028,9 @@ cont:
 
 		return SUCCESS;
 	}
-	else if(sysLv2FsStat(FLASH_VSH_MODULE_DIR "/webftp_server.sprx.bak", &stat) == SUCCESS)
+	else if(file_exists(FLASH_VSH_MODULE_DIR "/webftp_server.sprx.bak"))
 	{
-		if(sysLv2FsStat("/dev_blind", &stat) != SUCCESS)
+		if(not_exists("/dev_blind"))
 			sys_fs_mount("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_blind", 0);
 
 		sysLv2FsChmod(REBUG_VSH_MODULE_DIR "/webftp_server.sprx.bak", MODE);
@@ -1038,10 +1046,10 @@ cont:
 
 
 	u32 cobra_version = 0;
-	if((sysLv2FsStat("/dev_flash/rebug/cobra", &stat) == SUCCESS) && (sys_get_version2(&cobra_version) >= 0 && cobra_version >= 0x0810))
+	if((file_exists("/dev_flash/rebug/cobra")) && (sys_get_version2(&cobra_version) >= 0 && cobra_version >= 0x0810))
 	{
 		// parse boot_plugins_nocobra.txt (update existing path)
-		if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra.txt", &stat) == SUCCESS)
+		if(file_exists(HDDROOT_DIR "/boot_plugins_nocobra.txt"))
 		{
 			f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "r");
 			while(fgets(line, 255, f) != NULL)
@@ -1064,7 +1072,7 @@ cont:
 		else
 		{
 			// append line to boot_plugins_nocobra.txt
-			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra.txt", &stat) == SUCCESS)
+			if(file_exists(HDDROOT_DIR "/boot_plugins_nocobra.txt"))
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "a");
 			else
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra.txt", "w");
@@ -1098,7 +1106,7 @@ cont:
 		}
 
 		// parse boot_plugins_nocobra_dex.txt (update existing path)
-		if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", &stat) == SUCCESS)
+		if(file_exists(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt"))
 		{
 			f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "r");
 			while(fgets(line, 255, f) != NULL)
@@ -1121,7 +1129,7 @@ cont:
 		else
 		{
 			// append line to boot_plugins_nocobra_dex.txt
-			if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", &stat) == SUCCESS)
+			if(file_exists(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt"))
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "a");
 			else
 				f = fopen(HDDROOT_DIR "/boot_plugins_nocobra_dex.txt", "w");
@@ -1159,7 +1167,7 @@ cont:
 	if(lite || full || is_cobra())
 	{
 		// parse boot_plugins.txt (update existing path)
-		if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins.txt", &stat) == SUCCESS)
+		if(file_exists(HDDROOT_DIR "/boot_plugins.txt"))
 		{
 			f = fopen(HDDROOT_DIR "/boot_plugins.txt", "r");
 			while(fgets(line, 255, f) != NULL)
@@ -1183,7 +1191,7 @@ cont:
 		}
 
 		// append line to boot_plugins.txt
-		if(sysLv2FsStat(HDDROOT_DIR "/boot_plugins.txt", &stat) == SUCCESS)
+		if(file_exists(HDDROOT_DIR "/boot_plugins.txt"))
 			f = fopen(HDDROOT_DIR "/boot_plugins.txt", "a");
 		else
 			f = fopen(HDDROOT_DIR "/boot_plugins.txt", "w");
@@ -1231,7 +1239,7 @@ cont:
 	if(is_mamba())
 	{
 		// parse mamba_plugins.txt (update existing path)
-		if(sysLv2FsStat(HDDROOT_DIR "/mamba_plugins.txt", &stat) == SUCCESS)
+		if(file_exists(HDDROOT_DIR "/mamba_plugins.txt"))
 		{
 			f = fopen(HDDROOT_DIR "/mamba_plugins.txt", "r");
 			while(fgets(line, 255, f) != NULL)
@@ -1256,7 +1264,7 @@ cont:
 		}
 
 		// append line to mamba_plugins.txt (Mamba/PRX Loader - PS3MAPI)
-		if(sysLv2FsStat(HDDROOT_DIR "/mamba_plugins.txt", &stat) == SUCCESS)
+		if(file_exists(HDDROOT_DIR "/mamba_plugins.txt"))
 			f = fopen(HDDROOT_DIR "/mamba_plugins.txt", "a");
 		else
 			f = fopen(HDDROOT_DIR "/mamba_plugins.txt", "w");
@@ -1295,7 +1303,7 @@ cont:
 	}
 
 	// update prx_plugins.txt (PRX LOADER)
-	if(sysLv2FsStat(HDDROOT_DIR "/prx_plugins.txt", &stat) == SUCCESS)
+	if(file_exists(HDDROOT_DIR "/prx_plugins.txt"))
 	{
 		// parse prx_plugins.txt (update existing path)
 		f = fopen(HDDROOT_DIR "/prx_plugins.txt", "r");

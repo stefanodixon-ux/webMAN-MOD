@@ -1661,7 +1661,7 @@ int main(int argc, char *argv[])
 	printf("\033[1;37m");
 #endif
 
-	printf("ps3netsrv build 20200525");
+	printf("ps3netsrv build 20200527");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
@@ -1890,7 +1890,7 @@ int main(int argc, char *argv[])
 				for(int i = 0; host_entry->h_addr_list[i]; i++)
 				{
 					char *IP = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[i])); //Convert into IP string
-					printf("Host IP: %s\n", IP);
+					printf("Host IP: %s:%i\n", IP, port);
 				}
 			}
 			printf("\n");
