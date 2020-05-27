@@ -44,7 +44,7 @@ static inline uint32_t bytesToSectors(off64_t size)
 	return ((size + SECTOR_MASK) & ~SECTOR_MASK) / SECTOR_SIZE;
 }
 
-static char *dupString(const char *str, uint8_t len)
+static char *dupString(const char *str, uint16_t len)
 {
 	char *ret = new char[len + 1]; if(!ret) return NULL;
 	strcpy(ret, str);
@@ -53,13 +53,13 @@ static char *dupString(const char *str, uint8_t len)
 
 static uint8_t strncpy_upper(char *s1, const char *s2, uint8_t n)
 {
-	if ((!s1) || (!s2) || (n < 1)) return 0;
-
-	strncpy(s1, s2, n);
+	if ((!s1) || (!s2)) return 0;
 
 	for (uint8_t i = 0; i < n; i++)
 	{
-		if (s1[i] == 0)
+		s1[i] = s2[i];
+
+		if (s2[i] == 0)
 			return i;
 
 		if ((s1[i] >= 'a') && (s1[i] <= 'z'))
@@ -710,14 +710,14 @@ uint8_t *VIsoFile::buildPathTable(bool msb, bool joliet, size_t *retSize)
 		}
 
 		p += 8 + table->len_di;
-		if (table->len_di&1)
+		if (table->len_di & 1)
 			p++;
 
 		dirList = dirList->next;
 		i++;
 	}
 
-	*retSize = (p-tempBuf);
+	*retSize = (p - tempBuf);
 	uint8_t *ret = new uint8_t[*retSize]; if(!ret) return 0;
 
 	memcpy(ret, tempBuf, *retSize);
@@ -882,7 +882,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 			}
 
 			record->len_dr = 0x27 + record->len_fi;
-			if (record->len_dr&1)
+			if (record->len_dr & 1)
 			{
 				record->len_dr++;
 			}
@@ -942,7 +942,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 			}
 
 			record->len_dr = 0x27 + record->len_fi;
-			if (record->len_dr&1)
+			if (record->len_dr & 1)
 			{
 				record->len_dr++;
 			}
@@ -1081,7 +1081,7 @@ void VIsoFile::fixPathTableLba(uint8_t *pathTable, size_t size, uint32_t dirLba,
 		}
 
 		p = p + 8 + table->len_di;
-		if (table->len_di&1)
+		if (table->len_di & 1)
 			p++;
 	}
 }
@@ -1109,8 +1109,8 @@ bool VIsoFile::build(const char *inDir)
 	struct dirent2 **dirs;
 	int count;
 	int idx = 0;
-	uint8_t dlen;
-	uint8_t flen;
+	uint16_t dlen;
+	uint16_t flen;
 
 	dlen = strlen(inDir); if(dlen < 1) return false;
 
@@ -1477,7 +1477,7 @@ bool VIsoFile::generate(const char *inDir, const char *volumeName, const char *g
 
 	if (volumeSize & 0x1F)
 	{
-		padSectors += (0x20-(volumeSize&0x1F));
+		padSectors += (0x20 - (volumeSize & 0x1F));
 	}
 
 	padAreaSize = padSectors * SECTOR_SIZE;

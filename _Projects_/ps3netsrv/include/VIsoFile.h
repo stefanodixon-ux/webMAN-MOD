@@ -14,8 +14,8 @@
 typedef struct _FileList
 {
 	char *path;
-	uint8_t path_len;
-	uint8_t file_len;
+	uint16_t path_len;
+	uint16_t file_len;
 	uint32_t rlba;
 	off64_t size;
 	bool multipart;
@@ -25,8 +25,8 @@ typedef struct _FileList
 typedef struct _DirList
 {
 	char *path;
-	uint8_t path_len;
-	uint8_t full_len;
+	uint16_t path_len;
+	uint16_t full_len;
 	uint8_t *content;
 	uint8_t *contentJoliet;
 	size_t contentSize;

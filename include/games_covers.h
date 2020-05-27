@@ -488,7 +488,19 @@ no_icon0:
 			default_icon = iPS3;
 	}
 
-	if(!HAS(icon)) strcpy(icon, wm_icons[default_icon]);
+	if(!HAS(icon))
+	{
+		flen = sprintf(icon, "/dev_bdvd/%s", file);
+		if(file_exists(icon))
+		{
+			if(get_image_file(icon, flen)) return default_icon;
+			flen -= 4; icon[flen] = NULL;
+			if(get_image_file(icon, flen)) return default_icon;
+			sprintf(icon, "/dev_bdvd/%s.ICON0.PNG", file);
+			if(file_exists(icon)) return default_icon;
+		}
+		strcpy(icon, wm_icons[default_icon]);
+	}
 	return default_icon;
 }
 
