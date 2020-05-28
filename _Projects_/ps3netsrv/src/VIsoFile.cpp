@@ -1641,7 +1641,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 					if (vFilePtr < fEnd)
 					{
 						file_t fd;
-						uint64_t this_r;
+						int64_t this_r;
 
 						to_read = MIN((uint64_t)(fileList->size - (vFilePtr - fStart)), remaining);
 						fd = open_file(fileList->path, O_RDONLY);
