@@ -219,7 +219,7 @@ static char *translate_path(char *path, int *viso)
 
 	if(!path) return NULL;
 
-	normalize_path(path, 0);
+	normalize_path(path, false);
 
 	if(path[0] != '/')
 	{
@@ -280,6 +280,8 @@ static char *translate_path(char *path, int *viso)
 		}
 	}
 
+	normalize_path(p, true);
+
 #ifdef MERGE_DIRS
 	file_stat_t st;
 	if(stat_file(p, &st) < 0)
@@ -327,11 +329,11 @@ static char *translate_path(char *path, int *viso)
 
 					if(filepath)
 					{
-						normalize_path(dir_path, 1);
+						normalize_path(dir_path, true);
 
 						// return filepath if found
 						sprintf(filepath, "%s%s", dir_path, filename);
-						normalize_path(filepath + dlen, 1);
+						normalize_path(filepath + dlen, true);
 
 						if(stat_file(filepath, &st) >= 0)
 						{
@@ -353,7 +355,7 @@ static char *translate_path(char *path, int *viso)
 
 	if(path) free(path);
 
-	return normalize_path(p, 0);
+	return normalize_path(p, false);
 }
 
 static int64_t calculate_directory_size(char *path)
@@ -1038,7 +1040,7 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 
 	client->dirpath = NULL;
 
-	normalize_path(dirpath, 1);
+	normalize_path(dirpath, true);
 	client->dir = opendir(dirpath);
 	if(!client->dir)
 	{
@@ -1047,8 +1049,11 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 	}
 	else
 	{
+		uint16_t rlen = 0;
+		if(!strncmp(dirpath, root_directory, root_len)) rlen = root_len;
+
 		client->dirpath = dirpath;
-		printf("open dir %s\n", dirpath);
+		printf("open dir %s\n", dirpath + rlen);
 		strcat(dirpath, "/");
 		result.open_result = BE32(0);
 	}
@@ -1346,7 +1351,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 			while ((*dir_path == '\r') || (*dir_path == '\n') || (*dir_path == '\t') || (*dir_path == ' ')) dir_path++;
 			char *eol = strstr(dir_path, "\n"); if(eol) *eol = 0;
 
-			normalize_path(dir_path, 1);
+			normalize_path(dir_path, true);
 
 			// check dir exists
 			if(stat_file(dir_path, &st) >= 0)
@@ -1661,7 +1666,7 @@ int main(int argc, char *argv[])
 	printf("\033[1;37m");
 #endif
 
-	printf("ps3netsrv build 20200527A");
+	printf("ps3netsrv build 20200528");
 
 #ifdef WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
@@ -1765,7 +1770,7 @@ int main(int argc, char *argv[])
 		char *filename = strrchr(root_directory, '/'); if(filename) *(++filename) = 0;
 	}
 
-	normalize_path(root_directory, 1);
+	normalize_path(root_directory, true);
 
 	root_len = strlen(root_directory);
 

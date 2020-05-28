@@ -92,6 +92,8 @@ private:
 	off64_t padAreaStart;
 	off64_t padAreaSize;
 
+	file_stat_t st;
+
 	void reset(void);
 
 	DirList *getParent(DirList *dirList);

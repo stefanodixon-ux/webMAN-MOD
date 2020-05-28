@@ -417,12 +417,12 @@ static int select_directories(const struct dirent2 *entry)
 	if(!entry)
 		return false;
 
-	if ((strcmp(entry->d_name, ".") == SUCCEEDED) || (strcmp(entry->d_name, "..") == SUCCEEDED))
+	if (entry->d_type & DT_DIR)
 	{
-		return false;
-	}
-	else if (entry->d_type == DT_DIR)
-	{
+		if ((strcmp(entry->d_name, ".") == SUCCEEDED) || (strcmp(entry->d_name, "..") == SUCCEEDED))
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -434,16 +434,12 @@ static int select_files(const struct dirent2 *entry)
 	if(!entry)
 		return false;
 
-	if ((strcmp(entry->d_name, ".") == SUCCEEDED) || (strcmp(entry->d_name, "..") == SUCCEEDED))
+	if (entry->d_type & DT_DIR)
 	{
 		return false;
 	}
-	else if (entry->d_type != DT_DIR)
-	{
-		return true;
-	}
 
-	return false;
+	return true;
 }
 
 VIsoFile::VIsoFile(bool ps3Mode)
@@ -568,7 +564,7 @@ DirList *VIsoFile::getParent(DirList *dirList)
 	char *parentPath;
 	parentPath = dupString(dirList->path, dirList->full_len); if(!parentPath) return dirList;
 
-	char *slash = strrchr(parentPath, '/'); if(slash) *slash = 0;
+	char *slash = parentPath + dirList->path_len + 1; if(slash) *slash = 0;
 
 	while (tempList)
 	{
@@ -979,6 +975,7 @@ bool VIsoFile::buildContent(DirList *dirList, bool joliet)
 	}
 
 	p = new uint8_t[size];
+	if(!p) {if(record) free(record); return false;}
 	memcpy(p, tempBuf, size);
 
 	record = (Iso9660DirectoryRecord *)p;
@@ -1037,7 +1034,7 @@ void VIsoFile::fixDirLba(Iso9660DirectoryRecord *record, size_t size, uint32_t d
 
 		if (current->len_dr == 0)
 		{
-			p += (SECTOR_SIZE - (pos & SECTOR_MASK));
+			p   += (SECTOR_SIZE - (pos & SECTOR_MASK));
 			pos += (SECTOR_SIZE - (pos & SECTOR_MASK));
 			if (p >= (buf + size))
 				break;
@@ -1105,17 +1102,16 @@ void VIsoFile::fixLba(uint32_t isoLba, uint32_t jolietLba, uint32_t filesLba)
 
 bool VIsoFile::build(const char *inDir)
 {
+	uint16_t dlen = strlen(inDir); if(dlen < 1) return false;
+
+	rootList = new DirList;
+	if(!rootList) return false;
+
 	DirList *dirList, *tail;
 	struct dirent2 **dirs;
 	int count;
 	int idx = 0;
-	uint16_t dlen;
 	uint16_t flen;
-
-	dlen = strlen(inDir); if(dlen < 1) return false;
-
-	rootList = new DirList;
-	if(!rootList) return false;
 
 	rootList->path = dupString(inDir, dlen); if(rootList->path == NULL) return false;
 	rootList->path_len = dlen;
@@ -1450,7 +1446,6 @@ void VIsoFile::write(const char *volumeName, const char *gameCode)
 
 bool VIsoFile::generate(const char *inDir, const char *volumeName, const char *gameCode)
 {
-	file_stat_t st;
 	if (stat_file(inDir, &st) != SUCCEEDED)
 	{
 		printf("viso error: path not found \"%s\"\n", inDir);
@@ -1516,7 +1511,6 @@ int VIsoFile::open(const char *path, int flags)
 		close();
 	}
 
-	file_stat_t st;
 	if (stat_file(path, &st) != SUCCEEDED)
 	{
 		printf("viso error: path not found \"%s\"\n", path);
@@ -1765,8 +1759,10 @@ int VIsoFile::fstat(file_stat_t *fs)
 
 	fs->file_size = totalSize;
 	fs->mode = S_IFREG;
-	// FIXME: put the dates of the directory instead of this fixed value.
-	fs->mtime = fs->atime = fs->ctime = 0x526E3BE1;
+
+	fs->mtime = st.mtime;
+	fs->atime = st.atime;
+	fs->ctime = st.ctime;
 
 	return SUCCEEDED;
 }
