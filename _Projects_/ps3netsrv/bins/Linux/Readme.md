@@ -1,4 +1,4 @@
-Linux binary build webMAN-MOD 1.47.27 and ps3netsrv 20200520
+Linux binary build webMAN-MOD 1.47.27 and ps3netsrv 20200529
 
 Here is a RELEASE build of ps3netsrv source code (1.47.27) for Linux X86_64.
 
