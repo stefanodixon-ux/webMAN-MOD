@@ -564,7 +564,7 @@ DirList *VIsoFile::getParent(DirList *dirList)
 	char *parentPath;
 	parentPath = dupString(dirList->path, dirList->full_len); if(!parentPath) return dirList;
 
-	char *slash = parentPath + dirList->path_len + 1; if(slash) *slash = 0;
+	char *slash = strrchr(parentPath + dirList->path_len, '/'); if(slash) *slash = 0;
 
 	while (tempList)
 	{

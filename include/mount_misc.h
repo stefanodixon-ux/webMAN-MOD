@@ -78,16 +78,21 @@
 		{
 			do_umount(false);
 
-			// map PKGLAUNCH cores folder to RETROARCH
-			sys_map_path(PKGLAUNCH_DIR, NULL);
-
-			if(file_exists(RETROARCH_DIR1))
-				sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
-			else
-				sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
-
 			// mount PKGLAUNCH as disc
 			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", 0);
+
+			if(file_exists(RETROARCH_DIR1))
+			{
+				//sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
+				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
+				sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
+			}
+			else
+			{
+				//sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
+				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
+				sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
+			}
 
 			// store rom path for PKGLAUNCH
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, 0);

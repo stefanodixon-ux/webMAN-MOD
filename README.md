@@ -6,9 +6,9 @@ webMAN MOD is a homebrew plugin for PlayStation®3 forked from the original webM
 with many features added.
 
 
-Our goal was to create an AIO plugin all that include many of the features available on the PS3 Scene
-in an intuitive way. webMAN MOD is the result of the hard work of several users, developers and artists
-that collaborated with development, knowledge, resources, feedback & ideas.
+Our goal was to create an AIO plugin that include many of the features available on the PS3 Scene
+in an easy and intuitive way. webMAN MOD is the result of the hard work of several users, developers
+and artists that collaborated with development, knowledge, resources, feedback & ideas.
 
 ## Current functionality
 ### General
@@ -26,11 +26,11 @@ that collaborated with development, knowledge, resources, feedback & ideas.
 
 ### webMAN vanilla features
 - FTP server with remote control functions (shutdown/restart)
-- WWW server with remote control functions (scroll down for the complete list of shortcuts)
+- WWW server with remote control functions (shutdown/restart/mount/cpursx/insert/eject/setup)
 - Support for loading and browsing of [local] PS3 games in ISO and folder format, DVD videos in ISO format, Blu-ray movies in ISO format, PS1/PS2/PSP games in ISO format with cover display
 - NETISO support for network loading and browsing of PS3 games in ISO and folder format, DVD videos in ISO format, Blu-ray movies in ISO format, and PS1 games in ISO format.
 - NTFS support for PS3 and PS1 games in ISO format, Blu-ray movies in ISO format and DVD Video in ISO format
-- Dynamic Fan Control and in-game temperature monitoring
+- Manual and Dynamic Fan Control and in-game temperature monitoring
 - PAD shortcuts (*open include/combos.h for a complete list of shortcuts)
 - Keep USB device awake
 - Mount last game or AUTOBOOT.ISO to system startup
@@ -44,9 +44,10 @@ that collaborated with development, knowledge, resources, feedback & ideas.
 - New icons created by Brunolee & Berion
 - VSH Menu integration (hold SELECT to show the menu)
 - sLaunch GUI integration (hold START or R2+L2 on XMB to show the GUI)
+- It can mount PSP games stored on exFAT/NTFS/NET devices without copy the file to the internal HDD (1.47.27)
 - It can mount PS2 Classics games on PS2 Classic Launcher (.BIN.ENC)
 - Automatic CONFIG creation for PS2ISOs and PS2 Classic using config database from ManaGunZ or the database of CONFIG created by the installer
-- ROMS support through PKG/ROM Launcher and RetroArch
+- ROMS support through PKG/ROM Launcher and RetroArch (support internal/USB/NET storage with custom icons/background images)
 - Support for launch SELF applications via PKG/ROM Launcher
 - It can auto-mount any custom folder, ISO or open an URL on startup. webMAN vanilla only can mount AUTOBOOT.ISO
 - Title ID can be displayed on XMB menu
@@ -76,7 +77,7 @@ that collaborated with development, knowledge, resources, feedback & ideas.
 - XMBM+ integration when grouping of XMB content is disabled (v1.33.03)
 - Extended Content Profile Grouping (v1.33.07) - common files + individual content (4 profiles)
 - PS3 Manager API Support (PS3MAPI) compatible with RTM tools
-- Integrated Mysis video_rec plugin and get klicensee
+- Integrated Mysis video_rec plugin and get klicensee used by NPDRM content
 - Support for *.ntfs[BDFILE]* (fake ISO created by IRISMAN or prepISO/prepNTFS) - Used to play movies or install large packages on NTFS
 - Support to mount NTFS games using raw_iso.sprx (rawseciso by Estwald) - Supports fake ISO
 - Support for auto-fix games that require higher FW version (4.20 and later)
@@ -96,8 +97,8 @@ that collaborated with development, knowledge, resources, feedback & ideas.
 - Support for local web chat (source code only)
 - Support edition of small text files (<2KB) via web
 - Download files & install PKG remotely or with pad shortcuts
-- Support batch script automation at startup (boot_init.txt or autoexec.bat) or played at any time (/play.ps3/<script-file>.bat)
-- A comprehensive set of web commands and features for customization
+- Support batch script automation at startup (dev_hdd0/boot_init.txt or dev_hdd0/autoexec.bat) or played at any time (/play.ps3/<script-file>.bat)
+- A comprehensive set of web commands and features for customization (link in Web Commands Documentation)
 - Use "home" path to define default path for /app_home/PS3_GAME on start up and for R2+START (e.g. make app_home start multiMAN or IRISMAN)
 - Shorter URL to access paths & files. Use "home" path for search in a user defined folder.
 
@@ -112,7 +113,7 @@ https://www.psx-place.com/threads/webman-mod-web-commands.1508/
 - Video REC plugin : Standalone plugin that records video from games. When used, webMAN MOD is unloaded to free memory.
 
 ## Addons
-- ps3netsrv : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol
+- ps3netsrv : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
 - prepISO : tool that scans content stored in exFAT / NTFS devices and prepare the settings files needed by RAWSECISO plugin
 - PKG/ROM Launcher : allows the execution of PS3 applications and ROMS via RetroArch. Requires that the debug icon "★ app_home/PS3_GAME" be present on XMB
 - PS2CONFIG : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games

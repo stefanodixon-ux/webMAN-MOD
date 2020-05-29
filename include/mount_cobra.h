@@ -388,10 +388,12 @@
 					wait_for("/dev_bdvd", 15);
 
 					sys_map_path(PKGLAUNCH_DIR, NULL);
-					sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", isDir( RETROARCH_DIR1 ) ?
-																				RETROARCH_DIR1 "/USRDIR/cores" :
-																				RETROARCH_DIR2 "/USRDIR/cores" );
-					set_apphome(PKGLAUNCH_DIR "/PS3_GAME");
+					set_apphome (PKGLAUNCH_DIR "/PS3_GAME");
+
+					sys_map_path("/dev_bdvd/PS3_GAME", PKGLAUNCH_DIR "/PS3_GAME");
+					sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", isDir( RETROARCH_DIR1 ) ?
+																			RETROARCH_DIR1 "/USRDIR/cores" :
+																			RETROARCH_DIR2 "/USRDIR/cores" );
 				}
 
 				goto exit_mount;

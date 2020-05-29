@@ -955,6 +955,11 @@ static void do_umount(bool clean)
 
 		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL); // unmap UPDATE from bdvd
 
+		// map PKGLAUNCH cores folder to RETROARCH
+		sys_map_path(PKGLAUNCH_DIR, NULL);
+		sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", NULL);
+		sys_map_path("/app_home/PS3_GAME/USRDIR/cores", NULL);
+
 		// unmap bdvd & apphome
 		sys_map_path("/dev_bdvd", NULL);
 		sys_map_path("//dev_bdvd", NULL);
