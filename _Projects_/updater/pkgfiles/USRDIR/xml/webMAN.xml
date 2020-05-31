@@ -19,13 +19,13 @@
 
 	<View id="seg_webman_links_items">
 		<Items>
-			<Query class="type:x-xmb/folder-pixmap" key="reloadxmb" src="xcb://localhost/query?limit=1&cond=Ae+Game:Game.titleId RELOADXMB"/>
-
 			<Query class="type:x-xmb/folder-pixmap" key="webman_setup_link" src="#seg_webman_setup"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_unmount_link" src="#seg_webman_unmount"/>
 
+			<Query class="type:x-xmb/folder-pixmap" key="webman_refresh_xmb_link" src="#seg_webman_refresh_xmb"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_refresh_xml_link" src="#seg_webman_refresh_xml"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_refresh_html_link" src="#seg_webman_refresh_html"/>
+			<Query class="type:x-xmb/folder-pixmap" key="reloadxmb" src="xcb://localhost/query?limit=1&cond=Ae+Game:Game.titleId RELOADXMB"/>
 
 			<Query class="type:x-xmb/folder-pixmap" key="webman_webman_cpursx" src="#seg_webman_cpursx"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_games_link" src="#seg_webman_games"/>
@@ -269,6 +269,21 @@
 			<Query class="type:x-xmb/folder-pixmap" key="webman_nethost4_link6" src="#seg_webman_nethost4_roms"/>
 			<Query class="type:x-xmb/folder-pixmap" key="webman_nethost4_link7" src="#seg_webman_nethost4_pup"/>
 		</Items>
+	</View>
+
+	<!-- Main > webMAN > Refresh My Games -->
+	<View id="seg_webman_refresh_xmb">
+		<Attributes>
+			<Table key="webman_refresh_xmb">
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshxml.png</String></Pair>
+				<Pair key="title"><String>Refresh My Games & XMB</String></Pair>
+				<Pair key="info"><String>The XMB will be re-loaded after the update of the game list</String></Pair>
+				<Pair key="module_name"><String>idle_plugin</String></Pair>
+				<Pair key="bar_action"><String>none</String></Pair>
+				<Pair key="module_action"><String>/refresh_ps3?xmb</String></Pair>
+			</Table>
+		</Attributes>
+		<Items><Item class="type:x-xmb/module-action" key="webman_refresh_xmb" attr="webman_refresh_xmb"/></Items>
 	</View>
 
 	<!-- Main > webMAN > Refresh My Games -->

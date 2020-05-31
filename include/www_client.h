@@ -677,6 +677,8 @@ parse_request:
 					if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
 					{
 						reload_xmb();
+						sys_ppu_thread_sleep(3);
+						if(IS_ON_XMB) launch_app_home_icon();
 					}
 
 					#ifdef WM_REQUEST

@@ -268,7 +268,6 @@ static void block_online_servers(bool notify)
 			}
 
 			led(YELLOW, OFF);
-
 			led(GREEN, ON);
 		}
 
