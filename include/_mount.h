@@ -1291,6 +1291,15 @@ static void mount_thread(u64 action)
 	char netid = NULL;
 	char _path[STD_PATH_LEN], title_id[TITLEID_LEN];
 
+#ifdef PKG_HANDLER
+	if(!extcasecmp(_path0, ".pkg", 4) && file_exists(_path0))
+	{
+		mount_ret = (installPKG(_path0, _path) == CELL_OK);
+		is_mounting = false;
+		sys_ppu_thread_exit(0);
+	}
+#endif
+
 	ret = true;
 
 	mount_unk = EMU_OFF;
@@ -1513,6 +1522,7 @@ static bool mount_game(const char *path, u8 action)
 	if(islike(path, "/net") && !is_netsrv_enabled(path[4])) return false;
  #endif
 #endif
+
 	if(is_mounting) return false; is_mounting = true;
 
 	_path0 = (char*)path;

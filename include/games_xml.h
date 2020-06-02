@@ -509,13 +509,13 @@ scan_roms:
 
 #ifdef NET_SUPPORT
 				sys_addr_t data2 = NULL;
-				int v3_entries, v3_entry; v3_entries=v3_entry=0;
-				netiso_read_dir_result_data *data=NULL; char neth[8];
+				int v3_entries, v3_entry; v3_entries=v3_entry = 0;
+				netiso_read_dir_result_data *data = NULL; char neth[8];
 				if(is_net)
 				{
 					v3_entries = read_remote_dir(ns, &data2, &abort_connection);
 					if(!data2) goto continue_reading_folder_xml; //continue;
-					data=(netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
+					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
 				}
 #endif
 				if(!is_net && isDir(param) == false) goto continue_reading_folder_xml; //continue;

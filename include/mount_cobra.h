@@ -100,9 +100,9 @@
 			}
 
 
-			// ---------------
-			// mount NTFS ISO
-			// ---------------
+			// -----------------------
+			// mount extFAT / NTFS ISO
+			// -----------------------
 
 			char *ntfs_ext = strstr(_path, ".ntfs[");
 			if(ntfs_ext)
@@ -182,6 +182,13 @@
 	#endif
 					}
 
+#ifdef PKG_HANDLER
+					if(IS(ntfs_ext, ".ntfs[BDFILE]") && islike(ntfs_ext - 4, ".pkg"))
+					{
+						installPKG_all((char*)"/dev_bdvd", false);
+						goto exit_mount;
+					}
+#endif
 					// cache PS2ISO or PSPISO to HDD0
 					bool is_ps2 = IS(ntfs_ext, ".ntfs[PS2ISO]");
 					bool is_psp = IS(ntfs_ext, ".ntfs[PSPISO]");
@@ -245,7 +252,7 @@
 
 				if(_path[5] == NULL) strcat(_path, "/.");
 
-				char *netpath = _path + 5;
+				char *netpath = _path + 5, *pkg_slash = NULL;
 
 				size_t len = sprintf(netiso_args.path, "%s", netpath);
 
@@ -336,6 +343,10 @@
 				else
 				{
 					mount_unk = netiso_args.emu_mode = EMU_DVD;
+					if(!extcasecmp(netpath, ".pkg", 4))
+					{
+						pkg_slash = strrchr(netpath, '/'); if(pkg_slash) *pkg_slash = NULL;
+					}
 					if(!extcasecmp(netpath, ".iso", 4) || !extcasecmp(netpath, ".mdf", 4) || !extcasecmp(netpath, ".img", 4) || !extcasecmp(netpath, ".bin", 4)) ;
 					else
 						sprintf(netiso_args.path, "/***DVD***%s", netpath);
@@ -395,7 +406,13 @@
 																			RETROARCH_DIR1 "/USRDIR/cores" :
 																			RETROARCH_DIR2 "/USRDIR/cores" );
 				}
-
+#ifdef PKG_HANDLER
+				if(ret && (pkg_slash != NULL))
+				{
+					sprintf(_path, "/dev_bdvd/%s", pkg_slash + 1);
+					installPKG(_path, templn);
+				}
+#endif
 				goto exit_mount;
 			}
 

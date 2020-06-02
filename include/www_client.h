@@ -994,6 +994,14 @@ parse_request:
 
 				bool install_ps3 = (param[8] == '_');
 
+				if(islike(pkg_file, "/net"))
+				{
+					sprintf(header, "%s%s", "/mount_ps3", pkg_file); // use /mount.ps3 command to install the remote pkg
+					strcpy(param, header);
+					is_binary = WEB_COMMAND;
+					goto html_response;
+				}
+
 				pkg_delete_after_install = islike(pkg_file, "$all");
 
 				if(!*pkg_file || pkg_delete_after_install)
