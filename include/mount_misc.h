@@ -53,7 +53,7 @@
 			ret = isDir(_path);
 		}
 
-		set_apphome(_path);
+		set_app_home(_path);
 
 		if(launch_app_home_icon()) ret = true;
 

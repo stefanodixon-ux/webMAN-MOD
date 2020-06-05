@@ -1662,7 +1662,7 @@ ssize_t VIsoFile::read(void *buf, size_t nbyte)
 							return r;
 						}
 
-						if (this_r != to_read)
+						if (this_r != (int64_t)to_read)
 						{
 							fprintf(stderr, "VISO: read on file %s returned less data than expected (file modified?)\n", fileList->path);
 							return r;

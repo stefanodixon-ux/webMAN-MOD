@@ -881,16 +881,15 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 }
 
 #ifdef COBRA_ONLY
-static void set_apphome(const char *game_path)
+static void set_app_home(const char *game_path)
 {
 	if(game_path)
 		sys_map_path("/app_home", game_path);
 	else
-		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ? (char*)"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD
+		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ?
+										"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD when game is unmounted
 
-	sys_map_path("/app_home/USRDIR/", NULL);
 	sys_map_path("/app_home/USRDIR", NULL);
-	sys_map_path("/app_home/PS3_GAME/", game_path);
 	sys_map_path("/app_home/PS3_GAME", game_path);
 }
 
@@ -906,13 +905,14 @@ static void do_umount_iso(void)
 		wait_path("/dev_bdvd", 1, false);
 	}
 
-	if(iso_disctype != DISC_TYPE_NONE) cobra_umount_disc_image();
+	if(iso_disctype != DISC_TYPE_NONE)
+		cobra_umount_disc_image();
 
 	// If there is a real disc in the system, issue an insert event
 	if(real_disctype != DISC_TYPE_NONE)
 	{
 		cobra_send_fake_disc_insert_event();
-		wait_for("/dev_bdvd", 1);
+		wait_for("/dev_bdvd", 2);
 		cobra_disc_auth();
 	}
 
@@ -964,7 +964,7 @@ static void do_umount(bool clean)
 		sys_map_path("/dev_bdvd", NULL);
 		sys_map_path("//dev_bdvd", NULL);
 
-		set_apphome(NULL); // unmap app_home
+		set_app_home(NULL); // unmap app_home
 
 		// unmap GAMEI & PKGLAUNCH
  #ifdef PKG_LAUNCHER
@@ -1490,6 +1490,16 @@ mounting_done:
 		if(ret && ((!netid) && isDir("/dev_bdvd/PKG")))
 		{
 			sys_map_path("/app_home", "/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
+		}
+
+		if(ret && (file_exists("/dev_bdvd/USRDIR/EBOOT.BIN") && isDir(_path0)))
+		{
+			if(!(islike(_path0, HDD0_GAME_DIR) || islike(_path0, _HDD0_GAME_DIR)))
+			{
+				set_app_home(_path0);
+				sys_ppu_thread_sleep(1);
+				launch_app_home_icon();
+			}
 		}
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }

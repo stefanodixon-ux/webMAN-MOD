@@ -1,10 +1,5 @@
 #define ENABLE_INGAME_SCREENSHOT	((int*)getNIDfunc("vshmain",0x981D7E9F,0))[0] -= 0x2C;
 
-//int (*_cellGcmIoOffsetToAddress)(u32, void**) = NULL;
-int (*vshtask_notify)(int, const char *) = NULL;
-int (*View_Find)(const char *) = NULL;
-int (*plugin_GetInterface)(int,int) = NULL;
-
 #ifdef SYS_BGM
 u32 (*BgmPlaybackDisable)(int, void *) = NULL;
 u32 (*BgmPlaybackEnable)(int, void *) = NULL;
@@ -72,19 +67,19 @@ static int get_game_info(void)
 {
 	if(IS_ON_XMB) return 0; // prevents game_plugin detection during PKG installation
 
-	int h = View_Find("game_plugin");
+	int is_ingame = View_Find("game_plugin");
 
-	if(h)
+	if(is_ingame)
 	{
 		char _game_info[0x120];
-		game_interface = (game_plugin_interface *)plugin_GetInterface(h, 1);
+		game_interface = (game_plugin_interface *)plugin_GetInterface(is_ingame, 1);
 		game_interface->gameInfo(_game_info);
 
 		snprintf(_game_TitleID, 10, "%s", _game_info+0x04);
 		snprintf(_game_Title,   63, "%s", _game_info+0x14);
 	}
 
-	return h;
+	return is_ingame;
 }
 
 #ifndef LITE_EDITION
@@ -302,7 +297,7 @@ static void reload_xmb(void)
 		if(is_app_home_onxmb())
 		{
 			char col[8] = "network", seg[16] ="-1";
-			set_apphome((char*)RELOADXMB_DIR);
+			set_app_home((char*)RELOADXMB_DIR);
 			mount_unk = APP_GAME; *col = NULL, *seg = NULL;
 			launch_disc(col, seg, true);
 			mount_unk = EMU_OFF;

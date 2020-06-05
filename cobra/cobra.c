@@ -879,7 +879,9 @@ int cobra_mount_bd_disc_image(char *files[], unsigned int num)
 
 int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tracks)
 {
-	if (!file || !tracks || num_tracks > 32) return EINVAL;
+	if (!file || !tracks) return EINVAL;
+
+	if(num_tracks > 32) num_tracks = 32;
 
 	ScsiTrackDescriptor scsi_tracks[num_tracks];
 
@@ -888,7 +890,7 @@ int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tr
 	for (unsigned int i = 0; i < num_tracks; i++)
 	{
 		scsi_tracks[i].adr_control = (tracks[i].is_audio) ? 0x10 : 0x14;
-		scsi_tracks[i].track_number = i+1;
+		scsi_tracks[i].track_number = i + 1;
 		scsi_tracks[i].track_start_addr = tracks[i].lba;
 	}
 
@@ -906,7 +908,7 @@ int cobra_mount_ps2_disc_image(char *files[], int num, TrackDef *tracks, unsigne
 	for (unsigned int i = 0; i < num_tracks; i++)
 	{
 		scsi_tracks[i].adr_control = (tracks[i].is_audio) ? 0x10 : 0x14;
-		scsi_tracks[i].track_number = i+1;
+		scsi_tracks[i].track_number = i + 1;
 		scsi_tracks[i].track_start_addr = tracks[i].lba;
 	}
 

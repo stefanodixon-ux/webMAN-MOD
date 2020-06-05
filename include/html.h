@@ -63,9 +63,6 @@
 #define HTML_SHOW_LAST_GAME		"<span style=\"position:absolute;right:8px\"><font size=2>"
 #define HTML_SHOW_LAST_GAME_END	"</font></span>"
 
-#define open_browser			vshmain_AE35CF2D
-
-
 #define MAX(a, b)		((a) >= (b) ? (a) : (b))
 #define MIN(a, b)		((a) <= (b) ? (a) : (b))
 #define ABS(a)			(((a) < 0) ? -(a) : (a))
@@ -75,6 +72,21 @@
 int extcmp(const char *s1, const char *s2, size_t n);
 int extcasecmp(const char *s1, const char *s2, size_t n);
 char *strcasestr(const char *s1, const char *s2);
+
+static void open_browser(char *url, int mode)
+{
+	int is_ingame = View_Find("game_plugin");
+
+	if(is_ingame)
+	{
+		game_interface = (game_plugin_interface *)plugin_GetInterface(is_ingame, 1);
+		game_interface->wakeupWithGameExit(url, 1);
+	}
+	else
+	{
+		vshmain_AE35CF2D(url, mode);
+	}
+}
 
 static bool IS(const char *a, const char *b)
 {

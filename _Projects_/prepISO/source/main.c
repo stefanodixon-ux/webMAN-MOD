@@ -182,12 +182,12 @@ int main(int argc, const char* argv[])
 	mountCount = ntfsMountAll(&mounts, NTFS_DEFAULT | NTFS_RECOVER /* | NTFS_READ_ONLY */ );
 	if (mountCount <= 0) goto exit;
 
-	for (u8 profile = 0; profile < 6; profile++)
+	for (i = 0; i < mountCount; i++)
 	{
-		for (i = 0; i < mountCount; i++)
+		device_id = USB_MASS_STORAGE((mounts[i].interface->ioType & 0xff) - '0');
+		if (strncmp(mounts[i].name, "ntfs", 4) == 0 || strncmp(mounts[i].name, "ext", 3) == 0)
 		{
-			device_id = USB_MASS_STORAGE((mounts[i].interface->ioType & 0xff) - '0');
-			if (strncmp(mounts[i].name, "ntfs", 4) == 0 || strncmp(mounts[i].name, "ext", 3) == 0)
+			for (u8 profile = 0; profile < 6; profile++)
 			{
 				for(u8 m = 0; m < MAX_MODES; m++) //0="PS3ISO", 1="BDISO", 2="DVDISO", 3="PSXISO", 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEMES"
 				{
