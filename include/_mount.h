@@ -352,7 +352,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				{
 					if(is_dir)
 					{
-						sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name);
+						sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name); check_ps3_game(templn);
 						get_title_and_id_from_sfo(templn, title_id, d_name, icon, buf, 0); f1 = 0;
 					}
 #ifdef COBRA_ONLY
@@ -621,7 +621,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							sprintf(target, "%s/%s", "/dev_hdd0/GAMES", "My Disc Backup");
 
 							char title[80];
-							sprintf(title, "/dev_bdvd/PS3_GAME/PARAM.SFO");
+							sprintf(title, "/dev_bdvd/PS3_GAME/PARAM.SFO"); check_ps3_game(title);
 							if(file_exists(title))
 							{
 								char title_id[TITLEID_LEN];
@@ -1078,6 +1078,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 		for(u8 retry = 0; retry < 10; retry++)
 		{
 			if(file_copy((char*)"/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, _4KB_) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy((char*)"/dev_bdvd/PS3_GM01/PARAM.SFO", destpath, _4KB_) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}
@@ -1089,6 +1090,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 		for(u8 retry = 0; retry < 10; retry++)
 		{
 			if(file_copy((char*)"/dev_bdvd/PS3_GAME/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy((char*)"/dev_bdvd/PS3_GM01/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}
@@ -1116,12 +1118,13 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 					{
 						if(automount != f0)
 						{
-							sprintf(msg, "%s/AUTOMOUNT.ISO", drives[f0]);
-							if(file_exists(msg)) {mount_game(msg, MOUNT_SILENT); automount = f0; break;}
+							char *game_path = msg;
+							sprintf(game_path, "%s/AUTOMOUNT.ISO", drives[f0]);
+							if(file_exists(game_path)) {mount_game(game_path, MOUNT_SILENT); automount = f0; break;}
 							else
 							{
-								sprintf(msg, "%s/PS3_GAME/PARAM.SFO", drives[f0]);
-								if(file_exists(msg)) {mount_game(msg, MOUNT_SILENT); automount = f0; break;}
+								sprintf(game_path, "%s/PS3_GAME/PARAM.SFO", drives[f0]); check_ps3_game(game_path);
+								if(file_exists(game_path)) {mount_game(game_path, MOUNT_SILENT); automount = f0; break;}
 							}
 						}
 						else if(!isDir(drives[f0])) automount = 0;

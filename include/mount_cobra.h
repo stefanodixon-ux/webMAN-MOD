@@ -23,7 +23,7 @@
 			else if(strstr(_path, "/GAME"))
 			{
 				char extgdfile[strlen(_path) + 24], *extgdini = extgdfile;
-				sprintf(extgdfile, "%s/PS3_GAME/PS3GAME.INI", _path);
+				sprintf(extgdfile, "%s/PS3_GAME/PS3GAME.INI", _path); check_ps3_game(extgdfile);
 				if(read_file(extgdfile, extgdini, 12, 0))
 				{
 					if((extgd == 0) &&  (extgdini[10] & (1<<1))) set_gamedata_status(1, false); else
@@ -675,6 +675,7 @@
 
 						// re-mount using proper media type
 						if(isDir("/dev_bdvd/PS3_GAME")) mount_unk = EMU_PS3; else
+						if(isDir("/dev_bdvd/PS3_GM01")) mount_unk = EMU_PS3; else
 						if(isDir("/dev_bdvd/VIDEO_TS")) mount_unk = EMU_DVD; else
 						if(file_exists("/dev_bdvd/SYSTEM.CNF") || strcasestr(_path, "PS2")) mount_unk = EMU_PS2_DVD; else
 						if(strcasestr(_path, "PSP")!=NULL && !extcasecmp(_path, ".iso", 4)) mount_unk = EMU_PSP; else
@@ -717,8 +718,8 @@
 			fix_game(_path, title_id, webman_config->fixgame);
 		#else
 			char filename[STD_PATH_LEN + 20];
-			sprintf(filename, "%s/PS3_GAME/PARAM.SFO", _path);
 
+			sprintf(filename, "%s/PS3_GAME/PARAM.SFO", _path);
 			getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 		#endif
 			// ----

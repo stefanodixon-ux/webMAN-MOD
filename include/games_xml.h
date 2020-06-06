@@ -628,7 +628,10 @@ next_xml_entry:
 							if(is_npdrm && (f1 == id_GAMEZ))
 								read_e = sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name);
 							else
+							{
 								sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
+								check_ps3_game(templn);
+							}
 						}
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))

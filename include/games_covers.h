@@ -280,7 +280,13 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 
 	if(SHOW_COVERS_OR_ICON0)
 	{
-			if(is_dir && (webman_config->nocov == SHOW_ICON0)) {sprintf(icon, "%s/%s/PS3_GAME/ICON0.PNG", param, entry_name); if(!HAS(icon)) sprintf(icon, "%s/%s/ICON0.PNG", param, entry_name); return;}
+			if(is_dir && (webman_config->nocov == SHOW_ICON0))
+			{
+				sprintf(icon, "%s/%s/PS3_GAME/ICON0.PNG", param, entry_name); check_ps3_game(icon);
+				if(!HAS(icon))
+					sprintf(icon, "%s/%s/ICON0.PNG", param, entry_name);
+				return;
+			}
 
 			// get path/name and remove file extension
 			int flen = sprintf(icon, "%s/%s", param, entry_name);
@@ -328,7 +334,13 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 			}
 
 			// return ICON0
-			if(is_dir) {sprintf(icon, "%s/%s/PS3_GAME/ICON0.PNG", param, entry_name); if(!HAS(icon)) sprintf(icon, "%s/%s/ICON0.PNG", param, entry_name); return;}
+			if(is_dir)
+			{
+				sprintf(icon, "%s/%s/PS3_GAME/ICON0.PNG", param, entry_name); check_ps3_game(icon);
+				if(!HAS(icon))
+					sprintf(icon, "%s/%s/ICON0.PNG", param, entry_name);
+				return;
+			}
 
 			// continue searching for covers
 			if(SHOW_COVERS) return;

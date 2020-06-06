@@ -1426,6 +1426,9 @@ int cobra_create_mds(char *path, uint64_t size_in_sectors, DiscPhysInfo *layer0,
 	return 0;
 }
 */
+
+static uint8_t gm = 01;
+
 int cobra_map_game(const char *path, const char *title_id, int *special_mode)
 {
 /*
@@ -1451,6 +1454,22 @@ int cobra_map_game(const char *path, const char *title_id, int *special_mode)
 
 	sys_map_path("//dev_bdvd", path);
 	sys_map_path("/app_home", path);
+
+	char *mpath = (char *)malloc(strlen(path) + 12);
+	if(mpath)
+	{
+		CellFsStat stat;
+		sprintf(mpath, "%s/PS3_GM%02i", path, gm);
+		if(cellFsStat(mpath, &stat) != CELL_FS_SUCCEEDED)
+		{
+			gm = 01; sprintf(mpath, "%s/PS3_GM%02i", path, gm);
+		}
+		if(cellFsStat(mpath, &stat) == CELL_FS_SUCCEEDED)
+		{
+			sys_map_path("/app_home/PS3_GAME", mpath); gm++;
+		}
+		free(mpath);
+	}
 
 	unsigned int real_disctype;
 
