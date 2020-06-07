@@ -26,6 +26,7 @@
 #define FAILED		-1
 
 #define SWAP32(x) ((((x) & 0xff) << 24) | (((x) & 0xff00) << 8) | (((x) & 0xff0000) >> 8) | (((x) >> 24) & 0xff))
+#define RANGE(a, b, c)	((a) <= (b) ? (b) : (a) >= (c) ? (c) : (a))
 
 #define KB			   1024
 #define  _16KB_		  16384UL
@@ -876,14 +877,13 @@ int cobra_mount_bd_disc_image(char *files[], unsigned int num)
 	return sys_storage_ext_mount_bd_discfile(num, files);
 }
 
-
 int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tracks)
 {
 	if (!file || !tracks) return EINVAL;
 
-	if(num_tracks > 32) num_tracks = 32;
+	num_tracks = RANGE(num_tracks, 1, MAX_TRACKS);
 
-	ScsiTrackDescriptor scsi_tracks[num_tracks];
+	ScsiTrackDescriptor scsi_tracks[MAX_TRACKS];
 
 	memset(scsi_tracks, 0, sizeof(scsi_tracks));
 
@@ -899,7 +899,9 @@ int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tr
 
 int cobra_mount_ps2_disc_image(char *files[], int num, TrackDef *tracks, unsigned int num_tracks)
 {
-	if (!files || !tracks || num_tracks > 1) return EINVAL;
+	if (!files || !tracks) return EINVAL;
+
+	num_tracks = 1; if(num < 1) num = 1;
 
 	ScsiTrackDescriptor scsi_tracks[1];
 
@@ -2421,7 +2423,7 @@ int cobra_build_netiso_params(void *param_buf, char *server, uint16_t port, char
 
 	memset(param_buf, 0, 65536);
 
-	if (emu_mode < EMU_PS3 || emu_mode >= EMU_MAX || num_tracks >= 100)
+	if (emu_mode < EMU_PS3 || emu_mode >= EMU_MAX || num_tracks >= MAX_TRACKS)
 		return EINVAL;
 
 

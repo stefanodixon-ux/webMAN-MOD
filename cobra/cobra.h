@@ -781,6 +781,8 @@ int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, uint32
  */
 int cobra_unload_vsh_plugin(unsigned int slot);
 
+#define MAX_TRACKS	80
+
 #ifdef __cplusplus
 }
 #endif

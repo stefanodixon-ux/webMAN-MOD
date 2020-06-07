@@ -1,4 +1,4 @@
-#define MAX_TRACKS	80
+//#define MAX_TRACKS	80 <- defined in cobra.h
 
 #ifdef COBRA_ONLY
 static int parse_lba(const char *templn, int use_pregap, int ret_value)
