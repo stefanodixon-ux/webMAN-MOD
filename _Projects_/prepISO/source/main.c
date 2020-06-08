@@ -452,15 +452,15 @@ int main(int argc, const char* argv[])
 											}
 
 											// parse CUE file
-											strcpy(path + path_len - 3, "CUE");
-											fd = ps3ntfs_open(path, O_RDONLY, 0);
-											if(fd < 0)
+											const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
+											for(u8 e = 0; e < 4; e++)
 											{
-												strcpy(path + path_len - 3, "cue");
+												strcpy(path + path_len - 4, cue_ext[e]);
 												fd = ps3ntfs_open(path, O_RDONLY, 0);
+												if(fd >= SUCCESS) break;
 											}
 
-											if (fd >= 0)
+											if (fd >= SUCCESS)
 											{
 												int r = ps3ntfs_read(fd, (char *)cue_buf, sizeof(cue_buf));
 												ps3ntfs_close(fd);

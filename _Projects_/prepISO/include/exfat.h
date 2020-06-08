@@ -117,7 +117,7 @@ static int dir_read (char *dpath)
 					if(g_mode == PSXISO)
 					{
 						FIL fd;
-						int ret = 0;
+						int ret;
 
 						// detect CD sector size
 						if(!f_open (&fd, fn, FA_READ))
@@ -140,14 +140,15 @@ static int dir_read (char *dpath)
 
 						// parse CUE file
 						int path_len = snprintf (fn, 255, "%s/%s", dpath, fno.fname);
-						strcpy(fn + path_len - 3, "CUE");
-						if(f_open (&fd, fn, FA_READ))
+						const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
+						for(u8 e = 0; e < 4; e++)
 						{
-							strcpy(fn + path_len - 3, "cue");
-							if(f_open (&fd, fn, FA_READ)) ret = -1;
+							strcpy(fn + path_len - 4, cue_ext[e]);
+							ret = f_open (&fd, fn, FA_READ);
+							if(ret == SUCCESS) break;
 						}
 
-						if (ret >= 0)
+						if (ret >= SUCCESS)
 						{
 							UINT r = 0;
 							f_read (&fd, (char *)cue_buf, sizeof(cue_buf), &r);

@@ -52,7 +52,7 @@ static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_s
 
 	if(cue_size > 16)
 	{
-		int use_pregap = 0;
+		//int use_pregap = 0;
 		int lba, lp = 0, prev = 0;
 
 		while(lp < cue_size)
@@ -64,11 +64,11 @@ static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_s
 
 			lba = NONE;
 
-			if(strstr(templn, "PREGAP")) {use_pregap = parse_lba(templn, 0, 2); continue;}
+			//if(strstr(templn, "PREGAP")) {use_pregap = parse_lba(templn, 0, 2); continue;}
 			if(strstr(templn, "INDEX 1=")) lba = get_valuen32(templn, "INDEX 1="); else // ccd frames
 			if(strstr(templn, "INDEX 01") || strstr(templn, "INDEX 1 "))
 			{
-				lba = parse_lba(templn, num_tracks ? use_pregap : 0, FAILED); // cue msf
+				lba = parse_lba(templn, /*num_tracks ? use_pregap :*/ 0, FAILED); // cue msf
 				if(lba <= prev) lba += prev; // INDEX is a track length, instead of lba in msf
 				prev = lba;
 			}
