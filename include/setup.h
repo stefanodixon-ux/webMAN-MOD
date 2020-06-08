@@ -195,6 +195,8 @@ static void setup_parse_settings(char *param)
 #endif
 	webman_config->ftpd = IS_MARKED("ft=1" );
 //	webman_config->nopad = IS_MARKED("xp=1");
+
+//	if( IS_MARKED("ic=0" )) webman_config->nocov = SHOW_MMCOVERS;	 // default
 	if( IS_MARKED("nc=1" )) webman_config->nocov = SHOW_ICON0;	else // (0 = Use MM covers, 1 = Use ICON0.PNG, 2 = No game icons, 3 = Online Covers)
 	if( IS_MARKED("ic=1" )) webman_config->nocov = SHOW_ICON0;	else
 	if( IS_MARKED("ic=2" )) webman_config->nocov = SHOW_DISC;
