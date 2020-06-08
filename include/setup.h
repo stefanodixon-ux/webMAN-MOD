@@ -226,7 +226,7 @@ static void setup_parse_settings(char *param)
 	webman_config->dyn_temp = MY_TEMP;
 
 	webman_config->minfan = get_valuen(param, "mfan=", MIN_FANSPEED, 95); //%
-	webman_config->maxfan = get_valuen(param, "mfs=",  50, 99); //%
+	webman_config->maxfan = get_valuen(param, "mfs=",  40, 99); //%
 	if(webman_config->minfan > webman_config->maxfan) webman_config->maxfan = webman_config->minfan;
 
 	webman_config->bind = IS_MARKED("bn=1");
@@ -596,7 +596,7 @@ static void setup_form(char *buffer, char *templn)
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->man_speed == 0), buffer);
 	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C</td>"
 					"<td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% - "
-					HTML_NUMBER("mfs", "%i", "50", "99") " %% %s </td></tr>",
+					HTML_NUMBER("mfs", "%i", "40", "99") " %% %s </td></tr>",
 					webman_config->dyn_temp, (webman_config->fanc && (webman_config->man_speed == 0)) ? ITEM_CHECKED : "",
 					STR_LOWEST, webman_config->minfan, webman_config->maxfan, STR_FANSPEED); concat(buffer, templn);
 
@@ -1315,11 +1315,11 @@ static void read_settings(void)
 	if((webman_config->autoboot_path[0] != '/') && !islike(webman_config->autoboot_path, "http")) sprintf(webman_config->autoboot_path, "%s", DEFAULT_AUTOBOOT_PATH);
 
 	// check stored data
-	if(webman_config->maxfan < 50) webman_config->maxfan = 80; // % (0xCC)
+	if(webman_config->maxfan < 40) webman_config->maxfan = 80; // % (0xCC)
 	if(webman_config->nowarn >  1) webman_config->nowarn = 0;
 
 	webman_config->minfan   = RANGE(webman_config->minfan, MIN_FANSPEED, 95);   // %
-	webman_config->maxfan   = RANGE(webman_config->maxfan, 50, 99);   // %
+	webman_config->maxfan   = RANGE(webman_config->maxfan, 40, 99);   // %
 	if(webman_config->minfan > webman_config->maxfan) webman_config->maxfan = webman_config->minfan;
 
 	webman_config->man_rate = RANGE(webman_config->man_rate, MIN_FANSPEED, webman_config->maxfan);       // %
