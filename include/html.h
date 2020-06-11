@@ -255,7 +255,7 @@ static size_t utf8enc(char *dst, char *src, u8 cpy2src)
 	size_t j = 0; unsigned int c;
 	for(size_t i = 0; src[i]; i++)
 	{
-		c = ((unsigned char)src[i] & 0xFFFF);
+		c = ((unsigned char)src[i] & 0x7fffffff);
 
 		if(c <= 0x7F)
 			dst[j++] = c;
