@@ -169,7 +169,7 @@ static void saveBMP(char *path, bool notify_bmp)
 	cellFsLseek(fd, pad, CELL_FS_SEEK_SET, 0);
 
 	cellFsClose(fd);
-	sys_memory_free((sys_addr_t)sysmem);
+	sys_memory_free(sysmem);
 
 	// continue rsx rendering
 	rsx_fifo_pause(0);

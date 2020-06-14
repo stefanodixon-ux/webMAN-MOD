@@ -708,8 +708,9 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
-	{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_IDPS, (u64)IDPS);}
-	{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PSID, (u64)PSID);}
+	//{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_IDPS, (u64)IDPS);}
+	//{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PSID, (u64)PSID);}
+
 	u64 _new_IDPS[2] = { IDPS[0], IDPS[1]};
 	u64 _new_PSID[2] = { PSID[0], PSID[1]};
 
@@ -743,6 +744,8 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 			}
 		}
 	}
+
+	get_idps_psid();
 
 	sprintf(templn, "<b>%s%s --> %s</b>"
 					HTML_BLU_SEPARATOR

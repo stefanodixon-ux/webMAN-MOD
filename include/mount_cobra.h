@@ -99,7 +99,6 @@
 				cobra_iso_list[n] = (char*)iso_list[n];
 			}
 
-
 			// -----------------------
 			// mount extFAT / NTFS ISO
 			// -----------------------
