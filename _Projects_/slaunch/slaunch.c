@@ -445,13 +445,13 @@ static void load_config(void)
 		cellFsRead(fd, (void *)&sconfig, sizeof(_sconfig), 0);
 		cellFsClose(fd);
 
-		gmode=sconfig.gmode;
-		dmode=sconfig.dmode;
-		fav_mode=sconfig.fav_mode;
-		fav_game=sconfig.fav_game;
-		cur_game=sconfig.cur_game;
-		cur_game_=sconfig.cur_game_;
-		gpp=sconfig.gpp;
+		gmode     = sconfig.gmode;
+		dmode     = sconfig.dmode;
+		fav_mode  = sconfig.fav_mode;
+		fav_game  = sconfig.fav_game;
+		cur_game  = sconfig.cur_game;
+		cur_game_ = sconfig.cur_game_;
+		gpp       = sconfig.gpp;
 	}
 }
 
@@ -459,14 +459,15 @@ static void save_config(void)
 {
 	_sconfig sconfig;
 
-	sconfig.gmode=gmode;
-	sconfig.dmode=dmode;
-	sconfig.gpp=gpp;
-	sconfig.fav_mode=fav_mode;
-	sconfig.fav_game=fav_game;
-	sconfig.cur_game=cur_game;
-	sconfig.cur_game_=cur_game_;
-	sconfig.padd1=sconfig.padd0=0;
+	sconfig.gmode    = gmode;
+	sconfig.dmode    = dmode;
+	sconfig.gpp      = gpp;
+	sconfig.fav_mode = fav_mode;
+	sconfig.fav_game = fav_game;
+	sconfig.cur_game = cur_game;
+	sconfig.cur_game_= cur_game_;
+	sconfig.padd1 =
+	sconfig.padd0 = 0;
 	int fd;
 
 	if(cellFsOpen(WMTMP "/slaunch.cfg", CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
@@ -480,7 +481,7 @@ static void load_data(void)
 {
 	int fd;
 
-	if(get_vsh_plugin_slot_by_name("WWWD") >= 7) {games=fav_mode=0, gmode = TYPE_MAX; return;}
+	//if(get_vsh_plugin_slot_by_name("WWWD") >= 7) {games=fav_mode=0, gmode = TYPE_MAX; return;}
 
 	char filename[64];
 	if(fav_mode) sprintf(filename, WMTMP "/" SLIST "1.bin"); else sprintf(filename, WMTMP "/" SLIST ".bin");
@@ -491,8 +492,8 @@ static void load_data(void)
 
 	games=size/sizeof(_slaunch);
 
-	if(games>=MAX_GAMES) games=MAX_GAMES-1;
-	if(cur_game>=games) cur_game=0;
+	if(games >= MAX_GAMES) games = MAX_GAMES-1;
+	if(cur_game >= games) cur_game = 0;
 
 reload:
 	reset_heap(); load_background(); slaunch = NULL;
