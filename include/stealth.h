@@ -112,9 +112,9 @@ static void remove_cfw_syscalls(bool keep_ccapi)
 	for(u8 sc = initial_sc; sc < CFW_SYSCALLS; sc++)
 		pokeq(SYSCALL_PTR( sc_disable[sc] ), sc_null);
 
-	u64 sc9  = peekq(SYSCALL_PTR( 9));
+	u64 sc8  = peekq(SYSCALL_PTR(8)) | peekq(SYSCALL_PTR(9));
 
-	syscalls_removed = (sc9 == SYSCALLS_UNAVAILABLE || sc9 == sc_null);
+	syscalls_removed = (sc8 == SYSCALLS_UNAVAILABLE || sc8 == sc_null);
 
 	#ifdef COBRA_ONLY
 	if(syscalls_removed)
