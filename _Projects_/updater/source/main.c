@@ -610,6 +610,7 @@ int main()
 	file_copy(APP_USRDIR "/addons/PSP_Minis_Launcher.pkg", RES_DIR "/PSP_Minis_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/PSP_Remasters_Launcher.pkg"	, RES_DIR "/PSP_Remasters_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/Reload_XMB.pkg", RES_DIR "/Reload_XMB.pkg");
+	file_copy(APP_USRDIR "/addons/RELOAD_XMB.ISO", RES_DIR "/RELOAD_XMB.ISO");
 	file_copy(APP_USRDIR "/addons/ROMS_PKG_Launcher.pkg", RES_DIR "/ROMS_PKG_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_standard.pkg", RES_DIR "/wm_theme_standard.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_metalification.pkg"	, RES_DIR "/wm_theme_metalification.pkg");

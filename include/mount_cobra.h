@@ -336,7 +336,7 @@
 					sprintf(netiso_args.path, "/***DVD***%s", "/ROMS");
 
 					sprintf(templn, "/dev_bdvd/%s", netpath + 6);
-					save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", templn, 0);
+					save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", templn, SAVE_ALL);
 					copy_rom_media(templn);
 				}
 				else
@@ -584,7 +584,7 @@
 						if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
 						// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
-						save_file(WMNOSCAN, NULL, 0);
+						save_file(WMNOSCAN, NULL, SAVE_ALL);
 
 						if(mount_unk == EMU_PS2_CD) goto exit_mount; // don't call cobra_send_fake_disc_insert_event again
 					}

@@ -818,8 +818,8 @@ parse_request:
 						}
 						else
 						{
-							strcpy(header, param);
-							sprintf(param, "/mount.ps3%s", header + 9);
+							strcpy(header, param2);
+							sprintf(param, "/mount.ps3%s", header);
 							ap_param = 2; // force auto_play
 						}
 						is_binary = WEB_COMMAND;
@@ -852,7 +852,7 @@ parse_request:
 						get_param("col=", seg, param2, 80);
 					}
 
-					launch_disc(col, seg, execute);
+					exec_xmb_item(col, seg, execute);
 					mount_unk = EMU_OFF;
 				}
 
@@ -872,8 +872,7 @@ parse_request:
 				// /play.ps3                     start game from disc icon
 
 				// default: play.ps3?col=game&seg=seg_device
-				char col[16], seg[40]; *col = *seg = NULL;
-				launch_disc(col, seg, true);
+				launch_disc(true);
 
 				sprintf(param, "/cpursx.ps3");
 			}
@@ -1988,7 +1987,7 @@ parse_request:
 
 				if(sysmem) sys_memory_free(sysmem);
 
-				{ del_turnoff(1); }
+				del_turnoff(1);
 
 				if(param[14] != 'o')
 					vsh_shutdown(); // shutdown using VSH
@@ -2038,10 +2037,10 @@ parse_request:
 
 				if(sysmem) sys_memory_free(sysmem);
 
-				{ del_turnoff(2); }
+				del_turnoff(2);
 
 				char *allow_scan = strstr(param,"?0");
-				if(allow_scan) *allow_scan = NULL; else save_file(WMNOSCAN, NULL, 0);
+				if(allow_scan) *allow_scan = NULL; else save_file(WMNOSCAN, NULL, SAVE_ALL);
 
 				bool is_restart = IS(param, "/restart.ps3");
 

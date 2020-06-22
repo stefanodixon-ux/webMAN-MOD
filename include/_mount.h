@@ -144,9 +144,8 @@ static void auto_play(char *param, u8 play_ps3)
 		else
  #endif
 		{
-			char category[16], seg_name[40]; *category = *seg_name = NULL;
-			//if((atag && !l2) || (!atag && l2)) {sys_ppu_thread_sleep(1); launch_disc(category, seg_name, true);} // L2 + X
-			if(!(webman_config->combo2 & PLAY_DISC) || atag) {sys_ppu_thread_sleep(1); launch_disc(category, seg_name, ((atag && !l2) || (!atag && l2)));}		// L2 + X
+			//if((atag && !l2) || (!atag && l2)) {sys_ppu_thread_sleep(1); launch_disc();} // L2 + X
+			if(!(webman_config->combo2 & PLAY_DISC) || atag) {sys_ppu_thread_sleep(1); launch_disc((atag && !l2) || (!atag && l2));}		// L2 + X
 
 			autoplay = false;
 		}
@@ -453,8 +452,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 									poke_lv1(lv2_offset + 0x10, LV2_SELF);
 
 									working = 0;
-									{ del_turnoff(0); }
-									save_file(WMNOSCAN, NULL, 0);
+									del_turnoff(0); // no beep
+									save_file(WMNOSCAN, NULL, SAVE_ALL);
 									{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);} /*load LPAR id 1*/
 									sys_ppu_thread_exit(0);
 								}
@@ -865,7 +864,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				else
 				{
 					show_msg((char*)STR_CPYFINISH);
-					if(do_restart) { { del_turnoff(2); } vsh_reboot();}
+					if(do_restart) { del_turnoff(2); vsh_reboot();}
 				}
 
 				setPluginInactive();
@@ -1146,12 +1145,14 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 				if(!syscalls_removed && webman_config->dsc) disable_cfw_syscalls(webman_config->keep_ccapi);
 			}
 #endif
-			if((effective_disctype == DISC_TYPE_PS2_DVD) || (effective_disctype == DISC_TYPE_PS2_CD) || (real_disctype == DISC_TYPE_PS2_DVD) || (real_disctype == DISC_TYPE_PS2_CD) || (iso_disctype == DISC_TYPE_PS2_DVD) || (iso_disctype == DISC_TYPE_PS2_CD))
+			if((effective_disctype == DISC_TYPE_PS2_DVD) || (effective_disctype == DISC_TYPE_PS2_CD)
+			|| (real_disctype      == DISC_TYPE_PS2_DVD) || (real_disctype      == DISC_TYPE_PS2_CD)
+			|| (iso_disctype       == DISC_TYPE_PS2_DVD) || (iso_disctype       == DISC_TYPE_PS2_CD))
 			{
 				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
-				save_file(WMNOSCAN, NULL, 0);
+				save_file(WMNOSCAN, NULL, SAVE_ALL);
 			}
 			else if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF, msg);
 

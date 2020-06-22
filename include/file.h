@@ -204,7 +204,7 @@ static bool not_exists(const char *path)
 }
 
 #ifdef COBRA_ONLY
-static void check_ps3_game(char *path) {}
+#define check_ps3_game(path)
 #else
 static void check_ps3_game(char *path)
 {

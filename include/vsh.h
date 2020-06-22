@@ -190,7 +190,7 @@ static bool explore_exec_push(u32 usecs, u8 focus_first)
 	return false;
 }
 
-static void launch_disc(char *category, char *seg_name, bool execute)
+static void exec_xmb_item(char *category, char *seg_name, bool execute)
 {
 	u8 n; int view;
 
@@ -200,7 +200,9 @@ static void launch_disc(char *category, char *seg_name, bool execute)
 
 	for(n = 0; n < 15; n++) {view = View_Find("explore_plugin"); if(view) break; if(wait_for_abort(2000000)) return;}
 
-	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 15); if(n) {if(wait_for_abort(3000000)) return;}
+	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 15);
+
+	if(n) {if(wait_for_abort(3000000)) return;}
 
 	if(view)
 	{
@@ -282,24 +284,36 @@ static bool is_app_home_onxmb(void)
 	return has_app_home;
 }
 
-static bool launch_app_home_icon(void)
+static void launch_disc(bool exec)
 {
 	char category[8], seg_name[16]; *category = *seg_name = NULL;
-	if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(category, seg_name, true); return true;}
+	exec_xmb_item(category, seg_name, exec);
+}
+
+static bool launch_app_home_icon(void)
+{
+	if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(true);  return true;}
 	return false;
 }
 
 #ifdef COBRA_ONLY
 static void reload_xmb(void)
 {
-	if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
+	if(IS_ON_XMB)
 	{
-		if(is_app_home_onxmb())
+		mount_unk = EMU_OFF;
+		if(file_exists(RELOADXMB_EBOOT) && is_app_home_onxmb())
 		{
-			char col[8] = "network", seg[16] ="-1";
-			set_app_home((char*)RELOADXMB_DIR);
-			mount_unk = APP_GAME; *col = NULL, *seg = NULL;
-			launch_disc(col, seg, true);
+			set_app_home(RELOADXMB_DIR);
+			mount_unk = APP_GAME;
+		}
+		else if(file_exists(RELOADXMB_ISO))
+		{
+			mount_unk = mount_game(RELOADXMB_ISO, 0); // MOUNT_SILENT
+		}
+		if(mount_unk)
+		{
+			launch_disc(true);
 			mount_unk = EMU_OFF;
 		}
 	}
