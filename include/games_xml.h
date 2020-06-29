@@ -106,18 +106,19 @@ static void make_fb_xml(void)
 	}
 }
 
-static void add_custom_xml(t_string *myxml, char *custom_xml, char *query_xmb)
+static bool add_custom_xml(char *query_xmb)
 {
-	for(u8 d = 1; d < 7; d++)
+	char *custom_xml = query_xmb + 800;
+	for(u8 d = 0; d < 7; d++)
 	{
 		sprintf(custom_xml,  "%s/wm_custom.xml", drives[d]);
 		if(file_exists(custom_xml))
 		{
-			sprintf(query_xmb, QUERY_XMB2("wm_custom", "xmb://localhost%s#wm_root"), custom_xml);
-			_concat(myxml, query_xmb);
-			return;
+			sprintf(query_xmb, QUERY_XMB("wm_custom", "xmb://localhost%s#wm_root"), custom_xml);
+			return true;
 		}
 	}
+	return false;
 }
 
 static bool add_xmb_entry(u8 f0, u8 f1, int plen, const char *tempstr, char *templn, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u16 *item_count, u8 subfolder)
@@ -798,7 +799,7 @@ continue_reading_folder_xml:
 				_concat(&myxml_ngp, ADD_XMB_ITEM("setup"));
 		}
 
-		add_custom_xml(&myxml, templn, tempstr);
+		if(add_custom_xml(templn)) _concat(&myxml_ngp, templn);
 	}
 
 	// --- add sorted items to xml
@@ -986,6 +987,10 @@ continue_reading_folder_xml:
 													wm_icons[gDVD], STR_VIDFORMAT, item_count[gDVD], STR_VIDEO,
 													STR_NOITEM_PAIR); _concat(&myxml, templn);}
 	 #endif
+		if(add_custom_xml(templn)) {sprintf(templn, "<Table key=\"wm_custom\">"
+											XML_PAIR("icon_rsc","item_tex_ps3util")
+											XML_PAIR("title","%s") "</Table>",
+											"XML"); _concat(&myxml, templn);}
 	}
 
 	// --- Add Setup
@@ -1046,7 +1051,7 @@ continue_reading_folder_xml:
 		if(  c_roms                     ) _concat(&myxml, QUERY_XMB("wm_rom", "xmb://localhost" HTML_BASE_PATH "/ROMS.xml#seg_wm_rom_items"));
 		#endif
 	 #endif
-		add_custom_xml(&myxml, templn, tempstr);
+		if(add_custom_xml(templn)) _concat(&myxml, templn);
 		_concat(&myxml, "</Items></View>");
 	}
 

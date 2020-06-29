@@ -134,7 +134,7 @@ static uint8_t opt_mode=0;
 static uint8_t unload_mode=1;
 
 static uint64_t tick=0x80;
-static int8_t   delta=10;
+static int8_t  delta=10;
 
 #define SYS_PPU_THREAD_NONE        (sys_ppu_thread_t)NONE
 
@@ -601,7 +601,7 @@ static void reload_data(uint32_t curpad)
 
 	if(curpad & PAD_R2) gmode=dmode=TYPE_ALL;
 
-	cur_game=0;
+	cur_game=0; tick=0x80, delta=10;
 
 	load_data();
 	show_content();
@@ -984,7 +984,7 @@ static void slaunch_thread(uint64_t arg)
 
 					if((cur_game!=_cur_game) && games)		// draw backdrop
 					{
-						tick=0xc0;
+						tick=0xc0, delta=10;
 						play_rco_sound("snd_cursor");
 						pg_idx=(1 + _cur_game % gpp);
 						if(pg_idx<=games) set_backdrop(pg_idx, 1);
@@ -1000,7 +1000,7 @@ static void slaunch_thread(uint64_t arg)
 					init_delay=0, oldpad=0, tick+=delta;	// pulsing selection frame
 					pg_idx=(1 + cur_game % gpp);
 					if(pg_idx<=games) set_frame(1 + cur_game % gpp, 0xff000000ff000000|tick<<48|tick<<16); else cur_game=0;
-					if(tick<0x80 || tick>0xF0)delta=-delta;
+					if(tick<0x80 || tick>0xF0){delta=-delta; tick&=0xff;}
 
 					// update temperature
 					if(++frame > 300) {frame = 0, cpu_rsx ^= 1; draw_selection(cur_game);}

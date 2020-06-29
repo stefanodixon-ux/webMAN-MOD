@@ -595,6 +595,9 @@ int wwwd_start(size_t args, void *argp)
 
 	detect_firmware();
 
+	if(!payload_ps3hen && !(webman_config->fanc)) // SYSCON
+		sys_ppu_thread_sleep(webman_config->boots);
+
 	if(set_fan_policy_offset) restore_set_fan_policy = peekq(set_fan_policy_offset); // sys 389 get_fan_policy
 
 #ifdef PS3MAPI

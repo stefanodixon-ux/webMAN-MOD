@@ -756,7 +756,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						if(is_mounting)
 							mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
 						else if(IS_INGAME)
-							mlen += sprintf(tempstr + mlen, " To quit the game click");
+							mlen += sprintf(tempstr + mlen, " To quit the game click.");
+						else if(!cobra_version)
+							mlen += sprintf(tempstr + mlen, " Cobra payload not available.");
 					}
 #ifndef LITE_EDITION
  #ifdef COBRA_ONLY
@@ -1099,6 +1101,74 @@ static void cache_icon0_and_param_sfo(char *destpath)
 #endif
 
 #ifdef COBRA_ONLY
+static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_parts, int emu_type)
+{
+	bool ret = false;
+	int flen = strlen(_path) - 4; bool mount_iso = false;
+
+	if(flen < 0) ;
+
+	else if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
+	{
+		const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
+		for(u8 e = 0; e < 8; e++)
+		{
+			sprintf(cobra_iso_list[0] + flen, "%s", iso_ext[e]);
+			mount_iso = file_exists(cobra_iso_list[0]); if(mount_iso) break;
+		}
+	}
+	else if(_path[flen] == '.')
+	{
+		const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
+		for(u8 e = 0; e < 4; e++)
+		{
+			sprintf(_path + flen, "%s", cue_ext[e]);
+			if(file_exists(_path)) break;
+		}
+		if(not_exists(_path)) sprintf(_path, "%s", cobra_iso_list[0]);
+	}
+
+	mount_iso = mount_iso || file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = emu_type;
+
+	if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
+	{
+		sys_addr_t sysmem = 0;
+		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+		{
+			char *cue_buf = (char*)sysmem;
+			int cue_size = read_file(_path, cue_buf, _8KB_, 0);
+
+			if(cue_size > 16)
+			{
+				TrackDef tracks[MAX_TRACKS];
+				unsigned int num_tracks = parse_cue(_path, cue_buf, cue_size, tracks);
+
+				if(emu_type == EMU_PSX)
+					cobra_mount_psx_disc_image(cobra_iso_list[0], tracks, num_tracks);
+				else
+					cobra_mount_ps2_disc_image(cobra_iso_list, iso_parts, tracks, num_tracks);
+
+				mount_iso = false;
+			}
+			sys_memory_free(sysmem);
+		}
+	}
+
+	if(mount_iso)
+	{
+		TrackDef tracks[1];
+		tracks[0].lba = 0;
+		tracks[0].is_audio = 0;
+
+		if(emu_type == EMU_PSX)
+			cobra_mount_psx_disc_image(cobra_iso_list[0], tracks, 1);
+		else
+			cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
+	}
+
+	return ret;
+}
+
 static void mount_on_insert_usb(bool on_xmb, char *msg)
 {
 	// Auto-mount x:\AUTOMOUNT.ISO or JB game found on root of USB devices (dev_usb00x, dev_sd, dev_ms, dev_cf)

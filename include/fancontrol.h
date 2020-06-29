@@ -95,7 +95,7 @@ static void set_fan_speed(u8 new_fan_speed)
 
 static void restore_fan(u8 set_syscon_mode)
 {
-	if(get_fan_policy_offset > 0)
+	if(set_fan_policy_offset > 0)
 	{
 		//pokeq(syscall_base + (u64) (130 * 8), backup[3]);
 		//pokeq(syscall_base + (u64) (138 * 8), backup[4]);

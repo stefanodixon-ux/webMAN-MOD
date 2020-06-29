@@ -2,11 +2,11 @@
 // mount hdd0   -> /GAMES /GAMEZ /PS3ISO /PSXISO /PSXGAMES /PS2ISO /PSPISO /BDISO /DVDISO
 // mount usb*   -> /GAMES /GAMEZ /PS3ISO /PSXISO /PSXGAMES /PSPISO /BDISO /DVDISO
 //       iso.*  -> support split-iso
-// mount ntfs   -> .ntfs[PS3ISO] .ntfs[PSXISO].ntfs[BDISO] .ntfs[DVDISO] .ntfs[BDFILE]
-//    ps2 & psp -> are cached to hdd0
-//       psxiso -> use rawiso by default on NTFS due multi-disc support
-// mount net    -> /net0/PS3ISO /net0/PSXISO /net0/PSXGAMES /net0/BDISO /net0/DVDISO /net0/GAMES /net0/PKG
-//    ps2 & psp -> are cached to hdd0
+// mount ntfs   -> .ntfs[PS3ISO] .ntfs[PSXISO] .ntfs[PSPISO] .ntfs[BDISO] .ntfs[DVDISO] .ntfs[BDFILE]
+//          ps2 -> are cached to hdd0
+//       psxiso -> use rawseciso plugin by default on NTFS due multi-disc support
+// mount net    -> /net0/PS3ISO /net0/PSXISO /net0/PSXGAMES /net0/PSPISO /net0/BDISO /net0/DVDISO /net0/GAMES /net0/PKG
+//          ps2 -> are cached to hdd0
 //    Dump with /copy.ps3/net0/***PS3***/GAMES/BLES12345  -> /dev_hdd0/PS3ISO/BLES12345.iso
 //    Dump with /copy.ps3/net0/***DVD***/folder           -> /dev_hdd0/DVDISO/folder.iso
 
@@ -511,16 +511,13 @@
 					{
 						cellFsUnlink(TMP_DIR "/loadoptical"); //Cobra 8.x
 
-						TrackDef tracks[1];
-						tracks[0].lba = 0;
-						tracks[0].is_audio = 0;
-
 						#ifndef LITE_EDITION
 						// Auto-copy CONFIG from ManaGunZ
+						sprintf(templn, "%s", _path);
 						sprintf(_path, "%s.CONFIG", iso_list[0]);
 						if(!webman_config->ps2config && not_exists(_path))
 						{
-							cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
+							mount_ps_disc_image(templn, cobra_iso_list, iso_parts, EMU_PS2_DVD);
 							sys_ppu_thread_usleep(2500);
 							cobra_send_fake_disc_insert_event();
 
@@ -578,7 +575,7 @@
 
 						// mount PS2 ISO
 						if(mount_unk == EMU_PS2_DVD)
-							cobra_mount_ps2_disc_image(cobra_iso_list, 1, tracks, 1);
+							mount_ps_disc_image(templn, cobra_iso_list, iso_parts, EMU_PS2_DVD);
 
 						// set fan to PS2 mode (constant fan speed)
 						if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
@@ -598,59 +595,7 @@
 
 				else if(strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || mount_unk == EMU_PSX)
 				{
-					int flen = strlen(_path) - 4; bool mount_iso = false;
-
-					if(flen < 0) ;
-
-					else if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
-					{
-						const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
-						for(u8 e = 0; e < 8; e++)
-						{
-							sprintf(cobra_iso_list[0] + flen, "%s", iso_ext[e]);
-							mount_iso = file_exists(cobra_iso_list[0]); if(mount_iso) break;
-						}
-					}
-					else if(_path[flen] == '.')
-					{
-						const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
-						for(u8 e = 0; e < 4; e++)
-						{
-							sprintf(_path + flen, "%s", cue_ext[e]);
-							if(file_exists(_path)) break;
-						}
-						if(not_exists(_path)) sprintf(_path, "%s", cobra_iso_list[0]);
-					}
-
-					mount_iso = mount_iso || file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = EMU_PSX;
-
-					if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
-					{
-						sys_addr_t sysmem = 0;
-						if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
-						{
-							char *cue_buf = (char*)sysmem;
-							int cue_size = read_file(_path, cue_buf, _8KB_, 0);
-
-							if(cue_size > 16)
-							{
-								TrackDef tracks[MAX_TRACKS];
-								unsigned int num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);
-
-								cobra_mount_psx_disc_image(cobra_iso_list[0], tracks, num_tracks);
-								mount_iso = false;
-							}
-							sys_memory_free(sysmem);
-						}
-					}
-
-					if(mount_iso)
-					{
-						TrackDef tracks[1];
-						tracks[0].lba = 0;
-						tracks[0].is_audio = 0;
-						cobra_mount_psx_disc_image(cobra_iso_list[0], tracks, 1);
-					}
+					ret = mount_ps_disc_image(_path, cobra_iso_list, 1, EMU_PSX);
 				}
 
 				// -------------------
