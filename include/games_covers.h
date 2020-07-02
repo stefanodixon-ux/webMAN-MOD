@@ -245,25 +245,41 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id)
 			strncpy(title_id, name, TITLEID_LEN);
 	}
 
+	char *pos;
 	if(HAS_TITLE_ID) ;
 
-	else if((strstr(name, "-[") || strstr(name, "[B") || strstr(name, "[NP") || strstr(name, "[SL") || strstr(name, "[SC")))
+	else if(islike(name + TITLEID_LEN, "-["))
+		strncpy(title_id, name, TITLEID_LEN); // TITLEID-[NAME]
+	else
 	{
-		char *pos;
-		if((pos = strstr(name, " [B")))
-			strncpy(title_id, pos + 2, TITLEID_LEN); //BCES/BLES/BCUS/BLUS/etc.
-		else if((pos = strstr(name, "[BL")))
-			strncpy(title_id, pos + 1, TITLEID_LEN); //BLES/BLUS/etc.
-		else if((pos = strstr(name, "[BC")))
-			strncpy(title_id, pos + 1, TITLEID_LEN); //BCES/BCUS/etc.
-		else if((pos = strstr(name, "[NP")))
-			strncpy(title_id, pos + 1, TITLEID_LEN); //NP*
-		else if((pos = strstr(name, " [S")))
-			get_ps_titleid_from_path(title_id, pos + 2); //SLES/SLUS/SLPM/SLPS/SLAJ/SLKA/SCES/SCUS/SCPS/SCAJ/SCKA
-		else if((pos = strstr(name, "[S")))
-			get_ps_titleid_from_path(title_id, pos + 1); //SLES/SLUS/SLPM/SLPS/SLAJ/SLKA/SCES/SCUS/SCPS/SCAJ/SCKA
-		else
-			strncpy(title_id, name, TITLEID_LEN); // TITLEID-[NAME]
+		// search for BLES/UCES/SLES/BCUS/UCUS/SLUS/etc.
+		for(pos = (char*)name; *pos; pos++)
+			if((*pos == '[') && (pos[2] == 'L' || pos[2] == 'C') && ISDIGIT(pos[6]) && ISDIGIT(pos[7]))
+			{
+				if(pos[1] == 'B' || pos[1] == 'U') // B = PS3, U = PSP
+				{
+					strncpy(title_id, pos + 1, TITLEID_LEN); //BCES/BLES/BCUS/BLUS/BLJM/etc. || UCES/UCUS/ULES/ULUS/UCAS/UCKS/UCUS/ULJM/ULJS/etc.
+					break;
+				}
+				else
+				if(pos[1] == 'S') // S = PS1/PS2
+				{
+					get_ps_titleid_from_path(title_id, pos + 1); //SLES/SLUS/SLPM/SLPS/SLAJ/SLKA/SCES/SCUS/SCPS/SCAJ/SCKA
+					break;
+				}
+			}
+
+		if(*title_id == 0)
+		{
+			if((pos = strstr(name, "[NP")))
+				strncpy(title_id, pos + 1, TITLEID_LEN); //NP*
+			else if((pos = strstr(name, "[KTGS")))
+				strncpy(title_id, pos + 1, TITLEID_LEN); //KTGS*
+			else if((pos = strstr(name, "[KOEI")))
+				strncpy(title_id, pos + 1, TITLEID_LEN); //KOEI*
+			else if((pos = strstr(name, "[MRTC")))
+				strncpy(title_id, pos + 1, TITLEID_LEN); //MRTC*
+		}
 	}
 
 	if(title_id[4] == '-') strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = NULL;
