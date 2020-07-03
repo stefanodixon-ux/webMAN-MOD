@@ -290,14 +290,15 @@ static char *translate_path(char *path, int *viso)
 		//char *dir_name = p;
 		char lnk_file[MAX_LINK_LEN];
 		char *sep = NULL;
+		size_t p_len = root_len + path_len;
 
-		for(size_t i = root_len + path_len; i >= root_len; i--)
+		for(size_t i = p_len; i >= root_len; i--)
 		{
-			if(p[i] == '/')
+			if(p[i] == '/' || i == p_len)
 			{
 				p[i] = 0;
 				sprintf(lnk_file, "%s.INI", p); // e.g. /BDISO.INI
-				p[i] = '/';
+				if (i < p_len) p[i] = '/';
 
 				if(stat_file(lnk_file, &st) >= 0) {sep = p + i; break;}
 			}
@@ -1314,7 +1315,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	if(client->dir) {closedir(client->dir); client->dir = NULL;}
 
 #ifdef MERGE_DIRS
-	int slen;
+	unsigned int slen;
 	char *ini_file;
 
 	// get INI file for directory
@@ -1324,11 +1325,11 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	ini_file = path;
 	for(size_t i = slen; i >= root_len; i--)
 	{
-		if(p[i] == '/')
+		if(p[i] == '/' || i == slen)
 		{
 			p[i] = 0;
 			sprintf(ini_file, "%s.INI", p); // e.g. /BDISO.INI
-			p[i] = '/';
+			if(i < slen) p[i] = '/';
 
 			if(stat_file(ini_file, &st) >= 0) break;
 		}
