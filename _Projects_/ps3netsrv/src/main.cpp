@@ -16,6 +16,7 @@ static const int FAILED		= -1;
 static const int SUCCEEDED	=  0;
 static const int NONE		= -1;
 
+#include "color.h"
 #include "common.h"
 #include "compat.h"
 #include "netiso.h"
@@ -294,7 +295,7 @@ static char *translate_path(char *path, int *viso)
 
 		for(size_t i = p_len; i >= root_len; i--)
 		{
-			if(p[i] == '/' || i == p_len)
+			if((p[i] == '/') || (i == p_len))
 			{
 				p[i] = 0;
 				sprintf(lnk_file, "%s.INI", p); // e.g. /BDISO.INI
@@ -1321,11 +1322,11 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	// get INI file for directory
 	char *p;
 	p = client->dirpath;
-	slen = strlen(p);
+	slen = dirpath_len - 1; //strlen(p);
 	ini_file = path;
 	for(size_t i = slen; i >= root_len; i--)
 	{
-		if(p[i] == '/' || i == slen)
+		if((p[i] == '/') || (i == slen))
 		{
 			p[i] = 0;
 			sprintf(ini_file, "%s.INI", p); // e.g. /BDISO.INI
@@ -1658,30 +1659,15 @@ int main(int argc, char *argv[])
 	uint32_t whitelist_end   = 0;
 	uint16_t port = NETISO_PORT;
 
-#ifdef WIN32
-	CONSOLE_SCREEN_BUFFER_INFO console_info;
-	GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &console_info );
+	get_normal_color();
 
-	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0F );
-#else
-	printf("\033[1;37m");
-#endif
+	// Show build number
+	set_white_text();
+	printf("ps3netsrv build 20200704");
 
-	printf("ps3netsrv build 20200620");
-
-#ifdef WIN32
-	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x0C );
-#else
-	printf("\033[1;31m");
-#endif
-
+	set_red_text();
 	printf(" (mod by aldostools)\n");
-
-#ifdef WIN32
-	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), console_info.wAttributes );
-#else
-	printf("\033[0;37m");
-#endif
+	set_normal_color();
 
 #ifndef WIN32
 	if(sizeof(off_t) < 8)
@@ -1691,7 +1677,6 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-
 	file_stat_t fs;
 
 	if(argc < 2)
@@ -1700,6 +1685,7 @@ int main(int argc, char *argv[])
 		if(!filename) filename = strrchr(argv[0], '\\');
 		if( filename) filename++;
 
+		// Use current path as default shared directory
 		if( (filename != NULL) && (
 			(stat_file("./PS3ISO", &fs) >= 0) ||
 			(stat_file("./PSXISO", &fs) >= 0) ||
@@ -1708,6 +1694,15 @@ int main(int argc, char *argv[])
 			(stat_file("./DVDISO", &fs) >= 0) ||
 			(stat_file("./BDISO",  &fs) >= 0) ||
 			(stat_file("./ROMS",   &fs) >= 0) ||
+			(stat_file("./PKG",    &fs) >= 0) ||
+			(stat_file("./PS3ISO.INI", &fs) >= 0) ||
+			(stat_file("./PSXISO.INI", &fs) >= 0) ||
+			(stat_file("./GAMES.INI",  &fs) >= 0) ||
+			(stat_file("./GAMEZ.INI",  &fs) >= 0) ||
+			(stat_file("./DVDISO.INI", &fs) >= 0) ||
+			(stat_file("./BDISO.INI",  &fs) >= 0) ||
+			(stat_file("./ROMS.INI",   &fs) >= 0) ||
+			(stat_file("./PKG.INI",    &fs) >= 0) ||
 			(stat_file("./PS3_NET_Server.cfg", &fs) >= 0)
 			))
 		{
@@ -1745,6 +1740,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// Check shared directory
 	if(strlen(argv[1]) >= sizeof(root_directory))
 	{
 		printf("Directory name too long!\n");
@@ -1752,15 +1748,9 @@ int main(int argc, char *argv[])
 	}
 
 	strcpy(root_directory, argv[1]);
+	normalize_path(root_directory, true);
 
-	for (int i = strlen(root_directory) - 1; i >= 0; i--)
-	{
-		if ((root_directory[i] == '/') || (root_directory[i] == '\\'))
-			root_directory[i] = 0;
-		else
-			break;
-	}
-
+	// Use current path as default
 	if(*root_directory == 0)
 	{
 		if (getcwd(root_directory, sizeof(root_directory)) != NULL)
@@ -1771,18 +1761,19 @@ int main(int argc, char *argv[])
 		char *filename = strrchr(root_directory, '/'); if(filename) *(++filename) = 0;
 	}
 
+	// Show shared directory
 	normalize_path(root_directory, true);
-
+	printf("Path: %s\n\n", root_directory);
 	root_len = strlen(root_directory);
 
-	printf("Path: %s\n\n", root_directory);
-
+	// Check for root directory
 	if(strcmp(root_directory, "/") == 0)
 	{
-		printf("/ can't be specified as root directory!\n");
+		printf("ERROR: / can't be specified as root directory!\n");
 		goto exit_error;
 	}
 
+	// Parse port argument
 	if(argc > 2)
 	{
 		uint32_t u;
@@ -1808,6 +1799,7 @@ int main(int argc, char *argv[])
 		port = u;
 	}
 
+	// Parse whitelist argument
 	if(argc > 3)
 	{
 		char *p = argv[3];
@@ -1855,7 +1847,7 @@ int main(int argc, char *argv[])
 			else
 			{
 				whitelist_start |= (u<<(i*8));
-				whitelist_end |= (u<<(i*8));
+				whitelist_end   |= (u<<(i*8));
 			}
 
 			if(i != 0)
@@ -1874,6 +1866,7 @@ int main(int argc, char *argv[])
 		DPRINTF("Whitelist: %08X-%08X\n", whitelist_start, whitelist_end);
 	}
 
+	// Initialize port
 	s = initialize_socket(port);
 	if(s < 0)
 	{
@@ -1881,6 +1874,10 @@ int main(int argc, char *argv[])
 		goto exit_error;
 	}
 
+
+	/////////////////
+	// Show Host IP
+	/////////////////
 #ifdef WIN32
 	{
 		char host[256];
@@ -1892,7 +1889,7 @@ int main(int argc, char *argv[])
 			host_entry = gethostbyname(host); //find host information
 			if(host_entry);
 			{
-				SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), 0x08 );
+				set_gray_text();
 				for(int i = 0; host_entry->h_addr_list[i]; i++)
 				{
 					char *IP = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[i])); //Convert into IP string
@@ -1900,7 +1897,6 @@ int main(int argc, char *argv[])
 				}
 			}
 			printf("\n");
-			SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), console_info.wAttributes );
 		}
 	}
 #else
@@ -1909,7 +1905,7 @@ int main(int argc, char *argv[])
 		getifaddrs(&addrs);
 		tmp = addrs;
 
-		printf("\033[1;30m");
+		set_gray_text();
 		int i = 0;
 		while (tmp)
 		{
@@ -1922,14 +1918,17 @@ int main(int argc, char *argv[])
 
 			tmp = tmp->ifa_next;
 		}
-		printf("\033[0;37m");
 
 		freeifaddrs(addrs);
 	}
 #endif
 
-	memset(clients, 0, sizeof(clients));
+	//////////////
+	// main loop
+	//////////////
+	set_normal_color();
 	printf("Waiting for client...\n");
+	memset(clients, 0, sizeof(clients));
 
 	char last_ip[16], conn_ip[16];
 	memset(last_ip, 0, 16);
@@ -1941,6 +1940,7 @@ int main(int argc, char *argv[])
 		int cs;
 		int i;
 
+		// accept request
 		size = sizeof(addr);
 		cs = accept(s, (struct sockaddr *)&addr, (socklen_t *)&size);
 
@@ -1973,6 +1973,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
+			// Check whitelist range
 			if(whitelist_start != 0)
 			{
 				uint32_t ip = BE32(addr.sin_addr.s_addr);
@@ -1985,6 +1986,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
+			// Check for free slot
 			for (i = 0; i < MAX_CLIENTS; i++)
 			{
 				if(!clients[i].connected)
@@ -1998,6 +2000,7 @@ int main(int argc, char *argv[])
 				continue;
 			}
 
+			// Show only new connections
 			if(strcmp(last_ip, conn_ip))
 			{
 				printf("[%i] Connection from %s\n", i, conn_ip);
@@ -2005,6 +2008,9 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		/////////////////////////
+		// create client thread
+		/////////////////////////
 		if(initialize_client(&clients[i]) != SUCCEEDED)
 		{
 			printf("System seems low in resources.\n");

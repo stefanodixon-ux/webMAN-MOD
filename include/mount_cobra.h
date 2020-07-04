@@ -321,9 +321,8 @@
 							scsi_tracks[t].track_start_addr = tracks[t].lba;
 						}
 					}
-
 				}
-				else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ")) && (strstr(netpath + 5, "/") != NULL))
+				else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && (strstr(netpath + 5, "/") != NULL))
 				{
 					mount_unk = netiso_args.emu_mode = EMU_PS3;
 					sprintf(netiso_args.path, "/***PS3***%s", netpath);
@@ -346,7 +345,7 @@
 					{
 						pkg_slash = strrchr(netpath, '/'); if(pkg_slash) *pkg_slash = NULL;
 					}
-					if(!extcasecmp(netpath, ".iso", 4) || !extcasecmp(netpath, ".mdf", 4) || !extcasecmp(netpath, ".img", 4) || !extcasecmp(netpath, ".bin", 4)) ;
+					if(is_iso) ;
 					else
 						sprintf(netiso_args.path, "/***DVD***%s", netpath);
 				}
