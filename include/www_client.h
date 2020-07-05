@@ -2675,7 +2675,7 @@ retry_response:
 						sprintf(tempstr,"<form action=\"/edit.ps3\">"
 										"<input type=hidden name=\"f\" value=\"%s\">"
 										"<textarea name=\"t\" maxlength=%i style=\"width:800px;height:400px;\">%s</textarea><br>"
-										"<input class=\"bs\" type=\"submit\" value=\" %s \">",
+										"<input accesskey=\"S\" class=\"bs\" type=\"submit\" value=\" %s \">",
 										filename, MAX_TEXT_LEN, txt, STR_SAVE); _concat(&sbuffer, tempstr);
 
 						// show filename link

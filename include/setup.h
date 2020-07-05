@@ -118,6 +118,8 @@ static void setup_parse_settings(char *param)
 	webman_config->roms = IS_MARKED("rom=1");
 #endif
 
+	webman_config->ignore = IS_MARKED("igf=1");
+
 	webman_config->combo = webman_config->combo2 = 0;
 
 #ifdef SYS_ADMIN_MODE
@@ -564,6 +566,10 @@ static void setup_form(char *buffer, char *templn)
 
 	add_check_box("dvd", false, "DVD "                       ,       STR_VIDLG, !(webman_config->cmask & DVD), buffer);
 #endif
+
+	concat(buffer, "<br><br>");
+
+	add_check_box("igf", false, "wm_ignore.txt", " <button onclick=\"window.location='/edit.ps3" WMIGNORE_FILES "';return false;\">&#x270D;</button><br>", webman_config->ignore, buffer);
 
 	concat(buffer, "</td></tr></table>" HTML_BLU_SEPARATOR);
 

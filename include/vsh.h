@@ -299,6 +299,7 @@ static bool launch_app_home_icon(void)
 #ifdef COBRA_ONLY
 static void reload_xmb(void)
 {
+	if(!cobra_version) return;
 	if(IS_ON_XMB)
 	{
 		mount_unk = EMU_OFF;

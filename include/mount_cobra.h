@@ -11,6 +11,7 @@
 //    Dump with /copy.ps3/net0/***DVD***/folder           -> /dev_hdd0/DVDISO/folder.iso
 
 #ifdef COBRA_ONLY
+	if(!cobra_version) {ret = false; goto finish;}
 	{
 		// --------------------------------------------
 		// auto-map /dev_hdd0/game to dev_usbxxx/GAMEI

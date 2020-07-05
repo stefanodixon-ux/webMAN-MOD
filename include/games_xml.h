@@ -223,17 +223,19 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX);
 	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
 	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
-#ifdef MOUNT_ROMS
+//#ifdef MOUNT_ROMS
 	sys_addr_t sysmem_igf = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2) + (BUFFER_SIZE_DVD);
 
+	bool ignore = false;
 	char *ignore_files = NULL;
 	if(file_exists(WMIGNORE_FILES))
 	{
 		ignore_files = (char*)sysmem_igf;
 		read_file(WMIGNORE_FILES, ignore_files, _2KB_, 0);
 		ignore_files[_2KB_] = NULL;
+		ignore = (!sys_admin && (*ignore_files != 'b' || ignore_files[20] > 0)) | webman_config->ignore;
 	}
-#endif
+//#endif
 
 #if defined(LAUNCHPAD) || defined(MOUNT_ROMS)
 	char *sysmem_buf = (char*)sysmem;
@@ -383,7 +385,7 @@ scan_roms:
 	char localhost[24]; sprintf(localhost, "http://%s", local_ip);
 	char *proxy_plugin = (char*)WEB_LINK_PAIR;
 	#ifdef WM_PROXY_SPRX
-	if(file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_plugin = (char*)XAI_LINK_PAIR, *localhost = NULL;}
+	if((cobra_version > 0) && file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_plugin = (char*)XAI_LINK_PAIR, *localhost = NULL;}
 	#endif
 
 	#if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
@@ -534,13 +536,15 @@ scan_roms:
 #ifdef NET_SUPPORT
 					if(is_net)
 					{
-						#ifdef MOUNT_ROMS
-						if(scanning_roms && ignore_files && (strstr(ignore_files, data[v3_entry].name) != NULL)) continue;
-						#endif
+						//#ifdef MOUNT_ROMS
+						if(ignore && ignore_files && (strstr(ignore_files, data[v3_entry].name) != NULL)) continue;
+						//#endif
 
 						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, f1, 0) == FAILED) {v3_entry++; continue;}
+
+						if(webman_config->ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) {v3_entry++; continue;}
 #ifdef SLAUNCH_FILE
 						if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
 #endif
@@ -578,9 +582,9 @@ scan_roms:
 					{
 						if(entry.entry_name.d_name[0] == '.') continue;
 
-						#ifdef MOUNT_ROMS
-						if(scanning_roms && ignore_files && (strstr(ignore_files, entry.entry_name.d_name) != NULL)) continue;
-						#endif
+						//#ifdef MOUNT_ROMS
+						if(ignore && ignore_files && (strstr(ignore_files, entry.entry_name.d_name) != NULL)) continue;
+						//#endif
 
 //////////////////////////////
 						subfolder = 0;
@@ -654,6 +658,8 @@ next_xml_entry:
 							}
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
+
+							if(webman_config->ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) continue;
 #ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
 #endif
@@ -987,10 +993,18 @@ continue_reading_folder_xml:
 													wm_icons[gDVD], STR_VIDFORMAT, item_count[gDVD], STR_VIDEO,
 													STR_NOITEM_PAIR); _concat(&myxml, templn);}
 	 #endif
+
+		#ifndef ENGLISH_ONLY
+		char *STR_CUSTOMXML = buffer;
+		language("STR_CUSTOMXML", STR_CUSTOMXML, "XML");
+		#else
+		char *STR_CUSTOMXML = (char*)"XML";
+		#endif
+
 		if(add_custom_xml(templn)) {sprintf(templn, "<Table key=\"wm_custom\">"
 											XML_PAIR("icon_rsc","item_tex_ps3util")
 											XML_PAIR("title","%s") "</Table>",
-											"XML"); _concat(&myxml, templn);}
+											STR_CUSTOMXML); _concat(&myxml, templn);}
 	}
 
 	// --- Add Setup
@@ -1104,7 +1118,7 @@ save_xml:
 		}
 		else
 		{
-			scanning_roms = true;
+			ignore = scanning_roms = true;
 			cellFsUnlink(HTML_BASE_PATH "/ROMS.xml");
 		}
 

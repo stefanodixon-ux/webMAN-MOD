@@ -169,7 +169,7 @@
 							u32 ss = (u32)((pTick.tick - rTick.tick)/1000000);
 							///////////////////////
 
-							if((!sys_admin && (ss > 60)) || IS_INGAME) continue;
+							if(!sys_admin || (ss > 60) || IS_INGAME) continue; // allow delete boot_plugins.txt only on XMB to sys_admin in the first minute after boot
 
 							cellFsUnlink("/dev_hdd0/boot_plugins.txt");
 							cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
@@ -181,7 +181,7 @@
 							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))        // SELECT+R3+L2+R2
 							)
 						{
-							if(!sys_admin || IS_INGAME) continue;
+							if(!sys_admin || IS_INGAME) continue; // allow reset config only for sys_admin on XMB
  #ifndef ENGLISH_ONLY
 							char STR_RMVWMCFG[96];//	= "webMAN config reset in progress...";
 							char STR_RMVWMCFGOK[112];//	= "Done! Restart within 3 seconds";

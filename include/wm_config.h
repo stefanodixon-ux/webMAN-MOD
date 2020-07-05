@@ -45,8 +45,9 @@ typedef struct
 	u8 info;   // info level: 0=Path, 1=Path + ID, 2=ID, 3=None
 	u8 npdrm;
 	u8 vsh_mc; // allow allocation from vsh memory container
+	u8 ignore;
 
-	u8 padding2[13];
+	u8 padding2[12];
 
 	// start up settings
 

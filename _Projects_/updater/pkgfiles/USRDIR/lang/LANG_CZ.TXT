@@ -82,24 +82,24 @@ STR_LFRG			[←/→]
 STR_SAVE			[Uložit]
 STR_SETTINGSUPD		[Nastavení aktualizováno.<br><br>Zmáčkni <a href="/restart.ps3">here</a> pro restartování PLAYSTATION®3 systému.]
 STR_ERROR			[Chyba!]
-                	
+
 STR_MYGAMES			[webMAN hry]
 STR_LOADGAMES		[Načíst hry pomocí webMAN]
 STR_FIXING		[Fixing]
 
 STR_WMSETUP			[webMAN nastavení]
 STR_WMSETUP2		[Změna nastavení webMAN]
-                	
+
 STR_EJECTDISC		[Vysunout disk]
 STR_UNMOUNTGAME		[Vysunout stávající hru]
-                	
+
 STR_WMSTART			[webMAN načten!]
 STR_WMUNL			[webMAN nenačten!]
 STR_CFWSYSALRD		[CFW Syscalls už byly vypnuty]
 STR_CFWSYSRIP		[Odebírání historie soborů a CFW Syscalls...]
 STR_RMVCFWSYS		[Historie soborů & CFW Syscalls byly smazány OK!]
 STR_RMVCFWSYSF		[Chyba při smazání CFW Syscalls]
-                	
+
 STR_RMVWMCFG		[Probíha webMAN nastavení a reset...]
 STR_RMVWMCFGOK		[Hotovo! Restart po 3 sekundách]
 
@@ -118,18 +118,18 @@ STR_GAMEUM			[Hra odebrána.]
 
 STR_EJECTED			[Disk vysunut.]
 STR_LOADED			[Disk vložen.]
-                	
+
 STR_GAMETOM			[Hra pro vložení]
 STR_GAMELOADED		[Hra úspěšně načtena. Spusť hru pomocí disk ikony<br>nebo z <b>/app_home</b>&nbsp;XMB vstupu.</a><hr/>Klini <a href="/mount.ps3/unmount">zde</a> pro odebrání hry.]
 STR_PSPLOADED		[Hra úspěšně načtena. Spusť hru pomocí <b>PSP Launcher</b>.<hr/>]
 STR_PS2LOADED		[Hra úspěšně načtena. Spusť hru pomocí <b>PS2 Classic Launcher</b>.<hr/>]
 STR_LOADED2			[načteno   ]
-                	
+
 STR_MOVIETOM		[Načtení filmu]
 STR_MOVIELOADED		[Film načten úspěšně. Spusť film z diskové ikony<br>pod Video kolonkou.</a><hr/>Klini <a href="/mount.ps3/unmount">zde</a> pro odebrání filmu.]
-                	
+
 STR_XMLRF			[Seznam her obnoven (<a href="/dev_hdd0/xmlhost/game_plugin/mygames.xml">mygames.xml</a>).<br>Klini <a href="/restart.ps3">zde</a> pro restartování PLAYSTATION®3 systému.]
-                	
+
 STR_STORAGE			[Systémová paměť]
 STR_MEMORY			[Dostupná paměť]
 STR_MBFREE			[MB volné]
@@ -138,7 +138,7 @@ STR_KBFREE			[KB volné]
 STR_FANCTRL3		[Ovládání větráčku:]
 STR_ENABLED			[Povoleno]
 STR_DISABLED		[Vypnuto]
-                	
+
 STR_FANCH0			[Nastavení větráčku změněno:]
 STR_FANCH1			[MAX TEPLOTA: ]
 STR_FANCH2			[RYCHLOST VĚTRÁČKU: ]
@@ -152,4 +152,5 @@ STR_NOTFOUND		[Nenalezeno!]
 COVERS_PATH			[http://devil303.com/wmlp/covers/%s.JPG]
 IP_ADDRESS			[127.0.0.1]
 SEARCH_URL			[http://google.com/search?q=]
+STR_CUSTOMXML		[XML]
 
