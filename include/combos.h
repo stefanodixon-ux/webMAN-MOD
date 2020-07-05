@@ -423,10 +423,11 @@
 								sprintf(tmp, "CPU: %i°C  RSX: %i°C  FAN: %i%%   \n"
 											 "%s: %id %02d:%02d:%02d%s\n"
 											 "Firmware : %s %s\n"
-											 "IP: %s  %s%s",
+											 "IP: %s  %s  %s",
 											 t1, t2, (int)(((int)speed*100)/255),
 											 bb ? "Play" : "Startup", dd, hh, mm, ss, smax,
-											 fw_version, cfw_info, ip, net_type, syscalls_removed ? "  [noSC]" : "");
+											 fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
+												  (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "");
 
 								int hdd_free = (int)(get_free_space("/dev_hdd0")>>20);
 

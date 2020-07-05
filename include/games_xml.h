@@ -233,7 +233,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		ignore_files = (char*)sysmem_igf;
 		read_file(WMIGNORE_FILES, ignore_files, _2KB_, 0);
 		ignore_files[_2KB_] = NULL;
-		ignore = (!sys_admin && (*ignore_files != 'b' || ignore_files[20] > 0)) | webman_config->ignore;
+		ignore = !sys_admin || webman_config->ignore;
 	}
 //#endif
 
@@ -544,7 +544,7 @@ scan_roms:
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, f1, 0) == FAILED) {v3_entry++; continue;}
 
-						if(webman_config->ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) {v3_entry++; continue;}
+						if(ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) {v3_entry++; continue;}
 #ifdef SLAUNCH_FILE
 						if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
 #endif
@@ -659,7 +659,7 @@ next_xml_entry:
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
-							if(webman_config->ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) continue;
+							if(ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) continue;
 #ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
 #endif
