@@ -178,7 +178,7 @@ static void setup_parse_settings(char *param)
 
 #ifdef COBRA_ONLY
 	if(IS_UNMARKED("vs=1")) webman_config->combo2|=C_VSHMENU;
-	if(IS_UNMARKED("sl=1")) webman_config->combo2|=C_SLAUNCH;
+	if(IS_UNMARKED("gm=1")) webman_config->combo2|=C_SLAUNCH;
 #endif
 
 #ifdef VIDEO_REC
@@ -968,7 +968,7 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef COBRA_ONLY
 	add_check_box("vs", false, "VSH MENU",      " : <b>SELECT</b><br>"       , !(webman_config->combo2 & C_VSHMENU), buffer);
-	add_check_box("sl", false, "GAME MENU",     " : <b>START / L2+R2</b><br>", !(webman_config->combo2 & C_SLAUNCH), buffer);
+	add_check_box("gm", false, "GAME MENU",     " : <b>START / L2+R2</b><br>", !(webman_config->combo2 & C_SLAUNCH), buffer);
 #endif
 
 #ifdef SYS_ADMIN_MODE

@@ -144,6 +144,7 @@ static char *normalize_path(char *path, int8_t del_last_slash)
 
 	while(*p)
 	{
+		if(*p < ' ') {*p = 0; break;} else
 		if(*p == '\\') *p = '/';
 		p++;
 	}
@@ -1278,6 +1279,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 		d_name_len = strlen(entry->d_name);
 		#endif
 
+
 		if(IS_RANGE(d_name_len, 1, MAX_FILE_LEN))
 		{
 			sprintf(path + dirpath_len, "%s", entry->d_name);
@@ -1362,6 +1364,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 
 				if(dir)
 				{
+					printf("-> %s\n", dir_path);
 					dirpath_len = sprintf(path, "%s/", dir_path);
 
 					// list dir
@@ -1663,7 +1666,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20200704");
+	printf("ps3netsrv build 20200707");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");
