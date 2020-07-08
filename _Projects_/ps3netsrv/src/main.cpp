@@ -144,10 +144,11 @@ static char *normalize_path(char *path, int8_t del_last_slash)
 
 	while(*p)
 	{
-		if(*p < ' ') {*p = 0; break;} else
 		if(*p == '\\') *p = '/';
 		p++;
 	}
+
+	if((p > path) && (*(p - 1) == '\r')) *(--p) = 0; // remove last CR if found
 
 	if(del_last_slash) {if(p > path) {--p; if(*p == '/') *p = 0;}}
 	return path;
@@ -1666,7 +1667,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20200707");
+	printf("ps3netsrv build 20200708");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");
