@@ -387,6 +387,7 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/buffer_size.h"
 #include "include/eject_insert.h"
+#include "include/vsh.h"
 
 #ifdef COBRA_ONLY
 
@@ -399,7 +400,6 @@ static u8 mount_unk = EMU_OFF;
 #endif //#ifdef COBRA_ONLY
 
 #include "include/webchat.h"
-#include "include/vsh.h"
 #include "include/file.h"
 #include "include/ps2_disc.h"
 #include "include/ps2_classic.h"

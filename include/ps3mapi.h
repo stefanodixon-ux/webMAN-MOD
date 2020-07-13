@@ -297,6 +297,13 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 	concat(buffer, templn);
 }
 
+static bool add_sc_checkbox(int sc, const char *id, const char *label, char *buffer)
+{
+	bool disabled = is_syscall_disabled(sc);
+	add_check_box(id, disabled, label, _BR_, (!disabled), buffer);
+	return disabled;
+}
+
 static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
@@ -339,65 +346,34 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 					"<br><tr><td width=\"260\" class=\"la\">",
 					HTML_FORM_METHOD); concat(buffer, templn);
 
-	bool disabled; u8 sc_count = 0;
+	u8 sc_count = 0;
 
-	#define checked		(!disabled)
-
-	disabled = is_syscall_disabled(6);
-	add_check_box("sc6", disabled, "[6]LV2 Peek", _BR_, checked, buffer); if(disabled) sc_count++;
-
-	disabled = is_syscall_disabled(7);
-	add_check_box("sc7", disabled, "[7]LV2 Poke", _BR_, checked, buffer); if(disabled) sc_count++;
-
-	disabled = is_syscall_disabled(9);
-	add_check_box("sc9", disabled, "[9]LV1 Poke", _BR_, checked, buffer); if(disabled) sc_count++;
-
-	disabled = is_syscall_disabled(10);
-	add_check_box("sc10", disabled, "[10]LV1 Call", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(15);
-	add_check_box("sc15", disabled, "[15]LV2 Call", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(11);
-	add_check_box("sc11", disabled, "[11]LV1 Peek", _BR_, checked, buffer);
+	if(add_sc_checkbox(6, "sc6", "[6]LV2 Peek", buffer)) sc_count++;
+	if(add_sc_checkbox(7, "sc7", "[7]LV2 Poke", buffer)) sc_count++;
+	if(add_sc_checkbox(9, "sc9", "[9]LV1 Poke", buffer)) sc_count++;
+	add_sc_checkbox(10, "sc10", "[10]LV1 Call", buffer);
+	add_sc_checkbox(15, "sc15", "[15]LV2 Call", buffer);
+	add_sc_checkbox(11, "sc11", "[11]LV1 Peek", buffer);
 
 	concat(buffer, "</td><td  width=\"260\"  valign=\"top\" class=\"la\">");
 
-	disabled = is_syscall_disabled(35);
-	add_check_box("sc35", disabled, "[35]Map Path", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(36);
-	add_check_box("sc36", disabled, "[36]Map Game", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(38);
-	add_check_box("sc38", disabled, "[38]New sk1e", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(1022);
-	add_check_box("sc1022", disabled, "[1022]PRX Loader", _BR_, checked, buffer);
+	add_sc_checkbox(35, "sc35", "[35]Map Path", buffer);
+	add_sc_checkbox(36, "sc36", "[36]Map Game", buffer);
+	add_sc_checkbox(38, "sc38", "[38]New sk1e", buffer);
+	add_sc_checkbox(1022, "sc1022", "[1022]PRX Loader", buffer);
 
 	concat(buffer, "</td><td  width=\"260\"  valign=\"top\" class=\"la\">");
 
-	disabled = is_syscall_disabled(200);
-	add_check_box("sc200", disabled, "[200]sys_dbg_read_process_memory", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(201);
-	add_check_box("sc201", disabled, "[201]sys_dbg_write_process_memory", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(202);
-	add_check_box("sc202", disabled, "[202]Free - Payloader3", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(203);
-	add_check_box("sc203", disabled, "[203]LV2 Peek CCAPI", _BR_, checked, buffer);
-
-	disabled = is_syscall_disabled(204);
-	add_check_box("sc204", disabled, "[204]LV2 Poke CCAPI", _BR_, checked, buffer);
-
-	#undef checked
+	add_sc_checkbox(200, "sc200", "[200]sys_dbg_read_process_memory", buffer);
+	add_sc_checkbox(201, "sc201", "[201]sys_dbg_write_process_memory", buffer);
+	add_sc_checkbox(202, "sc202", "[202]Free - Payloader3", buffer);
+	add_sc_checkbox(203, "sc203", "[203]LV2 Peek CCAPI", buffer);
+	add_sc_checkbox(204, "sc204", "[204]LV2 Poke CCAPI", buffer);
 
 #ifdef REMOVE_SYSCALLS
 	concat(buffer, "<br>");
-	if(sc_count) add_check_box("sce\" onclick=\"b.value=(this.checked)?' Enable ':'Disable';", false, "Re-Enable Syscalls & Unlock syscall 8", _BR_, false, buffer);
-	else		 add_check_box("scd", false, "Disable Syscalls & Lock syscall 8"  , _BR_, false, buffer);
+	if(sc_count) add_checkbox("sce\" onclick=\"b.value=(this.checked)?' Enable ':'Disable';", "Re-Enable Syscalls & Unlock syscall 8", _BR_, false, buffer);
+	else		 add_checkbox("scd", "Disable Syscalls & Lock syscall 8"  , _BR_, false, buffer);
 #endif
 
 	sprintf(templn, "</td></tr><tr><td class=\"ra\"><br><input class=\"bs\" id=\"b\" type=\"submit\" value=\" %s \"/></td></tr></form></table><br>", "Disable");
@@ -723,29 +699,26 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 
 	if(islike(param, "/setidps.ps3mapi") && param[16] == '?')
 	{
-		char idps1_tmp[17];
-		if(get_param("idps1=", idps1_tmp, param, 16))
+		char tmp_value[17];
+		if(get_param("idps1=", tmp_value, param, 16))
 		{
-			_new_IDPS[0] = convertH(idps1_tmp);
+			_new_IDPS[0] = convertH(tmp_value);
 
-			char idps2_tmp[17];
-			if(get_param("idps2=", idps2_tmp, param, 16))
+			if(get_param("idps2=", tmp_value, param, 16))
 			{
-				_new_IDPS[1] = convertH(idps2_tmp);
+				_new_IDPS[1] = convertH(tmp_value);
 
 				{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_IDPS, (u64)_new_IDPS[0], (u64)_new_IDPS[1]);}
 			}
 		}
 
-		char psid1_tmp[17];
-		if(get_param("psid1=", psid1_tmp, param, 16))
+		if(get_param("psid1=", tmp_value, param, 16))
 		{
-			_new_PSID[0] = convertH(psid1_tmp);
+			_new_PSID[0] = convertH(tmp_value);
 
-			char psid2_tmp[17];
-			if(get_param("psid2=", psid2_tmp, param, 16))
+			if(get_param("psid2=", tmp_value, param, 16))
 			{
-				_new_PSID[1] = convertH(psid2_tmp);
+				_new_PSID[1] = convertH(tmp_value);
 
 				{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PSID, (u64)_new_PSID[0], (u64)_new_PSID[1]);}
 			}
@@ -1198,6 +1171,17 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 			char *p = strstr(buffer, "\r\n");
 			if(p) *p = NULL; else break;
 
+			#ifdef WM_REQUEST
+			if((*buffer == '/') || islike(buffer, "GET"))
+			{
+				save_file(WMREQUEST_FILE, buffer, SAVE_ALL); // e.g.  GET /install.ps3<pkg-path>
+
+				do_custom_combo(WMREQUEST_FILE);
+
+				ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
+				continue;
+			}
+			#endif
 			int split = ssplit(buffer, cmd, 19, param1, PS3MAPI_MAX_LEN);
 
 			if(_IS(cmd, "DISCONNECT"))
@@ -1227,10 +1211,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_502);
 				}
-				else
-				{
-					ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
-				}
+				else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
 			}
 			else if(_IS(cmd, "PS3"))
 			{
@@ -1243,10 +1224,10 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 						setPluginExit();
 
-						if(_IS(cmd, "REBOOT"))	 {system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0); }
-						if(_IS(cmd, "SOFTREBOOT")) {system_call_3(SC_SYS_POWER, SYS_SOFT_REBOOT, NULL, 0); }
-						if(_IS(cmd, "HARDREBOOT")) {system_call_3(SC_SYS_POWER, SYS_HARD_REBOOT, NULL, 0); }
-						if(_IS(cmd, "SHUTDOWN"))   {system_call_4(SC_SYS_POWER, SYS_SHUTDOWN, 0, 0, 0); }
+						if(_IS(cmd, "REBOOT"))     { system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0); }
+						if(_IS(cmd, "SOFTREBOOT")) { system_call_3(SC_SYS_POWER, SYS_SOFT_REBOOT, NULL, 0); }
+						if(_IS(cmd, "HARDREBOOT")) { system_call_3(SC_SYS_POWER, SYS_HARD_REBOOT, NULL, 0); }
+						if(_IS(cmd, "SHUTDOWN"))   { system_call_4(SC_SYS_POWER, SYS_SHUTDOWN, 0, 0, 0); }
 
 						sys_ppu_thread_exit(0);
 					}
@@ -1403,10 +1384,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_502);
 				}
-				else
-				{
-					ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
-				}
+				else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
 			}
 			else if(_IS(cmd, "PROCESS"))
 			{
@@ -1440,10 +1418,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_502);
 				}
-				else
-				{
-					ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
-				}
+				else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
 			}
 			else if(_IS(cmd, "MEMORY"))
 			{
@@ -1559,10 +1534,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_502);
 				}
-				else
-				{
-					ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
-				}
+				else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
 			}
 			else if(_IS(cmd, "MODULE"))
 			{
@@ -1673,17 +1645,14 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_502);
 				}
-				else
-				{
-					ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
-				}
+				else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_501);
 			}
 			else if(_IS(cmd, "TYPE"))
 			{
 				if(split)
 				{
-					ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 					dataactive = !IS(param1, "I");
+					ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 				}
 				else
 				{

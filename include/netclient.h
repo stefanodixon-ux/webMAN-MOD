@@ -705,21 +705,27 @@ static int read_remote_dir(int s, sys_addr_t *data /*netiso_read_dir_result_data
 	if(res.dir_size > 0)
 	{
 		int len;
-		sys_addr_t data1 = NULL;
+		sys_addr_t sysmem = NULL;
 		for(int retry = 25; retry > 0; retry--)
 		{
 			if(res.dir_size > (retry * 123)) res.dir_size = retry * 123;
-			len = (sizeof(netiso_read_dir_result_data)*res.dir_size);
+			len = (sizeof(netiso_read_dir_result_data) * res.dir_size);
 
 			int len2 = ((len + _64KB_) / _64KB_) * _64KB_;
 
-			if(sys_memory_allocate(len2, SYS_MEMORY_PAGE_SIZE_64K, &data1) == CELL_OK)
+			if(webman_config->vsh_mc)
 			{
-				u8 *data2 = (u8*)data1; *data = data1;
+				sys_memory_container_t vsh_mc = get_vsh_memory_container();
+				if(vsh_mc) sys_memory_allocate_from_container(_3MB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_1M, &sysmem);
+			}
+
+			if(sysmem || sys_memory_allocate(len2, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+			{
+				u8 *data2 = (u8*)sysmem; *data = sysmem;
 
 				if(recv(s, data2, len, MSG_WAITALL) != len)
 				{
-					sys_memory_free(data1);
+					sys_memory_free(sysmem);
 					*data = NULL;
 					return FAILED;
 				}

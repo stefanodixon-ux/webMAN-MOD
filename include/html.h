@@ -366,7 +366,7 @@ static size_t utf8dec(char *dst, char *src, u8 cpy2src)
 static size_t add_radio_button(const char *name, int value, const char *id, const char *label, const char *sufix, bool checked, char *buffer)
 {
 	char templn[MAX_LINE_LEN];
-	sprintf(templn, "<label><input type=\"radio\" name=\"%s\" value=\"%i\" id=\"%s\"%s/> %s%s</label>", name, value, id, checked ? ITEM_CHECKED : "", label, (!sufix) ? "<br>" : sufix);
+	sprintf(templn, "<label><input type=\"radio\" name=\"%s\" value=\"%i\" id=\"%s\"%s/> %s%s</label>", name, value, id, checked ? ITEM_CHECKED : "", label, (sufix) ? sufix : "<br>");
 	return concat(buffer, templn);
 }
 
@@ -383,6 +383,11 @@ static size_t add_check_box(const char *name, bool disabled, const char *label, 
 	}
 	sprintf(templn, "<label><input type=\"checkbox\" name=\"%s\" value=\"1\" %s%s/> %s</label>%s", name, disabled ? HTML_DISABLED_CHECKBOX : "", checked ? ITEM_CHECKED : "", clabel, (!sufix) ? "<br>" : sufix);
 	return concat(buffer, templn);
+}
+
+static size_t add_checkbox(const char *name, const char *label, const char *sufix, bool checked, char *buffer)
+{
+	return add_check_box(name, false, label, sufix, checked, buffer);
 }
 
 static size_t add_option_item(int value, const char *label, bool selected, char *buffer)

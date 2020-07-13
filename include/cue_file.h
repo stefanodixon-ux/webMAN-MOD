@@ -69,7 +69,7 @@ static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_s
 			if(strstr(templn, "INDEX 01") || strstr(templn, "INDEX 1 "))
 			{
 				len = lba = parse_lba(templn, FAILED); // cue msf
-				if(lba < off || !num_tracks)
+				if((lba < off) || !num_tracks)
 					lba = off + pregap; // INDEX 01 is a track length, instead of lba in msf
 				else
 					len = 0;			// INDEX 01 is absolute LBA in MSF

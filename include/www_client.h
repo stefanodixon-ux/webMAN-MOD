@@ -603,8 +603,10 @@ parse_request:
   #ifdef SLAUNCH_FILE
 			if(wm_request)
 			{
+				// Set the content of WMREQUEST_FILE as header
 				if(buf.st_size > 5 && buf.st_size < HTML_RECV_SIZE && read_file(WMREQUEST_FILE, header, buf.st_size, 0) > 4)
 				{
+					///// Process PhotoGUI request /////
 					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
 					{
 						char *filename = strrchr(header, '/'); if(filename) filename++;
@@ -613,6 +615,7 @@ parse_request:
 							char *pos1 = strcasestr(filename, ".jpg"); if(pos1) *pos1 = NULL;
 							char *pos2 = strcasestr(filename, ".png"); if(pos2) *pos2 = NULL;
 
+							// Find filename in SLAUNCH_FILE
 							int fsl = 0;
 							if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fsl, NULL, 0) == CELL_FS_SUCCEEDED)
 							{
@@ -627,16 +630,28 @@ parse_request:
 								}
 								cellFsClose(fsl);
 							}
+
+							// show filename
 							if(!(webman_config->minfo & 1)) show_msg(filename);
-							sprintf(header, "%s", filename);
 							init_delay = -10; // prevent show Not in XMB message
+
+							// replace header with found full path
+							sprintf(header, "%s", filename);
 						}
 					}
+					///// End PhotoGUI request /////
 
-					if(*header == '/') {strcpy(param, header); buf.st_size = sprintf(header, "GET %s", param);}
+					// Add GET verb
+					if(*header == '/') {strcpy(param, header); buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", param);}
+
+					// make proper URL replacing spaces with +
 					for(size_t n = buf.st_size; n > 4; n--) if(header[n] == ' ') header[n] = '+';
+
+					// Retry /play.ps3* while IS_INGAME
 					if(islike(header, "GET /play.ps3")) {if(IS_INGAME && (++retry < 30)) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}
 				}
+
+				// Delete WMREQUEST_FILE
 				cellFsUnlink(WMREQUEST_FILE);
 			}
    #endif //#ifdef SLAUNCH_FILE

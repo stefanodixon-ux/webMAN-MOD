@@ -102,22 +102,17 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 		if(strcasestr(param, "start") ) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] |= CELL_PAD_CTRL_START; }
 		if(strcasestr(param, "select")) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] |= CELL_PAD_CTRL_SELECT;}
 
-		if (strcasestr(param, "analogL"))
+		u8 ax = 0, ay = 0;
+		if (strcasestr(param, "analogL")) {ax = CELL_PAD_BTN_OFFSET_ANALOG_LEFT_X,  ay = CELL_PAD_BTN_OFFSET_ANALOG_LEFT_Y;}
+		if (strcasestr(param, "analogR")) {ax = CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_X, ay = CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_Y;}
+
+		if (ax)
 		{
-			// pad.ps3?analogL_up
-			if(strcasestr(param, "up"   )) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_LEFT_Y] = 0x00;}
-			if(strcasestr(param, "down" )) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_LEFT_Y] = 0xFF;}
-			if(strcasestr(param, "left" )) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_LEFT_X] = 0x00;}
-			if(strcasestr(param, "right")) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_LEFT_X] = 0xFF;}
-			delay = 150000;
-		}
-		else if (strcasestr(param, "analogR"))
-		{
-			// pad.ps3?analogR_up
-			if(strcasestr(param, "up"   )) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_Y] = 0x00;}
-			if(strcasestr(param, "down" )) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_Y] = 0xFF;}
-			if(strcasestr(param, "left" )) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_X] = 0x00;}
-			if(strcasestr(param, "right")) {data.button[CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_X] = 0xFF;}
+			// pad.ps3?analogL_up || pad.ps3?analogR_up
+			if(strcasestr(param, "up"   )) {data.button[ay] = 0x00;}
+			if(strcasestr(param, "down" )) {data.button[ay] = 0xFF;}
+			if(strcasestr(param, "left" )) {data.button[ax] = 0x00;}
+			if(strcasestr(param, "right")) {data.button[ax] = 0xFF;}
 			delay = 150000;
 		}
 		else

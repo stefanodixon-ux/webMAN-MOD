@@ -92,6 +92,7 @@ static u64 peek(u64 addr)
 	return peekq(addr | 0x8000000000000000ULL);
 }
 
+
 #ifdef COBRA_ONLY
 ///////////////// LV1/LV2 POKE HEN ////////////////
 static void lv2_poke_fan_hen(u64 addr, u64 value)
@@ -222,7 +223,7 @@ static void add_to_map(const char *path1, const char *path2)
 	}
 }
 
-static u16 string_to_lv2(char* path, u64 addr)
+static u16 string_to_lv2(const char *path, u64 addr)
 {
 	u16 plen = strlen(path);
 	u16 len  = (plen + 8) & 0x7f8;
@@ -270,7 +271,7 @@ static u64 convertH(char *val)
 #endif
 
 #ifndef LITE_EDITION
-static u16 Hex2Bin(const char* src, char* out)
+static u16 Hex2Bin(const char *src, char *out)
 {
 	char *target = out;
 	char value[3]; value[2] = NULL;

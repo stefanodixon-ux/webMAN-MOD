@@ -466,7 +466,7 @@
 								if(max_temp) //auto mode
 								{
 									if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) max_temp+=5; else max_temp+=1;
-									if(max_temp > 85) max_temp = 85;
+									if(max_temp > MAX_TEMPERATURE) max_temp = MAX_TEMPERATURE;
 									webman_config->dyn_temp = max_temp;
 									sprintf(msg, "%s\n%s %i°C", STR_FANCH0, STR_FANCH1, max_temp);
 								}

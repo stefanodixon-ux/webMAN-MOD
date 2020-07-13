@@ -243,13 +243,13 @@
 			{
 				netiso_svrid = (netid & 0x0F);
 				memset((void*)&netiso_args, 0, sizeof(_netiso_args));
-
+/*
 				if(is_netsrv_enabled(netiso_svrid) == false)
 				{
 					ret = false;
 					goto exit_mount;
 				}
-
+*/
 				if(_path[5] == NULL) strcat(_path, "/.");
 
 				char *netpath = _path + 5, *pkg_slash = NULL;
@@ -257,7 +257,9 @@
 				size_t len = sprintf(netiso_args.path, "%s", netpath);
 
 				bool is_iso = false;
-				char *ext = strrchr(netpath, '.'); if(ext) is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
+				char *ext = strrchr(netpath, '.');
+				if(strlen(netpath) == 4 || islike(ext, ".0"))
+					if(ext) is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
 
 				if(islike(netpath, "/PS3ISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_PS3; else
 				if(islike(netpath, "/BDISO" ) && is_iso) mount_unk = netiso_args.emu_mode = EMU_BD;  else

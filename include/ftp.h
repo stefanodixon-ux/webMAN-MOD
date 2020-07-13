@@ -1210,8 +1210,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						else
 						if(*param == '/')
 						{
-							u16 size = sprintf(buffer, "GET %s", param);
-							save_file(WMREQUEST_FILE, buffer, size);
+							save_file(WMREQUEST_FILE, param, SAVE_ALL);
 
 							do_custom_combo(WMREQUEST_FILE);
 
@@ -1358,11 +1357,11 @@ relisten:
 	{
 		while(working)
 		{
-			sys_ppu_thread_usleep(50000);
-			int conn_s_ftp;
+			sys_ppu_thread_usleep(ftp_active ? 5000 : 50000);
 			if(!working || !ftp_working) break;
 			if(ftp_active > MAX_FTP_THREADS) continue;
 
+			int conn_s_ftp;
 			if(sys_admin && ((conn_s_ftp = accept(list_s, NULL, NULL)) >= 0))
 			{
 				sys_ppu_thread_t t_id;
