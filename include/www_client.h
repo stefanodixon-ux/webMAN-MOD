@@ -331,162 +331,7 @@ static void handleclient_www(u64 conn_s_p)
 
 	char *file_query = param + HTML_RECV_LAST; *file_query = NULL;
 
-	if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
-	{
-		bool do_sleep = true;
-
-#ifdef WM_PROXY_SPRX
-		apply_remaps();
-#endif
-
-		if(conn_s_p == START_DAEMON)
-		{
-			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
-				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
-
- #ifndef ENGLISH_ONLY
-			update_language();
- #endif
-			make_fb_xml();
-
-			if(profile || !(webman_config->wmstart))
-			{
-				char cfw_info[20];
-				get_cobra_version(cfw_info);
-
-				if(payload_ps3hen)
-				{
-					sprintf(param,	"%s\n"
-									"%s %s", WM_APP_VERSION, cfw_info + 4, STR_ENABLED);
-				}
-				else
-				{
-					sys_ppu_thread_sleep(9);
-					sprintf(param,	"%s\n"
-									"%s %s" EDITION, WM_APP_VERSION, fw_version, cfw_info);
-				}
-				show_msg(param); do_sleep = false;
-			}
-
-			if(webman_config->bootd) wait_for("/dev_usb", webman_config->bootd); // wait for any usb
-
-			// is JAP?
-			int enter_button = 1;
-			xsetting_0AF1F161()->GetEnterButtonAssign(&enter_button);
-			CELL_PAD_CIRCLE_BTN = enter_button ? CELL_PAD_CTRL_CIRCLE : CELL_PAD_CTRL_CROSS;
-		}
-		else //if(conn_s_p == REFRESH_CONTENT)
-		{
-			{DELETE_CACHED_GAMES} // refresh XML will force "refresh HTML" to rebuild the cache file
-		}
-
-		mkdirs(param); // make hdd0 dirs GAMES, PS3ISO, PS2ISO, packages, etc.
-
-
-		//////////// usb ports ////////////
-		for(u8 indx = 5, d = 6; d < 128; d++)
-		{
-			sprintf(param, "/dev_usb%03i", d);
-			if(isDir(param)) {strcpy(drives[indx++], param); if(indx > 6) break;}
-		}
-		///////////////////////////////////
-
-
-		check_cover_folders(param);
-
-		// Use system icons if wm_icons don't exist
-		for(u8 i = 0; i < 14; i++)
-		{
-			if(not_exists(wm_icons[i]))
-			{
-				sprintf(param, VSH_RESOURCE_DIR "explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], param);
-				if(file_exists(param)) continue;
-
-				char *icon = wm_icons[i] + 32;
-				if(i == gPS3 || i == iPS3)	sprintf(icon, "user/024.png"); else // ps3
-				if(i == gPSX || i == iPSX)	sprintf(icon, "user/026.png"); else // psx
-				if(i == gPS2 || i == iPS2)	sprintf(icon, "user/025.png"); else // ps2
-				if(i == gPSP || i == iPSP)	sprintf(icon, "user/022.png"); else // psp
-				if(i == gDVD || i == iDVD)	sprintf(icon, "user/023.png"); else // dvd
-				if(i == iROM || i == iBDVD)	strcpy(wm_icons[i], wm_icons[iPS3]); else
-											sprintf(icon + 5, "icon_home.png"); // setup / eject
-			}
-		}
-
-#ifndef EMBED_JS
-		css_exists = file_exists(COMMON_CSS);
-		common_js_exists = file_exists(COMMON_SCRIPT_JS);
-#endif
-
-#ifdef NOSINGSTAR
-		no_singstar_icon();
-#endif
-#ifndef LITE_EDITION
-		chart_init = 0;
-#endif
-		sys_ppu_thread_t t_id;
-		sys_ppu_thread_create(&t_id, update_xml_thread, conn_s_p, THREAD_PRIO, THREAD_STACK_SIZE_UPDATE_XML, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
-
-		if(conn_s_p == START_DAEMON)
-		{
-#ifdef COBRA_ONLY
-			cobra_read_config(cobra_config);
-
-			// cobra spoofer not working since 4.53
-			if(webman_config->nospoof || (c_firmware >= 4.53f))
-			{
-				cobra_config->spoof_version  = 0;
-				cobra_config->spoof_revision = 0;
-			}
-			else
-			{
-				cobra_config->spoof_version = 0x0486;
-				cobra_config->spoof_revision = 67896; //0x00010938 // 4.85 = 67869; // 0x0001091d
-			}
-
-			if( cobra_config->ps2softemu == 0 && cobra_get_ps2_emu_type() == PS2_EMU_SW )
-				cobra_config->ps2softemu =  1;
-
-			cobra_write_config(cobra_config);
- #endif
- #ifdef SPOOF_CONSOLEID
-			spoof_idps_psid();
- #endif
- #ifdef COBRA_ONLY
-			#ifdef REMOVE_SYSCALLS
-			if(webman_config->spp & 1) //remove syscalls & history
-			{
-				if(!payload_ps3hen) sys_ppu_thread_sleep(5); do_sleep = false;
-
-				remove_cfw_syscalls(webman_config->keep_ccapi);
-				delete_history(true);
-			}
-			else
-			#endif
-			if(webman_config->spp & 2) //remove history & block psn servers (offline mode)
-			{
-				delete_history(false);
-				block_online_servers(false);
-			}
-			#ifdef OFFLINE_INGAME
-			if(file_exists(WMNET_DISABLED)) //re-enable network (force offline in game)
-			{
-				net_status = 1;
-				poll_start_play_time();
-			}
-			#endif
- #endif
-			if(do_sleep) sys_ppu_thread_sleep(1);
-
-#ifdef COBRA_ONLY
-			{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);}
-			{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
-			map_earth(0, param);
-#endif
-		}
-
-		sys_ppu_thread_exit(0);
-	}
+	#include "www_start.h"
 
  #ifdef USE_DEBUG
 	ssend(debug_s, "waiting...");
@@ -1406,7 +1251,6 @@ parse_request:
 						klic_polling = KL_OFF;
 					}
 				}
-
 				goto exit_handleclient_www;
 			}
  #endif
@@ -2230,17 +2074,20 @@ retry_response:
 				struct CellFsStat buf; bool is_net = false;
 
 				if(islike(param, "/dev_hdd1")) mount_device("/dev_hdd1", NULL, NULL); // auto-mount /dev_hdd1
-#ifdef USE_NTFS
+
+				#ifdef USE_NTFS
 				is_ntfs = is_ntfs_path(param);
-#endif
-#ifdef COBRA_ONLY
+				#endif
+
+				#ifdef COBRA_ONLY
 				if(islike(param, "/net") && (param[4] >= '0' && param[4] <= '4')) //net0/net1/net2/net3/net4
 				{
 					is_binary = FOLDER_LISTING, is_net = true;
 				}
-#endif
-#ifdef USE_NTFS
-				else if(is_ntfs)
+				else
+				#endif
+				#ifdef USE_NTFS
+				if(is_ntfs)
 				{
 					struct stat bufn;
 
@@ -2263,8 +2110,8 @@ retry_response:
 
 					if(bufn.st_mode & S_IFDIR) is_binary = FOLDER_LISTING;
 				}
-#endif
 				else
+				#endif
 					is_binary = (*param == '/') && (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED);
 
 				if(is_binary == BINARY_FILE) ;
@@ -2312,7 +2159,7 @@ retry_response:
 					c_len = buf.st_size;
 					if(buf.st_mode & S_IFDIR) {is_binary = FOLDER_LISTING;} // folder listing
 				}
-#ifdef COPY_PS3
+				#ifdef COPY_PS3
 				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
 				{
 					bool reply_html = !strstr(param, "//");
@@ -2320,25 +2167,26 @@ retry_response:
 					cellFsUnlink(FILE_LIST);
 					if(reply_html)
 					{
-#ifndef EMBED_JS
+						#ifndef EMBED_JS
 						memset(header, HTML_RECV_SIZE, 0);
 						sprintf(header, SCRIPT_SRC_FMT, FS_SCRIPT_JS);
 						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
 						save_file(FILE_LIST, (const char*)header, APPEND_TEXT);
 						save_file(FILE_LIST, (const char*)"<body onload='try{t2lnks()}catch(e){}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
-#else
+						#else
 						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
 						save_file(FILE_LIST, (const char*)"<body bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
-#endif
+						#endif
 					}
 
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
 					scan(param, true, wildcard, SCAN_LIST, (char*)FILE_LIST);
 
 					sprintf(param, "%s", FILE_LIST);
-					is_busy = false, allow_retry_response = false; goto retry_response;
+					is_busy = false, allow_retry_response = false;
+					goto retry_response;
 				}
-#endif
+				#endif
 				else
 				{
 					int code =  is_busy ?				 CODE_SERVER_BUSY :
@@ -2356,6 +2204,8 @@ retry_response:
 
  html_response:
 			header_len = prepare_header(header, param, is_binary);
+
+			#include "www_binary.h"
 
 			char templn[1024];
 			{u16 ulen = strlen(param); if((ulen > 1) && (param[ulen - 1] == '/')) ulen--, param[ulen] = NULL;}
@@ -2382,80 +2232,6 @@ retry_response:
 				if((uprofile != profile) || is_index_ps3) {DELETE_CACHED_GAMES}
 			}
 			//--
-
-			if(is_binary == BINARY_FILE) // binary file
-			{
-				if(keep_alive)
-				{
-					header_len += sprintf(header + header_len,  "Keep-Alive: timeout=3,max=250\r\n"
-																"Connection: keep-alive\r\n");
-				}
-
-				header_len += sprintf(header + header_len, "Content-Length: %llu\r\n\r\n", (unsigned long long)c_len);
-				send(conn_s, header, header_len, 0);
-
-				size_t buffer_size = 0; if(sysmem) sys_memory_free(sysmem); sysmem = NULL;
-
-				for(u8 n = MAX_PAGES; n > 0; n--)
-					if(c_len >= ((n-1) * _64KB_) && sys_memory_allocate(n * _64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK) {buffer_size = n * _64KB_; break;}
-
-				//if(!sysmem && sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)!=0)
-				if(buffer_size < _64KB_)
-				{
-					keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
-					goto exit_handleclient_www;
-				}
-
-				if(islike(param, "/dev_bdvd"))
-					{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
-
-				char *buffer = (char*)sysmem;
-				int fd;
-#ifdef USE_NTFS
-				if(is_ntfs)
-				{
-					fd = ps3ntfs_open(param + 5, O_RDONLY, 0);
-					if(fd <= 0) is_ntfs = false;
-				}
-#endif
-				if(is_ntfs || cellFsOpen(param, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
-				{
-					u64 read_e = 0, pos;
-
-#ifdef USE_NTFS
-					if(is_ntfs) ps3ntfs_seek64(fd, 0, SEEK_SET);
-					else
-#endif
-					cellFsLseek(fd, 0, CELL_FS_SEEK_SET, &pos);
-
-					while(working)
-					{
-#ifdef USE_NTFS
-						if(is_ntfs) read_e = ps3ntfs_read(fd, (void *)buffer, BUFFER_SIZE_FTP);
-#endif
-						if(is_ntfs || cellFsRead(fd, (void *)buffer, buffer_size, &read_e) == CELL_FS_SUCCEEDED)
-						{
-							if(read_e > 0)
-							{
-								if(send(conn_s, buffer, (size_t)read_e, 0) < 0) break;
-							}
-							else
-								break;
-						}
-						else
-							break;
-
-						//sys_ppu_thread_usleep(1668);
-					}
-#ifdef USE_NTFS
-					if(is_ntfs) ps3ntfs_close(fd);
-					else
-#endif
-					cellFsClose(fd);
-				}
-
-				goto exit_handleclient_www;
-			}
 
 			u32 BUFFER_SIZE_HTML = _64KB_;
 
@@ -2491,7 +2267,7 @@ retry_response:
 
 			//else	// text page
 			{
-				if((is_binary != FOLDER_LISTING) && is_setup)
+				if((is_binary == WEB_COMMAND) && is_setup)
 				{
 					setup_parse_settings(param + 11);
 				}
@@ -2520,132 +2296,7 @@ retry_response:
 				else if(webman_config->sman || strstr(param, "/sman.ps3")) {_concat(&sbuffer, "<div id='toolbox'>"); goto skip_code;}
 				else if(!mount_ps3)
 				{
-					{
-						char cpursx[32]; get_cpursx(cpursx);
-
-						sprintf(templn, " [<a href=\"%s\">"
-										// prevents flickering but cause error 80710336 in ps3 browser (silk mode)
-										//"<span id=\"lbl_cpursx\">%s</span></a>]<iframe src=\"/cpursx_ps3\" style=\"display:none;\"></iframe>"
-										"<span id=\"err\" style=\"display:none\">%s&nbsp;</span>%s</a>]"
-										"<script>function no_error(o){try{var doc=o.contentDocument||o.contentWindow.document;}catch(e){err.style.display='inline-block';o.style.display='none';}}</script>"
-										//
-										"<hr width=\"100%%\">"
-										"<div id=\"rxml\"><H1>%s XML ...</H1></div>"
-										"<div id=\"rhtm\"><H1>%s HTML ...</H1></div>"
- #ifdef COPY_PS3
-										"<div id=\"rcpy\"><H1><a href=\"/copy.ps3$abort\">&#9746;</a> %s ...</H1></div>"
-										//"<form action=\"\">", cpursx, STR_REFRESH, STR_REFRESH, STR_COPYING); _concat(&sbuffer, templn);
-										"<form action=\"\">", "/cpursx.ps3", cpursx, is_ps3_http ? cpursx : "<iframe src=\"/cpursx_ps3\" style=\"border:0;overflow:hidden;\" width=\"230\" height=\"23\" frameborder=\"0\" scrolling=\"no\" onload=\"no_error(this)\"></iframe>", STR_REFRESH, STR_REFRESH, STR_COPYING);
- #else
-										//"<form action=\"\">", cpursx, STR_REFRESH, STR_REFRESH); _concat(&sbuffer, templn);
-										"<form action=\"\">", "/cpursx.ps3", cpursx, is_ps3_http ? cpursx : "<iframe src=\"/cpursx_ps3\" style=\"border:0;overflow:hidden;\" width=\"230\" height=\"23\" frameborder=\"0\" scrolling=\"no\" onload=\"no_error(this)\"></iframe>", STR_REFRESH, STR_REFRESH);
- #endif
-						_concat(&sbuffer, templn);
-					}
-
-					if((webman_config->homeb) && (strlen(webman_config->home_url)>0))
-					{sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, STR_HOME, HTML_ONCLICK, webman_config->home_url); _concat(&sbuffer, templn);}
-
-					sprintf(templn, HTML_BUTTON_FMT
-									HTML_BUTTON_FMT
-									HTML_BUTTON_FMT
- #ifdef EXT_GDATA
-									HTML_BUTTON_FMT
- #endif
-									, HTML_BUTTON, STR_EJECT, HTML_ONCLICK, "/eject.ps3"
-									, HTML_BUTTON, STR_INSERT, HTML_ONCLICK, "/insert.ps3"
-									, HTML_BUTTON, STR_UNMOUNT, HTML_ONCLICK, "/mount.ps3/unmount"
- #ifdef EXT_GDATA
-									, HTML_BUTTON, "gameDATA", HTML_ONCLICK, "/extgd.ps3"
- #endif
-					);
-
-					_concat(&sbuffer, templn);
-
- skip_code:
- #ifdef COPY_PS3
-					if(((islike(param, "/dev_") && strlen(param) > 12 && !strstr(param,"?")) || islike(param, "/dev_bdvd")) && !strstr(param,".ps3/") && !strstr(param,".ps3?"))
-					{
-						if(copy_in_progress)
-							sprintf(templn, "%s&#9746; %s\" %s'%s';\">", HTML_BUTTON, STR_COPY, HTML_ONCLICK, "/copy.ps3$abort");
-						else
-							sprintf(templn, "%s%s\" onclick='rcpy.style.display=\"block\";location.href=\"/copy.ps3%s\";'\">", HTML_BUTTON, STR_COPY, param);
-
-						_concat(&sbuffer, templn);
-					}
-
-					if((islike(param, "/dev_") && !strstr(param,"?")) && !islike(param,"/dev_flash") && !strstr(param,".ps3/") && !strstr(param,".ps3?"))
-					{	// add buttons + javascript code to handle delete / cut / copy / paste (requires fm.js)
-	#ifdef EMBED_JS
-						sprintf(templn, "<script>"
-										"function tg(b,m,x,c){"
-										"var i,p,o,h,l=document.querySelectorAll('.d,.w'),s=m.length,n=1;"
-										"for(i=1;i<l.length;i++){o=l[i];"
-										"h=o.href;p=h.indexOf('/cpy.ps3');if(p>0){n=0;s=8;bCpy.value='Copy';}"
-										"if(p<1){p=h.indexOf('/cut.ps3');if(p>0){n=0;s=8;bCut.value='Cut';}}"
-										"if(p<1){p=h.indexOf('/delete.ps3');if(p>0){n=0;s=11;bDel.value='%s';}}"
-										"if(p>0){o.href=h.substring(p+s,h.length);o.style.color='#ccc';}"
-										"else{p=h.indexOf('/',8);o.href=m+h.substring(p,h.length);o.style.color=c;}"
-										"}if(n)b.value=(b.value == x)?x+' %s':x;"
-										"}</script>", STR_DELETE, STR_ENABLED); _concat(&sbuffer, templn);
-	#else
-						if(file_exists(FM_SCRIPT_JS))
-	#endif
-						{
-							sprintf(templn, "%s%s\" id=\"bDel\" onclick=\"tg(this,'%s','%s','red');\">", HTML_BUTTON, STR_DELETE, "/delete.ps3", STR_DELETE); _concat(&sbuffer, templn);
-							sprintf(templn, "%s%s\" id=\"bCut\" onclick=\"tg(this,'%s','%s','magenta');\">", HTML_BUTTON, "Cut", "/cut.ps3", "Cut"); _concat(&sbuffer, templn);
-							sprintf(templn, "%s%s\" id=\"bCpy\" onclick=\"tg(this,'%s','%s','blue');\">", HTML_BUTTON, "Copy", "/cpy.ps3", "Copy"); _concat(&sbuffer, templn);
-
-							if(cp_mode) {char *url = tempstr, *title = tempstr + MAX_PATH_LEN; urlenc(url, param); htmlenc(title, cp_path, 0); sprintf(templn, "%s%s\" id=\"bPst\" %s'/paste.ps3%s'\" title=\"%s\">", HTML_BUTTON, "Paste", HTML_ONCLICK, url, title); _concat(&sbuffer, templn);}
-						}
-					}
-
- #endif // #ifdef COPY_PS3
-					if(webman_config->sman || strstr(param, "/sman.ps3")) {_concat(&sbuffer, "</div>"); goto continue_rendering;}
-
-					sprintf(templn,  "%s%s XML%s\" %s'%s';\"> "
-									 "%s%s HTML%s\" %s'%s';\">",
-									 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/refresh.ps3';document.getElementById('rxml').style.display='block",
-									 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/index.ps3?html';document.getElementById('rhtm').style.display='block");
-
-					_concat(&sbuffer, templn);
-
- #ifdef SYS_ADMIN_MODE
-					if(sys_admin)
- #endif
-					{
-						sprintf(templn,  HTML_BUTTON_FMT
-										 HTML_BUTTON_FMT,
-										 HTML_BUTTON, STR_SHUTDOWN, HTML_ONCLICK, "/shutdown.ps3",
-										 HTML_BUTTON, STR_RESTART,  HTML_ONCLICK, "/restart.ps3");
-
-						_concat(&sbuffer, templn);
-					}
-
- #ifndef LITE_EDITION
-					char *nobypass = strstr(param, "$nobypass");
-					if(!nobypass) { PS3MAPI_REENABLE_SYSCALL8 } else *nobypass = NULL;
- #endif
-					sprintf( templn, "</form><hr>");
-					_concat(&sbuffer, templn);
- #ifndef LITE_EDITION
- continue_rendering:
- #endif
- #ifdef COPY_PS3
-					if(copy_in_progress)
-					{
-						sprintf(templn, "%s<a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)", "<div id=\"cps\"><font size=2>", "/copy.ps3", STR_COPYING, current_file, copied_count, STR_FILES);
-					}
-					else if(fix_in_progress)
-					{
-						sprintf(templn, "%s<a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)", "<div id=\"cps\"><font size=2>", "/fixgame.ps3", STR_FIXING, current_file, fixed_count, STR_FILES);
-					}
-					if((copy_in_progress || fix_in_progress) && file_exists(current_file))
-					{
-						strcat(templn, "</font><p></div><script>setTimeout(function(){cps.style.display='none'},15000);</script>"); _concat(&sbuffer, templn);
-					}
- #endif
-					keep_alive = 0;
+					#include "www_page.h"
 				}
 
  #ifndef LITE_EDITION

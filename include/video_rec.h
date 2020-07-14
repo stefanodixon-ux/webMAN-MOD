@@ -228,10 +228,13 @@ static bool rec_start(const char *param)
 	for(n = 0; n < sizeof(audio_formats); n++) if(rec_audio_format == audio_formats[n]) break;
 	if(n >= sizeof(audio_formats)) rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_64K;
 
+	// Use [MC] selected on /setup.ps3 (default: 4 - bg mc)
+	u8 mc = webman_config->vsh_mc; if((mc < 1) || (mc > 4)) mc = 4; // 1 - app, 2 - debug, 3 - fg, 4 - bg
+
 	// set video options
 	recOpt[1] = rec_video_format;
 	recOpt[2] = rec_audio_format;
-	recOpt[5] = (vsh_memory_container_by_id(1) == NONE ) ? vsh_memory_container_by_id(0) : vsh_memory_container_by_id(1);
+	recOpt[5] = (vsh_memory_container_by_id(mc) == NONE ) ? vsh_memory_container_by_id(0) : vsh_memory_container_by_id(mc);
 	recOpt[0x208] = 0x80; // 0x90 show XMB || reduce memsize // 0x80; // allow show XMB
 
 	get_game_info();

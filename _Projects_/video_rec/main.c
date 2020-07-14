@@ -107,6 +107,7 @@ static inline sys_prx_id_t prx_get_module_id_by_address(void *addr)
 #define CELL_REC_PARAM_VIDEO_FMT_YOUTUBE_MJPEG  CELL_REC_PARAM_VIDEO_FMT_MJPEG_HD720_11000K_30FPS
 #define CELL_REC_PARAM_AUDIO_FMT_YOUTUBE_MJPEG  CELL_REC_PARAM_AUDIO_FMT_PCM_768K
 
+static uint8_t  mc = 4; // bg memory container
 static uint8_t  rec_video_index = 32; // CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_5000K_30FPS
 static uint32_t rec_video_formats[37] = {
 											CELL_REC_PARAM_VIDEO_FMT_MPEG4_SMALL_512K_30FPS,
@@ -168,10 +169,10 @@ static uint32_t rec_audio_formats[8] = {
 											CELL_REC_PARAM_AUDIO_FMT_PCM_1536K
 										};
 
-static void show_rec_format(void)
+static void show_rec_format(const char *msg)
 {
-	char text[80];
-	sprintf(text, "[%i] Video: ", rec_video_index + (100 * rec_audio_index));
+	char text[120];
+	sprintf(text, "%s[%i] Video: ", msg, rec_video_index + (100 * rec_audio_index));
 
 	uint32_t flags;
 	flags = (rec_video_formats[rec_video_index] & 0xF000); // video format
@@ -221,7 +222,7 @@ static bool rec_start(void)
 {
 	recOpt[1] = rec_video_formats[rec_video_index];
 	recOpt[2] = rec_audio_formats[rec_audio_index];
-	recOpt[5] = (vsh_memory_container_by_id(1) == -1 ) ? vsh_memory_container_by_id(0) : vsh_memory_container_by_id(1);
+	recOpt[5] = (vsh_memory_container_by_id(mc) == -1 ) ? vsh_memory_container_by_id(0) : vsh_memory_container_by_id(mc);
 	recOpt[0x208] = 0x80; // 0x90 show XMB || reduce memsize // 0x80; // allow show XMB
 
 	CellRtcDateTime t;
@@ -240,11 +241,11 @@ static bool rec_start(void)
 	reco_open(-1); // memory container
 	sys_timer_sleep(4);
 
-	if(View_Find("rec_plugin") != 0)
+	if(View_Find("rec_plugin"))
 	{
 		rec_interface = (rec_plugin_interface *)plugin_GetInterface(View_Find("rec_plugin"), 1);
 
-		if(rec_interface != 0)
+		if(rec_interface)
 		{
 			rec_interface->start();
 			return true;
@@ -259,7 +260,7 @@ static bool rec_start(void)
 		reco_open(-1); //reco_open((vsh_E7C34044(1) == -1 ) ? vsh_E7C34044(0) : vsh_E7C34044(1));
 		sys_timer_sleep(3);
 
-		if(View_Find("rec_plugin") != 0)
+		if(View_Find("rec_plugin"))
 		{
 			rec_interface = (rec_plugin_interface *)plugin_GetInterface(View_Find("rec_plugin"), 1);
 
@@ -338,16 +339,31 @@ static void video_rec_thread(uint64_t arg)
 				{
 					if(++rec_video_index >= 37) rec_video_index = 0;
 				}
-				show_rec_format();
+				show_rec_format(" ");
 			}
 			if(r3)
 			{
-				if(View_Find("game_plugin") != 0)    // if game_plugin is loaded -> there is a game/app running and we can recording...
+				if(View_Find("game_plugin"))    // if game_plugin is loaded -> there is a game/app running and we can recording...
 				{
 					if(recording == false)
 					{
+						if(data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) // R2+R3 = app mc
+						{
+							mc = 1; // app mc
+						}
+						else
+						if(data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2) // L2+R3 = app mc
+						{
+							mc = 1; // app mc
+						}
+						else
+							mc = 4; // bg mc
+
 						// not recording yet
-						vshtask_notify("Recording started");
+						if(mc == 1)
+							show_rec_format("Recording started [1-app]\n");
+						else
+							show_rec_format("Recording started [4-bg]\n");
 
 						if(rec_start() == false)
 						{

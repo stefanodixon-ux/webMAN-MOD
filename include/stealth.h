@@ -2,7 +2,7 @@
 
 #define MAX_BLOCKED_URL         64
 
-u64 blocked_url[MAX_BLOCKED_URL][2]; u8 url_count = 0;
+static u64 blocked_url[MAX_BLOCKED_URL][2]; u8 url_count = 0;
 
 #ifdef REMOVE_SYSCALLS
 
