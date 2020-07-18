@@ -1,5 +1,5 @@
-	if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
-	{
+if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
+{
 	bool do_sleep = true;
 
 	#ifdef WM_PROXY_SPRX
@@ -158,4 +158,4 @@
 	}
 
 	sys_ppu_thread_exit(0);
-	}
+}

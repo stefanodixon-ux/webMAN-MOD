@@ -130,24 +130,21 @@ static void wait_for_pkg_install(void)
 	if(do_restart && (pkg_install_time == install_time)) do_restart = false; // installation canceled
 }
 
-static int LoadPluginById(int id, void *handler)
+static int get_xmm0_interface(void)
 {
 	if(xmm0_interface == 0) // getting xmb_plugin xmm0 interface for loading plugin sprx
 	{
 		xmm0_interface = (xmb_plugin_xmm0 *)plugin_GetInterface(View_Find("xmb_plugin"), XMM0);
 		if(xmm0_interface == 0) return FAILED;
 	}
-	return xmm0_interface->LoadPlugin3(id, handler, 0);
+	return CELL_OK;
 }
 
-static int UnloadPluginById(int id, void *handler)
+static int LoadPluginById(int id, void *handler)
 {
-	if(xmm0_interface == 0) // getting xmb_plugin xmm0 interface for loading plugin sprx
-	{
-		xmm0_interface = (xmb_plugin_xmm0 *)plugin_GetInterface(View_Find("xmb_plugin"), XMM0);
-		if(xmm0_interface == 0) return FAILED;
-	}
-	return xmm0_interface->Shutdown(id, handler, 1);
+	if(get_xmm0_interface()) return FAILED;
+
+	return xmm0_interface->LoadPlugin3(id, handler, 0);
 }
 
 static void unloadSysPluginCallback(void)
@@ -156,21 +153,28 @@ static void unloadSysPluginCallback(void)
 	//show_msg((char *)"plugin shutdown via xmb call launched");
 }
 
-static void unload_web_plugins(void)
+static void UnloadPluginById(int id)
 {
+	if(get_xmm0_interface()) return;
+
 	u8 retry = 0;
 
-	while(View_Find("webrender_plugin"))
+	while(xmm0_interface->IsPluginViewAvailable(id))
 	{
-		UnloadPluginById(0x1C, (void *)unloadSysPluginCallback);
-		sys_ppu_thread_sleep(1); if(++retry > 10) break;
+		xmm0_interface->Shutdown(id, (void *)unloadSysPluginCallback, 1);
+		sys_ppu_thread_usleep(100000); if(++retry > 100) break;
 	}
+}
 
-	while(View_Find("webbrowser_plugin"))
-	{
-		UnloadPluginById(0x1B, (void *)unloadSysPluginCallback);
-		sys_ppu_thread_sleep(1); if(++retry > 10) break;
-	}
+static void unload_plugin_modules(void)
+{
+	// Unload conflicting plugins
+	UnloadPluginById(nas_plugin);
+	UnloadPluginById(wboard_plugin);
+	UnloadPluginById(np_trophy_plugin);
+	UnloadPluginById(webbrowser_plugin);
+	UnloadPluginById(webrender_plugin);
+	UnloadPluginById(sysconf_plugin);
 
 #ifdef VIRTUAL_PAD
 	if(IS_ON_XMB)
@@ -184,7 +188,9 @@ static void unload_web_plugins(void)
 		explore_interface = (explore_plugin_interface *)plugin_GetInterface(View_Find("explore_plugin"), 1);
 		if(explore_interface == 0) return;
 	}
+
 	explore_interface->ExecXMBcommand("close_all_list", 0, 0);
+	sys_ppu_thread_sleep(2);
 }
 
 static void downloadPKG_thread(void)
@@ -196,24 +202,6 @@ static void downloadPKG_thread(void)
 		if(download_interface == 0) return;
 	}
 	download_interface->DownloadURL(0, pkg_durl, pkg_dpath);
-}
-
-static void installPKG_thread(void)
-{
-	if(game_ext_interface == 0) // test if game_ext_plugin is loaded for interface access
-	{
-		game_ext_interface = (game_ext_plugin_interface *)plugin_GetInterface(View_Find("game_ext_plugin"), 1);
-		if(game_ext_interface == 0) return;
-	}
-
-	installing_pkg = true;
-	game_ext_interface->LoadPage();
-
-	if(!extcasecmp(pkg_path, ".p3t", 4))
-		game_ext_interface->installTheme(pkg_path, (char*)"");
-	else
-		game_ext_interface->installPKG(pkg_path);
-	installing_pkg = false;
 }
 
 static int download_file(const char *param, char *msg)
@@ -294,13 +282,13 @@ static int download_file(const char *param, char *msg)
 
 		if(conv_num)
 		{
-			unload_web_plugins();
+			unload_plugin_modules();
 
 			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
 			sprintf(msg_durl, "Downloading %s", pdurl);
 
-			LoadPluginById(0x29, (void *)downloadPKG_thread);
+			LoadPluginById(download_plugin, (void *)downloadPKG_thread);
 			ret = CELL_OK;
 		}
 		else
@@ -312,15 +300,33 @@ end_download_process:
 	return ret;
 }
 
+static void installPKG_thread(void)
+{
+	if(game_ext_interface == 0) // test if game_ext_plugin is loaded for interface access
+	{
+		game_ext_interface = (game_ext_plugin_interface *)plugin_GetInterface(View_Find("game_ext_plugin"), 1);
+		if(game_ext_interface == 0) return;
+	}
+
+	installing_pkg = true;
+	game_ext_interface->LoadPage();
+
+	if(!extcasecmp(pkg_path, ".p3t", 4))
+		game_ext_interface->installTheme(pkg_path, (char*)"");
+	else
+		game_ext_interface->installPKG(pkg_path);
+	installing_pkg = false;
+}
+
 static int installPKG(const char *pkgpath, char *msg)
 {
 	int ret = FAILED;
 
-	unload_web_plugins();
+	unload_plugin_modules();
 
 	if(IS_INGAME)
 	{
-		unload_web_plugins();
+		unload_plugin_modules();
 
 		if(IS_INGAME)
 		{
@@ -348,13 +354,13 @@ static int installPKG(const char *pkgpath, char *msg)
 		else
 			snprintf(pkg_path, MAX_PKGPATH_LEN, "%s", pkgpath);
 
-		if( file_exists(pkg_path) )
+		if(file_exists(pkg_path))
 		{
 			if(!extcasecmp(pkg_path, ".pkg", 4) || !extcasecmp(pkg_path, ".p3t", 4)) //check if file has a .pkg extension or not and treat accordingly
 			{
-				unload_web_plugins();
+				unload_plugin_modules();
 
-				LoadPluginById(0x16, (void *)installPKG_thread);
+				LoadPluginById(game_ext_plugin, (void *)installPKG_thread);
 
 				get_pkg_size_and_install_time(pkg_path); // set original pkg_install_time
 

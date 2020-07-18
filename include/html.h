@@ -531,8 +531,15 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 	return slen + strlen(header);
 }
 
+static u64 convertH(char *val); // peek_poke.h
+
 static s64 val(const char *c)
 {
+	if(islike(c, "0x"))
+	{
+		return convertH((char*)c);
+	}
+
 	s64 previous_result = 0, result = 0;
 	s64 multiplier = 1;
 

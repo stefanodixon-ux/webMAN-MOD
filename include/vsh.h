@@ -127,14 +127,14 @@ static bool wait_for_abort(u32 usecs)
 
 
 #ifdef PKG_HANDLER
-static void unload_web_plugins(void);
+static void unload_plugin_modules(void);
 #endif
 static void explore_close_all(const char *path)
 {
 	if(IS_INGAME) return;
 
 #ifdef PKG_HANDLER
-	unload_web_plugins();
+	unload_plugin_modules();
 #endif
 
 	int view = View_Find("explore_plugin"); if(!view) return;

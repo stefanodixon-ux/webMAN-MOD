@@ -246,8 +246,6 @@ static u16 string_to_lv2(const char *path, u64 addr)
 }
 #endif
 
-#if defined(DEBUG_MEM) || defined(SPOOF_CONSOLEID)
-
 static u64 convertH(char *val)
 {
 	u64 ret = 0; char c;
@@ -267,8 +265,6 @@ static u64 convertH(char *val)
 
 	return ret;
 }
-
-#endif
 
 #ifndef LITE_EDITION
 static u16 Hex2Bin(const char *src, char *out)

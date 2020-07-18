@@ -1502,10 +1502,7 @@ parse_request:
 						*pos = NULL, pos += 5;
 
 						//  get data offset
-						if(islike(pos, "0x"))
-							offset = convertH(pos);
-						else
-							offset = val(pos);
+						offset = val(pos);
 
 						//  write binary data
 						size = Hex2Bin(data, header);
@@ -1766,7 +1763,7 @@ parse_request:
 				{
 					sp[n] = 0, p = strstr(params, "|"); if(!p) break;
 					params = p + 1, p[0] = NULL;
-					sp[n] = (*params == '0') ? convertH(params) : (u64)val(params); if(!sp[n] && (*params != '0')) sp[n] = (u64)(u32)(params);
+					sp[n] = (u64)val(params); if(!sp[n] && (*params != '0')) sp[n] = (u64)(u32)(params);
 				}
 
 				if(sc == 840)
@@ -2518,8 +2515,19 @@ retry_response:
 						// /loadprx.ps3?prx=<path-sprx>&slot=<slot>
 						// /unloadprx.ps3?prx=<path-sprx>
 						// /unloadprx.ps3?slot=<slot>
+						// /unloadprx.ps3?id=<id>
 
 						unsigned int slot = 7; bool prx_found;
+
+						#ifdef PKG_HANDLER
+						int id = get_valuen32(param, "id=");
+						if(id)
+						{
+							UnloadPluginById(id);
+							keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param); is_busy = false;
+							goto exit_handleclient_www;
+						}
+						#endif
 
 						if(param[12] == '/') sprintf(templn, "%s", param + 12); else
 						if(param[14] == '/') sprintf(templn, "%s", param + 14); else
