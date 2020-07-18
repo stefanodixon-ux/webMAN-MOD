@@ -2418,6 +2418,7 @@ retry_response:
 					if(islike(param, "/refresh.ps3") && refreshing_xml == 0)
 					{
 						// /refresh.ps3               refresh XML
+						// /refresh.ps3?xmb           refresh XML & reload XMB
 						// /refresh.ps3?cover=<mode>  refresh XML using cover type (icon0, mm, disc, online)
 						// /refresh.ps3?ntfs          refresh NTFS volumes and show NTFS volumes
 						// /refresh.ps3?prepntfs      refresh NTFS volumes & scan ntfs ISOs (clear cached .ntfs[PS*ISO] files in /dev_hdd0/tmp/wmtmp)
