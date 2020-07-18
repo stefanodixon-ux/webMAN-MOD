@@ -146,7 +146,7 @@ extern int vshmain_87BB0001(int param);  // shutdown_reset()
 extern int32_t vshmain_A4338777(void);  // get flag XXXX
 // vshmain_050CCCCE  // set u32
 
-extern int32_t vshmain_AE35CF2D(char *, int value);  // call_xmb_plugin | Executes Action based on Input (XMB Plugin XMM0 Interface 23), Examples: "http://www.psdevwiki.com",0; "copy:device",1; "regcam:reg?",1
+extern int32_t vshmain_AE35CF2D(char *, int value);  // call_xmb_plugin | Executes Action based on Input (XMB Plugin XMM0 Interface 23), Examples: "https://www.psdevwiki.com/ps3/Xmb_plugin",0; "copy:device",1; "regcam:reg?",1
 
 // vshmain_D609A2F6  // show_xmb_login | void vshmain_D609A2F6(int user_id /*starting from 1*/, bool connected /*true if already in a session*/ )
 // vshmain_455FBFBA  // "explore_plugin" |

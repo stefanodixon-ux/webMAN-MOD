@@ -52,6 +52,7 @@
 				{
 					if(read_e > 0)
 					{
+						if(webman_config->unlock_savedata) unlock_param_sfo(param, (unsigned char*)buffer, (u16)read_e);
 						if(send(conn_s, buffer, (size_t)read_e, 0) < 0) break;
 					}
 					else

@@ -13,6 +13,7 @@
 #define XMB_DISC_ICON		"/dev_hdd0/tmp/game/ICON0.PNG"
 #define CATEGORY_GAME_XML	"/dev_flash/vsh/resource/explore/xmb/category_game.xml"
 
+#define HDD0_HOME_DIR		"/dev_hdd0/home"
 #define HDD0_GAME_DIR		"/dev_hdd0/game/"
 #define _HDD0_GAME_DIR		"/dev_hdd0//game/"
 

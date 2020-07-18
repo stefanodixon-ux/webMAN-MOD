@@ -136,8 +136,9 @@ typedef struct
 	u8 profile;
 	char uaccount[9];
 	u8 admin_mode;
+	u8 unlock_savedata;
 
-	u8 padding10[5];
+	u8 padding10[4];
 
 	// misc settings
 

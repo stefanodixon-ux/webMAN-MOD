@@ -540,7 +540,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/exdata", drives[usb]);
 						else
-							sprintf(target, "%s/%s/exdata", "/dev_hdd0/home", webman_config->uaccount);
+							sprintf(target, "%s/%s/exdata", HDD0_HOME_DIR, webman_config->uaccount);
 
 						strcat(target, filename);
 					}
@@ -569,7 +569,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/exdata", drives[usb]);
 						else
-							sprintf(target, "%s/%s/exdata", "/dev_hdd0/home", webman_config->uaccount);
+							sprintf(target, "%s/%s/exdata", HDD0_HOME_DIR, webman_config->uaccount);
 					}
 					else if(strstr(source, "/PS3/THEME"))
 						sprintf(target, "/dev_hdd0/theme");
@@ -578,7 +578,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/PS3/SAVEDATA", drives[usb]);
 						else
-							sprintf(target, "%s/%s/savedata", "/dev_hdd0/home", webman_config->uaccount);
+							sprintf(target, "%s/%s/savedata", HDD0_HOME_DIR, webman_config->uaccount);
 
 						strcat(target, filename);
 					}
@@ -587,7 +587,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/PS3/TROPHY", drives[usb]);
 						else
-							sprintf(target, "%s/%s/trophy", "/dev_hdd0/home", webman_config->uaccount);
+							sprintf(target, "%s/%s/trophy", HDD0_HOME_DIR, webman_config->uaccount);
 
 						strcat(target, filename);
 					}

@@ -5,7 +5,7 @@
 #define ITEM_SELECTED			" selected=\"selected\""
 
 #define IS_MARKED(key)			(strstr(param, key) != NULL)
-#define IS_UNMARKED(key)		!strstr(param, key)
+#define IS_UNMARKED(key)		(!strstr(param, key))
 
 #define HTML_URL				"<a href=\"%s\">%s</a>"
 #define HTML_URL2				"<a href=\"%s%s\">%s</a>"
@@ -84,7 +84,7 @@ static void open_browser(char *url, int mode)
 	}
 	else
 	{
-		vshmain_AE35CF2D(url, mode);
+		vshmain_AE35CF2D(url, mode); // xmb_plugin->Function 23
 	}
 }
 

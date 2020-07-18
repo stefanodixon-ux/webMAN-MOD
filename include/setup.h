@@ -71,6 +71,7 @@ static void setup_parse_settings(char *param)
 
 	webman_config->nobeep = IS_UNMARKED("nb=1");
 	webman_config->wm_proxy = IS_UNMARKED("wp=1");
+	webman_config->unlock_savedata = IS_MARKED("up=1");
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
@@ -118,7 +119,7 @@ static void setup_parse_settings(char *param)
 	webman_config->roms = IS_MARKED("rom=1");
 #endif
 
-	webman_config->ignore = IS_MARKED("igf=1");
+	webman_config->ignore = IS_MARKED("igf=1"); // ignore game in content scanning
 
 	webman_config->combo = webman_config->combo2 = 0;
 
@@ -220,8 +221,10 @@ static void setup_parse_settings(char *param)
 	if(IS_MARKED("nf=1")) webman_config->fixgame = FIX_GAME_DISABLED;
 #endif
 
+#ifdef COBRA_ONLY
 	webman_config->nospoof = IS_MARKED("nsp=1"); //don't spoof fw version
 	if(c_firmware >= 4.53f) webman_config->nospoof = 1;
+#endif
 
 	if(IS_MARKED("fc=1") && IS_UNMARKED("temp=2")) webman_config->fanc = ENABLED;
 
@@ -680,6 +683,8 @@ static void setup_form(char *buffer, char *templn)
 #endif
 //	add_checkbox("xp", STR_COMBOS,   _BR_, (webman_config->nopad), buffer);
 
+	add_checkbox("up", "Unlock savedata", _BR_, (webman_config->unlock_savedata), buffer);
+
 	//game listing
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR);
 
@@ -781,6 +786,7 @@ static void setup_form(char *buffer, char *templn)
 	//game mounting
 	sprintf(templn, "%s + %s net/ntfs cached ISO", STR_UNMOUNT, STR_DELETE);
 	add_checkbox("dx", templn, _BR_, (webman_config->deliso), buffer);
+
 #ifdef FIX_GAME
 	if(c_firmware >= 4.20f && c_firmware < LATEST_CFW)
 	{
@@ -855,10 +861,10 @@ static void setup_form(char *buffer, char *templn)
 	//default user account
 	if(!webman_config->uaccount[0]) sprintf(webman_config->uaccount, "%08i", xsetting_CC56EB2D()->GetCurrentUserNumber());
 
-	sprintf(templn, "</select> : <a href=\"%s\">%s/</a><select name=\"uacc\">", "/dev_hdd0/home", "/dev_hdd0/home" + 5); concat(buffer, templn);
+	sprintf(templn, "</select> : <a href=\"%s\">%s</a><select name=\"uacc\">", HDD0_HOME_DIR, HDD0_HOME_DIR + 5); concat(buffer, templn);
 	{
 		int fd;
-		if(cellFsOpendir("/dev_hdd0/home", &fd) == CELL_FS_SUCCEEDED)
+		if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
 		{
 			CellFsDirent dir; u64 read_e;
 

@@ -281,6 +281,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										{
 											if(read_e)
 											{
+												if(webman_config->unlock_savedata) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
 												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) break; // FAILED
 											}
 											else
@@ -392,6 +393,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											read_e = (int)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
 											if(read_e > 0)
 											{
+												if(webman_config->unlock_savedata) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
 												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break; // FAILED
 											}
 											else if(read_e < 0)

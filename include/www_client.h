@@ -1269,7 +1269,8 @@ parse_request:
 			if(islike(param, "/popup.ps3"))
 			{
 				// /popup.ps3
-				// /popup.ps3<msg>
+				// /popup.ps3?<msg>
+				// /popup.ps3*<msg>
 
 				if(param[10] == NULL) show_info_popup = true; else is_popup = 1;
 
@@ -2381,7 +2382,11 @@ retry_response:
   #endif
 					{
 						char *msg = (param + 11); // /popup.ps3?<msg>
-						show_msg(msg);
+						if(param[10] == '*')
+							show_msg2(msg);
+						else
+							show_msg(msg);
+
 						sprintf(templn, "Message sent: %s", msg); _concat(&sbuffer, templn);
 					}
 

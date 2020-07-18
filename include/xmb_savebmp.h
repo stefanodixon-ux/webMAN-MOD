@@ -6,7 +6,7 @@
 #if defined(PS3_BROWSER) || defined(XMB_SCREENSHOT)
 static s32 rsx_fifo_pause(u8 pause)
 {
-	// lv2 sys_rsx_context_attribute()
+	// lv2 sys_rsx_context_attribute(uint32_t rsx_ctx_id, uint64_t arg_2, uint64_t arg_3); // syscall 674
 	system_call_6(0x2A2, 0x55555555ULL, (u64)(pause ? 2 : 3), 0, 0, 0, 0);
 
 	return (s32)p1;

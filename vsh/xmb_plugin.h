@@ -1,4 +1,4 @@
-// Mysis xmb_plugin.h v0.1
+// Mysis xmb_plugin.h v0.1 - https://www.psdevwiki.com/ps3/Xmb_plugin
 enum plugins
 {
 	system_plugin=0x00,
@@ -69,7 +69,7 @@ typedef struct
 	int (*IsPluginViewAvailable)(int) ;          // can test if plugin view is available or not. (Result != 0)
 	int (*LoadPlugin3)(int, void *, int) ;       // Loads corresponding plugin and executes the thread for view/interface usage
 	int (*LoadPlugin4)(int *) ;                  // Utility::LoadPlugin, 1 Parameter: uint * { Plugin Enum Id, int, int, int }
-	int (*Shutdown)(int,void *,int) ;            // int value (Plugin Enum Id), void * callback, int
+	int (*Shutdown)(int,void *,int) ;            // UnloadPluginById: int value (Plugin Enum Id), void * callback, int
 	int (*DoUnk6)(int *) ;                       // shutdown as well?
 	int (*DoUnk7)(int) ;                         // int value (Plugin Enum ID) - _paf_99919819 - (module activate?)
 	int (*ActivatePlugin)(int) ;                 // int value (Plugin Enum ID)
@@ -87,7 +87,7 @@ typedef struct
 	int (*DoUnk20)(int *, int *) ;               // out: int *, out: int *
 	int (*DoUnk21)(int, int) ;                   // int value (Plugin Enum ID), int value (0 = _vshnet_965A7E9D( ) ,else= _vshnet_52122E7D(("PS3 %s"), ))
 	int (*DoUnk22)(int) ;                        // executes given Plugin ID MOD0-Inferface Function 4)
-	int (*DoUnk23)(const char *,int) ;           // Executes Action
+	int (*ExecuteAction)(const char *,int) ;     // Executes Action (see vshmain_AE35CF2D)
 	int (*DoUnk24)(const char *,int) ;           // Gets Plugin ID Enum based by Action string
 	int (*DoUnk25)(void) ;
 } xmb_plugin_xmm0;

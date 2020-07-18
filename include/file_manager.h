@@ -164,7 +164,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			}
 			else if(IS(templn, "/app_home"))
 			{
-				sprintf(tempstr, "%s/%08i", "/dev_hdd0/home", xsetting_CC56EB2D()->GetCurrentUserNumber()); sprintf(fsize, HTML_URL, tempstr, HTML_DIR);
+				sprintf(tempstr, "%s/%08i", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); sprintf(fsize, HTML_URL, tempstr, HTML_DIR);
 			}
 			else
 #if defined(LITE_EDITION) // || defined(USE_NTFS)
@@ -219,9 +219,9 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		}
 #ifdef COPY_PS3
  #ifdef USE_NTFS
-		else if(is_ntfs_path(templn) || (!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, "/dev_hdd0/home") )))
+		else if(is_ntfs_path(templn) || (!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) )))
  #else
-		else if(!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, "/dev_hdd0/home") ))
+		else if(!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) ))
  #endif
 		{
 			sprintf(fsize, "<a href=\"/copy.ps3%s\" title=\"copy to %s\">%s</a>", islike(templn, param) ? templn + plen : templn, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", HTML_DIR);
@@ -247,11 +247,11 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 			if(IS(name, "LICDIR"))
 			{
-				sprintf(tempstr, "%s/%08i/savedata", "/dev_hdd0/home", xsetting_CC56EB2D()->GetCurrentUserNumber());
+				sprintf(tempstr, "%s/%08i/savedata", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber());
 			}
 			else if(islike(name, "NPWR"))
 			{
-				sprintf(tempstr, "%s/%08i/trophy/%s", "/dev_hdd0/home", xsetting_CC56EB2D()->GetCurrentUserNumber(), name);
+				sprintf(tempstr, "%s/%08i/trophy/%s", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber(), name);
 			}
 
 			if(isDir(tempstr)) sprintf(fsize, "<a href=\"%s\">%s</a>", tempstr, HTML_DIR);
@@ -358,7 +358,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		snprintf(ename, FILE_MGR_KEY_LEN, "%c%c%c%c%c", ((rDate.year - 1968) % 223) + 0x20, rDate.month+0x20, rDate.day+0x20, rDate.hour+0x20, rDate.minute+0x20);
 	else
 	{
-		//if(*name == '0' && flen == 8 && IS(param, "/dev_hdd0/home"))
+		//if(*name == '0' && flen == 8 && IS(param, HDD0_HOME_DIR))
 		//	snprintf(ename, FILE_MGR_KEY_LEN, "%s", name + 3);
 		//else
 		snprintf(ename, FILE_MGR_KEY_LEN, "%s         ", name); sclass = dclass;
@@ -471,7 +471,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 		slen = sprintf(swap, HTML_URL2,
 						strstr(pbuffer, "To: ") ? "" :
 						islike(param + 23, "/trophy/NPWR") ? "/delete.ps3" :
-						islike(param, "/dev_hdd0/home") ? "/copy.ps3" :
+						islike(param, HDD0_HOME_DIR) ? "/copy.ps3" :
 #ifdef FIX_GAME
 						islike(param, HDD0_GAME_DIR) ? "/fixgame.ps3" :
 #endif
@@ -565,7 +565,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		BUFFER_SIZE_HTML -= _2KB_;
 
 		u8 jb_games = (strstr(param, "/GAMES") || strstr(param, "/GAMEZ"));
-		u8 show_icon0 = jb_games || (islike(param, "/dev_hdd0/game") || islike(param, "/dev_hdd0/home/"));
+		u8 show_icon0 = jb_games || (islike(param, "/dev_hdd0/game") || islike(param, HDD0_HOME_DIR));
 
 #ifndef LITE_EDITION
 		sprintf(templn, "<img id=\"icon\" " ICON_STYLE ">"

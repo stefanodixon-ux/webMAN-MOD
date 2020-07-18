@@ -258,7 +258,7 @@
 
 				bool is_iso = false;
 				char *ext = strrchr(netpath, '.');
-				if(strlen(netpath) == 4 || islike(ext, ".0"))
+				if(strlen(ext) == 4 || islike(ext, ".0"))
 					if(ext) is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
 
 				if(islike(netpath, "/PS3ISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_PS3; else

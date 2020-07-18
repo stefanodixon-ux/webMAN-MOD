@@ -334,7 +334,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	if(webman_config->chart)
 		sprintf( templn, "<a href=\"%s\">", CPU_RSX_CHART);
 	else
-		sprintf( templn, "<a href=\"/dev_hdd0/home/%08i\">", xsetting_CC56EB2D()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
+		sprintf( templn, "<a href=\"%s/%08i\">", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
 
 	sprintf( templn, "<label title=\"Startup\">&#8986;</label> %id %02d:%02d:%02d</a>", dd, hh, mm, ss); buffer += concat(buffer, templn);
 	///////////////////////

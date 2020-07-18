@@ -338,13 +338,3 @@ static void reload_xmb(void)
 	}
 }
 #endif
-/*
-static void show_msg2(char* msg) // usage: show_msg2(L"text");
-{
-	if(View_Find("xmb_plugin") != 0)
-	{
-		xmb2_interface = (xmb_plugin_xmb2 *)plugin_GetInterface(View_Find("xmb_plugin"),'XMB2');
-		xmb2_interface->showMsg(msg);
-	}
-}
-*/

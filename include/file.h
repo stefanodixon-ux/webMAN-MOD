@@ -4,7 +4,7 @@
 
 #define NO_MSG							NULL
 
-int file_copy(char *file1, char *file2, u64 maxbytes);
+int64_t file_copy(char *file1, char *file2, u64 maxbytes);
 
 static bool copy_in_progress = false;
 static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
@@ -403,11 +403,11 @@ static int file_concat(const char *file1, char *file2)
 
 //////////////////////////////////////////////////////////////
 
-int file_copy(char *file1, char *file2, u64 maxbytes)
+int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 {
 	struct CellFsStat buf, buf2;
 	int fd1, fd2;
-	int ret = FAILED;
+	int64_t ret = FAILED;
 	copy_aborted = false;
 
 	filepath_check(file2);
@@ -451,6 +451,17 @@ int file_copy(char *file1, char *file2, u64 maxbytes)
 
 	u16 flen1 = 0;
 	bool check_666 = false;
+
+	if(webman_config->unlock_savedata && (buf.st_size < _4KB_))
+	{
+		u16 size = (u16)buf.st_size;
+		unsigned char data[_4KB_]; *data = NULL;
+		if(unlock_param_sfo(file1, data, size))
+		{
+			save_file(file2, (void*)data, size);
+			return size;
+		}
+	}
 
 	if(islike(file2, "/dev_hdd0/"))
 	{
@@ -1000,17 +1011,17 @@ static void delete_history(bool delete_folders)
 {
 	int fd; char path[64];
 
-	if(cellFsOpendir("/dev_hdd0/home", &fd) == CELL_FS_SUCCEEDED)
+	if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
 	{
 		CellFsDirectoryEntry dir; u32 read_e;
 		char *entry_name = dir.entry_name.d_name;
 
 		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{
-			unlink_file("/dev_hdd0/home", entry_name, "/etc/boot_history.dat");
-			unlink_file("/dev_hdd0/home", entry_name, "/etc/community/CI.TMP");
-			unlink_file("/dev_hdd0/home", entry_name, "/community/MI.TMP");
-			unlink_file("/dev_hdd0/home", entry_name, "/community/PTL.TMP");
+			unlink_file(HDD0_HOME_DIR, entry_name, "/etc/boot_history.dat");
+			unlink_file(HDD0_HOME_DIR, entry_name, "/etc/community/CI.TMP");
+			unlink_file(HDD0_HOME_DIR, entry_name, "/community/MI.TMP");
+			unlink_file(HDD0_HOME_DIR, entry_name, "/community/PTL.TMP");
 		}
 		cellFsClosedir(fd);
 	}

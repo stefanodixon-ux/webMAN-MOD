@@ -72,6 +72,45 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 	}
 }
 
+static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size)
+{
+	if( islike(param_sfo, HDD0_HOME_DIR) == false) return false;
+	if(!strstr(param_sfo + 14, "/PARAM.SFO")) return false;
+
+	u8 save = 0;
+
+	if(*mem == NULL) read_file(param_sfo, (void*)mem, sfo_size, 0);
+
+	READ_SFO_HEADER(false)
+
+	FOR_EACH_SFO_FIELD()
+	{
+		if(!memcmp((char *) &mem[str], "ACCOUNT_ID", 10))
+		{
+			memset((char *) &mem[pos], 0, 16); save++;
+		}
+		else if(!memcmp((char *) &mem[str], "ACCOUNTID", 9))
+		{
+			memset((char *) &mem[pos], 0, 16); save++;
+		}
+		else if(!memcmp((char *) &mem[str], "ATTRIBUTE", 9))
+		{
+			memset((char *) &mem[pos], 0, 4); save++; // Remove Copy Protection
+		}
+		else if(!memcmp((char *) &mem[str], "PARAMS", 6))
+		{
+			int userid = xsetting_CC56EB2D()->GetCurrentUserNumber();
+			mem[pos + 24] = (u8)(userid);           // User 1
+			memset((char *) &mem[pos + 28], 0, 16); // PSID
+			memset((char *) &mem[pos + 48], 0, 16); // Account ID
+			if(++save >= 3) break;
+		}
+		READ_NEXT_SFO_FIELD()
+	}
+
+	return save;
+}
+
 static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo_size)
 {
 	READ_SFO_HEADER(false)
@@ -146,19 +185,19 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 
 	check_ps3_game(filename);
 
-	u64 sfo_size = read_file(filename, paramsfo, _4KB_, 0);
+	u16 sfo_size = (u16)read_file(filename, paramsfo, _4KB_, 0);
 
 	if(sfo_size)
 	{
 		// get titleid
 		if(opcode == GET_VERSION)
-			get_app_ver(mem, title_id, (u16)sfo_size);                 // get game version (app_ver)
+			get_app_ver(mem, title_id, sfo_size);                 // get game version (app_ver)
 		else
 		if(opcode == GET_TITLE_AND_ID)
-			parse_param_sfo(mem, title_id, filename, (u16)sfo_size);   // get titleid & return title in the file name (used to backup games in _mount.h)
+			parse_param_sfo(mem, title_id, filename, sfo_size);   // get titleid & return title in the file name (used to backup games in _mount.h)
 		else
 		{
-			ret = fix_param_sfo(mem, title_id, opcode, (u16)sfo_size); // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
+			ret = fix_param_sfo(mem, title_id, opcode, sfo_size); // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
 
 			if(ret && opcode == FIX_SFO) save_file(filename, paramsfo, sfo_size);
 		}

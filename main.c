@@ -310,6 +310,7 @@ static char local_ip[16] = "127.0.0.1";
 static void show_msg(char* msg);
 static void sys_get_cobra_version(void);
 
+static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size);
 static bool not_exists(const char* path);
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
@@ -434,6 +435,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/poll.h"
 #include "include/md5.h"
 #include "include/script.h"
+#include "include/show_msg2.h"
 
 #include "include/www_client.h"
 
