@@ -183,7 +183,7 @@
 					}
 
 #ifdef PKG_HANDLER
-					if(IS(ntfs_ext, ".ntfs[BDFILE]") && islike(ntfs_ext - 4, ".pkg"))
+					if(!(webman_config->auto_install_pkg) && IS(ntfs_ext, ".ntfs[BDFILE]") && islike(ntfs_ext - 4, ".pkg"))
 					{
 						installPKG_all((char*)"/dev_bdvd", false);
 						goto exit_mount;
@@ -373,47 +373,49 @@
 				else
 				sys_ppu_thread_create(&thread_id_net, netiso_thread, 0, THREAD_PRIO, THREAD_STACK_SIZE_NET_ISO, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NET);
 #endif
-				if(ret && (netiso_args.emu_mode == EMU_PS3))
+				if(ret)
 				{
-					wait_for("/dev_bdvd", 15);
+					if(netiso_args.emu_mode == EMU_PS3)
+					{
+						wait_for("/dev_bdvd", 15);
 
-					get_name(templn, _path, GET_WMTMP);
-					cache_icon0_and_param_sfo(templn);
+						get_name(templn, _path, GET_WMTMP);
+						cache_icon0_and_param_sfo(templn);
 
-					#ifdef FIX_GAME
-					fix_game(_path, title_id, webman_config->fixgame);
-					#endif
-				}
+						#ifdef FIX_GAME
+						fix_game(_path, title_id, webman_config->fixgame);
+						#endif
+					}
 
-				if(ret && is_iso && islike(netpath, "/PSPISO") )
-				{
-					sprintf(templn, "/dev_bdvd/%s", netpath + 8);
-					sprintf(_path,  "/dev_bdvd/%s", netpath + 8);
+					else if(is_iso && islike(netpath, "/PSPISO"))
+					{
+						sprintf(templn, "/dev_bdvd/%s", netpath + 8);
+						sprintf(_path,  "/dev_bdvd/%s", netpath + 8);
 
-					sys_ppu_thread_sleep(1);
+						sys_ppu_thread_sleep(1);
 
-					ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
-				}
+						ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+					}
 
-				if(ret && islike(netpath, "/ROMS/"))
-				{
-					wait_for("/dev_bdvd", 15);
+					else if(islike(netpath, "/ROMS/"))
+					{
+						wait_for("/dev_bdvd", 15);
 
-					sys_map_path(PKGLAUNCH_DIR, NULL);
-					set_app_home (PKGLAUNCH_DIR "/PS3_GAME");
+						sys_map_path(PKGLAUNCH_DIR, NULL);
+						set_app_home (PKGLAUNCH_DIR "/PS3_GAME");
 
-					sys_map_path("/dev_bdvd/PS3_GAME", PKGLAUNCH_DIR "/PS3_GAME");
-					sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", isDir( RETROARCH_DIR1 ) ?
-																			RETROARCH_DIR1 "/USRDIR/cores" :
-																			RETROARCH_DIR2 "/USRDIR/cores" );
-				}
+						sys_map_path("/dev_bdvd/PS3_GAME", PKGLAUNCH_DIR "/PS3_GAME");
+						sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", isDir( RETROARCH_DIR1 ) ?
+																				RETROARCH_DIR1 "/USRDIR/cores" :
+																				RETROARCH_DIR2 "/USRDIR/cores" );
+					}
 #ifdef PKG_HANDLER
-				if(ret && (pkg_slash != NULL))
-				{
-					sprintf(_path, "/dev_bdvd/%s", pkg_slash + 1);
-					installPKG(_path, templn);
-				}
+					else if(!(webman_config->auto_install_pkg) && (pkg_slash != NULL))
+					{
+						installPKG_all((char*)"/dev_bdvd", false);
+					}
 #endif
+				}
 				goto exit_mount;
 			}
 

@@ -47,6 +47,8 @@
 //#define NOSINGSTAR		1	// remove SingStar icon from XMB  (thanks to bguerville)
 //#define CALC_MD5			1	// /md5.ps3/<file>
 //#define LAUNCHPAD			1	// create /dev_hdd0/tmp/wm_lauchpad.xml
+//#define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
+
 
 //// TEST FEATURES ////
 //#define SYS_BGM			1	// system background music (may freeze the system when enabled)

@@ -72,6 +72,7 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 	}
 }
 
+#ifdef UNLOCK_SAVEDATA
 static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size)
 {
 	if( islike(param_sfo, HDD0_HOME_DIR) == false) return false;
@@ -110,6 +111,7 @@ static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_si
 
 	return save;
 }
+#endif
 
 static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo_size)
 {

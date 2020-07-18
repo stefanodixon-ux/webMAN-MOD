@@ -452,6 +452,7 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 	u16 flen1 = 0;
 	bool check_666 = false;
 
+#ifdef UNLOCK_SAVEDATA
 	if(webman_config->unlock_savedata && (buf.st_size < _4KB_))
 	{
 		u16 size = (u16)buf.st_size;
@@ -462,6 +463,7 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 			return size;
 		}
 	}
+#endif
 
 	if(islike(file2, "/dev_hdd0/"))
 	{

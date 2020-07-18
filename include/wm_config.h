@@ -128,8 +128,9 @@ typedef struct
 	u8 ps2config;
 	u8 minfo;
 	u8 deliso;
+	u8 auto_install_pkg;
 
-	u8 padding9[8];
+	u8 padding9[7];
 
 	// profile settings
 

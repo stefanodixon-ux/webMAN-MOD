@@ -71,7 +71,13 @@ static void setup_parse_settings(char *param)
 
 	webman_config->nobeep = IS_UNMARKED("nb=1");
 	webman_config->wm_proxy = IS_UNMARKED("wp=1");
+
+#ifdef PKG_HANDLER
+	webman_config->auto_install_pkg = IS_UNMARKED("ai=1");
+#endif
+#ifdef UNLOCK_SAVEDATA
 	webman_config->unlock_savedata = IS_MARKED("up=1");
+#endif
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
@@ -683,7 +689,12 @@ static void setup_form(char *buffer, char *templn)
 #endif
 //	add_checkbox("xp", STR_COMBOS,   _BR_, (webman_config->nopad), buffer);
 
+#ifdef PKG_HANDLER
+	add_checkbox("ai", "Auto Install PKG", _BR_, !(webman_config->auto_install_pkg), buffer);
+#endif
+#ifdef UNLOCK_SAVEDATA
 	add_checkbox("up", "Unlock savedata", _BR_, (webman_config->unlock_savedata), buffer);
+#endif
 
 	//game listing
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR);

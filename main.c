@@ -310,7 +310,9 @@ static char local_ip[16] = "127.0.0.1";
 static void show_msg(char* msg);
 static void sys_get_cobra_version(void);
 
+#ifdef UNLOCK_SAVEDATA
 static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size);
+#endif
 static bool not_exists(const char* path);
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
