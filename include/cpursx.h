@@ -187,12 +187,12 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		char *pos = strstr(param, "fan=");
 		if(pos)
 		{
-			u32 new_speed = get_valuen(param, "fan=", 0, 99); max_temp = 0;
+			u32 new_speed = get_valuen(param, "fan=", 0, webman_config->maxfan); max_temp = 0;
 			if(!new_speed)
 				enable_fan_control(DISABLED, templn);
 			else
 			{
-				webman_config->man_rate = new_speed;
+				webman_config->man_rate = RANGE(new_speed, webman_config->minfan, webman_config->maxfan);
 				if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);
 			}
 		}
@@ -295,16 +295,17 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		sprintf(max_temp1, "/games.ps3");
 
 	sprintf(param,	"<a class=\"s\" href=\"%s\">"
-					"MEM: %'d KB</a><br>"
+					"MEM: %'d KB %s</a><br>"
 					"<a href=\"%s\">HDD: %'d %s</a>%s<hr>"
 					"<a class=\"s\" href=\"/cpursx.ps3?mode\">"
 					"%s %i%% (0x%X)</a><br>",
-					max_temp1, (meminfo.avail>>10), drives[0], hdd_free, STR_MBFREE, templn,
+					max_temp1, (meminfo.avail>>10), IS_ON_XMB ? "(XMB)" : "",
+					drives[0], hdd_free, STR_MBFREE, templn,
 					STR_FANCH2, (int)((int)fan_speed * 100) / 255, fan_speed); buffer += concat(buffer, param);
 
 	if(!max_temp && !is_ps3_http)
 	{
-		sprintf(templn, "<input type=\"range\" value=\"%i\" min=\"%i\" max=\"95\" style=\"width:600px\" onchange=\"self.location='/cpursx.ps3?fan='+this.value\">", webman_config->man_rate, DEFAULT_MIN_FANSPEED); buffer += concat(buffer, templn);
+		sprintf(templn, "<input type=\"range\" value=\"%i\" min=\"%i\" max=\"%i\" style=\"width:600px\" onchange=\"self.location='/cpursx.ps3?fan='+this.value\">", webman_config->man_rate, webman_config->minfan, webman_config->maxfan); buffer += concat(buffer, templn);
 	}
 
 	strcat(buffer, "<hr>");
@@ -377,7 +378,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 						"MAC Addr : %02X:%02X:%02X:%02X:%02X:%02X - %s %s"
 						"</span></h2></a></b>",
 						fw_version, cfw_info,
-						(syscalls_removed) ? STR_CFWSYSALRD : "",
+						(syscalls_removed) ? STR_CFWSYSALRD : (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "",
 #ifdef SPOOF_CONSOLEID
 						PSID[0], PSID[1],
 						eid0_idps[0], eid0_idps[1],

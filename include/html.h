@@ -23,7 +23,8 @@
 
 #define HTML_DISABLED_CHECKBOX	"disabled"
 
-#define HTML_FORM_METHOD_FMT	"%s"
+#define HTML_FORM_METHOD_FMT(a)	"<form action=\"" a "%s"
+
 #define HTML_FORM_METHOD		".ps3mapi\" method=\"get\" enctype=\"application/x-www-form-urlencoded\" target=\"_self\">"
 
 #define HTML_ENTRY_DATE			" &nbsp; </td>" \
@@ -601,15 +602,20 @@ static u16 get_param(const char *name, char *value, const char *url, u16 max_siz
 	return 0;
 }
 
-static u32 get_valuen32(const char *param, const char *label)
+static s64 get_valuen64(const char *param, const char *label)
 {
 	char value[12], *pos = strstr(param, label);
 	if(pos)
 	{
 		get_value(value, pos + strlen(label), 11);
-		return (u32)val(value);
+		return val(value);
 	}
 	return 0;
+}
+
+static u32 get_valuen32(const char *param, const char *label)
+{
+	return (u32)get_valuen64(param, label);
 }
 
 static u16 get_port(const char *param, const char *label, u16 default_port)

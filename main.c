@@ -425,9 +425,9 @@ static u8 mount_unk = EMU_OFF;
 #include "include/games_xml.h"
 #include "include/prepntfs.h"
 
-#include "include/cpursx.h"
 #include "include/snd0.h"
 #include "include/setup.h"
+#include "include/cpursx.h"
 #include "include/togglers.h"
 
 #include "include/_mount.h"

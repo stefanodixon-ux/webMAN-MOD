@@ -287,7 +287,7 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 
 	concat(buffer, templn);
 
-	sprintf(templn, "<form action=\"/notify" HTML_FORM_METHOD_FMT
+	sprintf(templn, HTML_FORM_METHOD_FMT("/notify")
 					"<table width=\"800\"><tr><td class=\"la\">"
 					"<textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea></td></tr>"
 					"<tr><td class=\"ra\"><br><input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr></table></form>",
@@ -532,7 +532,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 
 	concat(buffer, templn);
 
-	sprintf(templn, "<form action=\"/getmem" HTML_FORM_METHOD_FMT
+	sprintf(templn, HTML_FORM_METHOD_FMT("/getmem")
 					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn); memset(templn, 0, MAX_LINE_LEN);
 
 	add_proc_list(buffer, templn, &pid);
@@ -657,7 +657,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 
 	concat(buffer, templn);
 
-	sprintf(templn, "<form action=\"/setmem" HTML_FORM_METHOD_FMT
+	sprintf(templn, HTML_FORM_METHOD_FMT("/setmem")
 					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn); memset(templn, 0, MAX_LINE_LEN);
 
 	add_proc_list(buffer, templn, &pid);
@@ -729,7 +729,7 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 
 	sprintf(templn, "<b>%s%s</b>"
 					HTML_BLU_SEPARATOR
-					"<form action=\"/setidps" HTML_FORM_METHOD_FMT
+					HTML_FORM_METHOD_FMT("/setidps")
 					"<table id='ht' width=\"800\">"
 					"<tr><td width=\"400\" class=\"la\">"
 					"<br><b><u>%s:</u></b><br>" HTML_INPUT("idps1", "%016llX", "16", "18") HTML_INPUT("idps2", "%016llX", "16", "18") "</td>"
@@ -880,7 +880,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 
 			sprintf(templn, "</td>"
 							"<td width=\"100\" class=\"ra\">"
-							"<form action=\"/vshplugin" HTML_FORM_METHOD_FMT
+							HTML_FORM_METHOD_FMT("/vshplugin")
 							"<input name=\"unload_slot\" type=\"hidden\" value=\"%i\"><input type=\"submit\" %s/></form></td></tr>",
 							HTML_FORM_METHOD, slot, (slot) ? "value=\" Unload \"" : "value=\" Reserved \" disabled" );
 		}
@@ -888,7 +888,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
  		{
 			sprintf(templn, "<tr><td width=\"75\" class=\"la\">%i</td>"
 							"<td width=\"120\" class=\"la\">%s</td>"
-							"<form action=\"/vshplugin" HTML_FORM_METHOD_FMT
+							HTML_FORM_METHOD_FMT("/vshplugin")
 							"<td width=\"500\" class=\"la\">"
 							HTML_INPUT("prx\" style=\"width:555px\" list=\"plugins", "", "128", "75") "<input name=\"load_slot\" type=\"hidden\" value=\"%i\"></td>"
 							"<td width=\"100\" class=\"ra\"><input type=\"submit\" %s/></td></form></tr>",
@@ -1010,7 +1010,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 
 	concat(buffer, templn);
 
-	sprintf(templn, "<form action=\"/gameplugin" HTML_FORM_METHOD_FMT
+	sprintf(templn, HTML_FORM_METHOD_FMT("/gameplugin")
 					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn); memset(templn, 0, MAX_LINE_LEN);
 
 	add_proc_list(buffer, templn, &pid);
@@ -1034,13 +1034,15 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 					 "</tr>",
 					"Slot", "Name", "File name"); buffer += concat(buffer, templn);
 
+		#define MAX_SLOTS	65
+
 		char tmp_name[30];
 		char tmp_filename[STD_PATH_LEN];
-		u32 mod_list[62];
+		u32 mod_list[MAX_SLOTS];
 		memset(mod_list, 0, sizeof(mod_list));
 		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_MODULE_PID, (u64)pid, (u64)(u32)mod_list);}
 
-		for(unsigned int slot = 0; slot <= 60; slot++)
+		for(unsigned int slot = 0; slot < MAX_SLOTS; slot++)
 		{
 			memset(tmp_name, 0, sizeof(tmp_name));
 			memset(tmp_filename, 0, sizeof(tmp_filename));
@@ -1062,7 +1064,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 
 				sprintf(templn, "</td>"
 						 "<td width=\"100\" class=\"ra\">"
-						  "<form action=\"/gameplugin" HTML_FORM_METHOD_FMT
+						  HTML_FORM_METHOD_FMT("/gameplugin")
 						  "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
 						  "<input name=\"unload_slot\" type=\"hidden\" value=\"%i\">"
 						  "<input type=\"submit\" value=\" Unload \">"
@@ -1079,7 +1081,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						 "<td width=\"75\" class=\"la\">%i</td>"
 						 "<td width=\"300\" class=\"la\">%s</td>"
 						 "<td width=\"100\" class=\"ra\">"
-						  "<form action=\"/gameplugin" HTML_FORM_METHOD_FMT
+						  HTML_FORM_METHOD_FMT("/gameplugin")
 						   "<td width=\"500\" class=\"la\">"
 							 "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
 							 HTML_INPUT("prx\" list=\"plugins", "", "128", "75")

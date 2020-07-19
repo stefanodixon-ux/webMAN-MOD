@@ -141,8 +141,7 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 		// assign enter button
 		if((data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_CROSS | CELL_PAD_CTRL_CIRCLE)) && ((param[5] == '=') || (param[6] == '=')))
 		{
-			int enter_button = 1;
-			if(data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS) enter_button = 1; else enter_button = 0;
+			int enter_button = (data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS);
 			if(strcasestr(param, "swap")) {xsetting_0AF1F161()->GetEnterButtonAssign(&enter_button); enter_button ^= 1;}
 
 			xsetting_0AF1F161()->SetEnterButtonAssign(enter_button);
@@ -182,7 +181,7 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 #ifdef PKG_HANDLER
 static void press_cancel_button(void)
 {
-	int enter_button = 0;
+	int enter_button = 1;
 	xsetting_0AF1F161()->GetEnterButtonAssign(&enter_button);
 
 	if(enter_button)

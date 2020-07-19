@@ -2013,6 +2013,7 @@ retry_response:
 							|| islike(param, "/poke.lv1?")
 							|| islike(param, "/find.lv1?")
 							|| islike(param, "/dump.ps3")
+							|| islike(param, "/hexview.ps3/")
  #endif
 
  #ifndef LITE_EDITION
@@ -2842,7 +2843,7 @@ retry_response:
 						ps3mapi_mem_dump(pbuffer, templn, param);
 					}
 					else
-					if(islike(param, "/peek.lv") || islike(param, "/poke.lv") || islike(param, "/find.lv"))
+					if(islike(param, "/peek.lv") || islike(param, "/poke.lv") || islike(param, "/find.lv") || islike(param, "/hexview.ps3/"))
 					{
 						// /peek.lv1?<address>
 						// /poke.lv1?<address>=<value>
@@ -2852,8 +2853,10 @@ retry_response:
 						// /poke.lv2?<address>=<value>
 						// /find.lv2?<value>
 						// /find.lv2?<start-address>=<value>
+						// /hexview.ps3<file-path>
+						// /hexview.ps3<file-path>&offset=<value>
 
-						ps3mapi_find_peek_poke(pbuffer, templn, param);
+						ps3mapi_find_peek_poke_hexview(pbuffer, templn, param);
 					}
  #endif
 					else

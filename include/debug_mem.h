@@ -83,17 +83,24 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 	}
 }
 
-static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
+#define HEXVIEW_SIZE	0x200
+
+static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
-	u64 address, addr, byte_addr, fvalue, value=0, upper_memory, found_address=0, step = 1;
+	u64 address = 0, addr, byte_addr, fvalue, value=0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0;
 	bool bits8 = false, bits16 = false, bits32 = false, found = false;
-	u8 flen = 0;
+	u8 flen = 0, hilite;
 	char *v;
+
+	u8 data[HEXVIEW_SIZE]; struct CellFsStat s;
+	bool is_file = islike(param, "/hexview.ps3/");
+	if(is_file) address = (u64)get_valuen64(param, "&offset=");
 
 	v = strstr(param + 10, "&");
 	if(v) *v = NULL;
 
+	if(is_file) goto view_file;
 	address = convertH(param + 10);
 
 	v = strstr(param + 10, "=");
@@ -126,7 +133,7 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 	else
 		upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8; // safe memory adddress
 
-	if(address > upper_memory) address = upper_memory - 0x200;
+	if(address > upper_memory) address = upper_memory - HEXVIEW_SIZE;
 
 	if((v == NULL) || (address > upper_memory)) { /* ignore find/poke if value is not provided or invalid address */ }
 	else
@@ -179,11 +186,26 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 		found_address = address; found = true;
 	}
 
+view_file:
+
+	if(is_file)
+	{
+		param += 12; cellFsStat(param, &s);
+		read_file(param, (void*)data, 0x200, address);
+		add_breadcrumb_trail(buffer, param);
+
+		// file navigation
+		u64 max = s.st_size < HEXVIEW_SIZE ? 0 : s.st_size - HEXVIEW_SIZE;
+		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=%lli\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=%lli\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=%lli\">&gt;&gt;</a></span><HR>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
+		buffer += concat(buffer, templn);
+	}
+
 	////////////////////////////////
 	// show memory address in hex //
 	////////////////////////////////
 
-	if(address + 0x200 > (upper_memory + 8)) address = 0;
+	if(address + HEXVIEW_SIZE > (upper_memory + 8)) address = 0;
 
 	flen = (bits8) ? 1 : (bits16) ? 2 : (bits32) ? 4 : 8;
 	address &= 0xFFFFFFFFFFFFFFF0ULL;
@@ -192,7 +214,7 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 #ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
 #endif
-	for(u16 i = 0; i < 0x200; i++)
+	for(u16 i = 0; i < HEXVIEW_SIZE; i++)
 	{
 		if(!p)
 		{
@@ -201,11 +223,16 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 		}
 
 		byte_addr = address + i;
-		byte = (u8)((lv1 ? peek_lv1(byte_addr) : peekq(byte_addr)) >> 56);
 
-		if(found && byte_addr >= found_address && byte_addr < (found_address + flen)) buffer += concat(buffer, "<font color=yellow><b>");
+		if(is_file)
+			byte = data[i];
+		else
+			byte = (u8)((lv1 ? peek_lv1(byte_addr) : peekq(byte_addr)) >> 56);
+
+		hilite = found && (byte_addr >= found_address) && (byte_addr < (found_address + flen));
+		if(hilite) buffer += concat(buffer, "<font color=yellow><b>");
 		sprintf(templn, "%02X ", byte); buffer += concat(buffer, templn);
-		if(found && byte_addr >= found_address && byte_addr < (found_address + flen)) buffer += concat(buffer, "</b></font>");
+		if(hilite) buffer += concat(buffer, "</b></font>");
 
 		if(p == 0x7) buffer += concat(buffer, " ");
 
@@ -214,10 +241,14 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 			buffer += concat(buffer, " ");
 			for(u8 c = 0; c < 0x10; c++, addr++)
 			{
-				byte = (u8)((lv1 ? peek_lv1(addr) : peekq(addr)) >> 56);
+				if(is_file)
+					byte = data[(0x10 * (i / 0x10)) + c];
+				else
+					byte = (u8)((lv1 ? peek_lv1(addr) : peekq(addr)) >> 56);
 				if(byte<32 || byte>=127) byte='.';
 
-				if(found && addr >= found_address && addr < (found_address + flen)) buffer += concat(buffer, "<font color=yellow><b>");
+				hilite = (found && addr >= found_address) && (addr < (found_address + flen));
+				if(hilite) buffer += concat(buffer, "<font color=yellow><b>");
 				if(byte==0x3C)
 					buffer += concat(buffer, "&lt;");
 				else if(byte==0x3E)
@@ -225,7 +256,7 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 				else
 					{sprintf(templn,"%c", byte); buffer += concat(buffer, templn);}
 
-				if(found && addr >= found_address && addr < (found_address + flen)) buffer += concat(buffer, "</b></font>");
+				if(hilite) buffer += concat(buffer, "</b></font>");
 			}
 			buffer += concat(buffer, "<br>");
 		}
@@ -238,16 +269,19 @@ static void ps3mapi_find_peek_poke(char *buffer, char *templn, char *param)
 #endif
 	// footer
 
-	buffer += concat(buffer, "<hr>Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
-	sprintf(templn, " [<a href=\"/dump.ps3?%llx\">Dump 0x%llx</a>]", lv1?address:address + LV2_OFFSET_ON_LV1, lv1?address:address + LV2_OFFSET_ON_LV1); buffer += concat(buffer, templn);
-	sprintf(templn, " <a id=\"pblk\" href=\"/peek.lv%i?%llx\">&lt;&lt;</a> <a id=\"back\" href=\"/peek.lv%i?%llx\">&lt;Back</a>", lv1?1:2, ((int)(address-0x1000)>=0)?(address-0x1000):0, lv1?1:2, ((int)(address-0x200)>=0)?(address-0x200):0); buffer += concat(buffer, templn);
-	sprintf(templn, " <a id=\"next\" href=\"/peek.lv%i?%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/peek.lv%i?%llx\">&gt;&gt;</a></pre>", lv1?1:2, ((int)(address+0x400)<(int)upper_memory)?(address+0x200):(upper_memory-0x200), lv1?1:2, ((int)(lv1+0x1200)<(int)upper_memory)?(address+0x1000):(upper_memory-0x200)); buffer += concat(buffer, templn);
+	if(!is_file)
+	{
+		buffer += concat(buffer, "<hr>Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
+		sprintf(templn, " [<a href=\"/dump.ps3?%llx\">Dump 0x%llx</a>]", lv1?address:address + LV2_OFFSET_ON_LV1, lv1?address:address + LV2_OFFSET_ON_LV1); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"pblk\" href=\"/peek.lv%i?%llx\">&lt;&lt;</a> <a id=\"back\" href=\"/peek.lv%i?%llx\">&lt;Back</a>", lv1?1:2, ((int)(address-0x1000)>=0)?(address-0x1000):0, lv1?1:2, ((int)(address-HEXVIEW_SIZE)>=0)?(address-HEXVIEW_SIZE):0); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"next\" href=\"/peek.lv%i?%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/peek.lv%i?%llx\">&gt;&gt;</a></pre>", lv1?1:2, ((int)(address+0x400)<(int)upper_memory)?(address+HEXVIEW_SIZE):(upper_memory-HEXVIEW_SIZE), lv1?1:2, ((int)(lv1+0x1200)<(int)upper_memory)?(address+0x1000):(upper_memory-HEXVIEW_SIZE)); buffer += concat(buffer, templn);
+	}
 
 	// add navigation with left/right keys
 	concat(buffer,  "<script>"
 					"document.addEventListener('keydown',kd,false);"
 					"function kd(e)"
-					"{e=e||window.event;var kc=e.keyCode;if(kc==37){self.location=e.ctrlKey?pblk.href:back.href;}if(kc==39){self.location=e.ctrlKey?nblk.href:next.href;}}"
+					"{e=e||window.event;var kc=e.keyCode;if(kc==37){e.ctrlKey?pblk.click():back.click();}if(kc==39){e.ctrlKey?nblk.click():next.click();}}"
 					"</script>");
 }
 
