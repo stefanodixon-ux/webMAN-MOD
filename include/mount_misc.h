@@ -26,22 +26,22 @@
 	// ------------------
 	// mount NPDRM game
 	// ------------------
+ #ifdef PKG_LAUNCHER
+	if(!extcasecmp(_path, ".self", 5))
+	{
+		ret = file_exists(_path);
+		cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH");
+		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
+		if(ret) launch_app_home_icon();
+		goto mounting_done; //goto exit_mount;
+	}
+ #endif
 	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
 		ret = isDir(_path);
 
 		if(!ret)
 		{
- #ifdef PKG_LAUNCHER
-			if(strcasestr(_path, ".self"))
-			{
-				ret = file_exists(_path);
-				cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", 0);
-				save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
-				if(ret) launch_app_home_icon();
-				goto mounting_done; //goto exit_mount;
-			}
- #endif
 			if(islike(_path0, HDD0_GAME_DIR))
 			{
 				sprintf(_path, "%s%s", HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0/game/
@@ -79,7 +79,7 @@
 			do_umount(false);
 
 			// mount PKGLAUNCH as disc
-			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", 0);
+			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH");
 
 			if(file_exists(RETROARCH_DIR1))
 			{

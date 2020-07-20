@@ -269,6 +269,20 @@ size_t read_file(const char *file, char *data, size_t size, s32 offset)
 
 	if(offset < 0) offset = 0; else memset(data, 0, size);
 
+#ifdef USE_NTFS
+	if(is_ntfs_path(file))
+	{
+		fd = ps3ntfs_open(file + 5, O_RDONLY, 0);
+		if(fd >= 0)
+		{
+			ps3ntfs_seek64(fd, offset, SEEK_SET);
+			read_e = ps3ntfs_read(fd, (void *)data, size);
+			ps3ntfs_close(fd);
+		}
+		return read_e;
+	}
+#endif
+
 	if(cellFsOpen(file, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
 		if(cellFsReadWithOffset(fd, offset, (void *)data, size, &read_e) != CELL_FS_SUCCEEDED) read_e = 0;
@@ -280,9 +294,31 @@ size_t read_file(const char *file, char *data, size_t size, s32 offset)
 
 static int write_file(const char *file, int flags, const char *data, u64 offset, int size, bool crlf)
 {
+	int fd = 0;
+
+#ifdef USE_NTFS
+	if(is_ntfs_path(file))
+	{
+		int nflags = O_CREAT | O_WRONLY;
+		if(flags & CELL_FS_O_APPEND) nflags |= O_APPEND;
+		if(flags & CELL_FS_O_TRUNC)  nflags |= O_TRUNC;
+
+		fd = ps3ntfs_open(file + 5, nflags, MODE);
+		if(fd >= 0)
+		{
+			if(offset) ps3ntfs_seek64(fd, offset, SEEK_SET);
+			if((size <= SAVE_ALL) && data) size = strlen(data);
+			if( size ) ps3ntfs_write(fd, data, size);
+			if( crlf ) ps3ntfs_write(fd, (void *)"\r\n", 2);
+			ps3ntfs_close(fd);
+			return CELL_FS_SUCCEEDED;
+		}
+		return FAILED;
+	}
+#endif
+
 	cellFsChmod(file, MODE); // set permissions for overwrite
 
-	int fd = 0;
 	if(cellFsOpen(file, flags, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
 		if(offset) cellFsLseek(fd, offset, CELL_FS_SEEK_SET, &offset);

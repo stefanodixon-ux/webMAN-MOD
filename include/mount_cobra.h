@@ -308,21 +308,15 @@
 
 					ScsiTrackDescriptor *scsi_tracks = (ScsiTrackDescriptor *)netiso_args.tracks;
 
-					if(num_tracks <= 1)
-					{
-						scsi_tracks[0].adr_control = 0x14;
-						scsi_tracks[0].track_number = 1;
-						scsi_tracks[0].track_start_addr = 0;
-					}
+					scsi_tracks[0].adr_control = 0x14;
+					scsi_tracks[0].track_number = 1;
+					scsi_tracks[0].track_start_addr = 0;
 
-					else
+					for(unsigned int t = 1; t < num_tracks; t++)
 					{
-						for(unsigned int t = 0; t < num_tracks; t++)
-						{
-							scsi_tracks[t].adr_control = (tracks[t].is_audio) ? 0x10 : 0x14;
-							scsi_tracks[t].track_number = t + 1;
-							scsi_tracks[t].track_start_addr = tracks[t].lba;
-						}
+						scsi_tracks[t].adr_control = 0x10;
+						scsi_tracks[t].track_number = t + 1;
+						scsi_tracks[t].track_start_addr = tracks[t].lba;
 					}
 				}
 				else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && (strstr(netpath + 5, "/") != NULL))
@@ -651,11 +645,10 @@
 
 		else
 		{
-			int special_mode = 0;
-
 		#ifdef EXTRA_FEAT
 			CellPadData pad_data = pad_read();
 
+			int special_mode = 0;
 			if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_SELECT)) special_mode = true; //mount also app_home / eject disc
 
 			if(special_mode) eject_insert(1, 0);
@@ -683,9 +676,9 @@
 
 			// -- mount game folder
 			if((*title_id > ' ') && (title_id[8] >= '0'))
-				cobra_map_game(_path, title_id, &special_mode);
+				cobra_map_game(_path, title_id);
 			else
-				cobra_map_game(_path, "TEST00000", &special_mode);
+				cobra_map_game(_path, "TEST00000");
 		}
 
 		//goto exit_mount;

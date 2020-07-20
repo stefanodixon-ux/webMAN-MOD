@@ -378,7 +378,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 						"MAC Addr : %02X:%02X:%02X:%02X:%02X:%02X - %s %s"
 						"</span></h2></a></b>",
 						fw_version, cfw_info,
-						(syscalls_removed) ? STR_CFWSYSALRD : (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "",
+						(syscalls_removed) ? STR_CFWSYSALRD : "",
 #ifdef SPOOF_CONSOLEID
 						PSID[0], PSID[1],
 						eid0_idps[0], eid0_idps[1],
@@ -401,8 +401,12 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 #endif
 	/////////////////////////////
 
-	strcat(buffer,  HTML_BLU_SEPARATOR
-					WM_APP_VERSION " - Simple Web Server" EDITION "<p>");
+	buffer += concat(buffer, HTML_BLU_SEPARATOR
+							 WM_APP_VERSION " - Simple Web Server" EDITION " ");
+
+	if(webman_config->combo & SYS_ADMIN) strcat(buffer, sys_admin ? "[ADMIN]":"[USER]");
+
+	strcat(buffer, "<p>");
 
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 }

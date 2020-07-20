@@ -545,7 +545,8 @@ int cobra_umount_disc_image(void);
  *
  * When the game is unmapped, this function remaps /app_home to /dev_usb000 instead of deleting the entry
  */
-int cobra_map_game(const char *path, const char *title_id, int *special_mode);
+//int cobra_map_game(const char *path, const char *title_id, int *special_mode);
+int cobra_map_game(const char *path, const char *title_id);
 
 
 /*

@@ -263,6 +263,14 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	else if(skip_cmd)
 		sprintf(fsize, "%'llu %s", sz, sf);
 
+#ifndef LITE_EDITION
+	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !is_net )
+	{
+		sprintf(fsize, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
+		if(wm_icons_exists) sprintf(ftype, " pkg");
+	}
+#endif
+
 #ifdef COBRA_ONLY
  #ifdef USE_NTFS
 	else if(is_ntfs_path(templn))
@@ -278,14 +286,6 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 
 		set_file_type(param, templn + plen, ftype);
-	}
-#endif
-
-#ifndef LITE_EDITION
-	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !is_net && !islike(templn, DEV_NTFS) )
-	{
-		sprintf(fsize, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
-		if(wm_icons_exists) sprintf(ftype, " pkg");
 	}
 #endif
 
@@ -617,9 +617,9 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 					urlenc(swap, templn);
 					flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
-														  "f\" href=\"%s\">..</a></td>"
-														  "<td> " HTML_URL HTML_ENTRY_DATE
-														, swap, swap, HTML_DIR);
+														  "d\" href=\"%s\">..</a></td>"
+														  "<td> " HTML_URL "%s"
+														, swap, swap, HTML_DIR, HTML_ENTRY_DATE);
 
 					if(flen >= _MAX_LINE_LEN) return false; //path is too long
 
@@ -717,10 +717,10 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 #ifdef USE_NTFS
 			if(is_ntfs && !param[11])
 			{
-				flen = sprintf(line_entry[idx].path,  "!     "
-													  "f\" href=\"%s\">..</a></td>"
-													  "<td> " HTML_URL HTML_ENTRY_DATE
-													, "/", "/", HTML_DIR);
+				flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
+													  "d\" href=\"%s\">..</a></td>"
+													  "<td> " HTML_URL "%s"
+													, "/", "/", HTML_DIR, HTML_ENTRY_DATE);
 				idx++, dirs++;
 				tlen += flen;
 			}
@@ -818,8 +818,8 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				{
 					sprintf(line_entry[idx].path, "dnet%i     " // <-- size should be = FILE_MGR_KEY_LEN
 												  "d\" href=\"/net%i\">net%i (%s:%i)</a></td>"
-												  "<td> <a href=\"/mount.ps3/net%i\">%s</a>" HTML_ENTRY_DATE
-												  , n, n, n, webman_config->neth[n], webman_config->netp[n], n, HTML_DIR); idx++;
+												  "<td> <a href=\"/mount.ps3/net%i\">%s</a>%s"
+												  , n, n, n, webman_config->neth[n], webman_config->netp[n], n, HTML_DIR, HTML_ENTRY_DATE); idx++;
 				}
 			}
 		}

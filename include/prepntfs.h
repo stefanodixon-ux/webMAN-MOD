@@ -129,37 +129,27 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 
 		memcpy(plugin_args + sizeof(rawseciso_args) + array_len, sections_sizeP, array_len);
 
-		if(emu_mode == EMU_PSX)
+		int max = MAX_SECTIONS - ((num_tracks * sizeof(ScsiTrackDescriptor)) / 8);
+
+		if(parts >= max)
 		{
-			int max = MAX_SECTIONS - ((num_tracks * sizeof(ScsiTrackDescriptor)) / 8);
-
-			if(parts >= max)
-			{
-				return;
-			}
-
-			p_args->num_tracks = num_tracks | cd_sector_size_param;
-
-			scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * array_len));
-
-			if(num_tracks <= 1)
-			{
-				scsi_tracks[0].adr_control = 0x14;
-				scsi_tracks[0].track_number = 1;
-				scsi_tracks[0].track_start_addr = 0;
-			}
-			else
-			{
-				for(unsigned int t = 0; t < num_tracks; t++)
-				{
-					scsi_tracks[t].adr_control = (tracks[t].is_audio) ? 0x10 : 0x14;
-					scsi_tracks[t].track_number = t + 1;
-					scsi_tracks[t].track_start_addr = tracks[t].lba;
-				}
-			}
+			return;
 		}
-		else
-			p_args->num_tracks = num_tracks = 0;
+
+		p_args->num_tracks = num_tracks | cd_sector_size_param;
+
+		scsi_tracks = (ScsiTrackDescriptor *)(plugin_args + sizeof(rawseciso_args) + (2 * array_len));
+
+		scsi_tracks[0].adr_control = 0x14;
+		scsi_tracks[0].track_number = 1;
+		scsi_tracks[0].track_start_addr = 0;
+
+		for(unsigned int t = 1; t < num_tracks; t++)
+		{
+			scsi_tracks[t].adr_control = 0x10;
+			scsi_tracks[t].track_number = t + 1;
+			scsi_tracks[t].track_start_addr = tracks[t].lba;
+		}
 
 		int slen = strlen(filename) - extlen;
 		filename[slen] = NULL;
@@ -211,7 +201,6 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		}
 */
 	}
-
 }
 
 static void scan_path_ntfs(const char *path, bool chk_dirs)
