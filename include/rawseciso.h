@@ -745,7 +745,7 @@ static void get_psx_track_data(void)
 		while(k < (int) track_data[3])
 		{
 			tracks[num_tracks].adr_control = (buff[k + 1] != 0x14) ? 0x10 : 0x14;
-			tracks[num_tracks].track_number = num_tracks+1;
+			tracks[num_tracks].track_number = num_tracks + 1;
 			tracks[num_tracks].track_start_addr = ((u32) buff[k + 4] << 24) | ((u32) buff[k + 5] << 16) |
 												  ((u32) buff[k + 6] << 8)  | ((u32) buff[k + 7]);
 			num_tracks++; if(num_tracks >= MAX_TRACKS) break;

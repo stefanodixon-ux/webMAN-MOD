@@ -51,7 +51,7 @@ u8 bmp_header[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x0B, 0x00, 0x00, 0x12, 0x0B, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
+}; // size: 0x36
 
 
 #ifndef __PAF_H__
@@ -84,10 +84,11 @@ static void saveBMP(char *path, bool notify_bmp)
 {
 	if(extcasecmp(path, ".bmp", 4))
 	{
-		// build file path
+		// current date/time
 		CellRtcDateTime t;
 		cellRtcGetCurrentClockLocalTime(&t);
 
+		// build file path
 		sprintf(path, "/dev_hdd0/screenshot_%02d_%02d_%02d_%02d_%02d_%02d.bmp", t.year, t.month, t.day, t.hour, t.minute, t.second);
 	}
 
@@ -95,7 +96,7 @@ static void saveBMP(char *path, bool notify_bmp)
 
 	// create bmp file
 	int fd;
-	if(IS_INGAME || cellFsOpen(path, CELL_FS_O_WRONLY|CELL_FS_O_CREAT|CELL_FS_O_TRUNC, &fd, NULL, 0) != CELL_FS_SUCCEEDED) { BEEP2 ; return;}
+	if(IS_INGAME || cellFsOpen(path, CELL_FS_O_WRONLY|CELL_FS_O_CREAT|CELL_FS_O_TRUNC, &fd, NULL, 0) != CELL_FS_SUCCEEDED) { BEEP3 ; return;}
 
 	// alloc buffers
 	sys_memory_container_t mc_app = SYS_MEMORY_CONTAINER_NONE;
@@ -125,15 +126,15 @@ static void saveBMP(char *path, bool notify_bmp)
 
 
 	// set bmp header
-	u32 tmp = 0;
-	tmp = _ES32(w*h*3+0x36);
-	memcpy(bmp_header + 2 , &tmp, 4);     // file size
+	u32 tmp;
+	tmp = _ES32(w * h * 3 + 0x36);
+	memcpy(bmp_header + 0x02 , &tmp, 4);     // file size
 	tmp = _ES32(w);
-	memcpy(bmp_header + 18, &tmp, 4);     // bmp width
+	memcpy(bmp_header + 0x12, &tmp, 4);     // bmp width
 	tmp = _ES32(h);
-	memcpy(bmp_header + 22, &tmp, 4);     // bmp height
-	tmp = _ES32(w*h*3);
-	memcpy(bmp_header + 34, &tmp, 4);     // bmp data size
+	memcpy(bmp_header + 0x16, &tmp, 4);     // bmp height
+	tmp = _ES32(w * h * 3);
+	memcpy(bmp_header + 0x22, &tmp, 4);     // bmp data size
 
 	// write bmp header
 	cellFsWrite(fd, (void *)bmp_header, sizeof(bmp_header), NULL);
@@ -144,7 +145,7 @@ static void saveBMP(char *path, bool notify_bmp)
 	for(i = h; i > 0; i--)
 	{
 		for(k = 0; k < ww; k++)
-			line_frame[k] = *(u64*)(OFFSET(k*2, i));
+			line_frame[k] = *(u64*)(OFFSET(k * 2, i));
 
 		// convert line from ARGB to RGB
 		u8 *tmp_buf = (u8*)line_frame;
@@ -163,7 +164,7 @@ static void saveBMP(char *path, bool notify_bmp)
 	}
 
 	// padding
-	s32 rest = (w*3) % 4, pad = 0;
+	s32 rest = (w * 3) % 4, pad = 0;
 	if(rest)
 		pad = 4 - rest;
 	cellFsLseek(fd, pad, CELL_FS_SEEK_SET, 0);

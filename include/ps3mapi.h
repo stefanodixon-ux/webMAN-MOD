@@ -811,7 +811,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 				case 1: sprintf(tmp_filename + 10, "mamba_plugins.txt"); break;
 				case 2: sprintf(tmp_filename + 10, "prx_plugins.txt");   break;
 				case 3: sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/plugins.txt"); break;
-				case 4: sprintf(tmp_filename + 10, "boot_plugins_nocobra.txt"); if(IS_DEX) sprintf(tmp_filename + 30, "_dex.txt"); break;
+				case 4: sprintf(tmp_filename + 22, "_nocobra.txt"); if(IS_DEX) sprintf(tmp_filename + 30, "_dex.txt"); break;
 			}
 
 			int fdw = 0;

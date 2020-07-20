@@ -81,6 +81,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support for *.ntfs[BDFILE]* (fake ISO created by IRISMAN or prepISO/prepNTFS) - Used to play movies or install large packages on NTFS
 - Support to mount NTFS games using raw_iso.sprx (rawseciso by Estwald) - Supports fake ISO
 - Support last_game.txt / autoboot on nonCobra edition
+- Auto install PKG mounted from exFAT/ext/NTFS (reduce steps needed to install a PKG)
 
 #### Emulation features
 - ROMS support through PKG/ROM Launcher and RetroArch (support internal HDD/USB/NET storage with custom icons & background images)
@@ -93,7 +94,8 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - It can rip a game from disc to hdd0 or copy from hdd0 to usb000 or from usb00x to hdd0.
 - Shorter URL to access paths & files. Use "home" path for search in a user defined folder.
 - Support for MD5 hash verification of files stored on PS3 (internal HDD & USB FAT32 only)
-- Support edition of small text files (<2KB) via web
+- Support edition of small text files (up to 1,300 bytes) via web
+- Hex File Viewer (internal HDD/FAT32/NTFS)
 
 #### Network features
 - PS3 Manager API Support (PS3MAPI) compatible with RTM tools
@@ -103,7 +105,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support navigation of remote network servers even if they are disabled for content scanning
 - NETISO server on PS3 (ISO only) lets share local games among PS3 consoles in a LAN
 - Download files & install PKG remotely or with pad shortcuts
-- /dev_blind and /dev_hdd1 are auto-mounted when accessed via FTP or URL
+- /dev_blind and /dev_hdd1 are auto-mounted when accessed via FTP or http
 - Support for local web chat (source code only)
 
 #### Automatization
@@ -122,6 +124,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support for automatic or manual removal of CFW syscalls and spoof console id (IDPS/PSID)
 - "Offline" mode (blocks some PSN/tracking servers) and automatic restore when CFW syscalls are removed. Game updates still work in this mode. (v1.33.03)
 - Scan for games on the stealth folder "/video"
+- Auto unlock savedata during download & copy operations (removes account id, PSID & copy protection
 
 #### Safety & security features
 - Improved temperature monitoring (max & min fan speed, auto#2 mode, improved algorithm for dynamic fan control)

@@ -195,7 +195,6 @@ static void unload_plugin_modules(void)
 
 static void downloadPKG_thread(void)
 {
-
 	if(download_interface == 0) // test if download_interface is loaded for interface access
 	{
 		download_interface = (download_plugin_interface *)plugin_GetInterface(View_Find("download_plugin"), 1);

@@ -37,19 +37,26 @@ enum xmb_groups
 bool scanning_roms = false;
 
 #ifdef COBRA_ONLY
+static void sys_map_path2(const char *oldpath, const char *newpath)
+{
+	{system_call_2(35, (uint64_t)(uint32_t)oldpath, (uint64_t)(uint32_t)newpath);} // use sys35 to avoid sys map removal
+
+	sys_map_path(oldpath, newpath); // do it again using syscall 8 (in case sc35 is removed)
+}
+
 static void apply_remaps(void)
 {
  #ifdef WM_PROXY_SPRX
-	{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);}
+	{sys_map_path2(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);}
  #endif
 
 	if(payload_ps3hen)
 	{
-		{sys_map_path((char *)FB_XML,			(char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");}
+		{sys_map_path2((char *)FB_XML,			(char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");}
 	//	{sys_map_path((char *)HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");}
 	}
 
-	{sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
+	{sys_map_path2((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);} // redirect firmware update on BD disc to empty folder
 }
 #endif
 

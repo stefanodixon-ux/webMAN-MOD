@@ -218,7 +218,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			if(islike(target, "/dev_blind") || islike(target, "/dev_hdd1")) mount_device(target, NULL, NULL); // auto-mount destination device
 		}
 #endif
-		char enc_dir_name[STD_PATH_LEN*3], *source = param + plen;
+		char enc_dir_name[STD_PATH_LEN * 3], *source = param + plen;
 		max_mapped = 0;
 
 		// ----------------------------
@@ -338,7 +338,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			char *filename = strrchr(_path, '/'), *icon = tempstr;
 			{
 				char title_id[TITLEID_LEN], *d_name; *icon = *title_id = NULL;
-				u8 f0 = strstr(filename, ".ntfs[") ? NTFS : 0, f1 = strstr(_path, "PS2") ? 5 : strstr(_path, "PSX") ? 6 : strstr(_path, "PSP") ? 8 : 2, is_dir = isDir(source);
+				u8  f0 = strstr(filename, ".ntfs[") ? NTFS : 0, is_dir = isDir(source),
+					f1 = strstr(_path, "PS2") ? id_PS2ISO :
+						 strstr(_path, "PSX") ? id_PSXISO :
+						 strstr(_path, "PSP") ? id_PSPISO : id_PS3ISO;
 
 				check_cover_folders(templn);
 
@@ -352,7 +355,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					if(is_dir)
 					{
 						sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name); check_ps3_game(templn);
-						get_title_and_id_from_sfo(templn, title_id, d_name, icon, buf, 0); f1 = 0;
+						get_title_and_id_from_sfo(templn, title_id, d_name, icon, buf, 0); f1 = id_GAMES;
 					}
 #ifdef COBRA_ONLY
 					else
@@ -600,10 +603,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					}
 					else if(strstr(source, "/boot_plugins"))
 					{
+						sprintf(target, "/dev_hdd0/boot_plugins.txt");
 						if(cobra_version == 0)
-							sprintf(target, "/dev_hdd0/boot_plugins_nocobra.txt");
-						else
-							sprintf(target, "/dev_hdd0/boot_plugins.txt");
+							sprintf(target + 22, "_nocobra.txt");
 					}
 					else if(is_copying_from_hdd)
 						sprintf(target, "%s%s", drives[usb], source + 9);
@@ -757,8 +759,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
 						else if(IS_INGAME)
 							mlen += sprintf(tempstr + mlen, " To quit the game click.");
+#ifdef COBRA_ONLY
 						else if(!cobra_version)
 							mlen += sprintf(tempstr + mlen, " Cobra payload not available.");
+#endif
 					}
 #ifndef LITE_EDITION
  #ifdef COBRA_ONLY
@@ -1280,11 +1284,15 @@ static void mount_autoboot(void)
 
 	if(do_mount)
 	{   // add some delay
-		if(webman_config->delay)      {sys_ppu_thread_sleep(3); wait_for(path, 2 * (webman_config->boots + webman_config->bootd));}
+		if(webman_config->delay) {sys_ppu_thread_sleep(3); wait_for(path, 2 * (webman_config->boots + webman_config->bootd));}
 #ifndef COBRA_ONLY
 		if(islike(path, "/net") || (strstr(path, ".ntfs[") != NULL)) return;
 #endif
-
+#ifndef LITE_EDITION
+ #ifdef COBRA_ONLY
+		if(islike(path, "/net") && !is_netsrv_enabled(path[4])) return;
+ #endif
+#endif
 		if(is_last_game)
 		{
 			// prevent auto-launch game on boot (last game only). AUTOBOOT.ISO is allowed to auto-launch on boot
@@ -1530,7 +1538,7 @@ exit_mount:
 	else if(mount_unk == EMU_PS3)
 	{
 		CellPadData pad_data = pad_read();
-		bool otag = (strcasestr(_path, ONLINE_TAG)!=NULL);
+		bool otag = (strcasestr(_path, ONLINE_TAG) != NULL);
 		bool r2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2));
 		if((!r2 && otag) || (r2 && !otag)) disable_cfw_syscalls(webman_config->keep_ccapi);
 	}
@@ -1600,13 +1608,13 @@ finish:
 }
 
 static bool mount_game(const char *path, u8 action)
-{
+{ /*
 #ifndef LITE_EDITION
  #ifdef COBRA_ONLY
 	if(islike(path, "/net") && !is_netsrv_enabled(path[4])) return false;
  #endif
 #endif
-
+*/
 	if(is_mounting) return false; is_mounting = true;
 
 	_path0 = (char*)path;

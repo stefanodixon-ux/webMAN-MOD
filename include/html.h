@@ -308,7 +308,7 @@ static size_t utf8dec(char *dst, char *src, u8 cpy2src)
 {
 	size_t j = 0;
 	unsigned char c;
-	for(size_t i = 0; src[i] != '\0'; i++, j++)
+	for(size_t i = 0; src[i]; i++, j++)
 	{
 		c = (unsigned char)src[i];
 		if( (c & 0x80) == 0 )
