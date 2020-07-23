@@ -23,9 +23,7 @@ static s32 rsx_fifo_pause(u8 pause)
 #define BASE          0xC0000000UL     // local memory base ea
 
 // get pixel offset into framebuffer by x/y coordinates
-#define OFFSET(x, y) (u32)((((u32)offset) + ((((s16)x) + \
-                     (((s16)y) * (((u32)pitch) / \
-                     ((s32)4)))) * ((s32)4))) + (BASE))
+#define OFFSET(x, y) (u32)(offset + (4 * ((x) + ((y) * pitch))))
 
 #define _ES32(v)((u32)(((((u32)v) & 0xFF000000) >> 24) | \
 		               ((((u32)v) & 0x00FF0000) >> 8 ) | \
@@ -46,7 +44,7 @@ static u32 h = 0, w = 0;
 //static DrawCtx ctx;                                 // drawing context
 
 // screenshot
-u8 bmp_header[] = {
+static u8 bmp_header[] = {
   0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x0B, 0x00, 0x00, 0x12, 0x0B, 0x00, 0x00, 0x00, 0x00,
@@ -74,13 +72,13 @@ extern s32 paf_FFE0FBC9(u32 *pitch, u32 *unk1);  // unk1 = 0x12 color bit depth?
 static void init_graphic(void)
 {
 	// get current display values
-	offset = *(u32*)0x60201104;      // start offset of current framebuffer
-	getDisplayPitch(&pitch, &unk1);       // framebuffer pitch size
-	h = getDisplayHeight();               // display height
-	w = getDisplayWidth();                // display width
+	offset = BASE + *(u32*)0x60201104;          // start offset of current framebuffer
+	getDisplayPitch(&pitch, &unk1); pitch /= 4; // framebuffer pitch size
+	h = getDisplayHeight();                     // display height
+	w = getDisplayWidth();                      // display width
 }
 
-static void saveBMP(char *path, bool notify_bmp)
+static void saveBMP(char *path, bool notify_bmp, bool small)
 {
 	if(extcasecmp(path, ".bmp", 4))
 	{
@@ -98,32 +96,27 @@ static void saveBMP(char *path, bool notify_bmp)
 	int fd;
 	if(IS_INGAME || cellFsOpen(path, CELL_FS_O_WRONLY|CELL_FS_O_CREAT|CELL_FS_O_TRUNC, &fd, NULL, 0) != CELL_FS_SUCCEEDED) { BEEP3 ; return;}
 
-	// alloc buffers
-	sys_memory_container_t mc_app = SYS_MEMORY_CONTAINER_NONE;
-	mc_app = vsh_memory_container_by_id(1);
-
-	const s32 mem_size = _64KB_; // 64 KB (bmp data and frame buffer)
-
 	// max frame line size = 1920 pixel * 4(byte per pixel) = 7680 byte = 8 KB
 	// max bmp buffer size = 1920 pixel * 3(byte per pixel) = 5760 byte = 6 KB
 
 	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate_from_container(mem_size, mc_app, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) return;
-
-	{ BEEP2 }
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) return;
 
 	rsx_fifo_pause(1);
 
 	// initialize graphic
 	init_graphic();
 
+	u16 n, i, k, idx, ww = w;
+	u16 rr = small ? 2 : 1, r2 = 2 * rr; w /= rr, h /= rr; // resize bmp image if small flag is true
+
 	// calc buffer sizes
-	u32 line_frame_size = (w * 4);
+	u32 line_frame_size = (w * 4); // ABGR
 
 	// alloc buffers
 	u64 *line_frame = (u64*)sysmem;
 	u8 *bmp_buf = (u8*)sysmem + line_frame_size; // start offset: 8 KB
-
+	u8 *tmp_buf = (u8*)line_frame;
 
 	// set bmp header
 	u32 tmp;
@@ -139,20 +132,14 @@ static void saveBMP(char *path, bool notify_bmp)
 	// write bmp header
 	cellFsWrite(fd, (void *)bmp_header, sizeof(bmp_header), NULL);
 
-	u32 i, k, idx, ww = w/2;
-
 	// dump...
-	for(i = h; i > 0; i--)
+	for(i = h * rr; i > 0; i-=rr)
 	{
-		for(k = 0; k < ww; k++)
-			line_frame[k] = *(u64*)(OFFSET(k * 2, i));
+		for(n = k = 0; k < ww; k+=r2, n++)
+			line_frame[n] = *(u64*)(OFFSET(k, i));
 
-		// convert line from ARGB to RGB
-		u8 *tmp_buf = (u8*)line_frame;
-
-		idx = 0;
-
-		for(k = 0; k < line_frame_size; k+=4, idx+=3)
+		// convert line from ABGR to RGB
+		for(idx = k = 0; k < line_frame_size; k+=4, idx+=3)
 		{
 			bmp_buf[idx]   = tmp_buf[k + 3];  // R
 			bmp_buf[idx+1] = tmp_buf[k + 2];  // G
@@ -163,6 +150,9 @@ static void saveBMP(char *path, bool notify_bmp)
 		cellFsWrite(fd, (void *)bmp_buf, idx, NULL);
 	}
 
+	// continue rsx rendering
+	rsx_fifo_pause(0);
+
 	// padding
 	s32 rest = (w * 3) % 4, pad = 0;
 	if(rest)
@@ -172,34 +162,38 @@ static void saveBMP(char *path, bool notify_bmp)
 	cellFsClose(fd);
 	sys_memory_free(sysmem);
 
-	// continue rsx rendering
-	rsx_fifo_pause(0);
-
 	if(notify_bmp) show_msg(path);
 }
 
 /*
 #include "../vsh/system_plugin.h"
 
-static void saveBMP()
+static void saveBMP2(char *path, bool notify_bmp)
 {
 	if(IS_ON_XMB) //XMB
 	{
-		system_interface = (system_plugin_interface *)plugin_GetInterface(View_Find("system_plugin"),1); // 1=regular xmb, 3=ingame xmb (doesnt work)
-
-		CellRtcDateTime t;
-		cellRtcGetCurrentClockLocalTime(&t);
-
 		char bmp[0x50];
-		sprintf(bmp, "/dev_hdd0/screenshot_%02d_%02d_%02d_%02d_%02d_%02d.bmp", t.year, t.month, t.day, t.hour, t.minute, t.second);
+		if(extcasecmp(path, ".bmp", 4))
+		{
+			path = bmp;
+
+			CellRtcDateTime t;
+			cellRtcGetCurrentClockLocalTime(&t);
+
+			sprintf(path, "/dev_hdd0/screenshot_%02d_%02d_%02d_%02d_%02d_%02d.bmp", t.year, t.month, t.day, t.hour, t.minute, t.second);
+		}
+
+		filepath_check(path);
+
+		system_interface = (system_plugin_interface *)plugin_GetInterface(View_Find("system_plugin"),1); // 1=regular xmb, 3=ingame xmb (doesnt work)
 
 		rsx_fifo_pause(1);
 
-		system_interface->saveBMP(bmp);
+		system_interface->saveBMP(path);
 
 		rsx_fifo_pause(0);
 
-		show_msg(bmp);
+		if(notify_bmp) show_msg(path);
 	}
 }
 */

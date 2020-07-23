@@ -1118,7 +1118,28 @@ parse_request:
 					else
    #endif
    #ifdef XMB_SCREENSHOT
-					if(islike(param2, "$screenshot_xmb")) {sprintf(header, "%s", param + 27); saveBMP(header, false); *url = 0; add_breadcrumb_trail(url, header);} else
+					if(islike(param2, "$screenshot_xmb"))
+					{
+						char *filename = param2 + 15;
+						char *show = strstr(filename, "?show");
+						char *fast = strstr(filename, "?fast");
+						if(fast) *fast = NULL;
+						if(show) *show = NULL;
+
+						if(show && (*filename != '/'))
+							sprintf(header	, "%s/screenshot.bmp", WMTMP);
+						else
+							sprintf(header, "%s", filename);
+
+						saveBMP(header, false, (bool)fast);
+						if(show)
+						{
+							sprintf(param, "%s", header); is_binary = true;
+							goto retry_response;
+						}
+						*url = 0; add_breadcrumb_trail(url, header);
+					}
+					else
    #endif
 					{
 						if(*param2 == NULL) sprintf(param2, "/");
@@ -1947,7 +1968,18 @@ parse_request:
 				goto exit_handleclient_www;
 			}
  #endif
+ #ifdef UNLOCK_SAVEDATA
+			if(islike(param, "/unlocksave.ps3"))
+			{
+				// /unlocksave.ps3<path>  fix PARAM.SFO in savedata folder
 
+				char *savedata_path = param + 15;
+				scan(savedata_path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);
+
+				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				goto exit_handleclient_www;
+			}
+ #endif
  #ifdef FIX_GAME
 			if(islike(param, "/fixgame.ps3"))
 			{
@@ -1957,8 +1989,8 @@ parse_request:
 				char *game_path = param + 12, titleID[10];
 				fix_game(game_path, titleID, FIX_GAME_FORCED);
 
-				is_popup = 1;
-				goto html_response;
+				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				goto exit_handleclient_www;
 			}
  #endif
 
@@ -2362,22 +2394,6 @@ retry_response:
 					else
   #endif
 
-  #ifdef FIX_GAME
-					if(islike(param, "/fixgame.ps3"))
-					{
-						// /fixgame.ps3<path>  fix PARAM.SFO and EBOOT.BIN / SELF / SPRX in ISO or folder
-
-						char *game_path = param + 12;
-						sprintf(templn, "Fixed: %s", game_path);
-						show_msg(templn);
-
-						urlenc(templn, game_path);
-						sprintf(tempstr, "Fixed: " HTML_URL, templn, game_path); _concat(&sbuffer, tempstr);
-
-						sprintf(tempstr, HTML_REDIRECT_TO_URL, templn, HTML_REDIRECT_WAIT); _concat(&sbuffer, tempstr);
-					}
-					else
-  #endif
 					{
 						char *msg = (param + 11); // /popup.ps3?<msg>
 						if(param[10] == '*')
@@ -2753,7 +2769,7 @@ retry_response:
 						{
 							if(islike(param2, "/dev_hdd1")) mount_device(param2, NULL, NULL); // auto-mount device
 
-							char *wildcard = strstr(param2, "*"); if(wildcard) *wildcard++ = NULL;
+							char *wildcard = strstr(param2, "*"); if(wildcard) {*wildcard++ = NULL;}
 							//ret = del(param2, islike(param, "/delete.ps3"));
 							ret = scan(param2, islike(param, "/delete.ps3"), wildcard, SCAN_DELETE, NULL);
 

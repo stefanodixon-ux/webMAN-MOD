@@ -16,7 +16,7 @@ static u32 copied_count = 0;
 #define SAVE_ALL			0
 #define APPEND_TEXT			(-0xADD0ADD0ADD000ALL)
 #define DONT_CLEAR_DATA		-1
-#define RECURSIVE_DELETE	2
+#define RECURSIVE_DELETE	2 // don't check for ADMIN/USER
 
 #define DEV_NTFS		"/dev_nt"
 
@@ -29,7 +29,8 @@ enum scan_operations
 	SCAN_COPY   = 2,
 	SCAN_MOVE   = 3,
 	SCAN_RENAME = 4,
-	SCAN_COPYBK = 5		// rename source to source + .bak after copy
+	SCAN_COPYBK = 5,	// rename source to source + .bak after copy
+	SCAN_UNLOCK_SAVE = 6
 };
 
 #ifdef USE_NTFS
@@ -818,13 +819,15 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	size_t wildcard_len = (wildcard) ? strlen(wildcard) : 0;
 	char *wildcard1 = NULL, *wildcard2 = NULL, wcard[wildcard_len + 1];
 	char *(*instr)(const char *, const char *) = &strstr; bool wfound1 = true, wfound2 = true;
-	if(wildcard)
+	if(wildcard_len)
 	{
 		sprintf(wcard, "%s", wildcard);
+
 		wildcard1 = wcard;
 		if(*wildcard1 == '~') {wildcard1++, wfound1 = false;}							// *~TEXT = exclude files
 		if(*wildcard1 == '^') {wildcard1++, instr = &strcasestr;}						// *^TEXT = case insensitive search
 		if( wfound1 && (*wildcard1 == '~')) {wildcard1++, wfound1 = false;}				// <-- accept prefixes: ~^ or ^~
+
 		wildcard2 = strstr((char*)wildcard1, "*"); if(wildcard2) *wildcard2++ = NULL;	// *TEXT1*TEXT2 = text1 and text2
 		if(wildcard2 && (*wildcard2 == '~')) {wildcard2++, wfound2 = false;}
 	}
@@ -857,7 +860,9 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 		u16 path_len = sprintf(entry, "%s", path);
 		bool p_slash = (path_len > 1) && (path[path_len - 1] == '/');
 
-		if(fop > 1) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
+		bool use_dest = ((fop >= 2) && (fop <= 5)); // fop: 2 = copy, 3 = move, 4 = rename/move in same fs, 5 = copy bk
+
+		if(use_dest) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;}
 
 		u16 dest_len = sprintf(dest_entry, "%s", dest);
 
@@ -880,7 +885,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 			if(p_slash) sprintf(entry + path_len, "%s", entry_name); else sprintf(entry + path_len, "/%s", entry_name);
 
-			if(fop > 1) {sprintf(dest_entry + dest_len, "/%s", entry_name);} // fop: 2 = copy, 3 = move, 4 = rename/move in same fs
+			if(use_dest) {sprintf(dest_entry + dest_len, "/%s", entry_name);}
 
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
@@ -894,6 +899,17 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 				save_file(dest, entry, APPEND_TEXT);
 			}
+#ifdef UNLOCK_SAVEDATA
+			else if(fop == SCAN_UNLOCK_SAVE)
+			{
+				char sfo[_4KB_];
+				u16 sfo_size = read_file(entry, sfo, _4KB_, 0);
+				if(unlock_param_sfo(entry, (unsigned char *)sfo, sfo_size))
+				{
+					save_file(entry, (void*)sfo, sfo_size);
+				}
+			}
+#endif
 			else if(fop == SCAN_COPY || fop == SCAN_COPYBK)
 			{
 				file_copy(entry, dest_entry, COPY_WHOLE_FILE); // copy ntfs & cellFS

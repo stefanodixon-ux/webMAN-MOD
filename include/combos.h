@@ -345,7 +345,7 @@
 							if(do_custom_combo("l2_r2_select_start")) break;
 							else
   #endif
-								{memset(msg, 0, 256); saveBMP(msg, true); n = 0; break;} // L2 + R2 + SELECT + START
+								{BEEP2; memset(msg, 0, 256); saveBMP(msg, true, false); n = 0; break;} // L2 + R2 + SELECT + START
 							}
 							else
  #endif

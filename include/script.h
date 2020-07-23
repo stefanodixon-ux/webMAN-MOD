@@ -109,6 +109,9 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "popup "))    {line += 6; show_msg(line);} else
 					if(_islike(line, "log "))      {line += 4; save_file(log_file, line, APPEND_TEXT);} else
 					if(_islike(line, "logfile /")) {path += 8; sprintf(log_file, "%s", path);} else
+	#ifdef UNLOCK_SAVEDATA
+					if(_islike(line, "unlock /"))  {path += 7; scan(path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);} else
+	#endif
 	#ifdef COBRA_ONLY
 					if(_islike(line, "unmap /"))   {path += 6; sys_map_path(path, NULL);} else
 					if(_islike(line, "mute coldboot"))

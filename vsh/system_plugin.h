@@ -30,7 +30,7 @@ typedef struct
 	int (*DoUnk26)(void *, const wchar_t *); // uint8_t [0x1C], wchar * - circle_text
 	int (*DoUnk27)(void *, const wchar_t *); // uint8_t [0x1C], wchar * - triangle_text
 	int (*DoUnk28)(void *, const wchar_t *); // uint8_t [0x1C], wchar * - rectangle_text
-	int (*DoUnk29)(float, int, char *, int, int *, int *, char *, char *) // notification
+	int (*DoUnk29)(float, int, char *, int, int *, int *, char *, char *); // notification
 	int (*DoUnk30)(const char *); // char * (Example: "msg_press_ps_button")
 	int (*saveBMP)(const char *); // char * bmp_path ("%s/screen%03d.bmp") - "saveBMP", takes a XMB screendump (make sure you set a dynamic theme, else console freezes after dump)
 	int (*DoUnk32)(void); // Set up page_notification
