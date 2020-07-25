@@ -60,12 +60,15 @@ static void fix_game_folder(char *path)
 		CellFsDirectoryEntry dir; u32 read_e;
 		char *entry_name = dir.entry_name.d_name;
 
+		u16 plen = sprintf(fix_game_path[plevel], "%s/", path);
+		char *path_file = fix_game_path[plevel] + plen;
+
 		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{
 			if(fix_aborted) break;
 			if(entry_name[0] == '.') continue;
 
-			sprintf(fix_game_path[plevel], "%s/%s", path, entry_name);
+			sprintf(path_file, "%s", entry_name);
 
 			if(!extcasecmp(entry_name, ".sprx", 5) || !extcasecmp(entry_name, ".self", 5) || IS(entry_name, "EBOOT.BIN"))
 			{
@@ -99,8 +102,6 @@ static void fix_game_folder(char *path)
 				cellFsClose(fdw);
 			}
 			else if(isDir(fix_game_path[plevel]) && (webman_config->fixgame!=FIX_GAME_QUICK)) fix_game_folder(fix_game_path[plevel]);
-
-			sys_ppu_thread_usleep(1000);
 		}
 
 		cellFsClosedir(fd);

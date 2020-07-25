@@ -715,8 +715,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 						mode_t mode = NULL; char dirtype[2]; dirtype[1] = NULL;
 
-						size_t d_path_len = sprintf(filename, "%s/", d_path);
+						u16 d_path_len = sprintf(filename, "%s/", d_path);
 						bool is_root = (d_path_len < 6); if(is_root) d_path_len = sprintf(filename, "/");
+						char *path_file = filename + d_path_len;
 
 #ifdef USE_NTFS
 						DIR_ITER *pdir = NULL;
@@ -769,7 +770,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									{
 										if(is_root && IS(entry_name, "host_root")) continue;
 
-										sprintf(filename + d_path_len, "%s", entry_name);
+										sprintf(path_file, "%s", entry_name);
 
 										if(is_root)
 										{

@@ -216,7 +216,6 @@ static void check_ps3_game(char *path)
 		if(file_exists(path)) return;
 		p[6] = 'A', p[7] = 'M', p[8] = 'E';  // PS3_GAME
 	}
-
 }
 #endif
 
@@ -1223,7 +1222,7 @@ static void map_earth(u8 id, char *param)
 		else
 			id = ++(webman_config->earth_id);
 
-		sprintf(param, "/dev_hdd0/tmp/earth/%i.qrc", id);
+		sprintf(param, "%s/earth/%i.qrc", TMP_DIR, id);
 		if(file_exists(param))
 			{sys_map_path((char*)"/dev_flash/vsh/resource/qgl/earth.qrc",  param);}
 		else

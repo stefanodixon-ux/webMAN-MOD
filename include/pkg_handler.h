@@ -166,15 +166,19 @@ static void UnloadPluginById(int id)
 	}
 }
 
-static void unload_plugin_modules(void)
+static void unload_plugin_modules(bool all)
 {
 	// Unload conflicting plugins
-	UnloadPluginById(nas_plugin);
-	UnloadPluginById(wboard_plugin);
-	UnloadPluginById(np_trophy_plugin);
-	UnloadPluginById(webbrowser_plugin);
-	UnloadPluginById(webrender_plugin);
-	UnloadPluginById(sysconf_plugin);
+	if(View_Find("webbrowser_plugin")) UnloadPluginById(webbrowser_plugin);
+	if(View_Find("webrender_plugin")) UnloadPluginById(webrender_plugin);
+
+	if(all)
+	{
+		UnloadPluginById(nas_plugin);
+		UnloadPluginById(wboard_plugin);
+		UnloadPluginById(np_trophy_plugin);
+		UnloadPluginById(sysconf_plugin);
+	}
 
 #ifdef VIRTUAL_PAD
 	if(IS_ON_XMB)
@@ -281,7 +285,7 @@ static int download_file(const char *param, char *msg)
 
 		if(conv_num)
 		{
-			unload_plugin_modules();
+			unload_plugin_modules(true);
 
 			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
@@ -321,11 +325,11 @@ static int installPKG(const char *pkgpath, char *msg)
 {
 	int ret = FAILED;
 
-	unload_plugin_modules();
+	unload_plugin_modules(true);
 
 	if(IS_INGAME)
 	{
-		unload_plugin_modules();
+		unload_plugin_modules(true);
 
 		if(IS_INGAME)
 		{
@@ -357,7 +361,7 @@ static int installPKG(const char *pkgpath, char *msg)
 		{
 			if(!extcasecmp(pkg_path, ".pkg", 4) || !extcasecmp(pkg_path, ".p3t", 4)) //check if file has a .pkg extension or not and treat accordingly
 			{
-				unload_plugin_modules();
+				unload_plugin_modules(true);
 
 				LoadPluginById(game_ext_plugin, (void *)installPKG_thread);
 
@@ -384,12 +388,13 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 
 	int fd, ret = FAILED;
 
-	char pkgfile[MAX_PKGPATH_LEN];
-	u16 plen = sprintf(pkgfile, "%s/", INSTALL_PKG_PATH);
-
-	if(cellFsOpendir(pkgfile, &fd) == CELL_FS_SUCCEEDED)
+	if(cellFsOpendir(INSTALL_PKG_PATH, &fd) == CELL_FS_SUCCEEDED)
 	{
 		CellFsDirent dir; u64 read_e;
+
+		char pkgfile[MAX_PKGPATH_LEN];
+		u16 plen = sprintf(pkgfile, "%s/", INSTALL_PKG_PATH);
+		char *path_file = pkgfile + plen;
 
 		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 		{
@@ -397,7 +402,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 			{
 				if(!webman_config->nobeep) { BEEP1 }
 
-				sprintf(pkgfile + plen, "%s", dir.d_name);
+				sprintf(path_file, "%s", dir.d_name);
 
 				char msg[MAX_PATH_LEN];
 				ret = installPKG(pkgfile, msg); if(!(webman_config->minfo & 1)) show_msg(msg);

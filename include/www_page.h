@@ -21,7 +21,7 @@
 			_concat(&sbuffer, templn);
 		}
 
-		if((webman_config->homeb) && (strlen(webman_config->home_url)>0))
+		if((webman_config->homeb) && (webman_config->home_url[0] > 0))
 		{sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, STR_HOME, HTML_ONCLICK, webman_config->home_url); _concat(&sbuffer, templn);}
 
 		sprintf(templn, HTML_BUTTON_FMT

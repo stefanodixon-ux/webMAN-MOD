@@ -11,7 +11,9 @@ static int (*DoUnk13_)(int*, int*, char*, int, void *) = 0;
 static int ps3_interface_function13_hook(int* r3, int* r4, char* filename, int r6, void * key)
 {
 	char buffer[MAX_PATH_LEN];
-	sprintf(buffer, "Filename: %s\nSecure File ID: %08X%08X%08X%08X", filename, *(int*)key, *((int*)key + 1), *((int*)key + 2), *((int*)key + 3));
+	sprintf(buffer, "Filename: %s\n"
+					"Secure File ID: %08X%08X%08X%08X", filename,
+					*(int*)key, *((int*)key + 1), *((int*)key + 2), *((int*)key + 3));
 	save_file("/dev_hdd0/secureid.log", buffer, APPEND_TEXT);
 
 	return DoUnk13_(r3, r4, filename, r6, key);
@@ -30,7 +32,7 @@ static int ps3_savedata_plugin_init_hook(void * view)
 	{
 		DoUnk13_ = ps3_savedata_interface->DoUnk13;
 		ps3_savedata_interface->DoUnk13 = ps3_interface_function13_hook;
-		save_file("/dev_hdd0/secureid.log", "Secure File Id Hooked", APPEND_TEXT);
+		//save_file("/dev_hdd0/secureid.log", "Secure File Id Hooked", APPEND_TEXT);
 	}
 
 	return ps3_savedata_plugin_init_bk(view);
@@ -38,13 +40,13 @@ static int ps3_savedata_plugin_init_hook(void * view)
 
 static void restore_func(void * original,void * backup)
 {
-	memcpy(original,backup,8); // copy original function offset + toc
+	memcpy(original, backup, 8); // copy original function offset + toc
 }
 
 static void hook_func(void * original,void * backup, void * hook_function)
 {
-	memcpy(backup, original,8); // copy original function offset + toc
-	memcpy(original, hook_function ,8); // replace original function offset + toc by hook
+	memcpy(backup, original, 8); // copy original function offset + toc
+	memcpy(original, hook_function, 8); // replace original function offset + toc by hook
 }
 
 static void hook_savedata_plugin(void)

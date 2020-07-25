@@ -1,0 +1,19 @@
+<body bgcolor="#000">
+<center>
+<img id="xmb" src="/browser.ps3$screenshot_xmb?show?fast">
+</center>
+<iframe id="pad" src="http://pad.aldostools.org/pad2.html" height=600 width=100%></iframe>
+<script>
+
+var xmb = document.getElementById('xmb');
+xmb.src = '/browser.ps3$screenshot_xmb?show?fast?rand=' + Math.random();
+
+setInterval(function() {
+    var xmb = document.getElementById('xmb');
+    xmb.src = '/browser.ps3$screenshot_xmb?show?fast?rand=' + Math.random();
+}, 1500);
+
+var width  = document.body.scrollWidth;
+var height = document.body.scrollHeight;
+if(width > height) document.getElementById("pad").height=400; 
+</script>

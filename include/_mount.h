@@ -164,12 +164,15 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// ---------------------
 	// unmount current game
 	// ---------------------
-	if(islike(param, "/mount") && (strstr(param, "ps3/unmount") != NULL || strstr(param, "ps3/dev_bdvd") != NULL || strstr(param, "ps3/app_home") != NULL))
+	char *uparam = param + 7;
+	char *param2 = param + MOUNT_CMD;
+
+	if(islike(param, "/mount") && (islike(uparam, "ps3/unmount") || islike(param2, "/dev_bdvd") || islike(param2, "/app_home")))
 	{
 		if(mount_ps3 || forced_mount || IS_ON_XMB)
 		{
 			do_umount(true);
-			if(mount_ps3) {is_busy = false; return false;}
+			if(mount_ps3) return false;
 			umounted = true;
 		}
 	}
@@ -178,11 +181,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// unmount ps2_disc
 	// -----------------
 #ifdef PS2_DISC
-	else if(islike(param, "/mount") && (strstr(param, "ps2/unmount") != NULL))
+	else if(islike(param, "/mount") && islike(uparam, "ps2/unmount"))
 	{
 		do_umount_ps2disc(false);
 
-		if(mount_ps3) {is_busy = false; return false;}
+		if(mount_ps3) return false;
 		umounted = true;
 	}
 #endif
@@ -630,9 +633,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 								if(*title_id && (title_id[8] >= '0'))
 								{
 									if(strstr(title, " ["))
-										sprintf(target, "%s/%s", "/dev_hdd0/GAMES", title);
+										sprintf(target + 16, "%s", title);
 									else
-										sprintf(target, "%s/%s [%s]", "/dev_hdd0/GAMES", title, title_id);
+										sprintf(target + 16, "%s [%s]", title, title_id);
 								}
 							}
 						}
@@ -766,12 +769,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					}
 #ifndef LITE_EDITION
  #ifdef COBRA_ONLY
-					if(islike(param + MOUNT_CMD, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
+					if(islike(param2, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
  #endif
 #endif
 					if(!forced_mount && IS_INGAME)
 					{
-						sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param + MOUNT_CMD, param + MOUNT_CMD);
+						sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param2, param2);
 					}
 				}
 #ifndef ENGLISH_ONLY
@@ -882,12 +885,15 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 #endif //#ifdef COPY_PS3
 	}
 
+	is_busy = false;
 	return mounted;
 }
 
 #ifdef COBRA_ONLY
 static void set_app_home(const char *game_path)
 {
+	apply_remaps();
+
 	if(game_path)
 		sys_map_path("/app_home", game_path);
 	else

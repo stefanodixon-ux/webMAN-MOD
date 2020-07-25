@@ -962,6 +962,8 @@ parse_request:
 				// /browser.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
 				// /browser.ps3$disable_classic_ps2_mode   deletes 'classic_ps2_mode' to enable PS2 ISO in PS2 Launcher (old rebug)
 				// /browser.ps3$screenshot_xmb<path>       capture XMB screen
+				// /browser.ps3$screenshot_xmb<path>?show  capture XMB screen show
+				// /browser.ps3$screenshot_xmb<path>?fast  capture XMB screen (25% smaller)
 				// /browser.ps3?<url>                      open url on PS3 browser
 				// /browser.ps3/<webman_cmd>               execute webMAN command on PS3 browser
 				// /browser.ps3$<explore_plugin_command>   execute explore_plugin command on XMB (http://www.psdevwiki.com/ps3/Explore_plugin#Example_XMB_Commands)
@@ -1300,25 +1302,26 @@ parse_request:
 #ifdef COBRA_ONLY
 			if(islike(param, "/remap.ps3") || islike(param, "/remap_ps3") || islike(param, "/unmap.ps3"))
 			{
-				// /remap.ps3<path1>&to=<path2>       files on path1 is accessed from path2
-				// /remap.ps3?src=<path1>&to=<path2>
-				// /remap_ps3<path1>&to=<path2>       files on path1 is accessed from path2 (no check if folder exists)
-				// /remap_ps3?src=<path1>&to=<path2>
-				// /unmap.ps3<path>
-				// /unmap.ps3?src=<path>
+				// /remap.ps3<path1>&to=<path2>       files on path1 are accessed from path2
+				// /remap.ps3?src=<path1>&to=<path2>  use syscall35
+				// /remap_ps3<path1>&to=<path2>       files on path1 are accessed from path2 (no check if folder exists)
+				// /remap_ps3?src=<path1>&to=<path2>  files on path1 are accessed from path2 (no check if folder exists / sc35)
+				// /unmap.ps3<path>                   unmap path
+				// /unmap.ps3?src=<path>              use syscall35
 
 				char *path1 = header, *path2 = header + MAX_PATH_LEN, *url = header + 2 * MAX_PATH_LEN, *title = header + 2 * MAX_PATH_LEN;
 
 				memset(header, 0, HTML_RECV_SIZE);
 
+				bool use_sc35 = false;
+				bool isremap = (param[1] == 'r');
+				bool nocheck = (param[6] == '_');
+
 				if(param[10] == '/') get_value(path1, param + 10, MAX_PATH_LEN); else
 				if(param[11] == '/') get_value(path1, param + 11, MAX_PATH_LEN); else
 				{
-					get_param("src=", path1, param, MAX_PATH_LEN);
+					get_param("src=", path1, param, MAX_PATH_LEN); use_sc35 = true;
 				}
-
-				bool isremap = (param[1] == 'r');
-				bool nocheck = (param[6] == '_');
 
 				if(isremap)
 				{
@@ -1333,7 +1336,10 @@ parse_request:
 				}
 				else if(*path1 && (path1[1] != NULL) && (nocheck || file_exists(isremap ? path2 : path1)))
 				{
-					sys_map_path(path1, path2);
+					if(use_sc35)
+						sys_map_path2(path1, path2);
+					else
+						sys_map_path(path1, path2);
 
 					htmlenc(url, path2, 1); urlenc(url, path1); htmlenc(title, path1, 0);
 
@@ -2879,7 +2885,6 @@ retry_response:
 					if(mount_ps3)
 					{
 						// /mount_ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}]
-
 						struct timeval tv;
 						tv.tv_sec = 3;
 						setsockopt(conn_s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
@@ -2910,7 +2915,7 @@ retry_response:
 
 						if(game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount)) ap_param = 1; // use webman_config->autoplay
 
-						is_busy = false; keep_alive = 0;
+						keep_alive = 0; is_busy = false;
 
 						goto exit_handleclient_www;
 					}

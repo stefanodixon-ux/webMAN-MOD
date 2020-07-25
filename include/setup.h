@@ -218,7 +218,7 @@ static void setup_parse_settings(char *param)
 	webman_config->ftp_timeout = get_valuen(param, "tm=", 0, 255); //mins
 
 #ifdef PS3NET_SERVER
-	webman_config->netsrvd = IS_MARKED("nd=1" );
+	webman_config->netsrvd = IS_MARKED("nd=1");
 	webman_config->netsrvp = get_port(param, "netp=", NETPORT);
 #endif
 

@@ -277,7 +277,7 @@ static int prepNTFS(u8 clear)
 
 	if(cellFsOpendir(WMTMP, &fd) == CELL_FS_SUCCEEDED)
 	{
-		int dlen = sprintf(path, "%s/", WMTMP);
+		u16 dlen = sprintf(path, "%s/", WMTMP);
 		char *ext, *path_file = path + dlen;
 
 		CellFsDirectoryEntry dir; u32 read_f;

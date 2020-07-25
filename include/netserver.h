@@ -503,6 +503,7 @@ static int process_read_dir_cmd(u8 index, netiso_read_dir_entry_cmd *cmd)
 
 	int dir;
 	char dirpath[STD_PATH_LEN];
+	const u16 max_path_len = STD_PATH_LEN - 1;
 
 	/// list folder in all devices ///
 
@@ -512,13 +513,11 @@ static int process_read_dir_cmd(u8 index, netiso_read_dir_entry_cmd *cmd)
 
 		if(i == 7) i = NTFS + 1; // skip range from /net0 to /ext
 
-		sprintf(dirpath, "%s%s", drives[i], clients[index].dirpath);
+		dirpath_len = sprintf(dirpath, "%s%s", drives[i], clients[index].dirpath);
 
 		if(not_exists(dirpath)) continue;
 
 		cellFsOpendir(dirpath, &dir); if(!dir) continue;
-
-		dirpath_len = strlen(dirpath);
 
 		while(working && (cellFsReaddir(dir, &entry, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 		{
@@ -527,9 +526,9 @@ static int process_read_dir_cmd(u8 index, netiso_read_dir_entry_cmd *cmd)
 			d_name_len = entry.d_namlen;
 			if(d_name_len == 0) continue;
 
-			if(dirpath_len + d_name_len < STD_PATH_LEN - 1)
+			if(dirpath_len + d_name_len < max_path_len)
 			{
-				sprintf(dirpath, "%s%s/%s", drives[i], clients[index].dirpath, entry.d_name);
+				sprintf(dirpath + dirpath_len, "/%s", entry.d_name);
 				st.st_mode  = S_IFDIR;
 				st.st_size  = 0;
 				st.st_mtime = 0;
