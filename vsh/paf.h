@@ -53,6 +53,7 @@ extern uint32_t paf_3A8454FC(uint32_t* texture, uint32_t plugin, const char *tex
 
 extern uint32_t paf_F21655F3(const char *sprx_name);  // finds a loaded plugin 	uint32_t paf::View::Find(const char* plugin) Example: uint32_t paf::View::Find("system_plugin")
 #define FindLoadedPlugin paf_F21655F3
+#define View_Find paf_F21655F3
 
 // paf_65BE85B3  // _UnloadView 	_paf_65BE85B3(char *sprx_name, 0, 0)
 // paf_C6B89CEE  // ?

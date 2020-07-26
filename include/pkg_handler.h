@@ -187,11 +187,7 @@ static void unload_plugin_modules(bool all)
 	}
 #endif
 
-	if(explore_interface == 0)
-	{
-		explore_interface = (explore_plugin_interface *)plugin_GetInterface(View_Find("explore_plugin"), 1);
-		if(explore_interface == 0) return;
-	}
+	if(!get_explore_interface()) return;
 
 	explore_interface->ExecXMBcommand("close_all_list", 0, 0);
 	sys_ppu_thread_sleep(2);

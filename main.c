@@ -78,6 +78,7 @@
 #include "vsh/vshnet.h"
 #include "vsh/vshmain.h"
 #include "vsh/explore_plugin.h"
+#include "vsh/paf.h"
 
 #include "include/thread.h"
 #include "include/paths.h"
@@ -182,7 +183,7 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define	NET_BACKLOG		(4)
 #define	PS3MAPI_BACKLOG	(4)
 
-int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MAPI, 3=PS3NETSRV
+static int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MAPI, 3=PS3NETSRV
 
 ////////////
 
@@ -323,9 +324,9 @@ size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
 int wait_for(const char *path, u8 timeout);
 
-int (*vshtask_notify)(int, const char *) = NULL;
-int (*View_Find)(const char *) = NULL;
-int (*plugin_GetInterface)(int,int) = NULL;
+static int (*vshtask_notify)(int, const char *) = NULL;
+//static int (*View_Find)(const char *) = NULL;
+//static int (*plugin_GetInterface)(int,int) = NULL;
 
 #include "include/string.h"
 #include "include/wm_config.h"
@@ -381,7 +382,7 @@ static void set_app_home(const char *game_path);
 static size_t get_name(char *name, const char *filename, u8 cache);
 static void get_cpursx(char *cpursx);
 static void get_last_game(char *last_path);
-static void add_game_info(char *buffer, char *templn, bool is_cpursx);
+static void add_game_info(char *buffer, char *templn, u8 is_cpursx);
 static void mute_snd0(bool scan_gamedir);
 
 static bool from_reboot = false;
@@ -610,8 +611,8 @@ int wwwd_start(size_t args, void *argp)
  #endif
 #endif
 
-	View_Find = getNIDfunc("paf", 0xF21655F3, 0);
-	plugin_GetInterface = getNIDfunc("paf", 0x23AFB290, 0);
+	//View_Find = getNIDfunc("paf", 0xF21655F3, 0);
+	//plugin_GetInterface = getNIDfunc("paf", 0x23AFB290, 0);
 
 #ifdef SYS_BGM
 	BgmPlaybackEnable  = getNIDfunc("vshmain", 0xEDAB5E5E, 16*2);

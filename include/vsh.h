@@ -20,13 +20,13 @@ static void * getNIDfunc(const char * vsh_module, u32 fnid, s32 offset)
 
 	u32 table = (*(u32*)0x1008C) + 0x984; // vsh table address
 
-	while(((u32)*(u32*)table) != 0)
+	while((u32)*(u32*)table)
 	{
-		u32* export_stru_ptr = (u32*)*(u32*)table; // ptr to export stub, size 2C, "sys_io" usually... Exports:0000000000635BC0 stru_635BC0:    ExportStub_s <0x1C00, 1, 9, 0x39, 0, 0x2000000, aSys_io, ExportFNIDTable_sys_io, ExportStubTable_sys_io>
+		u32 *export_stru_ptr = (u32*)*(u32*)table; // ptr to export stub, size 2C, "sys_io" usually... Exports:0000000000635BC0 stru_635BC0:    ExportStub_s <0x1C00, 1, 9, 0x39, 0, 0x2000000, aSys_io, ExportFNIDTable_sys_io, ExportStubTable_sys_io>
 
-		const char* lib_name_ptr =  (const char*)*(u32*)((char*)export_stru_ptr + 0x10);
+		const char *lib_name_ptr =  (const char*)*(u32*)((char*)export_stru_ptr + 0x10);
 
-		if(strncmp(vsh_module, lib_name_ptr, strlen(lib_name_ptr)) == 0)
+		if(strcmp(vsh_module, lib_name_ptr) == 0)
 		{
 			// we got the proper export struct
 			u32 lib_fnid_ptr = *(u32*)((char*)export_stru_ptr + 0x14);
@@ -34,7 +34,7 @@ static void * getNIDfunc(const char * vsh_module, u32 fnid, s32 offset)
 			u16 count = *(u16*)((char*)export_stru_ptr + 6); // number of exports
 			for(int i = 0; i < count; i++)
 			{
-				if(fnid == *(u32*)((char*)lib_fnid_ptr + i*4))
+				if(fnid == *(u32*)((char*)lib_fnid_ptr + (i * 4)))
 				{
 					// take address from OPD
 					return (void**)*((u32*)(lib_func_ptr) + i) + offset;
@@ -61,6 +61,22 @@ static void show_msg(char* msg)
 	if(strlen(msg) > 200) msg[200] = NULL; // truncate on-screen message
 
 	vshtask_notify(0, msg);
+}
+
+static void play_rco_sound(const char *sound)
+{
+	paf_B93AFE7E((paf_F21655F3("system_plugin")), sound, 1, 0);
+}
+
+static explore_plugin_interface *get_explore_interface(void)
+{
+	int view = View_Find("explore_plugin");
+	if(view)
+		explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
+	else
+		explore_interface = NULL;
+
+	return explore_interface;
 }
 
 static int get_game_info(void)
@@ -137,10 +153,7 @@ static void explore_close_all(const char *path)
 	unload_plugin_modules(false);
 #endif
 
-	int view = View_Find("explore_plugin"); if(!view) return;
-
-	explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
-	if(explore_interface)
+	if(get_explore_interface())
 	{
 		explore_interface->ExecXMBcommand((char*)"close_all_list", 0, 0);
 		if(strstr(path, "BDISO") || strstr(path, "DVDISO"))
@@ -192,19 +205,19 @@ static bool explore_exec_push(u32 usecs, u8 focus_first)
 
 static void exec_xmb_item(char *category, char *seg_name, bool execute)
 {
-	u8 n; int view;
+	u8 n;
 
 #ifdef COBRA_ONLY
 	unload_vsh_gui();
 #endif
 
-	for(n = 0; n < 15; n++) {view = View_Find("explore_plugin"); if(view) break; if(wait_for_abort(2000000)) return;}
+	for(n = 0; n < 15; n++) {if(get_explore_interface()) break; if(wait_for_abort(2000000)) return;}
 
 	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 15);
 
 	if(n) {if(wait_for_abort(3000000)) return;}
 
-	if(view)
+	if(explore_interface)
 	{
 		// default category
 		if(!*category) sprintf(category, "game");
@@ -233,8 +246,6 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 				return;
 			}
 			else {timeout = 1, icon_found = 1;}
-
-			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
 
 			if(mount_unk >= EMU_ROMS) {timeout = 1, icon_found = 1;}
 
@@ -329,8 +340,7 @@ static void reload_xmb(void)
 
 	if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
 	{
-		int view = View_Find("explore_plugin");
-		if(view) explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
+		if(!get_explore_interface()) return;
 
 		explore_interface->ExecXMBcommand("close_all_list", 0, 0);
 		explore_interface->ExecXMBcommand("focus_category network", 0, 0);

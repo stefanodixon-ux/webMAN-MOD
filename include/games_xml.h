@@ -107,10 +107,8 @@ static void make_fb_xml(void)
 
 		if(payload_ps3hen && IS_ON_XMB)
 		{
-			int view = View_Find("explore_plugin");
-			if(view)
+			if(get_explore_interface())
 			{
-				explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
 				explore_interface->ExecXMBcommand("reload_category game",0,0);
 				explore_interface->ExecXMBcommand("reload_category network",0,0);
 			}

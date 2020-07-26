@@ -23,7 +23,8 @@ static s32 rsx_fifo_pause(u8 pause)
 #define BASE          0xC0000000UL     // local memory base ea
 
 // get pixel offset into framebuffer by x/y coordinates
-#define OFFSET(x, y) (u32)(offset + (4 * ((x) + ((y) * pitch))))
+//#define OFFSET(x, y) (u32)(offset + (4 * ((x) + ((y) * pitch))))
+#define OFFSET(x) (u32)(offset + (4 * x))
 
 #define _ES32(v)((u32)(((((u32)v) & 0xFF000000) >> 24) | \
 		               ((((u32)v) & 0x00FF0000) >> 8 ) | \
@@ -107,7 +108,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	// initialize graphic
 	init_graphic();
 
-	u16 n, i, k, idx, ww = w;
+	u16 i, k, idx, ww = w;
 	u16 rr = small ? 2 : 1, r2 = 2 * rr; w /= rr, h /= rr; // resize bmp image if small flag is true
 
 	// calc buffer sizes
@@ -133,10 +134,12 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	cellFsWrite(fd, (void *)bmp_header, sizeof(bmp_header), NULL);
 
 	// dump...
+	u32 _ww;
 	for(i = h * rr; i > 0; i-=rr)
 	{
-		for(n = k = 0; k < ww; k+=r2, n++)
-			line_frame[n] = *(u64*)(OFFSET(k, i));
+		tmp = (i * pitch), _ww = tmp + ww;
+		for(idx = 0; tmp < _ww; tmp+=r2, idx++)
+			line_frame[idx] = *(u64*)(OFFSET(tmp));
 
 		// convert line from ABGR to RGB
 		for(idx = k = 0; k < line_frame_size; k+=4, idx+=3)

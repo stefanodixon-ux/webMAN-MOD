@@ -79,11 +79,7 @@ static void auto_play(char *param, u8 play_ps3)
 
 		if(autoplay && wait_for_abort(webman_config->boots * 1000000)) return;
 
-		int view = View_Find("explore_plugin");
-		if(view)
-			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
-		else
-			return;
+		if(!get_explore_interface()) return;
 
 		bool mount_ps3 = (strstr(param, "_ps3") != NULL);
 

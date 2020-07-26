@@ -668,6 +668,20 @@ parse_request:
 				{
 					char *param2 = param + 9; if(*param2 == '?') param2++;
 
+					if(islike(param2, "snd_"))
+					{
+						play_rco_sound(param2);
+
+						#ifdef PS3MAPI
+						sprintf(param, "/buzzer.ps3mapi");
+						goto html_response;
+						#else
+						if(!mc) keep_alive = http_response(conn_s, header, param, CODE_VIRTUALPAD, param2);
+
+						goto exit_handleclient_www;
+						#endif
+					}
+
 					// check /play.ps3<path>
 					if(file_exists(param2))
 					{
@@ -1146,7 +1160,7 @@ parse_request:
 					{
 						if(*param2 == NULL) sprintf(param2, "/");
 						if(*param2 == '/' ) {do_umount(false); sprintf(header, "http://%s%s", local_ip, param2); open_browser(header, 0);} else
-						if(*param2 == '$' ) {int view = View_Find("explore_plugin"); if(view) {explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1); explore_interface->ExecXMBcommand(url,0,0);}} else
+						if(*param2 == '$' ) {if(get_explore_interface()) explore_interface->ExecXMBcommand(url, 0, 0);} else
 						if(*param2 == '?' ) {do_umount(false);  open_browser(url, 0);} else
 											{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23
 
@@ -1292,8 +1306,19 @@ parse_request:
 			if(islike(param, "/popup.ps3"))
 			{
 				// /popup.ps3
+				// /popup.ps3&snd=<id>
 				// /popup.ps3?<msg>
 				// /popup.ps3*<msg>
+				// /popup.ps3?<msg>&snd=<id>
+				// /popup.ps3*<msg>&snd=<id>
+
+				#ifdef PS3MAPI
+				char *snd = strstr(param, "&snd=");
+				if(snd)
+				{
+					if(ISDIGIT(snd[5])) ps3mapi_sound(snd[5] - '0'); *snd = NULL;
+				}
+				#endif
 
 				if(param[10] == NULL) show_info_popup = true; else is_popup = 1;
 
@@ -1320,7 +1345,12 @@ parse_request:
 				if(param[10] == '/') get_value(path1, param + 10, MAX_PATH_LEN); else
 				if(param[11] == '/') get_value(path1, param + 11, MAX_PATH_LEN); else
 				{
-					get_param("src=", path1, param, MAX_PATH_LEN); use_sc35 = true;
+					get_param("src=", path1, param, MAX_PATH_LEN);
+					#ifdef PS3MAPI
+					use_sc35 = !is_syscall_disabled(35);
+					#else
+					use_sc35 = true;
+					#endif
 				}
 
 				if(isremap)
@@ -2402,6 +2432,7 @@ retry_response:
 
 					{
 						char *msg = (param + 11); // /popup.ps3?<msg>
+
 						if(param[10] == '*')
 							show_msg2(msg);
 						else
@@ -2894,11 +2925,9 @@ retry_response:
 						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL) && (strstr(param, ".ntfs[PSPISO]") == NULL))
 						{
 							sys_ppu_thread_sleep(1);
-							int view = View_Find("explore_plugin");
 
-							if(view)
+							if(get_explore_interface())
 							{
-								explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
  #ifdef PKG_LAUNCHER
 								if(webman_config->ps3l && strstr(param, "/GAMEI/"))
 									focus_first_item();

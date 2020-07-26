@@ -130,8 +130,8 @@ extern int vshmain_87BB0001(int param);  // shutdown_reset()
 
 // vshmain_74105666  //
 
-// vshmain_74A54CBF  //
-// vshmain_5F5729FB  //
+extern int (*vshmain_74A54CBF)(int r3);
+extern int (*vshmain_5F5729FB)(int r3);
 
 // vshmain_08B435B9  //
 // vshmain_5EA75F0F  // set u8

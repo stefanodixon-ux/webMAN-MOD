@@ -85,7 +85,7 @@ static void get_net_info(char *net_type, char *ip)
 	netctl_main_9A528B81(ip_size, ip);
 }
 
-static void add_game_info(char *buffer, char *templn, bool is_cpursx)
+static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 {
 	if(IS_INGAME)
 	{
@@ -93,7 +93,7 @@ static void add_game_info(char *buffer, char *templn, bool is_cpursx)
 
 		if(strlen(_game_TitleID) == 9)
 		{
-			if(is_cpursx && sys_admin)
+			if(!is_cpursx && sys_admin)
 			{
 #ifdef GET_KLICENSEE
 				buffer += concat(buffer, " [<a href=\"/klic.ps3\">KLIC</a>]");
@@ -122,13 +122,14 @@ static void add_game_info(char *buffer, char *templn, bool is_cpursx)
 			if(not_exists(path)) sprintf(path, "%s%s", _HDD0_GAME_DIR, _game_TitleID);
 			if(not_exists(path)) sprintf(path, "/dev_bdvd/PS3_GAME");
 
-			sprintf(templn, "<a href=\"%s\"><img src=\"%s/ICON0.PNG\" height=\"60\" border=0%s></a>", path, path, " style=\"position:relative;top:20px;\""); buffer += concat(buffer, templn);
+			sprintf(templn, "<a href=\"%s\"><img src=\"%s/ICON0.PNG\" height=\"60\" border=0%s></a> "
+							"<a href=\"/%s.ps3mapi?proc=%i\"><small>pid=%i</small></a>",
+					path, path, " style=\"position:relative;top:20px;\"", (is_cpursx < 3) ? "gameplugin" : "getmem",  GetGameProcessID(), GetGameProcessID()); buffer += concat(buffer, templn);
 
 			buffer += concat(buffer, "</H2></span>");
 		}
 	}
 }
-
 
 static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_http)
 {
@@ -158,7 +159,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	if(sys_admin && !webman_config->sman && !strstr(param, "/sman.ps3")) {sprintf(templn, " [<a href=\"/shutdown.ps3\">%s</a>] [<a href=\"/restart.ps3\">%s</a>]", STR_SHUTDOWN, STR_RESTART ); buffer += concat(buffer, templn);}
 
-	add_game_info(buffer, templn, true);
+	add_game_info(buffer, templn, 0);
 
 #ifdef COPY_PS3
 	if(copy_in_progress)

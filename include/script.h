@@ -105,7 +105,11 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "wait /"))    {path += 5; wait_for(path, 5);} else
 					if(_islike(line, "lwait /"))   {path += 6; wait_for(path, 10);} else
 					if(_islike(line, "wait "))     {line += 5; wait_path("/dev_hdd0", (u8)val(line), false);} else
+					#ifdef PS3MAPI
+					if(_islike(line, "beep"))      {ps3mapi_sound(line[4] - '0');} else
+					#else
 					if(_islike(line, "beep"))      {if(line[4] == '3') {BEEP3;} else if(line[4] == '2') {BEEP2;} else {BEEP1;}} else
+					#endif
 					if(_islike(line, "popup "))    {line += 6; show_msg(line);} else
 					if(_islike(line, "log "))      {line += 4; save_file(log_file, line, APPEND_TEXT);} else
 					if(_islike(line, "logfile /")) {path += 8; sprintf(log_file, "%s", path);} else

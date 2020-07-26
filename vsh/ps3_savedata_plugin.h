@@ -14,7 +14,7 @@ typedef struct ps3_savedata_plugin_game_interface_t
 	int (*DoUnk10)(void);
 	int (*DoUnk11)(void);
 	int (*DoUnk12)(void);
-	int (*DoUnk13)(int*,int*,char*,int,void *); //
+	int (*DoUnk13)(int*,int*,char*,int,void *); // hooked function13(int* r3, int* r4, char* filename, int r6, void * key)
 	int (*DoUnk14)(void);
 	int (*DoUnk15)(void);
 	int (*DoUnk16)(void);
