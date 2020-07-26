@@ -111,6 +111,10 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	u16 i, k, idx, ww = w;
 	u16 rr = small ? 2 : 1, r2 = 2 * rr; w /= rr, h /= rr; // resize bmp image if small flag is true
 
+	u16 margin_w = small ? 80 : 0, margin_h = small ? 30 : 0;
+
+	w -= 2 * margin_w, h -= 2 * margin_h;
+
 	// calc buffer sizes
 	u32 line_frame_size = (w * 4); // ABGR
 
@@ -122,7 +126,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	// set bmp header
 	u32 tmp;
 	tmp = _ES32(w * h * 3 + 0x36);
-	memcpy(bmp_header + 0x02 , &tmp, 4);     // file size
+	memcpy(bmp_header + 0x02 , &tmp, 4);    // file size
 	tmp = _ES32(w);
 	memcpy(bmp_header + 0x12, &tmp, 4);     // bmp width
 	tmp = _ES32(h);
@@ -135,9 +139,9 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 
 	// dump...
 	u32 _ww;
-	for(i = h * rr; i > 0; i-=rr)
+	for(i = h * rr; i > margin_h; i-=rr)
 	{
-		tmp = (i * pitch), _ww = tmp + ww;
+		tmp = (i * pitch) + (rr * margin_w), _ww = tmp + ww - (rr * margin_w);
 		for(idx = 0; tmp < _ww; tmp+=r2, idx++)
 			line_frame[idx] = *(u64*)(OFFSET(tmp));
 

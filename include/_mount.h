@@ -13,6 +13,8 @@
 
 #define TITLEID_LEN		10
 
+static u8 mount_app_home = false; // force mount JB folder in /app_home (false = use webman_config->app_home)
+
 #ifdef PKG_LAUNCHER
 static char map_title_id[TITLEID_LEN];
 #endif
@@ -168,7 +170,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		if(mount_ps3 || forced_mount || IS_ON_XMB)
 		{
 			do_umount(true);
-			if(mount_ps3) return false;
+			if(mount_ps3) {mount_app_home = false; return false;}
 			umounted = true;
 		}
 	}
@@ -181,7 +183,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	{
 		do_umount_ps2disc(false);
 
-		if(mount_ps3) return false;
+		if(mount_ps3) {mount_app_home = false; return false;}
 		umounted = true;
 	}
 #endif
@@ -238,11 +240,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		purl = strstr(source, "offline=");
 		if(purl) net_status = (*(purl + 8) == '0') ? 1 : 0;
 #endif
-		purl = strstr(source, "?random=");
-		if(purl) *purl = NULL;
-
-		purl = strstr(source, "?/sman.ps3");
-		if(purl) *purl = NULL;
+		get_flag(source, "?random=");
+		get_flag(source, "?/sman.ps3");
 
 		// -------------------------
 		// use relative source path
@@ -263,7 +262,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		if(!is_copy)
 #endif
 		{
-			char *p = strstr(param, "/PS3_"); if(p) *p = NULL;
+			get_flag(param, "/PS3_"); // remove /PS3_GAME
 
 			int discboot = 0xff;
 			xsetting_0AF1F161()->GetSystemDiscBootFirstEnabled(&discboot);
@@ -297,6 +296,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			if(discboot == 1)
 				xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(1);
 		}
+
+		mount_app_home = false;
 
 		// -------------------
 		// exit mount from XMB
@@ -1428,7 +1429,7 @@ static void mount_thread(u64 action)
 
 	if(*_path == '/')
 	{
-		char *p = strstr(_path, "/PS3_"); if(p) *p = NULL;
+		get_flag(_path, "/PS3_"); // remove PS3_GAME
 	}
 
 	// ---------------------------------------------
@@ -1478,7 +1479,7 @@ exit_mount:
 		sprintf(msg, "\"%s", pos + 1);
 
 		// remove file extension
-		pos = strstr(msg, ".ntfs["); if(pos) *pos = NULL;
+		get_flag(msg, ".ntfs[");
 		pos = strrchr(msg, '.'); if(pos) *pos = NULL;
 		if(msg[1] == NULL) sprintf(msg, "\"%s", _path);
 

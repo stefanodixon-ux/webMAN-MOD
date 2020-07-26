@@ -783,7 +783,7 @@ parse_request:
 				goto exit_handleclient_www;
 			}
  #endif
-			{char *pos = strstr(param, "?restart.ps3"); if(pos) {*pos = NULL; do_restart = sys_admin;}}
+			if(get_flag(param, "?restart.ps3")) do_restart = sys_admin;
 
 			if(islike(param, "/cpursx_ps3"))
 			{
@@ -1137,17 +1137,15 @@ parse_request:
 					if(islike(param2, "$screenshot_xmb"))
 					{
 						char *filename = param2 + 15;
-						char *show = strstr(filename, "?show");
-						char *fast = strstr(filename, "?fast");
-						if(fast) *fast = NULL;
-						if(show) *show = NULL;
+						bool fast = get_flag(filename, "?fast");
+						bool show = get_flag(filename, "?show");
 
 						if(show && (*filename != '/'))
 							sprintf(header	, "%s/screenshot.bmp", WMTMP);
 						else
 							sprintf(header, "%s", filename);
 
-						saveBMP(header, false, (bool)fast);
+						saveBMP(header, false, fast);
 						if(show)
 						{
 							sprintf(param, "%s", header); is_binary = true;
@@ -1953,8 +1951,8 @@ parse_request:
 
 				del_turnoff(2);
 
-				char *allow_scan = strstr(param,"?0");
-				if(allow_scan) *allow_scan = NULL; else save_file(WMNOSCAN, NULL, SAVE_ALL);
+				bool allow_scan = get_flag(param,"?0");
+				if (!allow_scan) save_file(WMNOSCAN, NULL, SAVE_ALL);
 
 				bool is_restart = IS(param, "/restart.ps3");
 
@@ -2915,10 +2913,14 @@ retry_response:
 					else
 					if(mount_ps3)
 					{
-						// /mount_ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}]
+						// /mount_ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}][&to=/app_home]
 						struct timeval tv;
 						tv.tv_sec = 3;
 						setsockopt(conn_s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+						#ifdef COBRA_ONLY
+						mount_app_home = get_flag(param, "&to=/app_home");
+						#endif
 
 						if(!mc) keep_alive = http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser (don't wait for mount)
 
@@ -2955,7 +2957,7 @@ retry_response:
 					if(forced_mount || islike(param, "/mount.ps3") || islike(param, "/copy.ps3"))
  #endif
 					{
-						// /mount.ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}]
+						// /mount.ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}][&to=/app_home]
 						// /mount.ps3/unmount
 						// /mount.ps2/<path>[?random=<x>]
 						// /mount.ps2/unmount
@@ -2966,6 +2968,13 @@ retry_response:
 
 						keep_alive = 0;
 
+						#ifdef COBRA_ONLY
+						if(islike(param, "/mount.ps3"))
+						{
+							mount_app_home = get_flag(param, "&to=/app_home");
+						}
+						#endif
+
 						if(islike(param, "/mount.ps3/unmount"))
 						{
 							is_mounting = false;
@@ -2974,7 +2983,7 @@ retry_response:
 							if(*dev_name == '/')
 							{
 								if(isDir(dev_name)) {system_call_3(SC_FS_UMOUNT, (uint32_t)dev_name, 0, 1);}
-								sprintf(param, "/"); is_binary = FOLDER_LISTING; is_busy = false;
+								sprintf(param, "/"); is_binary = FOLDER_LISTING; mount_app_home = is_busy = false;
 								goto html_response;
 							}
 						}
@@ -2996,12 +3005,12 @@ retry_response:
 
 								else if(isDir(dev_name))
 								{
-									strcpy(param, dev_name); is_binary = FOLDER_LISTING; is_busy = false;
+									strcpy(param, dev_name); is_binary = FOLDER_LISTING; mount_app_home = is_busy = false;
 									goto html_response;
 								}
 								else
 								{
-									keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found"); is_busy = false;
+									keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found"); mount_app_home = is_busy = false;
 									goto exit_handleclient_www;
 								}
 							}
@@ -3025,8 +3034,7 @@ retry_response:
 
 						mobile_mode |= ((strstr(param, "?mob") != NULL) || (strstr(param, "&mob") != NULL));
 #ifdef LAUNCHPAD
-						char *launchpad = strstr(param, "?launchpad");
-						if(launchpad) {*launchpad = NULL; mobile_mode = LAUNCHPAD_MODE, auto_mount = false; sprintf(templn, "%s LaunchPad: %s", STR_REFRESH, STR_SCAN2); show_msg(templn);}
+						if(get_flag(param, "?launchpad")) {mobile_mode = LAUNCHPAD_MODE, auto_mount = false; sprintf(templn, "%s LaunchPad: %s", STR_REFRESH, STR_SCAN2); show_msg(templn);}
 #endif
 						if(game_listing(buffer, templn, param, tempstr, mobile_mode, auto_mount) == false)
 						{

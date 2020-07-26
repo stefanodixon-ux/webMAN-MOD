@@ -117,7 +117,6 @@
 					u8 n;
 					const char *rawseciso_sprx[4] = { WM_RES_PATH "/raw_iso.sprx",
 													  VSH_MODULE_DIR "raw_iso.sprx",
-													  _HDD0_GAME_DIR "IRISMAN00/sprx_iso",
 													  WMTMP "/res/sman.ntf" };
 
 					for(n = 0; n < 4; n++)
@@ -258,8 +257,12 @@
 
 				bool is_iso = false;
 				char *ext = strrchr(netpath, '.');
-				if(strlen(ext) == 4 || islike(ext, ".0"))
-					if(ext) is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
+
+				if(ext)
+				{
+					if(strlen(ext) == 4 || islike(ext, ".0"))
+						is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
+				}
 
 				if(islike(netpath, "/PS3ISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_PS3; else
 				if(islike(netpath, "/BDISO" ) && is_iso) mount_unk = netiso_args.emu_mode = EMU_BD;  else
@@ -350,7 +353,6 @@
 				sprintf(netiso_args.server, "%s", webman_config->neth[netiso_svrid]);
 				netiso_args.port = webman_config->netp[netiso_svrid];
 
-
 				u8 n;
 				const char *netiso_sprx[3] = { WM_RES_PATH "/netiso.sprx",
 											   VSH_MODULE_DIR "netiso.sprx",
@@ -365,7 +367,9 @@
 				}
 #ifdef USE_INTERNAL_PLUGIN
 				else
-				sys_ppu_thread_create(&thread_id_net, netiso_thread, 0, THREAD_PRIO, THREAD_STACK_SIZE_NET_ISO, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NET);
+				{
+					sys_ppu_thread_create(&thread_id_net, netiso_thread, 0, THREAD_PRIO, THREAD_STACK_SIZE_NET_ISO, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NET);
+				}
 #endif
 				if(ret)
 				{
@@ -675,10 +679,11 @@
 			}
 
 			// -- mount game folder
-			if((*title_id > ' ') && (title_id[8] >= '0'))
-				cobra_map_game(_path, title_id);
-			else
-				cobra_map_game(_path, "TEST00000");
+			bool is_gameid = (*title_id >= 'A' && *title_id <= 'Z') && ISDIGIT(title_id[8]);
+			if(!is_gameid)
+				sprintf(title_id, "TEST00000");
+
+			cobra_map_game(_path, title_id, mount_app_home | !(webman_config->app_home));
 		}
 
 		//goto exit_mount;

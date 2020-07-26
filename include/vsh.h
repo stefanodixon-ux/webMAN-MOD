@@ -54,13 +54,13 @@ static sys_memory_container_t get_vsh_memory_container(void)
 
 static void show_msg(char* msg)
 {
-	if(!vshtask_notify)
-		vshtask_notify = getNIDfunc("vshtask", 0xA02D46E7, 0);
-	if(!vshtask_notify) return;
+	//if(!vshtask_notify)
+	//	vshtask_notify = getNIDfunc("vshtask", 0xA02D46E7, 0);
+	//if(!vshtask_notify) return;
 
 	if(strlen(msg) > 200) msg[200] = NULL; // truncate on-screen message
 
-	vshtask_notify(0, msg);
+	vshtask_notify(msg);
 }
 
 static void play_rco_sound(const char *sound)

@@ -97,8 +97,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	bool is_file = islike(param, "/hexview.ps3/");
 	if(is_file) address = (u64)get_valuen64(param, "&offset=");
 
-	v = strstr(param + 10, "&");
-	if(v) *v = NULL;
+	get_flag(param + 10, "&");
 
 	if(is_file) goto view_file;
 	address = convertH(param + 10);

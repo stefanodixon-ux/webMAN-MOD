@@ -629,3 +629,13 @@ static u8 get_valuen(const char *param, const char *label, u8 min_value, u8 max_
 {
 	return RANGE((u8)get_valuen32(param, label), min_value, max_value);
 }
+
+static u8 get_flag(const char *param, const char *label)
+{
+	char *flag = strstr(param, label);
+	if(flag)
+	{
+		*flag = NULL; return true;
+	}
+	return false;
+}

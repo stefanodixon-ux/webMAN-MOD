@@ -646,8 +646,8 @@ list_games:
 
 #ifdef NET_SUPPORT
 				sys_addr_t data2 = NULL;
-				int v3_entries, v3_entry; v3_entries=v3_entry=0;
-				netiso_read_dir_result_data *data=NULL; char neth[8];
+				int v3_entries, v3_entry; v3_entries = v3_entry = 0;
+				netiso_read_dir_result_data *data = NULL; char neth[8];
 				if(is_net)
 				{
 					v3_entries = read_remote_dir(ns, &data2, &abort_connection);

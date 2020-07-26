@@ -120,6 +120,8 @@ static void setup_parse_settings(char *param)
 	webman_config->ps1emu = IS_MARKED("pse=1");
 	webman_config->ps2emu = IS_MARKED("b2n=1");
 
+	webman_config->app_home = IS_UNMARKED("ap=1"); // Mount JB GAMES as /app_home
+
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
 	webman_config->ps3l = IS_MARKED("p3l=1");
 	webman_config->roms = IS_MARKED("rom=1");
@@ -546,11 +548,13 @@ static void setup_form(char *buffer, char *templn)
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
 	b = isDir(PKGLAUNCH_DIR);
-	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"    , b ? " (" : _BR_, !(webman_config->cmask & PS3), buffer);
+	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"    , " (", !(webman_config->cmask & PS3), buffer);
+	add_checkbox("ap", "/app_home", b ? "," : ")<br>",       !(webman_config->app_home),    buffer);
 	if(b) add_checkbox("p3l", "PKG Launcher"         ,     " & "      ,  (webman_config->ps3l)       , buffer);
 	if(b) add_checkbox("rom", "ROMS"                 ,     ")<br>"    ,  (webman_config->roms)       , buffer);
 #else
-	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"    ,            _BR_, !(webman_config->cmask & PS3), buffer);
+	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"    , " (",    !(webman_config->cmask & PS3), buffer);
+	add_checkbox("ap", "/app_home"                   , ")<br>", !(webman_config->app_home),    buffer);
 #endif
 
 	b = isDir(PS2_CLASSIC_PLACEHOLDER);

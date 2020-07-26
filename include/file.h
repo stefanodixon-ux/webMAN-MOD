@@ -362,7 +362,7 @@ int save_file(const char *file, const char *mem, s64 size)
 }
 
 /*
-void addlog(const char *msg1, const char *msg2)
+static void addlog(const char *msg1, const char *msg2)
 {
 	char msg[200];
 	sprintf(msg, "%s %s", msg1, msg2);

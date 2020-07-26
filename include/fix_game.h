@@ -290,7 +290,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 			// -- get TitleID from PARAM.SFO
 			char filename[STD_PATH_LEN];
 
-			char *p = strstr(game_path, "/PS3_GAME"); if(!p) p = strstr(game_path, "/USRDIR"); if(p) *p = NULL;
+			if(!get_flag(game_path, "/PS3_GAME")) get_flag(game_path, "/USRDIR");
 
 			if(islike(game_path, "/net") || strstr(game_path, ".ntfs["))
 				{get_name(filename, strrchr(game_path, '/') + 1, GET_WMTMP); strcat(filename, ".SFO\0");}

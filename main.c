@@ -77,6 +77,7 @@
 #include "vsh/vsh.h"
 #include "vsh/vshnet.h"
 #include "vsh/vshmain.h"
+#include "vsh/vshtask.h"
 #include "vsh/explore_plugin.h"
 #include "vsh/paf.h"
 
@@ -130,7 +131,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.29 MOD"
+#define WM_VERSION			"1.47.30 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -324,7 +325,7 @@ size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
 int wait_for(const char *path, u8 timeout);
 
-static int (*vshtask_notify)(int, const char *) = NULL;
+//static int (*vshtask_notify)(int, const char *) = NULL;
 //static int (*View_Find)(const char *) = NULL;
 //static int (*plugin_GetInterface)(int,int) = NULL;
 

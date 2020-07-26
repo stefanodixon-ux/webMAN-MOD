@@ -30,7 +30,7 @@
 	if(!extcasecmp(_path, ".self", 5))
 	{
 		ret = file_exists(_path);
-		cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH");
+		cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", true);
 		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
 		if(ret) launch_app_home_icon();
 		goto mounting_done; //goto exit_mount;
@@ -79,7 +79,7 @@
 			do_umount(false);
 
 			// mount PKGLAUNCH as disc
-			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH");
+			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", true);
 
 			if(file_exists(RETROARCH_DIR1))
 			{

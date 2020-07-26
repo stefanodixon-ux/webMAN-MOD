@@ -129,8 +129,9 @@ typedef struct
 	u8 minfo;     // Mount info level: 0=Both messages, 1=After mount, 2=Previous to mount, 3=none
 	u8 deliso;    // 0=none, 1=delete cached PS2ISO copied from net/ntfs
 	u8 auto_install_pkg; // 0=auto install PKG when a .ntfs[BDFILE] is mounted, 1=no auto install PKG
+	u8 app_home;  // 0=mount folders in app_home, 1=do not mount app_home
 
-	u8 padding9[7];
+	u8 padding9[6];
 
 	// profile settings
 

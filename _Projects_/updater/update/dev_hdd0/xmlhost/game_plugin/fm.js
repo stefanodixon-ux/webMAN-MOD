@@ -74,7 +74,7 @@ window.addEventListener('contextmenu',function(e){
 		m0.href='/install.ps3'+p;m0.style.display=y?b:n;
 		m1.href='/mount.ps3'+p;m1.style.display=!y&&(w||c=='d'||p.indexOf('/GAME')>0||p.indexOf('ISO/')>0)?b:n;
 		m2.href=p;m2.text=(w||c=='w')?'Download':'Open';
-		v2.href='/hexview.ps3'+p;v2.style.display=(w||c=='w')?b:n;
+		v2.href='/hexview.ps3'+p;v2.style.display=(c!='d')?b:n;
 		m3.href='/delete.ps3'+p;
 		m4.href='/cut.ps3'+p;
 		m5.href='/cpy.ps3'+p;

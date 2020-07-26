@@ -680,7 +680,7 @@ next_xml_entry:
 							// subfolder name
 							if((IS_NTFS) && entry.entry_name.d_name[0] == '[')
 							{
-								strcpy(folder_name, entry.entry_name.d_name); *folder_name = '/'; char *p = strstr(folder_name, "] "); if(p) *p = NULL;
+								strcpy(folder_name, entry.entry_name.d_name); *folder_name = '/'; get_flag(folder_name, "] ");
 							}
 							else
 							{

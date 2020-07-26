@@ -80,7 +80,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 		//get title & app version from PARAM.SFO
 		getTitleID(templn, version, GET_VERSION);
-		getTitleID(title, titleid, GET_TITLE_AND_ID); char *p = strstr(title, " ["); if(p) *p = NULL; p = strstr(title, "\n"); if(p) *p = NULL;
+		getTitleID(title, titleid, GET_TITLE_AND_ID); get_flag(title, " ["); get_flag(title, "\n");
 		get_cover_from_name(tempstr, strrchr(param, '/') + 1, titleid); // get title id from path (if title ID was not found in PARAM.SFO)
 		if(*version >= '0') {strcat(title, " v"); strcat(title, version);}
 		sprintf(tempstr, "%s%s", HDD0_GAME_DIR, titleid); bool has_updates_dir = file_exists(tempstr);
