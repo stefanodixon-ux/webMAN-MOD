@@ -62,7 +62,7 @@ static void restore_cfw_syscalls(void)
 static void restore_blocked_urls(void)
 {
 	// restore blocked servers (XMB only)
-	if(IS_ON_XMB) {for(u8 u = 0; u<url_count; u++) poke_lv1(blocked_url[u][0], blocked_url[u][1]); url_count = 0;}
+	if(IS_ON_XMB) {for(u8 u = 0; u < url_count; u++) poke_lv1(blocked_url[u][0], blocked_url[u][1]); url_count = 0;}
 }
 
 static void remove_cfw_syscall8(void)
@@ -162,6 +162,8 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 
 		close_language();
 #endif
+		if(url_count) restore_blocked_urls();
+
 		show_msg((char*)STR_CFWSYSRIP);
 		remove_cfw_syscalls(keep_ccapi);
 		delete_history(true);
@@ -189,7 +191,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 
 static bool block_url(u64 addr, u64 value)
 {
-	if(url_count>=MAX_BLOCKED_URL) return false;
+	if(url_count >= MAX_BLOCKED_URL) return false;
 
 	// backup original value @ poke address
 	blocked_url[url_count][0] = addr;
