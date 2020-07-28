@@ -62,7 +62,8 @@ static void restore_cfw_syscalls(void)
 static void restore_blocked_urls(void)
 {
 	// restore blocked servers (XMB only)
-	if(IS_ON_XMB) {for(u8 u = 0; u < url_count; u++) poke_lv1(blocked_url[u][0], blocked_url[u][1]); url_count = 0;}
+	//if(IS_ON_XMB)
+		{for(u8 u = 0; u < url_count; u++) poke_lv1(blocked_url[u][0], blocked_url[u][1]); url_count = 0;}
 }
 
 static void remove_cfw_syscall8(void)
@@ -235,6 +236,7 @@ static void block_online_servers(bool notify)
 
 				if(     mem == 0x733A2F2F61757468ULL)  // s://auth
 					{if(!block_url(addr,   0x733A2F2F00000000ULL)) break;}
+
 				else if(mem == 0x2E7073332E757064ULL)  // .ps3.upd
 					{if(!block_url(addr-8, 0x3A2F2F0000000000ULL)) break;}
 				else if(mem == 0x656E612E6E65742EULL)  // ena.net.
