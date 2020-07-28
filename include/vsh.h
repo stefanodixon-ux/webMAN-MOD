@@ -52,7 +52,7 @@ static sys_memory_container_t get_vsh_memory_container(void)
 	return vsh_memory_container_by_id(webman_config->vsh_mc);
 }
 
-static void show_msg(char* msg)
+static void show_msg(char *msg)
 {
 	//if(!vshtask_notify)
 	//	vshtask_notify = getNIDfunc("vshtask", 0xA02D46E7, 0);
@@ -65,7 +65,9 @@ static void show_msg(char* msg)
 
 static void play_rco_sound(const char *sound)
 {
-	paf_B93AFE7E((paf_F21655F3("system_plugin")), sound, 1, 0);
+	char *system_plugin = (char*)"system_plugin";
+	char *sep = strchr(sound, '|'); if(sep) {*sep = NULL, system_plugin = sep + 1;}
+	PlayRCOSound((View_Find(system_plugin)), sound, 1, 0);
 }
 
 static explore_plugin_interface *get_explore_interface(void)

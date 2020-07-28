@@ -2339,6 +2339,8 @@ retry_response:
 
 				bool mount_ps3 = !is_popup && islike(param, "/mount_ps3"), forced_mount = false;
 
+				if(is_mounting) {is_mounting = false; do_umount(false);}
+
 				if(mount_ps3 && IS_INGAME) {mount_ps3 = false, forced_mount = true, param[6] = '.';}
 
 				if(conn_s != (int)WM_FILE_REQUEST)
@@ -2926,7 +2928,7 @@ retry_response:
 
 						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL) && (strstr(param, ".ntfs[PSPISO]") == NULL))
 						{
-							sys_ppu_thread_sleep(1);
+							//sys_ppu_thread_sleep(1);
 
 							if(get_explore_interface())
 							{

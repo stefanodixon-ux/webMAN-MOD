@@ -190,7 +190,7 @@ static void unload_plugin_modules(bool all)
 	if(!get_explore_interface()) return;
 
 	explore_interface->ExecXMBcommand("close_all_list", 0, 0);
-	sys_ppu_thread_sleep(2);
+	if(all) sys_ppu_thread_sleep(2);
 }
 
 static void downloadPKG_thread(void)

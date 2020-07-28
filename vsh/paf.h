@@ -31,11 +31,11 @@ extern uint32_t *paf_23AFB290(uint32_t arg, uint32_t id);  // gets Interface fro
 extern uint32_t paf_50CDB465(uint32_t plugin, const char *sound);  // finds/gets Sound resource 	uint32_t paf_50CDB465(uint32_t plugin /*paf_F21655F3*/, const char *sound)
 #define GetRCOSound paf_50CDB465
 
-extern void paf_B93AFE7E(uint32_t plugin, const char* sound, float arg1, int arg2);  // Example: paf_B93AFE7E( paf_F21655F3("system_plugin"), "snd_trophy", 1, 0)
+extern void paf_B93AFE7E(uint32_t plugin, const char *sound, float arg1, int arg2);  // Example: paf_B93AFE7E( paf_F21655F3("system_plugin"), "snd_trophy", 1, 0)
 #define PlayRCOSound paf_B93AFE7E
 //Example: PlayRCOSound( FindLoadedPlugin("system_plugin"), "snd_trophy", 1, 0)
 
-extern uint32_t paf_3A8454FC(uint32_t* texture, uint32_t plugin, const char *texture_name);
+extern uint32_t *paf_3A8454FC(uint32_t* texture, uint32_t plugin, const char *texture_name);
 #define LoadRCOTexture paf_3A8454FC
 
 //void(*vshcommon_A20E43DB)(int32_t, const char* eventName, int32_t, int32_t* texture, int32_t*, const char*, const char*, float, const wchar_t* text, int32_t, int32_t, int32_t);
@@ -44,7 +44,8 @@ extern uint32_t paf_3A8454FC(uint32_t* texture, uint32_t plugin, const char *tex
 // paf_B96A18B0  // ? texture
 // paf_A499E2BE  // ? texture
 // paf_3A8454FC  // finds/gets Texture resource 	Example: out: uint32_t* texture, return from paf_F21655F3, "tex_notification_info"
-// paf_89B67B9C  // gets localized string text from plugin resource (Different strings are returned depending on the system language) 	Example: (w)char (paf_F21655F3("system_plugin"), "msg_signed_out")
+extern wchar_t *paf_89B67B9C(uint32_t plugin, const char *text);  // gets localized string text from plugin resource (Different strings are returned depending on the system language) 	Example: (w)char (paf_F21655F3("system_plugin"), "msg_signed_out")
+#define LoadRCOText paf_89B67B9C
 // paf_E50657B1  // ?
 // paf_11E195B3  // Finds Resource Object (located in .rco) 	void* paf_11E195B3(uint32_t plugin, const char* object) // Example: paf_B93AFE7E( paf_F21655F3("system_plugin"), "page_notification")
 

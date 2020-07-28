@@ -278,7 +278,7 @@ static void ps3mapi_led(char *buffer, char *templn, char *param)
 
 	sprintf(templn, "</select>   <b>%s:</b>  <select name=\"mode\">", "Mode"); concat(buffer, templn);
 
-	add_option_item(0, "Off",		IS_MARKED("mode=0"), buffer);
+	add_option_item(0, "Off",		 IS_MARKED("mode=0"), buffer);
 	add_option_item(1, "On",		 IS_MARKED("mode=1"), buffer);
 	add_option_item(2, "Blink fast", IS_MARKED("mode=2"), buffer);
 	add_option_item(3, "Blink slow", IS_MARKED("mode=3"), buffer);

@@ -680,7 +680,7 @@
 
 			// -- mount game folder
 			bool is_gameid = (*title_id >= 'A' && *title_id <= 'Z') && ISDIGIT(title_id[8]);
-			if(!is_gameid)
+			if (!is_gameid)
 				sprintf(title_id, "TEST00000");
 
 			cobra_map_game(_path, title_id, mount_app_home | !(webman_config->app_home));

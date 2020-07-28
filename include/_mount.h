@@ -999,9 +999,9 @@ static void do_umount(bool clean)
 
 			// wait for unload of netiso or rawiso plugin
 		#ifdef NET_SUPPORT
-			while(netiso_loaded || rawseciso_loaded) {sys_ppu_thread_usleep(100000);}
+			while(netiso_loaded || rawseciso_loaded) {sys_ppu_thread_usleep(100000); if(is_mounting) break;}
 		#else
-			while(rawseciso_loaded) {sys_ppu_thread_usleep(100000);}
+			while(rawseciso_loaded) {sys_ppu_thread_usleep(100000); if(is_mounting) break;}
 		#endif
 		}
  #endif
