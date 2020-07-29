@@ -1,4 +1,95 @@
 <style>
+.dot-elastic {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-elastic 1s infinite linear;
+}
+
+.dot-elastic::before, .dot-elastic::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-elastic::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-elastic-before 1s infinite linear;
+}
+
+.dot-elastic::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-elastic-after 1s infinite linear;
+}
+
+@keyframes dot-elastic-before {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1.5);
+  }
+  50% {
+    transform: scale(1, 0.67);
+  }
+  75% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes dot-elastic {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1, 1.5);
+  }
+  75% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes dot-elastic-after {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1, 0.67);
+  }
+  75% {
+    transform: scale(1, 1.5);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
 #txtSearch {
   background-position: 10px 12px; /* Position the search icon */
   background-repeat: no-repeat; /* Do not repeat the icon image */
@@ -28,22 +119,57 @@
   cursor: pointer;
 }
 
+#dbTable th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 112px;
+  background-color: #f1f1f1;
+}
+
 #dbTable tr.header, #dbTable tr:hover {
   /* Add a grey background color to the table header and on hover */
   background-color: #f1f1f1;
 }
 
 H1 {color:#334;}
+
+#PS2Classic {position:absolute; top:20px; right:50px; color:navy; font-family:arial}
+
+div.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  background-color: white;
+}
+
+#sorting {
+	position:fixed;
+	top:45%;
+	left:35%;
+	width:200px;
+	font-size:60px;
+	font-family:arial;
+	background-color:#f0f0f0;
+	padding:20px;
+	border-width:5px;
+	border-color:red;
+	box-shadow: 15px 15px 15px #ccc;
+	opacity:0.9;
+}
 </style>
 
 <body onload="dbLinks();">
+<div id="sorting" style="display:none;"><table><tr><td style="width:150px;font-size:40px;";>Sorting</td><td><div class="dot-elastic" style="top:10px;"></div></td></tr></table></div>
+<div class="sticky">
 <H1>PS2 CONFIG Database</H1>
 <input type="text" id="txtSearch" onkeyup="doSearch()" placeholder="Search for names..">
-<table id="dbTable" onclick="download()">
+<label id="PS2Classic"><input type="checkbox" onchange="doSearch()" accesskey="c" id="chkPS2">PS2 <u>C</u>lassics [ENC]</label><br>
+</div>
+<table id="dbTable">
 <tr class="header">
-  <th style="width:10%;">Type</th>
-  <th style="width:20%;">Title ID</th>
-  <th style="width:70%;">Title</th>
+  <th style="width:10%;" onclick="sortTable(0);">Type</th>
+  <th style="width:20%;" onclick="sortTable(1);">Title ID</th>
+  <th style="width:70%;" onclick="sortTable(2);">Title</th>
 </tr>
 <tbody>
 <tr><td>CUSTOM</td><td>SLUS_212.68</td><td>24 - The Game</td></tr>
@@ -187,7 +313,7 @@ H1 {color:#334;}
 <tr><td>CUSTOM</td><td>SLPM_661.60</td><td>Devil May Cry 3 [Special Edition]</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_209.64</td><td>Devil May Cry 3</td></tr>
 <tr><td>CUSTOM</td><td>SLKA_252.65</td><td>Devil May Cry 3</td></tr>
-<tr><td>CUSTOM</td><td>SLPM_675.02</td><td>DEVIL MAY CRY</td></tr>
+<tr><td>CUSTOM</td><td>SLPM_675.02</td><td>Devil May Cry</td></tr>
 <tr><td>CUSTOM</td><td>SLES_503.58</td><td>Devil May Cry</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_202.16</td><td>Devil May Cry</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_650.38</td><td>Devil May Cry</td></tr>
@@ -525,6 +651,7 @@ H1 {color:#334;}
 <tr><td>CUSTOM</td><td>SLUS_212.43</td><td>Metal Gear Solid 3 - Subsistence</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_215.50</td><td>Metal Slug Anthology</td></tr>
 <tr><td>CUSTOM</td><td>SCPS_150.16</td><td>Minna no Golf 3</td></tr>
+<tr><td>CUSTOM</td><td>SCPS_150.59</td><td>Minna no Golf 4</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_625.55</td><td>Momotaro Densetsu</td></tr>
 <tr><td>CUSTOM</td><td>SLES_514.39</td><td>Mortal Kombat - Deadly Alliance</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_204.23</td><td>Mortal Kombat - Deadly Alliance</td></tr>
@@ -1093,7 +1220,7 @@ H1 {color:#334;}
 <tr><td>GX</td><td>SLES_503.58</td><td>Devil May Cry</td></tr>
 <tr><td>GX</td><td>SLUS_202.16</td><td>Devil May Cry</td></tr>
 <tr><td>GX</td><td>SLPM_650.38</td><td>Devil May Cry</td></tr>
-<tr><td>GX</td><td>SLPM_675.02</td><td>DEVIL MAY CRY</td></tr>
+<tr><td>GX</td><td>SLPM_675.02</td><td>Devil May Cry</td></tr>
 <tr><td>GX</td><td>SLES_517.21</td><td>Disney's Extreme Skate Adventure</td></tr>
 <tr><td>GX</td><td>SLES_517.20</td><td>Disney's Extreme Skate Adventure</td></tr>
 <tr><td>GX</td><td>SLUS_206.07</td><td>Disney's Extreme Skate Adventure</td></tr>
@@ -3265,41 +3392,71 @@ H1 {color:#334;}
 </tbody>
 </table>
 <script>
+function $(id){return document.getElementById(id);}
+
+var i, classics = 0;
+var table = $("dbTable");
+var tr = table.getElementsByTagName('tbody')[1].getElementsByTagName('tr');
+for (i = 2200; i < tr.length; i++) {
+	cols = tr[i].children;
+	if(cols[0].innerText=="ENC") {classics = i; break;}
+}
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const q = urlParams.get('q');
+
+var enc = $("chkPS2");
+enc.checked = urlParams.get('enc')!=null;
+
+var input = $("txtSearch");
+input.value = q;
+doSearch();
+input.select();
+input.focus();
+
 function doSearch() {
 	// Declare variables
-	var input, filter, table, tr, td, i, txtValue, cols;
-	input = document.getElementById("txtSearch");
-	filter = input.value.toUpperCase();
-	table = document.getElementById("dbTable");
-	tr = table.getElementsByTagName("tr");
+	var td, txtValue, cols, count = 0;
+	var filter = input.value.replace(/\s/g, '.+');
+	var filter2 = filter.replace(".", "").replace(/-/g, '.+');
+
+	var reg1 = new RegExp(filter, "i");
+	var reg2 = new RegExp(filter2, "i");
 
 	// Loop through all table rows, and hide those who don't match the search query
 	for (i = 0; i < tr.length; i++) {
-		cols = tr[i].getElementsByTagName("td");
-		td = cols[1];
-		if (td) {
-			txtValue = td.textContent || td.innerText;
-			if (txtValue.toUpperCase().indexOf(filter) > -1) {
-				tr[i].style.display = "";
-			} else {
-				td = cols[2];
-				if (td) {
-					txtValue = td.textContent || td.innerText;
-					if (txtValue.toUpperCase().indexOf(filter) > -1) {
-						tr[i].style.display = "";
-					} else {
-						tr[i].style.display = "none";
+		if(chkPS2.checked == (i < classics))
+			tr[i].style.display = "none";
+		else {
+			cols = tr[i].children;
+			td = cols[2];
+			if (td) {
+				txtValue = td.textContent || td.innerText;
+				if (txtValue.search(reg1) > -1) {
+					tr[i].style.display = ""; count++;
+				} else {
+					td = cols[1];
+					if (td) {
+						txtValue = td.textContent || td.innerText;
+						if (txtValue.replace(".", "").search(reg2) > -1) {
+							tr[i].style.display = ""; count++;
+						} else {
+							tr[i].style.display = "none";
+						}
 					}
 				}
 			}
 		}
 	}
+	cols = table.getElementsByTagName("th");
+	cols[2].innerText=count + " Title(s)";
+	input.focus();
 }
 function dbLinks() {
 	if (!document.getElementsByTagName || !document.createTextNode) return;
-	var rows = document.getElementById('dbTable').getElementsByTagName('tbody')[1].getElementsByTagName('tr');
-	for (i = 0; i < rows.length; i++) {
-		rows[i].onclick = function() {
+	for (i = 0; i < tr.length; i++) {
+		tr[i].onclick = function() {
 			//alert(this.rowIndex + 1);
 			var cols = this.getElementsByTagName('td');
 			var url = "https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/" + cols[0].innerText+"/"+cols[1].innerText;
@@ -3307,6 +3464,50 @@ function dbLinks() {
 			self.location = url;
 		}
 	}
+}
+
+$('txtSearch').addEventListener('paste', (e) => {
+	e.preventDefault();
+	const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+	window.document.execCommand('insertText', false, text);
+	doSearch();
+});
+
+$('txtSearch').addEventListener('keyup',kd,false);
+function kd(e)
+{
+	e=e||window.event;
+	var kc=e.keyCode;
+	if(kc==27) {
+		input.value='';
+		doSearch();
+	}
+	if(kc==67) {
+		input.focus();
+	}
+}
+
+function sortTable(colID) {
+
+	$("sorting").style.display="block";
+
+	setTimeout(function(){
+		var rows, r, i, x, y, len, b = 1;
+		rows = table.rows; len = (rows.length - 1);
+		if(chkPS2.checked) b = classics; else {len = classics; while(len > b && rows[len].style.display == "none") len--;}
+
+		for (r = b; r < len - 1; r++) {
+			x = rows[r].children[colID];
+			for (i = r + 1; i < len; i++) {
+				y = rows[i].children[colID];
+				if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+					rows[r].parentNode.insertBefore(rows[i], rows[r]);
+					x = rows[r].children[colID];
+				}
+			}
+		}
+		$("sorting").style.display="none";
+	}, 10);
 }
 </script>
 </body>
