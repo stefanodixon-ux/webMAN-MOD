@@ -50,6 +50,7 @@
 #define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
 
 //// TEST FEATURES ////
+//#define ALLOW_DISABLE_MAP_PATH	1	// Use SELECT+O to temporarily disable sys_map_path()
 #define SYS_BGM				1	// system background music (may freeze the system when enabled)
 //#define USE_DEBUG			1	// debug using telnet
 //#define WEB_CHAT			1	// /chat.ps3

@@ -81,7 +81,7 @@ static void init_graphic(void)
 
 static void saveBMP(char *path, bool notify_bmp, bool small)
 {
-	if(extcasecmp(path, ".bmp", 4))
+	if(!is_ext(path, ".bmp"))
 	{
 		// current date/time
 		CellRtcDateTime t;
@@ -180,7 +180,7 @@ static void saveBMP2(char *path, bool notify_bmp)
 	if(IS_ON_XMB) //XMB
 	{
 		char bmp[0x50];
-		if(extcasecmp(path, ".bmp", 4))
+		if(!is_ext(path, ".bmp"))
 		{
 			path = bmp;
 

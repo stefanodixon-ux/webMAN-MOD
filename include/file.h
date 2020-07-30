@@ -204,6 +204,16 @@ static bool not_exists(const char *path)
 	return !file_exists(path);
 }
 
+static bool is_ext(const char *path, const char *ext)
+{
+	return !extcasecmp(path, ext, 4);
+}
+
+static bool is_iso_0(const char *filename)
+{
+	return !extcasecmp(filename, ".iso.0", 6);
+}
+
 #ifdef COBRA_ONLY
 #define check_ps3_game(path)
 #else
@@ -568,7 +578,7 @@ merge_next:
 
 			if((part_size > 0xFFFFFFFFULL) && islike(file2, "/dev_usb"))
 			{
-				if(!extcasecmp(file2, ".iso", 4)) strcat(file2, ".0"); else strcat(file2, ".66600");
+				if(is_ext(file2, ".iso")) strcat(file2, ".0"); else strcat(file2, ".66600");
 				part++; part_size = 0xFFFF0000ULL; //4Gb - 64kb
 			}
 

@@ -29,7 +29,7 @@ static void set_file_type(const char *path, const char *filename, char *ftype)
 	else if(strstr(path, "/ROMS/"))
 		sprintf(ftype, " rom");
 #endif
-	else if(!extcmp(filename, ".BIN.ENC", 8) || strstr(path, "/PS2") || strstr(filename, ".ntfs[PS2"))
+	else if(is_BIN_ENC(filename) || strstr(path, "/PS2") || strstr(filename, ".ntfs[PS2"))
 		sprintf(ftype, " ps2");
 	else if(strstr(path, "/PSP") || strstr(filename, ".ntfs[PSP"))
 		sprintf(ftype, " psp");
@@ -280,7 +280,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
  #endif
 	else if( ((!is_net) && ( strstr(ext13, ".ntfs[") || _IS(ext8, ".BIN.ENC") )) || ((flen > 4) && (strcasestr(ISO_EXTENSIONS, ext) != NULL) && !islike(templn, HDD0_GAME_DIR)) )
 	{
-		if( (strcasestr(name, ".iso.") != NULL) && extcasecmp(name, ".iso.0", 6) && ( !strstr(ext13, ".ntfs[") ))
+		if( (strcasestr(name, ".iso.") != NULL) && !is_iso_0(name) && ( !strstr(ext13, ".ntfs[") ))
 			sprintf(fsize, "<label title=\"%'llu %s\"> %'llu %s</label>", sbytes, STR_BYTE, sz, sf);
 		else
 			sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
@@ -476,10 +476,10 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 						islike(param, HDD0_GAME_DIR) ? "/fixgame.ps3" :
 #endif
 #ifdef PKG_HANDLER
-						!extcmp(param + tlen, ".pkg", 4) ? "/install.ps3" :
+						is_ext(param + tlen, ".pkg") ? "/install.ps3" :
 #endif
 						islike(param, "/dev_hdd0/GAMES/covers") ? "" :
-						((isDir(param) || strcasestr(ISO_EXTENSIONS, param + tlen) != NULL) || (strstr(param, "/GAME") != NULL) || (strstr(param, ".ntfs[") != NULL) || (strstr(param, "/GAME") != NULL) || islike(param, "/net") || !extcmp(param + MAX(tlen - 4, 0), ".BIN.ENC", 8)) ? "/mount.ps3" :
+						((isDir(param) || strcasestr(ISO_EXTENSIONS, param + tlen) != NULL) || (strstr(param, "/GAME") != NULL) || (strstr(param, ".ntfs[") != NULL) || (strstr(param, "/GAME") != NULL) || islike(param, "/net") || is_BIN_ENC(param + MAX(tlen - 4, 0))) ? "/mount.ps3" :
 						"", url, label);
 	}
 

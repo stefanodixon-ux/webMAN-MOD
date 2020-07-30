@@ -109,7 +109,7 @@
 	// ------------------
 	// mount PS2 Classic
 	// ------------------
-	if(!extcmp(_path, ".BIN.ENC", 8))
+	if(is_BIN_ENC(_path))
 	{
 		char temp[STD_PATH_LEN + 16];
 

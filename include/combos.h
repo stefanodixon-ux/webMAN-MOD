@@ -218,8 +218,7 @@
 								enable_classic_ps2_mode();
 							}
 
-							sprintf(msg, "PS2 Classic %s", classic_ps2_enabled ? STR_DISABLED : STR_ENABLED);
-							show_msg(msg);
+							show_status("PS2 Classic", classic_ps2_enabled ? STR_DISABLED : STR_ENABLED);
 
 							n = 0;
 							break;
@@ -461,7 +460,7 @@
 							else
  #endif
 							{
-								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
+								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
 								if(max_temp) //auto mode
 								{
@@ -496,7 +495,7 @@
 							else
  #endif
 							{
-								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
+								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
 								if(max_temp) //auto mode
 								{
@@ -528,7 +527,7 @@
 							else
  #endif
 							{
-								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
+								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
 								if(webman_config->minfan-5 >= MIN_FANSPEED) webman_config->minfan -= 5;
 								sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH3, webman_config->minfan);
@@ -549,7 +548,7 @@
 							else
  #endif
 							{
-								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, msg);
+								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
 								if(webman_config->minfan < 95) webman_config->minfan += 5;
 								sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH3, webman_config->minfan);
@@ -660,7 +659,22 @@
 								if(do_custom_combo("select_circle")) break;
 								else
  #endif
+ #ifdef ALLOW_DISABLE_MAP_PATH
+								{
+									u64 open_hook_symbol = (dex_mode) ? open_hook_dex : open_hook_cex;
+
+									bool map_path_enabled = (peekq(open_hook_symbol) != original_open_hook);
+
 									do_umount(true);
+
+									if(webman_config->app_home)
+									{
+										show_status("map_path", disable_map_path(map_path_enabled) ? STR_DISABLED : STR_ENABLED);
+									}
+								}
+ #else
+									do_umount(true);
+ #endif
 
 								n = 0;
 								break;
@@ -739,7 +753,7 @@
 					else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2 )) // L3+R2+START (enable/disable fancontrol)
 					{
 						// L3+R2+START = Enable/disable fancontrol
-						enable_fan_control(TOGGLE_MODE, msg);
+						enable_fan_control(TOGGLE_MODE);
 
 						n = 0;
 						break;

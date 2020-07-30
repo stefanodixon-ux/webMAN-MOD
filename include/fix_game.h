@@ -281,7 +281,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 		fix_in_progress = true, fix_aborted = false, fixed_count = 0;
 
 #ifdef COBRA_ONLY
-		if(!extcasecmp(game_path, ".iso", 4) || !extcasecmp(game_path, ".iso.0", 6))
+		if(is_ext(game_path, ".iso") || is_iso_0(game_path))
 			fix_iso(game_path, 0x100000UL, false);
 		else
 #endif //#ifdef COBRA_ONLY

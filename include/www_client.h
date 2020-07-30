@@ -115,7 +115,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			{
 				*p = NULL;
 				if(code == CODE_INSTALL_PKG) add_breadcrumb_trail(body, (char *)msg + 11); else strcat(body, msg);
-				if(code == CODE_DOWNLOAD_FILE || extcasecmp(pkg_path, ".p3t", 4) != 0) strcat(body, "<p>To: \0"); add_breadcrumb_trail(body, p + 5);
+				if(code == CODE_DOWNLOAD_FILE || !is_ext(pkg_path, ".p3t")) strcat(body, "<p>To: \0"); add_breadcrumb_trail(body, p + 5);
 			}
 			else
 				strcat(body, msg);
@@ -1118,8 +1118,8 @@ parse_request:
 					else
 						enable_classic_ps2_mode();
 
-					sprintf(header, "PS2 Classic %s", classic_ps2_enabled ? STR_DISABLED : STR_ENABLED);
-					show_msg(header);
+					show_status("PS2 Classic", classic_ps2_enabled ? STR_DISABLED : STR_ENABLED);
+
 					sys_ppu_thread_sleep(3);
 				}
 				else
@@ -1158,7 +1158,7 @@ parse_request:
 					{
 						if(*param2 == NULL) sprintf(param2, "/");
 						if(*param2 == '/' ) {do_umount(false); sprintf(header, "http://%s%s", local_ip, param2); open_browser(header, 0);} else
-						if(*param2 == '$' ) {if(get_explore_interface()) explore_interface->ExecXMBcommand(url, 0, 0);} else
+						if(*param2 == '$' ) {if(get_explore_interface()) exec_xmb_command(url);} else
 						if(*param2 == '?' ) {do_umount(false);  open_browser(url, 0);} else
 											{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23
 
@@ -1245,6 +1245,7 @@ parse_request:
 				}
 				else
 					{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; show_msg((char*)"KLIC: Not in-game!");}
+
 
 				sprintf(prev, "%s", ((klic_polling_status) ? (klic_polling ? "Auto-Log: Running" : "Auto-Log: Stopped") :
 															((klic_polling == KL_GET)  ? "Added to Log" :
@@ -1336,55 +1337,76 @@ parse_request:
 
 				memset(header, 0, HTML_RECV_SIZE);
 
-				bool use_sc35 = false;
-				bool isremap = (param[1] == 'r');
-				bool nocheck = (param[6] == '_');
-
-				if(param[10] == '/') get_value(path1, param + 10, MAX_PATH_LEN); else
-				if(param[11] == '/') get_value(path1, param + 11, MAX_PATH_LEN); else
+				#ifdef ALLOW_DISABLE_MAP_PATH
+				// /remap.ps3?status                  status of map path
+				// /remap.ps3?disable                 disable map path
+				// /remap.ps3?enable                  restore map path after disable
+				if(param[10] == '?' && (param[11] == 'e' || param[11] == 'd'))
 				{
-					get_param("src=", path1, param, MAX_PATH_LEN);
-					#ifdef PS3MAPI
-					use_sc35 = !is_syscall_disabled(35);
-					#else
-					use_sc35 = true;
-					#endif
+					disable_map_path(param[11] == 'd');
 				}
-
-				if(isremap)
+				else if(param[10] == '?' && (param[11] == 's'))
 				{
-					sprintf(path2, "/dev_bdvd");
-					get_param("to=", path2, param, MAX_PATH_LEN);
-				}
+					u64 open_hook_symbol = (dex_mode) ? open_hook_dex : open_hook_cex;
 
-				if(param[10] == 0)
-				{
-					sys_map_path(NULL, NULL);
-					apply_remaps();
-				}
-				else if(*path1 && (path1[1] != NULL) && (nocheck || file_exists(isremap ? path2 : path1)))
-				{
-					if(use_sc35)
-						sys_map_path2(path1, path2);
-					else
-						sys_map_path(path1, path2);
-
-					htmlenc(url, path2, 1); urlenc(url, path1); htmlenc(title, path1, 0);
-
-					if(isremap && (*path2 != NULL))
-					{
-						htmlenc(path1, path2, 0);
-						sprintf(param,  "Remap: " HTML_URL "<br>"
-										"To: "    HTML_URL "<p>"
-										"Unmap: " HTML_URL2, url, title, path1, path2, "/unmap.ps3", url, title);
-					}
-					else
-					{
-						sprintf(param, "Unmap: " HTML_URL, url, title);
-					}
+					bool map_path_enabled = (peekq(open_hook_symbol) != original_open_hook);
+					sprintf(param, "%s %s", "map_path", map_path_enabled ? STR_ENABLED : STR_DISABLED );
 				}
 				else
-					sprintf(param, "%s: %s %s", STR_ERROR, (isremap ? path2 : path1), STR_NOTFOUND);
+				#endif
+				{
+					bool use_sc35 = false;
+					bool isremap = (param[1] == 'r');
+					bool nocheck = (param[6] == '_');
+
+					disable_map_path(false);
+
+					if(param[10] == '/') get_value(path1, param + 10, MAX_PATH_LEN); else
+					if(param[11] == '/') get_value(path1, param + 11, MAX_PATH_LEN); else
+					{
+						get_param("src=", path1, param, MAX_PATH_LEN);
+						#ifdef PS3MAPI
+						use_sc35 = !is_syscall_disabled(35);
+						#else
+						use_sc35 = true;
+						#endif
+					}
+
+					if(isremap)
+					{
+						sprintf(path2, "/dev_bdvd");
+						get_param("to=", path2, param, MAX_PATH_LEN);
+					}
+
+					if(param[10] == 0)
+					{
+						sys_map_path(NULL, NULL);
+						apply_remaps();
+					}
+					else if(*path1 && (path1[1] != NULL) && (nocheck || file_exists(isremap ? path2 : path1)))
+					{
+						if(use_sc35)
+							sys_map_path2(path1, path2);
+						else
+							sys_map_path(path1, path2);
+
+						htmlenc(url, path2, 1); urlenc(url, path1); htmlenc(title, path1, 0);
+
+						if(isremap && (*path2 != NULL))
+						{
+							htmlenc(path1, path2, 0);
+							sprintf(param,  "Remap: " HTML_URL "<br>"
+											"To: "    HTML_URL "<p>"
+											"Unmap: " HTML_URL2, url, title, path1, path2, "/unmap.ps3", url, title);
+						}
+						else
+						{
+							sprintf(param, "Unmap: " HTML_URL, url, title);
+						}
+					}
+					else
+						sprintf(param, "%s: %s %s", STR_ERROR, (isremap ? path2 : path1), STR_NOTFOUND);
+				}
 
 				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 
@@ -1656,7 +1678,7 @@ parse_request:
 				char *source = param + cmd_len, *dest = strstr(source, "|");
 				if(dest) {*dest++ = NULL;} else {dest = strstr(source, "&to="); if(dest) {*dest = NULL, dest+=4;}}
 
-				if(dest && (*dest != '/') && !extcmp(source, ".bak", 4)) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
+				if(dest && (*dest != '/') && is_ext(source, ".bak")) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
 
 				if(islike(source, "/dev_blind") || islike(source, "/dev_hdd1")) mount_device(source, NULL, NULL); // auto-mount source device
 				if(islike(dest,   "/dev_blind") || islike(dest,   "/dev_hdd1")) mount_device(dest,   NULL, NULL); // auto-mount destination device
@@ -2415,7 +2437,7 @@ retry_response:
 						char *p = strrchr(filename, '/');
 						if(p)
 						{
-							if(!extcmp(p, ".bat", 4)) {sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
+							if(is_ext(p, ".bat")) {sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
 							strcpy(txt, p); *p = NULL; sprintf(tempstr," &nbsp; " HTML_URL HTML_URL2 "</form>", filename, filename, filename, txt, txt); _concat(&sbuffer, tempstr);
 						}
 					}
@@ -2937,7 +2959,7 @@ retry_response:
 									focus_first_item();
 								else
  #endif
-								if(webman_config->ps2l && !extcmp(param, ".BIN.ENC", 8))
+								if(webman_config->ps2l && is_BIN_ENC(param))
 									focus_first_item();
 								else
 									explore_close_all(param);

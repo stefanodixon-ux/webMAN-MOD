@@ -125,7 +125,7 @@ static int process_open_cmd(u8 index, netiso_open_cmd *cmd)
 
 			/// detect multi part ISO - open file parts ///
 
-			if(!extcasecmp(filepath, ".iso.0", 6))
+			if(is_iso_0(filepath))
 			{
 				clients[index].fp[0] = fd;
 				clients[index].is_multipart = 1;
@@ -383,7 +383,7 @@ static int process_stat_cmd(u8 index, netiso_stat_cmd *cmd)
 
 			/// calc size of multi-part ///
 
-			if(!extcasecmp(filepath, ".iso.0", 6))
+			if(is_iso_0(filepath))
 			{
 				fp_len = strlen(filepath) - 1;
 				for(u8 i = 1; i < MAX_ISO_PARTS; i++)

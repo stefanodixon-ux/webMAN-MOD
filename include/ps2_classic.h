@@ -2,6 +2,11 @@
 #define SYSCALL8_OPCODE_ENABLE_PS2NETEMU	0x1ee9	/* Cobra 7.50 */
 #define PS2NETEMU_GET_STATUS				2
 
+static bool is_BIN_ENC(const char *filename)
+{
+	return !extcmp(filename, ".BIN.ENC", 8);
+}
+
 static int get_cobra_ps2netemu_status(void)
 {
 	system_call_2(SC_COBRA_SYSCALL8, (u64) SYSCALL8_OPCODE_ENABLE_PS2NETEMU, (u64) PS2NETEMU_GET_STATUS);
@@ -21,9 +26,7 @@ static void enable_ps2netemu_cobra(int param)
 
 	if(pad_data.len > 0)
 	{
-		char msg[100];
-		sprintf(msg, "%s %s", webman_config->ps2emu ? "ps2_netemu.self" : "ps2_emu.self", STR_ENABLED);
-		show_msg(msg);
+		show_status(webman_config->ps2emu ? "ps2_netemu.self" : "ps2_emu.self", STR_ENABLED);
 	}
 }
 #endif

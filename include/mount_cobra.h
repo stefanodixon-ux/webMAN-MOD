@@ -79,7 +79,7 @@
 
 			CD_SECTOR_SIZE_2352 = 2352;
 
-			if(!extcasecmp(_path, ".iso.0", 6))
+			if(is_iso_0(_path))
 			{
 				for(; iso_parts < MAX_ISO_PARTS; iso_parts++)
 				{
@@ -341,7 +341,7 @@
 				else
 				{
 					mount_unk = netiso_args.emu_mode = EMU_DVD;
-					if(!extcasecmp(netpath, ".pkg", 4))
+					if(is_ext(netpath, ".pkg"))
 					{
 						pkg_slash = strrchr(netpath, '/'); if(pkg_slash) *pkg_slash = NULL;
 					}
@@ -624,7 +624,7 @@
 						if(isDir("/dev_bdvd/PS3_GM01")) mount_unk = EMU_PS3; else
 						if(isDir("/dev_bdvd/VIDEO_TS")) mount_unk = EMU_DVD; else
 						if(file_exists("/dev_bdvd/SYSTEM.CNF") || strcasestr(_path, "PS2")) mount_unk = EMU_PS2_DVD; else
-						if(strcasestr(_path, "PSP")!=NULL && !extcasecmp(_path, ".iso", 4)) mount_unk = EMU_PSP; else
+						if(strcasestr(_path, "PSP")!=NULL && is_ext(_path, ".iso")) mount_unk = EMU_PSP; else
 						if(!isDir("/dev_bdvd")) mount_unk = EMU_PSX; // failed to mount PSX CD as bd disc
 
 						if(mount_unk) goto mount_again;

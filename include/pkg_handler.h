@@ -189,7 +189,7 @@ static void unload_plugin_modules(bool all)
 
 	if(!get_explore_interface()) return;
 
-	explore_interface->ExecXMBcommand("close_all_list", 0, 0);
+	exec_xmb_command("close_all_list");
 	if(all) sys_ppu_thread_sleep(2);
 }
 
@@ -310,7 +310,7 @@ static void installPKG_thread(void)
 	installing_pkg = true;
 	game_ext_interface->LoadPage();
 
-	if(!extcasecmp(pkg_path, ".p3t", 4))
+	if(is_ext(pkg_path, ".p3t"))
 		game_ext_interface->installTheme(pkg_path, (char*)"");
 	else
 		game_ext_interface->installPKG(pkg_path);
@@ -355,7 +355,7 @@ static int installPKG(const char *pkgpath, char *msg)
 
 		if(file_exists(pkg_path))
 		{
-			if(!extcasecmp(pkg_path, ".pkg", 4) || !extcasecmp(pkg_path, ".p3t", 4)) //check if file has a .pkg extension or not and treat accordingly
+			if(is_ext(pkg_path, ".pkg") || is_ext(pkg_path, ".p3t")) //check if file has a .pkg extension or not and treat accordingly
 			{
 				unload_plugin_modules(true);
 
@@ -394,7 +394,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 
 		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 		{
-			if(!extcasecmp(dir.d_name, ".pkg", 4))
+			if(is_ext(dir.d_name, ".pkg"))
 			{
 				if(!webman_config->nobeep) { BEEP1 }
 
@@ -447,7 +447,7 @@ static void poll_downloaded_pkg_files(char *msg)
 
 			while(working && (cellFsReaddir(fd, &entry, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 			{
-				if(!extcmp(entry.d_name, ".pkg", 4))
+				if(is_ext(entry.d_name, ".pkg"))
 				{
 					sprintf(dlfile, "%s%s", TEMP_DOWNLOAD_PATH, entry.d_name); pkg_count++;
 					cellFsChmod(dlfile, MODE);

@@ -1181,8 +1181,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						else
 						if(_IS(cmd, "COPY"))
 						{
-							sprintf(buffer, "%s %s", STR_COPYING, filename);
-							show_msg(buffer);
+							show_status(STR_COPYING, filename);
 
 							absPath(source, filename, cwd);
 							ssend(conn_s_ftp, FTP_OK_200); // The requested action has been successfully completed.

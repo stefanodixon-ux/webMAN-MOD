@@ -150,7 +150,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		u8 st, mode, unknown;
 		sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
 
-		if(strstr(param, "?u")) enable_fan_control(ENABLE_SC8, templn);
+		if(strstr(param, "?u")) enable_fan_control(ENABLE_SC8);
 	}
 
 #ifdef SPOOF_CONSOLEID
@@ -190,11 +190,11 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		{
 			u32 new_speed = get_valuen(param, "fan=", 0, webman_config->maxfan); max_temp = 0;
 			if(!new_speed)
-				enable_fan_control(DISABLED, templn);
+				enable_fan_control(DISABLED);
 			else
 			{
 				webman_config->man_rate = RANGE(new_speed, webman_config->minfan, webman_config->maxfan);
-				if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);
+				if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 			}
 		}
 		else
@@ -212,7 +212,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 					else
 						max_temp = webman_config->dyn_temp;
 
-					if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8, templn);
+					if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 				}
 			}
 		}

@@ -85,7 +85,7 @@ static void auto_play(char *param, u8 play_ps3)
 
 		bool mount_ps3 = (strstr(param, "_ps3") != NULL);
 
-		if(!l2 && !extcmp(param, ".BIN.ENC", 8))
+		if(!l2 && is_BIN_ENC(param))
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->ps2l && file_exists(PS2_CLASSIC_ISO_PATH))
 			{
@@ -112,7 +112,7 @@ static void auto_play(char *param, u8 play_ps3)
 		{
 			if(XMB_GROUPS && webman_config->ps3l)
 			{
-				explore_interface->ExecXMBcommand("focus_index pkg_launcher", 0, 0);
+				exec_xmb_command("focus_index pkg_launcher");
 				explore_exec_push(200000, true); // open pkg_launcher folder
 			}
 		}
@@ -125,12 +125,12 @@ static void auto_play(char *param, u8 play_ps3)
 			{
 				if(strcasestr(param, ".pkg"))
 				{
-					explore_interface->ExecXMBcommand("close_all_list", 0, 0);
-					explore_interface->ExecXMBcommand("focus_segment_index seg_package_files", 0, 0);
+					exec_xmb_command("close_all_list");
+					exec_xmb_command("focus_segment_index seg_package_files");
 				}
 				else
 				{
-					explore_interface->ExecXMBcommand("focus_index rx_video", 0, 0);
+					exec_xmb_command("focus_index rx_video");
 
 					// open rx_video folder
 					if(!explore_exec_push(200000, true) || !autoplay || strcasestr(param, ".mkv")) {is_busy = false; return;}
@@ -708,7 +708,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					mlen = sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
 											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[strstr(param,"BDISO") ? iBDVD : iDVD], mounted ? STR_MOVIELOADED : STR_ERROR);
 				}
-				else if(!extcmp(param, ".BIN.ENC", 8))
+				else if(is_BIN_ENC(param))
 				{
 #ifndef ENGLISH_ONLY
 					char *STR_PS2LOADED = buf; //[240]; //	= "Game loaded successfully. Start the game using <b>PS2 Classic Launcher</b>.<hr>";
@@ -719,7 +719,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
 											"<hr>%s", enc_dir_name, wm_icons[iPS2], 300, mounted ? STR_PS2LOADED : STR_ERROR);
 				}
-				else if(((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && !extcasecmp(param, ".iso", 4)) || is_gamei)
+				else if(((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && is_ext(param, ".iso")) || is_gamei)
 				{
 #ifndef ENGLISH_ONLY
 					char *STR_PSPLOADED = buf; //[232]; //	= "Game loaded successfully. Start the game using <b>PSP Launcher</b>.<hr>";
@@ -961,6 +961,8 @@ static void do_umount(bool clean)
 
 		cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", MODE); // restore SND0 permissions of game mounted (JB folder)
 
+		apply_remaps();
+
 		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL); // unmap UPDATE from bdvd
 
 		// map PKGLAUNCH cores folder to RETROARCH
@@ -1115,7 +1117,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 
 	if(flen < 0) ;
 
-	else if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
+	else if(is_ext(_path, ".cue") || is_ext(_path, ".ccd"))
 	{
 		const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
 		for(u8 e = 0; e < 8; e++)
@@ -1137,7 +1139,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 
 	mount_iso = mount_iso || file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = emu_type;
 
-	if(!extcasecmp(_path, ".cue", 4) || !extcasecmp(_path, ".ccd", 4))
+	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd"))
 	{
 		sys_addr_t sysmem = 0;
 		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
@@ -1208,7 +1210,7 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 				}
 			else
 			{
-				automount = 0; if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF, msg);
+				automount = 0; if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF);
 			}
 		}
 		else if((automount == 0) && IS_ON_XMB)
@@ -1231,14 +1233,14 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 				save_file(WMNOSCAN, NULL, SAVE_ALL);
 			}
-			else if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF, msg);
+			else if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF);
 
 			automount = 99;
 		}
 	}
 	else if(fan_ps2_mode && IS_INGAME)
 	{
-		automount = 0; enable_fan_control(PS2_MODE_OFF, msg);
+		automount = 0; enable_fan_control(PS2_MODE_OFF);
 	}
 }
 #endif
@@ -1377,7 +1379,7 @@ static void mount_thread(u64 action)
 	char _path[STD_PATH_LEN], title_id[TITLEID_LEN];
 
 #ifdef PKG_HANDLER
-	if(!extcasecmp(_path0, ".pkg", 4) && file_exists(_path0))
+	if(is_ext(_path0, ".pkg") && file_exists(_path0))
 	{
 		mount_ret = (installPKG(_path0, _path) == CELL_OK);
 		is_mounting = false;
@@ -1394,7 +1396,7 @@ static void mount_thread(u64 action)
 	// ----------------
 	// open url & exit
 	// ----------------
-	if(islike(_path0 + 1, "http") || islike(_path0, "http") || !extcmp(_path0, ".htm", 4))
+	if(islike(_path0 + 1, "http") || islike(_path0, "http") || is_ext(_path0, ".htm"))
 	{
 		char *url = strstr(_path0, "http");
 
@@ -1413,7 +1415,7 @@ static void mount_thread(u64 action)
 		goto finish;
 	}
 #ifdef COPY_PS3
-	else if(!extcmp(_path0, ".txt", 4) || !extcmp(_path0, ".bat", 4))
+	else if(is_ext(_path0, ".txt") || is_ext(_path0, ".bat"))
 	{
 		parse_script(_path0);
 		ret = false;
@@ -1500,7 +1502,7 @@ exit_mount:
 	// wait few seconds until the bdvd is mounted
 	// -------------------------------------------
 
-	if(ret && extcmp(_path, ".BIN.ENC", 8))
+	if(ret && !is_BIN_ENC(_path))
 	{
 		wait_for("/dev_bdvd", (islike(_path, "/dev_hdd0") ? 6 : netid ? 20 : 15));
 		if(!isDir("/dev_bdvd")) ret = false;
@@ -1531,7 +1533,7 @@ exit_mount:
 	// show error if bdvd was not mounted
 	// -----------------------------------
 
-	if(!ret && !isDir("/dev_bdvd")) {char msg[STD_PATH_LEN + 20]; sprintf(msg, "%s %s", STR_ERROR, _path); show_msg(msg);}
+	if(!ret && !isDir("/dev_bdvd")) {show_status(STR_ERROR, _path);}
 
 	// -------------------------------------------------------------------------------------
 	// remove syscalls hodling R2 (or prevent remove syscall if path contains [online] tag)
@@ -1567,23 +1569,26 @@ mounting_done:
 
 		apply_remaps();
 
-		if(ret && file_exists("/dev_bdvd/PS3UPDAT.PUP"))
+		if(ret)
 		{
-			sys_map_path("/dev_bdvd/PS3/UPDATE", "/dev_bdvd"); //redirect root of bdvd to /dev_bdvd/PS3/UPDATE (allows update from mounted /net folder or fake BDFILE)
-		}
-
-		if(ret && ((!netid) && isDir("/dev_bdvd/PKG")))
-		{
-			sys_map_path("/app_home", "/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
-		}
-
-		if(ret && (file_exists("/dev_bdvd/USRDIR/EBOOT.BIN") && isDir(_path0)))
-		{
-			if(!(islike(_path0, HDD0_GAME_DIR) || islike(_path0, _HDD0_GAME_DIR)))
+			if(file_exists("/dev_bdvd/PS3UPDAT.PUP"))
 			{
-				set_app_home(_path0);
-				sys_ppu_thread_sleep(1);
-				launch_app_home_icon();
+				sys_map_path("/dev_bdvd/PS3/UPDATE", "/dev_bdvd"); //redirect root of bdvd to /dev_bdvd/PS3/UPDATE (allows update from mounted /net folder or fake BDFILE)
+			}
+
+			if((!netid) && isDir("/dev_bdvd/PKG"))
+			{
+				sys_map_path("/app_home", "/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
+			}
+
+			if(file_exists("/dev_bdvd/USRDIR/EBOOT.BIN") && isDir(_path0))
+			{
+				if(!(islike(_path0, HDD0_GAME_DIR) || islike(_path0, _HDD0_GAME_DIR)))
+				{
+					set_app_home(_path0);
+					sys_ppu_thread_sleep(1);
+					launch_app_home_icon();
+				}
 			}
 		}
 

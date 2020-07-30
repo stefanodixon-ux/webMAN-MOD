@@ -143,7 +143,7 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	{
 		while(name[flen] != '.') flen--; name[flen] = NULL; pos = flen - 4;
 		if((pos > 0) && name[pos] == '.' && (strcasestr(ISO_EXTENSIONS, &name[pos]))) {flen = pos; name[flen] = NULL;} else
-		if(!extcmp(name, ".BIN.ENC", 8)) {flen -= 8; name[flen] = NULL;}
+		if(is_BIN_ENC(name)) {flen -= 8; name[flen] = NULL;}
 	}
 
 	if(cache) return (size_t) flen;
@@ -376,7 +376,7 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 
 	int flen;
 
-	if(!extcmp(file, ".BIN.ENC", 8))
+	if(is_BIN_ENC(file))
 	{
 		flen = sprintf(icon, "%s/%s", param, file);
 
@@ -502,7 +502,7 @@ no_icon0:
 
 			 if(strstr(icon, "PSX")) //if(strstr(param, "/PSX") || !extcmp(file, ".ntfs[PSXISO]", 13))
 			default_icon = iPSX;
-		else if(strstr(icon, "PS2")) //if(strstr(param, "/PS2ISO") || !extcmp(param, ".BIN.ENC", 8) || !extcmp(file, ".ntfs[PS2ISO]", 13))
+		else if(strstr(icon, "PS2")) //if(strstr(param, "/PS2ISO") || is_BIN_ENC(param) || !extcmp(file, ".ntfs[PS2ISO]", 13))
 			default_icon = iPS2;
 		else if(strstr(icon, "PSP")) //if(strstr(param, "/PSPISO") || strstr(param, "/ISO/") || !extcmp(file, ".ntfs[PSPISO]", 13))
 			default_icon = iPSP;

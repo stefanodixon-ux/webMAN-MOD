@@ -51,6 +51,8 @@ static void sys_map_path2(const char *path1, const char *path2)
 
 static void apply_remaps(void)
 {
+	disable_map_path(false);
+
  #ifdef WM_PROXY_SPRX
 	sys_map_path2(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);
  #endif
@@ -109,8 +111,8 @@ static void make_fb_xml(void)
 		{
 			if(get_explore_interface())
 			{
-				explore_interface->ExecXMBcommand("reload_category game",0,0);
-				explore_interface->ExecXMBcommand("reload_category network",0,0);
+				exec_xmb_command("reload_category game");
+				exec_xmb_command("reload_category network");
 			}
 		}
 	}

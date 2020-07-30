@@ -309,7 +309,8 @@ static bool script_running = false;
 static char fw_version[8] = "4.xx";
 static char local_ip[16] = "127.0.0.1";
 
-static void show_msg(char* msg);
+static void show_msg(char *msg);
+static void show_status(const char *label, const char *status);
 static void sys_get_cobra_version(void);
 
 #ifdef UNLOCK_SAVEDATA
@@ -385,6 +386,7 @@ static void get_cpursx(char *cpursx);
 static void get_last_game(char *last_path);
 static void add_game_info(char *buffer, char *templn, u8 is_cpursx);
 static void mute_snd0(bool scan_gamedir);
+static bool is_iso_0(const char *filename);
 
 static bool from_reboot = false;
 static bool is_busy = false;

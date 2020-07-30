@@ -44,7 +44,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 	parts = ps3ntfs_file_to_sectors(path, sectionsP, sections_sizeP, MAX_SECTIONS, 1);
 
 	// get multi-part file sectors
-	if(!extcasecmp(filename, ".iso.0", 6))
+	if(is_iso_0(filename))
 	{
 		size_t nlen = sprintf(tmp_path, "%s", path);
 		extlen = 6, --nlen;
@@ -226,26 +226,27 @@ static void scan_path_ntfs(const char *path, bool chk_dirs)
 		struct stat st;
 		CellFsDirent dir;
 		char dir_entry[STD_PATH_LEN];
+		size_t plen = snprintf(dir_entry, STD_PATH_LEN, "%s/", path);
 
 		while(ps3ntfs_dirnext(pdir, dir.d_name, &st) == 0)
 		{
 			if(dir.d_name[0] == '.') continue;
-			size_t plen = snprintf(dir_entry, STD_PATH_LEN, "%s/%s", path, dir.d_name);
+			size_t flen = snprintf(dir_entry + plen, STD_PATH_LEN - plen, "%s", dir.d_name);
 
 			if(st.st_mode & S_IFDIR)
 			{
 				if(sysmem && (idx < max_entries)) {sprintf(dir_entries[idx++].path, "%s", dir.d_name);}
 			}
-			else if(is_iso_file(dir.d_name, strlen(dir.d_name), ntfs_m, 0))
+			else if(is_iso_file(dir.d_name, flen, ntfs_m, 0))
 			{
-				create_ntfs_file(dir_entry, dir.d_name, plen);
+				create_ntfs_file(dir_entry, dir.d_name, plen + flen);
 			}
 		}
 		ps3ntfs_dirclose(pdir);
 
 		for(int i = 0; i < idx; i++)
 		{
-			snprintf(dir_entry, STD_PATH_LEN, "%s/%s", path, dir_entries[i].path);
+			snprintf(dir_entry + plen, STD_PATH_LEN - plen, "%s", dir_entries[i].path);
 
 			ntfs_subdir = dir_entries[i].path;
 			for(int c = 0; ntfs_subdir[c]; c++)

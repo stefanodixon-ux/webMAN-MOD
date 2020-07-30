@@ -116,7 +116,7 @@ static void restore_fan(u8 set_syscon_mode)
 	}
 }
 
-static void enable_fan_control(u8 enable, char *msg)
+static void enable_fan_control(u8 enable)
 {
 	if(enable == PS2_MODE_OFF) fan_ps2_mode = false;		else
 	if(enable == ENABLE_SC8) webman_config->fanc = ENABLED;	else
@@ -128,15 +128,17 @@ static void enable_fan_control(u8 enable, char *msg)
 	{
 		if(webman_config->man_speed == FAN_AUTO) max_temp = webman_config->dyn_temp;
 		set_fan_speed(webman_config->man_speed);
-		sprintf(msg, "%s %s", STR_FANCTRL3, STR_ENABLED);
 	}
 	else
 	{
 		restore_fan(SYSCON_MODE); //syscon
-		sprintf(msg, "%s %s", STR_FANCTRL3, STR_DISABLED);
 	}
 	save_settings();
-	if(enable != PS2_MODE_OFF) show_msg(msg);
+
+	if(enable != PS2_MODE_OFF)
+	{
+		show_status(STR_FANCTRL3, (webman_config->fanc) ? STR_ENABLED : STR_DISABLED);
+	}
 
 	if(enable == ENABLE_SC8) { PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 }

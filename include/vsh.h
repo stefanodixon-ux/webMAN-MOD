@@ -63,12 +63,21 @@ static void show_msg(char *msg)
 	vshtask_notify(msg);
 }
 
+static void show_status(const char *label, const char *status)
+{
+	char msg[288];
+	sprintf(msg, "%s %s", label, status);
+	show_msg(msg);
+}
+
+#ifndef LITE_EDITION
 static void play_rco_sound(const char *sound)
 {
 	char *system_plugin = (char*)"system_plugin";
 	char *sep = strchr(sound, '|'); if(sep) {*sep = NULL, system_plugin = sep + 1;}
 	PlayRCOSound((View_Find(system_plugin)), sound, 1, 0);
 }
+#endif
 
 static explore_plugin_interface *get_explore_interface(void)
 {
@@ -143,6 +152,10 @@ static bool wait_for_abort(u32 usecs)
 	return false;
 }
 
+static void exec_xmb_command(const char *cmd)
+{
+	explore_interface->ExecXMBcommand(cmd, 0, 0);
+}
 
 #ifdef PKG_HANDLER
 static void unload_plugin_modules(bool all);
@@ -157,11 +170,11 @@ static void explore_close_all(const char *path)
 
 	if(get_explore_interface())
 	{
-		explore_interface->ExecXMBcommand((char*)"close_all_list", 0, 0);
+		exec_xmb_command("close_all_list");
 		if(strstr(path, "BDISO") || strstr(path, "DVDISO"))
-			explore_interface->ExecXMBcommand((char*)"focus_category video", 0, 0);
+			exec_xmb_command("focus_category video");
 		else
-			explore_interface->ExecXMBcommand((char*)"focus_category game", 0, 0);
+			exec_xmb_command("focus_category game");
 	}
 }
 
@@ -169,7 +182,7 @@ static void focus_first_item(void)
 {
 	if(IS_ON_XMB)
 	{
-		explore_interface->ExecXMBcommand("focus_index 0", 0, 0);
+		exec_xmb_command("focus_index 0");
 	}
 }
 
@@ -190,14 +203,14 @@ static bool explore_exec_push(u32 usecs, u8 focus_first)
 
 		if(focus_first)
 		{
-			explore_interface->ExecXMBcommand("open_list nocheck", 0, 0);
+			exec_xmb_command("open_list nocheck");
 			if(wait_for_abort(500000)) return false;
 			focus_first_item();
 		}
 		else
 		{
 			gTick.tick =  rTick.tick + 1; // notify in-game
-			explore_interface->ExecXMBcommand("exec_push", 0, 0);
+			exec_xmb_command("exec_push");
 		}
 
 		return true;
@@ -263,13 +276,13 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 				wait = (n < icon_found) || execute;
 
 				if(wait) {if(wait_for_abort(50000)) return;}
-				explore_interface->ExecXMBcommand("close_all_list", 0, 0);
+				exec_xmb_command("close_all_list");
 				if(wait) {if(wait_for_abort(150000)) return;}
 				sprintf(explore_command, "focus_category %s", category);
-				explore_interface->ExecXMBcommand(explore_command, 0, 0);
+				exec_xmb_command(explore_command);
 				if(wait) {if(wait_for_abort(100000)) return;}
 				sprintf(explore_command, "focus_segment_index %s", seg_name);
-				explore_interface->ExecXMBcommand(explore_command, 0, 0);
+				exec_xmb_command(explore_command);
 				if(wait) {if(wait_for_abort(100000)) return;}
 			}
 
@@ -344,9 +357,9 @@ static void reload_xmb(void)
 	{
 		if(!get_explore_interface()) return;
 
-		explore_interface->ExecXMBcommand("close_all_list", 0, 0);
-		explore_interface->ExecXMBcommand("focus_category network", 0, 0);
-		explore_interface->ExecXMBcommand("focus_segment_index -1", 0, 0);
+		exec_xmb_command("close_all_list");
+		exec_xmb_command("focus_category network");
+		exec_xmb_command("focus_segment_index -1");
 		if(wait_for_abort(1000000)) return;
 		explore_exec_push(0, false);
 	}

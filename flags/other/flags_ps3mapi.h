@@ -47,9 +47,8 @@
 //#define CALC_MD5			1	// /md5.ps3/<file>
 //#define LAUNCHPAD			1	// create /dev_hdd0/tmp/wm_lauchpad.xml
 //#define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
-
-
 //// TEST FEATURES ////
+//#define ALLOW_DISABLE_MAP_PATH	1	// Use SELECT+O to temporarily disable sys_map_path()
 //#define SYS_BGM			1	// system background music (may freeze the system when enabled)
 //#define USE_DEBUG			1	// debug using telnet
 //#define WEB_CHAT			1	// /chat.ps3
@@ -57,5 +56,3 @@
 //#define RAWISO_PSX_MULTI		// support for multi PSX from Iris Manager (it's incomplete - only rawseciso.h code is complete) (thanks to Estwald)
 //#define DO_WM_REQUEST_POLLING	// poll file /dev_hdd0/tmp/wm_request (can be used by external apps)
 //#define SECURE_FILE_ID	// hook savedata plugin to capture secure file id (this feature is currently broken)
-
-
