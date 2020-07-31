@@ -127,7 +127,7 @@
 #dbTable th {
 	position: -webkit-sticky;
 	position: sticky;
-	top: 112px;
+	top: 125px;
 	background-color: #f1f1f1;
 }
 
@@ -147,7 +147,7 @@ H1 a {color:#334; text-decoration:none;}
 div.sticky {
 	position: -webkit-sticky;
 	position: sticky;
-	top: 0px;
+	top: 10px;
 	background-color: white;
 }
 
@@ -161,7 +161,6 @@ div.sticky {
 	background-color:#f0f0f0;
 	padding:20px;
 	border-width:5px;
-	border-color:red;
 	box-shadow: 15px 15px 15px #ccc;
 	border-radius: 10px;
 	opacity:0.9;
@@ -179,6 +178,7 @@ div.sticky {
 </tr></table>
 </div>
 
+<div style="position:fixed;top:0px;width:100%;height:125px;background-color:white;"></div>
 <div class="sticky">
 <h1>
 <a href="https://www.psx-place.com/threads/compatibility-list-ps2-on-ps3.1306/">PS2 CONFIG Database</a> -
@@ -186,8 +186,9 @@ div.sticky {
 </h1>
 <input type="text" id="txtSrchDB" onkeyup="doSearch()" placeholder="Search for names..">
 <select accesskey="c" tabindex="-1" id="category" onchange="category = this.value; doSearch();">
-<option value="ALL"   >CUSTOM + GX + SOFT</option>
+<option value="ALL"   >CUSTOM + NET + GX + SOFT</option>
 <option value="CUSTOM">CUSTOM</option>
+<option value="NET"   >NET</option>
 <option value="GX"    >GX</option>
 <option value="SOFT"  >SOFT</option>
 <option value="ENC"   >ENC (PS2 Classics)</option>
@@ -386,7 +387,7 @@ div.sticky {
 <tr><td>CUSTOM</td><td>SLPS_251.43</td><td>dot Hack Vol.2 - Mutation</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_663.63</td><td>Dragon Quest - Shounen Yangus no Fushigi na Daibouken</td></tr>
 <tr><td>CUSTOM</td><td>SLKA_251.74</td><td>DragonBall Z - Budokai</td></tr>
-<tr><td>CUSTOM</td><td>SLES_512.13</td><td>DragonBall Z Budokai</td></tr>
+<tr><td>CUSTOM</td><td>SLES_512.13</td><td>DragonBall Z - Budokai</td></tr>
 <tr><td>CUSTOM</td><td>SCES_500.06</td><td>Drakan - The Ancients' Gates</td></tr>
 <tr><td>CUSTOM</td><td>SCUS_971.28</td><td>Drakan - The Ancients' Gates</td></tr>
 <tr><td>CUSTOM</td><td>SLES_539.86</td><td>DreamWorks La Gang del Bosco</td></tr>
@@ -433,11 +434,11 @@ div.sticky {
 <tr><td>CUSTOM</td><td>SLUS_206.72</td><td>Final Fantasy X-2</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_654.78</td><td>Final Fantasy X-2 International</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_217.02</td><td>Fire Pro Wrestling - Returns</td></tr>
-<tr><td>CUSTOM</td><td>SLES_527.53</td><td>Flatout</td></tr>
+<tr><td>CUSTOM</td><td>SLES_527.53</td><td>FlatOut</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_209.01</td><td>FlatOut</td></tr>
 <tr><td>CUSTOM</td><td>SLES_540.02</td><td>FlatOut 2</td></tr>
-<tr><td>CUSTOM</td><td>SLES_540.03</td><td>Flatout 2</td></tr>
-<tr><td>CUSTOM</td><td>SLKA_254.01</td><td>FLATOUT 2</td></tr>
+<tr><td>CUSTOM</td><td>SLES_540.03</td><td>FlatOut 2</td></tr>
+<tr><td>CUSTOM</td><td>SLKA_254.01</td><td>FlatOut 2</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_212.51</td><td>FlatOut 2</td></tr>
 <tr><td>CUSTOM</td><td>SLES_520.65</td><td>Flipnic</td></tr>
 <tr><td>CUSTOM</td><td>SCES_538.51</td><td>Forbidden Siren 2</td></tr>
@@ -863,6 +864,7 @@ div.sticky {
 <tr><td>CUSTOM</td><td>SLUS_206.20</td><td>Smash Cars</td></tr>
 <tr><td>CUSTOM</td><td>SLES_518.00</td><td>Smash Cars Racing</td></tr>
 <tr><td>CUSTOM</td><td>SLES_535.60</td><td>Sonic Riders</td></tr>
+<tr><td>CUSTOM</td><td>SLUS_206.43</td><td>Soul Calibur II</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_212.16</td><td>Soul Calibur III</td></tr>
 <tr><td>CUSTOM</td><td>SLES_501.96</td><td>Soul Reaver 2 - Legacy of Kain</td></tr>
 <tr><td>CUSTOM</td><td>SLES_534.94</td><td>Spongebob Squarepants - Lights, Camera, PANTS!</td></tr>
@@ -1089,6 +1091,48 @@ div.sticky {
 <tr><td>CUSTOM</td><td>SLKA_252.60</td><td>zzz_unknown_korean_title</td></tr>
 <tr><td>CUSTOM</td><td>SLKA_253.14</td><td>zzz_unknown_korean_title</td></tr>
 <tr><td>CUSTOM</td><td>SLKA_254.02</td><td>zzz_unknown_korean_title</td></tr>
+<tr><td>NET</td><td>SLUS_204.61</td><td>BloodRayne</td></tr>
+<tr><td>NET</td><td>SLUS_208.62</td><td>Bloodrayne 2</td></tr>
+<tr><td>NET</td><td>SLUS_212.69</td><td>Bully</td></tr>
+<tr><td>NET</td><td>SCPS_150.04</td><td>Dark Cloud</td></tr>
+<tr><td>NET</td><td>SLUS_200.71</td><td>Dead or Alive 2</td></tr>
+<tr><td>NET</td><td>SLPS_250.26</td><td>Dead or Alive 2 - Hardcore</td></tr>
+<tr><td>NET</td><td>SLES_529.55</td><td>Deadly Strike</td></tr>
+<tr><td>NET</td><td>SLPM_250.26</td><td>DOA2-Hardcore</td></tr>
+<tr><td>NET</td><td>SLUS_207.66</td><td>Fatal Frame 2 - Crimson Butterfly</td></tr>
+<tr><td>NET</td><td>SLES_544.90</td><td>God Hand</td></tr>
+<tr><td>NET</td><td>SLUS_207.12</td><td>Gradius V</td></tr>
+<tr><td>NET</td><td>SLES_529.27</td><td>Grand Theft Auto - San Andreas</td></tr>
+<tr><td>NET</td><td>SLUS_209.46</td><td>Grand Theft Auto - San Andreas</td></tr>
+<tr><td>NET</td><td>SLUS_205.52</td><td>Grand Theft Auto - Vice City</td></tr>
+<tr><td>NET</td><td>SLES_503.30</td><td>Grand Theft Auto III</td></tr>
+<tr><td>NET</td><td>SLUS_200.62</td><td>Grand Theft Auto III</td></tr>
+<tr><td>NET</td><td>SLUS_216.04</td><td>GrimGrimoire</td></tr>
+<tr><td>NET</td><td>SLPS_253.60</td><td>Katamari Damacy</td></tr>
+<tr><td>NET</td><td>SLUS_202.75</td><td>Kessen 2</td></tr>
+<tr><td>NET</td><td>SLUS_208.47</td><td>La Pucelle - Tactics</td></tr>
+<tr><td>NET</td><td>SLPM_551.14</td><td>Mana-Khemia 2 - Ochita Gakuen to Renkinjutsushi-tachi</td></tr>
+<tr><td>NET</td><td>SLUS_208.27</td><td>Manhunt</td></tr>
+<tr><td>NET</td><td>SLES_503.25</td><td>Max Payne</td></tr>
+<tr><td>NET</td><td>SLUS_219.44</td><td>Nickelodeon Dora's Big Birthday Adventure</td></tr>
+<tr><td>NET</td><td>SLUS_215.77</td><td>Odin Sphere</td></tr>
+<tr><td>NET</td><td>SCUS_971.42</td><td>Primal - Civilization Is Only Skin Deep</td></tr>
+<tr><td>NET</td><td>SLUS_211.20</td><td>Psychonauts</td></tr>
+<tr><td>NET</td><td>SLUS_202.72</td><td>Rayman Arena</td></tr>
+<tr><td>NET</td><td>SLUS_204.42</td><td>Red Faction 2</td></tr>
+<tr><td>NET</td><td>SLUS_204.71</td><td>Rygar - The Legendary Adventure</td></tr>
+<tr><td>NET</td><td>SLPM_657.78</td><td>Sega Ages 2500 Series Vol.18 - Dragon Force</td></tr>
+<tr><td>NET</td><td>SLPM_627.75</td><td>Sega Ages 2500 Vol.32 - Phantasy Star Complete Collection</td></tr>
+<tr><td>NET</td><td>SLPM_622.47</td><td>Shin Contra</td></tr>
+<tr><td>NET</td><td>SLUS_209.74</td><td>Shin Megami Tensei - Digital Devil Saga</td></tr>
+<tr><td>NET</td><td>SLUS_209.11</td><td>Shin Megami Tensei - Nocturne</td></tr>
+<tr><td>NET</td><td>SLUS_216.21</td><td>Shin Megami Tensei - Persona 3 FES</td></tr>
+<tr><td>NET</td><td>SLUS_217.82</td><td>Shin Megami Tensei - Persona 4</td></tr>
+<tr><td>NET</td><td>SCUS_973.55</td><td>Siren</td></tr>
+<tr><td>NET</td><td>SLES_820.05</td><td>Summoner</td></tr>
+<tr><td>NET</td><td>SCUS_972.64</td><td>Syphon Filter - The Omega Strain</td></tr>
+<tr><td>NET</td><td>SLPS_251.13</td><td>Zettai Zetsumei Toshi</td></tr>
+<tr><td>NET</td><td>SLPS_732.04</td><td>Zettai Zetsumi Toshi [PlayStation 2 The Best]</td></tr>
 <tr><td>GX</td><td>SCES_533.58</td><td>24 - The Game</td></tr>
 <tr><td>GX</td><td>SLUS_212.68</td><td>24 - The Game</td></tr>
 <tr><td>GX</td><td>SCES_504.10</td><td>Ace Combat - Distant Thunder</td></tr>
@@ -1250,7 +1294,7 @@ div.sticky {
 <tr><td>GX</td><td>SLPS_251.43</td><td>dot Hack Vol.2 - Mutation</td></tr>
 <tr><td>GX</td><td>SLPM_663.63</td><td>Dragon Quest - Shounen Yangus no Fushigi na Daibouken</td></tr>
 <tr><td>GX</td><td>SLKA_251.74</td><td>DragonBall Z - Budokai</td></tr>
-<tr><td>GX</td><td>SLES_512.13</td><td>DragonBall Z Budokai</td></tr>
+<tr><td>GX</td><td>SLES_512.13</td><td>DragonBall Z - Budokai</td></tr>
 <tr><td>GX</td><td>SCES_500.06</td><td>Drakan - The Ancients' Gates</td></tr>
 <tr><td>GX</td><td>SCUS_971.28</td><td>Drakan - The Ancients' Gates</td></tr>
 <tr><td>GX</td><td>SLES_539.86</td><td>DreamWorks La Gang del Bosco</td></tr>
@@ -1291,11 +1335,11 @@ div.sticky {
 <tr><td>GX</td><td>SLPS_252.50</td><td>Final Fantasy X-2</td></tr>
 <tr><td>GX</td><td>SLUS_206.72</td><td>Final Fantasy X-2</td></tr>
 <tr><td>GX</td><td>SLPM_654.78</td><td>Final Fantasy X-2 International</td></tr>
-<tr><td>GX</td><td>SLES_527.53</td><td>Flatout</td></tr>
+<tr><td>GX</td><td>SLES_527.53</td><td>FlatOut</td></tr>
 <tr><td>GX</td><td>SLUS_209.01</td><td>FlatOut</td></tr>
 <tr><td>GX</td><td>SLES_540.02</td><td>FlatOut 2</td></tr>
-<tr><td>GX</td><td>SLES_540.03</td><td>Flatout 2</td></tr>
-<tr><td>GX</td><td>SLKA_254.01</td><td>FLATOUT 2</td></tr>
+<tr><td>GX</td><td>SLES_540.03</td><td>FlatOut 2</td></tr>
+<tr><td>GX</td><td>SLKA_254.01</td><td>FlatOut 2</td></tr>
 <tr><td>GX</td><td>SLUS_212.51</td><td>FlatOut 2</td></tr>
 <tr><td>GX</td><td>SCES_538.51</td><td>Forbidden Siren 2</td></tr>
 <tr><td>GX</td><td>SCKA_200.69</td><td>Forbidden Siren 2</td></tr>
@@ -1435,7 +1479,7 @@ div.sticky {
 <tr><td>GX</td><td>SLUS_210.08</td><td>Katamari Damacy</td></tr>
 <tr><td>GX</td><td>SLPM_650.15</td><td>Kessen 2</td></tr>
 <tr><td>GX</td><td>SLUS_202.75</td><td>Kessen 2</td></tr>
-<tr><td>GX</td><td>SLES_505.78</td><td>Kessen II</td></tr>
+<tr><td>GX</td><td>SLES_505.78</td><td>Kessen 2</td></tr>
 <tr><td>GX</td><td>SLPS_255.69</td><td>Kidou Senshi Gundam SEED - Rengou vs. Z.A.F.T.</td></tr>
 <tr><td>GX</td><td>SLPM_666.76</td><td>Kingdom Hearts - Re:Chain of Memories</td></tr>
 <tr><td>GX</td><td>SLUS_217.99</td><td>Kingdom Hearts - Re:Chain of Memories</td></tr>
@@ -1877,48 +1921,6 @@ div.sticky {
 <tr><td>GX</td><td>SLKA_252.60</td><td>zzz_unknown_korean_title</td></tr>
 <tr><td>GX</td><td>SLKA_253.14</td><td>zzz_unknown_korean_title</td></tr>
 <tr><td>GX</td><td>SLKA_254.02</td><td>zzz_unknown_korean_title</td></tr>
-<tr><td>NET</td><td>SLUS_204.61</td><td>BloodRayne</td></tr>
-<tr><td>NET</td><td>SLUS_208.62</td><td>Bloodrayne 2</td></tr>
-<tr><td>NET</td><td>SLUS_212.69</td><td>Bully</td></tr>
-<tr><td>NET</td><td>SCPS_150.04</td><td>Dark Cloud</td></tr>
-<tr><td>NET</td><td>SLUS_200.71</td><td>Dead or Alive 2</td></tr>
-<tr><td>NET</td><td>SLPS_250.26</td><td>Dead or Alive 2 - Hardcore</td></tr>
-<tr><td>NET</td><td>SLES_529.55</td><td>Deadly Strike</td></tr>
-<tr><td>NET</td><td>SLPM_250.26</td><td>DOA2-Hardcore</td></tr>
-<tr><td>NET</td><td>SLUS_207.66</td><td>Fatal Frame 2 - Crimson Butterfly</td></tr>
-<tr><td>NET</td><td>SLES_544.90</td><td>God Hand</td></tr>
-<tr><td>NET</td><td>SLUS_207.12</td><td>Gradius V</td></tr>
-<tr><td>NET</td><td>SLES_529.27</td><td>Grand Theft Auto - San Andreas</td></tr>
-<tr><td>NET</td><td>SLUS_209.46</td><td>Grand Theft Auto - San Andreas</td></tr>
-<tr><td>NET</td><td>SLUS_205.52</td><td>Grand Theft Auto - Vice City</td></tr>
-<tr><td>NET</td><td>SLES_503.30</td><td>Grand Theft Auto III</td></tr>
-<tr><td>NET</td><td>SLUS_200.62</td><td>Grand Theft Auto III</td></tr>
-<tr><td>NET</td><td>SLUS_216.04</td><td>GrimGrimoire</td></tr>
-<tr><td>NET</td><td>SLPS_253.60</td><td>Katamari Damacy</td></tr>
-<tr><td>NET</td><td>SLUS_202.75</td><td>Kessen 2</td></tr>
-<tr><td>NET</td><td>SLUS_208.47</td><td>La Pucelle - Tactics</td></tr>
-<tr><td>NET</td><td>SLPM_551.14</td><td>Mana-Khemia 2 - Ochita Gakuen to Renkinjutsushi-tachi</td></tr>
-<tr><td>NET</td><td>SLUS_208.27</td><td>Manhunt</td></tr>
-<tr><td>NET</td><td>SLES_503.25</td><td>Max Payne</td></tr>
-<tr><td>NET</td><td>SLUS_219.44</td><td>Nickelodeon Dora's Big Birthday Adventure</td></tr>
-<tr><td>NET</td><td>SLUS_215.77</td><td>Odin Sphere</td></tr>
-<tr><td>NET</td><td>SCUS_971.42</td><td>Primal - Civilization Is Only Skin Deep</td></tr>
-<tr><td>NET</td><td>SLUS_211.20</td><td>Psychonauts</td></tr>
-<tr><td>NET</td><td>SLUS_202.72</td><td>Rayman Arena</td></tr>
-<tr><td>NET</td><td>SLUS_204.42</td><td>Red Faction 2</td></tr>
-<tr><td>NET</td><td>SLUS_204.71</td><td>Rygar - The Legendary Adventure</td></tr>
-<tr><td>NET</td><td>SLPM_657.78</td><td>Sega Ages 2500 Series Vol.18 - Dragon Force</td></tr>
-<tr><td>NET</td><td>SLPM_627.75</td><td>Sega Ages 2500 Vol.32 - Phantasy Star Complete Collection</td></tr>
-<tr><td>NET</td><td>SLPM_622.47</td><td>Shin Contra</td></tr>
-<tr><td>NET</td><td>SLUS_209.74</td><td>Shin Megami Tensei - Digital Devil Saga</td></tr>
-<tr><td>NET</td><td>SLUS_209.11</td><td>Shin Megami Tensei - Nocturne</td></tr>
-<tr><td>NET</td><td>SLUS_216.21</td><td>Shin Megami Tensei - Persona 3 FES</td></tr>
-<tr><td>NET</td><td>SLUS_217.82</td><td>Shin Megami Tensei - Persona 4</td></tr>
-<tr><td>NET</td><td>SCUS_973.55</td><td>Siren</td></tr>
-<tr><td>NET</td><td>SLES_820.05</td><td>Summoner</td></tr>
-<tr><td>NET</td><td>SCUS_972.64</td><td>Syphon Filter - The Omega Strain</td></tr>
-<tr><td>NET</td><td>SLPS_251.13</td><td>Zettai Zetsumei Toshi</td></tr>
-<tr><td>NET</td><td>SLPS_732.04</td><td>Zettai Zetsumi Toshi [PlayStation 2 The Best]</td></tr>
 <tr><td>SOFT</td><td>SCES_533.58</td><td>24 - The Game</td></tr>
 <tr><td>SOFT</td><td>SLUS_212.68</td><td>24 - The Game</td></tr>
 <tr><td>SOFT</td><td>SCES_504.10</td><td>Ace Combat - Distant Thunder</td></tr>
@@ -2738,12 +2740,12 @@ div.sticky {
 <tr><td>ENC</td><td>SLES_543.58</td><td>Final Fantasy XII</td></tr>
 <tr><td>ENC</td><td>SLES_543.55</td><td>Final Fantasy XII</td></tr>
 <tr><td>ENC</td><td>SLUS_217.02</td><td>Fire Pro Wrestling - Returns</td></tr>
-<tr><td>ENC</td><td>SLES_540.03</td><td>Flatout 2</td></tr>
+<tr><td>ENC</td><td>SLES_540.03</td><td>FlatOut 2</td></tr>
 <tr><td>ENC</td><td>SLES_540.02</td><td>FlatOut 2</td></tr>
 <tr><td>ENC</td><td>SLUS_212.51</td><td>FlatOut 2</td></tr>
-<tr><td>ENC</td><td>SLKA_254.01</td><td>FLATOUT 2</td></tr>
+<tr><td>ENC</td><td>SLKA_254.01</td><td>FlatOut 2</td></tr>
 <tr><td>ENC</td><td>SLUS_209.01</td><td>FlatOut</td></tr>
-<tr><td>ENC</td><td>SLES_527.53</td><td>Flatout</td></tr>
+<tr><td>ENC</td><td>SLES_527.53</td><td>FlatOut</td></tr>
 <tr><td>ENC</td><td>SLES_520.65</td><td>Flipnic</td></tr>
 <tr><td>ENC</td><td>SCKA_200.69</td><td>Forbidden Siren 2</td></tr>
 <tr><td>ENC</td><td>SCES_538.51</td><td>Forbidden Siren 2</td></tr>
@@ -3445,7 +3447,7 @@ const q = urlParams.get('q');
 var category = urlParams.get('cat');
 if (category == null) 
 	category = "ALL";
-$("category").value = category;
+$("category").value = category.toUpperCase();
 
 input.value = q;
 doSearch();
@@ -3455,8 +3457,14 @@ function doSearch() {
 
 	// Declare variables
 	var td, txtValue, cols, cat = category;
-	var filter = input.value.replace(/\s/g, '.+').replace(/seco/g, '2eco');
-	var filter2 = input.value.replace(".", "").replace(/-/g, '.+');
+	var filter = input.value.replace(/\s/g, '.+').replace(/\*/g, '.+').replace(/seco/g, '2eco');
+	var filter2 = input.value.replace(".", "").replace(/\s/g, '.+').replace(/-/g, '.+').replace(/\*/g, '.+');
+	var dolike = (input.value.indexOf('*')>=0);
+	if (dolike)
+	{
+		if(input.value.substr(0,1)!='*')filter="^"+filter;
+		if(input.value.substr(input.value.length-1,1)!='*')filter=filter+"$";
+	}
 
 	var reg1 = new RegExp(filter, "i");
 	var reg2 = new RegExp(filter2, "i");
@@ -3486,6 +3494,8 @@ function doSearch() {
 				txtValue = td.textContent || td.innerText;
 				if (txtValue.search(reg1) > -1) {
 					tr[i].style.display = ""; count++;
+				} else if(dolike) {
+					tr[i].style.display = "none";
 				} else {
 					td = cols[1];
 					if (td) {
@@ -3525,19 +3535,21 @@ input.addEventListener('paste', (e) => {
 	doSearch();
 });
 
-input.addEventListener('keyup',kd,false);
+window.addEventListener('keyup',kd,false);
 function kd(e)
 {
 	e=e||window.event;
 	var kc=e.keyCode;
-	if(kc==27) {
+	if(kc==27) { // Esc
 		input.value='';
 		doSearch();
 	}
-	if(kc==67) {
-		input.focus();
+	if(kc==113) { // F2
+		category = (category == 'ENC') ? 'ALL' : 'ENC';
+		$("category").value = category;
+		doSearch();
 	}
-	if(kc==115) {
+	if(kc==115) { // F4
 		$("category").focus();
 	}
 }
@@ -3545,23 +3557,24 @@ function kd(e)
 function sortTable(colID) {
 	if(count <= 1) return;
 
-	$("sorting").style.display="block";
+	if(count > 100) $("sorting").style.display="block";
 
 	setTimeout(function(){
-		var rows, r, i, x, y, len, b = 1;
-		rows = table.rows; len = (rows.length - 1);
+		var r, i, x, y, len, b = 1;
+		var rows = table.rows;
+		len = (rows.length - 1);
 		if(PS2Classics) b = classics; else len = classics;
 
-		while(len > b && rows[len].style.display=='none') --len;
+		{while(len > b && rows[len-1].style.display=='none') --len; len++;}
 
 		for (r = b; r < len - 1; r++) {
-			if(rows[r].style.display=='none')continue;
-			x = rows[r].children[colID];
+			if(rows[r].style.display=='none') continue;
+			x = rows[r].children[colID].innerHTML.toLowerCase();
 			for (i = r + 1; i < len; i++) {
 				y = rows[i].children[colID];
-				if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+				if (x > y.innerHTML.toLowerCase()) {
 					rows[r].parentNode.insertBefore(rows[i], rows[r]);
-					x = rows[r].children[colID];
+					x = rows[r].children[colID].innerHTML.toLowerCase();
 				}
 			}
 		}
