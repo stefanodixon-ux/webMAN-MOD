@@ -19,6 +19,14 @@
 #define BUF_LEN		2048
 #define MAX_LEN		2047
 
+#include "zip_util.h"
+
+static int sys_fs_mount(char const* deviceName, char const* deviceFileSystem, char const* devicePath, int writeProt)
+{
+    lv2syscall8(837, (u64) deviceName, (u64) deviceFileSystem, (u64) devicePath, 0, (u64) writeProt, 0, 0, 0 );
+    return_to_user_prog(int);
+}
+
 static int connect_to_webman()
 {
 	struct sockaddr_in sin;
@@ -92,6 +100,13 @@ static bool file_exists(const char *path)
 	return (stat(path, &s) == 0);
 }
 
+static void log_file(const char *path, const char *text)
+{
+	FILE *fp = fopen(path, "wb");
+	fwrite((void *) text, 1, strlen(text), fp);
+	fclose(fp);
+}
+
 int main(int argc, const char* argv[])
 {
 	char path[BUF_LEN], url[BUF_LEN], param[BUF_LEN];
@@ -114,8 +129,10 @@ int main(int argc, const char* argv[])
 
 		if(*path)
 		{
-			p = strstr(path, "\n"); if(p) {sprintf(param, "%s", p + 1); *p = 0;}
-			p = strstr(path, "\r"); if(p) {*p = 0; sprintf(param, "%s", p + 1);}
+			p = strstr(path, "\n"); if(p) {*p = 0; if(*param == 0) sprintf(param, "%s", p + 1);}
+			p = strstr(path, "\r"); if(p) {*p = 0; if(*param == 0) sprintf(param, "%s", p + 1);}
+			p = strstr(param, "\n"); if(p) *p = 0;
+			p = strstr(param, "\r"); if(p) *p = 0;
 
 			if(not_exists(path))
 			{
@@ -156,14 +173,32 @@ int main(int argc, const char* argv[])
 		if(s >= 0) ssend(s, url);
 
 		// log last URL sent to webman
-		fp = fopen("/dev_hdd0//game/PKGLAUNCH/USRDIR/url.txt", "wb");
-		fwrite((void *) url, 1, strlen(url), fp);
-		fclose(fp);
-
+		log_file("/dev_hdd0//game/PKGLAUNCH/USRDIR/url.txt", url);
 		return 0;
 	}
 
 	if(not_exists(path)) return 0; // path must exists
+
+	if(((*param == '/') || (strstr(path, "/PS3~") != NULL)) && (strcasestr(path, ".zip") != NULL))
+	{
+		char *filename = strrchr(path, '/');
+		if(filename)
+		{
+			++filename; char *dest_path = param;
+			if(!strncmp(filename, "PS3~", 4))
+			{
+				int len = sprintf(dest_path, "/%s", filename + 4);
+				for(int i = 0; i < len; i++) if(*(dest_path + i) == '~') *(dest_path + i) = '/';
+				*(dest_path + len - 4) = 0; // remove .zip
+
+				if(!strncmp(dest_path, "/dev_blind/", 11))
+					sys_fs_mount("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_blind", 0);
+			}
+		}
+
+		if(*param == '/') extract_zip(path, param);
+		return 0;
+	}
 
 	///////////////////////
 	// process path + param

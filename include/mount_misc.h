@@ -27,14 +27,17 @@
 	// mount NPDRM game
 	// ------------------
  #ifdef PKG_LAUNCHER
-	if(!extcasecmp(_path, ".self", 5))
-	{
-		ret = file_exists(_path);
-		cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", true);
-		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
-		if(ret) launch_app_home_icon();
-		goto mounting_done; //goto exit_mount;
-	}
+	if(isDir(PKGLAUNCH_DIR))
+		if( !extcasecmp(_path, ".self", 5) ||
+			((strstr(_path, "/PS3~") != NULL) && is_ext(_path, ".zip"))
+		)
+		{
+			ret = file_exists(_path);
+			cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
+			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
+			if(ret) launch_app_home_icon();
+			goto mounting_done; //goto exit_mount;
+		}
  #endif
 	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
@@ -79,7 +82,7 @@
 			do_umount(false);
 
 			// mount PKGLAUNCH as disc
-			cobra_map_game(PKGLAUNCH_DIR, "PKGLAUNCH", true);
+			cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
 
 			if(file_exists(RETROARCH_DIR1))
 			{

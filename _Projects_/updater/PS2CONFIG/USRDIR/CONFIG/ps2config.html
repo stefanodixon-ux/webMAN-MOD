@@ -165,6 +165,21 @@ div.sticky {
 	border-radius: 10px;
 	opacity:0.9;
 }
+
+#clear {
+	position:fixed;
+	top: 75px;
+	right: 24px;
+	font-size: 24px;
+	font-family: Arial;
+	color: #ccc;
+	cursor: pointer;
+}
+
+#clear:hover {
+	color: blue;
+}
+
 </style>
 <title>PS2 CONFIG Database</title>
 </head>
@@ -184,8 +199,9 @@ div.sticky {
 <a href="https://www.psx-place.com/threads/compatibility-list-ps2-on-ps3.1306/">PS2 CONFIG Database</a> -
 <a href="https://github.com/aldostools/webMAN-MOD/releases" title="Download webMAN MOD"><font size="3" color="#aac"> PS2 on PS3</font></a>
 </h1>
-<input type="text" id="txtSrchDB" onkeyup="doSearch()" placeholder="Search for names..">
-<select accesskey="c" tabindex="-1" id="category" onchange="category = this.value; doSearch();">
+<input type="text" id="txtSrchDB" onkeyup="doSearch();" placeholder="Search for names..">
+<div id="clear" onclick="input.value='';doSearch();">X</div>
+<select accesskey="c" tabindex="-1" id="category" onchange="category=this.value;doSearch();input.select();" ondblclick="this.value=category='ALL';doSearch();">
 <option value="ALL"   >CUSTOM + NET + GX + SOFT</option>
 <option value="CUSTOM">CUSTOM</option>
 <option value="NET"   >NET</option>
