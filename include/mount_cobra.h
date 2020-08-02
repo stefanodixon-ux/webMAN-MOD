@@ -325,9 +325,9 @@
 				else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && (strstr(netpath + 5, "/") != NULL))
 				{
 					mount_unk = netiso_args.emu_mode = EMU_PS3;
-					sprintf(netiso_args.path, "/***PS3***%s", netpath);
+					if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);
 				}
-				else if(islike(netpath, "/ROMS/"))
+				else if(islike(netpath, "/ROMS/") && !is_iso)
 				{
 					netiso_args.emu_mode = EMU_BD;
 					mount_unk = EMU_ROMS;

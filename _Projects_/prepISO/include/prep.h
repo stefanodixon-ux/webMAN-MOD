@@ -3,7 +3,7 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 {
 	if (parts > 0)
 	{
-		uint32_t emu_mode;
+		uint32_t emu_mode = EMU_PS3;
 		if(m == PS3ISO) emu_mode = EMU_PS3;
 		if(m == BDISO ) emu_mode = EMU_BD;
 		if(m == DVDISO) emu_mode = EMU_DVD;

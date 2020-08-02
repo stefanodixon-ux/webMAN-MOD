@@ -170,6 +170,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 
 		// add javascript
 		{
+			sprintf(templn, "<noscript><h1 style='color:#f03'>%s Javascript %s</h1></noscript>", STR_ERROR, STR_DISABLED); _concat(&sbuffer, templn);
 			#ifndef ENGLISH_ONLY
 			if(webman_config->lang)
 			{
