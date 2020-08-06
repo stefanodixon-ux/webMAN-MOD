@@ -1,10 +1,5 @@
 #define ENABLE_INGAME_SCREENSHOT	((int*)getNIDfunc("vshmain",0x981D7E9F,0))[0] -= 0x2C;
 
-#ifdef SYS_BGM
-u32 (*BgmPlaybackDisable)(int, void *) = NULL;
-u32 (*BgmPlaybackEnable)(int, void *) = NULL;
-#endif
-
 int (*vshmain_is_ss_enabled)(void) = NULL;
 int (*set_SSHT_)(int) = NULL;
 
@@ -52,21 +47,22 @@ static sys_memory_container_t get_vsh_memory_container(void)
 	return vsh_memory_container_by_id(webman_config->vsh_mc);
 }
 
-static void show_msg(char *msg)
+static void show_msg(const char *text)
 {
 	//if(!vshtask_notify)
 	//	vshtask_notify = getNIDfunc("vshtask", 0xA02D46E7, 0);
 	//if(!vshtask_notify) return;
 
-	if(strlen(msg) > 200) msg[200] = NULL; // truncate on-screen message
+	char msg[199];
+	snprintf(msg, 199, "%s", text);
 
 	vshtask_notify(msg);
 }
 
 static void show_status(const char *label, const char *status)
 {
-	char msg[288];
-	sprintf(msg, "%s %s", label, status);
+	char msg[199];
+	snprintf(msg, 199, "%s %s", label, status);
 	show_msg(msg);
 }
 
@@ -121,7 +117,7 @@ static void enable_ingame_screenshot(void)
 		opd[0] -= 0x2C; // Sub before vshmain_981D7E9F sets Screenshot Flag
 		set_SSHT_(1);	// enable screenshot
 
-		show_msg((char*)"Screenshot enabled");
+		show_msg("Screenshot enabled");
 		sys_ppu_thread_sleep(2);
 	}
 }

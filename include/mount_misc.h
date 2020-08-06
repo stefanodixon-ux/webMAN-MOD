@@ -28,7 +28,7 @@
 	// ------------------
  #ifdef PKG_LAUNCHER
 	if(isDir(PKGLAUNCH_DIR))
-		if( !extcasecmp(_path, ".self", 5) ||
+		if( !extcasecmp(_path, ".self", 5)    || is_ext(_path, ".rar") || !extcasecmp(_path, ".7z", 3) ||
 			((strstr(_path, "/PS3~") != NULL) && is_ext(_path, ".zip"))
 		)
 		{

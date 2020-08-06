@@ -392,8 +392,8 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 
 #ifdef REMOVE_SYSCALLS
 	concat(buffer, "<br>");
-	if(sc_count) add_checkbox("sce\" onclick=\"b.value=(this.checked)?' Enable ':'Disable';", "Re-Enable Syscalls & Unlock syscall 8", _BR_, false, buffer);
-	else		 add_checkbox("scd", "Disable Syscalls & Lock syscall 8"  , _BR_, false, buffer);
+	if(sc_count)  add_checkbox("sce\" onclick=\"b.value=(this.checked)?' Enable ':'Disable';", "Re-Enable Syscalls & Unlock syscall 8", _BR_, false, buffer);
+	else		 _add_checkbox("scd", "Disable Syscalls & Lock syscall 8", false, buffer);
 #endif
 
 	sprintf(templn, "</td></tr><tr><td class=\"ra\"><br><input class=\"bs\" id=\"b\" type=\"submit\" value=\" %s \"/></td></tr></form></table><br>", "Disable");

@@ -669,7 +669,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(strstr(target, "/webftp_server")) {sprintf(tempstr, "<HR>%s", STR_SETTINGSUPD);} else
 				if(cp_mode) {char *p = strrchr(_path, '/'); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
 
-				if(is_error) {show_msg((char*)STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
+				if(is_error) {show_msg(STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
 			}
 			else
 #endif // #ifdef COPY_PS3
@@ -866,10 +866,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				// show msg end
 				if(copy_aborted)
-					show_msg((char*)STR_CPYABORT);
+					show_msg(STR_CPYABORT);
 				else
 				{
-					show_msg((char*)STR_CPYFINISH);
+					show_msg(STR_CPYFINISH);
 					if(do_restart) { del_turnoff(2); vsh_reboot();}
 				}
 
@@ -992,7 +992,7 @@ static void do_umount(bool clean)
 		{
 			sys_ppu_thread_t t_id;
 			u64 exit_code;
-		#ifdef NET_SUPPORT
+		#ifdef USE_INTERNAL_NET_PLUGIN
 			sys_ppu_thread_create(&t_id, netiso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
 			sys_ppu_thread_join(t_id, &exit_code);
 		#endif
@@ -1000,7 +1000,7 @@ static void do_umount(bool clean)
 			sys_ppu_thread_join(t_id, &exit_code);
 
 			// wait for unload of netiso or rawiso plugin
-		#ifdef NET_SUPPORT
+		#ifdef USE_INTERNAL_NET_PLUGIN
 			while(netiso_loaded || rawseciso_loaded) {sys_ppu_thread_usleep(100000); if(is_mounting) break;}
 		#else
 			while(rawseciso_loaded) {sys_ppu_thread_usleep(100000); if(is_mounting) break;}
@@ -1023,7 +1023,7 @@ static void do_umount(bool clean)
 		//eject_insert(1, 1);
 
 		if(isDir("/dev_flash/pkg"))
-			mount_game((char*)"/dev_flash/pkg", MOUNT_SILENT);
+			mount_game("/dev_flash/pkg", MOUNT_SILENT);
 	}
 
 #endif //#ifdef COBRA_ONLY
@@ -1060,7 +1060,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 			if(copy_aborted)
 			{
 				cellFsUnlink(target);
-				show_msg((char*)STR_CPYABORT);
+				show_msg(STR_CPYABORT);
 			}
 			else if(webman_config->deliso)
 			{
@@ -1341,7 +1341,7 @@ static void mount_thread(u64 action)
 
 		int ret_val = NONE; { system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); ret_val = (int)p1;}
 
-		if(ret_val < 0) { show_msg((char*)STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
+		if(ret_val < 0) { show_msg(STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
 		if(ret_val > 1) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 1); }
 	}
 

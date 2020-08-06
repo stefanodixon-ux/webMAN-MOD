@@ -33,7 +33,7 @@ static u8 max_temp  = 0; //syscon
 
 u64 get_fan_policy_offset  = 0;
 u64 set_fan_policy_offset  = 0;
-u64 restore_set_fan_policy = 0; // set in main.c
+u64 restore_set_fan_policy = 0; // set in firmware.h
 
 static bool fan_ps2_mode = false; // temporary disable dynamic fan control
 

@@ -365,7 +365,7 @@
 				{
 					ret = (cobra_load_vsh_plugin(0, (char*)netiso_sprx[n], &netiso_args, sizeof(_netiso_args)) == CELL_OK);
 				}
-#ifdef USE_INTERNAL_PLUGIN
+#ifdef USE_INTERNAL_NET_PLUGIN
 				else
 				{
 					sys_ppu_thread_create(&thread_id_net, netiso_thread, 0, THREAD_PRIO, THREAD_STACK_SIZE_NET_ISO, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NET);

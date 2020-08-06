@@ -1203,7 +1203,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								else
 									file_copy(source, param, COPY_WHOLE_FILE);
 
-								show_msg((char*)STR_CPYFINISH);
+								show_msg(STR_CPYFINISH);
 								copy_in_progress = false;
 							}
 							else

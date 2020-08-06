@@ -17,7 +17,7 @@ static void unload_prx_module(void)
 
 static void stop_prx_module(void)
 {
-	show_msg((char*)STR_WMUNL);
+	show_msg(STR_WMUNL);
 
 #ifdef REMOVE_SYSCALLS
 	remove_cfw_syscall8(); // remove cobra if syscalls were disabled

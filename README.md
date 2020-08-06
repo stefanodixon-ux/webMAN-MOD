@@ -206,6 +206,8 @@ Requirements for GNU/Linux:
 - jjolano (John Olano) for OpenFTP server
 - OsirisX for PS3XPAD and the source code needed for gamepad emulation
 - Berion & Brunolee for the graphics & icons
+- bucanero port of libraries for zip, rar, 7zip
+- lmirel port of libraries for exFAT
 - PSX-SCENE, PSX-PLACE, PLAYSTATIONHAX, PS3HAX & other scene websites/users, who translated, helped in the testing process
 
 Special thanks to Joonie, Habib & Rebug Team, flatz, haxxxen, devil303, Rancid-O, EvilNat, KW, naehrwert, MiralaTijera

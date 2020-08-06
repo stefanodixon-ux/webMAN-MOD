@@ -27,7 +27,7 @@ static bool toggle_rebug_mode(void)
 
 	if(file_exists(VSH_MODULE_PATH "vsh.self.swp"))
 	{
-		show_msg((char*)"Normal Mode detected!\n"
+		show_msg("Normal Mode detected!\n"
 						"Switch to REBUG Mode Debug XMB...");
 		sys_ppu_thread_sleep(3);
 
@@ -41,7 +41,7 @@ static bool toggle_rebug_mode(void)
 	if((file_exists(VSH_MODULE_PATH "vsh.self.nrm"))
 	&& (file_exists(VSH_MODULE_PATH "vsh.self.cexsp")))
 	{
-		show_msg((char*)"REBUG Mode Debug XMB detected!\n"
+		show_msg("REBUG Mode Debug XMB detected!\n"
 						"Switch to Retail XMB...");
 		sys_ppu_thread_sleep(3);
 
@@ -52,7 +52,7 @@ static bool toggle_rebug_mode(void)
 	else
 	if(file_exists(VSH_MODULE_PATH "vsh.self.dexsp"))
 	{
-		show_msg((char*)"REBUG Mode Retail XMB detected!\n"
+		show_msg("REBUG Mode Retail XMB detected!\n"
 						"Switch to Debug XMB...");
 		sys_ppu_thread_sleep(3);
 
@@ -70,7 +70,7 @@ static bool toggle_normal_mode(void)
 	if((file_exists(VSH_MODULE_PATH "vsh.self.nrm"))
 	&& (file_exists(VSH_MODULE_PATH "vsh.self.cexsp")))
 	{
-		show_msg((char*)"REBUG Mode Debug XMB detected!\n"
+		show_msg("REBUG Mode Debug XMB detected!\n"
 						"Switch to Normal Mode...");
 
 		swap_file(VSH_ETC_PATH, "index.dat", "index.dat.swp", "index.dat.nrm");
@@ -82,7 +82,7 @@ static bool toggle_normal_mode(void)
 	else
 	if(file_exists(VSH_MODULE_PATH "vsh.self.dexsp"))
 	{
-		show_msg((char*)"REBUG Mode Retail XMB detected!\n"
+		show_msg("REBUG Mode Retail XMB detected!\n"
 						"Switch to Normal Mode...");
 
 		swap_file(VSH_ETC_PATH, "index.dat", "index.dat.swp", "index.dat.nrm");
@@ -96,7 +96,7 @@ static bool toggle_normal_mode(void)
 	else
 	if(file_exists(VSH_MODULE_PATH "vsh.self.swp"))
 	{
-		show_msg((char*)"Normal Mode detected!\n"
+		show_msg("Normal Mode detected!\n"
 						"No need to switch!");
 		sys_ppu_thread_sleep(3);
 		disable_dev_blind();
@@ -110,7 +110,7 @@ static void toggle_debug_menu(void)
 
 	if(file_exists(VSH_MODULE_PATH "sysconf_plugin.sprx.dex"))
 	{
-		show_msg((char*)"CEX QA Menu is active!\n"
+		show_msg("CEX QA Menu is active!\n"
 						"Switch to DEX Debug Menu...");
 
 		swap_file(VSH_MODULE_PATH, "sysconf_plugin.sprx", "sysconf_plugin.sprx.cex", "sysconf_plugin.sprx.dex");
@@ -118,7 +118,7 @@ static void toggle_debug_menu(void)
 	else
 	if(file_exists(VSH_MODULE_PATH "sysconf_plugin.sprx.cex"))
 	{
-		show_msg((char*)"DEX Debug Menu is active!\n"
+		show_msg("DEX Debug Menu is active!\n"
 						"Switch to CEX QA Menu...");
 
 		swap_file(VSH_MODULE_PATH, "sysconf_plugin.sprx", "sysconf_plugin.sprx.dex", "sysconf_plugin.sprx.cex");
@@ -138,7 +138,7 @@ static bool toggle_cobra(void)
 	if( (file_exists(REBUG_COBRA_PATH "stage2.cex")) /* &&
 		(file_exists(REBUG_COBRA_PATH "stage2.dex")) */)
 	{
-		show_msg((char*)"REBUG COBRA is active!\n"
+		show_msg("REBUG COBRA is active!\n"
 						"Deactivating COBRA...");
 
 		save_file(TMP_DIR "/loadoptical", "SCE\0", 4); // Force load PS2 discs on BC consoles with Cobra 8.x
@@ -152,7 +152,7 @@ static bool toggle_cobra(void)
 	else if((file_exists(REBUG_COBRA_PATH "stage2.cex.bak")) /* &&
 			(file_exists(REBUG_COBRA_PATH "stage2.dex.bak")) */)
 	{
-		show_msg((char*)"REBUG COBRA is inactive!\n"
+		show_msg("REBUG COBRA is inactive!\n"
 						"Activating COBRA...");
 
 		cellFsRename(REBUG_COBRA_PATH "stage2.cex.bak", REBUG_COBRA_PATH "stage2.cex");
@@ -162,7 +162,7 @@ static bool toggle_cobra(void)
  #endif //#ifdef REX_ONLY
 	if(file_exists(HABIB_COBRA_PATH "stage2.cex"))
 	{
-		show_msg((char*)"COBRA is active!\n"
+		show_msg("COBRA is active!\n"
 						"Deactivating COBRA...");
 
 		cellFsRename(HABIB_COBRA_PATH "stage2.cex", HABIB_COBRA_PATH "stage2_disabled.cex");
@@ -171,7 +171,7 @@ static bool toggle_cobra(void)
 	}
 	else if(file_exists(HABIB_COBRA_PATH "stage2_disabled.cex"))
 	{
-		show_msg((char*)"COBRA is inactive!\n"
+		show_msg("COBRA is inactive!\n"
 						"Activating COBRA...");
 
 		cellFsRename(HABIB_COBRA_PATH "stage2_disabled.cex", HABIB_COBRA_PATH "stage2.cex");
@@ -181,7 +181,7 @@ static bool toggle_cobra(void)
 
 	if(file_exists(SYS_COBRA_PATH "stage2.bin"))
 	{
-		show_msg((char*)"COBRA is active!\n"
+		show_msg("COBRA is active!\n"
 						"Deactivating COBRA...");
 
 		cellFsRename(SYS_COBRA_PATH "stage2.bin", SYS_COBRA_PATH "stage2_disabled.bin");
@@ -192,7 +192,7 @@ static bool toggle_cobra(void)
 	}
 	else if(file_exists(SYS_COBRA_PATH "stage2_disabled.bin"))
 	{
-		show_msg((char*)"COBRA is inactive!\n"
+		show_msg("COBRA is inactive!\n"
 						"Activating COBRA...");
 
 		cellFsRename(SYS_COBRA_PATH "stage2_disabled.bin", SYS_COBRA_PATH "stage2.bin");
@@ -263,7 +263,7 @@ static void toggle_ps2emu(void)
  #endif //#ifdef REX_ONLY
 	if(file_exists(PS2_EMU_PATH "ps2_netemu.self.swap"))
 	{
-		show_msg((char*)"Switch to custom ps2emu...");
+		show_msg("Switch to custom ps2emu...");
 
 		swap_file(PS2_EMU_PATH, "ps2_netemu.self", "ps2_netemu.tmp", "ps2_netemu.self.swap");
 		swap_file(PS2_EMU_PATH, "ps2_gxemu.self",  "ps2_gxemu.tmp",  "ps2_gxemu.self.swap");
@@ -271,7 +271,7 @@ static void toggle_ps2emu(void)
 	}
 	else if(file_exists(PS2_EMU_PATH "ps2_netemu.self.sp"))
 	{
-		show_msg((char*)"Switching to custom ps2emu...");
+		show_msg("Switching to custom ps2emu...");
 
 		swap_file(PS2_EMU_PATH, "ps2_netemu.self", "ps2_netemu.tmp", "ps2_netemu.self.sp");
 		swap_file(PS2_EMU_PATH, "ps2_gxemu.self",  "ps2_gxemu.tmp",  "ps2_gxemu.self.sp");
@@ -279,7 +279,7 @@ static void toggle_ps2emu(void)
 	}
 	else if(file_exists(PS2_EMU_PATH "ps2_netemu.tmp"))
 	{
-		show_msg((char*)"Restoring original ps2emu...");
+		show_msg("Restoring original ps2emu...");
 
 		if(c_firmware >= 4.65f)
 		{

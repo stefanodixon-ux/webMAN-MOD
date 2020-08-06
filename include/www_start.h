@@ -123,6 +123,8 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		spoof_idps_psid();
 		#endif
 
+		if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT }
+
 		#ifdef COBRA_ONLY
 		#ifdef REMOVE_SYSCALLS
 		if(webman_config->spp & 1) //remove syscalls & history

@@ -1174,7 +1174,7 @@ static void enable_dev_blind(const char *msg)
 
 	if(!msg) return;
 
-	show_msg((char*)msg);
+	show_msg(msg);
 	sys_ppu_thread_sleep(2);
 }
 

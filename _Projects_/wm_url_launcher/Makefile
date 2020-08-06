@@ -10,7 +10,6 @@ endif
 #---------------------------------------------------------------------------------
 #  TITLE, APPID, CONTENTID, ICON0 SFOXML before ppu_rules.
 #---------------------------------------------------------------------------------
-
 TITLE		:=	PKG Launcher
 APPID		:=	PKGLAUNCH
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
@@ -43,14 +42,14 @@ ICON0		:=	$(CURDIR)/ICON0.PNG
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	../lib/libzip.a -lc -lz -lsysfs -lfont -ltiny3d -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lsysmodule -lm
-
+LIBS		:=	-lun7zip -lunrar -lstdc++ -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lsysmodule -lm -lsysfs \
+				-lzip -lz -lc -lfont -ltiny3d
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS		=	-O2 -Wall -std=gnu99 -mcpu=cell $(MACHDEP) $(INCLUDE)
+CFLAGS		=	-O2 -Wall -mcpu=cell -std=gnu99 $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	$(CFLAGS)
 
 LDFLAGS		=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
@@ -154,6 +153,7 @@ pkg: $(BUILD) $(OUTPUT).pkg
 
 npdrm: $(BUILD)
 	@$(SELF_NPDRM) $(SCETOOL_FLAGS) --np-content-id=$(CONTENTID) --encrypt $(BUILDDIR)/$(basename $(notdir $(OUTPUT))).elf $(BUILDDIR)/../EBOOT.BIN
+
 #---------------------------------------------------------------------------------
 
 else

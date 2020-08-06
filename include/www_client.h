@@ -131,7 +131,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			strcat(body, "<p>"); add_breadcrumb_trail(body, url + (islike(url, "/mount") ? MOUNT_CMD : 0));
 		}
 
-		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg((char*)body + 4);
+		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg(body + 4);
 
 #ifndef EMBED_JS
 		if(css_exists)
@@ -1182,9 +1182,9 @@ parse_request:
 				// /fixgame.ps3$abort
 				do_restart = false;
 
-				if(copy_in_progress) {copy_aborted = true; show_msg((char*)STR_CPYABORT);}   // /copy.ps3$abort
+				if(copy_in_progress) {copy_aborted = true; show_msg(STR_CPYABORT);}   // /copy.ps3$abort
 				else
-				if(fix_in_progress)  {fix_aborted = true;  show_msg((char*)"Fix aborted!");} // /fixgame.ps3$abort
+				if(fix_in_progress)  {fix_aborted = true;  show_msg("Fix aborted!");} // /fixgame.ps3$abort
 
 				sprintf(param, "/");
 			}
@@ -1245,7 +1245,7 @@ parse_request:
 													 "File: ",       (char*)(KLIC_PATH_OFFSET));
 				}
 				else
-					{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; show_msg((char*)"KLIC: Not in-game!");}
+					{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; show_msg("KLIC: Not in-game!");}
 
 
 				sprintf(prev, "%s", ((klic_polling_status) ? (klic_polling ? "Auto-Log: Running" : "Auto-Log: Stopped") :
@@ -2743,8 +2743,18 @@ retry_response:
 						if(param[12] != 's')
 						{
 							int * arg2;
-							if(system_bgm)  {BgmPlaybackDisable(0, &arg2); system_bgm = 0;} else
-											{BgmPlaybackEnable(0, &arg2);  system_bgm = 1;}
+							if(system_bgm)
+							{
+								u32 (*BgmPlaybackDisable)(int, void *);
+								BgmPlaybackDisable = getNIDfunc("vshmain", 0xEDAB5E5E, 17*2);
+								BgmPlaybackDisable(0, &arg2); system_bgm = 0;
+							}
+							else
+							{
+								u32 (*BgmPlaybackEnable)(int, void *);
+								BgmPlaybackEnable  = getNIDfunc("vshmain", 0xEDAB5E5E, 16*2);
+								BgmPlaybackEnable(0, &arg2);  system_bgm = 1;
+							}
 						}
 
 						sprintf(templn, "System BGM: %s", system_bgm ? STR_ENABLED : STR_DISABLED);

@@ -148,7 +148,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 	if(syscalls_removed)
 	{
 		if(!webman_config->nobeep) { BEEP2 }
-		show_msg((char*)STR_CFWSYSALRD);
+		show_msg(STR_CFWSYSALRD);
 	}
 	else
 	{
@@ -165,19 +165,19 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 #endif
 		if(url_count) restore_blocked_urls();
 
-		show_msg((char*)STR_CFWSYSRIP);
+		show_msg(STR_CFWSYSRIP);
 		remove_cfw_syscalls(keep_ccapi);
 		delete_history(true);
 
 		if(syscalls_removed)
 		{
 			if(!webman_config->nobeep) { BEEP1 }
-			show_msg((char*)STR_RMVCFWSYS);
+			show_msg(STR_RMVCFWSYS);
 		}
 		else
 		{
 			if(!webman_config->nobeep) { BEEP2 }
-			show_msg((char*)STR_RMVCFWSYSF);
+			show_msg(STR_RMVCFWSYSF);
 		}
 	}
 
@@ -211,7 +211,7 @@ static void block_online_servers(bool notify)
 	{
 		if(IS_INGAME) return; // not in XMB
 
-		if(notify) show_msg((char*)"Blocking PSN servers");
+		if(notify) show_msg("Blocking PSN servers");
 
 		#ifdef COBRA_ONLY
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
@@ -221,7 +221,7 @@ static void block_online_servers(bool notify)
 
 		if(peekq(TOC) == SYSCALLS_UNAVAILABLE)
 		{
-			show_msg((char*)STR_CFWSYSALRD);
+			show_msg(STR_CFWSYSALRD);
 		}
 		else
 		{
@@ -284,6 +284,6 @@ static void block_online_servers(bool notify)
 
 	if(notify)
 	{
-		if(url_count > 0) show_msg((char*)"PSN servers blocked");
+		if(url_count > 0) show_msg("PSN servers blocked");
 	}
 }

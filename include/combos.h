@@ -193,9 +193,9 @@
  #endif
 							cellFsUnlink(WMCONFIG);
 							{ BEEP1 }
-							show_msg((char*)STR_RMVWMCFG);
+							show_msg(STR_RMVWMCFG);
 							sys_ppu_thread_sleep(2);
-							show_msg((char*)STR_RMVWMCFGOK);
+							show_msg(STR_RMVWMCFGOK);
 							sys_ppu_thread_sleep(3);
 							goto reboot; // vsh reboot
 						}
@@ -579,11 +579,11 @@
   #ifndef LITE_EDITION
 								if(!(webman_config->combo2 & MOUNTNET0) &&
 									(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_SQUARE | CELL_PAD_CTRL_R2)))
-								{if(is_netsrv_enabled(0)) mount_game((char*)"/net0", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+R2 / SELECT+R2+SQUARE
+								{if(is_netsrv_enabled(0)) mount_game("/net0", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+R2 / SELECT+R2+SQUARE
 								else
 								if(!(webman_config->combo2 & MOUNTNET1) &&
 									(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_SQUARE | CELL_PAD_CTRL_L2)))
-								{if(is_netsrv_enabled(1)) mount_game((char*)"/net1", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+L2 / SELECT+L2+SQUARE
+								{if(is_netsrv_enabled(1)) mount_game("/net1", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+L2 / SELECT+L2+SQUARE
 								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_SQUARE)
   #endif
  #endif
@@ -613,7 +613,7 @@
 								else
  #endif
 								{
-									mount_game((char*)"_prev", EXPLORE_CLOSE_ALL);
+									mount_game("_prev", EXPLORE_CLOSE_ALL);
 
 									n = 0;
 									break;
@@ -628,7 +628,7 @@
 								else
  #endif
 								{
-									mount_game((char*)"_next", EXPLORE_CLOSE_ALL);
+									mount_game("_next", EXPLORE_CLOSE_ALL);
 
 									n = 0;
 									break;
@@ -832,13 +832,13 @@
 								do_umount(false); // prevent system freeze on disc icon
 
 								if( pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN) )
-									{open_browser((char*)"http://127.0.0.1/setup.ps3", 0); show_msg((char*)STR_WMSETUP);}     // L2+R2+L1+R1+O  ||  L2+R2+L1+R1+X (JAP)
+									{open_browser((char*)"http://127.0.0.1/setup.ps3", 0); show_msg(STR_WMSETUP);}     // L2+R2+L1+R1+O  ||  L2+R2+L1+R1+X (JAP)
 								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1)
-									{open_browser((char*)"http://127.0.0.1/index.ps3", 0); show_msg((char*)STR_MYGAMES);}     // L2+R2+R1+O  ||  L2+R2+R1+X (JAP)
+									{open_browser((char*)"http://127.0.0.1/index.ps3", 0); show_msg(STR_MYGAMES);}     // L2+R2+R1+O  ||  L2+R2+R1+X (JAP)
 								else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1)
-									{open_browser((char*)"http://127.0.0.1/cpursx.ps3", 0); show_msg((char*)WM_APPNAME " Info");}  // L2+R2+L1+O || L2+R2+L1+X (JAP)
+									{open_browser((char*)"http://127.0.0.1/cpursx.ps3", 0); show_msg(WM_APPNAME " Info");}  // L2+R2+L1+O || L2+R2+L1+X (JAP)
 								else
-									{open_browser((char*)"http://127.0.0.1/", 0); show_msg((char*)WM_APP_VERSION);}           // L2+R2+O || L2+R2+X (JAP)
+									{open_browser((char*)"http://127.0.0.1/", 0); show_msg(WM_APP_VERSION);}           // L2+R2+O || L2+R2+X (JAP)
 #endif
 							}
 						}
@@ -937,7 +937,7 @@
 				{
 					sys_ppu_thread_sleep(1);
 					// reboot
-					show_msg((char*)"Switching successful! Reboot now...");
+					show_msg("Switching successful! Reboot now...");
 					sys_ppu_thread_sleep(3);
 					disable_dev_blind();
 reboot:

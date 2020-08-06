@@ -290,14 +290,17 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 #endif
 
 #ifdef PKG_HANDLER
-	else if( (f1_len > 11) && (strcasestr(templn, ".SELF") != NULL) )
-		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 	else if( (f1_len > 11) && ((strstr(templn, "/ROMS/") != NULL) || (strcasestr(ROMS_EXTENSIONS, ext) != NULL)) )
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, show_img ? " pic" : " rom");
 	}
-	else if( IS(ext, ".pkg") || IS(ext, ".PKG") || IS(ext, ".p3t") )
+	else if( (f1_len > 11) && ((strcasestr(templn, ".SELF") != NULL) || _IS(ext, ".zip") || _IS(ext, ".rar") || _IS(ext+1, ".7z")))
+	{
+		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
+		if(wm_icons_exists) sprintf(ftype, " pkg");
+	}
+	else if( _IS(ext, ".pkg") || IS(ext, ".p3t") )
 	{
 		sprintf(fsize, "<a href=\"/install.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, " pkg");

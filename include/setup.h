@@ -526,21 +526,21 @@ static void setup_form(char *buffer, char *templn)
 
 	//Scan these devices
 	if(!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb())
-		add_checkbox("np", "/dev_hdd0/game", _BR_, (webman_config->npdrm), buffer);
-	add_checkbox("u0", drives[1], _BR_, (webman_config->usb0), buffer);
-	add_checkbox("u1", drives[2], _BR_, (webman_config->usb1), buffer);
-	add_checkbox("u2", drives[3], _BR_, (webman_config->usb2), buffer);
-	add_checkbox("u3", drives[4], _BR_, (webman_config->usb3), buffer);
-	add_checkbox("u6", drives[5], _BR_, (webman_config->usb6), buffer);
-	add_checkbox("u7", drives[6], _BR_, (webman_config->usb7), buffer);
+		_add_checkbox("np", "/dev_hdd0/game", (webman_config->npdrm), buffer);
+	_add_checkbox("u0", drives[1], (webman_config->usb0), buffer);
+	_add_checkbox("u1", drives[2], (webman_config->usb1), buffer);
+	_add_checkbox("u2", drives[3], (webman_config->usb2), buffer);
+	_add_checkbox("u3", drives[4], (webman_config->usb3), buffer);
+	_add_checkbox("u6", drives[5], (webman_config->usb6), buffer);
+	_add_checkbox("u7", drives[6], (webman_config->usb7), buffer);
 
-	if(isDir(drives[13])) add_checkbox("x0", drives[13], _BR_, (webman_config->dev_sd), buffer);
-	if(isDir(drives[14])) add_checkbox("x1", drives[14], _BR_, (webman_config->dev_ms), buffer);
-	if(isDir(drives[15])) add_checkbox("x2", drives[15], _BR_, (webman_config->dev_cf), buffer);
+	if(isDir(drives[13])) _add_checkbox("x0", drives[13], (webman_config->dev_sd), buffer);
+	if(isDir(drives[14])) _add_checkbox("x1", drives[14], (webman_config->dev_ms), buffer);
+	if(isDir(drives[15])) _add_checkbox("x2", drives[15], (webman_config->dev_cf), buffer);
 
 #ifdef USE_NTFS
 	concat(buffer, "<label title=\"internal prepNTFS\">");
-	add_checkbox("xn", "/dev_ntfs", _BR_, (webman_config->ntfs), buffer);
+	_add_checkbox("xn", "/dev_ntfs", (webman_config->ntfs), buffer);
 #endif
 
 	//Scan for content
@@ -548,10 +548,10 @@ static void setup_form(char *buffer, char *templn)
 
 #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
 	b = isDir(PKGLAUNCH_DIR);
-	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"    , " (", !(webman_config->cmask & PS3), buffer);
-	add_checkbox("ap", "/app_home", b ? "," : ")<br>",       !(webman_config->app_home),    buffer);
-	if(b) add_checkbox("p3l", "PKG Launcher"         ,     " & "      ,  (webman_config->ps3l)       , buffer);
-	if(b) add_checkbox("rom", "ROMS"                 ,     ")<br>"    ,  (webman_config->roms)       , buffer);
+	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"    , " (",    !(webman_config->cmask & PS3), buffer);
+	add_checkbox("ap", "/app_home", b ? "," : ")<br>",          !(webman_config->app_home)   , buffer);
+	if(b) add_checkbox("p3l", "PKG Launcher"         , " & "  ,  (webman_config->ps3l)       , buffer);
+	if(b) add_checkbox("rom", "ROMS"                 , ")<br>",  (webman_config->roms)       , buffer);
 #else
 	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"    , " (",    !(webman_config->cmask & PS3), buffer);
 	add_checkbox("ap", "/app_home"                   , ")<br>", !(webman_config->app_home),    buffer);
@@ -645,17 +645,17 @@ static void setup_form(char *buffer, char *templn)
 #ifdef COBRA_ONLY
 	add_checkbox("sn", "No SND0.AT3", " • ", (webman_config->nosnd0), buffer);
 #endif
-	add_checkbox("wp", "wm_proxy", _BR_, !(webman_config->wm_proxy), buffer);
+	_add_checkbox("wp", "wm_proxy", !(webman_config->wm_proxy), buffer);
 
-	add_checkbox("ab", STR_AUTOB  , _BR_, (webman_config->autob), buffer);
-	add_checkbox("dy", STR_DELAYAB, _BR_, (webman_config->delay), buffer);
+	_add_checkbox("ab", STR_AUTOB  , (webman_config->autob), buffer);
+	_add_checkbox("dy", STR_DELAYAB, (webman_config->delay), buffer);
 
-	add_checkbox("bl", STR_DEVBL,   _BR_, (webman_config->blind),   buffer);
-	add_checkbox("wn", STR_NOWMDN,  _BR_, (webman_config->wmstart), buffer);
+	_add_checkbox("bl", STR_DEVBL,   (webman_config->blind),   buffer);
+	_add_checkbox("wn", STR_NOWMDN,  (webman_config->wmstart), buffer);
 
-	add_checkbox("pl", STR_USBPOLL, _BR_, (webman_config->poll) , buffer);
+	_add_checkbox("pl", STR_USBPOLL, (webman_config->poll) , buffer);
 #ifdef COBRA_ONLY
-	add_checkbox("bus", STR_RESET_USB, _BR_, (webman_config->bus), buffer);
+	_add_checkbox("bus", STR_RESET_USB, (webman_config->bus), buffer);
 #endif
 
 	add_checkbox("ft", STR_FTPSVC,   " : ", (webman_config->ftpd) , buffer);
@@ -663,7 +663,7 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef AUTO_POWER_OFF
 	sprintf(templn, HTML_NUMBER("tm", "%i", "0", "255") " mins • ", webman_config->ftp_timeout); concat(buffer, templn);
-	add_checkbox("pw", "No Auto Power Off",  _BR_, !(webman_config->auto_power_off), buffer);
+	_add_checkbox("pw", "No Auto Power Off",  !(webman_config->auto_power_off), buffer);
 #else
 	sprintf(templn, HTML_NUMBER("tm", "%i", "0", "255") " mins<br>", webman_config->ftp_timeout); concat(buffer, templn);
 #endif
@@ -675,7 +675,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef LITE_EDITION
-	add_checkbox("bn", STR_ACCESS,   _BR_, (webman_config->bind) , buffer);
+	_add_checkbox("bn", STR_ACCESS,        (webman_config->bind) , buffer);
 #else
 	add_checkbox("bn", STR_ACCESS,  " : ", (webman_config->bind) , buffer);
 
@@ -685,36 +685,36 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef COBRA_ONLY
 	if(c_firmware < 4.53f)
-		add_checkbox("nsp", STR_NOSPOOF, _BR_, (webman_config->nospoof), buffer);
+		_add_checkbox("nsp", STR_NOSPOOF, (webman_config->nospoof), buffer);
 #endif
 
 #ifdef NOSINGSTAR
-	add_checkbox("nss", STR_NOSINGSTAR,  _BR_, (webman_config->noss), buffer);
+	_add_checkbox("nss", STR_NOSINGSTAR,  (webman_config->noss), buffer);
 #endif
-//	add_checkbox("xp", STR_COMBOS,   _BR_, (webman_config->nopad), buffer);
+//	_add_checkbox("xp", STR_COMBOS,       (webman_config->nopad), buffer);
 
 #ifdef PKG_HANDLER
-	add_checkbox("ai", "Auto Install PKG", _BR_, !(webman_config->auto_install_pkg), buffer);
+	_add_checkbox("ai", "Auto Install PKG", !(webman_config->auto_install_pkg), buffer);
 #endif
 #ifdef UNLOCK_SAVEDATA
-	add_checkbox("up", "Unlock savedata", _BR_, (webman_config->unlock_savedata), buffer);
+	_add_checkbox("up", "Unlock savedata", (webman_config->unlock_savedata), buffer);
 #endif
 
 	//game listing
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR);
 
-	add_checkbox("rf", STR_CONTSCAN, _BR_, (webman_config->refr), buffer);
+	_add_checkbox("rf", STR_CONTSCAN, (webman_config->refr), buffer);
 
 #ifdef LAUNCHPAD
 	b = file_exists(LAUNCHPAD_FILE_XML);
 	add_checkbox("ng" , STR_NOGRP,  b ? " & " : _BR_, (webman_config->nogrp  ),       buffer);
 	if(b)
-		add_checkbox("lg" , "LaunchPad.xml",    _BR_, (webman_config->launchpad_grp), buffer);
+		_add_checkbox("lg" , "LaunchPad.xml",    (webman_config->launchpad_grp), buffer);
 #else
-	add_checkbox("ng" , STR_NOGRP,     _BR_, (webman_config->nogrp  ), buffer);
+	_add_checkbox("ng" , STR_NOGRP,     (webman_config->nogrp  ), buffer);
 #endif
 
-	add_checkbox("ns" , STR_NOSETUP,   _BR_, (webman_config->nosetup), buffer);
+	_add_checkbox("ns" , STR_NOSETUP,   (webman_config->nosetup), buffer);
 
 	value = webman_config->nocov;
 	add_checkbox("nc\" onclick=\"ic.value=(nc.checked)?1:0;", STR_MMCOVERS, " : ", (value == SHOW_ICON0), buffer);
@@ -793,14 +793,14 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef LAUNCHPAD
 	if(file_exists(LAUNCHPAD_FILE_XML))
-		add_checkbox("lx", "LaunchPad.xml | PhotoGUI (USB0/PICTURE)", _BR_, !(webman_config->launchpad_xml), buffer);
+		_add_checkbox("lx", "LaunchPad.xml | PhotoGUI (USB0/PICTURE)", !(webman_config->launchpad_xml), buffer);
 	else if(payload_ps3hen || cobra_version >= 0x0820)
-		add_checkbox("lx", "PhotoGUI (USB0/PICTURE)", _BR_, !(webman_config->launchpad_xml), buffer);
+		_add_checkbox("lx", "PhotoGUI (USB0/PICTURE)", !(webman_config->launchpad_xml), buffer);
 #endif
 
 	//game mounting
 	sprintf(templn, "%s + %s net/ntfs cached ISO", STR_UNMOUNT, STR_DELETE);
-	add_checkbox("dx", templn, _BR_, (webman_config->deliso), buffer);
+	_add_checkbox("dx", templn, (webman_config->deliso), buffer);
 
 #ifdef FIX_GAME
 	if(c_firmware >= 4.20f && c_firmware < LATEST_CFW)
@@ -813,8 +813,8 @@ static void setup_form(char *buffer, char *templn)
 		concat(buffer, "</select><br>");
 	}
 #endif
-	add_checkbox("apd", STR_AUTO_PLAY, _BR_, (webman_config->autoplay), buffer);
-	add_checkbox("sm\"  accesskey=\"G", "sMAN GUI", _BR_, (webman_config->sman), buffer);
+	_add_checkbox("apd", STR_AUTO_PLAY, (webman_config->autoplay), buffer);
+	_add_checkbox("sm\"  accesskey=\"G", "sMAN GUI", (webman_config->sman), buffer);
 
 	//general settings
 #ifdef SPOOF_CONSOLEID

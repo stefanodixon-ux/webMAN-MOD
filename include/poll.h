@@ -24,7 +24,7 @@ static void poll_start_play_time(void)
 		{
 			xsetting_F48C0548()->GetSettingNet_enable(&status);
 			xsetting_F48C0548()->SetSettingNet_enable(net_status);
-			net_status = NONE; if(net_status && !status) show_msg((char*)ONLINE_TAG);
+			net_status = NONE; if(net_status && !status) show_msg(ONLINE_TAG);
 			cellFsUnlink(WMNET_DISABLED);
 		}
 	#endif
@@ -63,7 +63,7 @@ static void poll_start_play_time(void)
 				{
 					xsetting_F48C0548()->GetSettingNet_enable(&status);
 					xsetting_F48C0548()->SetSettingNet_enable(net_status < 0 ? 0 : net_status);
-					if(status && (net_status <= 0)) {save_file(WMNET_DISABLED, NULL, SAVE_ALL); show_msg((char*)OFFLINE_TAG);}
+					if(status && (net_status <= 0)) {save_file(WMNET_DISABLED, NULL, SAVE_ALL); show_msg(OFFLINE_TAG);}
 					net_status = status;
 				}
 			}

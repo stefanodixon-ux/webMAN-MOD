@@ -287,7 +287,7 @@ static bool rec_start(const char *param)
 		}
 		else
 		{
-			show_msg((char*)"No rec_plugin view found.");
+			show_msg("No rec_plugin view found.");
 			return false;
 		}
 	}
@@ -317,7 +317,7 @@ static void toggle_video_rec(const char *param)
 
 			if(rec_start(param) == false)
 			{
-				show_msg((char*)"Recording Error!");
+				show_msg("Recording Error!");
 			}
 			else
 			{
@@ -329,7 +329,7 @@ static void toggle_video_rec(const char *param)
 			// we are already recording
 			rec_interface->stop();
 			rec_interface->close(0);
-			show_msg((char*)"Recording finished");
+			show_msg("Recording finished");
 			recording = false;
 		}
 	}

@@ -189,7 +189,7 @@
 					old_fan = fan_speed;
 					set_fan_speed(fan_speed);
 
-					if(!webman_config->nowarn) show_msg((char*)STR_OVERHEAT2);
+					if(!webman_config->nowarn) show_msg(STR_OVERHEAT2);
 				}
 			}
 		}

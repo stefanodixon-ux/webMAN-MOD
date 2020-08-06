@@ -187,7 +187,7 @@ static int remote_stat(int s, const char *path, int *is_directory, s64 *file_siz
 	return CELL_OK;
 }
 
-#ifdef USE_INTERNAL_PLUGIN
+#ifdef USE_INTERNAL_NET_PLUGIN
 static int read_remote_file_critical(u64 offset, void *buf, u32 size)
 {
 	netiso_read_file_critical_cmd cmd;

@@ -20,6 +20,7 @@
 #define MAX_LEN		2047
 
 #include "zip_util.h"
+#include "unrar_util.h"
 
 static int sys_fs_mount(char const* deviceName, char const* deviceFileSystem, char const* devicePath, int writeProt)
 {
@@ -102,7 +103,7 @@ static bool file_exists(const char *path)
 
 static void log_file(const char *path, const char *text)
 {
-	FILE *fp = fopen(path, "wb");
+	FILE *fp = fopen(path,	"wb");
 	fwrite((void *) text, 1, strlen(text), fp);
 	fclose(fp);
 }
@@ -179,24 +180,49 @@ int main(int argc, const char* argv[])
 
 	if(not_exists(path)) return 0; // path must exists
 
-	if(((*param == '/') || (strstr(path, "/PS3~") != NULL)) && (strcasestr(path, ".zip") != NULL))
+	if( (((*param == '/') || (strstr(path, "/PS3~") != NULL)) && (strcasestr(path, ".zip") != NULL))
+		|| (strcasestr(path, ".rar") != NULL)
+		|| (strcasestr(path, ".7z")  != NULL) )
 	{
+		bool is_zip = (strcasestr(path, ".zip") != NULL);
+		bool is_rar = (strcasestr(path, ".rar") != NULL);
+		bool is_7z  = (strcasestr(path, ".7z")  != NULL);
+
+		char *dest_path = param;
+
 		char *filename = strrchr(path, '/');
 		if(filename)
 		{
-			++filename; char *dest_path = param;
+			++filename;
 			if(!strncmp(filename, "PS3~", 4))
 			{
 				int len = sprintf(dest_path, "/%s", filename + 4);
-				for(int i = 0; i < len; i++) if(*(dest_path + i) == '~') *(dest_path + i) = '/';
-				*(dest_path + len - 4) = 0; // remove .zip
+				for(int i = 1; i < len; i++) if(*(dest_path + i) == '~') *(dest_path + i) = '/';
+				*(dest_path + len - (is_7z ? 3 : 4)) = 0; // remove zip
 
 				if(!strncmp(dest_path, "/dev_blind/", 11))
 					sys_fs_mount("CELL_FS_IOS:BUILTIN_FLSH1", "CELL_FS_FAT", "/dev_blind", 0);
 			}
+			else if(*dest_path != '/')
+			{
+				char old = *filename; *filename = 0;
+				sprintf(dest_path, "%s", path);
+				*filename = old;
+			}
 		}
 
-		if(*param == '/') extract_zip(path, param);
+		if(*dest_path == '/')
+		{
+			strcat(dest_path, "/");
+
+			if(is_zip)
+				extract_zip(path, dest_path);
+			else if(is_rar)
+				unrar_extract(path, dest_path);
+			else if(is_7z)
+				Extract7zFile(path, dest_path);
+		}
+
 		return 0;
 	}
 

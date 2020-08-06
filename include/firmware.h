@@ -445,6 +445,8 @@ static void detect_firmware(void)
 	}
 #endif //#if defined(DEX_SUPPORT) || defined(DECR_SUPPORT)
 
+	if(set_fan_policy_offset) restore_set_fan_policy = peekq(set_fan_policy_offset); // sys 389 get_fan_policy
+
 #ifdef SPOOF_CONSOLEID
 	if(idps_offset2) psid_offset = idps_offset2 + 0x18ULL;
 #endif

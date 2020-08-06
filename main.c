@@ -40,14 +40,15 @@
 
 #ifdef REX_ONLY
  #ifndef DEX_SUPPORT
- #define DEX_SUPPORT	1
+ #define DEX_SUPPORT
  #endif
 #endif
 
 #undef NET_SUPPORT
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
- #define NET_SUPPORT 1
+ #define NET_SUPPORT
+ #define USE_INTERNAL_NET_PLUGIN
  #endif
 #endif
 
@@ -57,7 +58,7 @@
 #endif
 
 #ifdef PKG_LAUNCHER
- #define MOUNT_ROMS 1
+ #define MOUNT_ROMS
 #endif
 
 #ifndef WM_REQUEST
@@ -309,7 +310,7 @@ static bool script_running = false;
 static char fw_version[8] = "4.xx";
 static char local_ip[16] = "127.0.0.1";
 
-static void show_msg(char *msg);
+static void show_msg(const char *text);
 static void show_status(const char *label, const char *status);
 static void sys_get_cobra_version(void);
 
@@ -606,8 +607,6 @@ int wwwd_start(size_t args, void *argp)
 	if(!payload_ps3hen && !(webman_config->fanc)) // SYSCON
 		sys_ppu_thread_sleep(webman_config->boots);
 
-	if(set_fan_policy_offset) restore_set_fan_policy = peekq(set_fan_policy_offset); // sys 389 get_fan_policy
-
 #ifdef PS3MAPI
  #ifdef REMOVE_SYSCALLS
 	backup_cfw_syscalls();
@@ -616,13 +615,6 @@ int wwwd_start(size_t args, void *argp)
 
 	//View_Find = getNIDfunc("paf", 0xF21655F3, 0);
 	//plugin_GetInterface = getNIDfunc("paf", 0x23AFB290, 0);
-
-#ifdef SYS_BGM
-	BgmPlaybackEnable  = getNIDfunc("vshmain", 0xEDAB5E5E, 16*2);
-	BgmPlaybackDisable = getNIDfunc("vshmain", 0xEDAB5E5E, 17*2);
-#endif
-
-	if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT }
 
 	//pokeq(0x8000000000003560ULL, 0x386000014E800020ULL); // li r3, 0 / blr
 	//pokeq(0x8000000000003D90ULL, 0x386000014E800020ULL); // li r3, 0 / blr
@@ -674,11 +666,6 @@ static void wwwd_stop_thread(u64 arg)
 		sys_ppu_thread_join(thread_id_netsvr, &exit_code);
 	}
 #endif
-
-	if(thread_id_ftpd != SYS_PPU_THREAD_NONE)
-	{
-		sys_ppu_thread_join(thread_id_ftpd, &exit_code);
-	}
 
 #ifdef PS3MAPI
 	if(thread_id_ps3mapi != SYS_PPU_THREAD_NONE)

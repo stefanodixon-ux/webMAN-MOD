@@ -48,7 +48,7 @@ static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_
 		}
 		cellFsClose(fd);
 
-		if(conn_info_main.remote_adr.s_addr!=0x7F000001) show_msg((char*)(msg));
+		if(conn_info_main.remote_adr.s_addr != 0x7F000001) show_msg(msg);
 	}
 
 	// show msg log

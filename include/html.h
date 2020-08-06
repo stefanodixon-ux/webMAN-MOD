@@ -391,6 +391,11 @@ static size_t add_checkbox(const char *name, const char *label, const char *sufi
 	return add_check_box(name, false, label, sufix, checked, buffer);
 }
 
+static size_t _add_checkbox(const char *name, const char *label, bool checked, char *buffer)
+{
+	return add_checkbox(name, label, _BR_, checked, buffer);
+}
+
 static size_t add_option_item(int value, const char *label, bool selected, char *buffer)
 {
 	char templn[MAX_LINE_LEN];
