@@ -186,10 +186,10 @@ int main(int argc, const char* argv[])
 
 	bool is_zip = (strcasestr(ext, ".zip") == ext);
 	bool is_rar = (strcasestr(ext, ".rar") == ext);
-	bool is_bz2 = (strcasestr(ext, ".bz2") == ext);
-	bool is_tgz = (strcasestr(ext, ".tgz") == ext);
-	bool is_tar = (strcasestr(ext, ".tar") == ext);
 	bool is_7z  = (strcasestr(ext, ".7z")  == ext);
+	bool is_bz2 = (strcasestr(ext, ".bz2") == ext);
+	bool is_tar = (strcasestr(ext, ".tar") == ext);
+	bool is_tgz = (strcasestr(ext, ".tgz") == ext) || (strcasestr(ext, ".gz") == ext);
 
 	if((is_zip && ((*param == '/') || (strstr(path, "/PS3~") != NULL))) ||
 		is_rar || is_bz2 || is_tgz || is_tar || is_7z )

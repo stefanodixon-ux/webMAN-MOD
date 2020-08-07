@@ -31,7 +31,7 @@
 
 	if(isDir(PKGLAUNCH_DIR))
 	{
-		if( !extcasecmp(_path, ".self", 5)    || (strcasestr(".rar.bz2.tgz.tar.7z", ext) != NULL) ||
+		if( !extcasecmp(_path, ".self", 5)    || (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL) ||
 			((strstr(_path, "/PS3~") != NULL) && _IS(ext, ".zip"))
 		)
 		{

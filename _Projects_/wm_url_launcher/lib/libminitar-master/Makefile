@@ -38,7 +38,7 @@ DATA		:=	data
 LIBS		:=	 
 
 MACHDEP		:= -DBIGENDIAN 
-CFLAGS		+= -O2 -Wall -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
+CFLAGS		+= -O2 -Wall -std=c99 -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
 
 LD			:=	ppu-ld
 
@@ -81,7 +81,7 @@ $(BUILD):
 install: $(BUILD)
 	@echo Copying...
 	@cp -frv include/bzlib.h $(PORTLIBS)/include
-	@cp -frv include/untar.h $(PORTLIBS)/include
+	@cp -frv include/minitar.h $(PORTLIBS)/include
 	@cp -frv *.a $(PORTLIBS)/lib
 	@echo Done!
 
