@@ -66,10 +66,8 @@ static void walk_zip_directory(const char* startdir, const char* inputdir, struc
 		if ((strcmp(dirp->d_name, ".")  != 0) && (strcmp(dirp->d_name, "..") != 0)) {
 			snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
 
-			if (dir_exists(fullname) == SUCCESS) {
-				if (zip_add_dir(zipper, &fullname[len]) < 0) {
-					//LOG("Failed to add directory to zip: %s", fullname);
-				}
+			if (dirp->d_type == DT_DIR) {
+				strcat(fullname, "/");
 				walk_zip_directory(startdir, fullname, zipper);
 			} else {
 				struct zip_source *source = zip_source_file(zipper, fullname, 0, 0);

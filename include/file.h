@@ -204,6 +204,15 @@ static bool not_exists(const char *path)
 	return !file_exists(path);
 }
 
+static char *get_ext(const char *path)
+{
+	int plen = strlen(path) - 4;
+	if(plen < 0) plen = 0;
+	else if(path[plen + 1] == '.') plen++;
+	else if(path[plen + 2] == '.') plen+=2;
+	return (char *)(path + plen);
+}
+
 static bool is_ext(const char *path, const char *ext)
 {
 	return !extcasecmp(path, ext, 4);

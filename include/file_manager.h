@@ -66,8 +66,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	else
 		flen = strlen(name);
 
-	char *ext = name + MAX(flen - 4, 0); *fsize = NULL;
-
+	char *ext = get_ext(name); *fsize = NULL;
 
 #ifndef LITE_EDITION
 	//////////////////////////////////////////
@@ -295,7 +294,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, show_img ? " pic" : " rom");
 	}
-	else if( (f1_len > 11) && ((strcasestr(templn, ".SELF") != NULL) || _IS(ext, ".zip") || _IS(ext, ".rar") || _IS(ext+1, ".7z")))
+	else if( (f1_len > 11) && ((strcasestr(templn, ".SELF") != NULL) || _IS(ext, ".zip") || (strcasestr(".rar.bz2.tgz.tar.7z", ext) != NULL)))
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, " pkg");

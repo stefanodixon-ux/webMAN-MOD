@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 
-
 void unrar_extract(const char* rarFilePath, const char* dstPath)
 {
 	HANDLE hArcData; //Archive Handle
@@ -112,16 +111,20 @@ void unrar_test(const char* rarFilePath)
 }
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	// List RAR archive contents
-	unrar_list("/dev_hdd0/tmp/archive.rar");
+	//unrar_list("/dev_hdd0/tmp/archive.rar");
 
 	// Test RAR archive contents
-	unrar_test("/dev_hdd0/tmp/archive.rar");
+	//unrar_test("/dev_hdd0/tmp/archive.rar");
 
 	// Extract RAR archive contents to /dev_hdd0/tmp/
-	unrar_extract("/dev_hdd0/tmp/archive.rar", "/dev_hdd0/tmp/");
+	//unrar_extract("/dev_hdd0/tmp/archive.rar", "/dev_hdd0/tmp/");
+
+	if(argc < 2) return 0;
+
+	unrar_extract((const char*)argv[1], (const char*)argv[2]);
 
 	return 0;
 }

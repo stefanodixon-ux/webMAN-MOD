@@ -27,9 +27,12 @@
 	// mount NPDRM game
 	// ------------------
  #ifdef PKG_LAUNCHER
+	char *ext = get_ext(_path);
+
 	if(isDir(PKGLAUNCH_DIR))
-		if( !extcasecmp(_path, ".self", 5)    || is_ext(_path, ".rar") || !extcasecmp(_path, ".7z", 3) ||
-			((strstr(_path, "/PS3~") != NULL) && is_ext(_path, ".zip"))
+	{
+		if( !extcasecmp(_path, ".self", 5)    || (strcasestr(".rar.bz2.tgz.tar.7z", ext) != NULL) ||
+			((strstr(_path, "/PS3~") != NULL) && _IS(ext, ".zip"))
 		)
 		{
 			ret = file_exists(_path);
@@ -38,6 +41,7 @@
 			if(ret) launch_app_home_icon();
 			goto mounting_done; //goto exit_mount;
 		}
+	}
  #endif
 	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
@@ -70,14 +74,9 @@
  #ifdef MOUNT_ROMS
 	if(isDir(PKGLAUNCH_DIR))
 	{
-		int plen = strlen(_path) - 4;
-		if(plen < 0) plen = 0;
-		else if(_path[plen + 2] == '.') plen+=2;
-		else if(_path[plen + 1] == '.') plen++;
-
 		if(islike(_path, "/net")) ; else // mount ROMS in /net module
 
-		if((strstr(_path, "/ROMS/") != NULL) || (strcasestr(_path, ".SELF") != NULL) || (strcasestr(ROMS_EXTENSIONS, _path + plen) != NULL))
+		if((strstr(_path, "/ROMS/") != NULL) || (strcasestr(_path, ".SELF") != NULL) || (strcasestr(ROMS_EXTENSIONS, ext) != NULL))
 		{
 			do_umount(false);
 

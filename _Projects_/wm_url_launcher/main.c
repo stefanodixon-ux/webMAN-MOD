@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/process.h>
+#include <untar.h>
+#include <un7zip.h>
 
 #define RETROARCH1	"/dev_hdd0//game/SSNE10000/USRDIR/cores"
 #define RETROARCH2	"/dev_hdd0//game/SSNE10001/USRDIR/cores"
@@ -20,7 +22,6 @@
 #define MAX_LEN		2047
 
 #include "zip_util.h"
-#include "unrar_util.h"
 
 static int sys_fs_mount(char const* deviceName, char const* deviceFileSystem, char const* devicePath, int writeProt)
 {
@@ -180,14 +181,19 @@ int main(int argc, const char* argv[])
 
 	if(not_exists(path)) return 0; // path must exists
 
-	if( (((*param == '/') || (strstr(path, "/PS3~") != NULL)) && (strcasestr(path, ".zip") != NULL))
-		|| (strcasestr(path, ".rar") != NULL)
-		|| (strcasestr(path, ".7z")  != NULL) )
-	{
-		bool is_zip = (strcasestr(path, ".zip") != NULL);
-		bool is_rar = (strcasestr(path, ".rar") != NULL);
-		bool is_7z  = (strcasestr(path, ".7z")  != NULL);
+	int flen = strlen(path) - 4; if(flen < 0) flen = 0;
+	char *ext = path + flen; if(ext[1] == '.') ++ext;
 
+	bool is_zip = (strcasestr(ext, ".zip") == ext);
+	bool is_rar = (strcasestr(ext, ".rar") == ext);
+	bool is_bz2 = (strcasestr(ext, ".bz2") == ext);
+	bool is_tgz = (strcasestr(ext, ".tgz") == ext);
+	bool is_tar = (strcasestr(ext, ".tar") == ext);
+	bool is_7z  = (strcasestr(ext, ".7z")  == ext);
+
+	if((is_zip && ((*param == '/') || (strstr(path, "/PS3~") != NULL))) ||
+		is_rar || is_bz2 || is_tgz || is_tar || is_7z )
+	{
 		char *dest_path = param;
 
 		char *filename = strrchr(path, '/');
@@ -217,10 +223,28 @@ int main(int argc, const char* argv[])
 
 			if(is_zip)
 				extract_zip(path, dest_path);
-			else if(is_rar)
-				unrar_extract(path, dest_path);
 			else if(is_7z)
 				Extract7zFile(path, dest_path);
+			else if(is_bz2)
+				untar_bz2(path, dest_path);
+			else if(is_tgz)
+				untar_gz(path, dest_path);
+			else if(is_tar)
+				untar(path, dest_path);
+			else if(is_rar && file_exists("/dev_hdd0//game/PKGLAUNCH/USRDIR/unrar.self"))
+			{
+				char* launchargv[3];
+				memset(launchargv, 0, sizeof(launchargv));
+
+				p = strstr(param, "\n"); if(p) *p = 0;
+				p = strstr(param, "\r"); if(p) *p = 0;
+
+				launchargv[0] = (char*)malloc(strlen(path) + 1); strcpy(launchargv[0], path);
+				launchargv[1] = (char*)malloc(strlen(dest_path) + 1); strcpy(launchargv[1], dest_path);
+				launchargv[2] = NULL;
+
+				sysProcessExitSpawn2("/dev_hdd0//game/PKGLAUNCH/USRDIR/unrar.self", (char const**)launchargv, NULL, NULL, 0, 3071, SYS_PROCESS_SPAWN_STACK_SIZE_1M);
+			}
 		}
 
 		return 0;
