@@ -38,7 +38,7 @@ DATA		:=	data
 LIBS		:=	 
 
 MACHDEP		:= -DBIGENDIAN 
-CFLAGS		+= -O2 -Wall -std=c99 -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
+CFLAGS		+= -O2 -Wall -std=gnu99 -mcpu=cell $(MACHDEP) -fno-strict-aliasing $(INCLUDES)
 
 LD			:=	ppu-ld
 
