@@ -3480,7 +3480,7 @@ function doSearch() {
 	// Declare variables
 	var td, txtValue, cols, cat = category;
 	var filter = input.value.replace(/\s/g, '.+').replace(/\*/g, '.+').replace(/seco/g, '2eco');
-	var filter2 = input.value.replace(".", "").replace(/\s/g, '.+').replace(/-/g, '.+').replace(/\*/g, '.+');
+	var filter2 = input.value.replace(".", "").replace(/\s/g, '.+').replace(/[-_]/g, '').replace(/\*/g, '.+');
 	var dolike = (input.value.indexOf('*')>=0);
 	if (dolike)
 	{
@@ -3522,7 +3522,7 @@ function doSearch() {
 					td = cols[1];
 					if (td) {
 						txtValue = td.textContent || td.innerText;
-						if (txtValue.replace(".", "").search(reg2) > -1) {
+						if (txtValue.replace("_", "").replace(".", "").search(reg2) > -1) {
 							tr[i].style.display = ""; count++;
 						} else {
 							tr[i].style.display = "none";
