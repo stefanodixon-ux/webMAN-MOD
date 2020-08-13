@@ -1,4 +1,4 @@
-# webMAN MOD - Fork of original webMAN plugin by Deank for Playstation 3
+Git clone # webMAN MOD - Fork of original webMAN plugin by Deank for Playstation 3
 
 __README IS STILL IN PROGRESS, IF YOU SEE ANY ERROR PLEASE TELL ME OR PUSH A COMMIT__
 
