@@ -267,6 +267,8 @@ static void setup_parse_settings(char *param)
 	if(IS_MARKED("&temp=3"))
 		webman_config->fanc = FAN_AUTO2;
 
+	original_fanc = (webman_config->fanc == FAN_AUTO2) ? FAN_AUTO2 : ENABLED;
+
 	max_temp = 0;
 	if(webman_config->fanc)
 	{
@@ -1362,6 +1364,8 @@ static void read_settings(void)
 	webman_config->man_rate = RANGE(webman_config->man_rate, MIN_FANSPEED, webman_config->maxfan);       // %
 	webman_config->ps2_rate = RANGE(webman_config->ps2_rate, MIN_FANSPEED, webman_config->maxfan); // %
 	webman_config->dyn_temp = RANGE(webman_config->dyn_temp, 40, MAX_TEMPERATURE);  //°C
+
+	original_fanc = (webman_config->fanc == FAN_AUTO2) ? FAN_AUTO2 : ENABLED;
 
 #if defined(SPOOF_CONSOLEID)
 	get_eid0_idps();

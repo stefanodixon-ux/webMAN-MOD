@@ -116,12 +116,14 @@ static void restore_fan(u8 set_syscon_mode)
 	}
 }
 
+static u8 original_fanc = ENABLED;
+
 static void enable_fan_control(u8 enable)
 {
 	if(enable == PS2_MODE_OFF) fan_ps2_mode = false;		else
-	if(enable == ENABLE_SC8) webman_config->fanc = ENABLED;	else
+	if(enable == ENABLE_SC8) webman_config->fanc = original_fanc;	else
 	if(enable <= ENABLED)	 webman_config->fanc = enable;	else
-	/* enable==TOGGLE_MODE*/ webman_config->fanc = (webman_config->fanc ? DISABLED : ENABLED);
+	/* enable==TOGGLE_MODE*/ webman_config->fanc = (webman_config->fanc ? DISABLED : original_fanc);
 
 	max_temp = 0; // syscon
 	if(webman_config->fanc)

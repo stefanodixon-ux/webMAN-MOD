@@ -218,12 +218,12 @@ static bool is_ext(const char *path, const char *ext)
 	return !extcasecmp(path, ext, 4);
 }
 
+#ifdef COBRA_ONLY
 static bool is_iso_0(const char *filename)
 {
 	return !extcasecmp(filename, ".iso.0", 6);
 }
 
-#ifdef COBRA_ONLY
 #define check_ps3_game(path)
 #else
 static void check_ps3_game(char *path)
