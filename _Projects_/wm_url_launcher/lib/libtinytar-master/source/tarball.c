@@ -14,33 +14,15 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <zlib.h>
-#include "bzlib.h"
-#include "minitar.h"
+#include <tar.h>
 
+#include "bzlib.h"
+#include "tinytar.h"
+#include "tardata.h"
 
 #define Print(...)
 
 typedef int (*write_func_t)(void*, char*, int);
-typedef struct
-{
-	char name[100];
-	char mode[8];
-	char uid[8];
-	char gid[8];
-	char size[12];
-	char mtime[12];
-	char checksum[8];
-	char typeflag;
-	char linkname[100];
-	char magic[6];
-	char version[2];
-	char uname[32];
-	char gname[32];
-	char devmajor[8];
-	char devminor[8];
-	char prefix[155];
-	char pad[12];
-} PosixTarHeader_t;
 
 void* archive = NULL;
 write_func_t writer = NULL;
@@ -53,22 +35,23 @@ void Tar_init(void* arc, write_func_t wf, tar_callback_t cb)
 	user_callback = cb;
 }
 
-void Tar_initRecord(PosixTarHeader_t* header, char type)
+void Tar_initRecord(tar_block_t* header, char type)
 {
-    memset(header, 0, sizeof(PosixTarHeader_t));
-    sprintf(header->magic, "ustar");
+    memset(header, 0, sizeof(tar_block_t));
+    sprintf(header->magic, TMAGIC);
     sprintf(header->mtime, "%011lo", time(NULL));
-    sprintf(header->mode, "%07o", (type == TAR_REGULAR ? 0644 : 0755));
-    sprintf(header->uname, "minitar");
+    sprintf(header->mode, "%07o", (type == REGTYPE ? 0644 : 0755));
+    sprintf(header->uname, "tinytar");
     sprintf(header->gname, "users");
+    memcpy(header->version, TVERSION, TVERSLEN);
     header->typeflag = type;
 }
 
-void Tar_checksum(PosixTarHeader_t* header)
+void Tar_checksum(tar_block_t* header)
 {
     unsigned int sum = 0;
     char *p = (char *) header;
-    char *q = p + sizeof(PosixTarHeader_t);
+    char *q = p + sizeof(tar_block_t);
     while (p < header->checksum) sum += *p++ & 0xff;
     for (int i = 0; i < 8; ++i)  {
 	  sum += ' ';
@@ -79,12 +62,12 @@ void Tar_checksum(PosixTarHeader_t* header)
     sprintf(header->checksum, "%06o", sum);
 }
 
-void Tar_size(PosixTarHeader_t* header, size_t fileSize)
+void Tar_size(tar_block_t* header, size_t fileSize)
 {
     sprintf(header->size, "%011llo", (long long unsigned int)fileSize);
 }
 
-void Tar_filename(PosixTarHeader_t* header, const char* filename)
+void Tar_filename(tar_block_t* header, const char* filename)
 {
     if(filename==NULL || filename[0]==0 || strlen(filename)>=100)
 	{
@@ -96,7 +79,7 @@ void Tar_filename(PosixTarHeader_t* header, const char* filename)
 
 void Tar_endRecord(size_t len)
 {
-    while((len % sizeof(PosixTarHeader_t)) != 0)
+    while((len % sizeof(tar_block_t)) != 0)
     {
 	    writer(archive, "\0", 1);
 	    ++len;
@@ -107,35 +90,35 @@ void Tar_endRecord(size_t len)
 void Tar_finish()
 {
     //The end of the archive is indicated by two blocks filled with binary zeros
-    PosixTarHeader_t header;
-    memset(&header, 0, sizeof(PosixTarHeader_t));
-    writer(archive, (char*) &header, sizeof(PosixTarHeader_t));
-    writer(archive, (char*) &header, sizeof(PosixTarHeader_t));
+    tar_block_t header;
+    memset(&header, 0, sizeof(tar_block_t));
+    writer(archive, (char*) &header, sizeof(tar_block_t));
+    writer(archive, (char*) &header, sizeof(tar_block_t));
 }
 
 void Tar_putBuffer(const char* filename, char type, const char* content, size_t len)
 {
-    PosixTarHeader_t header;
+    tar_block_t header;
     Tar_initRecord(&header, type);
     Tar_filename(&header, filename);
     Tar_size(&header, len);
     Tar_checksum(&header);
-    writer(archive, (char*) &header, sizeof(PosixTarHeader_t));
+    writer(archive, (char*) &header, sizeof(tar_block_t));
     if (len) writer(archive, (char*) content, len);
     Tar_endRecord(len);
 }
 
 void Tar_putString(const char* filename, const char* content)
 {
-    Tar_putBuffer(filename, TAR_REGULAR, content, strlen(content));
+    Tar_putBuffer(filename, REGTYPE, content, strlen(content));
 }
 
 int Tar_putDirectory(const char* dirInArchive)
 {
 	if (user_callback)
-		user_callback(dirInArchive, 0, TAR_DIRECTORY);
+		user_callback(dirInArchive, 0, DIRTYPE);
 
-    Tar_putBuffer(dirInArchive, TAR_DIRECTORY, NULL, 0);
+    Tar_putBuffer(dirInArchive, DIRTYPE, NULL, 0);
 	return 0;
 }
 
@@ -154,14 +137,14 @@ int Tar_putFile(const char* filename, const char* nameInArchive)
     fseek(in, 0L, SEEK_SET);
 
 	if (user_callback)
-		user_callback(nameInArchive, len, TAR_REGULAR);
+		user_callback(nameInArchive, len, REGTYPE);
 
-    PosixTarHeader_t header;
-    Tar_initRecord(&header, TAR_REGULAR);
+    tar_block_t header;
+    Tar_initRecord(&header, REGTYPE);
     Tar_filename(&header, nameInArchive);
     Tar_size(&header, len);
     Tar_checksum(&header);
-    writer(archive, (char*) &header, sizeof(PosixTarHeader_t));
+    writer(archive, (char*) &header, sizeof(tar_block_t));
 
     size_t nRead=0;
     while((nRead = fread(buff, sizeof(char), BUFSIZ, in)) > 0)
@@ -206,7 +189,7 @@ void walk_tar_directory(const char* startdir, const char* inputdir)
   			} else {
     			Print("Adding file '%s'", fullname+len);
     			if (Tar_putFile(fullname, fullname+len) < 0) {
-      				Print("Failed to add file to zip: %s", fullname);
+      				Print("Failed to add file to tar: %s", fullname);
     			}
   			}
 		}

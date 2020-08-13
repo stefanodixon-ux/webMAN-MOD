@@ -32,16 +32,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <tar.h>
 #include <zlib.h>
+
 #include "bzlib.h"
-#include "minitar.h"
+#include "tinytar.h"
+#include "tardata.h"
 
 /* This is for mkdir(); this may need to be changed for some platforms. */
 #include <sys/stat.h>  /* For mkdir() */
 
 #define Print(...)
-#define BLOCKSIZE       512
 
 typedef int (*read_callback_t)(void*, char*, int);
 
@@ -166,64 +167,73 @@ void get_full_path(const char *dst_path, const char *file, char *out)
 
 /* Extract a tar archive. */
 static int
-untar_archive(void *a, read_callback_t read_cb, const char *dst_path, tar_callback_t callback)
+untar_archive(void *archive, read_callback_t reader, const char *dst_path, tar_callback_t callback)
 {
-	char buff[BLOCKSIZE];
+	tar_block_t buff;
 	char path[256];
+	char lnk[256];
 	FILE *f = NULL;
 	size_t bytes_read;
 	int filesize;
 
 	Print("Extracting to %s\n", dst_path);
 	for (;;) {
-		bytes_read = read_cb(a, buff, BLOCKSIZE);
+		bytes_read = reader(archive, buff.block, BLOCKSIZE);
 		if (bytes_read < BLOCKSIZE) {
 			Print("Short read on file: expected %d, got %d\n", BLOCKSIZE, (int)bytes_read);
 			return (-1);
 		}
-		if (is_end_of_archive(buff)) {
+		if (is_end_of_archive(buff.block)) {
 			Print("End of file.\n");
 			return 0;
 		}
-		if (!verify_checksum(buff)) {
+		if (!verify_checksum(buff.block)) {
 			Print("Checksum failure\n");
 			return (-1);
 		}
-		filesize = parseoct(buff + 124, 12);
-		switch (buff[156]) {
-		case TAR_HARDLINK:
-			Print(" Ignoring hardlink %s\n", buff);
+		filesize = parseoct(buff.size, 12);
+		switch (buff.typeflag) {
+		case LNKTYPE:
+			Print(" Extracting hardlink %s\n", buff.name);
+			get_full_path(dst_path, buff.name, path);
+			get_full_path(dst_path, buff.linkname, lnk);
+			link(lnk, path);
 			break;
-		case TAR_SYMLINK:
-			Print(" Ignoring symlink %s\n", buff);
+		case SYMTYPE:
+			Print(" Ignoring symlink %s\n", buff.name);
 			break;
-		case TAR_CHAR:
-			Print(" Ignoring character device %s\n", buff);
+		case CHRTYPE:
+			Print(" Ignoring character device %s\n", buff.name);
 			break;
-		case TAR_BLOCK:
-			Print(" Ignoring block device %s\n", buff);
+		case BLKTYPE:
+			Print(" Ignoring block device %s\n", buff.name);
 			break;
-		case TAR_DIRECTORY:
-			Print(" Extracting dir %s\n", buff);
-			get_full_path(dst_path, buff, path);
-			create_dir(path, parseoct(buff + 100, 8));
+		case DIRTYPE:
+			Print(" Extracting dir %s\n", buff.name);
+			get_full_path(dst_path, buff.name, path);
+			create_dir(path, parseoct(buff.mode, 8));
 			filesize = 0;
 			break;
-		case TAR_FIFO:
-			Print(" Ignoring FIFO %s\n", buff);
+		case FIFOTYPE:
+			Print(" Ignoring FIFO %s\n", buff.name);
+			break;
+		case REGTYPE:
+		case AREGTYPE:
+		case CONTTYPE:
+			Print(" Extracting file %s\n", buff.name);
+			get_full_path(dst_path, buff.name, path);
+			f = create_file(path, parseoct(buff.mode, 8));
 			break;
 		default:
-			Print(" Extracting file %s\n", buff);
-			get_full_path(dst_path, buff, path);
-			f = create_file(path, parseoct(buff + 100, 8));
+			Print(" Ignoring unsupported type %s (%X)\n", buff.name, buff.typeflag);
 			break;
 		}
 
 		if (callback)
-			callback(buff, filesize, buff[156]);
+			callback(buff.name, filesize, buff.typeflag);
 
 		while (filesize > 0) {
-			bytes_read = read_cb(a, buff, BLOCKSIZE);
+			bytes_read = reader(archive, buff.block, BLOCKSIZE);
 			if (bytes_read < BLOCKSIZE) {
 				Print("Short read on file: Expected %d, got %d\n", BLOCKSIZE, (int)bytes_read);
 				return (-1);
@@ -231,7 +241,7 @@ untar_archive(void *a, read_callback_t read_cb, const char *dst_path, tar_callba
 			if (filesize < BLOCKSIZE)
 				bytes_read = filesize;
 			if (f != NULL) {
-				if (fwrite(buff, 1, bytes_read, f) != bytes_read)
+				if (fwrite(buff.block, 1, bytes_read, f) != bytes_read)
 				{
 					Print("Failed write\n");
 					fclose(f);
