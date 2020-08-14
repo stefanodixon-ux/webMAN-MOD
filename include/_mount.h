@@ -619,20 +619,35 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						{
 							{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
 
-							sprintf(target, "%s/%s", "/dev_hdd0/GAMES", "My Disc Backup");
+							int cnt = 0;
+							do {
+								sprintf(target, "%s/%s %i", "/dev_hdd0/GAMES", "My Disc Backup", ++cnt);
+							} while (isDir(target));
 
-							char title[80];
+							char title[128];
 							sprintf(title, "/dev_bdvd/PS3_GAME/PARAM.SFO"); check_ps3_game(title);
 							if(file_exists(title))
 							{
 								char title_id[TITLEID_LEN];
 								getTitleID(title, title_id, GET_TITLE_AND_ID);
+
+								u8 n = 0; unsigned char c;
+								for(u8 i = 0; title[i]; i++)
+								{
+									c = (unsigned char)title[i];
+									if((c < 0x20) || (c > 0x7F)) continue;
+									if(!strchr("\\\"/<|>:*?", title[i])) title[n++] = title[i];
+								}
+								title[n] = 0;
+
 								if(*title_id && (title_id[8] >= '0'))
 								{
 									if(strstr(title, " ["))
 										sprintf(target + 16, "%s", title);
-									else
+									else if(*title)
 										sprintf(target + 16, "%s [%s]", title, title_id);
+									else if(*title)
+										sprintf(target + 16, "%s", title_id);
 								}
 							}
 						}

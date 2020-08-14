@@ -591,7 +591,7 @@ static void update_language(void)
 	if(lang ==  2) id = 5;  // it
 	if(lang ==  3) id = 3;  // es
 	if(lang ==  4) id = 4;  // de
-    if(lang ==  5) id = 6;  // nl
+	if(lang ==  5) id = 6;  // nl
 	if(lang ==  6) id = 7;  // pt
 	if(lang ==  7) id = 8;  // ru
 	if(lang ==  9) id = 16; // pl

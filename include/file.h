@@ -99,13 +99,14 @@ static void filepath_check(char *file)
 #endif
 	)
 	{
-
 		// remove invalid chars
-		for(u16 n = 11, c = 11; file[c]; c++)
+		u16 n = 11;
+		for(u16 c = 11; file[c]; c++)
 		{
 			if(file[c] == '\\') file[c] = '/';
 			if(!strchr("\"<|>:*?", file[c])) file[n++] = file[c];
 		}
+		file[n] = 0;
 	}
 #ifdef USE_NTFS
 	if(is_ntfs_path(file)) {file[10] = ':'; if(mountCount == NTFS_UNMOUNTED) check_ntfs_volumes();}
