@@ -185,12 +185,14 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	if(strstr(param, "?"))
 	{
-		char *pos = strstr(param, "fan=");
+		char *pos = strstr(param, "fan=");  // 0 = SYSCON, 1 = DYNAMIC, 2 = FAN_AUTO2
 		if(pos)
 		{
 			u32 new_speed = get_valuen(param, "fan=", 0, webman_config->maxfan); max_temp = 0;
-			if(!new_speed)
-				enable_fan_control(DISABLED);
+			if(new_speed <= ENABLED)
+				enable_fan_control(new_speed);
+			else if(new_speed == FAN_AUTO2)
+				enable_fan_control(ENABLE_AUTO2);
 			else
 			{
 				webman_config->man_rate = RANGE(new_speed, webman_config->minfan, webman_config->maxfan);
@@ -207,6 +209,8 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 				pos = strstr(param, "?m");
 				if(pos)
 				{
+					if(webman_config->fanc == FAN_AUTO2) enable_fan_control(ENABLED);
+
 					if((max_temp && !strstr(param, "dyn")) || strstr(param, "man"))
 						max_temp = FAN_MANUAL;
 					else
@@ -215,11 +219,12 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 					if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 				}
 			}
-		}
 
-		if(pos)
-		{
-			if(max_temp) //auto mode
+			if(strstr(param, "?mode=s"))
+				enable_fan_control(DISABLED);
+			else if(strstr(param, "?mode=a"))
+				enable_fan_control(ENABLE_AUTO2);
+			else if(max_temp) //auto mode
 			{
 				if(strstr(param, "?u")) max_temp++;
 				if(strstr(param, "?d")) max_temp--;
@@ -236,8 +241,9 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 				reset_fan_mode();
 			}
-			save_settings();
 		}
+
+		save_settings();
 	}
 
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }

@@ -2375,6 +2375,13 @@ retry_response:
 
 				if(is_cpursx)
 				{
+					// /cpursx.ps3?fan=<n> 0=SYSCON, 1=DYNAMIC, 2=AUTO#2, n>=20 = % fan speed
+					// /cpursx.ps3?mode=<syscon|manual|dynamic|auto>
+					// /cpursx.ps3?mode <- Toggle between dynamic/manual
+					// /cpursx.ps3?max=<temp> <- Target temperature for dynamic fan control
+					// /cpursx.ps3?up
+					// /cpursx.ps3?dn
+
 					cpu_rsx_stats(pbuffer, templn, param, is_ps3_http);
 
 					loading_html = keep_alive = is_cpursx = 0; goto send_response;
