@@ -2966,6 +2966,7 @@ retry_response:
 						// /find.lv2?<start-address>=<value>
 						// /hexview.ps3<file-path>
 						// /hexview.ps3<file-path>&offset=<value>
+						// /hexview.ps3<file-path>&offset=<value>&data=<new-value>
 
 						ps3mapi_find_peek_poke_hexview(pbuffer, templn, param);
 					}

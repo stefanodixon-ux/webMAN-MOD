@@ -277,6 +277,7 @@ static u16 Hex2Bin(const char *src, char *out)
 {
 	char *target = out;
 	char value[3]; value[2] = NULL;
+	if(islike(src, "0x")) src += 2;
 	while(*src && src[1])
 	{
 		value[0] = src[0], value[1] = src[1];
