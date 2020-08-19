@@ -121,8 +121,9 @@ static void make_fb_xml(void)
 static bool add_custom_xml(char *query_xmb)
 {
 	char *custom_xml = query_xmb + 800;
-	for(u8 d = 0; d < 7; d++)
+	for(u8 d = 0; d < MAX_DRIVES; d++)
 	{
+		if(d == NET) d = NTFS + 1;
 		sprintf(custom_xml,  "%s/wm_custom.xml", drives[d]);
 		if(file_exists(custom_xml))
 		{
@@ -413,7 +414,7 @@ scan_roms:
 	if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection) < 0) do_umount(false);
 	#endif
 
-	for(u8 f0 = 0; f0 < 16; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
+	for(u8 f0 = 0; f0 < MAX_DRIVES; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
 	{
 		if(check_drive(f0)) continue;
 
@@ -470,8 +471,8 @@ scan_roms:
 			}
 
 #ifdef NET_SUPPORT
-			if(is_net && (netiso_svrid == (f0-7)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
-			if(is_net && (ns<0)) ns = connect_to_remote_server(f0-7);
+			if(is_net && (netiso_svrid == (f0-NET)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
+			if(is_net && (ns<0)) ns = connect_to_remote_server(f0-NET);
 #endif
 			if(is_net && (ns<0)) break;
 
@@ -530,7 +531,7 @@ scan_roms:
 				{
 					v3_entries = read_remote_dir(ns, &data2, &abort_connection);
 					if(!data2) goto continue_reading_folder_xml; //continue;
-					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
+					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-NET));
 				}
 #endif
 				if(!is_net && isDir(param) == false) goto continue_reading_folder_xml; //continue;

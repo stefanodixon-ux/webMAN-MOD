@@ -967,6 +967,8 @@ parse_request:
 				// /browser.ps3$block_servers              block url of PSN servers in lv2
 				// /browser.ps3$restore_servers            restore url of PSN servers in lv2
 				// /browser.ps3$show_idps                  show idps/psid (same as R2+O)
+				// /browser.ps3$xregistry(<id>)            show value by id from xregistry.sys
+				// /browser.ps3$xregistry(<id>)=<value>    update value by id in xregistry.sys
 				// /browser.ps3$ingame_screenshot          enable screenshot in-game on CFW without the feature (same as R2+O)
 				// /browser.ps3$disable_syscalls           disable CFW syscalls
 				// /browser.ps3$toggle_rebug_mode          toggle rebug mode (swap VSH REX/DEX)
@@ -974,7 +976,7 @@ parse_request:
 				// /browser.ps3$toggle_debug_menu          toggle debug menu (DEX/CEX)
 				// /browser.ps3$toggle_cobra               toggle Cobra (swap stage2)
 				// /browser.ps3$toggle_ps2emu              toggle ps2emu
-				// /browser.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
+				// /+browser.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
 				// /browser.ps3$disable_classic_ps2_mode   deletes 'classic_ps2_mode' to enable PS2 ISO in PS2 Launcher (old rebug)
 				// /browser.ps3$screenshot_xmb<path>       capture XMB screen
 				// /browser.ps3$screenshot_xmb<path>?show  capture XMB screen show
@@ -1007,56 +1009,72 @@ parse_request:
 					restore_blocked_urls();
 				}
 				else
-#ifdef SPOOF_CONSOLEID
+   #ifdef SPOOF_CONSOLEID
 				if(islike(param2, "$show_idps"))
 				{
 					show_idps(header);
 				}
 				else
-#endif
-/*
-				if(islike(param2, "$registryInt(0x"))
-				{
-					int id, value;
-					id = convertH(param2 + 15);
-
-					char *pos = strstr(param2 + 16, "=");
-					if(pos)
-					{
-						value = val(pos + 1);
-						xsetting_D0261D72()->saveRegistryIntValue(id, value);
-					}
-
-					xsetting_D0261D72()->loadRegistryIntValue(id, &value);
-					sprintf(param2 + strlen(param2), " => %i", value);
-				}
-				else
-				if(islike(param2, "$registryString(0x"))
-				{
-					int id, len, size = 0;
-					id = convertH(param2 + 18);
-
-					char *pos = strstr(param2 + 19, "=");
-					if(pos)
-					{
-						pos++, len = strlen(pos);
-						xsetting_D0261D72()->saveRegistryStringValue(id, pos, len);
-					}
-
-					len = strlen(param2); char *value = param2 + len + 8;
-					char *pos2 = strstr(param2 + 19, ","); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
-					xsetting_D0261D72()->loadRegistryStringValue(id, value, size);
-					sprintf(param2 + len, " => %s", value);
-				}
-				else
-*/
+   #endif
    #ifndef LITE_EDITION
+				if(islike(param2, "$xregistry("))
+				{
+					int value, len, size = 0; param2 += 11;
+					int id = val(param2);
+
+					switch (id)
+					{
+						case 0x09: // "/setting/np/titleId"
+						case 0x19: // "/setting/np/tppsProxyServer"
+						case 0x1B: // "/setting/np/tppsProxyUserName"
+						case 0x1C: // "/setting/np/tppsProxyPassword"
+						case 0x20: // "/setting/system/hddSerial"
+						case 0x26: // "/setting/system/updateServerUrl"
+						case 0x2D: // "/setting/system/debugDirName"
+						case 0x3D: // "/setting/system/bootMode"
+						case 0x63: // "/setting/libad/adServerURL"
+						case 0x64: // "/setting/libad/adCatalogVersion"
+						case 0x6C: // "/setting/net/adhocSsidPrefix"
+						case 0x7C: // "/setting/wboard/baseUri"
+									size = 0x80;
+					}
+
+					char *pos = strstr(param2, ")="); // save
+					if(pos)
+					{
+						if(size)
+						{
+							pos += 2, len = strlen(pos);
+							xsetting_D0261D72()->saveRegistryStringValue(id, pos, len);
+						}
+						else
+						{
+							value = val(pos + 2);
+							xsetting_D0261D72()->saveRegistryIntValue(id, value);
+						}
+					}
+
+					len = strlen(param2);
+
+					if(size)
+					{
+						char *pos2 = strstr(param2, ","); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
+						xsetting_D0261D72()->loadRegistryStringValue(id, header, size);
+						sprintf(param2 + len, " => %s", header);
+					}
+					else
+					{
+						xsetting_D0261D72()->loadRegistryIntValue(id, &value);
+						sprintf(param2 + len, " => %i (0x%04x)", value, value);
+					}
+				}
+				else
 				if(islike(param2, "$ingame_screenshot"))
 				{
 					enable_ingame_screenshot();
 				}
 				else
-   #endif
+   #endif //#ifndef LITE_EDITION
    #ifdef REMOVE_SYSCALLS
 				if(islike(param2, "$disable_syscalls"))
 				{

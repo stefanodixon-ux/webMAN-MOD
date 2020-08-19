@@ -214,8 +214,6 @@ static u8 refreshing_xml = 0;
 static u8 system_bgm = 0;
 #endif
 
-#define NTFS 			(12)
-
 #define APP_GAME  0xFF
 
 static bool show_info_popup = false;

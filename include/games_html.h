@@ -41,7 +41,7 @@ enum paths_ids
 
 #define IS_HDD0          (f0 == 0)
 #define IS_NTFS          (f0 == NTFS)
-#define IS_NET           (f0 >= 7 && f0 < NTFS)
+#define IS_NET           (f0 >= NET && f0 < NTFS)
 
 #define TYPE_ALL 0
 #define TYPE_PS1 1
@@ -163,7 +163,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	if(webman_config->tid && HAS_TITLE_ID && strlen(templn) < 50 && strstr(templn, " [") == NULL) {sprintf(enc_dir_name, " [%s]", title_id); strcat(templn, enc_dir_name);}
 
 	urlenc(enc_dir_name, data[v3_entry].name);
-	get_default_icon(icon, param, data[v3_entry].name, data[v3_entry].is_directory, title_id, ns, ((neth[4] & 0x0F) + 7), f1);
+	get_default_icon(icon, param, data[v3_entry].name, data[v3_entry].is_directory, title_id, ns, ((neth[4] & 0x0F) + NET), f1);
 
 	if(SHOW_COVERS_OR_ICON0 && (NO_ICON || (webman_config->nocov == SHOW_ICON0))) {get_name(tempstr, data[v3_entry].name, GET_WMTMP); strcat(tempstr, ".PNG"); if(file_exists(tempstr)) strcpy(icon, tempstr);}
 
@@ -203,7 +203,7 @@ static int check_drive(u8 f0)
 
 	// is_net
 #ifdef NET_SUPPORT
-	if(((f0 >= 7) && (f0 <= 11)) && !is_netsrv_enabled(f0 - 7)) return FAILED; //net
+	if(((f0 >= NET) && (f0 < NTFS)) && !is_netsrv_enabled(f0 - NET)) return FAILED; //net
 #else
 	if(IS_NET) return FAILED; // is_net (LITE_EDITION)
 #endif
@@ -450,7 +450,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 #ifdef COBRA_ONLY
 			if(strstr(param, "ntfs")) {filter0 = NTFS, b0 = 1; clear_ntfs = (strstr(param, "ntfs(0)") != NULL);} else
 #endif
-			for(u8 f0 = 0; f0 < 16; f0++) if(strstr(param, drives[f0])) {filter0 = f0, b0 = 1; break;}
+			for(u8 f0 = 0; f0 < MAX_DRIVES; f0++) if(strstr(param, drives[f0])) {filter0 = f0, b0 = 1; break;}
 			for(u8 f1 = 0; f1 < f1_len; f1++) if(strstr(param, paths [f1])) {filter1 = f1, b1 = 1; break;}
 			if(!b0 && strstr(param, "hdd" ))  {filter0 = 0, b0 = 1;}
 			if(!b0 && strstr(param, "usb" ))  {filter0 = 1, b0 = 2;}
@@ -458,7 +458,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			if(!b1 && strstr(param, "?ps3"))  {filter1 = 0, b1 = 3;}
 			if(!b1 && strstr(param, "npdrm")) {filter1 = 0, b1 = id_NPDRM;}
 #ifdef NET_SUPPORT
-			if(!b0 && strstr(param, "net" ))  {filter0 = 7, b0 = 3;}
+			if(!b0 && strstr(param, "net" ))  {filter0 = NET, b0 = 3;}
 #endif
 			if(strstr(param, "?") != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && strstr(param, "?html") == NULL && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
 		}
@@ -567,7 +567,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 list_games:
 #endif
 
-		for(u8 f0 = filter0; f0 < 16; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
+		for(u8 f0 = filter0; f0 < MAX_DRIVES; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
 		{
 			if(check_drive(f0)) continue;
 
@@ -599,14 +599,14 @@ list_games:
 					if(f1 >= id_ISO) break; // ignore 9="ISO", 10="video", 11="GAMEI"
 				}
 #endif
-				if(b0) {if((b0 == 2) && (f0 < 7)); else if((b0 == 3) && (!IS_NTFS)); else if(filter0 != f0) continue;}
+				if(b0) {if((b0 == 2) && (f0 < NET)); else if((b0 == 3) && (!IS_NTFS)); else if(filter0 != f0) continue;}
 				if(b1) {if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1 != f1) continue;}
 				else
 					if(check_content_type(f1)) continue;
 
 #ifdef NET_SUPPORT
-				if(is_net && (netiso_svrid == (f0-7)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
-				if(is_net && (ns<0)) ns = connect_to_remote_server(f0-7);
+				if(is_net && (netiso_svrid == (f0-NET)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
+				if(is_net && (ns<0)) ns = connect_to_remote_server(f0-NET);
 #endif
 				if(is_net && (ns<0)) break;
 //
@@ -652,7 +652,7 @@ list_games:
 				{
 					v3_entries = read_remote_dir(ns, &data2, &abort_connection);
 					if(!data2) goto continue_reading_folder_html; //continue;
-					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-7));
+					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-NET));
 				}
 #endif
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_html; //continue;
