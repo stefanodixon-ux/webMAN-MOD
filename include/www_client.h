@@ -976,7 +976,7 @@ parse_request:
 				// /browser.ps3$toggle_debug_menu          toggle debug menu (DEX/CEX)
 				// /browser.ps3$toggle_cobra               toggle Cobra (swap stage2)
 				// /browser.ps3$toggle_ps2emu              toggle ps2emu
-				// /+browser.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
+				// /browser.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
 				// /browser.ps3$disable_classic_ps2_mode   deletes 'classic_ps2_mode' to enable PS2 ISO in PS2 Launcher (old rebug)
 				// /browser.ps3$screenshot_xmb<path>       capture XMB screen
 				// /browser.ps3$screenshot_xmb<path>?show  capture XMB screen show
