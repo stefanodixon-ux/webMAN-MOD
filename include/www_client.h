@@ -1016,6 +1016,31 @@ parse_request:
 				}
 				else
    #endif
+   #ifdef DEBUG_XREGISTRY
+				if(islike(param2, "$xregistry(/"))
+				{
+					param2 += 11; char *pos = strchr(param2, ')');
+					if(pos)
+					{
+						*pos = 0; u32 value; *header = 0;
+						if(pos[1] == '=')
+						{
+							strcpy(header, pos + 2);
+							value = val(header);
+							get_xreg_value(param2, value, header, false);
+						}
+						else
+							value = get_xreg_value(param2, 0, header, true);
+						*pos = ')';
+
+						if(*header)
+							sprintf(pos + 1, " => %s", header);
+						else
+							sprintf(pos + 1, " => %i (0x%04x)", value, value);
+					}
+				}
+				else
+   #endif
    #ifndef LITE_EDITION
 				if(islike(param2, "$xregistry("))
 				{
