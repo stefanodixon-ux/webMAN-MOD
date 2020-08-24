@@ -115,7 +115,7 @@
 
 #dbTable th, #dbTable td {
 	text-align: left; /* Left-align text */
-	padding: 12px; /* Add padding */
+	padding: 9px 12px 6px 12px; /* Add padding */
 }
 
 #dbTable tr {
@@ -230,8 +230,8 @@ div.sticky {
 <tr><td>CUSTOM</td><td>SCES_504.10</td><td>Ace Combat - Distant Thunder</td></tr>
 <tr><td>CUSTOM</td><td>SCES_524.24</td><td>Ace Combat - Squadron Leader</td></tr>
 <tr><td>CUSTOM</td><td>SCES_540.41</td><td>Ace Combat - The Belkan War</td></tr>
-<tr><td>CUSTOM</td><td>SLPS_250.52</td><td>Ace Combat 4 - Shattered Skies</td></tr>
-<tr><td>CUSTOM</td><td>SLUS_201.52</td><td>Ace Combat 4 - Shattered Skies</td></tr>
+<tr><td>CUSTOM</td><td title="Texture Fix">SLPS_250.52</td><td>Ace Combat 4 - Shattered Skies</td></tr>
+<tr><td>CUSTOM</td><td title="Texture Fix">SLUS_201.52</td><td>Ace Combat 4 - Shattered Skies</td></tr>
 <tr><td>CUSTOM</td><td>SCKA_200.42</td><td>Ace Combat 5 - The Unsung War</td></tr>
 <tr><td>CUSTOM</td><td>SLPS_254.18</td><td>Ace Combat 5 - The Unsung War</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_208.51</td><td>Ace Combat 5 - The Unsung War</td></tr>
@@ -483,14 +483,14 @@ div.sticky {
 <tr><td>CUSTOM</td><td>SLUS_205.60</td><td>Galerians Ash</td></tr>
 <tr><td>CUSTOM</td><td>SLES_513.43</td><td>Galerians Ash</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_213.93</td><td>Gallop Racer 2006</td></tr>
-<tr><td>CUSTOM</td><td>SLPM_657.01</td><td>Ghost Hunter</td></tr>
 <tr><td>CUSTOM</td><td>SCKA_200.27</td><td>Ghost in the Shell - Stand Alone Complex</td></tr>
 <tr><td>CUSTOM</td><td>SCPS_150.64</td><td>Ghost in the Shell - Stand Alone Complex</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_210.06</td><td>Ghost in the Shell - Stane Alone Complex</td></tr>
 <tr><td>CUSTOM</td><td>SLES_543.17</td><td>Ghost Rider</td></tr>
-<tr><td>CUSTOM</td><td>SCES_514.63</td><td>Ghosthunter</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_209.93</td><td>Ghosthunter</td></tr>
+<tr><td>CUSTOM</td><td>SCES_514.63</td><td>Ghosthunter</td></tr>
 <tr><td>CUSTOM</td><td>SCES_521.56</td><td>Ghosthunter - Hunter on the spectres</td></tr>
+<tr><td>CUSTOM</td><td>SLPM_657.01</td><td>Ghosthunter</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_201.78</td><td>Giants - Citizen Kabuto</td></tr>
 <tr><td>CUSTOM</td><td>SLES_544.90</td><td>God Hand</td></tr>
 <tr><td>CUSTOM</td><td>SCES_531.33</td><td>God of War</td></tr>
@@ -1396,13 +1396,13 @@ div.sticky {
 <tr><td>GX</td><td>SLPM_655.48</td><td>Freedom Fighters</td></tr>
 <tr><td>GX</td><td>SLUS_206.58</td><td>Freedom Fighters - The Battle for Liberty Island</td></tr>
 <tr><td>GX</td><td>SLUS_213.93</td><td>Gallop Racer 2006</td></tr>
-<tr><td>GX</td><td>SLPM_657.01</td><td>Ghost Hunter</td></tr>
 <tr><td>GX</td><td>SCKA_200.27</td><td>Ghost in the Shell - Stand Alone Complex</td></tr>
 <tr><td>GX</td><td>SCPS_150.64</td><td>Ghost in the Shell - Stand Alone Complex</td></tr>
 <tr><td>GX</td><td>SLUS_210.06</td><td>Ghost in the Shell - Stane Alone Complex</td></tr>
-<tr><td>GX</td><td>SCES_514.63</td><td>Ghosthunter</td></tr>
 <tr><td>GX</td><td>SLUS_209.93</td><td>Ghosthunter</td></tr>
+<tr><td>GX</td><td>SCES_514.63</td><td>Ghosthunter</td></tr>
 <tr><td>GX</td><td>SCES_521.56</td><td>Ghosthunter - Hunter on the spectres</td></tr>
+<tr><td>GX</td><td>SLPM_657.01</td><td>Ghosthunter</td></tr>
 <tr><td>GX</td><td>SCES_531.33</td><td>God of War</td></tr>
 <tr><td>GX</td><td>SCKA_300.02</td><td>God of War</td></tr>
 <tr><td>GX</td><td>SCUS_973.99</td><td>God of War</td></tr>
@@ -2524,12 +2524,9 @@ function $(id){return document.getElementById(id);}
 
 var table = $("dbTable");
 var input = $("txtSrchDB");
-var tr = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+var tbody = table.getElementsByTagName('tbody')[0];
+var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2200; i < count; i++) {
-	cols = tr[i].children;
-	if(cols[0].innerText=="ENC") {classics = i; break;}
-}
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -2596,7 +2593,7 @@ function doSearch() {
 		}
 	}
 	cols = table.getElementsByTagName("th");
-	cols[2].innerText=count.toLocaleString() + " Title(s)";
+	if(count == 1) cols[2].innerText="Title"; else cols[2].innerText=count.toLocaleString() + " Titles"
 	input.focus();
 }
 
@@ -2620,14 +2617,14 @@ input.addEventListener('paste', (e) => {
 	doSearch();
 });
 
-window.addEventListener('keyup',kd,false);
+window.addEventListener('keydown',kd,false);
 function kd(e)
 {
 	e=e||window.event;
 	var kc=e.keyCode;
 	if(kc==27) { // Esc
 		input.value='';
-		doSearch();
+		setTimeout(doSearch, 0);
 	}
 	if(kc==115) { // F4
 		$("category").focus();
@@ -2640,26 +2637,30 @@ function sortTable(colID) {
 	if(count > 100) $("sorting").style.display="block";
 
 	setTimeout(function(){
-		var r, i, x, y, len, b = 1;
-		var rows = table.rows;
-		len = (rows.length - 1);
+		var r, i, x, y, len, b = 0;
+		var rows = tbody.rows;
+		len = rows.length;
 		if(PS2Classics) b = classics; else len = classics;
 
 		{while(len > b && rows[len-1].style.display=='none') --len; len++;}
 
 		for (r = b; r < len - 1; r++) {
+			rows[r].lc = rows[r].children[colID].innerHTML.toLowerCase();
+		}
+
+		for (r = b; r < len - 1; r++) {
 			if(rows[r].style.display=='none') continue;
-			x = rows[r].children[colID].innerHTML.toLowerCase();
+			x = rows[r].lc;
 			for (i = r + 1; i < len; i++) {
-				y = rows[i].children[colID];
-				if (x > y.innerHTML.toLowerCase()) {
-					rows[r].parentNode.insertBefore(rows[i], rows[r]);
-					x = rows[r].children[colID].innerHTML.toLowerCase();
+				y = rows[i].lc;
+				if (x > y) {
+					tbody.insertBefore(rows[i], rows[r]);
+					x = y;
 				}
 			}
 		}
 		$("sorting").style.display="none";
-	}, 10);
+	}, 0);
 }
 </script>
 </body>
