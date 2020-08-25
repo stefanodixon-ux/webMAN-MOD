@@ -501,22 +501,26 @@
 							}
 						}
 
-						// install psp_emulator.self with support for decrypted MINIS.EDAT
-						if((c_firmware >= 4.82f) && file_exists(WM_RES_PATH "/psp_emulator.self"))
-						{
-							if(not_exists("/dev_blind/pspemu/psp_emulator.self.dec_edat")
-							&& not_exists("/dev_blind/pspemu/psp_emulator.self.original"))
-								_file_copy((char*)(WM_RES_PATH "/psp_emulator.self"), (char*)"/dev_blind/pspemu/psp_emulator.self.dec_edat");
-						}
-
 						// restore original psp_emulator.self (if it's swapped)
 						swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original");
 
-						// swap psp_emulator.self if decrypted MINIS.EDAT is detected & psp_emulator.self.dec_edat is installed
+						// check if decrypted MINIS.EDAT is detected
 						if(edat)
 						{
 							if(!islike(templn, "NPD"))
 							{
+								// install psp_emulator.self with support for decrypted MINIS.EDAT
+								if((c_firmware >= 4.82f) && file_exists(WM_RES_PATH "/psp_emulator.self"))
+								{
+									if(not_exists("/dev_flash/pspemu/psp_emulator.self.dec_edat")
+									&& not_exists("/dev_flash/pspemu/psp_emulator.self.original"))
+									{
+										enable_dev_blind(NULL);
+										_file_copy((char*)(WM_RES_PATH "/psp_emulator.self"), (char*)"/dev_blind/pspemu/psp_emulator.self.dec_edat");
+									}
+								}
+
+								// swap psp_emulator.self if decrypted MINIS.EDAT is detected & psp_emulator.self.dec_edat is installed
 								swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.original", "psp_emulator.self.dec_edat");
 								show_msg("MINIS.EDAT is decrypted!");
 							}
