@@ -470,17 +470,56 @@
 
 					if(file_exists(iso_list[0]))
 					{
+						int edat = 0;
+
 						sprintf(templn, "%s.MINIS.EDAT", iso_list[0]);
 						if(file_exists(templn))
 						{
-							if(isDir(PSP_LAUNCHER_MINIS))		sys_map_path(PSP_LAUNCHER_MINIS     "/USRDIR/MINIS.EDAT", templn);
-							if(isDir(PSP_LAUNCHER_REMASTERS))	sys_map_path(PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS.EDAT", templn);
+							if(isDir(PSP_LAUNCHER_MINIS))
+							{
+								sprintf(iso_list[1], "/%s", PSP_LAUNCHER_MINIS "/USRDIR/MINIS.EDAT");
+								_file_copy(templn, iso_list[1]);
+								edat = read_file(iso_list[1], templn, 4, 0);
+							}
+
+							if(isDir(PSP_LAUNCHER_REMASTERS))
+							{
+								sprintf(iso_list[1], "/%s", PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS.EDAT");
+								_file_copy(templn, iso_list[1]);
+								edat = read_file(iso_list[1], templn, 4, 0);
+							}
 						}
 
 						sprintf(templn, "%s.MINIS2.EDAT", iso_list[0]);
 						if(file_exists(templn))
 						{
-							if(isDir(PSP_LAUNCHER_REMASTERS)) sys_map_path(PSP_LAUNCHER_MINIS "/USRDIR/MINIS2.EDAT", templn);
+							if(isDir(PSP_LAUNCHER_REMASTERS))
+							{
+								sprintf(iso_list[1], "/%s", PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS2.EDAT");
+								_file_copy(templn, iso_list[1]);
+								edat = read_file(iso_list[1], templn, 4, 0);
+							}
+						}
+
+						// install psp_emulator.self with support for decrypted MINIS.EDAT
+						if((c_firmware >= 4.82f) && file_exists(WM_RES_PATH "/psp_emulator.self"))
+						{
+							if(not_exists("/dev_blind/pspemu/psp_emulator.self.dec_edat")
+							&& not_exists("/dev_blind/pspemu/psp_emulator.self.original"))
+								_file_copy((char*)(WM_RES_PATH "/psp_emulator.self"), (char*)"/dev_blind/pspemu/psp_emulator.self.dec_edat");
+						}
+
+						// restore original psp_emulator.self (if it's swapped)
+						swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original");
+
+						// swap psp_emulator.self if decrypted MINIS.EDAT is detected & psp_emulator.self.dec_edat is installed
+						if(edat)
+						{
+							if(!islike(templn, "NPD"))
+							{
+								swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.original", "psp_emulator.self.dec_edat");
+								show_msg("MINIS.EDAT is decrypted!");
+							}
 						}
 
 						int result = cobra_set_psp_umd(iso_list[0], NULL, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png");

@@ -965,6 +965,7 @@ static void do_umount(bool clean)
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
 		cobra_unset_psp_umd(); // eject PSPISO
+		swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original"); // restore original psp_emulator.self
 
 		do_umount_iso();	// unmount iso
  #ifdef PS2_DISC

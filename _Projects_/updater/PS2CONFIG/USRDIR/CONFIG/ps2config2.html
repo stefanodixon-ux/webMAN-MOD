@@ -216,6 +216,20 @@ div.sticky {
 
 </div>
 
+<script>
+function $(id){return document.getElementById(id);}
+var input = $("txtSrchDB");
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const q = urlParams.get('q');
+
+setTimeout(function(){
+	input.value = q;
+	input.focus();
+	input.select();
+}, 1);
+</script>
+
 <table id="dbTable">
 <thead>
 <tr class="header">
@@ -2528,18 +2542,12 @@ var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
 
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-const q = urlParams.get('q');
 
 var category = urlParams.get('cat');
 if (category == null) 
 	category = "ALL";
 $("category").value = category.toUpperCase();
-
-input.value = q;
 doSearch();
-input.select();
 
 function doSearch() {
 

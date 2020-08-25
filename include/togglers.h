@@ -5,6 +5,8 @@ static void swap_file(const char *path, const char *curfile, const char *rento, 
 {
 	char file1[64], file2[64], file3[64];
 
+	mount_device("/dev_blind", NULL, NULL);
+
 	sprintf(file3, "%s%s", path, newfile);
 
 	if(file_exists(file3))

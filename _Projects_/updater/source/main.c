@@ -855,6 +855,7 @@ int main()
 	sysLv2FsUnlink(TMP_DIR "/eula_cddb_plugin.sprx");
 
 	file_copy(APP_USRDIR "/res/wm_proxy.sprx", RES_DIR "/wm_proxy.sprx");
+	file_copy(APP_USRDIR "/res/psp_emulator.self", RES_DIR "/psp_emulator.self"); // supports decrypted MINIS.EDAT / MINIS2.EDAT (4.75-4.86)
 
 	sysLv2FsUnlink(TMP_DIR "/libfs.sprx");
 	file_copy(APP_USRDIR "/res/libfs.sprx", RES_DIR "/libfs.sprx");

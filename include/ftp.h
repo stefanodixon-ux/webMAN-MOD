@@ -35,7 +35,25 @@ static u8 ftp_session = 1;
 
 static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 {
-	if(*path == '/') strcpy(absPath_s, path);
+	if(*path == '/')
+	{
+		strcpy(absPath_s, path);
+		filepath_check(absPath_s);
+
+		if(islike(absPath_s, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); return 1;}
+		if(islike(absPath_s, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
+
+		if(not_exists(absPath_s))
+			for(u8 i = 0; i < MAX_DRIVES; i++)
+			{
+				if(i == NET) i = NTFS + 1;
+				sprintf(absPath_s, "%s/%s", drives[i], path);
+				filepath_check(absPath_s);
+				if(file_exists(absPath_s)) return 0;
+			}
+		else
+			return 0;
+	}
 	else
 	{
 		u16 len = sprintf(absPath_s, "%s", cwd);
@@ -46,9 +64,6 @@ static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 	}
 
 	filepath_check(absPath_s);
-
-	if(islike(absPath_s, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); return 1;}
-	if(islike(absPath_s, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
 
 	return 0;
 }
