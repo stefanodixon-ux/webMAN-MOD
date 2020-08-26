@@ -150,7 +150,8 @@ class Header(Struct):
 		out += "[X] Type: %08x\n" % self.type
 		out += "[X] Header size: %08x\n" % self.headSize
 		out += "[X] Content Type: %08x %s\n" % (this.contentType, this.category)
-		out += "[X] Item count: " + "{:,}".format(self.itemCount) + " ({:,} files".format(self.itemCount - this.dirCount) + ", {:,} directories)".format(this.dirCount) + " [0x{:08x}]\n".format(self.itemCount)
+		if this.dirCount > 0:
+			out += "[X] Item count: " + "{:,}".format(self.itemCount) + " ({:,} files".format(self.itemCount - this.dirCount) + ", {:,} directories)".format(this.dirCount) + " [0x{:08x}]\n".format(self.itemCount)
 		out += "[X] Package size: " + "{:,} bytes".format(self.packageSize) + " -> {:,.1f} MB".format(float(self.packageSize)/1024/1024) + " [0x{:016x}]\n".format(self.packageSize)
 		out += "[X] Data offset: %016x\n" % self.dataOff
 		out += "[X] Data size: " + "{:016x}\n".format(self.dataSize)
@@ -256,14 +257,20 @@ def listPkg(filename):
 		data += fp.read(0x200 * header.itemCount)
 	fp.close()
 
-	#print header
+	print 'Listing "' + filename + '"'
+	print
+	print header
+	if header.type == 0x80000001:
+		print "ERROR: Unsupported Package Type 0x%x (signed pkg)" % 0x80000001
+		return
+
 	assert (header.type == 0x00000001) , 'Unsupported Type'
 	if header.itemCount > 0:
 		print "+) overwrite, -) no overwrite"
 		print
 		context = keyToContext(header.QADigest)
-		dataEnc = data[header.dataOff:header.dataOff+0x200*header.itemCount]
-		decData = crypt(listToString(context), dataEnc, 0x200*header.itemCount)
+		dataEnc = data[header.dataOff:header.dataOff + 0x200 * header.itemCount]
+		decData = crypt(listToString(context), dataEnc, 0x200 * header.itemCount)
 		totalSize = 0
 
 		for i in range(0, header.itemCount):
@@ -306,8 +313,13 @@ def unpack(filename):
 		data += fp.read(0x200 * header.itemCount)
 	fp.close()
 
+	print 'Extracting "' + filename + '"'
+	print header
+	if header.type == 0x80000001:
+		print "ERROR: Unsupported Package Type 0x%x (signed pkg)" % 0x80000001
+		return
+
 	assert header.type == (0x00000001), 'Unsupported Type'
-	print 'Extracting ' + filename
 	if header.itemCount > 0:
 		context = listToString(keyToContext(header.QADigest))
 		dataEnc = data[header.dataOff:header.dataOff + 0x200 * header.itemCount]
@@ -320,8 +332,6 @@ def unpack(filename):
 			pass
 
 		# Decrypt whole PKG in chunks
-		context = listToString(keyToContext(header.QADigest))
-
 		fp = open(filename, 'rb')
 		fp.seek(header.dataOff)
 		fileSize = header.packageSize
