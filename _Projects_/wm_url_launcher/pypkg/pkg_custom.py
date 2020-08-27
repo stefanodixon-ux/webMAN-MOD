@@ -20,6 +20,8 @@ TYPE_DIRECTORY = 0x4
 
 TYPE_OVERWRITE_ALLOWED = 0x80000000
 
+MaxCacheSize = 0x8000000
+
 debug = False
 
 this = sys.modules[__name__]
@@ -152,6 +154,8 @@ class Header(Struct):
 		out += "[X] Content Type: %08x %s\n" % (this.contentType, this.category)
 		if this.dirCount > 0:
 			out += "[X] Item count: " + "{:,}".format(self.itemCount) + " ({:,} files".format(self.itemCount - this.dirCount) + ", {:,} directories)".format(this.dirCount) + " [0x{:08x}]\n".format(self.itemCount)
+		else:
+			out += "[X] Item count: " + "{:,}".format(self.itemCount) + " [0x{:08x}]\n".format(self.itemCount)
 		out += "[X] Package size: " + "{:,} bytes".format(self.packageSize) + " -> {:,.1f} MB".format(float(self.packageSize)/1024/1024) + " [0x{:016x}]\n".format(self.packageSize)
 		out += "[X] Data offset: %016x\n" % self.dataOff
 		out += "[X] Data size: " + "{:016x}\n".format(self.dataSize)
@@ -261,7 +265,8 @@ def listPkg(filename):
 	print
 	print header
 	if header.type == 0x80000001:
-		print "ERROR: Unsupported Package Type 0x%x (signed pkg)" % 0x80000001
+		print "ERROR: Unsupported Package Type 0x%x (finished /  signed pkg)" % 0x80000001
+		wait()
 		return
 
 	assert (header.type == 0x00000001) , 'Unsupported Type'
@@ -316,7 +321,8 @@ def unpack(filename):
 	print 'Extracting "' + filename + '"'
 	print header
 	if header.type == 0x80000001:
-		print "ERROR: Unsupported Package Type 0x%x (signed pkg)" % 0x80000001
+		print "ERROR: Unsupported Package Type 0x%x (finished /  signed pkg)" % 0x80000001
+		wait()
 		return
 
 	assert header.type == (0x00000001), 'Unsupported Type'
@@ -332,29 +338,32 @@ def unpack(filename):
 			pass
 
 		# Decrypt whole PKG in chunks
+		context = listToString(keyToContext(header.QADigest))
 		fp = open(filename, 'rb')
 		fp.seek(header.dataOff)
 		fileSize = header.packageSize
-		decFile = open(filename + ".dec", 'wb')
-		if fileSize > 0x1000000:
-			chunkSize = 0x1000000
-			while True:
+		UseCacheFile = (fileSize > MaxCacheSize)
+		if UseCacheFile:
+			# Create cache file with decoded
+			decFile = open(filename + ".dec", 'wb')
+			chunkSize = MaxCacheSize
+			while fileSize > 0:
 				pkgData = fp.read(chunkSize)
-				if not pkgData:
-					break
 				decFile.write(crypt(context, pkgData, chunkSize))
 				fileSize -= chunkSize
 				if fileSize < chunkSize:
 					chunkSize = fileSize
+			decFile.close()
+			fp.close()
 		else:
 			pkgData = fp.read(fileSize)
 			fileData = crypt(context, pkgData, fileSize)
-			decFile.write(fileData)
-		decFile.close()
-		fp.close()
+			fp.close()
 
 		totalSize = 0
-		fp = open(filename + ".dec", 'rb')
+
+		if UseCacheFile:
+			decFile = open(filename + ".dec", 'rb')
 
 		for i in range(0, header.itemCount):
 			fileD = FileHeader()
@@ -372,27 +381,31 @@ def unpack(filename):
 			else:
 				fileSize = fileD.fileSize
 				totalSize += fileSize
-				totalBytes = 0
 
-				fp.seek(fileD.fileOff)
-				decFile = open(directory + "/" + fileD.fileName, "wb")
-				if fileSize > 0x1000000:
-					chunkSize = 0x1000000
-					while True:
-						pkgData = fp.read(chunkSize)
-						if not pkgData:
-							break
-						decFile.write(pkgData)
-						fileSize -= chunkSize
-						if fileSize < chunkSize:
-							chunkSize = fileSize
+				# Create output file
+				outFile = open(directory + "/" + fileD.fileName, "wb")
+				if UseCacheFile:
+					decFile.seek(fileD.fileOff)
+					if fileSize > MaxCacheSize:
+						chunkSize = MaxCacheSize
+						while fileSize > 0:
+							fileData = decFile.read(chunkSize)
+							if not fileData:
+								break
+							outFile.write(fileData)
+							fileSize -= chunkSize
+							if fileSize < chunkSize:
+								chunkSize = fileSize
+					else:
+						fileData = decFile.read(fileSize)
+						outFile.write(fileData)
 				else:
-					pkgData = fp.read(fileSize)
-					decFile.write(pkgData)
-				decFile.close()
+					outFile.write(fileData[fileD.fileOff:fileD.fileOff + fileSize])
+				outFile.close()
 
-		fp.close()
-		os.remove(filename + ".dec")
+		if UseCacheFile:
+			decFile.close()
+			os.remove(filename + ".dec")
 
 	print
 	print ">> Item count: " + "{:,}".format(header.itemCount) + " ({:,} files".format(header.itemCount - this.dirCount) + ", {:,} directories) ".format(this.dirCount) + "{:,} bytes".format(totalSize) + " -> {:,.1f} MB".format(float(totalSize)/1024/1024)
@@ -492,6 +505,11 @@ def pack(folder, contentid, outname=None):
 				this.category = "(CATEGORY = TR - Theme)"
 				this.contentType = 0x09 # Theme
 		fp.close()
+	elif contentid.find("VSHMODULE") >= 0:
+		this.prefixPath = "" # do not use ../../ on standard packages
+		this.prefixLen = 0
+		this.contentType = 0x0C # vsh module
+		this.category = "(VSH MODULE)"
 
 	qadigest = hashlib.sha1()
 
@@ -665,12 +683,10 @@ def pack(folder, contentid, outname=None):
 			fp = open(path, 'rb')
 
 			fileSize = file.fileSize
-			if fileSize > 0x1000000:
-				chunkSize = 0x1000000
-				while True:
+			if fileSize > MaxCacheSize:
+				chunkSize = MaxCacheSize
+				while fileSize > 0:
 					fileData = fp.read(chunkSize)
-					if not fileData:
-						break
 					outFile.write(crypt(context, fileData, chunkSize))
 					fileSize -= chunkSize
 					if fileSize < chunkSize:
