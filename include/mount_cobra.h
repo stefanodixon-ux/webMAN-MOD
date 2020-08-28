@@ -502,7 +502,7 @@
 						}
 
 						// restore original psp_emulator.self (if it's swapped)
-						swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original");
+						swap_file(PSP_EMU_PATH, "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original");
 
 						// check if decrypted MINIS.EDAT is detected
 						if(edat)
@@ -521,7 +521,7 @@
 								}
 
 								// swap psp_emulator.self if decrypted MINIS.EDAT is detected & psp_emulator.self.dec_edat is installed
-								swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.original", "psp_emulator.self.dec_edat");
+								swap_file(PSP_EMU_PATH, "psp_emulator.self", "psp_emulator.self.original", "psp_emulator.self.dec_edat");
 								show_msg("MINIS.EDAT is decrypted!");
 							}
 						}

@@ -2,6 +2,7 @@
 #define VSH_MODULE_PATH		"/dev_blind/vsh/module/"
 #define VSH_ETC_PATH		"/dev_blind/vsh/etc/"
 #define PS2_EMU_PATH		"/dev_blind/ps2emu/"
+#define PSP_EMU_PATH		"/dev_blind/pspemu/"
 #define REBUG_COBRA_PATH	"/dev_blind/rebug/cobra/"
 #define HABIB_COBRA_PATH	"/dev_blind/habib/cobra/"
 #define SYS_COBRA_PATH		"/dev_blind/sys/"
