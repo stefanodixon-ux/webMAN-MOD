@@ -912,8 +912,8 @@ static void set_app_home(const char *game_path)
 		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ?
 										"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD when game is unmounted
 
+	sys_map_path(APP_HOME_DIR, game_path);
 	sys_map_path("/app_home/USRDIR", NULL);
-	sys_map_path("/app_home/PS3_GAME", game_path);
 }
 
 static void do_umount_iso(void)

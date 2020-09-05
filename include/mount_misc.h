@@ -12,10 +12,17 @@
 		char *pos = strstr(_path, "/GAMEI/");
 		if(pos)
 		{
+			char *end = pos + 7 + TITLE_ID_LEN;
+			char bak = *end; *end = 0;
+			sys_map_path(APP_HOME_DIR, _path); *end = bak;
+
 			sys_map_path(PKGLAUNCH_DIR, _path0);
 			get_value(map_title_id, pos + 7, TITLE_ID_LEN);
 			sprintf(_path, "/dev_hdd0/game/%s", map_title_id);
 			sys_map_path(_path, _path0);
+
+			sys_ppu_thread_sleep(1);
+			launch_app_home_icon();
 
 			mount_unk = EMU_GAMEI;
 			goto exit_mount;

@@ -28,7 +28,7 @@ enum paths_ids
 #define IS_PS3_TYPE    ((f1<=id_PS3ISO) || (f1==id_VIDEO || (f1==id_GAMEI)))
 #define IS_BLU_TYPE    ((f1<=id_BDISO)  || (f1==id_VIDEO || (f1==id_GAMEI)))
 
-#define IS_JB_FOLDER    ((f1<=id_GAMEZ) || (f1==id_VIDEO))
+#define IS_JB_FOLDER    ((f1<=id_GAMEZ) || (f1==id_VIDEO) || (f1==id_GAMEI))
 #define IS_PS3_FOLDER    (f1==id_PS3ISO)
 #define IS_BLU_FOLDER    (f1==id_BDISO)
 #define IS_DVD_FOLDER    (f1==id_DVDISO)
