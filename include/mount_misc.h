@@ -12,12 +12,15 @@
 		char *pos = strstr(_path, "/GAMEI/");
 		if(pos)
 		{
-			char *end = pos + 7 + TITLE_ID_LEN;
-			char bak = *end; *end = 0;
-			sys_map_path(APP_HOME_DIR, _path); *end = bak;
+			int tid_offset = 7; // folder is title_id
+			char *slash = strstr(pos + tid_offset, "/"); if(slash) *slash = 0;
 
-			sys_map_path(PKGLAUNCH_DIR, _path0);
-			get_value(map_title_id, pos + 7, TITLE_ID_LEN);
+			if(strstr(pos + tid_offset, "_00-") == pos + 23) tid_offset += 7; // folder is content_id
+
+			sys_map_path(APP_HOME_DIR, _path);
+			sys_map_path(PKGLAUNCH_DIR, _path);
+
+			get_value(map_title_id, pos + tid_offset, TITLE_ID_LEN);
 			sprintf(_path, "/dev_hdd0/game/%s", map_title_id);
 			sys_map_path(_path, _path0);
 
