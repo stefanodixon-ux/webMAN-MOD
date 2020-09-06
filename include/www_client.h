@@ -2882,6 +2882,8 @@ retry_response:
 							del(HTML_BASE_PATH, RECURSIVE_DELETE);
 							del(VSH_MENU_IMAGES, RECURSIVE_DELETE);
 
+							restore_fan(SYSCON_MODE);
+
 							sprintf(param, "%s%s", "/delete.ps3", "?uninstall");
 							goto reboot;
 						}
