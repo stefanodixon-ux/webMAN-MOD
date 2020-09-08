@@ -39,6 +39,12 @@
 		}
 		else
 		{
+			// multi-CD
+			char multi[STD_PATH_LEN]; snprintf(multi, STD_PATH_LEN, "%s", _path);
+			char     *mcd = strstr(multi, "CD");   if(mcd) mcd += 2;
+			if(!mcd) {mcd = strstr(multi, "Vol");  if(mcd) mcd += 3;}
+			if(!mcd) {mcd = strstr(multi, "Disc"); if(mcd) mcd += 4;}
+
 			u8 n;
 
 			for(n = 0; n < MAX_LAST_GAMES; n++)
@@ -46,11 +52,27 @@
 				if(IS(lastgames.game[n].path, _path)) break;
 			}
 
-			if(n >= MAX_LAST_GAMES)
+			if((n >= MAX_LAST_GAMES) || mcd)
 			{
 				lastgames.last++;
 				if(lastgames.last >= MAX_LAST_GAMES) lastgames.last = 0;
 				snprintf(lastgames.game[lastgames.last].path, STD_PATH_LEN, "%s", _path);
+
+				// multi-CD
+				if(mcd)
+				{
+					int n = lastgames.last;
+					while(*mcd == ' ') mcd++;
+					while(ISDIGIT(*mcd))
+					{
+						++mcd[0]; // next CD
+						if(not_exists(multi)) break;
+
+						n++;
+						if(n >= MAX_LAST_GAMES) n = 0;
+						snprintf(lastgames.game[n].path, STD_PATH_LEN, "%s", multi);
+					}
+				}
 			}
 		}
 
