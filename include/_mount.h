@@ -1246,9 +1246,10 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 	{
 		if(isDir("/dev_usb000") == check_multipsx)
 		{
-			check_multipsx = 0; BEEP2;
+			check_multipsx = 0;
+			show_msg(STR_GAMEUM); play_rco_sound("snd_trophy");
 			wait_for("/dev_usb000", 5);
-			if(isDir("/dev_usb000")) mount_game("_next", MOUNT_NORMAL);
+			mount_game("_next", MOUNT_NORMAL);
 		}
 	}
 }
@@ -1334,6 +1335,7 @@ static bool mount_ret = false;
 static void mount_thread(u64 action)
 {
 	bool ret = false;
+	bool multiCD = false;
 
 	automount = 0;
 

@@ -30,6 +30,8 @@
 			if(*lastgames.game[lastgames.last].path != '/' || strlen(lastgames.game[lastgames.last].path) < 7) goto exit_mount;
 
 			sprintf(_path, "%s", lastgames.game[lastgames.last].path);
+
+			multiCD = strstr(_path, "CD") || strstr(_path, "Vol") || strstr(_path, "Disc");
 		}
 		else
 		if(lastgames.last >= MAX_LAST_GAMES)
@@ -70,7 +72,7 @@
 
 						n++;
 						if(n >= MAX_LAST_GAMES) n = 0;
-						snprintf(lastgames.game[n].path, STD_PATH_LEN, "%s", multi);
+						snprintf(lastgames.game[n].path, STD_PATH_LEN, "%s", multi); multiCD = true;
 					}
 				}
 			}
