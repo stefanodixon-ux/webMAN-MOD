@@ -15,7 +15,7 @@
 
 static u8 mount_app_home = false; // force mount JB folder in /app_home (false = use webman_config->app_home)
 
-#ifdef PKG_LAUNCHER
+#ifdef MOUNT_GAMEI
 static char map_title_id[TITLEID_LEN];
 #endif
 
@@ -95,7 +95,7 @@ static void auto_play(char *param, u8 play_ps3)
 			}
 		}
 		else
- #if defined(FAKEISO) || defined(PKG_LAUNCHER)
+ #ifdef COBRA_ONLY
 		if(!l2 && ((strstr(param, "/PSPISO") != NULL) || (strstr(param, ".ntfs[PSPISO]") != NULL)))
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
@@ -103,17 +103,6 @@ static void auto_play(char *param, u8 play_ps3)
 				if(explore_exec_push(250000, true))	// move to psp_launcher folder and open it
 				if(autoplay && !explore_exec_push(500000, false))	// start psp_launcher
 					autoplay = false;
-			}
-		}
-		else
- #endif
- #ifdef PKG_LAUNCHER
-		if(strstr(param, "/GAMEI/"))
-		{
-			if(XMB_GROUPS && webman_config->ps3l)
-			{
-				exec_xmb_command("focus_index pkg_launcher");
-				explore_exec_push(200000, true); // open pkg_launcher folder
 			}
 		}
 		else
@@ -709,7 +698,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				strcat(buffer, is_movie ? STR_MOVIETOM : STR_GAMETOM); strcat(buffer, ": "); add_breadcrumb_trail(buffer, source);
 
 				//if(strstr(param, "PSX")) {sprintf(tempstr, " <font size=2>[CD %i • %s]</font>", CD_SECTOR_SIZE_2352, (webman_config->ps1emu) ? "ps1_netemu.self" : "ps1_emu.self"); strcat(buffer, tempstr);}
-#ifdef PKG_LAUNCHER
+#ifdef MOUNT_GAMEI
 				is_gamei = strstr(param, "/GAMEI/");
 #endif
 				if(is_movie)
@@ -734,20 +723,13 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
 											"<hr>%s", enc_dir_name, wm_icons[iPS2], 300, mounted ? STR_PS2LOADED : STR_ERROR);
 				}
-				else if(((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && is_ext(param, ".iso")) || is_gamei)
+				else if(((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && is_ext(param, ".iso")))
 				{
-#ifndef ENGLISH_ONLY
 					char *STR_PSPLOADED = buf; //[232]; //	= "Game loaded successfully. Start the game using <b>PSP Launcher</b>.<hr>";
 					sprintf(STR_PSPLOADED,   "Game %s%s%s</b>.<hr>",
 											 "loaded successfully. Start the ", "game using <b>", "PSP Launcher");
+#ifndef ENGLISH_ONLY
 					language("STR_PSPLOADED", STR_PSPLOADED, STR_PSPLOADED);
-
-#endif
-#ifdef PKG_LAUNCHER
-					if(is_gamei)
-					{
-						char *pos = strstr(STR_PSPLOADED, "PSP Launcher"); if(pos) strcpy(pos, "PKG Launcher");
-					}
 #endif
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
 											"<hr>%s", enc_dir_name, wm_icons[iPSP], strcasestr(enc_dir_name,".png") ? 200 : 300, mounted ? STR_PSPLOADED : STR_ERROR);
@@ -993,13 +975,14 @@ static void do_umount(bool clean)
 		set_app_home(NULL); // unmap app_home
 
 		// unmap GAMEI & PKGLAUNCH
- #ifdef PKG_LAUNCHER
+ #ifdef MOUNT_GAMEI
 		if(*map_title_id)
 		{
 			char gamei_mapping[32];
 			sprintf(gamei_mapping, HDD0_GAME_DIR "%s", map_title_id);
 			sys_map_path(gamei_mapping, NULL);
 			sys_map_path(PKGLAUNCH_DIR, NULL);
+			*map_title_id = NULL;
 		}
  #endif
 

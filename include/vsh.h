@@ -296,7 +296,7 @@ static bool is_app_home_onxmb(void)
 {
 	if(has_app_home >= 0) return (bool)has_app_home; has_app_home = false;
 
-	sys_addr_t sysmem = NULL;
+	sys_addr_t sysmem = NULL; has_app_home = 0;
 	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 	{
 		char *buffer = (char*)sysmem;
@@ -305,7 +305,7 @@ static bool is_app_home_onxmb(void)
 		sys_memory_free(sysmem);
 	}
 
-	return has_app_home;
+	return (bool)has_app_home;
 }
 
 static void launch_disc(bool exec)

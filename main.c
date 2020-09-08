@@ -59,6 +59,7 @@
 
 #ifdef PKG_LAUNCHER
  #define MOUNT_ROMS
+ #define MOUNT_GAMEI
 #endif
 
 #ifndef WM_REQUEST

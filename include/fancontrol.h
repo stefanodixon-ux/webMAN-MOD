@@ -1,4 +1,5 @@
 #define DEFAULT_MIN_FANSPEED	(25) /* % */
+#define DEFAULT_MAX_FANSPEED	(80) /* % */
 #define MIN_FANSPEED			(20) /* % */
 #define MIN_FANSPEED_8BIT		(0x33) /* 20% */
 #define MAX_FANSPEED_8BIT		(0xF4) /* 95% */

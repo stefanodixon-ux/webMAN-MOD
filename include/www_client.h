@@ -714,7 +714,9 @@ parse_request:
 #ifdef COBRA_ONLY
 					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
 
-					if((*param2 != NULL) && isDir(header))
+					if(*map_title_id && (*param2 == NULL))
+						launch_app_home_icon();
+					else if((*param2 != NULL) && isDir(header))
 					{
 						set_app_home(header);
 
@@ -3018,11 +3020,6 @@ retry_response:
 
 							if(get_explore_interface())
 							{
- #ifdef PKG_LAUNCHER
-								if(webman_config->ps3l && strstr(param, "/GAMEI/"))
-									focus_first_item();
-								else
- #endif
 								if(webman_config->ps2l && is_BIN_ENC(param))
 									focus_first_item();
 								else

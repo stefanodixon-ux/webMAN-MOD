@@ -7,7 +7,7 @@
 	// ------------------
 	// mount GAMEI game
 	// ------------------
- #ifdef PKG_LAUNCHER
+	#ifdef MOUNT_GAMEI
 	{
 		char *pos = strstr(_path, "/GAMEI/");
 		if(pos)
@@ -18,7 +18,7 @@
 			if(strstr(pos + tid_offset, "_00-") == pos + 23) tid_offset += 7; // folder is content_id
 
 			sys_map_path(APP_HOME_DIR, _path);
-			sys_map_path(PKGLAUNCH_DIR, _path);
+			if(isDir(PKGLAUNCH_DIR)) sys_map_path(PKGLAUNCH_DIR, _path);
 
 			get_value(map_title_id, pos + tid_offset, TITLE_ID_LEN);
 			sprintf(_path, "/dev_hdd0/game/%s", map_title_id);
@@ -31,7 +31,7 @@
 			goto exit_mount;
 		}
 	}
- #endif
+	#endif
 
 	// ------------------
 	// mount NPDRM game

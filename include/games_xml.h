@@ -262,7 +262,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	make_fb_xml();
 
-	#if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
+	#if defined(MOUNT_ROMS)
 	bool c_roms = webman_config->roms;
 	char *RETROARCH_DIR = NULL;
 	if(c_roms)
@@ -275,9 +275,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	u16 key;
 	int fdxml; char *xml_file = (char*)MY_GAMES_XML;
 
-	#ifdef PKG_LAUNCHER
-	bool pkg_launcher = webman_config->ps3l && isDir(PKGLAUNCH_DIR);
-	#endif
+	if(!is_app_home_onxmb()) webman_config->gamei = 0; // do not scan GAMEI if app_home/PS3_GAME icon is not on XMB
+
 	bool ps2_launcher = webman_config->ps2l && isDir(PS2_CLASSIC_PLACEHOLDER);
 	#ifdef COBRA_ONLY
 	bool psp_launcher = webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS));
@@ -323,16 +322,6 @@ scan_roms:
 		if(!(webman_config->cmask & PS3))
 		{
 			_concat(&myxml_ps3, "<View id=\"seg_wm_ps3_items\"><Attributes>");
-			#ifdef PKG_LAUNCHER
-			if(pkg_launcher)
-			{
-				sprintf(templn, "<Table key=\"pkg_launcher\">"
-								XML_PAIR("icon", PKGLAUNCH_ICON)
-								XML_PAIR("title","PKG Launcher")
-								XML_PAIR("info","%s") "%s",
-								"PKG Launcher", "</Table>"); _concat(&myxml_ps3, templn);
-			}
-			#endif
 		}
 		if(!(webman_config->cmask & PS2))
 		{
@@ -401,8 +390,8 @@ scan_roms:
 	if((cobra_version > 0) && file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_plugin = (char*)XAI_LINK_PAIR, *localhost = NULL;}
 	#endif
 
-	#if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
-	f1_len = ((webman_config->nogrp && c_roms) ? id_ROMS : webman_config->ps3l ? id_GAMEI : id_VIDEO) + 1;
+	#if defined(MOUNT_GAMEI) || defined(MOUNT_ROMS)
+	f1_len = ((webman_config->nogrp && c_roms) ? id_ROMS : webman_config->gamei ? id_GAMEI : id_VIDEO) + 1;
 	#endif
 
 	int ns = NONE; u8 uprofile = profile;
@@ -453,9 +442,7 @@ scan_roms:
 				if(key >= max_xmb_items) break;
 
 				//if(IS_PS2_FOLDER && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
-#ifdef PKG_LAUNCHER
-				if(IS_GAMEI_FOLDER) {if(is_net || (IS_HDD0) || (IS_NTFS)) continue;}
-#endif
+				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || is_net || (IS_HDD0) || (IS_NTFS)) continue;}
 				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
@@ -623,7 +610,7 @@ next_xml_entry:
 
 						if(IS_JB_FOLDER)
 						{
-#ifdef PKG_LAUNCHER
+#ifdef MOUNT_GAMEI
 							if(IS_GAMEI_FOLDER)
 							{
 								// create game folder in /dev_hdd0/game and copy PARAM.SFO to prevent deletion of XMB icon when gameDATA is disabled
@@ -635,7 +622,7 @@ next_xml_entry:
 									sprintf(_param_sfo, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 									mkdir_tree(param_sfo); file_copy(_param_sfo, param_sfo, COPY_WHOLE_FILE);
 								}
-								if(!webman_config->ps3l) continue;
+								if(!webman_config->gamei) continue;
 
 								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name);
 								if(not_exists(templn)) continue;
@@ -750,11 +737,7 @@ continue_reading_folder_xml:
 
 	if( !scanning_roms && XMB_GROUPS )
 	{
-#ifndef PKG_LAUNCHER
 		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</Attributes><Items>");}
-#else
-		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</Attributes><Items>"); if(pkg_launcher) _concat(&myxml_ps3, QUERY_XMB("pkg_launcher", "xcb://localhost/query?limit=1&cond=Ae+Game:Common.dirPath /dev_hdd0//game+Ae+Game:Common.fileName " PKGLAUNCH_ID));}
-#endif
 		if(!(webman_config->cmask & PS2)) {_concat(&myxml_ps2, "</Attributes><Items>"); if(ps2_launcher) _concat(&myxml_ps2, QUERY_XMB("ps2_classic_launcher", "xcb://127.0.0.1/query?limit=1&cond=Ae+Game:Game.titleId PS2U10000"));}
 
 #ifdef COBRA_ONLY

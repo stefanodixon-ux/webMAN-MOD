@@ -239,7 +239,7 @@ static void check_ps3_game(char *path)
 }
 #endif
 
-#if defined(COPY_PS3) || defined(PKG_HANDLER) || defined(PKG_LAUNCHER)
+#if defined(COPY_PS3) || defined(PKG_HANDLER) || defined(MOUNT_GAMEI)
 static void mkdir_tree(char *path)
 {
 	size_t path_len = strlen(path);

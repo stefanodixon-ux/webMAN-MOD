@@ -67,7 +67,7 @@ enum paths_ids
 #include "games_slaunch.h"
 #include "games_covers.h"
 
-#if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
+#if defined(MOUNT_GAMEI) || defined(MOUNT_ROMS)
  static u8 f1_len = 13;       // VIDEO + GAMEI + ROMS
 #else
  static const u8 f1_len = 11; // VIDEO
@@ -345,11 +345,12 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		if(!(webman_config->cmask & BLU))   add_query_html(pbuffer, "BDISO" );
 		if(!(webman_config->cmask & DVD))   add_query_html(pbuffer, "DVDISO");
 
- #if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
-		if(webman_config->ps3l) {add_query_html(pbuffer, "GAMEI");}
-		if(webman_config->roms) {add_query_html(pbuffer, "ROMS");}
+ #ifdef MOUNT_GAMEI
+		if(webman_config->gamei) {add_query_html(pbuffer, "GAMEI");}
  #endif
-
+ #ifdef MOUNT_ROMS
+		if(webman_config->roms)  {add_query_html(pbuffer, "ROMS");}
+ #endif
  #ifdef NET_SUPPORT
 		if(webman_config->netd[0] || webman_config->netd[1] || webman_config->netd[2] || webman_config->netd[3] || webman_config->netd[4]) add_query_html(pbuffer, "net");
  #endif
@@ -435,8 +436,8 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		u8 clear_ntfs = 0;
 #endif
 
-#if defined(PKG_LAUNCHER) || defined(MOUNT_ROMS)
-		f1_len = (webman_config->roms ? id_ROMS : webman_config->ps3l ? id_GAMEI : id_VIDEO) + 1;
+#if defined(MOUNT_GAMEI) || defined(MOUNT_ROMS)
+		f1_len = (webman_config->roms ? id_ROMS : webman_config->gamei ? id_GAMEI : id_VIDEO) + 1;
 #endif
 
 #ifdef LAUNCHPAD
@@ -587,9 +588,7 @@ list_games:
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
 				//if(IS_PS2_FOLDER && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
-#ifdef PKG_LAUNCHER
-				if(IS_GAMEI_FOLDER) {if(is_net || (IS_HDD0) || (IS_NTFS) || (!webman_config->ps3l)) continue;}
-#endif
+				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || is_net || (IS_HDD0) || (IS_NTFS)) continue;}
 				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
@@ -747,7 +746,7 @@ next_html_entry:
 
 						if(IS_JB_FOLDER)
 						{
-#ifdef PKG_LAUNCHER
+#ifdef MOUNT_GAMEI
 							if(IS_GAMEI_FOLDER)
 							{
 								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name); if(not_exists(templn)) continue;
