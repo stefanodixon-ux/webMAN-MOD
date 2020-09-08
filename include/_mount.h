@@ -13,6 +13,8 @@
 
 #define TITLEID_LEN		10
 
+static int8_t check_multipsx = -1;
+
 static u8 mount_app_home = false; // force mount JB folder in /app_home (false = use webman_config->app_home)
 
 #ifdef MOUNT_GAMEI
@@ -683,7 +685,6 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// ------------------
 			{
 				size_t mlen;
-				bool is_gamei = false;
 				bool is_movie = strstr(param, "/BDISO") || strstr(param, "/DVDISO") || !extcmp(param, ".ntfs[BDISO]", 12) || !extcmp(param, ".ntfs[DVDISO]", 13);
 
 #ifndef ENGLISH_ONLY
@@ -698,9 +699,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				strcat(buffer, is_movie ? STR_MOVIETOM : STR_GAMETOM); strcat(buffer, ": "); add_breadcrumb_trail(buffer, source);
 
 				//if(strstr(param, "PSX")) {sprintf(tempstr, " <font size=2>[CD %i • %s]</font>", CD_SECTOR_SIZE_2352, (webman_config->ps1emu) ? "ps1_netemu.self" : "ps1_emu.self"); strcat(buffer, tempstr);}
-#ifdef MOUNT_GAMEI
-				is_gamei = strstr(param, "/GAMEI/");
-#endif
+
 				if(is_movie)
 				{
 #ifndef ENGLISH_ONLY
@@ -937,6 +936,8 @@ static void do_umount(bool clean)
 #ifdef USE_NTFS
 	root_check = true;
 #endif
+
+	check_multipsx = -1;
 
 	cellFsUnlink("/dev_hdd0/tmp/game/ICON0.PNG"); // remove XMB disc icon
 
@@ -1240,6 +1241,15 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 	else if(fan_ps2_mode && IS_INGAME)
 	{
 		automount = 0; enable_fan_control(PS2_MODE_OFF);
+	}
+	else if((check_multipsx >= 0) && IS_INGAME)
+	{
+		if(isDir("/dev_usb000") == check_multipsx)
+		{
+			check_multipsx = 0; BEEP2;
+			wait_for("/dev_usb000", 5);
+			if(isDir("/dev_usb000")) mount_game("_next", MOUNT_NORMAL);
+		}
 	}
 }
 #endif

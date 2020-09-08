@@ -640,7 +640,7 @@
 
 				else if(strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || mount_unk == EMU_PSX)
 				{
-					ret = mount_ps_disc_image(_path, cobra_iso_list, 1, EMU_PSX);
+					ret = mount_ps_disc_image(_path, cobra_iso_list, 1, EMU_PSX); check_multipsx = !isDir("/dev_usb000");
 				}
 
 				// -------------------
