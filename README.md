@@ -72,9 +72,11 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support for exclude games by file name & Title ID using wm_ignore.txt
 
 #### Extended mount of game
+- Support for multiCD PSXISO games stored as ISO in HDD0 / USB FAT32. Eject/Insert a USB0 device to mount the next CD
 - It can mount PSP games stored on exFAT/ext/NTFS/NET devices without copy the file to the internal HDD (1.47.27) - Requires prepISO 1.27 or later
 - It can mount PS2 Classics games on PS2 Classic Launcher (.BIN.ENC)
 - Automatic CONFIG creation for PS2ISOs and PS2 Classic using config database from ManaGunZ or the database of CONFIG created by the installer
+- Scanning & launch of package files extracted to GAMEI folder on USB FAT32. Folders' name can be title_id or content_id
 - Support for launch SELF applications via PKG/ROM Launcher or through the XMB icon: ★ app_home/PS3_GAME
 - Integrated external gameDATA allows installation of packages & game data on external USB drives
 - Integrated prepNTFS allows to scan PS3ISO, PSXISO, BDISO & DVDISO on NTFS devices without require prepISO/prepNTFS
@@ -87,6 +89,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - ROMS support through PKG/ROM Launcher and RetroArch (support internal HDD/USB/NET storage with custom icons & background images)
 - Enable selection of emulator for PS1 and PS2 on B/C consoles
 - PS2 Launcher / PSP Launchers can be integrated into webMAN Games menu for easy access
+- Auto install / auto select PSP emulator for PSP games using decrypted MINIS.EDAT / MINIS2.EDAT
 
 #### File management & navigation
 - Improvements on File Manager (file & folder icons, links to navigate faster, mount ISO, mount net0/ or net1/, preview images, copy/paste/delete files & folders)

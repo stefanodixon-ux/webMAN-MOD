@@ -13,7 +13,7 @@
 
 #define TITLEID_LEN		10
 
-static int8_t check_multipsx = -1;
+static int8_t check_multipsx = NONE;
 
 static u8 mount_app_home = false; // force mount JB folder in /app_home (false = use webman_config->app_home)
 
@@ -41,7 +41,7 @@ typedef struct
 #define MOUNT_NORMAL	1	// mount game/folder + store last game + show msg + allow Auto-enable external gameDATA
 // MOUNT_EXT_GDATA		2	// mount /dev_usb/GAMEI as /dev_hdd0/game on non-Cobra edition
 // EXPLORE_CLOSE_ALL	3	// MOUNT_NORMAL + close all first
-
+#define MOUNT_NEXT_CD	4	// MOUNT_NORMAL + mount next CD (PSXISO)
 
 // /mount_ps3/<path>[?random=<x>[&emu={ ps1_netemu.self / ps1_emu.self / ps2_netemu.self / ps2_emu.self }][offline={0/1}]
 // /mount.ps3/<path>[?random=<x>[&emu={ ps1_netemu.self / ps1_emu.self / ps2_netemu.self / ps2_emu.self }][offline={0/1}]
@@ -937,7 +937,7 @@ static void do_umount(bool clean)
 	root_check = true;
 #endif
 
-	check_multipsx = -1;
+	check_multipsx = NONE;
 
 	cellFsUnlink("/dev_hdd0/tmp/game/ICON0.PNG"); // remove XMB disc icon
 
@@ -1246,10 +1246,12 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 	{
 		if(isDir("/dev_usb000") == check_multipsx)
 		{
-			check_multipsx = 0;
+			check_multipsx = NONE;
 			show_msg(STR_GAMEUM); play_rco_sound("snd_trophy");
-			wait_for("/dev_usb000", 5);
-			mount_game("_next", MOUNT_NORMAL);
+
+			wait_for("/dev_usb000", 5); // wait for user reinsert the USB device
+
+			mount_game("_next", MOUNT_NEXT_CD);
 		}
 	}
 }

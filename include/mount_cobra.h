@@ -114,11 +114,13 @@
 				if(islike(ntfs_ext, ".ntfs[PSXISO]") || (!strstr(_path, "[raw]")))
 	#endif
 				{
-					u8 n;
+					if(multiCD) check_multipsx = !isDir("/dev_usb000"); // check eject/insert USB000 in mount_on_insert_usb()
+
 					const char *rawseciso_sprx[4] = { WM_RES_PATH "/raw_iso.sprx",
 													  VSH_MODULE_DIR "raw_iso.sprx",
 													  WMTMP "/res/sman.ntf" };
 
+					u8 n;
 					for(n = 0; n < 4; n++)
 						if(file_exists(rawseciso_sprx[n])) break;
 
@@ -640,7 +642,7 @@
 
 				else if(strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || mount_unk == EMU_PSX)
 				{
-					ret = mount_ps_disc_image(_path, cobra_iso_list, 1, EMU_PSX); if(multiCD) check_multipsx = !isDir("/dev_usb000");
+					ret = mount_ps_disc_image(_path, cobra_iso_list, 1, EMU_PSX); if(multiCD) check_multipsx = !isDir("/dev_usb000"); // check eject/insert USB000 in mount_on_insert_usb()
 				}
 
 				// -------------------

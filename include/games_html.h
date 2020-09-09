@@ -225,6 +225,14 @@ static int check_content_type(u8 f1)
 	return CELL_OK;
 }
 
+static char *is_multi_cd(const char *name)
+{
+	char  *p = strstr(name, "CD");
+	if(!p) p = strstr(name, "Vol");
+	if(!p) p = strstr(name, "Disc");
+	return p;
+}
+
 static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 {
 	bool is_html = (key <= HTML_KEY);
@@ -260,9 +268,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	char *p = NULL, *nm = templn + 5;
 	if(f1 > id_PS3ISO)
 	{
-		       p = strstr(nm, "CD");
-		if(!p) p = strstr(nm, "Vol");
-		if(!p) p = strstr(nm, "Disc");
+		p = is_multi_cd(nm);
 		if( p) {while(*p && !ISDIGIT(*p)) ++p;}
 	}
 	if( p)

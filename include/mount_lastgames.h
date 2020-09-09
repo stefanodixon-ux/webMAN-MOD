@@ -31,7 +31,14 @@
 
 			sprintf(_path, "%s", lastgames.game[lastgames.last].path);
 
-			multiCD = strstr(_path, "CD") || strstr(_path, "Vol") || strstr(_path, "Disc");
+			multiCD = is_multi_cd(_path);
+
+			if(action == MOUNT_NEXT_CD)
+			{
+				action = MOUNT_NORMAL;
+
+				if(!multiCD) goto mounting_done;
+			}
 		}
 		else
 		if(lastgames.last >= MAX_LAST_GAMES)
@@ -43,12 +50,9 @@
 		{
 			// multi-CD
 			char multi[STD_PATH_LEN]; snprintf(multi, STD_PATH_LEN, "%s", _path);
-			char     *mcd = strstr(multi, "CD");   if(mcd) mcd += 2;
-			if(!mcd) {mcd = strstr(multi, "Vol");  if(mcd) mcd += 3;}
-			if(!mcd) {mcd = strstr(multi, "Disc"); if(mcd) mcd += 4;}
+			char *mcd = is_multi_cd(multi);
 
 			u8 n;
-
 			for(n = 0; n < MAX_LAST_GAMES; n++)
 			{
 				if(IS(lastgames.game[n].path, _path)) break;
@@ -64,7 +68,12 @@
 				if(mcd)
 				{
 					int n = lastgames.last;
+
+					if(*mcd == 'C') mcd += 2;
+					if(*mcd == 'V') mcd += 3;
+					if(*mcd == 'D') mcd += 4;
 					while(*mcd == ' ') mcd++;
+
 					while(ISDIGIT(*mcd))
 					{
 						++mcd[0]; // next CD
