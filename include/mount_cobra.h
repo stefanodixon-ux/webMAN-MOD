@@ -409,6 +409,18 @@
 																				RETROARCH_DIR1 "/USRDIR/cores" :
 																				RETROARCH_DIR2 "/USRDIR/cores" );
 					}
+
+					else if(islike(netpath, "/GAMEI/"))
+					{
+						wait_for("/dev_bdvd", 15);
+						sys_map_path(APP_HOME_DIR, "/dev_bdvd");
+
+						sys_ppu_thread_sleep(1);
+						launch_app_home_icon();
+
+						mount_unk = EMU_GAMEI;
+						goto exit_mount;
+					}
 #ifdef PKG_HANDLER
 					else if(!(webman_config->auto_install_pkg) && (pkg_slash != NULL))
 					{

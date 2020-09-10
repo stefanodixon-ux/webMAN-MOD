@@ -113,7 +113,16 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		if(not_exists(templn))
 		{
 			if(data[v3_entry].is_directory)
-				sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
+			{
+				if(IS_GAMEI_FOLDER)
+					sprintf(enc_dir_name, "%s/%s/PARAM.SFO", param, data[v3_entry].name);
+				else
+					sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
+				copy_net_file(templn, enc_dir_name, ns, COPY_WHOLE_FILE);
+
+				strcpy(templn + strlen(templn) - 4, ".png");
+				strcpy(enc_dir_name + strlen(enc_dir_name) - 9, "ICON0.PNG");
+			}
 			else
 			{
 				get_name(tempstr, data[v3_entry].name, NO_EXT);
@@ -594,14 +603,14 @@ list_games:
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
 				//if(IS_PS2_FOLDER && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
-				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || is_net || (IS_HDD0) || (IS_NTFS)) continue;}
+				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
 				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
 #ifdef NET_SUPPORT
 				if(is_net)
 				{
-					if(f1 >= id_ISO) break; // ignore 9="ISO", 10="video", 11="GAMEI"
+					if(f1 >= id_ISO) f1 = id_GAMEI; // ignore 9="ISO", 10="video"
 				}
 #endif
 				if(b0) {if((b0 == 2) && (f0 < NET)); else if((b0 == 3) && (!IS_NTFS)); else if(filter0 != f0) continue;}

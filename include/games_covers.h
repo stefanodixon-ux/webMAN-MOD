@@ -545,7 +545,7 @@ static int get_title_and_id_from_sfo(char *templn, char *title_id, const char *e
 	// get titleID & title from PARAM.SFO
 	if(is_sfo(mem))
 	{
-		if(islike(templn + 11, "/GAMEI/")) use_filename = false;
+		if(islike(templn + 11, "/GAMEI/") || strstr(templn, "_00-")) use_filename = false;
 
 		parse_param_sfo(mem, title_id, templn, (u16)sfo_size);
 

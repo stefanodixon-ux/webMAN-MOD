@@ -10,7 +10,7 @@
 	#ifdef MOUNT_GAMEI
 	{
 		char *pos = strstr(_path, "/GAMEI/");
-		if(pos)
+		if(pos && !islike(_path, "/net"))
 		{
 			int tid_offset = 7; // folder is title_id
 			char *slash = strstr(pos + tid_offset, "/"); if(slash) *slash = 0;

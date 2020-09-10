@@ -442,7 +442,7 @@ scan_roms:
 				if(key >= max_xmb_items) break;
 
 				//if(IS_PS2_FOLDER && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
-				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || is_net || (IS_HDD0) || (IS_NTFS)) continue;}
+				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
 				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
@@ -451,7 +451,7 @@ scan_roms:
 #ifdef NET_SUPPORT
 				if(is_net)
 				{
-					if(f1 >= id_ISO) break; // ignore 9="ISO", 10="video", 11="GAMEI"
+					if(f1 >= id_ISO) f1 = id_GAMEI; // ignore 9="ISO", 10="video"
 				}
 #endif
 				if(check_content_type(f1)) continue;
