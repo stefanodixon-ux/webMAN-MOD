@@ -391,7 +391,7 @@ int main(int argc, const char* argv[])
 
 			if(strcasestr(path, "/ROMS/LUA/"))        sprintf(path, "%s/lutro%s",      RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/ZX81/"))       sprintf(path, "%s/81%s",         RETROARCH, sufix[i]);    else
-			if(strcasestr(path, "/ROMS/FUSE/"))       sprintf(path, "%s/	",       RETROARCH, sufix[i]);    else
+			if(strcasestr(path, "/ROMS/FUSE/"))       sprintf(path, "%s/fuse%s",       RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/GW/"))         sprintf(path, "%s/gw%s",         RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/O2EM"))        sprintf(path, "%s/o2em%s",       RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/HANDY"))       sprintf(path, "%s/handy%s",      RETROARCH, sufix[i]);    else
