@@ -542,6 +542,12 @@ int main()
 	// crossdomain.xml
 	file_copy(APP_USRDIR "/html/crossdomain.xml", XMLHOST_DIR "/crossdomain.xml");
 
+	// temperature monitor
+	file_copy(APP_USRDIR "/html/gauge.min.js", XMLHOST_DIR "/gauge.min.js");
+	file_copy(APP_USRDIR "/html/temp.js",      XMLHOST_DIR "/temp.js");
+	file_copy(APP_USRDIR "/html/tempc.html",   XMLHOST_DIR "/tempc.html");
+	file_copy(APP_USRDIR "/html/tempf.html",   XMLHOST_DIR "/tempf.html");
+
 	// fb.xml
 	if(is_ps3hen() == 0x1337)
 	{

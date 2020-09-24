@@ -722,12 +722,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
 											"<hr>%s", enc_dir_name, wm_icons[iPS2], 300, mounted ? STR_PS2LOADED : STR_ERROR);
 				}
-				else if(((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && is_ext(param, ".iso")))
+				else if((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && is_ext(param, ".iso"))
 				{
+#ifndef ENGLISH_ONLY
 					char *STR_PSPLOADED = buf; //[232]; //	= "Game loaded successfully. Start the game using <b>PSP Launcher</b>.<hr>";
 					sprintf(STR_PSPLOADED,   "Game %s%s%s</b>.<hr>",
 											 "loaded successfully. Start the ", "game using <b>", "PSP Launcher");
-#ifndef ENGLISH_ONLY
 					language("STR_PSPLOADED", STR_PSPLOADED, STR_PSPLOADED);
 #endif
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
@@ -948,8 +948,9 @@ static void do_umount(bool clean)
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
 		cobra_unset_psp_umd(); // eject PSPISO
+ #ifndef LITE_EDITION
 		swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original"); // restore original psp_emulator.self
-
+ #endif
 		do_umount_iso();	// unmount iso
  #ifdef PS2_DISC
 		do_umount_ps2disc(false); // unmount ps2disc

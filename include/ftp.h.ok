@@ -35,25 +35,7 @@ static u8 ftp_session = 1;
 
 static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 {
-	if(*path == '/')
-	{
-		strcpy(absPath_s, path);
-		filepath_check(absPath_s);
-
-		if(islike(absPath_s, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); return 1;}
-		if(islike(absPath_s, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
-
-		if(not_exists(absPath_s))
-			for(u8 i = 0; i < MAX_DRIVES; i++)
-			{
-				if(i == NET) i = NTFS + 1;
-				sprintf(absPath_s, "%s/%s", drives[i], path);
-				filepath_check(absPath_s);
-				if(file_exists(absPath_s)) return 0;
-			}
-		else
-			return 0;
-	}
+	if(*path == '/') strcpy(absPath_s, path);
 	else
 	{
 		u16 len = sprintf(absPath_s, "%s", cwd);
@@ -64,6 +46,9 @@ static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 	}
 
 	filepath_check(absPath_s);
+
+	if(islike(absPath_s, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); return 1;}
+	if(islike(absPath_s, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
 
 	return 0;
 }
@@ -296,9 +281,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										{
 											if(read_e)
 											{
-												#ifdef UNLOCK_SAVEDATA
-												if(webman_config->unlock_savedata && (read_e < 8192)) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
-												#endif
 												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) break; // FAILED
 											}
 											else
@@ -410,9 +392,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											read_e = (int)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
 											if(read_e > 0)
 											{
-												#ifdef UNLOCK_SAVEDATA
-												if(webman_config->unlock_savedata && (read_e < 8192)) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
-												#endif
 												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break; // FAILED
 											}
 											else if(read_e < 0)
@@ -730,9 +709,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 						mode_t mode = NULL; char dirtype[2]; dirtype[1] = NULL;
 
-						u16 d_path_len = sprintf(filename, "%s/", d_path);
+						size_t d_path_len = sprintf(filename, "%s/", d_path);
 						bool is_root = (d_path_len < 6); if(is_root) d_path_len = sprintf(filename, "/");
-						char *path_file = filename + d_path_len;
 
 #ifdef USE_NTFS
 						DIR_ITER *pdir = NULL;
@@ -785,7 +763,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									{
 										if(is_root && IS(entry_name, "host_root")) continue;
 
-										sprintf(path_file, "%s", entry_name);
+										sprintf(filename + d_path_len, "%s", entry_name);
 
 										if(is_root)
 										{
@@ -1196,7 +1174,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						else
 						if(_IS(cmd, "COPY"))
 						{
-							show_status(STR_COPYING, filename);
+							sprintf(buffer, "%s %s", STR_COPYING, filename);
+							show_msg(buffer);
 
 							absPath(source, filename, cwd);
 							ssend(conn_s_ftp, FTP_OK_200); // The requested action has been successfully completed.
@@ -1218,7 +1197,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								else
 									file_copy(source, param, COPY_WHOLE_FILE);
 
-								show_msg(STR_CPYFINISH);
+								show_msg((char*)STR_CPYFINISH);
 								copy_in_progress = false;
 							}
 							else
@@ -1231,7 +1210,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						else
 						if(*param == '/')
 						{
-							save_file(WMREQUEST_FILE, param, SAVE_ALL);
+							u16 size = sprintf(buffer, "GET %s", param);
+							save_file(WMREQUEST_FILE, buffer, size);
 
 							do_custom_combo(WMREQUEST_FILE);
 
@@ -1378,11 +1358,11 @@ relisten:
 	{
 		while(working)
 		{
-			sys_ppu_thread_usleep(ftp_active ? 5000 : 50000);
+			sys_ppu_thread_usleep(50000);
+			int conn_s_ftp;
 			if(!working || !ftp_working) break;
 			if(ftp_active > MAX_FTP_THREADS) continue;
 
-			int conn_s_ftp;
 			if(sys_admin && ((conn_s_ftp = accept(list_s, NULL, NULL)) >= 0))
 			{
 				sys_ppu_thread_t t_id;

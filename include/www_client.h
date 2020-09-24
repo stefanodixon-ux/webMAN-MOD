@@ -765,6 +765,26 @@ parse_request:
 			{
 				sprintf(param, "%s%s", HTML_BASE_PATH, "/crossdomain.xml");
 			}
+			else
+			if(islike(param, "/tempc.html") || islike(param, "/tempf.html"))
+			{
+				u8 t1 = 0, t2 = 0;
+				get_temperature(0, &t1); // CPU // 3E030000 -> 3E.03°C -> 62.(03/256)°C
+				get_temperature(1, &t2); // RSX
+
+				u8 st, mode, unknown;
+				sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
+
+				sprintf(header, "%s%s", HTML_BASE_PATH, param); strcpy(param, header);
+
+				sprintf(header, "function setGaugeValues(){"
+								"cpu=%i;"
+								"rsx=%i;"
+								"fan=%i;"
+								"}", t1, t2, fan_speed * 100 / 255);
+
+				save_file(HTML_BASE_PATH "/temp.js", header, SAVE_ALL);
+			}
 
  #ifdef SYS_ADMIN_MODE
 			if(islike(param, "/admin.ps3"))

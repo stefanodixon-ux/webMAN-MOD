@@ -66,14 +66,12 @@ static void show_status(const char *label, const char *status)
 	show_msg(msg);
 }
 
-#ifndef LITE_EDITION
 static void play_rco_sound(const char *sound)
 {
 	char *system_plugin = (char*)"system_plugin";
 	char *sep = strchr(sound, '|'); if(sep) {*sep = NULL, system_plugin = sep + 1;}
 	PlayRCOSound((View_Find(system_plugin)), sound, 1, 0);
 }
-#endif
 
 static explore_plugin_interface *get_explore_interface(void)
 {

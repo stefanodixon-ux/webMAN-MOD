@@ -703,7 +703,6 @@ next_part:
 	return ret;
 }
 
-#ifdef COPY_PS3
 static void _file_copy(char *file1, char *file2)
 {
 	if(not_exists(file1)) return;
@@ -712,6 +711,7 @@ static void _file_copy(char *file1, char *file2)
 	dont_copy_same_size = true;  // restore default mode (assume file is already copied if existing file has same size)
 }
 
+#ifdef COPY_PS3
 static int folder_copy(const char *path1, char *path2)
 {
 	filepath_check(path2);

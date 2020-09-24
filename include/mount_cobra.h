@@ -515,6 +515,7 @@
 							}
 						}
 
+						#ifndef LITE_EDITION
 						// restore original psp_emulator.self (if it's swapped)
 						swap_file(PSP_EMU_PATH, "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original");
 
@@ -539,6 +540,7 @@
 								show_msg("MINIS.EDAT is decrypted!");
 							}
 						}
+						#endif
 
 						int result = cobra_set_psp_umd(iso_list[0], NULL, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png");
 
