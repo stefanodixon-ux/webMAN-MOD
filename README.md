@@ -1,5 +1,3 @@
-[![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
-
 # webMAN MOD - Fork of original webMAN plugin by Deank for Playstation 3
 
 __README IS STILL IN PROGRESS, IF YOU SEE ANY ERROR PLEASE TELL ME OR PUSH A COMMIT__
