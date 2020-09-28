@@ -1418,7 +1418,7 @@ static void mount_thread(u64 action)
 
 		if(IS_ON_XMB)
 		{
-			while(View_Find("explore_plugin") == 0) sys_ppu_thread_sleep(1); // wait for explore_plugin
+			wait_for_xmb(); // wait for explore_plugin
 
 			do_umount(false);
 			open_browser(url, 0);

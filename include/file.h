@@ -1151,6 +1151,15 @@ int wait_for(const char *path, u8 timeout)
 	return wait_path(path, timeout, true);
 }
 
+#define MAX_WAIT	30
+
+static u8 wait_for_xmb(void)
+{
+	u8 t = 0;
+	while(View_Find("explore_plugin") == 0) {if(++t > MAX_WAIT) break; sys_ppu_thread_sleep(1);}
+	return (t > MAX_WAIT); // true = timeout
+}
+
 //////////////////////////////////////////////////////////////
 
 /*

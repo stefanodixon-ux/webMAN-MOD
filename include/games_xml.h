@@ -1209,7 +1209,7 @@ static void update_xml_thread(u64 conn_s_p)
 	refreshing_xml = 1;
 
 	if(IS_ON_XMB)
-		while(View_Find("explore_plugin") == 0) sys_ppu_thread_sleep(1); // wait for explore_plugin
+		wait_for_xmb(); // wait for explore_plugin
 
 	if(scan_mygames_xml(conn_s_p)) mount_autoboot();
 

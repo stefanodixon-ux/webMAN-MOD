@@ -686,6 +686,12 @@ parse_request:
 					// check /play.ps3<path>
 					if(file_exists(param2))
 					{
+						if(wait_for_xmb())
+						{
+							keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, param);
+							goto exit_handleclient_www;
+						}
+
 						if(IS(param2, "/app_home"))
 						{
 							launch_app_home_icon();
@@ -1491,11 +1497,14 @@ parse_request:
 #endif
 			if(islike(param, "/wait.ps3"))
 			{
+				// /wait.ps3?xmb
 				// /wait.ps3?<secs>
 				// /wait.ps3/<path>
 
 				if(param[9] == '/')
 					wait_for(param + 9, 30);
+				else if(islike(param + 9, "?xmb"))
+					wait_for_xmb();
 				else
 					sys_ppu_thread_sleep(val(param + 10));
 
