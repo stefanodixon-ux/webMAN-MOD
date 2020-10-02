@@ -1338,7 +1338,7 @@ static bool mount_ret = false;
 static void mount_thread(u64 action)
 {
 	bool ret = false;
-	bool multiCD = false;
+	bool multiCD = false; // mount_lastgames.h
 
 	automount = 0;
 
