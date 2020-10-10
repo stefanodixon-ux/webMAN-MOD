@@ -262,6 +262,8 @@ int main(int argc, const char* argv[])
 
 		sprintf(param, "%s", path);
 
+		if(strstr(path, "/dev_bdvd/") == path) sprintf(path, "/ROMS/%s", param + 10);
+
 		char *RETROARCH;
 		for(int i = 0; i < 2; i++)
 		{
