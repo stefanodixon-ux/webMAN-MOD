@@ -1700,7 +1700,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20200708");
+	printf("ps3netsrv build 20201014");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");

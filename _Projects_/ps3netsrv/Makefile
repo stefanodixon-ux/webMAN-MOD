@@ -7,6 +7,8 @@ OBJS = src/main.o src/padlock.o src/aes.o src/compat.o src/File.o src/VIsoFile.o
 CFLAGS = -Wall -Wno-format -I./include -std=gnu99 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -DPOLARSSL
 CPPFLAGS += -Wall -Wno-format -I./include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -DPOLARSSL
 
+CPPFLAGS += -std=c++0x
+
 #CFLAGS += -Doff64_t=off_t
 #CPPFLAGS += -Doff64_t=off_t
 
@@ -36,8 +38,8 @@ LIBS += -lpthread
 endif
 
 ifeq ($(OS), windows)
-CFLAGS += -D_OS_WINDOWS
-CPPFLAGS += -D_OS_WINDOWS
+CFLAGS += -D_OS_WINDOWS -DWIN32
+CPPFLAGS += -D_OS_WINDOWS -DWIN32
 OBJS += src/scandir.o src/dirent.o
 CC = gcc
 CXX = g++
