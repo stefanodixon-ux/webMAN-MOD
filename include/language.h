@@ -398,6 +398,11 @@ static u32 get_system_language(u8 *lang)
 
 static u8 lang_roms = 0;
 
+static void close_language(void)
+{
+	if(fh) cellFsClose(fh); lang_roms = fh = 0;
+}
+
 static bool language(const char *key_name, char *label, const char *default_str)
 {
 	u64 bytes_read = 0;
@@ -408,6 +413,8 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 	u8 do_retry = 1;
 	char buffer[MAX_LINE_LEN];
+
+	if(!lang_roms) close_language();
 
  retry:
 
@@ -478,14 +485,9 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 	} while(lang_pos < size);
 
-	if(do_retry) {cellFsClose(fh); do_retry--, fh = lang_pos = 0; goto retry;}
+	if(do_retry) {cellFsClose(fh); fh = do_retry = lang_pos = 0; goto retry;}
 
 	return true;
-}
-
-static void close_language(void)
-{
-	if(fh) cellFsClose(fh); lang_roms = fh = 0;
 }
 
 #undef CHUNK_SIZE
