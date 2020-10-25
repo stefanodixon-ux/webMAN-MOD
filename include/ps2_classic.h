@@ -144,7 +144,7 @@ static void copy_ps2config(char *config, const char *_path)
 
 		if(strlen(title_id) == TITLE_ID_LEN)
 		{
-			sprintf(config, "%s%s/%.4s_%3s.%.2s.ENC", PS2CONFIG_PATH, "/CONFIG/ENC",
+			sprintf(config, "%s%s/%.4s_%.3s.%.2s.ENC", PS2CONFIG_PATH, "/CONFIG/ENC",
 							title_id,      // SLES, SLUS, SLPM, SLPS, SCES, SCUS, SCPS
 							title_id + 4,  // _000.00
 							title_id + 7); // SLxS00000

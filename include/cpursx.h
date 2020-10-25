@@ -203,8 +203,11 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 			}
 			else
 			{
+				max_temp = FAN_MANUAL;
 				webman_config->man_rate = RANGE(new_speed, webman_config->minfan, webman_config->maxfan);
+				webman_config->man_speed = (u8)(((float)(webman_config->man_rate + 1) * 255.f)/100.f); // manual fan speed
 				if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
+				set_fan_speed(webman_config->man_speed);
 			}
 		}
 		else if(webman_config->fanc || strstr(param, "?m"))

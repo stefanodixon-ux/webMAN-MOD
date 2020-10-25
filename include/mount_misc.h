@@ -17,6 +17,8 @@
 
 			if(strstr(pos + tid_offset, "_00-") == pos + 23) tid_offset += 7; // folder is content_id
 
+			do_umount(false);
+
 			sys_map_path(APP_HOME_DIR, _path);
 			if(isDir(PKGLAUNCH_DIR)) sys_map_path(PKGLAUNCH_DIR, _path);
 
@@ -70,6 +72,7 @@
 			ret = isDir(_path);
 		}
 
+		do_umount(false);
 		set_app_home(_path);
 
 		if(launch_app_home_icon()) ret = true;
