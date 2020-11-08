@@ -23,6 +23,7 @@ public:
 	Console(Console&&) = delete;
 	Console& operator=(const Console&) = delete;
 	Console& operator=(Console&&) = delete;
+	~Console() = default;
 
 	static Console& get(Color defaultColor = Color::Normal);
 
@@ -37,7 +38,6 @@ public:
 
 private:
 	explicit Console(Color defaultColor);
-	~Console() = default;
 
 	std::map<Color, int> colorMap;
 	Color textColor;

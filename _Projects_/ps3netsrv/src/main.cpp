@@ -1716,7 +1716,7 @@ int main(int argc, char *argv[])
 	Console& console = Console::get(Color::Normal);
 
 	// Show build number
-	console.print(Color::White, "ps3netsrv build 20201014");
+	console.print(Color::White, "ps3netsrv build 20201030");
 	console.print(Color::Red," (mod by aldostools)\n");
 
 #ifndef WIN32

@@ -43,16 +43,7 @@ static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 		if(islike(absPath_s, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); return 1;}
 		if(islike(absPath_s, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
 
-		if(not_exists(absPath_s))
-			for(u8 i = 0; i < MAX_DRIVES; i++)
-			{
-				if(i == NET) i = NTFS + 1;
-				sprintf(absPath_s, "%s/%s", drives[i], path);
-				filepath_check(absPath_s);
-				if(file_exists(absPath_s)) return 0;
-			}
-		else
-			return 0;
+		return 0;
 	}
 	else
 	{
@@ -61,6 +52,18 @@ static u8 absPath(char* absPath_s, const char* path, const char* cwd)
 		if(cwd[len - 1] != '/') strcat(absPath_s + len, "/");
 
 		strcat(absPath_s + len, path);
+
+		if(not_exists(absPath_s))
+		{
+			for(u8 i = 0; i < MAX_DRIVES; i++)
+			{
+				if(i == NET) i = NTFS + 1;
+				sprintf(absPath_s, "%s/%s", drives[i], path);
+				filepath_check(absPath_s);
+				if(file_exists(absPath_s)) return 0;
+			}
+			sprintf(absPath_s, "%s/%s", cwd, path);
+		}
 	}
 
 	filepath_check(absPath_s);
