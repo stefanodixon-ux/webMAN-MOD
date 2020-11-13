@@ -2115,10 +2115,24 @@ parse_request:
 			if(islike(param, "/fixgame.ps3"))
 			{
 				// /fixgame.ps3<path>  fix PARAM.SFO and EBOOT.BIN / SELF / SPRX in ISO or folder
+				// /fixgame.ps3<param_sfo>&attrib=<value>
 
-				// fix game folder
 				char *game_path = param + 12, titleID[10];
-				fix_game(game_path, titleID, FIX_GAME_FORCED);
+				char *attrib = strstr(game_path, "&attrib=");
+
+				if(attrib)
+				{
+					u32 attribute = get_valuen32(attrib, "&attrib="); *attrib = NULL;
+
+					char sfo[_4KB_];
+					u16 sfo_size = read_file(game_path, sfo, _4KB_, 0);
+					if(patch_param_sfo(game_path, (unsigned char *)sfo, sfo_size, attribute))
+					{
+						save_file(game_path, (void*)sfo, sfo_size);
+					}
+				}
+				else
+					fix_game(game_path, titleID, FIX_GAME_FORCED); // fix game folder
 
 				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
 				goto exit_handleclient_www;

@@ -860,7 +860,10 @@ static void setup_form(char *buffer, char *templn)
 	//add_checkbox("shh", "Offline [Lock PSN]", _BR_, (webman_config->spp & 2), buffer);
 	concat(buffer, " • Offline  : <select name=\"shh\">");
 	add_option_item(0, STR_DISABLED, !(webman_config->spp & 6), buffer);
-	add_option_item(1, "Lock PSN",    (webman_config->spp & 2), buffer);
+
+	if(!payload_ps3hen)
+		add_option_item(1, "Lock PSN",    (webman_config->spp & 2), buffer);
+
 	#ifdef OFFLINE_INGAME
 	add_option_item(2, STR_GAMES,     (webman_config->spp & 4), buffer);
 	#endif
