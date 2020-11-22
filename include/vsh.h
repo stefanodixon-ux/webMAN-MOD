@@ -50,23 +50,18 @@ static sys_memory_container_t get_vsh_memory_container(void)
 //------------
 /* Based on PHTNC's code to write VSH Notify notifications with icons */
 
-static int32_t getTexture(int32_t* texturePtr, uint32_t plugin, const char* textureName)
-{
-	return LoadRCOTexture(texturePtr, plugin, textureName);
-}
-
 static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 {
 	char* tex;
 	char* plugin;
 
-	int len = strlen(msg); if(len >= 200) return -1;
+	int len = strlen(msg); if(len >= 200) return FAILED;
 
 	wchar_t message[2 * len];
 
 	mbstowcs((wchar_t *)message, (const char *)msg, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
-	plugin = (char*)"system_plugin";
+	plugin = (icon_id >= 20) ? (char*)"explore_plugin" : (char*)"system_plugin";
 
 	switch (icon_id)
 	{
@@ -111,11 +106,11 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		break;
 
 	case 10:
-		tex = (char*)"tex_notification_trophy_gold";
+		tex = (char*)"tex_notification_trophy_silver";
 		break;
 
 	case 11:
-		tex = (char*)"tex_notification_trophy_silver";
+		tex = (char*)"tex_notification_trophy_gold";
 		break;
 
 	case 12:
@@ -154,37 +149,30 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 
 	case 20:
 		tex = (char*)"tex_Signing_In";
-		plugin = (char*)"explore_plugin";
 		break;
 
 	case 21:
 		tex = (char*)"tex_new_ws";
-		plugin = (char*)"explore_plugin";
 		break;
 
 	case 22:
 		tex = (char*)"tex_check_ws";
-		plugin = (char*)"explore_plugin";
 		break;
 
 	case 23:
 		tex = (char*)"tex_urgent_ws";
-		plugin = (char*)"explore_plugin";
 		break;
 
 	case 24:
 		tex = (char*)"item_tex_cam_facebook";
-		plugin = (char*)"explore_plugin";
 		break;
 
 	case 25:
 		tex = (char*)"item_tex_Profile_LevelIcon";
-		plugin = (char*)"explore_plugin";
 		break;
 
 	case 26:
 		tex = (char*)"item_tex_ps_store";
-		plugin = (char*)"explore_plugin";
 		break;
 
 	default:
@@ -192,13 +180,13 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		break;
 	}
 
-	int teximg, dummy = 0;
 	uint32_t _plugin = View_Find(plugin);
 	if (_plugin <= 0)
-		return -1;
+		return FAILED;
 
-	getTexture(&teximg, _plugin, tex);
-	return vshcommon_A20E43DB(0, "sceNpCommerce", 0, &teximg, &dummy, "", "", 0, message, 0, 0, 0);
+	int teximg, dummy = 0;
+	LoadRCOTexture(&teximg, _plugin, tex);
+	return vshcommon_A20E43DB(0, tex, 0, &teximg, &dummy, "", "", 0, message, 0, 0, 0);
 }
 //------------
 
@@ -208,7 +196,7 @@ static void show_msg(const char *text)
 	//	vshtask_notify = getNIDfunc("vshtask", 0xA02D46E7, 0);
 	//if(!vshtask_notify) return;
 
-	char msg[199];
+	char msg[200];
 	snprintf(msg, 199, "%s", text);
 
 	u8 icon_id = 0;
@@ -221,9 +209,9 @@ static void show_msg(const char *text)
 
 static void show_status(const char *label, const char *status)
 {
-	char msg[199];
+	char msg[200];
 	snprintf(msg, 199, "%s %s", label, status);
-	show_msg(msg);
+	vshtask_notify(msg);
 }
 
 static void play_rco_sound(const char *sound)
@@ -448,7 +436,7 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 	}
 }
 
-static int has_app_home = -1;
+static int has_app_home = NONE;
 
 static bool is_app_home_onxmb(void)
 {
