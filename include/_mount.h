@@ -862,10 +862,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				// show msg end
 				if(copy_aborted)
-					show_msg(STR_CPYABORT);
+					vshNotify_WithIcon(7, STR_CPYABORT);
 				else
 				{
-					show_msg(STR_CPYFINISH);
+					vshNotify_WithIcon(7, STR_CPYFINISH);
 					if(do_restart) { del_turnoff(2); vsh_reboot();}
 				}
 
@@ -1061,7 +1061,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 			if(copy_aborted)
 			{
 				cellFsUnlink(target);
-				show_msg(STR_CPYABORT);
+				vshNotify_WithIcon(7, STR_CPYABORT);
 			}
 			else if(webman_config->deliso)
 			{

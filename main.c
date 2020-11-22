@@ -79,6 +79,7 @@
 #include "vsh/vsh.h"
 #include "vsh/vshnet.h"
 #include "vsh/vshmain.h"
+#include "vsh/vshcommon.h"
 #include "vsh/vshtask.h"
 #include "vsh/explore_plugin.h"
 #include "vsh/paf.h"

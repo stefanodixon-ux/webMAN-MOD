@@ -47,6 +47,161 @@ static sys_memory_container_t get_vsh_memory_container(void)
 	return vsh_memory_container_by_id(webman_config->vsh_mc);
 }
 
+//------------
+/* Based on PHTNC's code to write VSH Notify notifications with icons */
+
+static int32_t getTexture(int32_t* texturePtr, uint32_t plugin, const char* textureName)
+{
+	return LoadRCOTexture(texturePtr, plugin, textureName);
+}
+
+static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
+{
+	char* tex;
+	char* plugin;
+
+	int len = strlen(msg); if(len >= 200) return -1;
+
+	wchar_t message[2 * len];
+
+	mbstowcs((wchar_t *)message, (const char *)msg, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
+
+	plugin = (char*)"system_plugin";
+
+	switch (icon_id)
+	{
+	case 0:
+		tex = (char*)"tex_notification_info";
+		break;
+
+	case 1:
+		tex = (char*)"tex_notification_friend";
+		break;
+
+	case 2:
+		tex = (char*)"tex_notification_headset";
+		break;
+
+	case 3:
+		tex = (char*)"tex_notification_caution";
+		break;
+
+	case 4:
+		tex = (char*)"tex_notification_keypad";
+		break;
+
+	case 5:
+		tex = (char*)"tex_notification_mediasever";
+		break;
+
+	case 6:
+		tex = (char*)"tex_notification_music";
+		break;
+
+	case 7:
+		tex = (char*)"tex_notification_psbutton_insensitive";
+		break;
+
+	case 8:
+		tex = (char*)"tex_notification_settings";
+		break;
+
+	case 9:
+		tex = (char*)"tex_notification_trophy_bronze";
+		break;
+
+	case 10:
+		tex = (char*)"tex_notification_trophy_gold";
+		break;
+
+	case 11:
+		tex = (char*)"tex_notification_trophy_silver";
+		break;
+
+	case 12:
+		tex = (char*)"tex_notification_trophy_platinum";
+		break;
+
+	case 13:
+		tex = (char*)"tex_pointer_hand";
+		break;
+
+	case 14:
+		tex = (char*)"tex_pointer_pen";
+		break;
+
+	case 15:
+		tex = (char*)"tex_pointer_arrow";
+		break;
+
+	case 16:
+		tex = (char*)"tex_pointer_grab";
+		break;
+
+	case 17:
+		tex = (char*)"tex_arrow_right";
+		break;
+
+	case 18:
+		tex = (char*)"tex_psn";
+		plugin = (char*)"xmb_plugin";
+		break;
+
+	case 19:
+		tex = (char*)"tex_indi_plus";
+		plugin = (char*)"xmb_plugin";
+		break;
+
+	case 20:
+		tex = (char*)"tex_Signing_In";
+		plugin = (char*)"explore_plugin";
+		break;
+
+	case 21:
+		tex = (char*)"tex_new_ws";
+		plugin = (char*)"explore_plugin";
+		break;
+
+	case 22:
+		tex = (char*)"tex_check_ws";
+		plugin = (char*)"explore_plugin";
+		break;
+
+	case 23:
+		tex = (char*)"tex_urgent_ws";
+		plugin = (char*)"explore_plugin";
+		break;
+
+	case 24:
+		tex = (char*)"item_tex_cam_facebook";
+		plugin = (char*)"explore_plugin";
+		break;
+
+	case 25:
+		tex = (char*)"item_tex_Profile_LevelIcon";
+		plugin = (char*)"explore_plugin";
+		break;
+
+	case 26:
+		tex = (char*)"item_tex_ps_store";
+		plugin = (char*)"explore_plugin";
+		break;
+
+	default:
+		tex = (char*)"tex_notification_info";
+		break;
+	}
+
+	int teximg, dummy = 0;
+	uint32_t _plugin = View_Find(plugin);
+	if (_plugin <= 0)
+		return -1;
+
+	getTexture(&teximg, _plugin, tex);
+	return vshcommon_A20E43DB(0, "sceNpCommerce", 0, &teximg, &dummy, "", "", 0, message, 0, 0, 0);
+}
+//------------
+
 static void show_msg(const char *text)
 {
 	//if(!vshtask_notify)
@@ -56,7 +211,12 @@ static void show_msg(const char *text)
 	char msg[199];
 	snprintf(msg, 199, "%s", text);
 
-	vshtask_notify(msg);
+	u8 icon_id = 0;
+	char *param = strstr(msg, "&icon=");
+	if(param)
+		{icon_id = (u8)val(param + 6); *param = NULL; vshNotify_WithIcon(icon_id, msg);}
+	else
+		vshtask_notify(msg);
 }
 
 static void show_status(const char *label, const char *status)

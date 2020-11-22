@@ -148,7 +148,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 	if(syscalls_removed)
 	{
 		if(!webman_config->nobeep) { BEEP2 }
-		show_msg(STR_CFWSYSALRD);
+		vshNotify_WithIcon(20, STR_CFWSYSALRD);
 	}
 	else
 	{
@@ -213,7 +213,7 @@ static void block_online_servers(bool notify)
 	{
 		if(IS_INGAME) return; // not in XMB
 
-		if(notify) show_msg("Blocking PSN servers");
+		if(notify) vshNotify_WithIcon(18, "Blocking PSN servers");
 
 		#ifdef COBRA_ONLY
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
@@ -286,6 +286,6 @@ static void block_online_servers(bool notify)
 
 	if(notify)
 	{
-		if(url_count > 0) show_msg("PSN servers blocked");
+		if(url_count > 0) vshNotify_WithIcon(18, "PSN servers blocked");
 	}
 }

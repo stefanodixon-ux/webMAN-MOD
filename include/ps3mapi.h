@@ -292,10 +292,12 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
+	u8 icon_id = (u8)get_valuen32(param, "&icon=");
+
 	char msg[200]; strcpy(msg, "Hello :)");
 	if(get_param("?msg=", msg, param, 199))
 	{
-		show_msg(msg);
+		vshNotify_WithIcon(icon_id, msg);
 	}
 
 	if(!is_ps3mapi_home)
@@ -308,10 +310,14 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 	concat(buffer, templn);
 
 	sprintf(templn, HTML_FORM_METHOD_FMT("/notify")
-					"<table width=\"800\"><tr><td class=\"la\">"
-					"<textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea></td></tr>"
-					"<tr><td class=\"ra\"><br><input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr></table></form>",
-					HTML_FORM_METHOD, msg, "Send");
+					"<table width=\"800\">"
+					"<tr><td class=\"la\"><textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea>"
+					"<br>Icon (0-26): " HTML_NUMBER("icon", "%i", "0", "26")
+					"</td></tr>"
+					"<tr><td class=\"ra\">"
+					"<input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr>"
+					"</table></form>",
+					HTML_FORM_METHOD, msg, icon_id, "Send");
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "</td>");
 	concat(buffer, templn);
@@ -1800,7 +1806,7 @@ static void ps3mapi_thread(__attribute__((unused)) u64 arg)
 end:
 		sclose(&list_s);
 	}
-	else show_msg((char *)"PS3MAPI Server not loaded!");
+	else vshNotify_WithIcon(23, (char *)"PS3MAPI Server not loaded!");
 
 	sys_ppu_thread_exit(0);
 }

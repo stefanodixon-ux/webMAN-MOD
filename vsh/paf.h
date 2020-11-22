@@ -35,7 +35,8 @@ extern void paf_B93AFE7E(uint32_t plugin, const char *sound, float arg1, int arg
 #define PlayRCOSound paf_B93AFE7E
 //Example: PlayRCOSound( FindLoadedPlugin("system_plugin"), "snd_trophy", 1, 0)
 
-extern uint32_t *paf_3A8454FC(uint32_t* texture, uint32_t plugin, const char *texture_name);
+extern uint32_t paf_3A8454FC(int32_t* texptr, uint32_t plugin, const char* name); // return the texture address (atleast that's what i imagine what it does) by plugin name and texture name.
+//extern uint32_t *paf_3A8454FC(uint32_t* texture, uint32_t plugin, const char *texture_name);
 #define LoadRCOTexture paf_3A8454FC
 
 //void(*vshcommon_A20E43DB)(int32_t, const char* eventName, int32_t, int32_t* texture, int32_t*, const char*, const char*, float, const wchar_t* text, int32_t, int32_t, int32_t);

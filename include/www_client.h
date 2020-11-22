@@ -1379,9 +1379,11 @@ parse_request:
 				// /popup.ps3
 				// /popup.ps3&snd=<id>
 				// /popup.ps3?<msg>
+				// /popup.ps3?<msg>&icon=<id>
 				// /popup.ps3*<msg>
 				// /popup.ps3?<msg>&snd=<id>
 				// /popup.ps3*<msg>&snd=<id>
+				// /popup.ps3?<msg>&icon=<id>&snd=<id>
 
 				#ifdef PS3MAPI
 				char *snd = strstr(param, "&snd=");
