@@ -52,16 +52,10 @@ static sys_memory_container_t get_vsh_memory_container(void)
 
 static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 {
-	char* tex;
-	char* plugin;
+	char *tex;
+	char *plugin;
 
-	int len = strlen(msg); if(len >= 200) return FAILED;
-
-	wchar_t message[2 * len];
-
-	mbstowcs((wchar_t *)message, (const char *)msg, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
-
-	plugin = (icon_id >= 20) ? (char*)"explore_plugin" : (char*)"system_plugin";
+	plugin = (icon_id >= 18) ? (char*)"explore_plugin" : (char*)"system_plugin";
 
 	switch (icon_id)
 	{
@@ -137,14 +131,13 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		tex = (char*)"tex_arrow_right";
 		break;
 
+	// explore_plugin icons
 	case 18:
 		tex = (char*)"tex_psn";
-		plugin = (char*)"xmb_plugin";
 		break;
 
 	case 19:
-		tex = (char*)"tex_indi_plus";
-		plugin = (char*)"xmb_plugin";
+		tex = (char*)"tex_psplus_icon";
 		break;
 
 	case 20:
@@ -164,7 +157,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		break;
 
 	case 24:
-		tex = (char*)"item_tex_cam_facebook";
+		tex = (char*)"item_tex_cam_icon";
 		break;
 
 	case 25:
@@ -175,14 +168,135 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		tex = (char*)"item_tex_ps_store";
 		break;
 
+	case 27:
+		tex = (char*)"tex_album_icon";
+		break;
+
+	case 28:
+		tex = (char*)"item_tex_Players";
+		break;
+
+	case 29:
+		tex = (char*)"item_tex_NewFriend";
+		break;
+
+	case 30:
+		tex = (char*)"tex_music";
+		break;
+
+	case 31:
+		tex = (char*)"tex_photo";
+		break;
+
+	case 32:
+		tex = (char*)"tex_video";
+		break;
+
+	case 33:
+		tex = (char*)"tex_game";
+		break;
+
+	case 34:
+		tex = (char*)"tex_lock_icon";
+		break;
+
+	case 35:
+		tex = (char*)"tex_indi_Sign_out";
+		break;
+
+	case 36:
+		tex = (char*)"tex_indi_Message";
+		break;
+
+	case 37:
+		tex = (char*)"tex_Message_Sent";
+		break;
+
+	case 38:
+		tex = (char*)"item_tex_CardBallon";
+		break;
+
+	case 39:
+		tex = (char*)"friend_tex_load";
+		break;
+
+	case 40:
+		tex = (char*)"tex_Avatar_Default";
+		break;
+
+	case 41:
+		tex = (char*)"item_tex_disc_bd"; //PS3
+		break;
+
+	case 42:
+		tex = (char*)"item_tex_disc_icon"; //CD
+		break;
+
+	case 43:
+		tex = (char*)"item_tex_disc_cd_ps2"; //PS2
+		break;
+
+	case 44:
+		tex = (char*)"item_tex_disc_ps1"; //PSX
+		break;
+
+	case 45:
+		tex = (char*)"item_tex_disc_bd_contents"; //BD
+		break;
+
+	case 46:
+		tex = (char*)"item_tex_disc_dvd"; //DVD
+		break;
+
+	case 47:
+		tex = (char*)"game_tex_disc_unknown";
+		break;
+
+	case 48:
+		tex = (char*)"item_tex_psp_icon";
+		break;
+
+	case 49:
+		tex = (char*)"tex_indi_AFK";
+		break;
+
+	case 50:
+		tex = (char*)"tex_go_game";
+		break;
+
 	default:
 		tex = (char*)"tex_notification_info";
+		plugin = (char*)"system_plugin";
 		break;
+	}
+
+	// custom textures
+	char rco[24], texture[64];
+	char *pos = strstr(msg, "&icon=");
+	if(pos)
+	{
+		if(get_param("&icon=", texture, pos, 63))
+		{
+			tex = (char*)texture;
+			plugin = (char*)"explore_plugin";
+
+			if(get_param("&rco=", rco, pos, 23))
+			{
+				plugin = (char*)rco;
+			}
+		}
+		*pos = NULL;
 	}
 
 	uint32_t _plugin = View_Find(plugin);
 	if (_plugin <= 0)
 		return FAILED;
+
+	int len = strlen(msg); if(len >= 200) return FAILED;
+
+	wchar_t message[2 * len];
+
+	mbstowcs((wchar_t *)message, (const char *)msg, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
 	int teximg, dummy = 0;
 	LoadRCOTexture(&teximg, _plugin, tex);
@@ -199,10 +313,16 @@ static void show_msg(const char *text)
 	char msg[200];
 	snprintf(msg, 199, "%s", text);
 
-	u8 icon_id = 0;
 	char *param = strstr(msg, "&icon=");
 	if(param)
-		{icon_id = (u8)val(param + 6); *param = NULL; vshNotify_WithIcon(icon_id, msg);}
+	{
+		u8 icon_id = (u8)val(param + 6);
+
+		if(param[6] == '0' || icon_id)
+			*param = NULL;
+
+		vshNotify_WithIcon(icon_id, msg);
+	}
 	else
 		vshtask_notify(msg);
 }

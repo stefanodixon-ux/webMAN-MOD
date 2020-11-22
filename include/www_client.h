@@ -1384,6 +1384,8 @@ parse_request:
 				// /popup.ps3?<msg>&snd=<id>
 				// /popup.ps3*<msg>&snd=<id>
 				// /popup.ps3?<msg>&icon=<id>&snd=<id>
+				// /popup.ps3?<msg>&icon=<rsc_icon> (e.g. /popup.ps3?Hello&icon=item_tex_cam_facebook)
+				// /popup.ps3?<msg>&icon=<rsc_icon>&rco=<plugin_name> (e.g. /popup.ps3?Hello&icon=item_tex_NewAvc&rco=explore_plugin)
 
 				#ifdef PS3MAPI
 				char *snd = strstr(param, "&snd=");

@@ -743,6 +743,8 @@
 				sprintf(title_id, "TEST00000");
 
 			cobra_map_game(_path, title_id, mount_app_home | !(webman_config->app_home));
+
+			mount_unk = EMU_PS3;
 		}
 
 		//goto exit_mount;

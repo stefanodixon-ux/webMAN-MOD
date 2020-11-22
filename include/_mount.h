@@ -1466,7 +1466,7 @@ static void mount_thread(u64 action)
 
 	if(action == EXPLORE_CLOSE_ALL) {action = MOUNT_NORMAL; explore_close_all(_path);}
 
-	if(action && !(webman_config->minfo & 1)) show_msg(_path);
+	if(action && !(webman_config->minfo & 1)) vshNotify_WithIcon(50, _path);
 
 	cellFsUnlink(WMNOSCAN); // remove wm_noscan if a PS2ISO has been mounted
 
@@ -1501,7 +1501,13 @@ exit_mount:
 
 		// show loaded path
 		strcat(msg, "\" "); strcat(msg, STR_LOADED2);
-		if(!(webman_config->minfo & 2)) show_msg(msg);
+		if(!(webman_config->minfo & 2))
+		{
+			if((mount_unk >= EMU_PS3) && (mount_unk <= EMU_PSP))
+				vshNotify_WithIcon(40 + mount_unk, msg);
+			else
+				show_msg(msg);
+		}
 	}
 
 	// ---------------

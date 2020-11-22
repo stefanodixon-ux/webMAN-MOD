@@ -312,7 +312,7 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 	sprintf(templn, HTML_FORM_METHOD_FMT("/notify")
 					"<table width=\"800\">"
 					"<tr><td class=\"la\"><textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea>"
-					"<br>Icon (0-26): " HTML_NUMBER("icon", "%i", "0", "26")
+					"<br>Icon (0-50): " HTML_NUMBER("icon", "%i", "0", "50")
 					"</td></tr>"
 					"<tr><td class=\"ra\">"
 					"<input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr>"
