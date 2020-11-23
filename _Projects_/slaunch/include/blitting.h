@@ -109,7 +109,7 @@ DrawCtx ctx;                      // drawing context
 void font_finalize(void);
 void init_graphic(void);
 int32_t load_img_bitmap(int32_t idx, char *path, const char *default_img);
-void flip_frame(uint64_t *canvas);
+void flip_frame(void);
 void dim_bg(float ds, float de);
 void dim_img(float dim);
 void dump_bg(uint32_t x, uint32_t y, uint32_t w, uint32_t h);

@@ -23,7 +23,7 @@ SYS_MODULE_STOP(slaunch_stop);
 #define STR_UNLOAD		"Unload webMAN"
 #define STR_QUIT		"Quit"
 
-#define APP_VERSION		"1.11"
+#define APP_VERSION		"1.12"
 
 typedef struct {
 	uint8_t  gmode;
@@ -205,7 +205,7 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 	int px=left_margin, py=90;	// top-left
 
 	// draw background and menu strip
-	flip_frame((uint64_t*)ctx.canvas);
+	flip_frame();
 	memcpy((uint8_t *)ctx.menu, (uint8_t *)(ctx.canvas)+INFOBAR_Y*CANVAS_W*4, CANVAS_W*INFOBAR_H*4);
 
 	set_textbox(LIGHT_GRAY, 0, INFOBAR_Y - 10, CANVAS_W, 1);
@@ -414,7 +414,7 @@ static void show_no_content(void)
 
 	ctx.fg_color=WHITE_TEXT;
 	set_font(32.f, 32.f, 1.5f, 1); print_text(ctx.canvas, CANVAS_W, 0, 520, no_content);
-	flip_frame((uint64_t*)ctx.canvas);
+	flip_frame();
 
 	sys_timer_usleep(1500000);
 

@@ -380,7 +380,7 @@ void init_graphic()
 	// get current display values
 	BASE_offset = (*(uint32_t*)0x60201104) + BASE;	  // start offset of current framebuffer
 
-	flip_frame((uint64_t*)ctx.canvas);
+	flip_frame();
 
 	//getDisplayPitch(&pitch, &unk1);	   // framebuffer pitch size
 	//h = getDisplayHeight();			   // display height
@@ -500,14 +500,15 @@ static uint32_t mix_color(uint32_t bg, uint32_t fg)
 /***********************************************************************
 * flip finished frame into paused ps3-framebuffer
 ***********************************************************************/
-void flip_frame(uint64_t *canvas)
+void flip_frame(void)
 {
+	uint64_t *canvas = (uint64_t *)ctx.canvas;
 	uint32_t i, k, m, CANVAS_WW = CANVAS_W/2;
 
 	for(m = i = 0; i < CANVAS_H; i++, m = i * CANVAS_WW)
 		for(k = 0; k < CANVAS_WW; k++)
 			*(uint64_t*)(OFFSET(k*2, i)) =
-				 canvas[k + m];
+				 (i >= 8) ? canvas[k + m] : 0;
 }
 
 void set_texture_direct(uint32_t *texture, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
