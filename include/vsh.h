@@ -133,7 +133,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 
 	// explore_plugin icons
 	case 18:
-		tex = (char*)"tex_psn";
+		tex = (char*)"tex_psn_big";
 		break;
 
 	case 19:
@@ -177,7 +177,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		break;
 
 	case 29:
-		tex = (char*)"item_tex_NewFriend";
+		tex = (char*)"tex_indi_NewRoom";
 		break;
 
 	case 30:
@@ -201,7 +201,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		break;
 
 	case 35:
-		tex = (char*)"tex_indi_Sign_out";
+		tex = (char*)"tex_indi_Sign_out"; // Error icon
 		break;
 
 	case 36:
@@ -217,7 +217,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		break;
 
 	case 39:
-		tex = (char*)"friend_tex_load";
+		tex = (char*)"tex_loading_icon";
 		break;
 
 	case 40:
@@ -287,6 +287,9 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		}
 		*pos = NULL;
 	}
+
+	if(IS_INGAME)
+		return vshtask_notify(msg);
 
 	uint32_t _plugin = View_Find(plugin);
 	if (_plugin <= 0)

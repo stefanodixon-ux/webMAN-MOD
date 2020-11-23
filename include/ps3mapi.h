@@ -1201,7 +1201,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	ssend(conn_s_ps3mapi, PS3MAPI_OK_230);
 
-	sprintf(buffer, PS3MAPI_CONNECT_NOTIF, inet_ntoa(conn_info.remote_adr)); show_msg(buffer);
+	sprintf(buffer, PS3MAPI_CONNECT_NOTIF, inet_ntoa(conn_info.remote_adr)); vshNotify_WithIcon(5, buffer);
 
 	while(connactive == 1 && working)
 	{
@@ -1748,7 +1748,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 	}
 
 	sprintf(buffer, PS3MAPI_DISCONNECT_NOTIF, inet_ntoa(conn_info.remote_adr));
-	show_msg(buffer);
+	vshNotify_WithIcon(5, buffer);
 
 	if(pasv_s >= 0) sclose(&pasv_s);
 	sclose(&conn_s_ps3mapi);

@@ -675,7 +675,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(strstr(target, "/webftp_server")) {sprintf(tempstr, "<HR>%s", STR_SETTINGSUPD);} else
 				if(cp_mode) {char *p = strrchr(_path, '/'); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
 
-				if(is_error) {show_msg(STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
+				if(is_error) {vshNotify_WithIcon(23, STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
 			}
 			else
 #endif // #ifdef COPY_PS3
@@ -862,10 +862,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				// show msg end
 				if(copy_aborted)
-					vshNotify_WithIcon(7, STR_CPYABORT);
+					vshNotify_WithIcon(23, STR_CPYABORT);
 				else
 				{
-					vshNotify_WithIcon(7, STR_CPYFINISH);
+					vshNotify_WithIcon(22, STR_CPYFINISH);
 					if(do_restart) { del_turnoff(2); vsh_reboot();}
 				}
 
@@ -1355,13 +1355,13 @@ static void mount_thread(u64 action)
 
 		int ret_val = NONE; { system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); ret_val = (int)p1;}
 
-		if(ret_val < 0) { show_msg(STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
+		if(ret_val < 0) { vshNotify_WithIcon(23, STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
 		if(ret_val > 1) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 1); }
 	}
 
 #else
 
-	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE) { show_msg(STR_CFWSYSALRD); goto finish; }
+	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE) { vshNotify_WithIcon(23, STR_CFWSYSALRD); goto finish; }
 
 #endif
 

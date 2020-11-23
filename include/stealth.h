@@ -148,7 +148,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 	if(syscalls_removed)
 	{
 		if(!webman_config->nobeep) { BEEP2 }
-		vshNotify_WithIcon(20, STR_CFWSYSALRD);
+		vshNotify_WithIcon(23, STR_CFWSYSALRD);
 	}
 	else
 	{
@@ -172,12 +172,12 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 		if(syscalls_removed)
 		{
 			if(!webman_config->nobeep) { BEEP1 }
-			show_msg(STR_RMVCFWSYS);
+			vshNotify_WithIcon(18, STR_RMVCFWSYS);
 		}
 		else
 		{
 			if(!webman_config->nobeep) { BEEP2 }
-			show_msg(STR_RMVCFWSYSF);
+			vshNotify_WithIcon(35, STR_RMVCFWSYSF);
 		}
 	}
 
@@ -223,7 +223,7 @@ static void block_online_servers(bool notify)
 
 		if(peekq(TOC) == SYSCALLS_UNAVAILABLE)
 		{
-			show_msg(STR_CFWSYSALRD);
+			vshNotify_WithIcon(3, STR_CFWSYSALRD);
 		}
 		else
 		{

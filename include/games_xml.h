@@ -1231,7 +1231,7 @@ static void refresh_xml(char *msg)
 	webman_config->profile = profile; save_settings();
 
 	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
-	show_msg(msg);
+	vshNotify_WithIcon(39, msg);
 
 	// refresh XML
 	sys_ppu_thread_t t_id;
@@ -1248,7 +1248,8 @@ static void refresh_xml(char *msg)
 	while(refreshing_xml && working) sys_ppu_thread_sleep(1);
 
 	sprintf(msg, "%s XML%s: OK", STR_REFRESH, SUFIX2(profile));
-	show_msg(msg);
+	vshNotify_WithIcon(33, msg);
+
 
 	setPluginInactive();
 }

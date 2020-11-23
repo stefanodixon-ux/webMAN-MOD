@@ -1253,9 +1253,9 @@ parse_request:
 				// /fixgame.ps3$abort
 				do_restart = false;
 
-				if(copy_in_progress) {copy_aborted = true; show_msg(STR_CPYABORT);}   // /copy.ps3$abort
+				if(copy_in_progress) {copy_aborted = true; vshNotify_WithIcon(23, STR_CPYABORT);}   // /copy.ps3$abort
 				else
-				if(fix_in_progress)  {fix_aborted = true;  show_msg("Fix aborted!");} // /fixgame.ps3$abort
+				if(fix_in_progress)  {fix_aborted = true;  vshNotify_WithIcon(23, "Fix aborted!");} // /fixgame.ps3$abort
 
 				sprintf(param, "/");
 			}
@@ -1316,7 +1316,7 @@ parse_request:
 													 "File: ",       (char*)(KLIC_PATH_OFFSET));
 				}
 				else
-					{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; show_msg("KLIC: Not in-game!");}
+					{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; vshNotify_WithIcon(23, "KLIC: Not in-game!");}
 
 
 				sprintf(prev, "%s", ((klic_polling_status) ? (klic_polling ? "Auto-Log: Running" : "Auto-Log: Stopped") :

@@ -30,7 +30,7 @@ static bool toggle_rebug_mode(void)
 	if(file_exists(VSH_MODULE_PATH "vsh.self.swp"))
 	{
 		show_msg("Normal Mode detected!\n"
-						"Switch to REBUG Mode Debug XMB...");
+				 "Switch to REBUG Mode Debug XMB...");
 		sys_ppu_thread_sleep(3);
 
 		swap_file(VSH_ETC_PATH, "index.dat", "index.dat.nrm", "index.dat.swp");
@@ -44,7 +44,7 @@ static bool toggle_rebug_mode(void)
 	&& (file_exists(VSH_MODULE_PATH "vsh.self.cexsp")))
 	{
 		show_msg("REBUG Mode Debug XMB detected!\n"
-						"Switch to Retail XMB...");
+				 "Switch to Retail XMB...");
 		sys_ppu_thread_sleep(3);
 
 		swap_file(VSH_MODULE_PATH, "vsh.self", "vsh.self.dexsp", "vsh.self.cexsp");
@@ -55,7 +55,7 @@ static bool toggle_rebug_mode(void)
 	if(file_exists(VSH_MODULE_PATH "vsh.self.dexsp"))
 	{
 		show_msg("REBUG Mode Retail XMB detected!\n"
-						"Switch to Debug XMB...");
+				 "Switch to Debug XMB...");
 		sys_ppu_thread_sleep(3);
 
 		swap_file(VSH_MODULE_PATH, "vsh.self", "vsh.self.cexsp", "vsh.self.dexsp");
@@ -73,7 +73,7 @@ static bool toggle_normal_mode(void)
 	&& (file_exists(VSH_MODULE_PATH "vsh.self.cexsp")))
 	{
 		show_msg("REBUG Mode Debug XMB detected!\n"
-						"Switch to Normal Mode...");
+				 "Switch to Normal Mode...");
 
 		swap_file(VSH_ETC_PATH, "index.dat", "index.dat.swp", "index.dat.nrm");
 		swap_file(VSH_ETC_PATH, "version.txt", "version.txt.swp", "version.txt.nrm");
@@ -85,7 +85,7 @@ static bool toggle_normal_mode(void)
 	if(file_exists(VSH_MODULE_PATH "vsh.self.dexsp"))
 	{
 		show_msg("REBUG Mode Retail XMB detected!\n"
-						"Switch to Normal Mode...");
+				 "Switch to Normal Mode...");
 
 		swap_file(VSH_ETC_PATH, "index.dat", "index.dat.swp", "index.dat.nrm");
 		swap_file(VSH_ETC_PATH, "version.txt", "version.txt.swp", "version.txt.nrm");
@@ -99,7 +99,7 @@ static bool toggle_normal_mode(void)
 	if(file_exists(VSH_MODULE_PATH "vsh.self.swp"))
 	{
 		show_msg("Normal Mode detected!\n"
-						"No need to switch!");
+				 "No need to switch!");
 		sys_ppu_thread_sleep(3);
 		disable_dev_blind();
 	}
@@ -113,7 +113,7 @@ static void toggle_debug_menu(void)
 	if(file_exists(VSH_MODULE_PATH "sysconf_plugin.sprx.dex"))
 	{
 		show_msg("CEX QA Menu is active!\n"
-						"Switch to DEX Debug Menu...");
+				 "Switch to DEX Debug Menu...");
 
 		swap_file(VSH_MODULE_PATH, "sysconf_plugin.sprx", "sysconf_plugin.sprx.cex", "sysconf_plugin.sprx.dex");
 	}
@@ -121,7 +121,7 @@ static void toggle_debug_menu(void)
 	if(file_exists(VSH_MODULE_PATH "sysconf_plugin.sprx.cex"))
 	{
 		show_msg("DEX Debug Menu is active!\n"
-						"Switch to CEX QA Menu...");
+				 "Switch to CEX QA Menu...");
 
 		swap_file(VSH_MODULE_PATH, "sysconf_plugin.sprx", "sysconf_plugin.sprx.dex", "sysconf_plugin.sprx.cex");
 	}
@@ -141,7 +141,7 @@ static bool toggle_cobra(void)
 		(file_exists(REBUG_COBRA_PATH "stage2.dex")) */)
 	{
 		show_msg("REBUG COBRA is active!\n"
-						"Deactivating COBRA...");
+				 "Deactivating COBRA...");
 
 		save_file(TMP_DIR "/loadoptical", "SCE\0", 4); // Force load PS2 discs on BC consoles with Cobra 8.x
 
@@ -155,7 +155,7 @@ static bool toggle_cobra(void)
 			(file_exists(REBUG_COBRA_PATH "stage2.dex.bak")) */)
 	{
 		show_msg("REBUG COBRA is inactive!\n"
-						"Activating COBRA...");
+				 "Activating COBRA...");
 
 		cellFsRename(REBUG_COBRA_PATH "stage2.cex.bak", REBUG_COBRA_PATH "stage2.cex");
 		cellFsRename(REBUG_COBRA_PATH "stage2.dex.bak", REBUG_COBRA_PATH "stage2.dex");
@@ -165,7 +165,7 @@ static bool toggle_cobra(void)
 	if(file_exists(HABIB_COBRA_PATH "stage2.cex"))
 	{
 		show_msg("COBRA is active!\n"
-						"Deactivating COBRA...");
+				 "Deactivating COBRA...");
 
 		cellFsRename(HABIB_COBRA_PATH "stage2.cex", HABIB_COBRA_PATH "stage2_disabled.cex");
 
@@ -174,7 +174,7 @@ static bool toggle_cobra(void)
 	else if(file_exists(HABIB_COBRA_PATH "stage2_disabled.cex"))
 	{
 		show_msg("COBRA is inactive!\n"
-						"Activating COBRA...");
+				 "Activating COBRA...");
 
 		cellFsRename(HABIB_COBRA_PATH "stage2_disabled.cex", HABIB_COBRA_PATH "stage2.cex");
 
@@ -184,7 +184,7 @@ static bool toggle_cobra(void)
 	if(file_exists(SYS_COBRA_PATH "stage2.bin"))
 	{
 		show_msg("COBRA is active!\n"
-						"Deactivating COBRA...");
+				 "Deactivating COBRA...");
 
 		cellFsRename(SYS_COBRA_PATH "stage2.bin", SYS_COBRA_PATH "stage2_disabled.bin");
 
@@ -195,7 +195,7 @@ static bool toggle_cobra(void)
 	else if(file_exists(SYS_COBRA_PATH "stage2_disabled.bin"))
 	{
 		show_msg("COBRA is inactive!\n"
-						"Activating COBRA...");
+				 "Activating COBRA...");
 
 		cellFsRename(SYS_COBRA_PATH "stage2_disabled.bin", SYS_COBRA_PATH "stage2.bin");
 
