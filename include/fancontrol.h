@@ -109,7 +109,7 @@ static void restore_fan(u8 set_syscon_mode)
 			sys_sm_set_fan_policy(0, SYSCON_MODE, 0); //syscon
 		else
 		{
-			webman_config->ps2_rate = RANGE(webman_config->ps2_rate, MIN_FANSPEED, 99); //%
+			webman_config->ps2_rate = RANGE(webman_config->ps2_rate, MIN_FANSPEED, webman_config->maxfan); //%
 			sys_sm_set_fan_policy(0, MANUAL_MODE, PERCENT_TO_8BIT(webman_config->ps2_rate)); // PS2_MODE
 			fan_ps2_mode = true;
 		}
