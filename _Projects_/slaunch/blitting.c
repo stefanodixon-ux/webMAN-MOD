@@ -367,6 +367,7 @@ void init_graphic()
 	memset(&ctx, 0, sizeof(DrawCtx));
 
 	// set drawing context
+	ctx.dummy	   = mem_alloc(64 * 1024);					// temp buffer
 	ctx.canvas	   = mem_alloc(CANVAS_W * CANVAS_H * 4);	// background buffer
 	ctx.menu	   = mem_alloc(CANVAS_W * 96 * 4);			// info bar
 	ctx.font_cache = mem_alloc(FONT_CACHE_MAX * 32 * 32);	// glyph bitmap cache
@@ -508,7 +509,7 @@ void flip_frame(void)
 	for(m = i = 0; i < CANVAS_H; i++, m = i * CANVAS_WW)
 		for(k = 0; k < CANVAS_WW; k++)
 			*(uint64_t*)(OFFSET(k*2, i)) =
-				 (i >= 8) ? canvas[k + m] : 0;
+				 canvas[k + m];
 }
 
 void set_texture_direct(uint32_t *texture, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
