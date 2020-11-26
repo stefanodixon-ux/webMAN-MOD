@@ -92,7 +92,6 @@ typedef struct _Bitmap {
 
 // drawing context
 typedef struct _DrawCtx {
-	uint32_t *dummy;              // addr of temp buffer
 	uint32_t *canvas;             // addr of canvas
 	uint32_t *menu;               // addr of bottom menu stip
 	uint32_t *imgs;               // addr of images

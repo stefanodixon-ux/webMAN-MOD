@@ -367,7 +367,6 @@ void init_graphic()
 	memset(&ctx, 0, sizeof(DrawCtx));
 
 	// set drawing context
-	ctx.dummy	   = mem_alloc(64 * 1024);					// temp buffer
 	ctx.canvas	   = mem_alloc(CANVAS_W * CANVAS_H * 4);	// background buffer
 	ctx.menu	   = mem_alloc(CANVAS_W * 96 * 4);			// info bar
 	ctx.font_cache = mem_alloc(FONT_CACHE_MAX * 32 * 32);	// glyph bitmap cache

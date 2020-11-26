@@ -629,6 +629,8 @@ static void start_VSH_Menu(void)
 
 	rsx_fifo_pause(1);
 
+	mem_alloc(slist_size + sizeof(_slaunch)); // reserve initial heap for game list
+
 	// initialize VSH Menu graphic
 	init_graphic();
 
