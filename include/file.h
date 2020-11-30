@@ -159,7 +159,7 @@ static bool isDir(const char* path)
 	else
 		return 0;
 }
-/*
+
 static s64 file_size(const char* path)
 {
 #ifdef USE_NTFS
@@ -168,16 +168,16 @@ static s64 file_size(const char* path)
 		char tmp[STD_PATH_LEN];
 		strcpy(tmp, path); tmp[10] = ':';
 		struct stat bufn;
-		if(ps3ntfs_stat(tmp + 5, &bufn) < 0) return FAILED;
+		if(ps3ntfs_stat(tmp + 5, &bufn) < 0) return 0;
 		return bufn.st_size;
 	}
 #endif
 
 	struct CellFsStat s;
-	if(cellFsStat(path, &s) != CELL_FS_SUCCEEDED) return FAILED;
+	if(cellFsStat(path, &s) != CELL_FS_SUCCEEDED) return 0;
 	return s.st_size;
 }
-
+/*
 static bool file_exists(const char* path)
 {
 	return (file_size(path) >= 0);
@@ -808,6 +808,77 @@ static int folder_copy(const char *path1, char *path2)
 		return FAILED;
 
 	return CELL_FS_SUCCEEDED;
+}
+
+static u32 dir_count;
+static u32 file_count;
+
+static u64 folder_size(const char *path)
+{
+	if(!isDir(path))
+		return file_size(path);
+
+	int fd; bool is_ntfs = false;
+
+	u64 dir_size = 0;
+
+	copy_aborted = false;
+
+#ifdef USE_NTFS
+	struct stat bufn;
+	DIR_ITER *pdir = NULL;
+
+	if(is_ntfs_path(path))
+	{
+		pdir = ps3ntfs_opendir((char*)path);
+		if(pdir) is_ntfs = true;
+	}
+#endif
+
+	if(is_ntfs || cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
+	{
+		CellFsDirectoryEntry entry; u32 read_f;
+		char *entry_name = entry.entry_name.d_name;
+
+		char source[STD_PATH_LEN];
+		u16 plen1 = sprintf(source, "%s", path);
+
+		while(working)
+		{
+#ifdef USE_NTFS
+			if(is_ntfs)
+			{
+				if(ps3ntfs_dirnext(pdir, entry_name, &bufn)) break;
+			}
+			else
+#endif
+			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
+
+			if(copy_aborted) break;
+			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
+
+			sprintf(source + plen1, "/%s", entry_name);
+
+			if(isDir(source))
+			{
+				dir_count++;
+				dir_size += folder_size(source);
+			}
+			else
+			{
+				file_count++;
+				dir_size += file_size(source);
+			}
+		}
+
+#ifdef USE_NTFS
+		if(is_ntfs) ps3ntfs_dirclose(pdir);
+		else
+#endif
+		cellFsClosedir(fd);
+	}
+
+	return dir_size;
 }
 #endif
 

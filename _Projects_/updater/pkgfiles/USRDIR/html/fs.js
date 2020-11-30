@@ -96,7 +96,8 @@ window.addEventListener('contextmenu',function(e){
 		m7.href='javascript:rn(\"'+p+'\")';m7.style.display=(p.substring(0,5)=='/dev_')?b:n;
 		m8.href='/copy.ps3'+p; m8.text = 'Copy to ' + ((p.indexOf('/dev_hdd')==0) ? "usb" : "hdd0");
 		m9.href='/copy_ps3'+p;
-		md.href='/md5.ps3'+p;
+		md.href=((c=='d')?'/stat.ps3':'/md5.ps3')+p;
+		md.text=((c=='d')?'Folder Size':'MD5 Hash');
 		y=p.indexOf('.ps3');if(y>0)p=p.substring(y+4);url=window.location.href;
 	}
 },false);

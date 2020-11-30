@@ -3,7 +3,7 @@ function t2lnks(){
 	var url = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 	var www =/(^|[^\/#])(www\.[\S]+(\b|$))/gim;
 	var dev =/(\/\b(dev_+.*))/ig;
-	txt.innerHTML= "<a href='/'><b>webMAN MOD</b> 1.47.30</a><HR>" +
+	txt.innerHTML= "<a href='/'><b>webMAN MOD</b> 1.47.31</a><HR>" +
 				  txt.innerHTML
 				 .replace(url, "<a href='$1'>$1</a>")
 				 .replace(www, '$1<a target="_blank" href="http://$2">$2</a>')
@@ -96,7 +96,8 @@ window.addEventListener('contextmenu',function(e){
 		m7.href='javascript:rn(\"'+p+'\")';m7.style.display=(p.substring(0,5)=='/dev_')?b:n;
 		m8.href='/copy.ps3'+p; m8.text = 'Copy to ' + ((p.indexOf('/dev_hdd')==0) ? "usb" : "hdd0");
 		m9.href='/copy_ps3'+p;
-		md.href='/md5.ps3'+p;
+		md.href=((c=='d')?'/stat.ps3':'/md5.ps3')+p;
+		md.text=((c=='d')?'Folder Size':'MD5 Hash');
 		y=p.indexOf('.ps3');if(y>0)p=p.substring(y+4);url=window.location.href;
 	}
 },false);

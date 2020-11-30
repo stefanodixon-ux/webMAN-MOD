@@ -1732,6 +1732,26 @@ parse_request:
 				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
 				goto exit_handleclient_www;
 			}
+			if(islike(param, "/stat.ps3"))
+			{
+				char *path = param + 9, *buffer = header;
+
+				sprintf(buffer, "Path: ");
+				add_breadcrumb_trail(buffer, path);
+
+				dir_count = file_count = 0;
+				u64 dir_size = folder_size(path);
+
+				sprintf(param, "%s<p>"
+								"Size: %llu (%llu MB)<br>"
+								"Dir(s): %llu<br>"
+								"File(s): %llu", buffer, dir_size, dir_size>>20, dir_count, file_count);
+
+				keep_alive = http_response(conn_s, header, "/stat.ps3", CODE_HTTP_OK, param);
+
+				goto exit_handleclient_www;
+			}
+
 			if(islike(param, "/rename.ps3") || islike(param, "/swap.ps3") || islike(param, "/move.ps3"))
 			{
 				// /rename.ps3<path>|<dest>       rename <path> to <dest>
