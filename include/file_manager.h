@@ -471,7 +471,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 		else
 #endif
 		slen = sprintf(swap, HTML_URL2,
-						strstr(pbuffer, "To: ") ? "" :
+						(strstr(pbuffer, "To: ") || strstr(pbuffer, "Path: ")) ? "" :
 						islike(param + 23, "/trophy/NPWR") ? "/delete.ps3" :
 						islike(param, HDD0_HOME_DIR) ? "/copy.ps3" :
 #ifdef FIX_GAME

@@ -46,7 +46,7 @@ enum emu_modes
 
 #define PKGFILE 6 || (m == 7) || (m == 8)
 
-#define FW_VERSION 4.86f
+#define FW_VERSION 4.87f
 
 typedef struct
 {

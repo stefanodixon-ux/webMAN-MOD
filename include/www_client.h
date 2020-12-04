@@ -1743,9 +1743,9 @@ parse_request:
 				u64 dir_size = folder_size(path);
 
 				sprintf(param, "%s<p>"
-								"Size: %llu (%llu MB)<br>"
+								"Size: %llu (%i.%i MB)<br>"
 								"Dir(s): %llu<br>"
-								"File(s): %llu", buffer, dir_size, dir_size>>20, dir_count, file_count);
+								"File(s): %llu", buffer, dir_size, dir_size>>20, ((10 * (((u32)dir_size) % _1MB_)) + _512KB_) / _1MB_, dir_count, file_count);
 
 				keep_alive = http_response(conn_s, header, "/stat.ps3", CODE_HTTP_OK, param);
 

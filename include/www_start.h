@@ -109,8 +109,8 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		}
 		else
 		{
-			cobra_config->spoof_version = 0x0486;
-			cobra_config->spoof_revision = 67896; //0x00010938 // 4.85 = 67869; // 0x0001091d
+			cobra_config->spoof_version = 0x0487;
+			cobra_config->spoof_revision = 0x000109a5; // 4.86 = 0x00010938 // 4.85 = 0x0001091d
 		}
 
 		if( cobra_config->ps2softemu == 0 && cobra_get_ps2_emu_type() == PS2_EMU_SW )

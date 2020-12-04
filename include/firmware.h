@@ -1,4 +1,4 @@
-#define LATEST_CFW	4.86f
+#define LATEST_CFW	4.87f
 
 #ifndef COBRA_ONLY
 static u64 base_addr = 0;
@@ -30,6 +30,7 @@ static u64 sc_142 = 0;
 #define FW484	0x323031392F30312FULL // 2019/01/
 #define FW485	0x323031392F30382FULL // 2019/08/
 #define FW486	0x323032302F30312FULL // 2020/01/
+#define FW487	0x323032302F30372FULL // 2020/07/
 
 #define SC_GET_PLATFORM_INFO		(387)
 #define SC_GET_CONSOLE_TYPE			(985)
@@ -103,7 +104,8 @@ static void detect_firmware(void)
 		if(SYSCALL_TABLE) break;
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
 
-		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW486) ? 4.86f :
+		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW487) ? 4.87f :
+																					(peek(0x2FCB68) == FW486) ? 4.86f :
 																					(peek(0x2FCB68) == FW485) ? 4.85f :
 																					(peek(0x2FCB68) == FW484) ? 4.84f :
 #ifndef LAST_FIRMWARE_ONLY
@@ -135,7 +137,8 @@ static void detect_firmware(void)
 #endif  // #ifndef LAST_FIRMWARE_ONLY
 
 #ifdef DEX_SUPPORT
-		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW486) ? 4.86f :
+		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW487) ? 4.87f :
+																					(peek(0x31F028) == FW486) ? 4.86f :
 																					(peek(0x31F028) == FW485) ? 4.85f :
 																					(peek(0x31F028) == FW484) ? 4.84f :
  #ifndef LAST_FIRMWARE_ONLY
@@ -169,7 +172,8 @@ static void detect_firmware(void)
 	  //if(peek(0x32B270) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_450H; c_firmware = 4.50f; dex_mode = 1;}	else
 		if(peek(0x32EDC8) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_460H; c_firmware = 4.60f; dex_mode = 1;}	else
  #endif // #ifndef LAST_FIRMWARE_ONLY
-		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW486) ? 4.86f :
+		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW487) ? 4.87f :
+																					(peek(0x344B70) == FW486) ? 4.86f :
 																					(peek(0x344B70) == FW485) ? 4.85f :
 																					(peek(0x344B70) == FW484) ? 4.84f :
  #ifndef LAST_FIRMWARE_ONLY

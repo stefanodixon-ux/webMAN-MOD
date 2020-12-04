@@ -937,6 +937,8 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLKA_250.07</td><td>Spy Fiction</td></tr>
 <tr><td>CUSTOM</td><td>SLPS_253.11</td><td>Spy Fiction</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_208.56</td><td>Spy Fiction</td></tr>
+<tr><td>CUSTOM</td><td>SLES_500.30</td><td>SSX</td></tr>
+<tr><td>CUSTOM</td><td>SLUS_200.95</td><td>SSX</td></tr>
 <tr><td>CUSTOM</td><td>SLES_820.28</td><td>Star Ocean 3 - Till the End of Time [Disc1of2]</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_204.88</td><td>Star Ocean 3 - Till the End of Time [Disc1of2]</td></tr>
 <tr><td>CUSTOM</td><td>SLES_820.29</td><td>Star Ocean 3 - Till the End of Time [Disc2of2]</td></tr>
@@ -3322,6 +3324,8 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLPS_253.11</td><td>Spy Fiction</td></tr>
 <tr><td>ENC</td><td>SLUS_208.56</td><td>Spy Fiction</td></tr>
 <tr><td>ENC</td><td>SLKA_250.07</td><td>Spy Fiction</td></tr>
+<tr><td>ENC</td><td>SLES_500.30</td><td>SSX</td></tr>
+<tr><td>ENC</td><td>SLUS_200.95</td><td>SSX</td></tr>
 <tr><td>ENC</td><td>SLES_516.97</td><td>SSX 3</td></tr>
 <tr><td>ENC</td><td>SLUS_207.72</td><td>SSX 3</td></tr>
 <tr><td>ENC</td><td>SLES_535.51</td><td>SSX On Tour</td></tr>
@@ -3354,12 +3358,12 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLES_543.31</td><td>Street Dance</td></tr>
 <tr><td>ENC</td><td>SLES_530.45</td><td>Street Racing Syndicate</td></tr>
 <tr><td>ENC</td><td>SLUS_205.82</td><td>Street Racing Syndicate</td></tr>
-<tr><td>ENC</td><td>SLES_511.41</td><td>Summoner 2</td></tr>
-<tr><td>ENC</td><td>SLUS_204.48</td><td>Summoner 2</td></tr>
 <tr><td>ENC</td><td>SLUS_200.74</td><td>Summoner</td></tr>
 <tr><td>ENC</td><td>SLES_820.01</td><td>Summoner</td></tr>
 <tr><td>ENC</td><td>SLES_820.05</td><td>Summoner</td></tr>
 <tr><td>ENC</td><td>SLES_820.03</td><td>Summoner</td></tr>
+<tr><td>ENC</td><td>SLES_511.41</td><td>Summoner 2</td></tr>
+<tr><td>ENC</td><td>SLUS_204.48</td><td>Summoner 2</td></tr>
 <tr><td>ENC</td><td>SLUS_212.72</td><td>Super Monkey Ball Adventure</td></tr>
 <tr><td>ENC</td><td>SLES_537.01</td><td>Super Monkey Ball Adventure</td></tr>
 <tr><td>ENC</td><td>SLUS_214.34</td><td>Superman Returns - The Video Game</td></tr>
@@ -3570,7 +3574,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2295; i < count; i++) {
+for (i = 2300; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
