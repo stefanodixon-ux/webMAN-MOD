@@ -12,13 +12,13 @@ and artists that collaborated with development, knowledge, resources, feedback &
 
 ## Current functionality
 ### General
-- Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.86 CEX, DEX & DECR)
+- Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.87 CEX, DEX & DECR)
 - Support on REBUG firmware with Cobra feature disabled (ver 4.84.2-4.86.1 CEX & DEX) 
 - Support on REBUG firmware with Mamba loaded via boot_plugins_nocobra_kernel.txt (ver 4.86.1 CEX & 4.84.2 DEX) 
-- Support on PS3HEN on 4.82 OFW and 4.84-4.86 HFW CEX & DEX
-- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.86 CEX & DEX)
-- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.86 CEX & DEX)
-- Support on classic custom firmware with PRXLoader (ver 3.41-4.86 CEX & DEX)
+- Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.87 HFW
+- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.87 CEX & DEX)
+- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.87 CEX & DEX)
+- Support on classic custom firmware with PRXLoader (ver 3.41-4.87 CEX & DEX)
 
 - All PS3 Models (including all fat, Slim 20xx, 21xx, 25xx, 3xxx & SuperSlims 4xxx) are supported via PS3HEN payload
 - All PS3 Models capable to downgrade to 3.56 or lower are supported via PS3Xploit Flash Writer (aka PS3Xploit 2.0)
