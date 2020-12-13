@@ -227,6 +227,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		if (meminfo.avail<(BUFFER_SIZE_ALL+MIN_MEM)) set_buffer_sizes(1); //MIN
 		if((meminfo.avail<(BUFFER_SIZE_ALL+MIN_MEM)) || sys_memory_allocate((BUFFER_SIZE_ALL), SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK)
 		{
+			show_msg(STR_ERROR);
 			return false;  //leave if cannot allocate memory
 		}
 	}
@@ -236,17 +237,19 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX);
 	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
 	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
-//#ifdef MOUNT_ROMS
-	sys_addr_t sysmem_igf = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2) + (BUFFER_SIZE_DVD);
 
+//#ifdef MOUNT_ROMS
+	sys_addr_t sysmem_igf = NULL;
 	bool ignore = false;
 	char *ignore_files = NULL;
 	if(file_exists(WMIGNORE_FILES))
 	{
-		ignore_files = (char*)sysmem_igf;
-		read_file(WMIGNORE_FILES, ignore_files, _2KB_, 0);
-		ignore_files[_2KB_] = NULL;
-		ignore = !sys_admin || webman_config->ignore;
+		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_igf) == CELL_OK)
+		{
+			ignore_files = (char*)sysmem_igf;
+			read_file(WMIGNORE_FILES, ignore_files, _32KB_, 0);
+			ignore = !sys_admin || webman_config->ignore;
+		}
 	}
 //#endif
 
@@ -289,7 +292,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	#ifdef MOUNT_ROMS
 	#define ROM_PATHS	72
-	const char roms_path[ROM_PATHS][12] = { "2048", "CAP32", "MAME", "MAME078", "MAME2000", "MAME2003", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "BOMBER", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "QUAKE2", "JAVAME", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "NEOCD", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "GPSP", "VBOY", "VBA", "MGBA", "PALM", "POKEMINI", "GENESIS", "GEN", "MEGAD", "PICO", "GG", "GEARBOY", "ZX81", "FUSE", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "UZEM", "VECX", "WSWAM" };
+	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME078", "MAME2000", "MAME2003", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "BOMBER", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "QUAKE2", "JAVAME", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "NEOCD", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "GPSP", "VBOY", "VBA", "MGBA", "PALM", "POKEMINI", "GENESIS", "GEN", "MEGAD", "PICO", "GG", "GEARBOY", "ZX81", "FUSE", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "UZEM", "VECX", "WSWAM" };
 	u16 roms_count[ROM_PATHS];
 	u8 roms_index = 0;
 	#endif
@@ -1195,12 +1198,12 @@ save_xml:
 	led(GREEN, ON);
 
 	// --- release allocated memory
+	sys_memory_free(sysmem_igf);
 #ifdef USE_VM
 	sys_vm_unmap(sysmem);
 #else
 	sys_memory_free(sysmem);
 #endif
-
 	return false;
 }
 
@@ -1249,7 +1252,6 @@ static void refresh_xml(char *msg)
 
 	sprintf(msg, "%s XML%s: OK", STR_REFRESH, SUFIX2(profile));
 	vshNotify_WithIcon(33, msg);
-
 
 	setPluginInactive();
 }

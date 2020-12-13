@@ -283,8 +283,10 @@ static void mkdirs(char *param)
 	param[9] = NULL; // <- return /dev_hdd0
 }
 
-size_t read_file(const char *file, char *data, size_t size, s32 offset)
+size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 {
+	if(!data) return 0;
+
 	int fd = 0; u64 read_e = 0;
 
 	if(offset < 0) offset = 0; else memset(data, 0, size);

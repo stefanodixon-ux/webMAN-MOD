@@ -44,22 +44,28 @@
  #endif
 #endif
 
+#ifdef PKG_LAUNCHER
+ #define MOUNT_ROMS
+ #define MOUNT_GAMEI
+#endif
+
 #undef NET_SUPPORT
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
  #define NET_SUPPORT
  #define USE_INTERNAL_NET_PLUGIN
  #endif
+#else
+ #undef WM_PROXY_SPRX
+ #undef PS3MAPI
+ #undef MOUNT_ROMS
+ #undef MOUNT_GAMEI
+ #undef PKG_LAUNCHER
 #endif
 
 #ifdef LAST_FIRMWARE_ONLY
  #undef DECR_SUPPORT
  #undef FIX_GAME
-#endif
-
-#ifdef PKG_LAUNCHER
- #define MOUNT_ROMS
- #define MOUNT_GAMEI
 #endif
 
 #ifndef WM_REQUEST
