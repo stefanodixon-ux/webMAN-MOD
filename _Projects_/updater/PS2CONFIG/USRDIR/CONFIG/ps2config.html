@@ -1128,6 +1128,7 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLES_531.30</td><td>World Championship Poker</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_210.28</td><td>World Championship Poker</td></tr>
 <tr><td>CUSTOM</td><td>SLES_545.47</td><td>World Championship Poker featuring Howard Lederer - All In</td></tr>
+<tr><td>CUSTOM</td><td>SLPS_201.95</td><td>World Fantasista</td></tr>
 <tr><td>CUSTOM</td><td>SLES_515.09</td><td>World of Outlaws - Sprint Cars</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_202.83</td><td>World of Outlaws - Sprint Cars 2002</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_652.84</td><td>World Rallt Championship II Extreme</td></tr>
@@ -3542,6 +3543,7 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLES_545.47</td><td>World Championship Poker featuring Howard Lederer - All In</td></tr>
 <tr><td>ENC</td><td>SLES_531.30</td><td>World Championship Poker</td></tr>
 <tr><td>ENC</td><td>SLUS_210.28</td><td>World Championship Poker</td></tr>
+<tr><td>ENC</td><td>SLPS_201.95</td><td>World Fantasista</td></tr>
 <tr><td>ENC</td><td>SLUS_202.83</td><td>World of Outlaws - Sprint Cars 2002</td></tr>
 <tr><td>ENC</td><td>SLES_515.09</td><td>World of Outlaws - Sprint Cars</td></tr>
 <tr><td>ENC</td><td>SLPM_652.84</td><td>World Rallt Championship II Extreme</td></tr>
@@ -3588,7 +3590,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2300; i < count; i++) {
+for (i = 2310; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
