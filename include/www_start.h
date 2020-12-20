@@ -18,7 +18,7 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 
 		if(profile || !(webman_config->wmstart))
 		{
-			char cfw_info[20];
+			char cfw_info[24];
 			get_cobra_version(cfw_info);
 
 			if(payload_ps3hen)

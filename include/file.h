@@ -1338,54 +1338,54 @@ static void map_earth(u8 id, char *param)
 #endif
 
 #ifdef MOUNT_ROMS
-static void copy_rom_media(char *_path)
+static void copy_rom_media(char *src_path)
 {
 	// get rom name & file extension
-	char *name = strrchr(_path, '/');
+	char *name = strrchr(src_path, '/');
 	if(!name) return;
 
-	char media_file[64];
+	char dst_path[64];
 
 	char *ext  = strrchr(++name, '.');
 	if(ext)
 	{
+		char path[MAX_LINE_LEN];
+
 		// copy rom icon to ICON0.PNG
-		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON0.PNG");
-		{strcpy(ext, ".png"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);} else
-		{strcpy(ext, ".PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);} else
+		sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON0.PNG");
+		{strcpy(ext, ".png"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
+		{strcpy(ext, ".PNG"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
 		{
-			char templn[MAX_LINE_LEN];
-			sprintf(templn, "%s/%s", WMTMP, name);
-			char *ext2 = strrchr(templn, '.');
-			{strcpy(ext2, ".png"); if(file_exists(templn)) {file_copy(templn, media_file, COPY_WHOLE_FILE);} else
-			{strcpy(ext2, ".PNG"); if(file_exists(templn)) {file_copy(templn, media_file, COPY_WHOLE_FILE);} else
-														   {file_copy((char*)PKGLAUNCH_ICON, media_file, COPY_WHOLE_FILE);}}}
+			sprintf(path, "%s/%s", WMTMP, name);
+			char *ext2 = strrchr(path, '.');
+			{strcpy(ext2, ".png"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
+			{strcpy(ext2, ".PNG"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
+														   {file_copy((char*)PKGLAUNCH_ICON, dst_path, COPY_WHOLE_FILE);}}}
 		}}}
 
-		// copy rom icon to PIC0.PNG
-		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PIC0.PNG");
-		{strcpy(ext + 1, "PIC0.PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-										else				 {cellFsUnlink(media_file);}}
+		strcpy(path, src_path); char *path_ = strrchr(path, '/') + 1;
 
-		// copy rom icon to PIC1.PNG
-		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PIC1.PNG");
-		{strcpy(ext + 1, "PIC1.PNG"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-										else				 {cellFsUnlink(media_file);}}
-
-		// copy rom icon to SND0.AT3
-		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "SND0.AT3");
-		{strcpy(ext + 1, "SND0.AT3"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-										else				 {cellFsUnlink(media_file);}}
-
-		// copy rom icon to ICON1.PAM
-		sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON1.PAM");
-		{strcpy(ext + 1, "ICON1.PAM"); if(file_exists(_path)) {file_copy(_path, media_file, COPY_WHOLE_FILE);}
-										else				 {cellFsUnlink(media_file);}}
+		const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
+		for(u8 i = 0; i < 5; i++)
+		{
+			sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]);
+			strcpy(ext + 1, media[i]);
+			if(file_exists(src_path))
+				file_copy(src_path, dst_path, COPY_WHOLE_FILE);
+			else
+			{
+				strcpy(path_, media[i]);
+				if(file_exists(path))
+					file_copy(path, dst_path, COPY_WHOLE_FILE);
+				else
+					cellFsUnlink(dst_path);
+			}
+		}
 		*ext = NULL;
 	}
 
 	// patch title name in PARAM.SFO of PKGLAUNCH
-	sprintf(media_file, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
-	write_file(media_file, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, name, 0x378, 0x80, false);
+	sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
+	write_file(dst_path, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, name, 0x378, 0x80, false);
 }
 #endif // #ifdef MOUNT_ROMS

@@ -404,7 +404,7 @@
 								char net_type[8] = "", ip[ip_size] = "-";
 								get_net_info(net_type, ip);
 
-								char cfw_info[20];
+								char cfw_info[24];
 								get_cobra_version(cfw_info);
 
 								char smax[32];

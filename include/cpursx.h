@@ -32,14 +32,14 @@ static void sys_get_cobra_version(void)
 
 static void get_cobra_version(char *cfw_info)
 {
-	// returns cfw_info[20]
+	// returns cfw_info[22]
 
 #ifdef COBRA_ONLY
 	if(syscalls_removed && peekq(TOC) != SYSCALLS_UNAVAILABLE) syscalls_removed = false;
 
 	if(!cobra_version && !syscalls_removed) sys_get_cobra_version();
 
-	char cobra_ver[8];
+	char cobra_ver[12];
 	if((cobra_version & 0x0F) == 0)
 		sprintf(cobra_ver, "%X.%X", cobra_version>>8, (cobra_version & 0xFF) >> 4);
 	else
@@ -67,6 +67,11 @@ static void get_cobra_version(char *cfw_info)
 #ifndef COBRA_ONLY
 		sprintf(cfw_info, " nonCobra");
 #endif
+
+	// noBD LV1 4.75(??) - 4.87
+	if( (peek_lv1(0x712890ULL) == 0xF921007860000000ULL) || // NOR ori: 0xF9210078409D0014ULL
+		(peek_lv1(0x714BE0ULL) == 0x7863002060000000ULL) )  // NOR ori: 0x78630020409E0018ULL
+		strcat(cfw_info, " noBD");
 }
 
 static void get_net_info(char *net_type, char *ip)
