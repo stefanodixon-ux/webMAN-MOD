@@ -31,7 +31,7 @@
 
 			sprintf(_path, "%s", lastgames.game[lastgames.last].path);
 
-			multiCD = is_multi_cd(_path);
+			multiCD = (is_multi_cd(_path) != NULL);
 
 			if(action == MOUNT_NEXT_CD)
 			{
@@ -69,9 +69,9 @@
 				{
 					int n = lastgames.last;
 
-					if(*mcd == 'C') mcd += 2;
-					if(*mcd == 'V') mcd += 3;
-					if(*mcd == 'D') mcd += 4;
+					if(*mcd == 'C') mcd += 2; // CD
+					if(*mcd == 'V') mcd += 3; // Vol
+					if(*mcd == 'D') mcd += 4; // Disc
 					while(*mcd == ' ') mcd++;
 
 					while(ISDIGIT(*mcd))

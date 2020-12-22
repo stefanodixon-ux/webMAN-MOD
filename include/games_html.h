@@ -236,9 +236,9 @@ static int check_content_type(u8 f1)
 
 static char *is_multi_cd(const char *name)
 {
-	char  *p = strstr(name, "CD");
-	if(!p) p = strstr(name, "Vol");
-	if(!p) p = strstr(name, "Disc");
+	char   *p = strstr(name, "CD");
+	if(!p) {p = strstr(name, "Vol");
+	if(!p)  p = strstr(name, "Disc");}
 	return p;
 }
 
