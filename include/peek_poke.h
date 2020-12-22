@@ -37,6 +37,7 @@ static void lv1_poke_ps3mapi(u64 addr, u64 value)
 {
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_POKE, addr, value);
 }
+#endif
 
 /////////////////// LV2 PEEK //////////////////////
 static u64 lv2_peek_hen(u64 addr) //sc6
@@ -44,7 +45,6 @@ static u64 lv2_peek_hen(u64 addr) //sc6
 	system_call_1(SC_PEEK_LV2, addr);
 	return (u64) p1;
 }
-#endif
 
 static u64 lv2_peek_cfw(u64 addr) //sc8 + LV2_OFFSET_ON_LV1
 {

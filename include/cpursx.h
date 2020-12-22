@@ -329,7 +329,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	if(!max_temp && webman_config->fanc && !is_ps3_http )
 	{
 		sprintf(templn, "<input type=\"range\" value=\"%i\" min=\"%i\" max=\"%i\" style=\"width:600px\""
-						" onchange=\"self.location='/cpursx.ps3?fan='this.value\">",
+						" onchange=\"self.location='/cpursx.ps3?fan='+this.value\">",
 						webman_config->man_rate, webman_config->minfan, webman_config->maxfan);
 		buffer += concat(buffer, templn);
 	}

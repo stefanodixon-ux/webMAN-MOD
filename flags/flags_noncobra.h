@@ -11,11 +11,11 @@
 //#define LITE_EDITION	1	// no ps3netsrv support, smaller memory footprint
 
 #define DEX_SUPPORT		1	// add support for DEX
-#define DECR_SUPPORT	1	// add support for DECR
-#define LAST_FIRMWARE_ONLY 1	//  support only 4.84-4.86 CEX / DEX (no DECR support)
+//#define DECR_SUPPORT	1	// add support for DECR
+#define LAST_FIRMWARE_ONLY 1	// support only 4.84-4.86 CEX / DEX (no FIX_GAME)
 
 //// FEATURES ////
-#define FIX_GAME		1	// Auto-Fix game
+//#define FIX_GAME		1	// Auto-Fix game
 #define EXT_GDATA		1	// /extgd.ps3?status /extgd.ps3?enable /extgd.ps3?disable (external gameDATA)
 #define COPY_PS3		1	// batch script commands and /copy.ps3/<path>
 #define DEBUG_MEM		1	// /dump.ps3 / peek.lv1 / poke.lv1 / find.lv1 / peek.lv2 / poke.lv2 / find.lv2

@@ -160,6 +160,7 @@ static bool isDir(const char* path)
 		return 0;
 }
 
+#ifdef COPY_PS3
 static s64 file_size(const char* path)
 {
 #ifdef USE_NTFS
@@ -177,6 +178,7 @@ static s64 file_size(const char* path)
 	if(cellFsStat(path, &s) != CELL_FS_SUCCEEDED) return 0;
 	return s.st_size;
 }
+#endif // #ifdef COPY_PS3
 /*
 static bool file_exists(const char* path)
 {

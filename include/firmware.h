@@ -71,7 +71,7 @@ static u64 find_syscall_table(void)
 	for(u64 addr = dex_mode ? SYSCALL_TABLE_470D : SYSCALL_TABLE_470; addr < 0x8000000000400000ULL; addr += 4)
 	#endif
 	{
-		if(peekq(addr) == 0x3235352E3235352EULL) return (addr + (dex_mode ? 0x1228 : 0x1220));
+		if(peek(addr) == 0x3235352E3235352EULL) return (addr + (dex_mode ? 0x1228 : 0x1220));
 	}
 	return 0;
 }
@@ -80,12 +80,12 @@ static void detect_firmware(void)
 {
 	if((c_firmware > 3.40f) || SYSCALL_TABLE || syscalls_removed) return;
 
-	dex_mode = 0;
+	dex_mode = (lv2_peek_hen(0x800000000032EB60ULL) == DEH);
 
 #ifdef COBRA_ONLY
 	// detect ps3hen payload
 	payload_ps3hen = (lv1_peek_cfw(0x1337) == 0x1337); // <= {system_call_1(SC_COBRA_SYSCALL8, 0x1337); payload_ps3hen = (p1 == 0x1337);}
-	if(payload_ps3hen)
+	if(payload_ps3hen || IS_DEH)
 	{
 		peekq = lv2_peek_hen;
 		pokeq = lv2_poke_hen;

@@ -64,7 +64,6 @@
 #endif
 
 #ifdef LAST_FIRMWARE_ONLY
- #undef DECR_SUPPORT
  #undef FIX_GAME
 #endif
 
