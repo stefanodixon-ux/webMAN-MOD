@@ -903,7 +903,11 @@ static void setup_form(char *buffer, char *templn)
 	}
 	#endif
 
+	#ifdef NOBD_PATCH
+	sprintf(templn, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]%s<p>", STR_DELETE, (payload_ps3hen || dex_mode || (c_firmware < 4.75f)) ? "" : " [<a href=\"/nobd.ps3\">noBD</a>]"); concat(buffer, templn);
+	#else
 	sprintf(templn, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]<p>", STR_DELETE); concat(buffer, templn);
+	#endif
 #endif
 
 	//memory usage

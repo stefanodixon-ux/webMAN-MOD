@@ -48,6 +48,7 @@
 #define CALC_MD5		1	// /md5.ps3/<file>
 #define LAUNCHPAD		1	// create /dev_hdd0/tmp/wm_lauchpad.xml
 #define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
+#define NOBD_PATCH		1	// /nobd.ps3
 
 //// TEST FEATURES ////
 //#define ALLOW_DISABLE_MAP_PATH	1	// Use SELECT+O to temporarily disable sys_map_path()
