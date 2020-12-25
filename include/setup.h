@@ -661,8 +661,10 @@ static void setup_form(char *buffer, char *templn)
 	_add_checkbox("dy", STR_DELAYAB, (webman_config->delay), buffer);
 
 #ifdef NOBD_PATCH
-	add_checkbox( "bl", STR_DEVBL, " • ", (webman_config->blind),  buffer);
-	_add_checkbox("bd", "noBD patch",     (webman_config->noBD),   buffer);
+	u8 noBD = !(payload_ps3hen || dex_mode || (c_firmware < 4.75f));
+	char *SEP = noBD ? (char*)" • " : (char*)"<br>";
+	add_checkbox( "bl", STR_DEVBL, SEP, (webman_config->blind),  buffer);
+	if(noBD) _add_checkbox("bd", "noBD patch", (webman_config->noBD),   buffer);
 #else
 	_add_checkbox( "bl", STR_DEVBL,  (webman_config->blind),  buffer);
 #endif
