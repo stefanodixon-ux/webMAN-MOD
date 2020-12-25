@@ -91,6 +91,10 @@ static void setup_parse_settings(char *param)
 	else
 		disable_dev_blind();
 
+#ifdef NOBD_PATCH
+	webman_config->noBD = IS_MARKED("bd=1"); apply_noBD_patches(webman_config->noBD);
+#endif
+
 	webman_config->nosetup = IS_MARKED("ns=1");
 	webman_config->nogrp   = IS_MARKED("ng=1");
 	webman_config->sman    = IS_MARKED("sm=1");
@@ -656,7 +660,13 @@ static void setup_form(char *buffer, char *templn)
 	_add_checkbox("ab", STR_AUTOB  , (webman_config->autob), buffer);
 	_add_checkbox("dy", STR_DELAYAB, (webman_config->delay), buffer);
 
-	_add_checkbox("bl", STR_DEVBL,   (webman_config->blind),   buffer);
+#ifdef NOBD_PATCH
+	add_checkbox( "bl", STR_DEVBL, " • ", (webman_config->blind),  buffer);
+	_add_checkbox("bd", "noBD patch",     (webman_config->noBD),   buffer);
+#else
+	_add_checkbox( "bl", STR_DEVBL,  (webman_config->blind),  buffer);
+#endif
+
 	_add_checkbox("wn", STR_NOWMDN,  (webman_config->wmstart), buffer);
 
 	_add_checkbox("pl", STR_USBPOLL, (webman_config->poll) , buffer);

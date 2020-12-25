@@ -478,6 +478,11 @@ static void wwwd_thread(u64 arg)
 		set_fan_speed(webman_config->man_speed);
 	}
 
+#ifdef NOBD_PATCH
+	if(webman_config->noBD)
+		apply_noBD_patches(1);
+#endif
+
 	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 
 #ifdef WM_REQUEST

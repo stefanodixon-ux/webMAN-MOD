@@ -64,8 +64,9 @@ typedef struct
 	u8 noss;    // 0=allow singstar icon, 1=remove singstar icon
 	u8 nosnd0;  // 0=allow SND0.AT3/ICON1.PAM, 1=mute SND0.AT3/ICON1.PAM
 	u8 dsc;     // 0=none, 1=disable syscalls if physical disc is inserted
+	u8 noBD;    // 0=normal, 1=apply noBD patch
 
-	u8 padding3[4];
+	u8 padding3[3];
 
 	// fan control settings
 

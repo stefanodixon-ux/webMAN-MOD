@@ -3062,21 +3062,14 @@ retry_response:
 
 							if(!param[9] || param[10])
 							{
-								//00712790  78 84 00 20 F8 01 00 70  F9 21 00 78 40 9E 00 0C
-								poke_lv1(0x712798ULL, noBD ? 0xF921007860000000ULL : 0xF9210078409E000CULL);
-								//00712890  F9 21 00 78 40 9D 00 14  E8 62 96 08 E8 BF 00 40
-								poke_lv1(0x712890ULL, noBD ? 0xF921007860000000ULL : 0xF9210078409D0014ULL);
-								//00712C10  2F BF 00 A7 41 9E 00 0C  2F BF 00 A5 40 9E 00 54
-								poke_lv1(0x712C18ULL, noBD ? 0x2FBF00A560000000ULL : 0x2FBF00A5409E0054ULL);
-								//00714BE0  78 63 00 20 40 9E 00 18  E8 01 00 90 EB E1 00 78
-								poke_lv1(0x714BE0ULL, noBD ? 0x7863002060000000ULL : 0x78630020409E0018ULL);
+								apply_noBD_patches(noBD);
 							}
+							_concat(&sbuffer, noBD ? STR_ENABLED : STR_DISABLED);
+							sprintf(param, "/peek.lv1?712790");
+							ps3mapi_find_peek_poke_hexview(pbuffer, templn, param);
 						}
-						_concat(&sbuffer, noBD ? STR_ENABLED : STR_DISABLED);
-						sprintf(param, "/peek.lv1?712790");
-						ps3mapi_find_peek_poke_hexview(pbuffer, templn, param);
 					}
- #endif
+ #endif // #ifdef NOBD_PATCH
  #ifdef DEBUG_MEM
 					else
 					if(islike(param, "/dump.ps3"))

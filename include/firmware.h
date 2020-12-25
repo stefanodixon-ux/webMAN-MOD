@@ -459,6 +459,23 @@ static void detect_firmware(void)
 #endif
 }
 
+#ifdef NOBD_PATCH
+static void apply_noBD_patches(u8 noBD)
+{
+	// noBD LV1 4.75 - 4.87
+	if(payload_ps3hen || dex_mode || (c_firmware < 4.75f)) return;
+
+	//00712790  78 84 00 20 F8 01 00 70  F9 21 00 78 40 9E 00 0C
+	poke_lv1(0x712798ULL, noBD ? 0xF921007860000000ULL : 0xF9210078409E000CULL);
+	//00712890  F9 21 00 78 40 9D 00 14  E8 62 96 08 E8 BF 00 40
+	poke_lv1(0x712890ULL, noBD ? 0xF921007860000000ULL : 0xF9210078409D0014ULL);
+	//00712C10  2F BF 00 A7 41 9E 00 0C  2F BF 00 A5 40 9E 00 54
+	poke_lv1(0x712C18ULL, noBD ? 0x2FBF00A560000000ULL : 0x2FBF00A5409E0054ULL);
+	//00714BE0  78 63 00 20 40 9E 00 18  E8 01 00 90 EB E1 00 78
+	poke_lv1(0x714BE0ULL, noBD ? 0x7863002060000000ULL : 0x78630020409E0018ULL);
+}
+#endif
+
 static void apply_lv2_patches(u64 addr_3C, u64 addr_3D, u64 addr_3E,
 						 u64 addr_jump, u64 addr_09)
 {
