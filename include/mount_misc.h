@@ -96,7 +96,13 @@
 			// mount PKGLAUNCH as disc
 			cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
 
-			if(file_exists(RETROARCH_DIR1))
+			if(file_exists(RETROARCH_DIR0))
+			{
+				//sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
+				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
+				sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
+			}
+			else if(file_exists(RETROARCH_DIR1))
 			{
 				//sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
 				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");

@@ -7,8 +7,10 @@
 #include <untar.h>
 #include <un7zip.h>
 
+#define RETROARCH0	"/dev_hdd0//game/RETROARCH/USRDIR/cores"
 #define RETROARCH1	"/dev_hdd0//game/SSNE10000/USRDIR/cores"
 #define RETROARCH2	"/dev_hdd0//game/SSNE10001/USRDIR/cores"
+
 #define SHOWTIME	"/dev_hdd0//game/HTSS00003/USRDIR/movian.self"
 
 #define VIDEO_EXTENSIONS ".MKV|.MP4|.AVI|.MPG|.MPEG|.MOV|.M2TS|.VOB|.FLV|.WMV|.ASF|.DIVX|.XVID|.PAM|.BIK|.BINK|.VP6|.MTH|.3GP|.RMVB|.OGM|.OGV|.M2T|.MTS|.TS|.TSV|.TSA|.TTS|.RM|.RV|.VP3|.VP5|.VP8|.264|.M1V|.M2V|.M4B|.M4P|.M4R|.M4V|.MP4V|.MPE|.BDMV|.DVB|.WEBM|.NSV"
@@ -258,16 +260,16 @@ int main(int argc, const char* argv[])
 	// find executable
 	if(*param == 0)
 	{
-		const char *sufix[2] = {"_libretro_ps3.SELF", "_libretro_psl1ght.SELF"};
+		const char *sufix[3] = {"_libretro_ps3.SELF", "_libretro_ps3.SELF", "_libretro_psl1ght.SELF"};
 
 		sprintf(param, "%s", path);
 
 		if(strstr(path, "/dev_bdvd/") == path) sprintf(path, "/ROMS/%s", param + 10);
 
 		char *RETROARCH;
-		for(int i = 0; i < 2; i++)
+		for(int i = 0; i < 3; i++)
 		{
-			RETROARCH = (i == 0) ? RETROARCH1 : RETROARCH2;
+			RETROARCH = (i == 0) ? RETROARCH0 : (i == 1) ? RETROARCH1 : RETROARCH2;
 
 			if(strcasestr(path, "/ROMS/SNES/"))
 			{
@@ -351,7 +353,8 @@ int main(int argc, const char* argv[])
 			{
 									 sprintf(path, "%s/mame078%s",  RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/mame2000%s", RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/mame2003%s	", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/mame2003%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/mame2003_plus%s", RETROARCH, sufix[i]);
 			}
 			else
 			if(strcasestr(path, "/ROMS/MAME078/"))  sprintf(path, "%s/mame078%s",       RETROARCH, sufix[i]);   else
@@ -398,7 +401,12 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/O2EM"))        sprintf(path, "%s/o2em%s",       RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/HANDY"))       sprintf(path, "%s/handy%s",      RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/NXENGINE"))    sprintf(path, "%s/nxengine%s",   RETROARCH, sufix[i]);    else
-			if(strcasestr(path, "/ROMS/DOSBOX/"))     sprintf(path, "%s/dosbox%s",     RETROARCH, sufix[i]);    else
+			if(strcasestr(path, "/ROMS/DOSBOX/"))
+			{
+									 sprintf(path, "%s/dosbox_svn%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/dosbox%s",     RETROARCH, sufix[i]);
+			}
+			else
 			if(strcasestr(path, "/ROMS/VECX/"))       sprintf(path, "%s/vecx%s",       RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/INTV/"))       sprintf(path, "%s/freeintv%s",   RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/2048/"))       sprintf(path, "%s/2048%s",       RETROARCH, sufix[i]);    else

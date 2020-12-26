@@ -563,7 +563,7 @@ static void netiso_stop_thread(__attribute__((unused)) u64 arg)
 
 	sys_ppu_thread_exit(0);
 }
-#endif // #ifdef USE_INTERNAL_PLUGIN
+#endif // #ifdef USE_INTERNAL_NET_PLUGIN
 
 static bool is_netsrv_enabled(u8 server_id)
 {

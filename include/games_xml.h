@@ -270,7 +270,10 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	char *RETROARCH_DIR = NULL;
 	if(c_roms)
 	{
-		RETROARCH_DIR = file_exists(RETROARCH_DIR1) ? (char*)RETROARCH_DIR1 : (char*)RETROARCH_DIR2;
+		RETROARCH_DIR = file_exists(RETROARCH_DIR0) ? (char*)RETROARCH_DIR0 :
+						file_exists(RETROARCH_DIR1) ? (char*)RETROARCH_DIR1 :
+													  (char*)RETROARCH_DIR2;
+
 		c_roms = isDir(PKGLAUNCH_DIR) && isDir(RETROARCH_DIR);
 	}
 	#endif
