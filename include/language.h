@@ -465,6 +465,8 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 				size_t str_len = 0; u8 copy = 0;
 
+				cellFsReadWithOffset(fd, lang_pos, buffer, CHUNK_SIZE, NULL); p = 0;
+
 				// set value
 				while(lang_pos < size)
 				{

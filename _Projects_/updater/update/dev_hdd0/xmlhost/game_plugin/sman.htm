@@ -18,8 +18,8 @@
 
 <div id="top_action">
 	<div id="top_buttons">
-	<a onclick="$('rxml').style.display='block';self.location='/refresh.ps3?xmb;/sman.ps3';" class="t_menu"><span id="refresh">Refresh</span></a>
-	<a onclick="self.location='/mount.ps3/unmount?/sman.ps3';" class="t_menu"><span id="eject">Eject</span></a>
+	<a onclick="$('rxml').style.display='block';self.location=(event.ctrlKey)?'/refresh.ps3;/sman.ps3':'/refresh.ps3?xmb;/sman.ps3';" class="t_menu"><span id="refresh">Refresh</span></a>
+	<a onclick="self.location=(event.ctrlKey)?'/mount_ps3/unmount?/sman.ps3':'/mount.ps3/unmount?/sman.ps3';" class="t_menu"><span id="eject">Eject</span></a>
 	<a onclick="self.location='/insert.ps3';" class="t_menu"><span id="insert">Insert</span></a>
 	<a onclick="self.location='/restart.ps3';" class="t_menu"><span id="restart">Restart</span></a>
 	<a onclick="self.location='/shutdown.ps3';" class="t_menu"><span id="shutdown">Shutdown</span></a>
@@ -35,7 +35,7 @@
 </div>
 
 <div id="left_action">
-	<a onclick="$('rhtm').style.display='block';self.location='/sman.ps3?';" class="b_games"><span id="games">Games</span></a>
+	<a onclick="$('rhtm').style.display='block';self.location=(event.ctrlKey)?'/index.ps3':'/sman.ps3?';" class="b_games"><span id="games">Games</span></a>
 	<a onclick="self.location='/';" class="b_files"><span id="files">Files</span></a>
 	<a onclick="self.location='/games.ps3';" class="b_cflow">Coverflow</a>
 	<a onclick="self.location='/home.ps3mapi/sman.ps3';" class="b_ps3mapi">PS3MAPI</a>

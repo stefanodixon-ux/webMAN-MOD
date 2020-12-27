@@ -120,6 +120,9 @@
 			copy_rom_media(_path);
 
 			mount_unk = EMU_ROMS;
+
+			if(launch_app_home_icon()) ret = true;
+
 			goto mounting_done; //goto exit_mount;
 		}
 	}
