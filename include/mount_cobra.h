@@ -178,7 +178,7 @@
 					{
 						get_name(templn, _path, NO_EXT);
 						cache_icon0_and_param_sfo(templn);
-						sys_map_path("/app_home", "/dev_bdvd");
+						if(!(webman_config->app_home)) sys_map_path("/app_home", "/dev_bdvd");
 	#ifdef FIX_GAME
 						fix_game(_path, title_id, webman_config->fixgame);
 	#endif
@@ -329,7 +329,7 @@
 				{
 					mount_unk = netiso_args.emu_mode = EMU_PS3;
 					if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);
-					sys_map_path("/app_home", "/dev_bdvd");
+					if(!(webman_config->app_home)) sys_map_path("/app_home", "/dev_bdvd");
 				}
 				else if(islike(netpath, "/ROMS/") && !is_iso)
 				{
@@ -461,7 +461,7 @@
 					cobra_mount_ps3_disc_image(cobra_iso_list, iso_parts);
 					sys_ppu_thread_usleep(2500);
 					cobra_send_fake_disc_insert_event();
-					sys_map_path("/app_home", "/dev_bdvd");
+					if(!(webman_config->app_home)) sys_map_path("/app_home", "/dev_bdvd");
 
 					{
 						get_name(templn, _path, GET_WMTMP);
