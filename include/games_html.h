@@ -24,17 +24,17 @@ enum paths_ids
 	id_NPDRM    = 99,
 };
 
-#define IS_ISO_FOLDER  ((f1>=id_PS3ISO) && (f1!=id_GAMEI) && (f1!=id_VIDEO))
-#define IS_PS3_TYPE    ((f1<=id_PS3ISO) || (f1==id_VIDEO || (f1==id_GAMEI)))
-#define IS_BLU_TYPE    ((f1<=id_BDISO)  || (f1==id_VIDEO || (f1==id_GAMEI)))
+#define IS_ISO_FOLDER   ((f1>=id_PS3ISO) && (f1!=id_GAMEI) && (f1!=id_VIDEO))
+#define IS_PS3_TYPE     ((f1<=id_PS3ISO) || (f1==id_VIDEO || (f1==id_GAMEI)))
+#define IS_BLU_TYPE     ((f1<=id_BDISO)  || (f1==id_VIDEO || (f1==id_GAMEI)))
 
 #define IS_JB_FOLDER    ((f1<=id_GAMEZ) || (f1==id_VIDEO) || (f1==id_GAMEI))
-#define IS_PS3_FOLDER    (f1==id_PS3ISO)
-#define IS_BLU_FOLDER    (f1==id_BDISO)
-#define IS_DVD_FOLDER    (f1==id_DVDISO)
-#define IS_PS2_FOLDER    (f1==id_PS2ISO)
-#define IS_PSX_FOLDER   ((f1==id_PSXISO) || (f1==id_PSXGAMES))
-#define IS_PSP_FOLDER   ((f1==id_PSPISO) || (f1==id_ISO))
+#define IS_PS3ISO        (f1==id_PS3ISO)
+#define IS_BDISO         (f1==id_BDISO)
+#define IS_DVDISO        (f1==id_DVDISO)
+#define IS_PS2ISO        (f1==id_PS2ISO)
+#define IS_PSXISO       ((f1==id_PSXISO) || (f1==id_PSXGAMES))
+#define IS_PSPISO       ((f1==id_PSPISO) || (f1==id_ISO))
 #define IS_VIDEO_FOLDER  (f1==id_VIDEO)
 #define IS_GAMEI_FOLDER  (f1==id_GAMEI)
 #define IS_ROMS_FOLDER   (f1==id_ROMS)
@@ -91,7 +91,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		{
 			if(!strcasestr(ROMS_EXTENSIONS, ext)) return FAILED;
 		}
-		else if(IS_PSP_FOLDER && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
+		else if(IS_PSPISO && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
 		else
 			if(!strcasestr(ISO_EXTENSIONS + 10, ext)) return FAILED;
 	}
@@ -222,12 +222,12 @@ static int check_drive(u8 f0)
 
 static int check_content_type(u8 f1)
 {
-	if( (webman_config->cmask & PS3) && IS_PS3_TYPE   ) return FAILED; // 0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI"
-	if( (webman_config->cmask & BLU) && IS_BLU_FOLDER ) return FAILED;
-	if( (webman_config->cmask & DVD) && IS_DVD_FOLDER ) return FAILED;
-	if( (webman_config->cmask & PS2) && IS_PS2_FOLDER ) return FAILED;
-	if( (webman_config->cmask & PS1) && IS_PSX_FOLDER ) return FAILED;
-	if( (webman_config->cmask & PSP) && IS_PSP_FOLDER ) return FAILED;
+	if( (webman_config->cmask & PS3) && IS_PS3_TYPE) return FAILED; // 0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI"
+	if( (webman_config->cmask & BLU) && IS_BDISO   ) return FAILED;
+	if( (webman_config->cmask & DVD) && IS_DVDISO  ) return FAILED;
+	if( (webman_config->cmask & PS2) && IS_PS2ISO  ) return FAILED;
+	if( (webman_config->cmask & PS1) && IS_PSXISO  ) return FAILED;
+	if( (webman_config->cmask & PSP) && IS_PSPISO  ) return FAILED;
 #ifdef MOUNT_ROMS
 	if((!webman_config->roms)        && IS_ROMS_FOLDER) return FAILED;
 #endif
@@ -259,7 +259,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 			snprintf(skey, HTML_KEY_LEN + 1, "%s", templn);
 		else
 		{
-			char group = IS_BLU_FOLDER ? id_VIDEO : get_default_icon_by_type(f1);
+			char group = IS_BDISO ? id_VIDEO : get_default_icon_by_type(f1);
 			snprintf(skey, HTML_KEY_LEN + 1, "%c%s", group, templn);
 		}
 #else
@@ -323,11 +323,11 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 		return ((IS_ISO_FOLDER || IS_VIDEO_FOLDER)  && (flen > 4) && (
 				(              _IS(ext, ".iso")) ||
 				((flen > 6) && _IS(entry_name + flen - 6, ".iso.0")) ||
-				((IS_PS2_FOLDER) && strcasestr(".bin|.img|.mdf|.enc", ext)) ||
-				((IS_PSX_FOLDER || IS_DVD_FOLDER || IS_BLU_FOLDER) && strcasestr(ISO_EXTENSIONS + 17, ext))
+				((IS_PS2ISO) && strcasestr(".bin|.img|.mdf|.enc", ext)) ||
+				((IS_PSXISO || IS_DVDISO || IS_BDISO) && strcasestr(ISO_EXTENSIONS + 17, ext))
 				));
 #else
-	return (IS_PS2_FOLDER && flen > 8 && IS(entry_name + flen - 8, ".BIN.ENC"));
+	return (IS_PS2ISO && flen > 8 && IS(entry_name + flen - 8, ".BIN.ENC"));
 #endif
 }
 
@@ -598,11 +598,11 @@ list_games:
 			for(u8 f1 = filter1; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 			{
 #ifndef COBRA_ONLY
-				if(IS_ISO_FOLDER && !(IS_PS2_FOLDER)) continue; // 0="GAMES", 1="GAMEZ", 5="PS2ISO", 10="video"
+				if(IS_ISO_FOLDER && !(IS_PS2ISO)) continue; // 0="GAMES", 1="GAMEZ", 5="PS2ISO", 10="video"
 #endif
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
-				//if(IS_PS2_FOLDER && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
+				//if(IS_PS2ISO && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
 				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
 				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"

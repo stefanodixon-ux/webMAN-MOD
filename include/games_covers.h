@@ -452,13 +452,13 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 static enum icon_type get_default_icon_by_type(u8 f1)
 {
 	return  IS_PS3_TYPE    ? iPS3 :
-			IS_PSX_FOLDER  ? iPSX :
-			IS_PS2_FOLDER  ? iPS2 :
-			IS_PSP_FOLDER  ? iPSP :
+			IS_PSXISO      ? iPSX :
+			IS_PS2ISO      ? iPS2 :
+			IS_PSPISO      ? iPSP :
 #ifdef MOUNT_ROMS
 			IS_ROMS_FOLDER ? iROM :
 #endif
-			IS_DVD_FOLDER  ? iDVD : iBDVD;
+			IS_DVDISO      ? iDVD : iBDVD;
 }
 
 static enum icon_type get_default_icon(char *icon, const char *param, char *file, int is_dir, char *title_id, int ns, u8 f0, u8 f1)
@@ -599,15 +599,15 @@ static int get_name_iso_or_sfo(char *templn, char *title_id, char *icon, const c
 		flen-=13; if(flen < 0) return FAILED;
 
 		char *ntfs_ext = (char*)entry_name + flen;
-		if(IS_PS3_FOLDER && !IS(ntfs_ext, ".ntfs[PS3ISO]")) return FAILED;
-		if(IS_PS2_FOLDER && !IS(ntfs_ext, ".ntfs[PS2ISO]")) return FAILED;
-		if(IS_PSX_FOLDER && !IS(ntfs_ext, ".ntfs[PSXISO]")) return FAILED;
-		if(IS_PSP_FOLDER && !IS(ntfs_ext, ".ntfs[PSPISO]")) return FAILED;
-		if(IS_DVD_FOLDER && !IS(ntfs_ext, ".ntfs[DVDISO]")) return FAILED;
-		if(IS_BLU_FOLDER && !strstr(ntfs_ext, ".ntfs[BD" )) return FAILED;
+		if(IS_PS3ISO && !IS(ntfs_ext, ".ntfs[PS3ISO]")) return FAILED;
+		if(IS_PS2ISO && !IS(ntfs_ext, ".ntfs[PS2ISO]")) return FAILED;
+		if(IS_PSXISO && !IS(ntfs_ext, ".ntfs[PSXISO]")) return FAILED;
+		if(IS_PSPISO && !IS(ntfs_ext, ".ntfs[PSPISO]")) return FAILED;
+		if(IS_DVDISO && !IS(ntfs_ext, ".ntfs[DVDISO]")) return FAILED;
+		if(IS_BDISO  && !strstr(ntfs_ext, ".ntfs[BD" )) return FAILED;
 	}
 
-	if(IS_PS3_FOLDER)
+	if(IS_PS3ISO)
 	{
 		get_name(templn, entry_name, GET_WMTMP); strcat(templn, ".SFO\0"); // WMTMP
 		if((!IS_NTFS) && not_exists(templn))

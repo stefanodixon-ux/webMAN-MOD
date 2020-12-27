@@ -26,4 +26,5 @@ set PKG_NAME=./%CONTENTID%.pkg
 :: This will run the Python PKG script...
 python.exe %PKG% --contentid %CONTENTID% %PKG_DIR% %PKG_NAME%
 
+ren UP0001-PKGLAUNCH_00-0000000000000000.pkg ROMS_PKG_Launcher.pkg
 pause

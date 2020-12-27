@@ -42,7 +42,11 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 
 	char c, enc_filename[MAX_PATH_LEN];
 
-	slaunch.type = IS_ROMS_FOLDER ? TYPE_ROM : IS_PS3_TYPE ? TYPE_PS3 : IS_PSX_FOLDER ? TYPE_PS1 : IS_PS2_FOLDER ? TYPE_PS2 : IS_PSP_FOLDER ? TYPE_PSP : TYPE_VID;
+	slaunch.type =  IS_ROMS_FOLDER ? TYPE_ROM :
+					IS_PS3_TYPE    ? TYPE_PS3 :
+					IS_PSXISO      ? TYPE_PS1 :
+					IS_PS2ISO      ? TYPE_PS2 :
+					IS_PSPISO      ? TYPE_PSP : TYPE_VID;
 
 #ifdef WM_REQUEST
 	if(usb0_picture_exists)
