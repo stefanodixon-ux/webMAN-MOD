@@ -489,10 +489,10 @@ static void wwwd_thread(u64 arg)
 #endif
 
 #ifdef COBRA_ONLY
-	if(isDir(webman_config->home_url))
+	if(webman_config->homeb && isDir(webman_config->home_url))
 		set_app_home(webman_config->home_url);
-
-	{sys_map_path((char*)"/app_home", NULL);}
+	else
+		sys_map_path((char*)"/app_home", NULL);
 #endif
 
 	from_reboot = file_exists(WMNOSCAN);
