@@ -530,7 +530,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 
 	u32 pid = 0;
 	u64 address = 0x10000;
-	int length = 0x200;
+	int length = 0x80;
 
 	if(strstr(param, ".ps3mapi?"))
 	{
@@ -540,11 +540,13 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			address = convertH(addr_tmp);
 
 			length = (int)get_valuen32(param, "len=");
-			if(length == 0) {length = 0x200; char *pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
-			length = RANGE(length, 1, 0x200);
+			if(length == 0) {length = 0x80; char *pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
+			length = RANGE(length, 1, 0x80);
 
 			pid = get_valuen32(param, "proc=");
 		}
+		else
+			pid = GetGameProcessID();
 	}
 
 	if(!is_ps3mapi_home)
@@ -564,7 +566,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 	add_proc_list(buffer, templn, &pid, 1);
 
 	sprintf(templn, "<b><u>%s:</u></b> " HTML_INPUT("addr", "%llX", "16", "18")
-					"   <b><u>%s:</u></b> <input name=\"len\" type=\"number\" value=\"%i\" min=\"1\" max=\"2048\">"
+					"   <b><u>%s:</u></b> <input name=\"len\" type=\"number\" value=\"%i\" min=\"1\" max=\"128\">"
 					"   <input class=\"bs\" type=\"submit\" value=\" %s \"/></form>", "Address", address, "Length", length, "Get");
 	concat(buffer, templn);
 
@@ -629,11 +631,14 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			// add navigation with left/right keys
 			concat(buffer,  "<script>"
 							"document.addEventListener('keydown',kd,false);"
-							"function kd(e)"
-							"{e=e||window.event;var kc=e.keyCode;if(kc==37){e.ctrlKey?pblk.click():back.click();}if(kc==39){e.ctrlKey?nblk.click():next.click();}}"
+							"function kd(e){"
+							"if(typeof document.activeElement.name!='undefined')return;"
+							"e=e||window.event;var kc=e.keyCode;"
+							"if(kc==37){e.ctrlKey?pblk.click():back.click();}"
+							"if(kc==39){e.ctrlKey?nblk.click():next.click();}}"
 							"</script>");
 
-			concat(buffer, "<br><textarea id=\"output\" name=\"output\" cols=\"111\" rows=\"10\" readonly=\"true\">");
+			concat(buffer, "<textarea id=\"output\" name=\"output\" style=\"display:none\">");
 
 			for(int i = 0; i < length; i++)
 			{
@@ -642,7 +647,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			}
 		}
 		else {sprintf(templn, "%s: %i", "Error", retval); concat(buffer, templn);}
-		concat(buffer, "</textarea><br>");
+		concat(buffer, "</textarea>");
 	}
 
 	concat(buffer, "<br>");
@@ -673,7 +678,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 		{
 			address = convertH(addr_tmp);
 
-			length = get_param("val=", val_tmp, param, 0x200) / 2;
+			length = get_param("val=", val_tmp, param, 0x100) / 2;
 			if(length)
 			{
 				Hex2Bin(val_tmp, value);
@@ -681,6 +686,8 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 				pid = get_valuen32(param, "proc=");
 			}
 		}
+		else
+			pid = GetGameProcessID();
 	}
 
 	if(!is_ps3mapi_home && islike(param, "/setmem.ps3mapi")) ps3mapi_getmem(buffer, templn, param);
@@ -705,7 +712,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 					"<br><br><b><u>%s:</u></b><br>"
 					"<table width=\"800\">"
 					"<tr><td class=\"la\">"
-					"<textarea id=\"val\" name=\"val\" cols=\"111\" rows=\"3\" maxlength=\"199\">%s</textarea></td></tr>"
+					"<textarea id=\"val\" name=\"val\" cols=\"110\" rows=\"4\" maxlength=\"199\">%s</textarea></td></tr>"
 					"<tr><td class=\"ra\"><br>"
 					"<input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr></table></form>", "Address", address, "Value", val_tmp, "Set");
 	concat(buffer, templn);
