@@ -288,7 +288,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 		*pos = NULL;
 	}
 
-	if(IS_INGAME)
+	if(IS_INGAME || webman_config->msg_icon)
 		return vshtask_notify(msg);
 
 	uint32_t _plugin = View_Find(plugin);

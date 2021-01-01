@@ -794,6 +794,13 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home) concat(buffer,	HTML_RED_SEPARATOR);
 }
 
+static void ps3mapi_get_vsh_plugin_info(unsigned int slot, char *tmp_name, char *tmp_filename)
+{
+	memset(tmp_name, 0, 30);
+	memset(tmp_filename, 0, STD_PATH_LEN);
+	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename);
+}
+
 static void add_plugins_list(char *buffer, char *templn)
 {
 	if(!strstr(buffer, "<datalist id=\"plugins\">"))
@@ -865,9 +872,8 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 
 				for (unsigned int slot = 1; slot < 7; slot++)
 				{
-					memset(tmp_name, 0, sizeof(tmp_name));
-					memset(tmp_filename, 0, sizeof(tmp_filename));
-					{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename); }
+					ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
+
 					if(*tmp_filename)
 					{
 						size_t flen = sprintf(templn, "%s\n", tmp_filename);
@@ -910,9 +916,8 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 	buffer += concat(buffer, templn);
 	for (unsigned int slot = 0; slot < 7; slot++)
 	{
-		memset(tmp_name, 0, sizeof(tmp_name));
-		memset(tmp_filename, 0, sizeof(tmp_filename));
-		{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename); }
+		ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
+
 		if(*tmp_filename)
 		{
 			sprintf(templn, "<tr><td width=\"75\" class=\"la\">%i</td>"
@@ -1679,9 +1684,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						if(split)
 						{
 							unsigned int slot = val(param2);
-							memset(param1, 0, sizeof(param1));
-							memset(param2, 0, sizeof(param2));
-							{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)param1, (u64)(u32)param2); }
+							ps3mapi_get_vsh_plugin_info(slot, param1, param2);
 							sprintf(buffer, "200 %s|%s\r\n", param1, param2);
 							ssend(conn_s_ps3mapi, buffer);
 						}
@@ -1834,13 +1837,9 @@ static unsigned int get_vsh_plugin_slot_by_name(const char *name, bool unload)
 	unsigned int slot;
 	for (slot = 1; slot < 7; slot++)
 	{
-		memset(tmp_name, 0, sizeof(tmp_name));
-		memset(tmp_filename, 0, sizeof(tmp_filename));
+		ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
 
-		{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename); }
-
-		if(find_free_slot) {if(*tmp_name) continue; break;}
-		else
+		if(find_free_slot) {if(*tmp_name) continue; break;} else
 		if(IS(tmp_name, name) || strstr(tmp_filename, name)) {if(unload) cobra_unload_vsh_plugin(slot); break;}
 	}
 	return slot;

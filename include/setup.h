@@ -71,6 +71,7 @@ static void setup_parse_settings(char *param)
 
 	webman_config->nobeep = IS_UNMARKED("nb=1");
 	webman_config->wm_proxy = IS_UNMARKED("wp=1");
+	webman_config->msg_icon = IS_UNMARKED("mn=1");
 
 #ifdef PKG_HANDLER
 	webman_config->auto_install_pkg = IS_UNMARKED("ai=1");
@@ -669,7 +670,8 @@ static void setup_form(char *buffer, char *templn)
 	_add_checkbox( "bl", STR_DEVBL,  (webman_config->blind),  buffer);
 #endif
 
-	_add_checkbox("wn", STR_NOWMDN,  (webman_config->wmstart), buffer);
+	add_checkbox("wn", STR_NOWMDN, " • ", (webman_config->wmstart), buffer);
+	_add_checkbox("mn", "Icon", !(webman_config->msg_icon), buffer);
 
 	_add_checkbox("pl", STR_USBPOLL, (webman_config->poll) , buffer);
 #ifdef COBRA_ONLY
