@@ -417,8 +417,12 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 	bool set_base_path = false;
 
 	size_t slen = sprintf(buffer,	"HTTP/1.1 200 OK\r\n"
-									"Access-Control-Allow-Origin: *\r\n"
-									"Content-Type: "); char *header = buffer + slen;
+									"%s"
+									"Content-Type: ",
+									webman_config->bind ? "" : // disallow CORS if bind (remote access to FTP/WWW services) is disabled
+									"Access-Control-Allow-Origin: *\r\n"); // default: allow CORS (Cross-Origin Resource Sharing)
+
+	char *header = buffer + slen;
 
 	int flen = strlen(param);
 

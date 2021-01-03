@@ -604,6 +604,7 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLES_511.10</td><td>Hitman 2 - Silent Assassin</td></tr>
 <tr><td>CUSTOM</td><td>SLKA_250.55</td><td>Hitman 2 - Silent Assassin</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_203.74</td><td>Hitman 2 - Silent Assassin</td></tr>
+<tr><td>CUSTOM</td><td>SCUS_971.30</td><td>Hot Shots Golf 3</td></tr>
 <tr><td>CUSTOM</td><td>SCUS_976.10</td><td>Hot Shots Tennis</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_216.28</td><td>Hot Wheels - Beat That</td></tr>
 <tr><td>CUSTOM</td><td>SLES_549.71</td><td>Hot Wheels - Beat That!</td></tr>
@@ -1160,6 +1161,8 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLUS_207.15</td><td>WWII Paratroopers</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_213.48</td><td>Yakuza</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_662.96</td><td>Yamiyo ni Sasayaku - Tantei Sagara Kyouichirou</td></tr>
+<tr><td>CUSTOM</td><td>SLUS_202.78</td><td>Yanya Caballista - City Skater</td></tr>
+<tr><td>CUSTOM</td><td>SLPM_620.51</td><td>Yanya Caballista - featuring Gawoo</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_200.94</td><td>X Squad</td></tr>
 <tr><td>CUSTOM</td><td>SLES_500.31</td><td>X-Squad</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_204.69</td><td>Xenosaga - Episode I - Der Wille zur Macht</td></tr>
@@ -2981,6 +2984,7 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLES_511.09</td><td>Hitman 2 - Silent Assassin</td></tr>
 <tr><td>ENC</td><td>SLES_511.07</td><td>Hitman 2 - Silent Assassin</td></tr>
 <tr><td>ENC</td><td>SLUS_203.74</td><td>Hitman 2 - Silent Assassin</td></tr>
+<tr><td>ENC</td><td>SCUS_971.30</td><td>Hot Shots Golf 3</td></tr>
 <tr><td>ENC</td><td>SCUS_976.10</td><td>Hot Shots Tennis</td></tr>
 <tr><td>ENC</td><td>SLES_549.71</td><td>Hot Wheels - Beat That!</td></tr>
 <tr><td>ENC</td><td>SLUS_216.28</td><td>Hot Wheels - Beat That</td></tr>
@@ -3585,6 +3589,8 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLUS_204.69</td><td>Xenosaga - Episode I - Der Wille zur Macht</td></tr>
 <tr><td>ENC</td><td>SLUS_213.48</td><td>Yakuza</td></tr>
 <tr><td>ENC</td><td>SLPM_662.96</td><td>Yamiyo ni Sasayaku - Tantei Sagara Kyouichirou</td></tr>
+<tr><td>ENC</td><td>SLUS_202.78</td><td>Yanya Caballista - City Skater</td></tr>
+<tr><td>ENC</td><td>SLPM_620.51</td><td>Yanya Caballista - featuring Gawoo</td></tr>
 <tr><td>ENC</td><td>SLPS_258.51</td><td>Zettai Zetsumei Toshi 2 - Itetsuita Kioku Tachi [Irem Collection]</td></tr>
 <tr><td>ENC</td><td>SLPS_256.06</td><td>Zettai Zetsumei Toshi 2 - Itetsuita Kioutachi</td></tr>
 <tr><td>ENC</td><td>SLPS_251.13</td><td>Zettai Zetsumei Toshi</td></tr>
@@ -3604,7 +3610,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2318; i < count; i++) {
+for (i = 2323; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }

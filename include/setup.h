@@ -1330,7 +1330,8 @@ static void read_settings(void)
 	webman_config->pspl = 1;          //Show PSP Launcher
 	webman_config->ps2l = 1;          //Show PS2 Classic Launcher
 
-	webman_config->noBD = isNOBD;     //Get initial status for noBD
+	if(ALLOW_NOBD)
+		webman_config->noBD = isNOBD;     //Get initial status for noBD
 
 	//webman_config->ps2emu = 0;      //default PS2 emulator on B/C consoles: 0 = ps2_emu, 1 = ps2_netemu
 	//webman_config->ps2config = 0;   //enable auto lookup for PS2 CONFIG

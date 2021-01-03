@@ -33,6 +33,8 @@ static u8 max_temp  = 0; //syscon
 #define SC_GET_FAN_POLICY		(409)
 #define SC_GET_TEMPERATURE		(383)
 
+#define FIRST_10_SECONDS	(rTick.tick < gTick.tick + 10000000)
+
 u64 get_fan_policy_offset  = 0;
 u64 set_fan_policy_offset  = 0;
 u64 restore_set_fan_policy = 0; // set in firmware.h
@@ -47,6 +49,8 @@ static void get_temperature(u32 _dev, u8 *temp)
 
 static void sys_sm_set_fan_policy(u8 unknown , u8 fan_mode, u8 fan_speed)
 {
+	if(payload_ps3hen && IS_INGAME && FIRST_10_SECONDS) return; // skip first 10secs in-game
+
 	// syscon mode: 0, 1, 0x0
 	// manual mode: 0, 2, fan_speed (0x33 - 0xFF)
 
@@ -59,6 +63,8 @@ static void sys_sm_set_fan_policy(u8 unknown , u8 fan_mode, u8 fan_speed)
 
 static void sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknown)
 {
+	if(payload_ps3hen && IS_INGAME && FIRST_10_SECONDS) return; // skip first 10secs in-game
+
 	u64 restore_get_fan_policy = peekq(get_fan_policy_offset); // sys 409 get_fan_policy
 	u64 enable_get_fan_policy = 0x3860000100000000ULL | (restore_get_fan_policy & 0xffffffffULL);
 

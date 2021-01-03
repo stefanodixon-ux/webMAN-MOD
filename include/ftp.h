@@ -139,6 +139,8 @@ static sys_addr_t allocate_ftp_buffer(sys_addr_t sysmem)
 	return NULL;
 }
 
+#define is_remote_ip (conn_info.local_adr.s_addr != conn_info.remote_adr.s_addr)
+
 static void handleclient_ftp(u64 conn_s_ftp_p)
 {
 	int conn_s_ftp = (int)conn_s_ftp_p; // main communications socket
@@ -149,7 +151,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	char remote_ip[16];
 	sprintf(remote_ip, "%s", inet_ntoa(conn_info.remote_adr));
 
-	if(webman_config->bind && ((conn_info.local_adr.s_addr != conn_info.remote_adr.s_addr) && strncmp(remote_ip, webman_config->allow_ip, strlen(webman_config->allow_ip)) != 0))
+	// check remote access
+	if(webman_config->bind && is_remote_ip && !islike(remote_ip, webman_config->allow_ip))
 	{
 		ssend(conn_s_ftp, "451 Access Denied. Use SETUP to allow remote connections.\r\n");
 		sclose(&conn_s_ftp);

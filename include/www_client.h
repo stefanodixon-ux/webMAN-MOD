@@ -341,7 +341,7 @@ static void handleclient_www(u64 conn_s_p)
 	if(loading_html > 10) loading_html = 0;
 
 	bool is_local = true;
-	sys_net_sockinfo_t conn_info_main;
+	sys_net_sockinfo_t conn_info;
 
 	u8 max_cc = 0; // count client connections per persistent connection
 	u8 keep_alive = 0;
@@ -355,21 +355,23 @@ static void handleclient_www(u64 conn_s_p)
 	if(!wm_request)
  #endif
 	{
-		sys_net_get_sockinfo(conn_s, &conn_info_main, 1);
+		sys_net_get_sockinfo(conn_s, &conn_info, 1);
 
-		char *ip_address = cmd;
-		is_local = (conn_info_main.local_adr.s_addr == conn_info_main.remote_adr.s_addr);
+		char *remote_ip = cmd;
+		sprintf(remote_ip, "%s", inet_ntoa(conn_info.remote_adr));
 
-		sprintf(ip_address, "%s", inet_ntoa(conn_info_main.remote_adr));
-		if(webman_config->bind && (!is_local) && !islike(ip_address, webman_config->allow_ip))
+		// check remote access
+		if(webman_config->bind && is_remote_ip && !islike(remote_ip, webman_config->allow_ip))
 		{
 			keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, STR_ERROR);
 
 			goto exit_handleclient_www;
 		}
 
-		if(!webman_config->netd[0] && !webman_config->neth[0][0]) strcpy(webman_config->neth[0], ip_address); // show client IP if /net0 is empty
-		if(!webman_config->bind) strcpy(webman_config->allow_ip, ip_address);
+		is_local = (conn_info.local_adr.s_addr == conn_info.remote_adr.s_addr);
+
+		if(!webman_config->netd[0] && !webman_config->neth[0][0]) strcpy(webman_config->neth[0], remote_ip); // show client IP if /net0 is empty
+		if(!webman_config->bind) strcpy(webman_config->allow_ip, remote_ip); // default allowed remote ip
 	}
 
 /*
@@ -2569,7 +2571,7 @@ retry_response:
 					{
 						// /chat.ps3    webchat
 
-						webchat(buffer, templn, param, tempstr, conn_info_main);
+						webchat(buffer, templn, param, tempstr, conn_info);
 					}
 					else
   #endif
