@@ -903,7 +903,7 @@ parse_request:
 				// /install.ps3<p3t-path>  install ps3 theme
 				// /install.ps3<directory> install pkgs in directory (GUI)
 				// /install.ps3$           install webman addons (GUI)
-				// /install.ps3$all        install all pkg files in /dev_hdd0/packages & delete pkg
+				// /install_ps3$all        install all pkg files in /dev_hdd0/packages & delete pkg
 				// /install_ps3            install all pkg files in /dev_hdd0/packages
 				// /install_ps3$           install all webman addons
 				// /install_ps3<path>      install pkg files in <path>
@@ -935,7 +935,7 @@ parse_request:
 				{
 					if(install_ps3) // /install_ps3/<path> = install all files
 					{
-						installPKG_all(pkg_file, false); // keep files
+						installPKG_all(pkg_file, pkg_delete_after_install); // keep files
 						sys_ppu_thread_sleep(1); // wait to copy "pkgfile" variable in installPKG_combo_thread
 					}
 					is_binary = WEB_COMMAND;
@@ -3049,14 +3049,12 @@ retry_response:
 						_concat(&sbuffer, "noBD: ");
 
 						// noBD LV1 4.75 - 4.87
-						if(payload_ps3hen || dex_mode || (c_firmware < 4.75f))
-							_concat(&sbuffer, STR_ERROR);
-						else
+						if(ALLOW_NOBD)
 						{
 							if(!param[9])
-								noBD = (peek_lv1(0x714BE0ULL) != 0x7863002060000000ULL);  // toggle noBD
+								noBD = !isNOBD;  // toggle noBD
 							else if(!param[10])
-								noBD = (peek_lv1(0x714BE0ULL) == 0x7863002060000000ULL);  // status noBD
+								noBD =  isNOBD;  // status noBD
 							else if( param[10] & 1) noBD = 1; //enable
 							else if(~param[10] & 1) noBD = 0; //disable
 
@@ -3068,6 +3066,8 @@ retry_response:
 							sprintf(param, "/peek.lv1?712790");
 							ps3mapi_find_peek_poke_hexview(pbuffer, templn, param);
 						}
+						else
+							_concat(&sbuffer, STR_ERROR);
 					}
  #endif // #ifdef NOBD_PATCH
  #ifdef DEBUG_MEM

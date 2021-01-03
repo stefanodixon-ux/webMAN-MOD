@@ -662,7 +662,7 @@ static void setup_form(char *buffer, char *templn)
 	_add_checkbox("dy", STR_DELAYAB, (webman_config->delay), buffer);
 
 #ifdef NOBD_PATCH
-	u8 noBD = !(payload_ps3hen || dex_mode || (c_firmware < 4.75f));
+	u8 noBD = ALLOW_NOBD;
 	char *SEP = noBD ? (char*)" • " : (char*)"<br>";
 	add_checkbox( "bl", STR_DEVBL, SEP, (webman_config->blind),  buffer);
 	if(noBD) _add_checkbox("bd", "noBD patch", (webman_config->noBD),   buffer);
@@ -918,7 +918,7 @@ static void setup_form(char *buffer, char *templn)
 	#endif
 
 	#ifdef NOBD_PATCH
-	sprintf(templn, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]%s<p>", STR_DELETE, (payload_ps3hen || dex_mode || (c_firmware < 4.75f)) ? "" : " [<a href=\"/nobd.ps3\">noBD</a>]"); concat(buffer, templn);
+	sprintf(templn, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]%s<p>", STR_DELETE, ALLOW_NOBD ? " [<a href=\"/nobd.ps3\">noBD</a>]" : ""); concat(buffer, templn);
 	#else
 	sprintf(templn, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]<p>", STR_DELETE); concat(buffer, templn);
 	#endif
@@ -1329,6 +1329,8 @@ static void read_settings(void)
 
 	webman_config->pspl = 1;          //Show PSP Launcher
 	webman_config->ps2l = 1;          //Show PS2 Classic Launcher
+
+	webman_config->noBD = isNOBD;     //Get initial status for noBD
 
 	//webman_config->ps2emu = 0;      //default PS2 emulator on B/C consoles: 0 = ps2_emu, 1 = ps2_netemu
 	//webman_config->ps2config = 0;   //enable auto lookup for PS2 CONFIG
