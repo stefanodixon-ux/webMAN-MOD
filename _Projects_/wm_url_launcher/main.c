@@ -133,15 +133,18 @@ int main(int argc, const char* argv[])
 
 		if(*path)
 		{
-			p = strstr(path, "\n"); if(p) {*p = 0; if(*param == 0) sprintf(param, "%s", p + 1);}
-			p = strstr(path, "\r"); if(p) {*p = 0; if(*param == 0) sprintf(param, "%s", p + 1);}
-			p = strstr(param, "\n"); if(p) *p = 0;
-			p = strstr(param, "\r"); if(p) *p = 0;
+			p = strstr(path, "\n"); if(p) {*p = 0; if(*param == 0) sprintf(param, "%s", p + 1);  p = strstr(param, "\n"); if(p) *p = 0;}
+			p = strstr(path, "\r"); if(p) {*p = 0; if(*param == 0) sprintf(param, "%s", p + 1);} p = strstr(param, "\r"); if(p) *p = 0;
 
 			if(not_exists(path))
 			{
 				char *retroArch = strstr(path,  "/game/SSNE10000");
-				if(retroArch) memcpy(retroArch, "/game/SSNE10001", 15);
+				if(retroArch) memcpy(retroArch, "/game/RETROARCH", 15);
+				if(not_exists(path))
+				{
+					char *retroArch = strstr(path,  "/game/RETROARCH");
+					if(retroArch) memcpy(retroArch, "/game/SSNE10001", 15);
+				}
 			}
 			if(!strncmp(path, "GET ", 4))
 				{urlenc(url, path); sprintf(url, "%s HTTP/1.0\r\n", path);}
@@ -260,7 +263,8 @@ int main(int argc, const char* argv[])
 	// find executable
 	if(*param == 0)
 	{
-		const char *sufix[3] = {"_libretro_ps3.SELF", "_libretro_ps3.SELF", "_libretro_psl1ght.SELF"};
+		const char retro[3][40] = {RETROARCH0, RETROARCH1, RETROARCH2};
+		const char sufix[3][24] = {"_libretro_ps3.SELF", "_libretro_ps3.SELF", "_libretro_psl1ght.SELF"};
 
 		sprintf(param, "%s", path);
 
@@ -269,7 +273,7 @@ int main(int argc, const char* argv[])
 		char *RETROARCH;
 		for(int i = 0; i < 3; i++)
 		{
-			RETROARCH = (i == 0) ? RETROARCH0 : (i == 1) ? RETROARCH1 : RETROARCH2;
+			RETROARCH = (char*)retro[i];
 
 			if(strcasestr(path, "/ROMS/SNES/"))
 			{
@@ -338,7 +342,8 @@ int main(int argc, const char* argv[])
 									 sprintf(path, "%s/stella2014%s", RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/stella%s",     RETROARCH, sufix[i]);
 			}
- 			if(strcasestr(path, "/ROMS/FBA/"))
+			else
+			if(strcasestr(path, "/ROMS/FBA/"))
 			{
 									 sprintf(path, "%s/fb_alpha%s",    RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/fbalpha%s",     RETROARCH, sufix[i]);

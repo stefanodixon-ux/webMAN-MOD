@@ -252,13 +252,10 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SCKA_200.70</td><td>Ace Combat Zero - The Belkan War</td></tr>
 <tr><td>CUSTOM</td><td>SLPS_256.29</td><td>Ace Combat Zero - The Belkan War</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_213.46</td><td>Ace Combat Zero - The Belkan War</td></tr>
-<tr><td>CUSTOM</td><td>SLES_539.56</td><td>Aeon Flux</td></tr>
-<tr><td>CUSTOM</td><td>SLUS_212.05</td><td>Aeon Flux</td></tr>
 <tr><td>CUSTOM</td><td>SLES_509.19</td><td>Akira Psycho Ball</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_661.75</td><td>Akumajo Dracula - Yami no Juin</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_205.69</td><td>All-Star Baseball 2004</td></tr>
 <tr><td>CUSTOM</td><td>SLES_516.02</td><td>All-Stars Baseball 2004</td></tr>
-<tr><td>CUSTOM</td><td>SLPS_201.81</td><td>Alpine Racer 3</td></tr>
 <tr><td>CUSTOM</td><td>SCES_517.06</td><td>Amplitude</td></tr>
 <tr><td>CUSTOM</td><td>SCUS_972.58</td><td>Amplitude</td></tr>
 <tr><td>CUSTOM</td><td>SCCS_400.01</td><td>Ape Escape 2</td></tr>
@@ -2632,6 +2629,22 @@ function kd(e)
 	}
 	if(kc==115) { // F4
 		$("category").focus();
+	}
+	if(kc==36 && e.ctrlKey && !e.shiftKey) { // home
+		window.scrollBy(0, -1000000);
+		$("txtSrchDB").focus();
+	}
+	if(kc==35 && e.ctrlKey && !e.shiftKey) { // home
+		window.scrollBy(0, 1000000);
+		$("txtSrchDB").focus();
+	}
+	if(kc==38 && (document.activeElement.id==="txtSrchDB")) { // up
+		window.scrollBy(0, -80); // Scroll 150px
+		e.preventDefault();
+	}
+	if(kc==40 && (document.activeElement.id==="txtSrchDB")) { // down
+		window.scrollBy(0, 80); // Scroll 150px
+		e.preventDefault();
 	}
 }
 

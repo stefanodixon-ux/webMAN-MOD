@@ -61,6 +61,10 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 				filepath_check(absPath_s);
 				if(file_exists(absPath_s)) return 0;
 			}
+			sprintf(absPath_s, "%s/%s", HDD0_GAME_DIR, path);
+			if(file_exists(absPath_s)) return 0;
+			sprintf(absPath_s, "%s/%s", _HDD0_GAME_DIR, path);
+			if(file_exists(absPath_s)) return 0;
 			sprintf(absPath_s, "%s/%s", cwd, path);
 		}
 

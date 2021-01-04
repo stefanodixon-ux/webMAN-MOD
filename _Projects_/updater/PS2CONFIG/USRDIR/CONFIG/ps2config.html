@@ -3722,6 +3722,22 @@ function kd(e)
 	if(kc==115) { // F4
 		$("category").focus();
 	}
+	if(kc==36 && e.ctrlKey && !e.shiftKey) { // home
+		window.scrollBy(0, -1000000);
+		$("txtSrchDB").focus();
+	}
+	if(kc==35 && e.ctrlKey && !e.shiftKey) { // home
+		window.scrollBy(0, 1000000);
+		$("txtSrchDB").focus();
+	}
+	if(kc==38 && (document.activeElement.id==="txtSrchDB")) { // up
+		window.scrollBy(0, -80); // Scroll 150px
+		e.preventDefault();
+	}
+	if(kc==40 && (document.activeElement.id==="txtSrchDB")) { // down
+		window.scrollBy(0, 80); // Scroll 150px
+		e.preventDefault();
+	}
 }
 
 function sortTable(colID) {
