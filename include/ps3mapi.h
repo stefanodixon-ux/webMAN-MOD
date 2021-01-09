@@ -488,8 +488,9 @@ static void ps3mapi_syscall8(char *buffer, char *templn, char *param)
 	concat(buffer, templn);
 }
 
-static void add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
+static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 {
+	u8 is_vsh = 0;
 	u32 pid = *proc_id;
 
 	if(pid == 0)
@@ -513,6 +514,8 @@ static void add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 		memset(templn, 0, MAX_LINE_LEN);
 		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_NAME_BY_PID, (u64)pid, (u64)(u32)templn); }
 		concat(buffer, templn);
+
+		is_vsh = islike(templn, "01000300_main_vsh.self");
 /*
 		char url[32]; sprintf(url, "/syscall.ps3?19|%i", pid);
 		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Kill", HTML_ONCLICK, url);
@@ -531,6 +534,8 @@ static void add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 
 		*proc_id = pid;
 	}
+
+	return is_vsh;
 }
 
 static void ps3mapi_getmem(char *buffer, char *templn, char *param)
@@ -803,25 +808,32 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home) concat(buffer,	HTML_RED_SEPARATOR);
 }
 
-static void add_plugins_list(char *buffer, char *templn)
+static void add_plugins_list(char *buffer, char *templn, u8 is_vsh)
 {
 	if(!strstr(buffer, "<datalist id=\"plugins\">"))
 	{
 		concat(buffer, "<div style=\"display:none\"><datalist id=\"plugins\">");
 		int fd, cnt = 0;
 
-		const char *paths[6] = {
+		const char *vsh_modules[3] = {
+									"/dev_flash/vsh/module",
+									"/dev_flash/sys/internal",
+									"/dev_flash/sys/external"
+								};
+
+		const char *paths[5] = {
 									"/dev_hdd0/plugins",
 									"/dev_hdd0/plugins/ps3xpad",
 									"/dev_hdd0/plugins/ps3_menu",
 									"/dev_hdd0/plugins/PS3Lock",
-									WM_INSTALLER_PATH,
 									WM_RES_PATH
 								};
 
-		#define PLUGINS_PATH	(i < 3) ? drives[i] : paths[i - 3]
+		#define PLUGINS_PATH	is_vsh ? vsh_modules[i] : (i < 3) ? drives[i] : paths[i - 3]
 
-		for(u8 i = 0; i < 9; i++)
+		u8 count = is_vsh ? 3 : 8;
+
+		for(u8 i = 0; i < count; i++)
 		if(cellFsOpendir(PLUGINS_PATH, &fd) == CELL_FS_SUCCEEDED)
 		{
 			CellFsDirectoryEntry dir; u32 read_e;
@@ -833,7 +845,7 @@ static void add_plugins_list(char *buffer, char *templn)
 			{
 				if(!extcmp(entry_name, ".sprx", 5))
 				{
-					sprintf(templn + plen, "%s</option>", entry_name); buffer += concat(buffer, templn); if(++cnt > 50) break;
+					sprintf(templn + plen, "%s</option>", entry_name); buffer += concat(buffer, templn); if(++cnt > 450) break;
 				}
 			}
 			cellFsClosedir(fd);
@@ -964,7 +976,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 		HTML_BUTTON, "prx_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=2",
 		HTML_BUTTON, "plugins.txt",					HTML_ONCLICK, "/vshplugin.ps3mapi?s=3"); concat(buffer, templn);
 
-	add_plugins_list(buffer, templn);
+	add_plugins_list(buffer, templn, 0);
 
 	sprintf(templn, "%s", "</table><br>");
 
@@ -1062,9 +1074,11 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 	concat(buffer, templn);
 
 	sprintf(templn, HTML_FORM_METHOD_FMT("/gameplugin")
-					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn); memset(templn, 0, MAX_LINE_LEN);
+					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn);
 
-	add_proc_list(buffer, templn, &pid, 3);
+	memset(templn, 0, MAX_LINE_LEN);
+
+	u8 is_vsh = add_proc_list(buffer, templn, &pid, 3);
 
 	if(is_ps3mapi_home || !pid)
 		sprintf(templn, "<input class=\"bs\" type=\"submit\" value=\" Set \" /></form>");
@@ -1148,7 +1162,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 			buffer += concat(buffer, templn);
 		}
 
-		add_plugins_list(buffer, templn);
+		add_plugins_list(buffer, templn, is_vsh);
 	}
 
 	sprintf(templn, "%s", "</table><br>");

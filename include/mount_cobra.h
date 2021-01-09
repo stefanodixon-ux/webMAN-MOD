@@ -615,14 +615,12 @@
 												_file_copy(temp, _path);
 											else
 											{
-												char config_path[4][8] = {"CUSTOM", "NET", "GX", "SOFT"};
+												const char *config_path[4] = {"CUSTOM", "NET", "GX", "SOFT"};
 												for(u8 i = 0; i < 4; i++)
 												{
 													sprintf(temp, "%s/CONFIG/%s/%s.CONFIG", PS2CONFIG_PATH, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
 													sprintf(temp, "%s/sys/CONFIG/%s/%s.CONFIG", MANAGUNZ, config_path[i], tempID);
-													if(file_exists(temp)) {_file_copy(temp, _path); break;}
-													sprintf(temp, "%s/CONFIG/%s/%s.CONFIG", WM_INSTALLER_PATH, config_path[i], tempID);
 													if(file_exists(temp)) {_file_copy(temp, _path); break;}
 												}
 											}

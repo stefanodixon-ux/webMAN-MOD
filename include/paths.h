@@ -25,7 +25,6 @@
 #define MM_ROOT_SSTL		_HDD0_GAME_DIR "NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
 #define MM_ROOT_STL			"/dev_hdd0/tmp/game_repo/main"		// stealthMAN root folder
 
-#define WM_INSTALLER_PATH	_HDD0_GAME_DIR "UPDWEBMOD/USRDIR"
 #define XMBMANPLS_PATH		_HDD0_GAME_DIR "XMBMANPLS/USRDIR"
 #define PS2CONFIG_PATH		_HDD0_GAME_DIR "PS2CONFIG/USRDIR"
 
