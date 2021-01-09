@@ -44,9 +44,9 @@
 
 #define XMLHOST_DIR          "/dev_hdd0/xmlhost/game_plugin"
 
-#define XMLMANPLS_DIR        "/dev_hdd0//game/XMBMANPLS"
-#define XMLMANPLS_FEATS_DIR  XMLMANPLS_DIR "/USRDIR/FEATURES"
-#define XMLMANPLS_IMAGES_DIR XMLMANPLS_DIR "/USRDIR/IMAGES"
+#define XMBMANPLS_DIR        "/dev_hdd0//game/XMBMANPLS"
+#define XMBMANPLS_FEATS_DIR  XMBMANPLS_DIR "/USRDIR/FEATURES"
+#define XMBMANPLS_IMAGES_DIR XMBMANPLS_DIR "/USRDIR/IMAGES"
 
 #define IRISMAN_USRDIR       "/dev_hdd0//game/IRISMAN01/USRDIR"
 #define PRXLOADER_USRDIR     "/dev_hdd0//game/PRXLOADER/USRDIR"
@@ -409,10 +409,10 @@ int main()
 	sysLv2FsMkdir(XMLHOST_DIR, DMODE);
 
 	sysLv2FsMkdir(HDDROOT_DIR "/game", DMODE);
-	sysLv2FsMkdir(XMLMANPLS_DIR, DMODE);
-	sysLv2FsMkdir(XMLMANPLS_DIR "/USRDIR", DMODE);
-	sysLv2FsMkdir(XMLMANPLS_IMAGES_DIR, DMODE);
-	sysLv2FsMkdir(XMLMANPLS_FEATS_DIR, DMODE);
+	sysLv2FsMkdir(XMBMANPLS_DIR, DMODE);
+	sysLv2FsMkdir(XMBMANPLS_DIR "/USRDIR", DMODE);
+	sysLv2FsMkdir(XMBMANPLS_IMAGES_DIR, DMODE);
+	sysLv2FsMkdir(XMBMANPLS_FEATS_DIR, DMODE);
 
 	// Create backup folders
 	sysLv2FsMkdir(HDDROOT_DIR "/packages", DMODE);
@@ -709,78 +709,78 @@ int main()
 	file_copy(APP_USRDIR "/icons/icon_lp_nocover.png"  , ICONS_DIR "/icon_lp_nocover.png");
 
 	// XMBM+ webMAN
-	sysLv2FsMkdir(XMLMANPLS_DIR, DMODE);
-	sysLv2FsMkdir(XMLMANPLS_DIR "/USRDIR", DMODE);
-	sysLv2FsMkdir(XMLMANPLS_IMAGES_DIR, DMODE);
-	sysLv2FsMkdir(XMLMANPLS_FEATS_DIR, DMODE);
+	sysLv2FsMkdir(XMBMANPLS_DIR, DMODE);
+	sysLv2FsMkdir(XMBMANPLS_DIR "/USRDIR", DMODE);
+	sysLv2FsMkdir(XMBMANPLS_IMAGES_DIR, DMODE);
+	sysLv2FsMkdir(XMBMANPLS_FEATS_DIR, DMODE);
 
-	if(not_exists(XMLMANPLS_DIR "/PARAM.SFO"))
-		file_copy(APP_USRDIR "/xmbm/PARAM.SFO", XMLMANPLS_DIR "/PARAM.SFO");
+	if(not_exists(XMBMANPLS_DIR "/PARAM.SFO"))
+		file_copy(APP_USRDIR "/xmbm/PARAM.SFO", XMBMANPLS_DIR "/PARAM.SFO");
 
-	if(not_exists(XMLMANPLS_DIR "/ICON0.PNG"))
-		file_copy(APP_DIR "/ICON0.PNG", XMLMANPLS_DIR "/ICON0.PNG");
+	if(not_exists(XMBMANPLS_DIR "/ICON0.PNG"))
+		file_copy(APP_USRDIR "/xmbm/ICON0.PNG", XMBMANPLS_DIR "/ICON0.PNG");
 
 	//if(not_exists(HDDROOT_DIR "/boot_init.bak"))
 	//	file_copy(APP_DIR "/boot_init.bak", HDDROOT_DIR "/boot_init.bak");
 
-	file_copy(APP_USRDIR "/xml/webMAN.xml"    , XMLMANPLS_FEATS_DIR "/webMAN.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_EN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_EN.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_AR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_AR.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_CN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_CN.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_DE.xml" , XMLMANPLS_FEATS_DIR "/webMAN_DE.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_ES.xml" , XMLMANPLS_FEATS_DIR "/webMAN_ES.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_FR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_FR.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_GR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_GR.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_DK.xml" , XMLMANPLS_FEATS_DIR "/webMAN_DK.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_HU.xml" , XMLMANPLS_FEATS_DIR "/webMAN_HU.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_HR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_HR.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_BG.xml" , XMLMANPLS_FEATS_DIR "/webMAN_BG.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_CZ.xml" , XMLMANPLS_FEATS_DIR "/webMAN_CZ.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_SK.xml" , XMLMANPLS_FEATS_DIR "/webMAN_SK.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_IN.xml" , XMLMANPLS_FEATS_DIR "/webMAN_IN.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_JP.xml" , XMLMANPLS_FEATS_DIR "/webMAN_JP.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_KR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_KR.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_IT.xml" , XMLMANPLS_FEATS_DIR "/webMAN_IT.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_NL.xml" , XMLMANPLS_FEATS_DIR "/webMAN_NL.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_PL.xml" , XMLMANPLS_FEATS_DIR "/webMAN_PL.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_PT.xml" , XMLMANPLS_FEATS_DIR "/webMAN_PT.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_RU.xml" , XMLMANPLS_FEATS_DIR "/webMAN_RU.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_TR.xml" , XMLMANPLS_FEATS_DIR "/webMAN_TR.xml");
-	file_copy(APP_USRDIR "/xml/webMAN_ZH.xml" , XMLMANPLS_FEATS_DIR "/webMAN_ZH.xml");
+	file_copy(APP_USRDIR "/xml/webMAN.xml"    , XMBMANPLS_FEATS_DIR "/webMAN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_EN.xml" , XMBMANPLS_FEATS_DIR "/webMAN_EN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_AR.xml" , XMBMANPLS_FEATS_DIR "/webMAN_AR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_CN.xml" , XMBMANPLS_FEATS_DIR "/webMAN_CN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_DE.xml" , XMBMANPLS_FEATS_DIR "/webMAN_DE.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_ES.xml" , XMBMANPLS_FEATS_DIR "/webMAN_ES.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_FR.xml" , XMBMANPLS_FEATS_DIR "/webMAN_FR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_GR.xml" , XMBMANPLS_FEATS_DIR "/webMAN_GR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_DK.xml" , XMBMANPLS_FEATS_DIR "/webMAN_DK.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_HU.xml" , XMBMANPLS_FEATS_DIR "/webMAN_HU.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_HR.xml" , XMBMANPLS_FEATS_DIR "/webMAN_HR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_BG.xml" , XMBMANPLS_FEATS_DIR "/webMAN_BG.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_CZ.xml" , XMBMANPLS_FEATS_DIR "/webMAN_CZ.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_SK.xml" , XMBMANPLS_FEATS_DIR "/webMAN_SK.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_IN.xml" , XMBMANPLS_FEATS_DIR "/webMAN_IN.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_JP.xml" , XMBMANPLS_FEATS_DIR "/webMAN_JP.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_KR.xml" , XMBMANPLS_FEATS_DIR "/webMAN_KR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_IT.xml" , XMBMANPLS_FEATS_DIR "/webMAN_IT.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_NL.xml" , XMBMANPLS_FEATS_DIR "/webMAN_NL.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_PL.xml" , XMBMANPLS_FEATS_DIR "/webMAN_PL.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_PT.xml" , XMBMANPLS_FEATS_DIR "/webMAN_PT.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_RU.xml" , XMBMANPLS_FEATS_DIR "/webMAN_RU.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_TR.xml" , XMBMANPLS_FEATS_DIR "/webMAN_TR.xml");
+	file_copy(APP_USRDIR "/xml/webMAN_ZH.xml" , XMBMANPLS_FEATS_DIR "/webMAN_ZH.xml");
 
-	file_copy(APP_USRDIR "/xmbm/bd.png"			, XMLMANPLS_IMAGES_DIR "/bd.png");
-	file_copy(APP_USRDIR "/xmbm/blockpsn.png"	, XMLMANPLS_IMAGES_DIR "/blockpsn.png");
-	file_copy(APP_USRDIR "/xmbm/cachefiles.png"	, XMLMANPLS_IMAGES_DIR "/cachefiles.png");
-	file_copy(APP_USRDIR "/xmbm/filemanager.png", XMLMANPLS_IMAGES_DIR "/filemanager.png");
-	file_copy(APP_USRDIR "/xmbm/gamedata.png"	, XMLMANPLS_IMAGES_DIR "/gamedata.png");
-	file_copy(APP_USRDIR "/xmbm/gamefix.png"	, XMLMANPLS_IMAGES_DIR "/gamefix.png");
-	file_copy(APP_USRDIR "/xmbm/gamesbrowser.png", XMLMANPLS_IMAGES_DIR "/gamesbrowser.png");
-	file_copy(APP_USRDIR "/xmbm/multiman.png"	, XMLMANPLS_IMAGES_DIR "/multiman.png");
-	file_copy(APP_USRDIR "/xmbm/network.png"	, XMLMANPLS_IMAGES_DIR "/network.png");
-	file_copy(APP_USRDIR "/xmbm/pkgmanager.png"	, XMLMANPLS_IMAGES_DIR "/pkgmanager.png");
-	file_copy(APP_USRDIR "/xmbm/refreshhtml.png", XMLMANPLS_IMAGES_DIR "/refreshhtml.png");
-	file_copy(APP_USRDIR "/xmbm/refreshxml.png"	, XMLMANPLS_IMAGES_DIR "/refreshxml.png");
-	file_copy(APP_USRDIR "/xmbm/restartps3.png"	, XMLMANPLS_IMAGES_DIR "/restartps3.png");
-	file_copy(APP_USRDIR "/xmbm/settings.png"	, XMLMANPLS_IMAGES_DIR "/settings.png");
-	file_copy(APP_USRDIR "/xmbm/shutdownps3.png", XMLMANPLS_IMAGES_DIR "/shutdownps3.png");
-	file_copy(APP_USRDIR "/xmbm/sysinfo.png"	, XMLMANPLS_IMAGES_DIR "/sysinfo.png");
-	file_copy(APP_USRDIR "/xmbm/sysfiles.png"	, XMLMANPLS_IMAGES_DIR "/sysfiles.png");
-	file_copy(APP_USRDIR "/xmbm/tools.png"		, XMLMANPLS_IMAGES_DIR "/tools.png");
-	file_copy(APP_USRDIR "/xmbm/unload.png"		, XMLMANPLS_IMAGES_DIR "/unload.png");
-	file_copy(APP_USRDIR "/xmbm/usbredirect.png", XMLMANPLS_IMAGES_DIR "/usbredirect.png");
-	file_copy(APP_USRDIR "/xmbm/vshmenu.png"	, XMLMANPLS_IMAGES_DIR "/vshmenu.png");
-	file_copy(APP_USRDIR "/xmbm/slaunch.png"	, XMLMANPLS_IMAGES_DIR "/slaunch.png");
-	file_copy(APP_USRDIR "/xmbm/webman.png"		, XMLMANPLS_IMAGES_DIR "/webman.png");
-	file_copy(APP_USRDIR "/xmbm/eject.png"		, XMLMANPLS_IMAGES_DIR "/eject.png");
-	file_copy(APP_USRDIR "/xmbm/setup.png"		, XMLMANPLS_IMAGES_DIR "/setup.png");
-	file_copy(APP_USRDIR "/xmbm/refresh.png"	, XMLMANPLS_IMAGES_DIR "/refresh.png");
-	//file_copy(APP_USRDIR "/xmbm/clear.png"	, XMLMANPLS_IMAGES_DIR "/clear.png");
-	//file_copy(APP_USRDIR "/xmbm/cache.png"	, XMLMANPLS_IMAGES_DIR "/cache.png");
-	//file_copy(APP_USRDIR "/xmbm/restart.png"	, XMLMANPLS_IMAGES_DIR "/restart.png");
+	file_copy(APP_USRDIR "/xmbm/bd.png"			, XMBMANPLS_IMAGES_DIR "/bd.png");
+	file_copy(APP_USRDIR "/xmbm/blockpsn.png"	, XMBMANPLS_IMAGES_DIR "/blockpsn.png");
+	file_copy(APP_USRDIR "/xmbm/cachefiles.png"	, XMBMANPLS_IMAGES_DIR "/cachefiles.png");
+	file_copy(APP_USRDIR "/xmbm/filemanager.png", XMBMANPLS_IMAGES_DIR "/filemanager.png");
+	file_copy(APP_USRDIR "/xmbm/gamedata.png"	, XMBMANPLS_IMAGES_DIR "/gamedata.png");
+	file_copy(APP_USRDIR "/xmbm/gamefix.png"	, XMBMANPLS_IMAGES_DIR "/gamefix.png");
+	file_copy(APP_USRDIR "/xmbm/gamesbrowser.png", XMBMANPLS_IMAGES_DIR "/gamesbrowser.png");
+	file_copy(APP_USRDIR "/xmbm/multiman.png"	, XMBMANPLS_IMAGES_DIR "/multiman.png");
+	file_copy(APP_USRDIR "/xmbm/network.png"	, XMBMANPLS_IMAGES_DIR "/network.png");
+	file_copy(APP_USRDIR "/xmbm/pkgmanager.png"	, XMBMANPLS_IMAGES_DIR "/pkgmanager.png");
+	file_copy(APP_USRDIR "/xmbm/refreshhtml.png", XMBMANPLS_IMAGES_DIR "/refreshhtml.png");
+	file_copy(APP_USRDIR "/xmbm/refreshxml.png"	, XMBMANPLS_IMAGES_DIR "/refreshxml.png");
+	file_copy(APP_USRDIR "/xmbm/restartps3.png"	, XMBMANPLS_IMAGES_DIR "/restartps3.png");
+	file_copy(APP_USRDIR "/xmbm/settings.png"	, XMBMANPLS_IMAGES_DIR "/settings.png");
+	file_copy(APP_USRDIR "/xmbm/shutdownps3.png", XMBMANPLS_IMAGES_DIR "/shutdownps3.png");
+	file_copy(APP_USRDIR "/xmbm/sysinfo.png"	, XMBMANPLS_IMAGES_DIR "/sysinfo.png");
+	file_copy(APP_USRDIR "/xmbm/sysfiles.png"	, XMBMANPLS_IMAGES_DIR "/sysfiles.png");
+	file_copy(APP_USRDIR "/xmbm/tools.png"		, XMBMANPLS_IMAGES_DIR "/tools.png");
+	file_copy(APP_USRDIR "/xmbm/unload.png"		, XMBMANPLS_IMAGES_DIR "/unload.png");
+	file_copy(APP_USRDIR "/xmbm/usbredirect.png", XMBMANPLS_IMAGES_DIR "/usbredirect.png");
+	file_copy(APP_USRDIR "/xmbm/vshmenu.png"	, XMBMANPLS_IMAGES_DIR "/vshmenu.png");
+	file_copy(APP_USRDIR "/xmbm/slaunch.png"	, XMBMANPLS_IMAGES_DIR "/slaunch.png");
+	file_copy(APP_USRDIR "/xmbm/webman.png"		, XMBMANPLS_IMAGES_DIR "/webman.png");
+	file_copy(APP_USRDIR "/xmbm/eject.png"		, XMBMANPLS_IMAGES_DIR "/eject.png");
+	file_copy(APP_USRDIR "/xmbm/setup.png"		, XMBMANPLS_IMAGES_DIR "/setup.png");
+	file_copy(APP_USRDIR "/xmbm/refresh.png"	, XMBMANPLS_IMAGES_DIR "/refresh.png");
+	//file_copy(APP_USRDIR "/xmbm/clear.png"	, XMBMANPLS_IMAGES_DIR "/clear.png");
+	//file_copy(APP_USRDIR "/xmbm/cache.png"	, XMBMANPLS_IMAGES_DIR "/cache.png");
+	//file_copy(APP_USRDIR "/xmbm/restart.png"	, XMBMANPLS_IMAGES_DIR "/restart.png");
 
-	file_copy(APP_USRDIR "/icons/icon_wm_eject.png",  XMLMANPLS_IMAGES_DIR "/icon_wm_eject.png");
-	file_copy(APP_USRDIR "/icons/icon_wm_insert.png", XMLMANPLS_IMAGES_DIR "/icon_wm_insert.png");
-	file_copy(APP_USRDIR "/icons/icon_wm_ps3.png"  ,  XMLMANPLS_IMAGES_DIR "/icon_wm_ps3.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_eject.png",  XMBMANPLS_IMAGES_DIR "/icon_wm_eject.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_insert.png", XMBMANPLS_IMAGES_DIR "/icon_wm_insert.png");
+	file_copy(APP_USRDIR "/icons/icon_wm_ps3.png"  ,  XMBMANPLS_IMAGES_DIR "/icon_wm_ps3.png");
 
 	sysLv2FsUnlink(XMLHOST_DIR "/mygames.xml");
 

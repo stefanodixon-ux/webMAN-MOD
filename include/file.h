@@ -897,7 +897,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if(!sys_admin || !working) return FAILED;
 
 #ifdef USE_NTFS
-	if((fop == SCAN_DELETE) && !isDir(path))
+	if((fop == SCAN_DELETE) && !wildcard && !isDir(path))
 	{
 		if(is_ntfs_path(path))
 			return ps3ntfs_unlink(path + 5);
@@ -905,7 +905,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			return cellFsUnlink(path);
 	}
 #else
-	if((fop == SCAN_DELETE) && !isDir(path)) return cellFsUnlink(path);
+	if((fop == SCAN_DELETE) && !wildcard && !isDir(path)) return cellFsUnlink(path);
 #endif
 
 	if((fop == SCAN_DELETE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;

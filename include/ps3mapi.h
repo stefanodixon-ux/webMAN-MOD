@@ -73,6 +73,15 @@ static u16 sc_disable[CFW_SYSCALLS] = {200, 201, 202, 203, 204, 1022, 6, 7, 10, 
 static u16 sc_disable[CFW_SYSCALLS] = {200, 201, 202, 203, 204, 1022, 6, 7, 10, 11, 15, 20, 35, 36, 38, 8, 9};
 #endif
 
+#ifdef COBRA_ONLY
+static void ps3mapi_get_vsh_plugin_info(unsigned int slot, char *tmp_name, char *tmp_filename)
+{
+	memset(tmp_name, 0, 30);
+	memset(tmp_filename, 0, STD_PATH_LEN);
+	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename);
+}
+#endif
+
 #ifdef PS3MAPI
 
 static void ps3mapi_buzzer(char *buffer, char *templn, char *param);
@@ -792,13 +801,6 @@ static void ps3mapi_setidps(char *buffer, char *templn, char *param)
 					"</table></form><br>");
 
 	if(!is_ps3mapi_home) concat(buffer,	HTML_RED_SEPARATOR);
-}
-
-static void ps3mapi_get_vsh_plugin_info(unsigned int slot, char *tmp_name, char *tmp_filename)
-{
-	memset(tmp_name, 0, 30);
-	memset(tmp_filename, 0, STD_PATH_LEN);
-	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename);
 }
 
 static void add_plugins_list(char *buffer, char *templn)

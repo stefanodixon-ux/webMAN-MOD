@@ -1012,8 +1012,8 @@ parse_request:
 				// /browser.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
 				// /browser.ps3$disable_classic_ps2_mode   deletes 'classic_ps2_mode' to enable PS2 ISO in PS2 Launcher (old rebug)
 				// /browser.ps3$screenshot_xmb<path>       capture XMB screen
-				// /browser.ps3$screenshot_xmb<path>?show  capture XMB screen show
-				// /browser.ps3$screenshot_xmb<path>?fast  capture XMB screen (25% smaller)
+				// /browser.ps3$screenshot_xmb?show        capture XMB screen show
+				// /browser.ps3$screenshot_xmb?show?fast   capture XMB screen (25% smaller)
 				// /browser.ps3?<url>                      open url on PS3 browser
 				// /browser.ps3/<webman_cmd>               execute webMAN command on PS3 browser
 				// /browser.ps3$<explore_plugin_command>   execute explore_plugin command on XMB (http://www.psdevwiki.com/ps3/Explore_plugin#Example_XMB_Commands)
@@ -2963,7 +2963,13 @@ retry_response:
 						{
 							if(islike(param2, "/dev_hdd1")) mount_device(param2, NULL, NULL); // auto-mount device
 
-							char *wildcard = strstr(param2, "*"); if(wildcard) {*wildcard++ = NULL;}
+							char *wildcard = strstr(param2, "*");
+							if(wildcard)
+							{
+								if(!strstr(wildcard + 1, "*"))
+									while((*wildcard != '/') && wildcard > param2) --wildcard;
+								*wildcard++ = NULL;
+							}
 							//ret = del(param2, islike(param, "/delete.ps3"));
 							ret = scan(param2, islike(param, "/delete.ps3"), wildcard, SCAN_DELETE, NULL);
 
