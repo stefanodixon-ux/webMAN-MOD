@@ -157,6 +157,18 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
 		map_earth(0, param);
 		#endif
+
+		#ifdef PLAY_MUSIC
+		if(webman_config->music)
+		{
+			vshNotify_WithIcon(6, "Starting Music...\n"
+								  "Press O to abort");
+			if(!wait_for_abort(1000000UL * (8 + webman_config->boots)))
+				play_xmb_music();
+			else
+				play_rco_sound("snd_system_ng");
+		}
+		#endif
 	}
 
 	sys_ppu_thread_exit(0);

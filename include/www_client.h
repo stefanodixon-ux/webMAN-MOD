@@ -1020,9 +1020,23 @@ parse_request:
 				// /browser.ps3*<xmb_plugin_command>       execute xmb_plugin commands on XMB (http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23_Examples)
 				// /browser.ps3$slaunch                    start slaunch
 				// /browser.ps3$vsh_menu                   start vsh_menu
+				// /browser.ps3$home                       go to webMAN Games
+				// /browser.ps3$music                      play xmb music
 
 				char *param2 = param + 12, *url = param + 13;
 
+				if(islike(param2, "$home"))
+				{
+					goto_xmb_home();
+				}
+				else
+				#ifdef PLAY_MUSIC
+				if(islike(param2, "$music"))
+				{
+					play_xmb_music();
+				}
+				else
+				#endif
 				if(islike(param2, "$rsx"))
 				{
 					static u8 rsx = 1;

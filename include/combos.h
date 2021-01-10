@@ -4,7 +4,9 @@
 
  REFRESH XML  : SELECT+L3 (+R2=profile1, +L2=profile2, +R1=profile3, +L1=profile4, +L1+R1=Reload XMB, +R2+L2=FAIL SAFE)
                                                 *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_l3
- UNLOAD WM    : L3+R3+R2
+ UNLOAD WM    : R2+L3+R3 / L3+R3+R2 / L3+R2+R3
+
+ GOTO_HOME    : L2+L3+R3 / L3+R3+L2 / L3+L2+R3  *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l3_r3_l2
 
  PLAY_DISC    : L2+START                        *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_start
  PLAY APP_HOME: R2+START                        *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_r2_start
@@ -702,9 +704,9 @@
 						}
 					} // SELECT
 					else if(!(webman_config->combo & UNLOAD_WM) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
-																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)) //  L3+R3+R2 (Quit / Unload webMAN)
+																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)) //  R2+L3+R3 / L3+R3+R2 / L3+R2+R3 (Quit / Unload webMAN)
 					{
-						// L3+R3+R2 = Quit / Unload webMAN
+						// R2+L3+R3 / L3+R3+R2 / L3+R2+R3 = Quit / Unload webMAN
  #ifdef VIDEO_REC
 						#ifdef COBRA_ONLY
 						quit_plugin:
@@ -716,6 +718,18 @@
 
 						stop_prx_module();
 						sys_ppu_thread_exit(0);
+						break;
+					}
+					else if(!(webman_config->combo & GOTO_HOME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
+																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2)) //  L2+L3+R3 / L3+R3+L2 / L3+L2+R3
+					{
+						// L2+L3+R3 / L3+R3+L2 / L3+L2+R3 = Go to webMAN Games / Go to Home
+  #ifdef WM_CUSTOM_COMBO
+						if(do_custom_combo("l3_r3_l2")) break;
+						else
+  #endif
+						goto_xmb_home();
+						n = 0;
 						break;
 					}
 					else

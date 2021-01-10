@@ -13,7 +13,7 @@
 #define MINDYNFAN (1<<11)
 #define DISACOBRA (1<<12)
 #define SYS_ADMIN (1<<13)
-
+#define GOTO_HOME (1<<14)
 
 //combo2
 #define EXTGAMDAT (1<<0)
@@ -72,7 +72,9 @@ static void setup_parse_settings(char *param)
 	webman_config->nobeep = IS_UNMARKED("nb=1");
 	webman_config->wm_proxy = IS_UNMARKED("wp=1");
 	webman_config->msg_icon = IS_UNMARKED("mn=1");
-
+#ifdef PLAY_MUSIC
+	webman_config->music = IS_MARKED("ms=1");
+#endif
 #ifdef PKG_HANDLER
 	webman_config->auto_install_pkg = IS_UNMARKED("ai=1");
 #endif
@@ -153,6 +155,7 @@ static void setup_parse_settings(char *param)
 	if(IS_UNMARKED("pf2=1")) webman_config->combo|=MINDYNFAN;
 	if(IS_UNMARKED("pdf=1")) webman_config->combo|=DISABLEFC;
 	if(IS_UNMARKED("psc=1")) webman_config->combo|=DISABLESH;
+	if(IS_UNMARKED("hom=1")) webman_config->combo|=GOTO_HOME;
 	if(IS_UNMARKED("kcc=1")) webman_config->keep_ccapi = true;
 
 #ifdef COBRA_ONLY
@@ -658,7 +661,13 @@ static void setup_form(char *buffer, char *templn)
 #endif
 	_add_checkbox("wp", "wm_proxy", !(webman_config->wm_proxy), buffer);
 
+#ifdef PLAY_MUSIC
+	add_checkbox("ab", STR_AUTOB, " • ", (webman_config->autob), buffer);
+	_add_checkbox("ms", "Music", (webman_config->music), buffer);
+#else
 	_add_checkbox("ab", STR_AUTOB  , (webman_config->autob), buffer);
+#endif
+
 	_add_checkbox("dy", STR_DELAYAB, (webman_config->delay), buffer);
 
 #ifdef NOBD_PATCH
@@ -670,7 +679,7 @@ static void setup_form(char *buffer, char *templn)
 	_add_checkbox( "bl", STR_DEVBL,  (webman_config->blind),  buffer);
 #endif
 
-	add_checkbox("wn", STR_NOWMDN, " • ", (webman_config->wmstart), buffer);
+	add_checkbox("wn", STR_NOWMDN, " • ",  (webman_config->wmstart),  buffer);
 	_add_checkbox("mn", "Icon", !(webman_config->msg_icon), buffer);
 
 	_add_checkbox("pl", STR_USBPOLL, (webman_config->poll) , buffer);
@@ -1109,6 +1118,8 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(templn, " : <b>SELECT+R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
 	add_checkbox("pkg", "INSTALL PKG", templn                           , !(webman_config->combo2 & INSTALPKG), buffer);
 #endif
+	add_checkbox("hom", "GOTO_HOME", " : <b>L2+L3+R3</b><br>"           , !(webman_config->combo & GOTO_HOME), buffer);
+
 	add_checkbox("pld", "PLAY DISC", " : <b>L2+START</b><br>"
 						"</td></tr></table>"                            , !(webman_config->combo2 & PLAY_DISC), buffer);
 
@@ -1138,6 +1149,9 @@ static void setup_form(char *buffer, char *templn)
   #endif
   #ifdef XMB_SCREENSHOT
 					"<option>/browser.ps3$screenshot_xmb"
+  #endif
+  #ifdef PLAY_MUSIC
+					"<option>/browser.ps3$music"
   #endif
  #endif //#ifdef PS3_BROWSER
 					"<option>/cpursx.ps3?mode"

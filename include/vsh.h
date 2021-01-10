@@ -591,6 +591,39 @@ static bool launch_app_home_icon(void)
 	return false;
 }
 
+static void goto_xmb_home(void)
+{
+	if(IS_ON_XMB && get_explore_interface())
+	{
+		play_rco_sound("snd_system_ok");
+		exec_xmb_command("focus_category game");
+		exec_xmb_command("focus_segment_index xmb_app3");
+	}
+}
+
+#ifdef PLAY_MUSIC
+static void play_xmb_music(void)
+{
+	if(IS_ON_XMB && get_explore_interface())
+	{
+		exec_xmb_command("close_all_list");
+		sys_ppu_thread_sleep(1);
+		exec_xmb_command("focus_category music");
+		exec_xmb_command("focus_segment_index -1");
+		if(wait_for_abort(2000000UL)) return;
+		parse_pad_command("triangle", 0);
+		sys_ppu_thread_sleep(2);
+		parse_pad_command("cross", 0);
+		sys_ppu_thread_sleep(2);
+		parse_pad_command("psbtn", 0);
+		sys_ppu_thread_sleep(1);
+		exec_xmb_command("close_all_list");
+		sys_ppu_thread_sleep(1);
+		exec_xmb_command("focus_category game");
+	}
+}
+#endif
+
 #ifdef COBRA_ONLY
 static void reload_xmb(void)
 {
