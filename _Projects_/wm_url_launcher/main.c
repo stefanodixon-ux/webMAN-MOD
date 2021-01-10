@@ -432,6 +432,7 @@ int main(int argc, const char* argv[])
 				if(not_exists(path)) sprintf(path, "%s/dosbox%s",     RETROARCH, sufix[i]);
 			}
 			else
+			if(strcasestr(path, "/ROMS/SCUMMVM/"))    sprintf(path, "%s/scummvm%s",    RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/VECX/"))       sprintf(path, "%s/vecx%s",       RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/INTV/"))       sprintf(path, "%s/freeintv%s",   RETROARCH, sufix[i]);    else
 			if(strcasestr(path, "/ROMS/2048/"))       sprintf(path, "%s/2048%s",       RETROARCH, sufix[i]);    else

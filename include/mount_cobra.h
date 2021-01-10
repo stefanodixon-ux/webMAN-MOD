@@ -267,6 +267,8 @@
 						is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
 				}
 
+				mount_unk = netiso_args.emu_mode = EMU_BD;
+
 				if(islike(netpath, "/PS3ISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_PS3; else
 				if(islike(netpath, "/BDISO" ) && is_iso) mount_unk = netiso_args.emu_mode = EMU_BD;  else
 				if(islike(netpath, "/DVDISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_DVD; else
@@ -274,7 +276,7 @@
 			//	if(islike(netpath, "/PSPISO") && is_iso) goto copy_pspiso_to_hdd0;                   else
 				if(islike(netpath, "/PSPISO") && is_iso)
 				{
-					mount_unk = netiso_args.emu_mode = EMU_BD;
+					//mount_unk = netiso_args.emu_mode = EMU_BD;
 					sprintf(netiso_args.path, "/***DVD***%s", "/PSPISO");
 				}
 				else if(islike(netpath, "/PSX") && is_iso)
@@ -333,7 +335,7 @@
 				}
 				else if(islike(netpath, "/ROMS/") && !is_iso)
 				{
-					netiso_args.emu_mode = EMU_BD;
+					//netiso_args.emu_mode = EMU_BD;
 					mount_unk = EMU_ROMS;
 
 					sprintf(netiso_args.path, "/***DVD***%s", "/ROMS");
@@ -344,7 +346,7 @@
 				}
 				else
 				{
-					mount_unk = netiso_args.emu_mode = EMU_DVD;
+					//mount_unk = netiso_args.emu_mode = EMU_DVD;
 					if(is_ext(netpath, ".pkg"))
 					{
 						pkg_slash = strrchr(netpath, '/'); if(pkg_slash) *pkg_slash = NULL;
