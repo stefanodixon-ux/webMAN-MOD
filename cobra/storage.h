@@ -89,7 +89,7 @@ static int sys_storage_close(sys_device_handle_t device_handle)
 }
 #endif
 
-int sys_storage_read(sys_device_handle_t device_handle, uint64_t unk, uint64_t start_sector, uint32_t sector_count, void *buf, uint32_t *nread, uint64_t unk2);
+int sys_storage_read(sys_device_handle_t device_handle, uint64_t mode, uint64_t start_sector, uint32_t sector_count, void *buf, uint32_t *nread, uint64_t flags);
 
 /* static int sys_storage_send_device_command(sys_device_handle_t device_handle, unsigned int command, void *indata, uint64_t inlen, void *outdata, uint64_t outlen)
 {
