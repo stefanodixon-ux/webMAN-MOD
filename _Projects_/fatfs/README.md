@@ -1,5 +1,9 @@
-# fatfs_psx
-embedded fatfs/exfat implementation for psx
+# fatfs
+
+Ported to PS3 by lmirel : https://github.com/lmirel/fatfs_psx
+
+--
+embedded fatfs/exfat implementation for ps3
 
 original implementation comes from http://elm-chan.org/fsw/ff/00index_e.html
 --

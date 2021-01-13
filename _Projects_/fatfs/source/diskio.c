@@ -119,15 +119,19 @@ DRESULT disk_read (
     if(!my_buff)
 		return RES_ERROR;
 
+	uint64_t storage_flag = 0;
     uint32_t sectors_read;
     int r, k;
 	res = RES_OK;
 	for (k = 0; k < SYSIO_RETRY; k++)
 	{
-		r = sys_storage_read (fd, (uint32_t) sector, (uint32_t) count, 
-			(uint8_t *) my_buff, &sectors_read); 
-
-		if(r == 0x80010002 || r == 0)
+		r = sys_storage_read (fd, sector, count, (uint8_t *) my_buff, &sectors_read, storage_flag); 
+		if (r == 0x80010002 ) {
+			if(storage_flag == 0x22) break;
+			if(storage_flag == 1) storage_flag = 0x22;
+			if(storage_flag == 0) storage_flag = 1;
+		}
+		if(r == 0)
 		{
 			break;
 		}
@@ -196,7 +200,7 @@ DRESULT disk_write (
 	else
 		my_buff = (void *) buff;
 
-    uint32_t sectors_read;
+    uint32_t sectors_wrote;
 
     if (!my_buff)
 	{
@@ -205,14 +209,21 @@ DRESULT disk_write (
     if (flag)
 		memcpy (my_buff, buff, ss * count);
 
+	u64 storage_flag = 0;
+	
     int r, k;
 	res = RES_OK;
 	for (k = 0; k < SYSIO_RETRY; k++)
 	{
-		r = sys_storage_write (fd, (uint32_t) sector, (uint32_t) count, 
-			(uint8_t *) my_buff, &sectors_read);
-
-		if (r == 0x80010002 || r ==0)
+		r = sys_storage_write (fd, (uint32_t) sector, (uint32_t) count, (uint8_t *) my_buff, &sectors_wrote, storage_flag);
+		
+		if (r == 0x80010002 ) {
+			if(storage_flag == 0x22) break;
+			if(storage_flag == 1) storage_flag = 0x22;
+			if(storage_flag == 0) storage_flag = 1;
+		}
+		
+		if (r ==0)
 		{
 			break;
 		}
@@ -232,7 +243,7 @@ DRESULT disk_write (
 		return RES_ERROR;
 	}
 
-    if (sectors_read != count)
+    if (sectors_wrote != count)
 	{
 		return RES_ERROR;
 	}
@@ -270,13 +281,13 @@ DRESULT disk_ioctl (
 		case GET_SECTOR_COUNT:	/* Get number of sectors on the drive */
 		{
 			static device_info_t disc_info;
-			disc_info.total_sectors = 0;
+			disc_info.sector_count = 0;
 			int rr = sys_storage_get_device_info (id, &disc_info);
 			if (rr != 0)
 			{
 				return RES_ERROR;
 			}
-			*(LBA_t*)buff = disc_info.total_sectors;
+			*(LBA_t*)buff = (LBA_t) disc_info.sector_count;
 			res = RES_OK;
 		}
 			break;

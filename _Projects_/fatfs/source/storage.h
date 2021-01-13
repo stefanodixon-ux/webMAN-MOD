@@ -74,11 +74,11 @@ typedef struct
     uint8_t     name[7];
     uint8_t     unknown01;
     uint32_t    unknown02; // random nr?
-    uint32_t    zero01; 
+    uint32_t    zero01;
     uint32_t    unknown03; // 0x28?
     uint32_t    unknown04; // 0xd000e990?
     uint8_t     zero02[16];
-    uint64_t    total_sectors;
+    uint64_t    sector_count;
     uint32_t    sector_size;
     uint32_t    unknown05;
     uint8_t     writable;
@@ -127,7 +127,7 @@ static inline int sys_storage_send_atapi_command(uint32_t fd, struct lv2_atapi_c
                 , (uint64_t) &tag);
 
     return_to_user_prog(int);
-  
+
 }
 
 
@@ -140,7 +140,7 @@ static inline int sys_storage_send_device_cmd(uint32_t fd, uint32_t cmd, void * 
                 , cmd_size
                 , (uint64_t) data_buffer
                 , len_data_buffer);
-    
+
     return_to_user_prog(int);
 }
 
@@ -158,7 +158,7 @@ static inline int sys_storage_async_configure(uint32_t fd, sys_io_buffer_t io_bu
 
 
 static inline int sys_storage_async_send_device_command(uint32_t fd, uint64_t cmd,
-    const void *cmdbuf, uint32_t cmdbuf_size, void *databuf, uint32_t databuf_size, uint64_t user_data) 
+    const void *cmdbuf, uint32_t cmdbuf_size, void *databuf, uint32_t databuf_size, uint64_t user_data)
 {
     lv2syscall7(619
                 , fd
@@ -180,9 +180,9 @@ static inline int sys_storage_get_device_info(uint64_t device, device_info_t *de
     return_to_user_prog(int);
 }
 
-static inline int sys_storage_open(uint64_t id, int *fd)
+static inline int sys_storage_open(uint64_t device_ID, int *fd)
 {
-    lv2syscall4(600, id, 0, (uint64_t) fd, 0);
+    lv2syscall4(600, device_ID, 0, (uint64_t) fd, 0);
 
     return_to_user_prog(int);
 }
@@ -194,20 +194,16 @@ static inline int sys_storage_close(int fd)
     return_to_user_prog(int);
 }
 
-static inline int sys_storage_read(int fd, uint32_t start_sector, uint32_t sectors, uint8_t *bounce_buf, uint32_t *sectors_read)
+static inline s32 sys_storage_read(int fd, uint64_t start_sector, uint64_t nb_sector, const void* buffer, uint32_t *sectors_read, uint64_t flags )
 {
-    lv2syscall7(602, fd, 0, start_sector, sectors, (uint64_t) bounce_buf, (uint64_t) sectors_read, 0);
-
+	lv2syscall7( 602, fd, 0, start_sector, nb_sector, (uint64_t)buffer, (uint64_t)sectors_read, flags );
     return_to_user_prog(int);
-    
 }
 
-static inline int sys_storage_write(int fd, uint32_t start_sector, uint32_t sectors, uint8_t *bounce_buf, uint32_t *sectors_read)
+static inline s32 sys_storage_write(int fd, uint64_t start_sector, uint64_t nb_sector, const void* buffer, uint32_t *sectors_wrote, uint64_t flags )
 {
-    lv2syscall7(603, fd, 0, start_sector, sectors, (uint64_t) bounce_buf, (uint64_t) sectors_read, 0);
-
+	lv2syscall7( 603, fd, 0, start_sector, nb_sector, (uint64_t)buffer, (uint64_t)sectors_wrote, flags );
     return_to_user_prog(int);
-    
 }
 
 /*
@@ -216,7 +212,7 @@ static inline int sys_storage_async_read(int fd, uint32_t start_sector, uint32_t
     lv2syscall7(606, fd, 0, start_sector, sectors, bounce_buf, user_data, 0);
 
     return_to_user_prog(int);
-    
+
 }
 */
 
@@ -228,7 +224,7 @@ static inline int sys_storage_reset_bd(void)
     lv2syscall2(864, 0x5004, 0x29);
 
     return_to_user_prog(int);
-    
+
 }
 
 /**
@@ -247,11 +243,11 @@ static inline int sys_storage_ctrl_bd(int _func)
 {
     uint64_t func[0x18/8];
     func[0]= (uint64_t) _func;
-    
+
     lv2syscall2(864, 0x5007, (uint64_t) &func[0]);
 
     return_to_user_prog(int);
-    
+
 }
 
 
