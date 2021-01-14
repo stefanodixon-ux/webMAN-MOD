@@ -126,15 +126,17 @@ static u8 *create_fake_file_iso_mem(char *filename, u64 size)
 	u16 *string = (u16 *) malloc(256);
 	if(!string) {free(mem); return NULL;}
 
-	char name[65];
-	u16 len_string = snprintf(name, 64, "%s", filename);
-	name[64] = 0;
+	#define MAX_NAME_LEN	110
 
-	if(len_string > 64)
+	char name[MAX_NAME_LEN + 2];
+	u16 len_string, len_name = snprintf(name, MAX_NAME_LEN, "%s", filename);
+	name[MAX_NAME_LEN] = 0;
+
+	if(len_name > MAX_NAME_LEN)
 	{
 		char *ext = get_extension(filename);
 		// break the string
-		int pos = 63 - strlen(ext);
+		int pos = MAX_NAME_LEN - 1 - strlen(ext);
 		while(pos > 0 && (name[pos] & 192) == 128) pos--; // skip UTF extra codes
 		strcpy(&name[pos], ext);
 	}
@@ -161,7 +163,7 @@ static u8 *create_fake_file_iso_mem(char *filename, u64 size)
 
 		if(size > 0xFFFFF800ULL) {flags = 0x80; size0 = 0xFFFFF800ULL;} else size0 = size;
 
-		idr = create_directory_record(idr, name, strlen(name), size0, flags, last_lba);
+		idr = create_directory_record(idr, name, len_name, size0, flags, last_lba);
 
 		idr2 = create_directory_record(idr2, (char*)string, len_string * 2, size0, flags, last_lba);
 
@@ -248,7 +250,7 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 				parts += ps3ntfs_file_to_sectors(src_path, sections + parts + 0x200/4, sections_size + parts, MAX_SECTIONS - parts - 0x200/4, 1);
 		}
 
-		if (parts > 0 && parts < (MAX_SECTIONS - 0x200/4))
+		if (parts < (MAX_SECTIONS - 0x200/4))
 		{
 			rawseciso_args *p_args;
 			p_args = (rawseciso_args *)plugin_args;

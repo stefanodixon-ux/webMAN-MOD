@@ -1,8 +1,8 @@
 #define MAX_ISOS 2000
 
 static int  nn = 0;
-static int  nt[MAX_ISOS];
-static char ff[MAX_ISOS][255];
+static size_t nt[MAX_ISOS];
+static char ff[MAX_ISOS][256];
 
 static char subpath[MAX_PATH_LEN];
 /*
@@ -19,7 +19,7 @@ void addlog(char *msg1, char *msg2)
 	}
 }
 */
-static int s_mode;
+static int s_mode; // 0 = png/jpg/sfo, 1=iso/bin/img/mdf
 
 int copy_exfat(char *src_file, char *out_file, u64 size)
 {
@@ -59,8 +59,11 @@ static int dir_read (char *dpath)
 
 	/* Register work area to the default drive */
 	FATFS fs;   /* Work area (filesystem object) for logical drive */
-	char drn[5];
-	snprintf(drn, 4, "%.3s", dpath);
+	char drn[6];
+	snprintf(drn, 5, "%s", dpath);
+	if(drn[2]=='/')drn[3]=0;
+	if(drn[3]=='/')drn[4]=0;
+	if(drn[4]=='/')drn[5]=0;
 	f_mount(&fs, drn, 0);
 
 	char fn[256];
@@ -96,8 +99,10 @@ static int dir_read (char *dpath)
 				//--- create .ntfs[BDFILES] for 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS"
 				if(g_mode >= 4)
 				{
-					snprintf (fn, 255, "%s/%s", dpath, fno.fname);
-					make_fake_iso(g_mode, ext, fno.fname, fn, device_id, fno.fsize);
+					// store path for conversion after the directory scan (fflib_file_to_sectors breaks the scan)
+					nt[nn] = fno.fsize;
+					snprintf (ff[nn], 255, "%s", fno.fname);
+					nn++; if(nn >= MAX_ISOS) break;
 					continue;
 				}
 				//---------------
@@ -192,7 +197,7 @@ static int dir_read (char *dpath)
 	//
 	if(nn)
 	{
-		int flen, dlen;
+		int flen, dlen, plen;
 		for(dlen = strlen(dpath); dlen; dlen--) if(dpath[dlen] == '/') break; // find subdir name
 
 		char *subdir = &dpath[dlen + 1]; sprintf(subpath, "%s", dpath);
@@ -200,24 +205,33 @@ static int dir_read (char *dpath)
 			if(subpath[c] == '[') subpath[c] = '('; else
 			if(subpath[c] == ']') subpath[c] = ')';
 
+		int parts;
+
 		for(int f = 0; f < nn; f++)
 		{
 			for(int i = 0; i < MAX_SECTIONS; i++) sections[i] = sections_size[i] = 0;
 
 			flen = snprintf (fn, 255, "%s/%s", subpath, ff[f]);
 
-			int parts = fflib_file_to_sectors (fn, sections, sections_size, MAX_SECTIONS, 1);
+			parts = fflib_file_to_sectors (fn, sections, sections_size, MAX_SECTIONS, 1);
 			if (parts >= MAX_SECTIONS) continue;
 
 			if(dlen >= 10)
-				flen = snprintf (wm_path, 255, "[%s] %s", subdir, ff[f]);
+				plen = snprintf (wm_path, 255, "[%s] %s", subdir, ff[f]);
 			else
-				flen = snprintf (wm_path, 255, "%s", ff[f]);
+				plen = snprintf (wm_path, 255, "%s", ff[f]);
 
-			wm_path[flen - 4] = 0;
+			wm_path[plen - 4] = 0;
 
 			num_tracks = nt[f];
-			build_file(wm_path, parts, num_tracks, device_id, g_profile, g_mode);
+
+			if(g_mode >= 4)
+			{
+				char *ext = fn + flen - 4;
+				make_fake_iso(g_mode, ext, ff[f], fn, device_id, nt[f]);
+			}
+			else
+				build_file(wm_path, parts, num_tracks, device_id, g_profile, g_mode);
 		}
 		nn = 0;
 	}
@@ -230,9 +244,11 @@ static int dir_read (char *dpath)
 static void scan_exfat(void)
 {
 	fflib_init();
-	for(u8 port = 0; port <= 8; port++)
+	for(u8 port = 0; port < FF_VOLUMES; port++) // 0-7, 64-79, 120-130
 	{
-		if(port == 8) port = 71;
+		if(port == 8)  port = 64;
+		if(port == 80) port = 120;
+
 		sprintf(path, "/dev_usb%03u/", port);
 		if(file_exists(path)) continue; // skip scanning of this USB port if it is readable by PS3 file system
 
