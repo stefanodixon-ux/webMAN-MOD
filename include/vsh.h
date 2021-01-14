@@ -598,6 +598,8 @@ static void goto_xmb_home(void)
 		play_rco_sound("snd_system_ok");
 		exec_xmb_command("focus_category game");
 		exec_xmb_command("focus_segment_index xmb_app3");
+		exec_xmb_command("reload_category music");
+		exec_xmb_command("reload_category video");
 	}
 }
 
