@@ -1160,6 +1160,7 @@ static void rawseciso_thread(uint64_t arg)
 
 		sys_addr_t addr_cache;
 
+		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr_cache) == CELL_OK)
 		{
 			cd_cache = (uint8_t *)addr_cache;
 
