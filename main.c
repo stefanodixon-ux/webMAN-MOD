@@ -188,9 +188,9 @@ SYS_MODULE_EXIT(wwwd_stop);
 #define PS3MAPIPORT		(7887)
 
 #define WWW_BACKLOG		(2001)
-#define	FTP_BACKLOG		(7)
-#define	NET_BACKLOG		(4)
-#define	PS3MAPI_BACKLOG	(4)
+#define FTP_BACKLOG		(7)
+#define NET_BACKLOG		(4)
+#define PS3MAPI_BACKLOG	(4)
 
 static int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MAPI, 3=PS3NETSRV
 
@@ -492,7 +492,7 @@ static void wwwd_thread(u64 arg)
 	if(webman_config->homeb && isDir(webman_config->home_url))
 		set_app_home(webman_config->home_url);
 	else
-		sys_map_path((char*)"/app_home", NULL);
+		sys_map_path("/app_home", NULL);
 #endif
 
 	from_reboot = file_exists(WMNOSCAN);

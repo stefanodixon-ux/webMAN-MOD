@@ -107,6 +107,7 @@
 			char *ntfs_ext = strstr(_path, ".ntfs[");
 			if(ntfs_ext)
 			{
+
 	#ifdef USE_INTERNAL_PLUGIN
 				// ------------------------------------------------------------------------------------------------------------
 				// launch ntfs psx & isos tagged [raw] with external rawseciso sprx (if available) (due support for multi PSX)
@@ -116,15 +117,15 @@
 				{
 					if(multiCD) check_multipsx = !isDir("/dev_usb000"); // check eject/insert USB000 in mount_on_insert_usb()
 
-					const char *rawseciso_sprx[4] = { WM_RES_PATH "/raw_iso.sprx",
+					const char *rawseciso_sprx[3] = { WM_RES_PATH "/raw_iso.sprx",
 													  VSH_MODULE_DIR "raw_iso.sprx",
 													  WMTMP "/res/sman.ntf" };
 
 					u8 n;
-					for(n = 0; n < 4; n++)
+					for(n = 0; n < 3; n++)
 						if(file_exists(rawseciso_sprx[n])) break;
 
-					if(n < 4)
+					if(n < 3)
 					{
 						cellFsChmod(_path, MODE);
 

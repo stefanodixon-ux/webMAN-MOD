@@ -1110,6 +1110,22 @@ static void rawseciso_thread(uint64_t arg)
 	else
 		size_sector = 2048ULL;
 
+	if(mode_file != 1)
+	{
+		usb_device = args->device;
+
+		if(usb_device)
+		{
+			ret = sys_storage_open(usb_device, 0, &handle, 0);
+			if(ret != OK)
+			{
+				DPRINTF("sys_storage_open : %x\n", ret);
+				sys_memory_free((sys_addr_t)args);
+				sys_ppu_thread_exit(ret);
+			}
+		}
+	}
+
 	if(emu_mode == EMU_PSX_MULTI)
 	{
 		psx_isos_desc = &psx_args->discs_desc[0][0];
@@ -1142,18 +1158,17 @@ static void rawseciso_thread(uint64_t arg)
 		discsize *= size_sector;
 		CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
 
-		sys_addr_t addr;
+		sys_addr_t addr_cache;
 
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) == CELL_OK)
 		{
-			cd_cache = (uint8_t *)addr;
+			cd_cache = (uint8_t *)addr_cache;
 
 			if(process_read_iso_cmd(cd_cache, 0, _40KB_) == CELL_OK)
 			{
 				CD_SECTOR_SIZE_2352 = detect_cd_sector_size((char*)cd_cache);
 			}
 
-			sys_memory_free(addr); cd_cache = 0;
+			sys_memory_free(addr_cache); cd_cache = 0;
 		}
 
 		if(discsize % CD_SECTOR_SIZE_2352)
@@ -1174,22 +1189,6 @@ static void rawseciso_thread(uint64_t arg)
 
 
 	DPRINTF("discsize = %lx%08lx\n", discsize>>32, discsize);
-
-	if(mode_file != 1)
-	{
-		usb_device = args->device;
-
-		if(usb_device)
-		{
-			ret = sys_storage_open(usb_device, 0, &handle, 0);
-			if(ret != OK)
-			{
-				DPRINTF("sys_storage_open : %x\n", ret);
-				sys_memory_free((sys_addr_t)args);
-				sys_ppu_thread_exit(ret);
-			}
-		}
-	}
 
 	ret = sys_event_port_create(&result_port, 1, SYS_EVENT_PORT_NO_NAME);
 	if(ret != OK)

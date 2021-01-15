@@ -1751,9 +1751,12 @@ parse_request:
 				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
 				goto exit_handleclient_www;
 			}
-			if(islike(param, "/stat.ps3"))
+			if(islike(param, "/stat.ps3") || islike(param, "/chmod.ps3"))
 			{
-				char *path = param + 9, *buffer = header;
+				do_chmod = islike(param, "/chmod.ps3");
+
+				char *buffer = header;
+				char *path = param + (do_chmod ? 10 : 9);
 
 				sprintf(buffer, "Path: ");
 				add_breadcrumb_trail(buffer, path);

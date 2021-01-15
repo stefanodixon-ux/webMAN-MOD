@@ -10,12 +10,12 @@ function t2lnks(){
 				 .replace(dev, '<a class=\42w\42 href=\42$1\42>$1</a>')+
 
 	// Style links
-	"<style>a{font-family:courier;text-decoration:none;color:#dddddd;}a:hover{color:#ffffff;}</style>"+
+	"<style>a{font-family:courier;text-decoration:none;color:#dddddd;}a:hover{color:#ffffff;}</style>" +
 
 	// Right-click menu
 	"<div id='mnu' style='position:fixed;width:180px;background:#333;z-index:9;display:none;padding:5px;box-shadow:3px 3px 6px #222;opacity:0.96'>" +
-	"<a id='m0'>Install PKG</a>"+
-	"<a id='m1'>Mount</a>"+
+	"<a id='m0'>Install PKG</a>" +
+	"<a id='m1'>Mount</a>" +
 	"<a id='m2'>Open<br></a>" +
 	"<hr>" +
 	"<a id='v2'>Hex View<br></a>" +
@@ -23,16 +23,16 @@ function t2lnks(){
 	"<hr>" +
 	"<a id='m3'>Delete<br></a>" +
 	"<a id='m7'>Rename<br></a>" +
-	"<a id='md'>MD5 Hash<br></a>"+
+	"<a id='md'>MD5 Hash<br></a>" +
 	"<hr>" +
 	"<a id='m4'>Cut<br></a>" +
 	"<a id='m5'>Copy<br></a>" +
 	"<hr>" +
 	"<a id='m8'>Copy To</a><br>" +
-	"<a id='m9'>Copy & overwrite<br></a>"+
-	"</div>"+
-	"<script src='/dev_hdd0/xmlhost/game_plugin/common.js'></script><hr>"+
-	" <input type='button' value=' &#9664;  ' onclick='location.href=\42javascript:history.back();\42;'>"+
+	"<a id='m9'>Copy & overwrite<br></a>" +
+	"</div>" +
+	"<script src='/dev_hdd0/xmlhost/game_plugin/common.js'></script><hr>" +
+	" <input type='button' value=' &#9664;  ' onclick='location.href=\42javascript:history.back();\42;'>" +
 	"</body></html>";
 }
 

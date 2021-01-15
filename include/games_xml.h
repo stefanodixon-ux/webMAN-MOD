@@ -59,11 +59,11 @@ static void apply_remaps(void)
 
 	if(payload_ps3hen)
 	{
-		sys_map_path((char *)FB_XML,			(char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");
-	//	sys_map_path((char *)HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");
+		sys_map_path(FB_XML, (char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");
+	//	sys_map_path(HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");
 	}
 
-	sys_map_path((char*)"/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR); // redirect firmware update on BD disc to empty folder
+	sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR); // redirect firmware update on BD disc to empty folder
 }
 #endif
 

@@ -153,8 +153,8 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		if(do_sleep) sys_ppu_thread_sleep(1);
 
 		#ifdef COBRA_ONLY
-		{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);}
-		{sys_map_path((char*)"/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
+		{sys_map_path("/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);}
+		{sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);}
 		map_earth(0, param);
 		#endif
 

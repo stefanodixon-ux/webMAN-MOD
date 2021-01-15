@@ -998,6 +998,21 @@ static void rawseciso_thread(u64 arg)
 	else
 		sec_size = CD_SECTOR_SIZE_2048;
 
+	if(mode_file != 1)
+	{
+		usb_device = args->device;
+
+		if(usb_device != 0)
+		{
+			ret = sys_storage_open(usb_device, 0, &handle, 0);
+			if(ret != CELL_OK)
+			{
+				//DPRINTF("sys_storage_open failed: %x\n", ret);
+				goto exit_rawseciso;
+			}
+		}
+	}
+
 #ifdef RAWISO_PSX_MULTI
 	if(emu_mode == EMU_PSX_MULTI)
 	{
@@ -1010,6 +1025,9 @@ static void rawseciso_thread(u64 arg)
 	if(emu_mode == EMU_PSX)
 	{   // old psx support
 		num_tracks = args->num_tracks;
+
+		discsize *= sec_size;
+		CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
 
 		if(num_tracks > 0xFF)
 		{
@@ -1031,21 +1049,18 @@ static void rawseciso_thread(u64 arg)
 
 		is_cd2352 = 1;
 
-		discsize *= sec_size;
-		CD_SECTOR_SIZE_2352 = default_cd_sector_size(discsize);
+		sys_addr_t addr_cache;
 
-		sys_addr_t addr;
-
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) == CELL_OK)
+		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr_cache) == CELL_OK)
 		{
-			cd_cache = (u8 *)addr;
+			cd_cache = (u8 *)addr_cache; ntfs_running = 1;
 
 			if(process_read_iso_cmd_iso(cd_cache, 0, 0xA000) == CELL_OK)
 			{
 				CD_SECTOR_SIZE_2352 = detect_cd_sector_size((char*)cd_cache);
 			}
 
-			sys_memory_free(addr); cd_cache = 0;
+			sys_memory_free(addr_cache); cd_cache = 0; ntfs_running = 0;
 		}
 
 		if(discsize % CD_SECTOR_SIZE_2352)
@@ -1066,21 +1081,6 @@ static void rawseciso_thread(u64 arg)
 
 
 	//DPRINTF("discsize = %lx%08lx\n", discsize>>32, discsize);
-
-	if(mode_file != 1)
-	{
-		usb_device = args->device;
-
-		if(usb_device != 0)
-		{
-			ret = sys_storage_open(usb_device, 0, &handle, 0);
-			if(ret != CELL_OK)
-			{
-				//DPRINTF("sys_storage_open failed: %x\n", ret);
-				goto exit_rawseciso;
-			}
-		}
-	}
 
 	ret = sys_event_port_create(&result_port, 1, SYS_EVENT_PORT_NO_NAME);
 	if(ret != CELL_OK)

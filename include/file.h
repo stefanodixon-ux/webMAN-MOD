@@ -384,7 +384,6 @@ int save_file(const char *file, const char *mem, s64 size)
 */
 	return write_file(file, flags, mem, 0, (int)size, crlf);
 }
-
 /*
 static void addlog(const char *msg1, const char *msg2)
 {
@@ -393,7 +392,6 @@ static void addlog(const char *msg1, const char *msg2)
 	save_file("/dev_hdd0/wmm.log", msg, APPEND_TEXT);
 }
 */
-
 static int sysLv2FsLink(const char *oldpath, const char *newpath)
 {
 	system_call_2(SC_FS_LINK, (u64)(u32)oldpath, (u64)(u32)newpath);
@@ -814,13 +812,18 @@ static int folder_copy(const char *path1, char *path2)
 	return CELL_FS_SUCCEEDED;
 }
 
-static u32 dir_count;
-static u32 file_count;
+static u8 do_chmod = 0;
+static u32 dir_count = 0;
+static u32 file_count = 0;
 
 static u64 folder_size(const char *path)
 {
 	if(!isDir(path))
+	{
+		if(do_chmod) cellFsChmod(path, MODE);
+
 		return file_size(path);
+	}
 
 	int fd; bool is_ntfs = false;
 
@@ -846,6 +849,7 @@ static u64 folder_size(const char *path)
 
 		char source[STD_PATH_LEN];
 		u16 plen1 = sprintf(source, "%s", path);
+		char *psource = source + plen1;
 
 		while(working)
 		{
@@ -861,7 +865,7 @@ static u64 folder_size(const char *path)
 			if(copy_aborted) break;
 			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
-			sprintf(source + plen1, "/%s", entry_name);
+			sprintf(psource, "/%s", entry_name); if(do_chmod) cellFsChmod(source, MODE);
 
 			if(isDir(source))
 			{
@@ -953,12 +957,14 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 		u16 path_len = sprintf(entry, "%s", path);
 		bool p_slash = (path_len > 1) && (path[path_len - 1] == '/');
+		char *pentry = entry + path_len;
 
 		bool use_dest = ((fop >= 2) && (fop <= 5)); // fop: 2 = copy, 3 = move, 4 = rename/move in same fs, 5 = copy bk
 
 		if(use_dest) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;}
 
 		u16 dest_len = sprintf(dest_entry, "%s", dest);
+		char *pdest = dest_entry + dest_len;
 
 		while(working)
 		{
@@ -977,15 +983,15 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			if(copy_aborted) break;
 			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
-			if(p_slash) sprintf(entry + path_len, "%s", entry_name); else sprintf(entry + path_len, "/%s", entry_name);
+			if(p_slash) sprintf(pentry, "%s", entry_name); else sprintf(pentry, "/%s", entry_name);
 
-			if(use_dest) {sprintf(dest_entry + dest_len, "/%s", entry_name);}
+			if(use_dest) sprintf(pdest, "/%s", entry_name);
 
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
 
-			else if(wildcard1 && (*wildcard1!=NULL) && ((!instr(entry + path_len, wildcard1)) == wfound1)) continue;
-			else if(wildcard2 && (*wildcard2!=NULL) && ((!instr(entry + path_len, wildcard2)) == wfound2)) continue;
+			else if(wildcard1 && (*wildcard1!=NULL) && ((!instr(pentry, wildcard1)) == wfound1)) continue;
+			else if(wildcard2 && (*wildcard2!=NULL) && ((!instr(pentry, wildcard2)) == wfound2)) continue;
 
 			else if(fop == SCAN_LIST)
 			{
@@ -1328,7 +1334,7 @@ static void map_earth(u8 id, char *param)
 
 		sprintf(param, "%s/earth/%i.qrc", TMP_DIR, id);
 		if(file_exists(param))
-			{sys_map_path((char*)"/dev_flash/vsh/resource/qgl/earth.qrc",  param);}
+			{sys_map_path("/dev_flash/vsh/resource/qgl/earth.qrc",  param);}
 		else
 		{
 			webman_config->earth_id = 0;

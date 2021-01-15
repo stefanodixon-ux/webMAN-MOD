@@ -3,7 +3,7 @@ function t2lnks(){
 	var url = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 	var www =/(^|[^\/#])(www\.[\S]+(\b|$))/gim;
 	var dev =/(\/\b(dev_+.*))/ig;
-	txt.innerHTML= "<a href='/'><b>webMAN MOD</b> 1.47.33</a><HR>" +
+	txt.innerHTML= "<a href='/'><b>webMAN MOD</b> 1.47.33</a><HR>"+
 				  txt.innerHTML
 				 .replace(url, "<a href='$1'>$1</a>")
 				 .replace(www, '$1<a target="_blank" href="http://$2">$2</a>')
@@ -13,22 +13,22 @@ function t2lnks(){
 	"<style>a{font-family:courier;text-decoration:none;color:#dddddd;}a:hover{color:#ffffff;}</style>"+
 
 	// Right-click menu
-	"<div id='mnu' style='position:fixed;width:180px;background:#333;z-index:9;display:none;padding:5px;box-shadow:3px 3px 6px #222;opacity:0.96'>" +
+	"<div id='mnu' style='position:fixed;width:180px;background:#333;z-index:9;display:none;padding:5px;box-shadow:3px 3px 6px #222;opacity:0.96'>"+
 	"<a id='m0'>Install PKG</a>"+
 	"<a id='m1'>Mount</a>"+
-	"<a id='m2'>Open<br></a>" +
-	"<hr>" +
-	"<a id='v2'>Hex View<br></a>" +
-	"<a id='m6'>Open Location<br></a>" +
-	"<hr>" +
-	"<a id='m3'>Delete<br></a>" +
-	"<a id='m7'>Rename<br></a>" +
+	"<a id='m2'>Open<br></a>"+
+	"<hr>"+
+	"<a id='v2'>Hex View<br></a>"+
+	"<a id='m6'>Open Location<br></a>"+
+	"<hr>"+
+	"<a id='m3'>Delete<br></a>"+
+	"<a id='m7'>Rename<br></a>"+
 	"<a id='md'>MD5 Hash<br></a>"+
-	"<hr>" +
-	"<a id='m4'>Cut<br></a>" +
-	"<a id='m5'>Copy<br></a>" +
-	"<hr>" +
-	"<a id='m8'>Copy To</a><br>" +
+	"<hr>"+
+	"<a id='m4'>Cut<br></a>"+
+	"<a id='m5'>Copy<br></a>"+
+	"<hr>"+
+	"<a id='m8'>Copy To</a><br>"+
 	"<a id='m9'>Copy & overwrite<br></a>"+
 	"</div>"+
 	"<script src='/dev_hdd0/xmlhost/game_plugin/common.js'></script><hr>"+
