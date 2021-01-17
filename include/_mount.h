@@ -117,7 +117,7 @@ static void auto_play(char *param, u8 play_ps3)
 				if(strcasestr(param, ".pkg"))
 				{
 					exec_xmb_command("close_all_list");
-					exec_xmb_command("focus_segment_index seg_package_files");
+					exec_xmb_command2("focus_segment_index %s", "seg_package_files");
 				}
 				else
 				{

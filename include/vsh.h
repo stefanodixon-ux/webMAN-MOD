@@ -422,6 +422,13 @@ static void exec_xmb_command(const char *cmd)
 	explore_interface->ExecXMBcommand(cmd, 0, 0);
 }
 
+static void exec_xmb_command2(const char *cmd, const char *param)
+{
+	char explore_command[128]; // info: http://www.psdevwiki.com/ps3/explore_plugin
+	sprintf(explore_command, cmd, param);
+	exec_xmb_command(explore_command);
+}
+
 #ifdef PKG_HANDLER
 static void unload_plugin_modules(bool all);
 #endif
@@ -437,9 +444,9 @@ static void explore_close_all(const char *path)
 	{
 		exec_xmb_command("close_all_list");
 		if(strstr(path, "BDISO") || strstr(path, "DVDISO"))
-			exec_xmb_command("focus_category video");
+			exec_xmb_command2("focus_category %s", "video");
 		else
-			exec_xmb_command("focus_category game");
+			exec_xmb_command2("focus_category %s", "game");
 	}
 }
 
@@ -529,8 +536,6 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 
 			if(mount_unk >= EMU_ROMS) {timeout = 1, icon_found = 1;}
 
-			char explore_command[128]; // info: http://www.psdevwiki.com/ps3/explore_plugin
-
 			//if(!webman_config->autoplay) execute = false;
 
 			for(n = 0; n < timeout; n++)
@@ -543,11 +548,9 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 				if(wait) {if(wait_for_abort(50000)) return;}
 				exec_xmb_command("close_all_list");
 				if(wait) {if(wait_for_abort(150000)) return;}
-				sprintf(explore_command, "focus_category %s", category);
-				exec_xmb_command(explore_command);
+				exec_xmb_command2("focus_category %s", category);
 				if(wait) {if(wait_for_abort(100000)) return;}
-				sprintf(explore_command, "focus_segment_index %s", seg_name);
-				exec_xmb_command(explore_command);
+				exec_xmb_command2("focus_segment_index %s", seg_name);
 				if(wait) {if(wait_for_abort(100000)) return;}
 			}
 
@@ -596,10 +599,11 @@ static void goto_xmb_home(void)
 	if(IS_ON_XMB && get_explore_interface())
 	{
 		play_rco_sound("snd_system_ok");
-		exec_xmb_command("focus_category game");
-		exec_xmb_command("focus_segment_index xmb_app3");
-		exec_xmb_command("reload_category music");
-		exec_xmb_command("reload_category video");
+		exec_xmb_command2("focus_category %s", "network"); // force lose focus
+		exec_xmb_command2("focus_category %s", "game");
+		exec_xmb_command2("focus_segment_index %s", "xmb_app3");
+		exec_xmb_command2("reload_category %s", "music");
+		exec_xmb_command2("reload_category %s", "video");
 	}
 }
 
@@ -610,8 +614,8 @@ static void play_xmb_music(void)
 	{
 		exec_xmb_command("close_all_list");
 		sys_ppu_thread_sleep(1);
-		exec_xmb_command("focus_category music");
-		exec_xmb_command("focus_segment_index -1");
+		exec_xmb_command2("focus_category %s", "music");
+		exec_xmb_command2("focus_segment_index %s", "-1");
 		if(wait_for_abort(2000000UL)) return;
 		parse_pad_command("triangle", 0);
 		sys_ppu_thread_sleep(2);
@@ -621,7 +625,7 @@ static void play_xmb_music(void)
 		sys_ppu_thread_sleep(1);
 		exec_xmb_command("close_all_list");
 		sys_ppu_thread_sleep(1);
-		exec_xmb_command("focus_category game");
+		exec_xmb_command2("focus_category %s", "game");
 	}
 }
 #endif
@@ -660,8 +664,8 @@ static void reload_xmb(void)
 		if(!get_explore_interface()) return;
 
 		exec_xmb_command("close_all_list");
-		exec_xmb_command("focus_category network");
-		exec_xmb_command("focus_segment_index -1");
+		exec_xmb_command2("focus_category %s", "network");
+		exec_xmb_command2("focus_segment_index %s", "-1");
 		if(wait_for_abort(1000000)) return;
 		explore_exec_push(0, false);
 	}

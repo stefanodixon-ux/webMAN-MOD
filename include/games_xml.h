@@ -111,8 +111,8 @@ static void make_fb_xml(void)
 		{
 			if(get_explore_interface())
 			{
-				exec_xmb_command("reload_category game");
-				exec_xmb_command("reload_category network");
+				exec_xmb_command2("reload_category %s", "game");
+				exec_xmb_command2("reload_category %s", "network");
 			}
 		}
 	}
