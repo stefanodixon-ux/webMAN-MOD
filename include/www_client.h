@@ -2201,7 +2201,24 @@ parse_request:
 					{memcpy(header, "/index.ps3", 10); memcpy(param, "/index.ps3", 10); auto_mount = true;}
 			}
  #endif
+ #ifdef USE_NTFS
+			// /mount.ps3/dev_ntfs* => convert ntfs path to cached path
+			if(islike(param, "/mount") && is_ntfs_path(param + 10))
+			{
+				char *filename = param + 10;
+				strcpy(header, filename);
+				int flen = get_name(filename, header, GET_WMTMP);
 
+				for(int i = 2; i < 9; i++) // "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO"
+					if(strstr(header, paths[i])) {sprintf(filename + flen, ".ntfs[%s]", paths[i]); break;}
+
+				if(not_exists(filename))
+				{
+					check_ntfs_volumes();
+					prepNTFS(0);
+				}
+			}
+ #endif
 			if(islike(param, "/games.ps3"))
 			{
 				// /games.ps3
@@ -3199,7 +3216,7 @@ retry_response:
 								goto html_response;
 							}
 						}
-						else if(!islike(param + 10, "/net"))
+						else if(!islike(param + 10, "/net") && !islike(param + 10, WMTMP))
 						{
 							strcpy(templn, param);
 

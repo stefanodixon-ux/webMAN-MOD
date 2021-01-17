@@ -10,6 +10,9 @@ Our goal was to create an AIO plugin that include many of the features available
 in an easy and intuitive way. webMAN MOD is the result of the hard work of several users, developers
 and artists that collaborated with development, knowledge, resources, feedback & ideas.
 
+## Web Commands & General Documentation
+https://www.psx-place.com/threads/webman-mod-web-commands.1508/
+
 ## Current functionality
 ### General
 - Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.87 CEX, DEX & DECR)
@@ -42,15 +45,15 @@ and artists that collaborated with development, knowledge, resources, feedback &
 
 #### Installer & GUIs
 - Easy installer/updater with 4 editions: full, lite, standard (rebug) & nonCobra.
-- New icons created by Brunolee & Berion
+- New icons created by Berion & Brunolee
 - VSH Menu integration (hold SELECT to show the menu)
 - sLaunch GUI integration (hold START or R2+L2 on XMB to show the game menu GUI)
 - Coverflow web-GUI (/games.ps3) provides a mobile/desktop friendly GUI for fast selection of games.
 - Grid web-GUI (/index.ps3) display games with resizable icons and content can be filtered by type/device/name
 - web-GUI for Temperature monitoring: /cpursx.ps3, /cpursx.html & /tempc.html or /tempf.html (gauges)
 - 2 GUI Themes: sMAN-like graphical interface & webMAN original theme
-- LaunchPad integration (DeViL303' mod to use What's New section to mount games)
-- PhotoGUI integration (DeViL303' mod to use Photo albums to mount games)
+- LaunchPad integration (DeViL303's mod to use What's New section to mount games)
+- PhotoGUI integration (DeViL303's mod to use Photo albums to mount games)
 - XMBM+ integration when grouping of XMB content is disabled (v1.33.03)
 - Support for custom XML menu (wm_custom.xml) integrated into webMAN Games menu
 - Install packages from any folder using web command: /install.ps3<path>
@@ -58,6 +61,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 #### Localization & Regional settings
 - Translated into 23 languages
 - Support for change BD/DVD region
+- Game listing using localized title in PARAM.SFO
 
 #### Content organization & information display
 - Title ID can be displayed on XMB menu (next to the title or as "info" text)
@@ -69,20 +73,22 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Extended system information via /cpursx.ps3 (Title ID, game icon, APP Version, IDPS/PSID, CFW version, last played game, console's run time & number of boots)
 - Display of Play time & startup time to SELECT+START and /cpursx.ps3 (Use SELECT+START+R2 to display Game ID, Title, play time and more in-Game info)
 - Use "home" path to define default path for /app_home/PS3_GAME on start up and for R2+START (e.g. make app_home start multiMAN or IRISMAN)
-- Support for list NPDRM games stored /dev_hdd0/game or GAMEI folder on USB FAT32 & NET host, in addition to ISOs and JB folders
+- Support for list & launch NPDRM games stored /dev_hdd0/game or GAMEI folder on USB FAT32 & NET host, in addition to ISOs and JB folders
 - Support for exclude games by file name & Title ID using wm_ignore.txt
 
 #### Extended mount of game
 - Support for multiCD PSXISO games stored as ISO in HDD0 / USB FAT32. Eject/Insert a USB0 device to mount the next CD
-- It can mount PSP games stored on exFAT/ext/NTFS/NET devices without copy the file to the internal HDD (1.47.27) - Requires prepISO 1.27 or later
+- It can mount PSP games stored on exFAT/NTFS/ext2/3/4/NET devices without copy the file to the internal HDD (1.47.27) - Requires prepISO 1.27 or later
 - It can mount PS2 Classics games on PS2 Classic Launcher (.BIN.ENC)
+- It can mount PSX games with CD sector sizes: 2352, 2048, 2336, 2448, 2328, 2340, 2368
 - Automatic CONFIG creation for PS2ISOs and PS2 Classic using config database from ManaGunZ or the database of CONFIG created by the installer
 - Scanning & launch of package files extracted to GAMEI folder on USB FAT32 & NET host. Folders' name can be title_id or content_id
 - Support for launch SELF applications via PKG/ROM Launcher or through the XMB icon: ★ app_home/PS3_GAME
 - Integrated external gameDATA allows installation of packages & game data on external USB drives
 - Integrated prepNTFS allows to scan PS3ISO, PSXISO, BDISO & DVDISO on NTFS devices without need to run prepISO/prepNTFS
 - Support for *.ntfs[BDFILE]* (fake ISO created by IRISMAN or prepISO/prepNTFS) - Used to play AVI/MP4 movies or install large packages stored on NTFS
-- Support to mount NTFS games using raw_iso.sprx (rawseciso by Estwald) - Supports fake ISO
+- Support to mount exFAT/NTFS games using raw_iso.sprx (rawseciso by Estwald) - Supports fake ISO
+- Option to mount ISO also in app_home/PS3_GAME icon.
 - Support last_game.txt / autoboot on nonCobra edition
 - Auto install PKG mounted from exFAT/ext/NTFS (reduce steps needed to install a PKG)
 
@@ -99,7 +105,8 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Shorter URL to access paths & files. Use "home" path in /setup.ps3 for search in a user defined folder.
 - Support for MD5 hash verification of files stored on PS3 (internal HDD & USB FAT32 only)
 - Support edition of small text files (up to 1,300 bytes) via web
-- Hex File Viewer (internal HDD/FAT32/NTFS/exFAT/ext2)
+- Folder size statistics & enable permissions
+- Hex File Viewer (internal HDD/FAT32/NTFS/exFAT/ext2/3/4)
 
 #### Network features
 - Update to latest release from XMB
@@ -108,12 +115,12 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Extended support up to 5 remote network servers
 - Auto configure remote IP address when /setup.ps3 is accessed from a remote client
 - Support navigation of remote network servers even if they are disabled for content scanning
-- NETISO server on PS3 (ISO only) lets share local games among PS3 consoles in a LAN
+- NETISO server on PS3 (ISO only) lets share local games with other PS3 consoles in a LAN
 - Download files & install PKG remotely or with pad shortcuts
 - /dev_blind and /dev_hdd1 are auto-mounted when accessed via FTP or http or from XMB
 - Support for local web chat (source code only)
 
-#### Automatization
+#### Automation
 - Support for user defined combos (pad shortcuts)
 - Virtual pad allows send button events remotely via http://pad.aldostools.org on web browser or with webPAD software (Windows only)
 - Several shortcuts to toggle Cobra, swap Rebug files, mount net0/ or net1/, show IDPS/PSID, etc.
@@ -124,9 +131,13 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Launch mounted games with /play.ps3 command. Once a game is mounted via html, click on the displayed icon to launch the game on the PS3.
 - Execute XMB functions with /play.ps3 command. (e.g: /play.ps3?col=network&seg=seg_premo) <- this will start Remote Play server from XMB.
 - A comprehensive set of web commands and features for customization (link in Web Commands Documentation)
+- Multiple Web Commands interfaces via HTTP, FTP, PS3MAPI, file polling (dev_hdd0/tmp/wm_request)
+- Option for auto-play music when the system starts or through a combo that calls /browser.ps3$music
+- Combo L2+L3+R3 allows to set the XMB multimedia player as background/dynamic theme.
+- Support for enable/disable noBD patch needed to remarry BD drive
 
 #### Stealth features
-- Support for dumping IDPS/PSID
+- Support for dumping IDPS/PSID/act.dat
 - Support for automatic or manual removal of CFW syscalls and spoof console id (IDPS/PSID)
 - "Offline" mode (blocks some PSN/tracking servers) and automatic restore when CFW syscalls are removed. Game updates still work in this mode. (v1.33.03)
 - Scan for games on the stealth folder "/video"
@@ -143,6 +154,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 #### Memory & debugging
 - All LV2 peek/pokes are done through syscalls 8/9 (CFW only) - syscalls 6/7 used only by PS3HEN
 - Web Debugger (remote peek/poke/find bytes, dump lv1 & lv2 memory)
+- PS3MAPI web GUI debuger (process view, memory browse/change, attach/unload plugins to the process, syscall managament)
 - MIN+ memory profile (same as MIN but uses 512K and 2.5X more buffer for PS3 games)
 - MAX+ memory profile (same as MAX 1280K for PS3 games, others buffer is reduced, eg: 2X less buffer for ftp and 4X for DVD etc...)
 - Support for up to 3MB from 4 available VSH memory containers [MC] (bg, fg, debug, app)
@@ -154,10 +166,8 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Enable in-game screen capture on CFW that don't has the feature.
 - Integrated Mysis video_rec plugin and get klicensee used by NPDRM content
 
-## Web Commands Documentation
-https://www.psx-place.com/threads/webman-mod-web-commands.1508/
-
 ## Integrated Plugins
+- wm_proxy plugin : Proxy that redirects XMB menu actions to web commands
 - sLaunch plugin : GUI to navigate and mount the games from any place on the XMB
 - VSH Menu plugin : GUI to execute commands from any place on the XMB
 - RAWSECISO plugin : Proxy that handles the SCSI requests by Cobra to access the ISO images stored in exFAT/NTFS devices
@@ -166,12 +176,12 @@ https://www.psx-place.com/threads/webman-mod-web-commands.1508/
 
 ## Addons
 - ps3netsrv : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
-- prepISO : tool that scans content stored in exFAT / NTFS devices and prepare the settings files needed by RAWSECISO plugin
+- prepISO : tool that scans content stored in exFAT/NTFS/ext2/3/4 devices and prepare the settings files needed by RAWSECISO plugin
 - PKG/ROM Launcher : allows the execution of PS3 applications and ROMS via RetroArch. Requires that the debug icon "★ app_home/PS3_GAME" be present on XMB
 - PS2CONFIG : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games
 - WM Themes : Set of packages that customize the look of the XMB icons used by webMAN MOD
 - Reload XMB : PS3 application that forces the reload of XMB icons
-- Boot MAMBA : Package that installs MAMBA payload for use on Rebug 4.84 and later with Cobra disabled
+- Boot MAMBA : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87 with Cobra disabled
 - MOVIAN.ISO : Custom ISO to launch MOVIAN
 
 - PS2 Classics Launcher : PS3 application required to launch PS2 Classics games in .BIN.ENC format
@@ -179,7 +189,8 @@ https://www.psx-place.com/threads/webman-mod-web-commands.1508/
 - PSP Minis Launcher : PS3 application required to launch PSP Mini games in ISO format
 
 - RetroArch : Required to launch the emulators that run the classic games in ROM format
-- MOVIAN : Required to play audio and videos in non-nantive formats
+- MOVIAN : Required to play audio and videos in non-nantive formats like MKV
+- multiMAN : Optional. Use for dump ISO, download covers, advanced file management
 
 - webPAD : http://pad.aldostools.org - Online virtual game pad
 

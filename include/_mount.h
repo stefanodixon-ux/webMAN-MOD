@@ -1497,8 +1497,10 @@ exit_mount:
 		sprintf(msg, "\"%s", pos + 1);
 
 		// remove file extension
-		get_flag(msg, ".ntfs[");
-		pos = strrchr(msg, '.'); if(pos) *pos = NULL;
+		if(!get_flag(msg, ".ntfs["))
+		{
+			pos = strrchr(msg, '.'); if(pos) *pos = NULL;
+		}
 		if(msg[1] == NULL) sprintf(msg, "\"%s", _path);
 
 		// show loaded path

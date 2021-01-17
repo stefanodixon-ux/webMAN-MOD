@@ -196,7 +196,7 @@ static int active_socket[4] = {NONE, NONE, NONE, NONE}; // 0=FTP, 1=WWW, 2=PS3MA
 
 ////////////
 
-static const u32 MODE  = 0777;
+static const u32 MODE  = 0777; // S_IRWXO | S_IRWXU | S_IRWXG
 static const u32 DMODE = (CELL_FS_S_IFDIR | 0777);
 static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
 
