@@ -409,6 +409,9 @@ static bool wait_for_abort(u32 usecs)
 {
 	if(IS_INGAME) return true;
 
+	if(usecs < 50  ) usecs *= 1000000; // convert to microseconds
+	if(usecs < 1000) usecs *= 1000;    // convert to milliseconds
+
 	for(u32 s = 0; s <= usecs; s+=200000)
 	{
 		if(abort_autoplay()) return true; //200ms
@@ -476,7 +479,7 @@ static bool explore_exec_push(u32 usecs, u8 focus_first)
 		if(focus_first)
 		{
 			exec_xmb_command("open_list nocheck");
-			if(wait_for_abort(500000)) return false;
+			if(wait_for_abort(500)) return false;
 			focus_first_item();
 		}
 		else
@@ -498,11 +501,11 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 	unload_vsh_gui();
 #endif
 
-	for(n = 0; n < 15; n++) {if(get_explore_interface()) break; if(wait_for_abort(2000000)) return;}
+	for(n = 0; n < 15; n++) {if(get_explore_interface()) break; if(wait_for_abort(2)) return;}
 
 	if(IS(seg_name, "seg_device")) wait_for("/dev_bdvd", 15);
 
-	if(n) {if(wait_for_abort(3000000)) return;}
+	if(n) {if(wait_for_abort(3)) return;}
 
 	if(explore_interface)
 	{
@@ -519,7 +522,7 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 
 			while(View_Find("webrender_plugin") || View_Find("webbrowser_plugin"))
 			{
-				if(wait_for_abort(50000)) return; if(++retry > 100) break;
+				if(wait_for_abort(50)) return; if(++retry > 100) break;
 			}
 
 			// use segment for media type
@@ -545,13 +548,13 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 				if((n < icon_found) && file_exists(XMB_DISC_ICON)) {n = icon_found;}
 				wait = (n < icon_found) || execute;
 
-				if(wait) {if(wait_for_abort(50000)) return;}
+				if(wait) {if(wait_for_abort(50)) return;}
 				exec_xmb_command("close_all_list");
-				if(wait) {if(wait_for_abort(150000)) return;}
+				if(wait) {if(wait_for_abort(150)) return;}
 				exec_xmb_command2("focus_category %s", category);
-				if(wait) {if(wait_for_abort(100000)) return;}
+				if(wait) {if(wait_for_abort(100)) return;}
 				exec_xmb_command2("focus_segment_index %s", seg_name);
-				if(wait) {if(wait_for_abort(100000)) return;}
+				if(wait) {if(wait_for_abort(100)) return;}
 			}
 
 			if(mount_unk >= EMU_ROMS) sys_ppu_thread_sleep(1);
@@ -594,16 +597,23 @@ static bool launch_app_home_icon(void)
 	return false;
 }
 
-static void goto_xmb_home(void)
+static void goto_xmb_home(bool reload_game)
 {
 	if(IS_ON_XMB && get_explore_interface())
 	{
 		play_rco_sound("snd_system_ok");
-		exec_xmb_command2("focus_category %s", "network"); // force lose focus
-		exec_xmb_command2("focus_category %s", "game");
-		exec_xmb_command2("focus_segment_index %s", "xmb_app3");
-		exec_xmb_command2("reload_category %s", "music");
-		exec_xmb_command2("reload_category %s", "video");
+		exec_xmb_command2("focus_category %s", "network");		 // force lose focus before focus game column
+		exec_xmb_command2("focus_category %s", "game");			 // return focus to game column
+		exec_xmb_command2("focus_segment_index %s", "xmb_app3"); // focus on webMAN Games
+		exec_xmb_command2("reload_category %s", "music");		 // prevent xmb stuck on music albums
+		exec_xmb_command2("reload_category %s", "video");		 // prevent xmb stuck on video albums
+		if(reload_game)
+		{
+			sys_ppu_thread_usleep(1000);
+			exec_xmb_command2("focus_category %s", "network");	 // force lose focus before focus game column
+			exec_xmb_command2("reload_category %s", "game");	 // prevent xmb stuck on game column
+			exec_xmb_command2("focus_category %s", "game");		 // return focus to game column
+		}
 	}
 }
 
@@ -616,14 +626,12 @@ static void play_xmb_music(void)
 		sys_ppu_thread_sleep(1);
 		exec_xmb_command2("focus_category %s", "music");
 		exec_xmb_command2("focus_segment_index %s", "-1");
-		if(wait_for_abort(2000000UL)) return;
+		if(wait_for_abort(2)) return;
 		parse_pad_command("triangle", 0);
-		sys_ppu_thread_sleep(2);
+		if(wait_for_abort(2)) return;
 		parse_pad_command("cross", 0);
-		sys_ppu_thread_sleep(2);
+		if(wait_for_abort(2)) return;
 		parse_pad_command("psbtn", 0);
-		sys_ppu_thread_sleep(1);
-		exec_xmb_command("close_all_list");
 		sys_ppu_thread_sleep(1);
 		exec_xmb_command2("focus_category %s", "game");
 	}
@@ -666,7 +674,7 @@ static void reload_xmb(void)
 		exec_xmb_command("close_all_list");
 		exec_xmb_command2("focus_category %s", "network");
 		exec_xmb_command2("focus_segment_index %s", "-1");
-		if(wait_for_abort(1000000)) return;
+		if(wait_for_abort(1)) return;
 		explore_exec_push(0, false);
 	}
 }

@@ -163,7 +163,7 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		{
 			vshNotify_WithIcon(6, "Starting Music...\n"
 								  "Press O to abort");
-			if(!wait_for_abort(1000000UL * (8 + webman_config->boots)))
+			if(!wait_for_abort(8 + webman_config->boots))
 				play_xmb_music();
 			else
 				play_rco_sound("snd_system_ng");

@@ -227,14 +227,14 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 	return false;
 }
 
-static bool get_cover_from_name(char *icon, const char *name, char *title_id)
+static bool get_cover_from_name(char *icon, const char *name, char *title_id) // get icon & title_id from name
 {
 	if(HAS(icon)) return true;
 
 	// get cover from title_id in PARAM.SFO
 	if(get_cover_by_titleid(icon, title_id)) return true;
 
-	// get titleid from file name
+	// get title_id from file name
 	if(HAS_TITLE_ID) ;
 
 	else if((*name == 'B' || *name == 'N' || *name == 'S' || *name == 'U') && ISDIGIT(name[6]) && ISDIGIT(name[7]))
@@ -532,7 +532,7 @@ no_icon0:
 	return default_icon;
 }
 
-static int get_title_and_id_from_sfo(char *templn, char *title_id, const char *entry_name, char *icon, char *data, u8 f0)
+static int get_title_and_id_from_sfo(char *param_sfo, char *title_id, const char *entry_name, char *icon, char *data, u8 f0)
 {
 	int ret = FAILED;
 
@@ -540,14 +540,15 @@ static int get_title_and_id_from_sfo(char *templn, char *title_id, const char *e
 
 	// read param.sfo
 	unsigned char *mem = (u8*)data;
-	u64 sfo_size = read_file(templn, data, _4KB_, 0);
+	u64 sfo_size = read_file(param_sfo, data, _4KB_, 0);
+	char *title = param_sfo;
 
-	// get titleID & title from PARAM.SFO
+	// get title_id & title from PARAM.SFO
 	if(is_sfo(mem))
 	{
-		if((IS_HDD0 && islike(templn + 9, "/game/")) || islike(templn + 11, "/GAMEI/") || strstr(templn, "_00-")) use_filename = false;
+		if((IS_HDD0 && islike(param_sfo + 9, "/game/")) || islike(param_sfo + 11, "/GAMEI/") || strstr(param_sfo, "_00-")) use_filename = false;
 
-		parse_param_sfo(mem, title_id, templn, (u16)sfo_size);
+		parse_param_sfo(mem, title_id, title, (u16)sfo_size);
 
 		if(SHOW_COVERS) get_cover_by_titleid(icon, title_id);
 
@@ -556,23 +557,23 @@ static int get_title_and_id_from_sfo(char *templn, char *title_id, const char *e
 
 	if(use_filename)
 	{
-		if(NO_ICON && !HAS_TITLE_ID) get_cover_from_name(icon, entry_name, title_id); // get titleID from name
+		if(NO_ICON && !HAS_TITLE_ID) get_cover_from_name(icon, entry_name, title_id); // get title_id from name
 
 		ret = ~CELL_FS_SUCCEEDED;
 	}
 
 	if(ret != CELL_FS_SUCCEEDED)
 	{
-		get_name(templn, entry_name, NO_PATH); if(!IS_NTFS) utf8enc(data, templn, true); //use file name as title
+		get_name(title, entry_name, NO_PATH); if(!IS_NTFS) utf8enc(data, title, true); //use file name as title
 	}
 
 	return ret;
 }
 
 #ifdef COBRA_ONLY
-static int get_name_iso_or_sfo(char *templn, char *title_id, char *icon, const char *param, const char *entry_name, u8 f0, u8 f1, u8 uprofile, int flen, char *tempstr)
+static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, const char *param, const char *entry_name, u8 f0, u8 f1, u8 uprofile, int flen, char *tempstr)
 {
-	// check entry path & returns file name without extension or path of sfo (for /PS3ISO) in templn
+	// check entry path & returns file name without extension or path of sfo (for /PS3ISO) in param_sfo
 
 	if(IS_NTFS)
 	{   // ntfs
@@ -607,34 +608,44 @@ static int get_name_iso_or_sfo(char *templn, char *title_id, char *icon, const c
 		if(IS_BDISO  && !strstr(ntfs_ext, ".ntfs[BD" )) return FAILED;
 	}
 
+	char *title = param_sfo;
+
 	if(IS_PS3ISO)
 	{
-		get_name(templn, entry_name, GET_WMTMP); strcat(templn, ".SFO\0"); // WMTMP
-		if((!IS_NTFS) && not_exists(templn))
+		get_name(param_sfo, entry_name, GET_WMTMP); strcat(param_sfo, ".SFO\0"); // WMTMP
+		if((!IS_NTFS) && not_exists(param_sfo))
 		{
 			get_name(tempstr, entry_name, NO_EXT);
-			sprintf(templn, "%s/%s.SFO", param, tempstr); // /PS3ISO
+			sprintf(param_sfo, "%s/%s.SFO", param, tempstr); // /PS3ISO
 		}
 
-		if(get_title_and_id_from_sfo(templn, title_id, entry_name, icon, tempstr, f0) != CELL_FS_SUCCEEDED || !HAS_TITLE_ID)
+		if(get_title_and_id_from_sfo(title, title_id, entry_name, icon, tempstr, f0) != CELL_FS_SUCCEEDED || !HAS_TITLE_ID)
 		{
 			if(!IS_NTFS)
 			{
-				sprintf(templn, "%s/%s", param, entry_name); // get raw title ID from ISO
+				char *iso_file = param_sfo;
+				sprintf(iso_file, "%s/%s", param, entry_name); // get raw title ID from ISO
 
-				if(read_file(templn, title_id, 11, 0x810) == 11)
+				if(read_file(iso_file, title_id, 11, 0x810) == 11)
 				{
 					strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = NULL;
 				}
 			}
 
-			get_name(templn, entry_name, NO_EXT);
+			get_name(title, entry_name, NO_EXT);
 		}
 	}
 	else
 	{
-		get_name(templn, entry_name, NO_EXT);
-		if((f1 >= id_BDISO && f1 <= id_ISO) && (webman_config->info == 1 || webman_config->info == 2)) get_cover_from_name(icon, entry_name, title_id);
+		get_name(title, entry_name, NO_EXT);
+		if(f1 >= id_BDISO && f1 <= id_ISO)
+		{
+			// info level: 0=Path, 1=Path + ID, 2=ID, 3=None
+			if(webman_config->info == 1 || webman_config->info == 2)
+			{
+				get_cover_from_name(icon, entry_name, title_id); // get title_id from name
+			}
+		}
 	}
 
 	return CELL_OK;

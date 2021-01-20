@@ -815,6 +815,35 @@ static int folder_copy(const char *path1, char *path2)
 static u8 do_chmod = 0;
 static u32 dir_count = 0;
 static u32 file_count = 0;
+static char *stitle_id = NULL;
+
+static size_t size_link(const char *source)
+{
+	size_t size = file_size(source);
+
+	if(!stitle_id) {file_count++; return size;}
+
+	if(islike(source, "/dev_hdd0"))
+	{
+		char *usrdir = strstr(source, "/USRDIR/");
+		if(usrdir)
+		{
+			if(!islike(usrdir + 8, "EBOOT.BIN"))
+			{
+				char game_path[MAX_PATH_LEN];
+				sprintf(game_path, "%s%s%s", _HDD0_GAME_DIR, stitle_id, usrdir);
+				if(file_size(game_path) == size)
+				{
+					cellFsUnlink(game_path);
+					sysLv2FsLink(source, game_path);
+
+					file_count++; return size;
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 static u64 folder_size(const char *path)
 {
@@ -874,8 +903,7 @@ static u64 folder_size(const char *path)
 			}
 			else
 			{
-				file_count++;
-				dir_size += file_size(source);
+				dir_size += size_link(source);
 			}
 		}
 
@@ -888,7 +916,7 @@ static u64 folder_size(const char *path)
 
 	return dir_size;
 }
-#endif
+#endif // #ifdef COPY_PS3
 
 //////////////////////////////////////////////////////////////
 

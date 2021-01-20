@@ -188,7 +188,7 @@
 #ifdef PKG_HANDLER
 					if(!(webman_config->auto_install_pkg) && IS(ntfs_ext, ".ntfs[BDFILE]") && islike(ntfs_ext - 4, ".pkg"))
 					{
-						installPKG_all((char*)"/dev_bdvd", false);
+						installPKG_all("/dev_bdvd", false);
 						goto exit_mount;
 					}
 #endif
@@ -429,7 +429,7 @@
 #ifdef PKG_HANDLER
 					else if(!(webman_config->auto_install_pkg) && (pkg_slash != NULL))
 					{
-						installPKG_all((char*)"/dev_bdvd", false);
+						installPKG_all("/dev_bdvd", false);
 					}
 #endif
 				}

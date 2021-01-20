@@ -295,7 +295,7 @@
 				<Pair key="info"><String>XML 새로고침으로 업데이트된 게임목록이 저장됩니다. 재부팅후 목록이 갱신됩니다.</String></Pair>
 				<Pair key="module_name"><String>idle_plugin</String></Pair>
 				<Pair key="bar_action"><String>none</String></Pair>
-				<Pair key="module_action"><String>/refresh_ps3</String></Pair>
+				<Pair key="module_action"><String>/refresh.ps3</String></Pair>
 			</Table>
 		</Attributes>
 		<Items><Item class="type:x-xmb/module-action" key="webman_refresh_xml" attr="webman_refresh_xml"/></Items>

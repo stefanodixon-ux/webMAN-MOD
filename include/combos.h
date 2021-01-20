@@ -646,7 +646,7 @@
 								if(do_custom_combo("select_r2_circle")) break;
 								else
   #endif
-								installPKG_all((char*)DEFAULT_PKG_PATH, true);
+								installPKG_all(DEFAULT_PKG_PATH, true);
 
 								n = 0;
 								break;
@@ -721,14 +721,16 @@
 						break;
 					}
 					else if(!(webman_config->combo & GOTO_HOME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
-																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2)) //  L2+L3+R3 / L3+R3+L2 / L3+L2+R3
+																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) //  L2+L3+R3 / L3+R3+L2 / L3+L2+R3
 					{
-						// L2+L3+R3 / L3+R3+L2 / L3+L2+R3 = Go to webMAN Games / Go to Home
+						// L3+R3+L2    = Go to webMAN Games
+						// L3+R3+L2+R2 = Go to webMAN Games + Reload Game column
+						bool reload_game = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) == CELL_PAD_CTRL_R2;
   #ifdef WM_CUSTOM_COMBO
-						if(do_custom_combo("l3_r3_l2")) break;
+						if(do_custom_combo(reload_game ? "l3_r3_l2_r2" : "l3_r3_l2")) break;
 						else
   #endif
-						goto_xmb_home();
+						goto_xmb_home(reload_game);
 						n = 0;
 						break;
 					}

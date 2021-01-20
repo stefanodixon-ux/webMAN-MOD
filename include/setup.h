@@ -661,12 +661,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 	_add_checkbox("wp", "wm_proxy", !(webman_config->wm_proxy), buffer);
 
-#ifdef PLAY_MUSIC
-	add_checkbox("ab", STR_AUTOB, " • ", (webman_config->autob), buffer);
-	_add_checkbox("ms", "Music", (webman_config->music), buffer);
-#else
 	_add_checkbox("ab", STR_AUTOB  , (webman_config->autob), buffer);
-#endif
 
 	_add_checkbox("dy", STR_DELAYAB, (webman_config->delay), buffer);
 
@@ -723,7 +718,7 @@ static void setup_form(char *buffer, char *templn)
 //	_add_checkbox("xp", STR_COMBOS,       (webman_config->nopad), buffer);
 
 #ifdef PKG_HANDLER
-	_add_checkbox("ai", "Auto Install PKG", !(webman_config->auto_install_pkg), buffer);
+	_add_checkbox("ai", "Auto Install PKG", !(webman_config->auto_install_pkg), buffer); // when NTFS/NET ISO is mounted as /dev_bdvd
 #endif
 #ifdef UNLOCK_SAVEDATA
 	_add_checkbox("up", "Unlock savedata", (webman_config->unlock_savedata), buffer);
@@ -842,7 +837,14 @@ static void setup_form(char *buffer, char *templn)
 		concat(buffer, "</select><br>");
 	}
 #endif
+
+#ifdef PLAY_MUSIC
+	add_checkbox("apd", STR_AUTO_PLAY, " • ", (webman_config->autoplay), buffer);
+	_add_checkbox("ms", "XMB Music", (webman_config->music), buffer);
+#else
 	_add_checkbox("apd", STR_AUTO_PLAY, (webman_config->autoplay), buffer);
+#endif
+
 	_add_checkbox("sm\"  accesskey=\"G", "sMAN GUI", (webman_config->sman), buffer);
 
 	//general settings

@@ -589,8 +589,8 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 		sprintf(templn, "<br><b><u>%s:</u></b>", "Output");
 		concat(buffer, templn);
 
-		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&lt;Back</a>", pid, address - 0x2000, pid, address - 0x200); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&gt;&gt;</a><hr>", pid, address + 0x200, pid, address + 0x2000); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&lt;Back</a>", pid, address - 0x2000, pid, address - 0x80); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&gt;&gt;</a><hr>", pid, address + 0x80, pid, address + 0x2000); buffer += concat(buffer, templn);
 
 		char buffer_tmp[length + 1];
 		memset(buffer_tmp, 0, sizeof(buffer_tmp));

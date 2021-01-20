@@ -502,8 +502,8 @@ parse_request:
 				// Delete WMREQUEST_FILE
 				cellFsUnlink(WMREQUEST_FILE);
 			}
-   #endif //#ifdef SLAUNCH_FILE
- #endif //#ifdef WM_REQUEST
+   #endif // #ifdef SLAUNCH_FILE
+ #endif // #ifdef WM_REQUEST
 		}
 		else sprintf(header, "GET %s", mc + 1);
 
@@ -1027,7 +1027,7 @@ parse_request:
 
 				if(islike(param2, "$home"))
 				{
-					goto_xmb_home();
+					goto_xmb_home(false);
 				}
 				else
 				#ifdef PLAY_MUSIC
@@ -1146,7 +1146,7 @@ parse_request:
 					enable_ingame_screenshot();
 				}
 				else
-   #endif //#ifndef LITE_EDITION
+   #endif // #ifndef LITE_EDITION
    #ifdef REMOVE_SYSCALLS
 				if(islike(param2, "$disable_syscalls"))
 				{
@@ -1214,7 +1214,7 @@ parse_request:
 					sys_ppu_thread_sleep(3);
 				}
 				else
-    #endif //#ifndef LITE_EDITION
+    #endif // #ifndef LITE_EDITION
    #endif // #ifdef COBRA_ONLY
 				if(IS_ON_XMB || *param2 == '?' || *param2 == '/')
 				{   // in-XMB
@@ -1758,6 +1758,10 @@ parse_request:
 				char *buffer = header;
 				char *path = param + (do_chmod ? 10 : 9);
 
+				stitle_id = strstr(path, "&id="); if(stitle_id) {*stitle_id = NULL, stitle_id += 4;}
+
+				if(!islike(path, "/dev_hdd0")) stitle_id = NULL;
+
 				sprintf(buffer, "Path: ");
 				add_breadcrumb_trail(buffer, path);
 
@@ -2004,7 +2008,7 @@ parse_request:
 				goto exit_handleclient_www;
 			}
 
- #endif //#ifndef LITE_EDITION
+ #endif // #ifndef LITE_EDITION
 
 			if(islike(param, "/quit.ps3"))
 			{

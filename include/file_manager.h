@@ -590,8 +590,8 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 		usb = get_default_usb_drive(0);
 #endif
-		_concat(&sout, "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}td+td{text-align:right}</style>"
-									  "<table id=\"files\" class=\"propfont\">");
+		_concat(&sout,  "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}td+td{text-align:right}</style>"
+						"<table id=\"files\" class=\"propfont\">");
 /*
 		if(file_exists("/dev_hdd0/xmlhost/game_plugin/sort.js"))
 			_concat(&sout, "<script src=\"/dev_hdd0/xmlhost/game_plugin/sort.js\"></script>"

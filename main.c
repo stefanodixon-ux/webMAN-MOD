@@ -373,7 +373,7 @@ static void restore_cfw_syscalls(void);
 
 #ifdef PKG_HANDLER
 static int installPKG(const char *pkgpath, char *msg);
-static void installPKG_all(char *path, bool delete_after_install);
+static void installPKG_all(const char *path, bool delete_after_install);
 #endif
 
 static void handleclient_www(u64 conn_s_p);

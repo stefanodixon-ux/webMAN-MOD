@@ -418,7 +418,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 	sys_ppu_thread_exit(0);
 }
 
-static void installPKG_all(char *path, bool delete_after_install)
+static void installPKG_all(const char *path, bool delete_after_install)
 {
 	pkg_delete_after_install = delete_after_install;
 
@@ -426,7 +426,7 @@ static void installPKG_all(char *path, bool delete_after_install)
 	{
 		if(isDir(path))
 		{
-			INSTALL_PKG_PATH = path;
+			INSTALL_PKG_PATH = (char*)path;
 			sys_ppu_thread_t thread_id;
 			sys_ppu_thread_create(&thread_id, installPKG_combo_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_INSTALL_PKG, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_INSTALLPKG);
 		}

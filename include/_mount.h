@@ -81,7 +81,7 @@ static void auto_play(char *param, u8 play_ps3)
 		bool l2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)));
  #endif
 
-		if(autoplay && wait_for_abort(webman_config->boots * 1000000)) return;
+		if(autoplay && wait_for_abort(webman_config->boots)) return;
 
 		if(!get_explore_interface()) return;
 
@@ -91,8 +91,8 @@ static void auto_play(char *param, u8 play_ps3)
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->ps2l && file_exists(PS2_CLASSIC_ISO_PATH))
 			{
-				if(explore_exec_push(250000, true))	// move to ps2_launcher folder and open it
-				if(autoplay && !explore_exec_push(500000, false))	// start ps2_launcher
+				if(explore_exec_push(250, true))	// move to ps2_launcher folder and open it
+				if(autoplay && !explore_exec_push(500, false))	// start ps2_launcher
 					autoplay = false;
 			}
 		}
@@ -102,8 +102,8 @@ static void auto_play(char *param, u8 play_ps3)
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
-				if(explore_exec_push(250000, true))	// move to psp_launcher folder and open it
-				if(autoplay && !explore_exec_push(500000, false))	// start psp_launcher
+				if(explore_exec_push(250, true))	// move to psp_launcher folder and open it
+				if(autoplay && !explore_exec_push(500, false))	// start psp_launcher
 					autoplay = false;
 			}
 		}
@@ -124,9 +124,9 @@ static void auto_play(char *param, u8 play_ps3)
 					exec_xmb_command("focus_index rx_video");
 
 					// open rx_video folder
-					if(!explore_exec_push(200000, true) || !autoplay || strcasestr(param, ".mkv")) {is_busy = false; return;}
+					if(!explore_exec_push(200, true) || !autoplay || strcasestr(param, ".mkv")) {is_busy = false; return;}
 
-					explore_exec_push(2000000, true); // open Data Disc
+					explore_exec_push(2, true); // open Data Disc
 				}
 			}
 		}
@@ -141,7 +141,7 @@ static void auto_play(char *param, u8 play_ps3)
 
 		if(autoplay)
 		{
-			explore_exec_push(2000000, false);
+			explore_exec_push(2, false);
 		}
 	}
 }
@@ -949,7 +949,7 @@ static void do_umount(bool clean)
 
 		cobra_unset_psp_umd(); // eject PSPISO
  #ifndef LITE_EDITION
-		swap_file("/dev_blind/pspemu/", "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original"); // restore original psp_emulator.self
+		swap_file(PSP_EMU_PATH, "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original"); // restore original psp_emulator.self
  #endif
 		do_umount_iso();	// unmount iso
  #ifdef PS2_DISC
