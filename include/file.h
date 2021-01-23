@@ -2,6 +2,8 @@
 #define SC_FS_MOUNT 					(837)
 #define SC_FS_UMOUNT					(838)
 
+#define SC_BDVD_DECRYPT					(36)
+
 #define NO_MSG							NULL
 
 int64_t file_copy(char *file1, char *file2, u64 maxbytes);
@@ -393,6 +395,13 @@ static void addlog(const char *msg1, const char *msg2)
 	save_file("/dev_hdd0/wmm.log", msg, APPEND_TEXT);
 }
 */
+
+static int sysLv2FsBdDecrypt(void)
+{
+	system_call_1(SC_BDVD_DECRYPT, (u64) "/dev_bdvd");
+	return_to_user_prog(int);
+}
+
 static int sysLv2FsLink(const char *oldpath, const char *newpath)
 {
 	system_call_2(SC_FS_LINK, (u64)(u32)oldpath, (u64)(u32)newpath);
@@ -409,7 +418,7 @@ static int file_concat(const char *file1, char *file2)
 	filepath_check(file2);
 
 	if(islike(file1, "/dvd_bdvd"))
-		{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+		sysLv2FsBdDecrypt(); // decrypt dev_bdvd files
 
 	if(cellFsStat(file1, &buf) != CELL_FS_SUCCEEDED) return ret;
 
@@ -550,7 +559,7 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 	}
 
 	if(allow_sc36 && islike(file1, "/dvd_bdvd"))
-		{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+		sysLv2FsBdDecrypt(); // decrypt dev_bdvd files
 
 #ifdef USE_NTFS
 	if(is_ntfs1)
@@ -743,7 +752,7 @@ static int folder_copy(const char *path1, char *path2)
 	if(is_ntfs || cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
 	{
 		if(islike(path1, "/dvd_bdvd"))
-			{allow_sc36 = false; system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+			{allow_sc36 = false; sysLv2FsBdDecrypt();} // decrypt dev_bdvd files
 
 #ifdef USE_NTFS
 		if(is_ntfs_path(path2))

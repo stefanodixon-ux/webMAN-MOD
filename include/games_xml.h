@@ -487,25 +487,7 @@ scan_roms:
 			}
 			else
 			#endif
-			#ifdef NET_SUPPORT
-			if(is_net)
-			{
-				char ll[4]; if(li) sprintf(ll, "/%c", '@'+li); else *ll = NULL;
-				sprintf(param, "/%s%s%s",    paths[f1], SUFIX(uprofile), ll);
-
-				if(li == 99) sprintf(param, "/%s%s", paths[f1], AUTOPLAY_TAG);
-			}
-			else
-			#endif
-			{
-				if(IS_NTFS)
-					sprintf(param, "%s", WMTMP);
-				else
-				{
-					sprintf(param, "%s/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
-					if(li == 99) sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
-				}
-			}
+			set_scan_path(li, f0, f1, is_net, uprofile, param);
 
 #ifdef NET_SUPPORT
 			if(is_net && open_remote_dir(ns, param, &abort_connection) < 0) goto continue_reading_folder_xml; //continue;
@@ -731,7 +713,7 @@ continue_reading_folder_xml:
 				if(uprofile > 0) {subfolder = uprofile = 0; goto read_folder_xml;}
 				if(is_net && (f1 > id_GAMEZ))
 				{
-					if(ls && (li < 27)) {li++; goto subfolder_letter_xml;} else if(li < 99) {li = 99; goto subfolder_letter_xml;}
+					if(ls && (li < 27)) {li++; goto subfolder_letter_xml;} else if(li < LANG_CUSTOM) {li = LANG_CUSTOM; goto subfolder_letter_xml;}
 				}
 			}
 //

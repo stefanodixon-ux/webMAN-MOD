@@ -1,4 +1,5 @@
 #define LANG_XX			23
+#define LANG_CUSTOM		99
 
 #ifdef ENGLISH_ONLY
 
@@ -434,7 +435,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 		}
 		else
 		{
-			if(webman_config->lang >= LANG_XX && (webman_config->lang != 99)) webman_config->lang = 0;
+			if(webman_config->lang >= LANG_XX && (webman_config->lang != LANG_CUSTOM)) webman_config->lang = 0;
 
 			const char lang_codes[24][2] = {"EN", "FR", "IT", "ES", "DE", "NL", "PT", "RU", "HU", "PL", "GR", "HR", "BG", "IN", "TR", "AR", "CN", "KR", "JP", "ZH", "DK", "CZ", "SK", "XX"};
 
@@ -603,7 +604,7 @@ static void update_language(void)
 
 	// TITLE_XX
 
-	*TITLE_XX = NULL; u8 id = 99, lang = webman_config->lang;
+	*TITLE_XX = NULL; u8 id = LANG_CUSTOM, lang = webman_config->lang;
 
 	if(lang ==  1) id = 2;  // fr
 	if(lang ==  2) id = 5;  // it
@@ -619,7 +620,7 @@ static void update_language(void)
 	if(lang == 18) id = 0;  // jp
 	if(lang == 19) id = 10; // ch
 	if(lang == 20) id = 14; // da
-	if(  id == 99) return;
+	if(  id == LANG_CUSTOM) return;
 
 	sprintf(TITLE_XX, "TITLE_%02i", id);
 }

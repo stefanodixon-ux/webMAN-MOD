@@ -331,6 +331,29 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 #endif
 }
 
+static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *param)
+{
+#ifdef NET_SUPPORT
+	if(is_net)
+	{
+		char ll[4]; if(li) sprintf(ll, "/%c", '@'+li); else *ll = NULL;
+		sprintf(param, "/%s%s%s",    paths[f1], SUFIX(uprofile), ll);
+
+		if(li == LANG_CUSTOM) sprintf(param, "/%s%s", paths[f1], AUTOPLAY_TAG);
+	}
+	else
+#endif
+	{
+		if(IS_NTFS) //ntfs
+			sprintf(param, WMTMP);
+		else
+		{
+			sprintf(param, "%s/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
+			if(li == LANG_CUSTOM) sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
+		}
+	}
+}
+
 static bool game_listing(char *buffer, char *templn, char *param, char *tempstr, u8 mode, bool auto_mount)
 {
 	u16 retry = 0;
@@ -490,15 +513,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		int fdsl = 0;
 		if(!b0 && cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
-			typedef struct // 1MB for 2000+1 titles
-			{
-				u8  type;
-				char id[10];
-				u8  path_pos; // start position of path
-				u16 icon_pos; // start position of icon
-				u16 padd;
-				char name[508]; // name + path + icon
-			} __attribute__((packed)) _slaunch; _slaunch slaunch; u64 read_e;
+			_slaunch slaunch; u64 read_e;
 
 			int flen, slen;
 
@@ -574,7 +589,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 				tlen += (flen + div_size);
 			}
 			cellFsClose(fd);
-			filter0 = 99;
+			filter0 = MAX_DRIVES;
 		}
 		else if(!b0 && !b1 && !filter_name[0]) fdsl = create_slaunch_file();
 #endif
@@ -630,26 +645,7 @@ list_games:
 				subfolder = 0; uprofile = profile;
 		read_folder_html:
 //
-#ifdef NET_SUPPORT
-				if(is_net)
-				{
-					char ll[4]; if(li) sprintf(ll, "/%c", '@'+li); else *ll = NULL;
-					sprintf(param, "/%s%s%s",    paths[f1], SUFIX(uprofile), ll);
-
-					if(li == 99) sprintf(param, "/%s%s", paths[f1], AUTOPLAY_TAG);
-				}
-				else
-#endif
-				{
-					if(IS_NTFS) //ntfs
-						sprintf(param, "%s", WMTMP);
-					else
-					{
-						sprintf(param, "%s/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
-						if(li == 99) sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
-					}
-				}
-
+				set_scan_path(li, f0, f1, is_net, uprofile, param);
 #ifdef NET_SUPPORT
 				if(is_net && open_remote_dir(ns, param, &abort_connection) < 0) goto continue_reading_folder_html; //continue;
 #endif
@@ -806,7 +802,7 @@ next_html_entry:
 
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
-							templn[80] = NULL;
+							templn[80] = NULL; // truncate title name
 
 							if(urlenc(tempstr, icon)) sprintf(icon, "%s", tempstr);
 
@@ -869,7 +865,7 @@ next_html_entry:
 					if(uprofile > 0) {subfolder = uprofile = 0; goto read_folder_html;}
 					if(is_net && (f1 > id_GAMEZ))
 					{
-						if(ls && (li < 27)) {li++; goto subfolder_letter_html;} else if(li < 99) {li = 99; goto subfolder_letter_html;}
+						if(ls && (li < 27)) {li++; goto subfolder_letter_html;} else if(li < LANG_CUSTOM) {li = LANG_CUSTOM; goto subfolder_letter_html;}
 					}
 				}
 //

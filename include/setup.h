@@ -339,8 +339,8 @@ static void setup_parse_settings(char *param)
 	webman_config->lang = 0; //English
 
 #ifndef ENGLISH_ONLY
-	webman_config->lang = get_valuen(param, "&l=", 0, 99);
-	if(webman_config->lang > 22) webman_config->lang = 99; // Unknown LANG_XX.TXT
+	webman_config->lang = get_valuen(param, "&l=", 0, LANG_CUSTOM);
+	if(webman_config->lang > 22) webman_config->lang = LANG_CUSTOM; // Unknown LANG_XX.TXT
 
 	update_language();
 #endif
@@ -791,7 +791,7 @@ static void setup_form(char *buffer, char *templn)
 	value = webman_config->lang;
 	for(u8 l, ll, n = 0; n < 24; n++)
 	{
-		l = n; if(n >= 13 && n <= 15) l += 7; else if(n > 16) l -= 3; ll = l; if(n >= LANG_XX) {ll = LANG_XX, l = 99;}
+		l = n; if(n >= 13 && n <= 15) l += 7; else if(n > 16) l -= 3; ll = l; if(n >= LANG_XX) {ll = LANG_XX, l = LANG_CUSTOM;}
 		add_option_item(l, languages[ll], (value == l) , buffer);
 	}
 #endif

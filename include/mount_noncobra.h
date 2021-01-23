@@ -216,7 +216,7 @@ install_mm_payload:
 		if(action && (c_firmware >= 4.20f))
 		{
 			if(file_exists(NEW_LIBFS_PATH))
-				sprintf(expplg, "%s", NEW_LIBFS_PATH);
+				sprintf(expplg, NEW_LIBFS_PATH);
 			else
 				sprintf(expplg, "%s/ILFS0_000.BIN", app_sys);
 

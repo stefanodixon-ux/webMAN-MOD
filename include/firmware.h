@@ -986,16 +986,14 @@ static void patch_lv2(void)
 #ifdef ALLOW_DISABLE_MAP_PATH
 static u64 map_path_instruction = 0; // store cobra mappath instruction
 
-#define open_hook_dex		0x80000000002B25D0ULL
-#define open_hook_cex		0x8000000000297638ULL
 #define original_open_hook	0xF821FF617C0802A6ULL
 
 static bool disable_map_path(bool toggle_patch) // based on haxxxen's patch posted on psx-place @ Sep 2, 2018
 {
-	u64 open_hook_symbol = (dex_mode) ? open_hook_dex : open_hook_cex;
-
-	if(c_firmware >= 4.82f)
+	if(open_hook)
 	{
+		u64 open_hook_symbol = open_hook | 0x8000000000000000ULL;
+
 		if(!map_path_instruction) map_path_instruction = peekq(open_hook_symbol); // backup cobra mappath instruction
 
 		if(toggle_patch && (peekq(open_hook_symbol) != original_open_hook))
@@ -1006,8 +1004,9 @@ static bool disable_map_path(bool toggle_patch) // based on haxxxen's patch post
 		{
 			pokeq(open_hook_symbol, map_path_instruction); // restore cobra mappath instruction
 		}
+		return (peekq(open_hook_symbol) == original_open_hook);
 	}
-	return (peekq(open_hook_symbol) == original_open_hook);
+	return false;
 }
 #else
 #define disable_map_path(a)

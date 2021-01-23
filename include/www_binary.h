@@ -22,7 +22,7 @@
 		}
 
 		if(islike(param, "/dev_bdvd"))
-			{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+			sysLv2FsBdDecrypt(); // decrypt dev_bdvd files
 
 		char *buffer = (char*)sysmem;
 		int fd;

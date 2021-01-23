@@ -2424,17 +2424,17 @@ retry_response:
 						#ifndef EMBED_JS
 						memset(header, HTML_RECV_SIZE, 0);
 						sprintf(header, SCRIPT_SRC_FMT, FS_SCRIPT_JS);
-						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
-						save_file(FILE_LIST, (const char*)header, APPEND_TEXT);
-						save_file(FILE_LIST, (const char*)"<body onload='try{t2lnks()}finally{}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
+						save_file(FILE_LIST, HTML_HEADER, SAVE_ALL);
+						save_file(FILE_LIST, header, APPEND_TEXT);
+						save_file(FILE_LIST, "<body onload='try{t2lnks()}finally{}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
 						#else
-						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
-						save_file(FILE_LIST, (const char*)"<body bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
+						save_file(FILE_LIST, HTML_HEADER, SAVE_ALL);
+						save_file(FILE_LIST, "<body bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
 						#endif
 					}
 
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
-					scan(param, true, wildcard, (reply_html ? SCAN_LIST_SIZE : SCAN_LIST), (char*)FILE_LIST);
+					scan(param, true, wildcard, (reply_html ? SCAN_LIST_SIZE : SCAN_LIST), FILE_LIST);
 
 					sprintf(param, "%s", FILE_LIST);
 					is_busy = false, allow_retry_response = false;

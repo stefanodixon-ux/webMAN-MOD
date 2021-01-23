@@ -135,6 +135,7 @@ https://www.psx-place.com/threads/webman-mod-web-commands.1508/
 - Option for auto-play music when the system starts or through a combo that calls /browser.ps3$music
 - Combo L2+L3+R3 allows to set the XMB multimedia player as background/dynamic theme.
 - Support for enable/disable noBD patch needed to remarry BD drive
+- Support for relink identical files in /dev_hdd0/GAMES and /dev_hdd0/game
 
 #### Stealth features
 - Support for dumping IDPS/PSID/act.dat

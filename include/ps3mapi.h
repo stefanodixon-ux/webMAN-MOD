@@ -135,7 +135,7 @@ static void ps3mapi_home(char *buffer, char *templn)
 	//LedRed
 	ps3mapi_led(buffer, templn, (char*)" ");
 
-	sprintf(templn, "%s", "</td>");
+	sprintf(templn, "</td>");
 	concat(buffer, templn);
 
 	//Notify
@@ -159,7 +159,7 @@ static void ps3mapi_home(char *buffer, char *templn)
 		}
 		else
 		{
-			sprintf(templn, "%s", "</table><br>");
+			sprintf(templn, "</table><br>");
 			concat(buffer, templn);
 		}
 		//---------------------------------------------
@@ -978,7 +978,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 
 	add_plugins_list(buffer, templn, 0);
 
-	sprintf(templn, "%s", "</table><br>");
+	sprintf(templn, "</table><br>");
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR);
 	concat(buffer, templn);
@@ -1165,7 +1165,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 		add_plugins_list(buffer, templn, is_vsh);
 	}
 
-	sprintf(templn, "%s", "</table><br>");
+	sprintf(templn, "</table><br>");
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR);
 	concat(buffer, templn);

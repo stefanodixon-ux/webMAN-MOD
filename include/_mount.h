@@ -608,7 +608,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					{
 						if(islike(source, "/dev_bdvd"))
 						{
-							{system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+							sysLv2FsBdDecrypt(); // decrypt dev_bdvd files
 
 							int cnt = 0;
 							do {
@@ -637,7 +637,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 										sprintf(target + 16, "%s", title);
 									else if(*title)
 										sprintf(target + 16, "%s [%s]", title, title_id);
-									else if(*title)
+									else
 										sprintf(target + 16, "%s", title_id);
 								}
 							}
@@ -983,7 +983,7 @@ static void do_umount(bool clean)
 		if(*map_title_id)
 		{
 			char gamei_mapping[32];
-			sprintf(gamei_mapping, HDD0_GAME_DIR "%s", map_title_id);
+			sprintf(gamei_mapping, "%s/%s", HDD0_GAME_DIR, map_title_id);
 			sys_map_path(gamei_mapping, NULL);
 			sys_map_path(PKGLAUNCH_DIR, NULL);
 			*map_title_id = NULL;

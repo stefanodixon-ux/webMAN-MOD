@@ -39,11 +39,8 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 	{
 		strcpy(absPath_s, path);
 
-		if(scan)
-		{
-			if(islike(path, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); filepath_check(absPath_s); return 1;}
-			if(islike(path, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
-		}
+		if(islike(path, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); filepath_check(absPath_s); return 1;}
+		if(islike(path, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
 	}
 	else
 	{
@@ -258,7 +255,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							int err = FTP_FILE_UNAVAILABLE;
 
 							if(do_sc36 && islike(filename, "/dvd_bdvd"))
-								{do_sc36 = false; system_call_1(36, (u64) "/dev_bdvd");} // decrypt dev_bdvd files
+								{do_sc36 = false; sysLv2FsBdDecrypt();} // decrypt dev_bdvd files
 
 							sysmem = allocate_ftp_buffer(sysmem);
 
