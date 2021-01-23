@@ -761,14 +761,8 @@ continue_reading_folder_xml:
 #ifdef ENGLISH_ONLY
 	bool add_xmbm_plus = file_exists(XMBMANPLS_PATH "/FEATURES/webMAN.xml");
 #else
-	bool add_xmbm_plus = false;
-
-	while(true)
-	{
-		sprintf(templn, "%s/FEATURES/webMAN%s.xml", XMBMANPLS_PATH, lang_code);
-		add_xmbm_plus = file_exists(templn);
-		if(add_xmbm_plus || *lang_code == NULL) break; *lang_code = NULL;
-	}
+	sprintf(templn, "%s/FEATURES/webMAN%s.xml", XMBMANPLS_PATH, lang_code);
+	bool add_xmbm_plus = file_exists(templn);
 #endif
 
 	if(!scanning_roms && webman_config->nogrp)

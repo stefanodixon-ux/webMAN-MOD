@@ -424,16 +424,19 @@
 								char *RSX = (char*)" RSX:";
 								if(webman_config->lang == 99) RSX = (char*)"/";
 
+								char days[6]; *days = NULL;
+								if(dd) sprintf(days, "%id ", dd);
+
 								sprintf(tmp, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
-											 "%s: %id %02d:%02d:%02d%s\n"
+											 "%s: %s%02d:%02d:%02d%s\n"
 											 "%s : %s %s\n"
 											 "IP: %s  %s  %s",
 											 t1, RSX, t2, (int)(((int)speed*100)/255),
-											 bb ? "Play" : "Startup", dd, hh, mm, ss, smax,
+											 bb ? "Play" : "Startup", days, hh, mm, ss, smax,
 											 STR_FIRMWARE, fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
 												  (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "");
 
-								int hdd_free = (int)(get_free_space("/dev_hdd0")>>20);
+								uint32_t hdd_free = (uint32_t)(get_free_space("/dev_hdd0")>>20);
 
 								sprintf(msg, "%s\n%s: %i %s\n"
 											 "%s: %i %s\n", tmp,
