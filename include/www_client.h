@@ -1021,13 +1021,14 @@ parse_request:
 				// /browser.ps3$slaunch                    start slaunch
 				// /browser.ps3$vsh_menu                   start vsh_menu
 				// /browser.ps3$home                       go to webMAN Games
+				// /browser.ps3$home*                      go to webMAN Games + reload_category game
 				// /browser.ps3$music                      play xmb music
 
 				char *param2 = param + 12, *url = param + 13;
 
 				if(islike(param2, "$home"))
 				{
-					goto_xmb_home(false);
+					goto_xmb_home(param2[5] != 0);
 				}
 				else
 				#ifdef PLAY_MUSIC
@@ -1753,14 +1754,22 @@ parse_request:
 			}
 			if(islike(param, "/stat.ps3") || islike(param, "/chmod.ps3"))
 			{
+				// /chdmod.ps3<path> - change file permissions
+				// /stat.ps3<path> - count files & folder size
+				// /stat.ps3<path>&id=<title_id> - link identical files in /hdd0/game using MD5
+				// /stat.ps3<path>&id=<title_id>?fast - don't check MD5
+
 				do_chmod = islike(param, "/chmod.ps3");
 
 				char *buffer = header;
 				char *path = param + (do_chmod ? 10 : 9);
 
+				check_md5 = !get_flag(path, "?fast");
 				stitle_id = strstr(path, "&id="); if(stitle_id) {*stitle_id = NULL, stitle_id += 4;}
 
-				if(!islike(path, "/dev_hdd0")) stitle_id = NULL;
+				if(!islike(path, INT_HDD_ROOT_PATH)) stitle_id = NULL;
+
+				if(stitle_id) cellFsUnlink(FILE_LIST_TXT);
 
 				sprintf(buffer, "Path: ");
 				add_breadcrumb_trail(buffer, path);
@@ -2384,12 +2393,15 @@ retry_response:
 						if(!islike(param, "/dev_"))
 						{
 							strcpy(header, param + 1);
+							if(IS(param, "/pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
+							if(IS(param, "/xmb")) {sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
 							if(*html_base_path == '/') {sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
 							if(not_exists(param)) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
 							if(not_exists(param)) {sprintf(param, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
 							if(not_exists(param)) {sprintf(param, "%s%s",  HDD0_GAME_DIR, header);} // try /dev_hdd0/game
 							if(not_exists(param)) {sprintf(param, "%s%s", _HDD0_GAME_DIR, header);} // try /dev_hdd0//game
 							if(not_exists(param)) {sprintf(param, "%s/%s", "/dev_hdd0", header);} // try hdd0
+							if(not_exists(param)) {sprintf(param, "%s/%s", "/dev_hdd0/tmp", header);} // try hdd0
 						}
 					}
 
@@ -2405,7 +2417,7 @@ retry_response:
 				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
 				{
 					bool reply_html = !strstr(param, "//");
-					char *FILE_LIST = reply_html ? (char*)"/dev_hdd0/tmp/wmtmp/filelist.htm" : (char*)"/dev_hdd0/tmp/wmtmp/filelist.txt";
+					char *FILE_LIST = reply_html ? (char*)FILE_LIST_HTM : (char*)FILE_LIST_TXT;
 					cellFsUnlink(FILE_LIST);
 					if(reply_html)
 					{
@@ -2414,7 +2426,7 @@ retry_response:
 						sprintf(header, SCRIPT_SRC_FMT, FS_SCRIPT_JS);
 						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
 						save_file(FILE_LIST, (const char*)header, APPEND_TEXT);
-						save_file(FILE_LIST, (const char*)"<body onload='try{t2lnks()}catch(e){}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
+						save_file(FILE_LIST, (const char*)"<body onload='try{t2lnks()}finally{}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
 						#else
 						save_file(FILE_LIST, (const char*)HTML_HEADER, SAVE_ALL);
 						save_file(FILE_LIST, (const char*)"<body bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
@@ -2422,7 +2434,7 @@ retry_response:
 					}
 
 					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
-					scan(param, true, wildcard, SCAN_LIST, (char*)FILE_LIST);
+					scan(param, true, wildcard, (reply_html ? SCAN_LIST_SIZE : SCAN_LIST), (char*)FILE_LIST);
 
 					sprintf(param, "%s", FILE_LIST);
 					is_busy = false, allow_retry_response = false;
@@ -2971,11 +2983,11 @@ retry_response:
 								*param = NULL;
 							}
 
-							unlink_file("/dev_hdd0", "tmp/", "wm_vsh_menu.cfg");
-							unlink_file("/dev_hdd0", "tmp/", "wm_custom_combo");
+							unlink_file(TMP_DIR, "wm_vsh_menu", ".cfg");
 
 							cellFsUnlink(WMCONFIG);
 							cellFsUnlink(WMNOSCAN);
+							cellFsUnlink(WM_COMBO_PATH);
 							cellFsUnlink(WMREQUEST_FILE);
 							cellFsUnlink(WMNET_DISABLED);
 							cellFsUnlink(WMONLINE_GAMES);

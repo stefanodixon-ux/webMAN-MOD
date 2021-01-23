@@ -182,7 +182,7 @@ static void ps3mapi_home(char *buffer, char *templn)
 		ps3mapi_gameplugin(buffer, templn, (char*)" ");
 
 		sprintf(templn, HTML_RED_SEPARATOR
-						"Firmware: %X %s | PS3MAPI: webUI v%X, Server v%X, Core v%X | By NzV, modified by OsirisX", versionfw, fwtype, PS3MAPI_WEBUI_VERSION, PS3MAPI_SERVER_VERSION, core_version);
+						"%s: %X %s | PS3MAPI: webUI v%X, Server v%X, Core v%X | By NzV, modified by OsirisX", STR_FIRMWARE, versionfw, fwtype, PS3MAPI_WEBUI_VERSION, PS3MAPI_SERVER_VERSION, core_version);
 		concat(buffer, templn);
 	}
 	else

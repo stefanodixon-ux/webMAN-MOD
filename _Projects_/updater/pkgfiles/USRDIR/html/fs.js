@@ -2,15 +2,20 @@ function t2lnks(){
 	var txt=document.body;
 	var url = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 	var www =/(^|[^\/#])(www\.[\S]+(\b|$))/gim;
-	var dev =/(\/\b(dev_+.*))/ig;
-	txt.innerHTML= "<a href='/'><b>webMAN MOD</b> 1.47.33</a><HR>" +
+	var dev1 =/(\/\b(dev_+.*\t)([,0-9]+))/ig;
+	var dev2 =/(\/\b(dev_+.*))/ig;
+	var htab = txt.innerHTML.indexOf("\t") > 0;
+	var count = txt.innerHTML.split("\n").length - 1;
+	txt.innerHTML = "<a href='/'><b>webMAN MOD</b> 1.47.33</a><HR>"+
+					"<style>td+td{width:100px;}</style><table>" +
 				  txt.innerHTML
-				 .replace(url, "<a href='$1'>$1</a>")
-				 .replace(www, '$1<a target="_blank" href="http://$2">$2</a>')
-				 .replace(dev, '<a class=\42w\42 href=\42$1\42>$1</a>')+
-
+				 .replace(url, "<tr><td><a href='$1'>$1</td></tr>")
+				 .replace(www, '<tr><td>$1<a target="_blank" href="http://$2">$2</a></td></tr>')
+				 .replace(htab ? dev1 : dev2, htab? '<tr><td><a class=\42w\42 href=\42$2\42>/$2</a></td><td align=right>$3</td></tr>' :
+													'<tr><td><a class=\42w\42 href=\42$1\42>$1</a></td></tr>')
+				+
 	// Style links
-	"<style>a{font-family:courier;text-decoration:none;color:#dddddd;}a:hover{color:#ffffff;}</style>" +
+	"</table><style>a{font-family:courier;text-decoration:none;color:#dddddd;}a:hover{color:#ffffff;}</style>" +
 
 	// Right-click menu
 	"<div id='mnu' style='position:fixed;width:180px;background:#333;z-index:9;display:none;padding:5px;box-shadow:3px 3px 6px #222;opacity:0.96'>" +
@@ -32,8 +37,19 @@ function t2lnks(){
 	"<a id='m9'>Copy & overwrite<br></a>" +
 	"</div>" +
 	"<script src='/dev_hdd0/xmlhost/game_plugin/common.js'></script><hr>" +
-	" <input type='button' value=' &#9664;  ' onclick='location.href=\42javascript:history.back();\42;'>" +
+	" <input type='button' value=' &#9664;  ' onclick='location.href=\42javascript:history.back();\42;'> &nbsp; "+count+" item(s) found <span id='size'></span>"+
 	"</body></html>";
+
+	try{
+		var size = 0;
+		var rows = document.getElementsByTagName('tr');
+		for(i=0;i<rows.length;i++){
+			cols =rows[i].getElementsByTagName('td');
+			size+=parseFloat(cols[1].innerHTML.replace(/,/g,""));
+		}
+		document.getElementById('size').innerHTML="&bull; "+(size/0x100000).toFixed(1).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" MB / "+size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" bytes";
+	}
+	finally{};
 }
 
 function tg(b,m,x,c){

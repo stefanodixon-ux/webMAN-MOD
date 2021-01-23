@@ -2,7 +2,7 @@
 
 #include <cell/hash/libmd5.h>
 
-static void calc_md5(char *filename, char *md5)
+static void calc_md5(const char *filename, char *md5)
 {
 	u64 _md5[2] = {0, 0};
 

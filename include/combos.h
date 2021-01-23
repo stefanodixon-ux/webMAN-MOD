@@ -421,13 +421,16 @@
 								get_temperature(0, &t1); // CPU
 								get_temperature(1, &t2); // RSX
 
-								sprintf(tmp, "CPU: %i°C  RSX: %i°C  FAN: %i%%   \n"
+								char *RSX = (char*)" RSX:";
+								if(webman_config->lang == 99) RSX = (char*)"/";
+
+								sprintf(tmp, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
 											 "%s: %id %02d:%02d:%02d%s\n"
-											 "Firmware : %s %s\n"
+											 "%s : %s %s\n"
 											 "IP: %s  %s  %s",
-											 t1, t2, (int)(((int)speed*100)/255),
+											 t1, RSX, t2, (int)(((int)speed*100)/255),
 											 bb ? "Play" : "Startup", dd, hh, mm, ss, smax,
-											 fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
+											 STR_FIRMWARE, fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
 												  (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "");
 
 								int hdd_free = (int)(get_free_space("/dev_hdd0")>>20);
@@ -892,7 +895,7 @@
 							else
 #endif
 #ifdef WM_REQUEST
-							if(do_custom_combo("/dev_hdd0/tmp/wm_custom_combo")) break;
+							if(do_custom_combo(WM_COMBO_PATH)) break;
 							else
 #endif
 							{

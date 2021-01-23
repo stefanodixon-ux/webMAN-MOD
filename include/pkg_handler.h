@@ -2,6 +2,9 @@
 #define IS_INSTALLING_NAS	(View_Find("nas_plugin")  != 0)
 #define IS_DOWNLOADING		(View_Find("download_plugin") != 0)
 
+#define PKG_MAGIC				0x7F504B47
+#define XMM0					0x584d4d30
+
 #ifdef PKG_HANDLER
 
 // /install_ps3<pkg-path>             Keeps pkg after installation
@@ -38,13 +41,6 @@ static time_t pkg_install_time = 0;
 
 static bool install_in_progress = false;
 static bool installing_pkg = false;
-
-#define INT_HDD_ROOT_PATH		"/dev_hdd0/"
-#define DEFAULT_PKG_PATH		"/dev_hdd0/packages/"
-#define TEMP_DOWNLOAD_PATH		"/dev_hdd0/tmp/downloader/"
-
-#define PKG_MAGIC				0x7F504B47
-#define XMM0					0x584d4d30
 
 typedef struct {
 	u32 magic; // 0x7F504B47 //

@@ -403,7 +403,7 @@ static void setup_parse_settings(char *param)
  #ifdef WM_CUSTOM_COMBO
 	if(save_file(WM_CUSTOM_COMBO "r2_square", command, cmdlen) != CELL_FS_SUCCEEDED)
  #endif
-	save_file("/dev_hdd0/tmp/wm_custom_combo", command, cmdlen);
+	save_file(WM_COMBO_PATH, command, cmdlen);
 #endif
 }
 
@@ -791,7 +791,7 @@ static void setup_form(char *buffer, char *templn)
 	value = webman_config->lang;
 	for(u8 l, ll, n = 0; n < 24; n++)
 	{
-		l = n; if(n >= 13 && n <= 15) l += 7; else if(n > 16) l -= 3; ll = l; if(n == 23) {ll = n, l = 99;}
+		l = n; if(n >= 13 && n <= 15) l += 7; else if(n > 16) l -= 3; ll = l; if(n >= LANG_XX) {ll = LANG_XX, l = 99;}
 		add_option_item(l, languages[ll], (value == l) , buffer);
 	}
 #endif
@@ -1132,7 +1132,7 @@ static void setup_form(char *buffer, char *templn)
  #ifdef WM_CUSTOM_COMBO
 	if( read_file(WM_CUSTOM_COMBO "r2_square", command, 255, 0) == 0)
  #endif
-		read_file("/dev_hdd0/tmp/wm_custom_combo", command, 255, 0);
+		read_file(WM_COMBO_PATH, command, 255, 0);
 
 	sprintf(templn, "&nbsp; &nbsp;" HTML_INPUT("ccbo\" list=\"cmds", "%s", "255", "50")
 					#ifdef WM_CUSTOM_COMBO

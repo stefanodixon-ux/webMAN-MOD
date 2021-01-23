@@ -20,6 +20,10 @@
 #define HDD0_GAME_DIR		"/dev_hdd0/game/"
 #define _HDD0_GAME_DIR		"/dev_hdd0//game/"
 
+#define INT_HDD_ROOT_PATH		"/dev_hdd0/"
+#define DEFAULT_PKG_PATH		"/dev_hdd0/packages/"
+#define TEMP_DOWNLOAD_PATH		"/dev_hdd0/tmp/downloader/"
+
 #define MANAGUNZ			_HDD0_GAME_DIR "MANAGUNZ0/USRDIR"	// ManaGunZ folder
 #define MM_ROOT_STD			_HDD0_GAME_DIR "BLES80608/USRDIR"	// multiMAN root folder
 #define MM_ROOT_SSTL		_HDD0_GAME_DIR "NPEA00374/USRDIR"	// multiman SingStar® Stealth root folder
@@ -44,6 +48,9 @@
 #define WMOFFLINE_GAMES		WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
 
 #define WMIGNORE_FILES		WM_RES_PATH "/wm_ignore.txt"	// webMAN config file to ignore files during content scanning
+
+#define FILE_LIST_TXT		WMTMP "/filelist.txt"
+#define FILE_LIST_HTM		WMTMP "/filelist.htm"
 
 #define SLAUNCH_FILE		WMTMP "/slist.bin"
 #define DEL_CACHED_ISO		WMTMP "/deliso.txt"

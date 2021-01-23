@@ -30,7 +30,8 @@ enum scan_operations
 	SCAN_MOVE   = 3,
 	SCAN_RENAME = 4,
 	SCAN_COPYBK = 5,	// rename source to source + .bak after copy
-	SCAN_UNLOCK_SAVE = 6
+	SCAN_UNLOCK_SAVE = 6,
+	SCAN_LIST_SIZE = 7
 };
 
 #ifdef USE_NTFS
@@ -523,9 +524,9 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 	}
 #endif
 
-	if(islike(file2, "/dev_hdd0/"))
+	if(islike(file2, INT_HDD_ROOT_PATH))
 	{
-		if(islike(file1, "/dev_hdd0/"))
+		if(islike(file1, INT_HDD_ROOT_PATH))
 		{
 			cellFsUnlink(file2); copied_count++;
 			return sysLv2FsLink(file1, file2);
@@ -813,18 +814,24 @@ static int folder_copy(const char *path1, char *path2)
 }
 
 static u8 do_chmod = 0;
+static u8 check_md5 = 0;
 static u32 dir_count = 0;
 static u32 file_count = 0;
 static char *stitle_id = NULL;
 
+#ifdef CALC_MD5
+static void calc_md5(const char *filename, char *md5);
+#endif
 static size_t size_link(const char *source)
 {
 	size_t size = file_size(source);
 
 	if(!stitle_id) {file_count++; return size;}
 
-	if(islike(source, "/dev_hdd0"))
+	if(islike(source, INT_HDD_ROOT_PATH))
 	{
+		save_file(FILE_LIST_TXT, current_file, APPEND_TEXT);
+
 		char *usrdir = strstr(source, "/USRDIR/");
 		if(usrdir)
 		{
@@ -834,9 +841,28 @@ static size_t size_link(const char *source)
 				sprintf(game_path, "%s%s%s", _HDD0_GAME_DIR, stitle_id, usrdir);
 				if(file_size(game_path) == size)
 				{
+					if(copy_aborted) return 0;
+					strcpy(current_file, source);
+
+					#ifdef CALC_MD5
+					if(check_md5)
+					{
+						char *hash1 = cp_path;
+						char *hash2 = cp_path + 40;
+						calc_md5(source, hash1);
+						if(copy_aborted) return 0;
+						calc_md5(game_path, hash2);
+						if(!IS(hash1, hash2)) return 0;
+					}
+					#endif
+					if(copy_aborted) return 0;
+
 					cellFsUnlink(game_path);
 					sysLv2FsLink(source, game_path);
 
+					strncpy(game_path, "lnk->", 5);
+
+					save_file(FILE_LIST_TXT, game_path, APPEND_TEXT);
 					file_count++; return size;
 				}
 			}
@@ -1021,9 +1047,12 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			else if(wildcard1 && (*wildcard1!=NULL) && ((!instr(pentry, wildcard1)) == wfound1)) continue;
 			else if(wildcard2 && (*wildcard2!=NULL) && ((!instr(pentry, wildcard2)) == wfound2)) continue;
 
-			else if(fop == SCAN_LIST)
+			else if(fop == SCAN_LIST || fop == SCAN_LIST_SIZE)
 			{
 				if(!dest || *dest != '/') break;
+
+				// add size column if fop == SCAN_LIST_SIZE
+				if(fop) {sprintf(entry_name, "\t%'llu", file_size(entry)); strcat(entry, entry_name);}
 
 				save_file(dest, entry, APPEND_TEXT);
 			}

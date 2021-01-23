@@ -1,3 +1,5 @@
+#define LANG_XX			23
+
 #ifdef ENGLISH_ONLY
 
 static char STR_HOME[8] = "Home";
@@ -143,6 +145,7 @@ static char STR_HOME[8] = "Home";
 
 #define STR_XMLRF		"Game list refreshed (<a href=\"" MY_GAMES_XML "\">mygames.xml</a>).<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system now."
 
+#define STR_FIRMWARE	"Firmware"
 #define STR_STORAGE		"System storage"
 #define STR_MEMORY		"Memory"
 #define STR_MBFREE		"MB free"
@@ -225,6 +228,7 @@ static char STR_LOADED[40];//		= "Disc inserted.";
 
 static char STR_LOADED2[48];//		= "loaded   ";
 
+static char STR_FIRMWARE[10];//		= "Firmware";
 static char STR_STORAGE[40];//		= "System storage";
 static char STR_MEMORY[48];//		= "Memory available";
 static char STR_MBFREE[24];//		= "MB free";
@@ -430,11 +434,11 @@ static bool language(const char *key_name, char *label, const char *default_str)
 		}
 		else
 		{
-			if(webman_config->lang > 22 && (webman_config->lang != 99)) webman_config->lang = 0;
+			if(webman_config->lang >= LANG_XX && (webman_config->lang != 99)) webman_config->lang = 0;
 
 			const char lang_codes[24][2] = {"EN", "FR", "IT", "ES", "DE", "NL", "PT", "RU", "HU", "PL", "GR", "HR", "BG", "IN", "TR", "AR", "CN", "KR", "JP", "ZH", "DK", "CZ", "SK", "XX"};
 
-			i = webman_config->lang; if(i > 23) i = 23;
+			i = webman_config->lang; if(i > LANG_XX) i = LANG_XX;
 
 			sprintf(lang_code, "_%.2s", lang_codes[i]);
 			sprintf(lang_path, "%s/LANG%s.TXT", WM_LANG_PATH, lang_code);
@@ -559,6 +563,7 @@ static void update_language(void)
 		language("STR_LOADED", STR_LOADED, "Disc inserted.");
 		language("STR_LOADED2", STR_LOADED2, "loaded   ");
 
+		language("STR_FIRMWARE", STR_FIRMWARE, "Firmware");
 		language("STR_STORAGE", STR_STORAGE, "System storage");
 		language("STR_MEMORY", STR_MEMORY, "Memory available");
 		language("STR_MBFREE", STR_MBFREE, "MB free");

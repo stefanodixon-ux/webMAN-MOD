@@ -39,8 +39,11 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 	{
 		strcpy(absPath_s, path);
 
-		if(islike(absPath_s, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); filepath_check(absPath_s); return 1;}
-		if(islike(absPath_s, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
+		if(scan)
+		{
+			if(islike(path, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); filepath_check(absPath_s); return 1;}
+			if(islike(path, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
+		}
 	}
 	else
 	{
@@ -65,6 +68,8 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 			if(file_exists(absPath_s)) return 0;
 			sprintf(absPath_s, "%s/%s", _HDD0_GAME_DIR, path);
 			if(file_exists(absPath_s)) return 0;
+			if(islike(path, "/pkg")) {sprintf(absPath_s, "%s/%s", DEFAULT_PKG_PATH, path + 4);}
+			if(islike(path, "/xmb")) {sprintf(absPath_s, "%s/%s", "/dev_blind/vsh/resource/explore/xmb", path + 4);}
 			sprintf(absPath_s, "%s/%s", cwd, path);
 		}
 
