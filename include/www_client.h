@@ -1396,7 +1396,10 @@ parse_request:
 			#endif
 			if(islike(param, "/popup.ps3"))
 			{
-				// /popup.ps3
+				// /popup.ps3	- show info once
+				// /popup.ps3$	- show persistent info ON
+				// /popup.ps3*	- show persistent info OFF
+				// /popup.ps3?	- show webman version
 				// /popup.ps3&snd=<id>
 				// /popup.ps3?<msg>
 				// /popup.ps3?<msg>&icon=<id>
@@ -1415,7 +1418,16 @@ parse_request:
 				}
 				#endif
 
-				if(param[10] == NULL) show_info_popup = true; else is_popup = 1;
+				if(param[10] == '\0')
+					{show_info_popup = true;}						// show info once
+				else if(param[10] == '$' && param[11] == '\0')
+					{BEEP1; show_persistent_popup = PERSIST, show_info_popup = true;}	// show persistent info ON
+				else if(param[10] == '*' && param[11] == '\0')
+					{BEEP2; show_persistent_popup = 0;}				// show persistent info OFF
+				else if(param[10] == '?' && param[11] == '\0')
+					{show_wm_version(param);}						// show webman version
+				else
+					{is_popup = 1;}									// show message
 
 				goto html_response;
 			}

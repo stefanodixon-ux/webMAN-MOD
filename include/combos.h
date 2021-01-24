@@ -336,7 +336,7 @@
 							))
 						{
 							// SELECT+START+L2+R2 = screenshot of XMB
-							// SELECT+START       = show temp or copy progress + show temp (hold SELECT+START for 5 seconds to toggle persistant popup)
+							// SELECT+START       = show temp or copy progress + show temp (hold SELECT+START for 5 seconds to toggle persistent popup)
 							// SELECT+START+R2    = show only copy progress
 							// SELECT+R3          = show temp (if no VIDEO_REC)
  #ifdef XMB_SCREENSHOT
@@ -375,7 +375,7 @@
  show_popup:
 								{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
-								CellRtcTick pTick; u32 dd, hh, mm, ss; char tmp[256];
+								CellRtcTick pTick; u32 dd, hh, mm, ss;
 
 								cellRtcGetCurrentTick(&pTick);
 
@@ -427,29 +427,37 @@
 								char days[6]; *days = NULL;
 								if(dd) sprintf(days, "%id ", dd);
 
-								sprintf(tmp, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
+								u16 len =
+								sprintf(msg, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
 											 "%s: %s%02d:%02d:%02d%s\n"
 											 "%s : %s %s\n"
-											 "IP: %s  %s  %s",
+											 "IP: %s  %s  %s\n",
 											 t1, RSX, t2, (int)(((int)speed*100)/255),
 											 bb ? "Play" : "Startup", days, hh, mm, ss, smax,
 											 STR_FIRMWARE, fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
 												  (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "");
 
-								uint32_t hdd_free = (uint32_t)(get_free_space("/dev_hdd0")>>20);
-
-								sprintf(msg, "%s\n%s: %i %s\n"
-											 "%s: %i %s\n", tmp,
-											 STR_STORAGE, hdd_free, STR_MBFREE,
-											 STR_MEMORY, meminfo.avail>>10, STR_KBFREE);
-
-								if(R2 && (gTick.tick>rTick.tick))
+								if(R2 && (gTick.tick > rTick.tick))
 								{
 									////// play time //////
 									ss = (u32)((pTick.tick-gTick.tick)/1000000);
 									dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
-									if(dd<100) {char gname[200]; get_game_info(); sprintf(gname, "%s %s\n\n", _game_TitleID, _game_Title); sprintf(msg, "%sPlay: %id %02d:%02d:%02d\n%s", gname, dd, hh, mm, ss, tmp); }
+									if(dd < 100)
+									{
+										char gname[200]; get_game_info();
+										sprintf(gname, "%s %s\n\n", _game_TitleID, _game_Title);
+										sprintf(msg, "%sPlay: %id %02d:%02d:%02d\n%s", gname, dd, hh, mm, ss);
+									}
+								}
+								else
+								{
+									int hdd_free = (int)(get_free_space("/dev_hdd0")>>20);
+									int mem_free = (int)(meminfo.avail>>10);
+									sprintf(msg + len,  "%s: %i %s\n"
+														"%s: %i %s\n",
+														STR_STORAGE, hdd_free, STR_MBFREE,
+														STR_MEMORY,  mem_free, STR_KBFREE);
 								}
 
 								{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }

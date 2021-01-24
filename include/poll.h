@@ -1,6 +1,9 @@
 #define _IS_ON_XMB_		((sec & 1) && (gTick.tick == rTick.tick))
 #define _IS_IN_GAME_	((sec & 1) && (gTick.tick >  rTick.tick))
 
+// combos.h
+static u8 show_persistent_popup = 0;
+
 static bool toggle_snd0 = false;
 
 static void poll_start_play_time(void)
@@ -86,10 +89,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 	int delta = 0;
 	u8 oc = 0; // overheat control timer
 
-	char msg[256];
-
-	// combos.h
-	u8 show_persistent_popup = 0;
+	char msg[0x100];
 
 	old_fan = 0;
 	while(working)

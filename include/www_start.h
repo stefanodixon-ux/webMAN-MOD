@@ -18,21 +18,10 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 
 		if(profile || !(webman_config->wmstart))
 		{
-			char cfw_info[24];
-			get_cobra_version(cfw_info);
+			if(!payload_ps3hen) sys_ppu_thread_sleep(9); // wait from boot
 
-			if(payload_ps3hen)
-			{
-				sprintf(param,	"%s\n"
-								"%s %s", WM_APP_VERSION, cfw_info + 4, STR_ENABLED);
-			}
-			else
-			{
-				sys_ppu_thread_sleep(9);
-				sprintf(param,	"%s\n"
-								"%s %s" EDITION, WM_APP_VERSION, fw_version, cfw_info);
-			}
-			show_msg(param); do_sleep = false;
+			show_wm_version(param);
+			do_sleep = false;
 		}
 
 		if(webman_config->bootd) wait_for("/dev_usb", webman_config->bootd); // wait for any usb

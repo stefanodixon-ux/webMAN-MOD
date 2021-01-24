@@ -444,3 +444,21 @@ static void get_cpursx(char *cpursx)
 
 	sprintf(cpursx, "CPU: %i°C | RSX: %i°C", t1, t2);
 }
+
+static void show_wm_version(char *param)
+{
+	char cfw_info[24];
+	get_cobra_version(cfw_info);
+
+	if(payload_ps3hen)
+	{
+		sprintf(param,	"%s\n"
+						"%s %s", WM_APP_VERSION, cfw_info + 4, STR_ENABLED);
+	}
+	else
+	{
+		sprintf(param,	"%s\n"
+						"%s %s" EDITION, WM_APP_VERSION, fw_version, cfw_info);
+	}
+	show_msg(param);
+}
