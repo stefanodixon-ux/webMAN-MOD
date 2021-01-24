@@ -537,7 +537,7 @@ parse_request:
 				{
 					refresh_xml(param);
 
-					if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
+					if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT) && is_app_home_onxmb())
 					{
 						reload_xmb();
 						sys_ppu_thread_sleep(3);
@@ -2720,7 +2720,7 @@ retry_response:
  #else
 						sprintf(templn,  "<br>%s", STR_XMLRF); _concat(&sbuffer, templn);
  #endif
-						if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
+						if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT) && is_app_home_onxmb())
 						{
 							sprintf(templn, " [<a href=\"/reloadxmb.ps3\">%s XMB</a>]", STR_REFRESH);
 							_concat(&sbuffer, templn);

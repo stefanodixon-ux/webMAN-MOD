@@ -144,7 +144,7 @@
 #endif
 							if(not_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN"))
 							{
-								if(isDir(webman_config->home_url))
+								if(is_app_dir(webman_config->home_url, "."))
 									set_app_home(webman_config->home_url);
 								else if(islike(webman_config->home_url, "http"))
 									open_browser(webman_config->home_url, 0);

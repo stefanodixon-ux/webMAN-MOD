@@ -54,10 +54,11 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 	for(u8 i = 0; i < 14; i++)
 	{
 		if(not_exists(wm_icons[i]))
-		{
+		{	// Check /dev_flash/vsh/resource/explore/icon/
 			sprintf(param, VSH_RESOURCE_DIR "explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], param);
 			if(file_exists(param)) continue;
 
+			// If not found, use /dev_flash/vsh/resource/explore/user/
 			char *icon = wm_icons[i] + 32;
 			if(i == gPS3 || i == iPS3)	sprintf(icon, "user/024.png"); else // ps3
 			if(i == gPSX || i == iPSX)	sprintf(icon, "user/026.png"); else // psx

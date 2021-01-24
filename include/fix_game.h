@@ -173,8 +173,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 
 					if(patch_update)
 					{
-						sprintf(update_path, "%s%s/USRDIR/EBOOT.BIN", HDD0_GAME_DIR, title_id); // has update on hdd0?
-						if(file_exists(update_path)) fix_ver = false;
+						if(is_app_dir(HDD0_GAME_DIR, title_id)) fix_ver = false;
 					}
 
 					if(fix_ver)

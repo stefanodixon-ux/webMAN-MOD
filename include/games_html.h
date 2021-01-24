@@ -760,7 +760,7 @@ next_html_entry:
 #ifdef MOUNT_GAMEI
 							if(IS_GAMEI_FOLDER)
 							{
-								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name); if(not_exists(templn)) continue;
+								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
 								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
 							else

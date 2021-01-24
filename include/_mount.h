@@ -893,7 +893,12 @@ static void set_app_home(const char *game_path)
 		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ?
 										"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD when game is unmounted
 
-	sys_map_path(APP_HOME_DIR, game_path);
+	// mount custom app in /app_home/PS3_GAME if has USRDIR/EBOOT.BIN
+	if(!game_path && (webman_config->homeb && is_app_dir(webman_config->home_url, ".")))
+		sys_map_path(APP_HOME_DIR, webman_config->home_url);
+	else
+		sys_map_path(APP_HOME_DIR, game_path);
+
 	sys_map_path("/app_home/USRDIR", NULL);
 }
 
@@ -1605,6 +1610,7 @@ mounting_done:
 				sys_map_path("/app_home", "/dev_bdvd/PKG"); //redirect net_host/PKG to app_home
 			}
 
+			// mounted NPDRM folder
 			if(file_exists("/dev_bdvd/USRDIR/EBOOT.BIN") && isDir(_path0))
 			{
 				if(!(islike(_path0, HDD0_GAME_DIR) || islike(_path0, _HDD0_GAME_DIR)))

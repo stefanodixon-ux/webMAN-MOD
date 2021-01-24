@@ -8,7 +8,7 @@
 #define XML_PAIR(key, value) 	"<Pair key=\"" key "\"><String>" value "</String></Pair>"
 
 #define XAI_LINK_PAIR			XML_PAIR("module_name", WM_PROXY_SPRX) XML_PAIR("bar_action", "none")
-#define WEB_LINK_PAIR			XML_PAIR("module_name", "webbrowser_plugin")
+#define WEB_LINK_PAIR			XML_PAIR("module_name", "webrender_plugin")
 
 #define STR_NOITEM_PAIR			XML_PAIR("str_noitem", "msg_error_no_content") "</Table>"
 
@@ -612,8 +612,7 @@ next_xml_entry:
 								}
 								if(!webman_config->gamei) continue;
 
-								sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name);
-								if(not_exists(templn)) continue;
+								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
 
 								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
@@ -1003,7 +1002,7 @@ continue_reading_folder_xml:
 		if(add_xmbm_plus)
 			_concat(&myxml, XML_PAIR("child","segment"));
 		else
-			{sprintf(templn, XML_PAIR("module_action","%s/setup.ps3"), localhost); _concat(&myxml, templn);}
+			{sprintf(templn, XML_PAIR("module_action","http://%s/setup.ps3"), local_ip); _concat(&myxml, templn);}
 
 		_concat(&myxml, "</Table>");
 	}

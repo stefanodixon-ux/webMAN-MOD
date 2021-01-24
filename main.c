@@ -489,7 +489,8 @@ static void wwwd_thread(u64 arg)
 #endif
 
 #ifdef COBRA_ONLY
-	if(webman_config->homeb && isDir(webman_config->home_url))
+	// mount custom app in /app_home/PS3_GAME if has USRDIR/EBOOT.BIN
+	if(webman_config->homeb && is_app_dir(webman_config->home_url, "."))
 		set_app_home(webman_config->home_url);
 	else
 		sys_map_path("/app_home", NULL);

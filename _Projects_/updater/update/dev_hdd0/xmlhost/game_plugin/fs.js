@@ -11,7 +11,7 @@ function t2lnks(){
 				  txt.innerHTML
 				 .replace(url, "<tr><td><a href='$1'>$1</td></tr>")
 				 .replace(www, '<tr><td>$1<a target="_blank" href="http://$2">$2</a></td></tr>')
-				 .replace(htab ? dev1 : dev2, htab? '<tr><td><a class=\42w\42 href=\42$2\42>/$2</a></td><td align=right>$3</td></tr>' :
+				 .replace(htab ? dev1 : dev2, htab? '<tr><td><a class=\42w\42 href=\42/$2\42>/$2</a></td><td align=right>$3</td></tr>' :
 													'<tr><td><a class=\42w\42 href=\42$1\42>$1</a></td></tr>')
 				+
 	// Style links
