@@ -1166,6 +1166,7 @@ static void setup_form(char *buffer, char *templn)
  #endif
  #ifdef PKG_HANDLER
 					"<option>/install_ps3/dev_hdd0/packages"
+					"<option>/buzzer.ps3mapi?mode=2;/move.ps3/dev_hdd0/vsh/task/*.pkg&to=/dev_hdd0/packages"
  #endif
 					"</datalist></div>");
 #endif // #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)

@@ -163,12 +163,14 @@ static bool isDir(const char* path)
 		return 0;
 }
 
+#ifdef COBRA_ONLY
 static bool is_app_dir(const char *path, const char *app_name)
 {
 	char eboot[STD_PATH_LEN];
 	sprintf(eboot, "%s/%s/USRDIR/EBOOT.BIN", path, app_name);
 	return file_exists(eboot);
 }
+#endif
 
 #ifdef COPY_PS3
 static s64 file_size(const char* path)
