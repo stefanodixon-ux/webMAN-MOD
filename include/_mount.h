@@ -902,6 +902,15 @@ static void set_app_home(const char *game_path)
 	sys_map_path("/app_home/USRDIR", NULL);
 }
 
+static void set_bdvd_as_app_home(void)
+{
+	if(!(webman_config->app_home))
+	{
+		sys_map_path(APP_HOME_DIR, NULL);
+		sys_map_path("/app_home", "/dev_bdvd");
+	}
+}
+
 static void do_umount_iso(void)
 {
 	unsigned int real_disctype, effective_disctype, iso_disctype;
