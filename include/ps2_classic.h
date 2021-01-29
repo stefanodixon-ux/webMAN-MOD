@@ -120,6 +120,8 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 		game_id = strstr(path, "TC"); // 178 games TCPS/ ??? TCES
 	if(!game_id)
 		game_id = strstr(path, "TL"); // ??? games TLES
+	if(!game_id)
+		game_id = strstr(path, "SRPM"); // ??? games SRPM
 
 	u16 len = 0; if(game_id) while(game_id[len] && ++len < 12);
 

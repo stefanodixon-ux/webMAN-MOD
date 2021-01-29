@@ -14,6 +14,7 @@
 
 #define HTML_DIR				"&lt;dir&gt;"
 #define HTML_BUTTON_FMT			"%s%s\" %s'%s';\">"
+#define HTML_BUTTON_FMT2		"%s%s\" %s'%s%s';\">"
 #define HTML_BUTTON				" <input type=\"button\" value=\""
 #define HTML_ONCLICK			"onclick=\"location.href="
 #define HTML_INPUT(n, v, m, s)	"<input name=\"" n "\" type=\"text\" value=\"" v "\" maxlength=\"" m "\" size=\"" s "\">"
@@ -465,7 +466,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		if(_IS(ext, ".avi"))
 			strcat(header, "video/x-msvideo");
 		else
-		if(_IS(ext, ".mp4"))
+		if(_IS(ext, ".mp4") || IS(ext, ".MTH"))
 			strcat(header, "video/mp4");
 		else
 		if(_IS(ext, ".mkv"))

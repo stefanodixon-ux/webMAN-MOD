@@ -482,11 +482,11 @@ static void wwwd_thread(u64 arg)
 	apply_noBD_patches(webman_config->noBD);
 #endif
 
-	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
-
 #ifdef WM_REQUEST
 	cellFsUnlink(WMREQUEST_FILE);
 #endif
+
+	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 
 #ifdef COBRA_ONLY
 	// mount custom app in /app_home/PS3_GAME if has USRDIR/EBOOT.BIN

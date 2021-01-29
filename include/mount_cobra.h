@@ -60,20 +60,23 @@
 		// ----------
 		if(!isDir(_path))
 		{
-			if( strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || !extcmp(_path, ".ntfs[PSXISO]", 13) || mount_unk == EMU_PSX) {mount_unk = EMU_PSX; select_ps1emu(_path);}
+			char templn[MAX_LINE_LEN];
 
-			//if(_next || _prev)
-				sys_ppu_thread_sleep(1);
-			//else
-			//	sys_ppu_thread_usleep(50000);
+			#ifdef MOUNT_PNG
+			bool is_PNG = is_ext(_path, ".png");
 
+			if(is_PNG && (mount_unk == EMU_OFF)) {read_file(_path, templn, 1, 0xFFE0); mount_unk = *templn;}
+			#endif
+
+			if( strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || !extcmp(_path, ".ntfs[PSXISO]", 13) || (mount_unk == EMU_PSX)) {mount_unk = EMU_PSX; select_ps1emu(_path);}
+
+			sys_ppu_thread_sleep(1);
 
 			// --------------
 			// get ISO parts
 			// --------------
 
 			u8 iso_parts = 1;
-			char templn[MAX_LINE_LEN];
 
 			size_t path_len = sprintf(templn, "%s", _path);
 
@@ -81,12 +84,24 @@
 
 			if(is_iso_0(_path))
 			{
+				// count iso_parts
 				for(; iso_parts < MAX_ISO_PARTS; iso_parts++)
 				{
-					sprintf(templn + path_len - 2, ".%i", iso_parts);
+					#ifdef MOUNT_PNG
+					if(is_PNG)
+						sprintf(templn + path_len - 6, ".%i.PNG", iso_parts);
+					else
+					#endif
+						sprintf(templn + path_len - 2, ".%i", iso_parts);
+
 					if(not_exists(templn)) break;
 				}
-				templn[path_len - 2] = NULL;
+				#ifdef MOUNT_PNG
+				if(is_PNG)
+					templn[path_len - 6] = NULL; // remove .0.PNG
+				else
+				#endif
+					templn[path_len - 2] = NULL; // remove .0
 			}
 
 			char *cobra_iso_list[iso_parts], iso_list[iso_parts][path_len + 2];
@@ -97,6 +112,9 @@
 			for(u8 n = 1; n < iso_parts; n++)
 			{
 				sprintf(iso_list[n], "%s.%i", templn, n);
+				#ifdef MOUNT_PNG
+				if(is_PNG) strcat(iso_list[n], ".PNG"); // .iso.#.PNG
+				#endif
 				cobra_iso_list[n] = (char*)iso_list[n];
 			}
 
@@ -442,13 +460,13 @@
 			// mount PS3ISO / PSPISO / PS2ISO / DVDISO / BDISO stored on hdd0/usb
 			// ------------------------------------------------------------------
 			{
-				ret = file_exists(cobra_iso_list[0]); if(!ret) goto exit_mount;
+				ret = file_exists(iso_list[0]); if(!ret) goto exit_mount;
 
 				// --------------
 				// mount PS3 ISO
 				// --------------
 
-				if(strstr(_path, "/PS3ISO") || mount_unk == EMU_PS3)
+				if(strstr(_path, "/PS3ISO") || (mount_unk == EMU_PS3))
 				{
 	#ifdef FIX_GAME
 					if(webman_config->fixgame != FIX_GAME_DISABLED)
@@ -476,7 +494,7 @@
 				// mount PSP ISO
 				// --------------
 
-				else if(strstr(_path, "/PSPISO") || strstr(_path, "/ISO/") || mount_unk == EMU_PSP)
+				else if(strstr(_path, "/PSPISO") || strstr(_path, "/ISO/") || (mount_unk == EMU_PSP))
 				{
 					if(netid)
 					{
@@ -560,7 +578,7 @@
 				// mount PS2 ISO
 				// --------------
 
-				else if(strstr(_path, "/PS2ISO") || mount_unk == EMU_PS2_DVD)
+				else if(strstr(_path, "/PS2ISO") || (mount_unk == EMU_PS2_DVD))
 				{
 					if(!islike(_path, "/dev_hdd0"))
 					{
@@ -658,7 +676,7 @@
 				// mount PSX ISO
 				// --------------
 
-				else if(strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || mount_unk == EMU_PSX)
+				else if(strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || (mount_unk == EMU_PSX))
 				{
 					ret = mount_ps_disc_image(_path, cobra_iso_list, 1, EMU_PSX); if(multiCD) check_multipsx = !isDir("/dev_usb000"); // check eject/insert USB000 in mount_on_insert_usb()
 				}
@@ -667,9 +685,9 @@
 				// mount DVD / BD ISO
 				// ------------------
 
-				else if(strstr(_path, "/DVDISO") || mount_unk == EMU_DVD)
+				else if(strstr(_path, "/DVDISO") || (mount_unk == EMU_DVD))
 					cobra_mount_dvd_disc_image(cobra_iso_list, iso_parts);
-				else if(strstr(_path, "/BDISO")  || mount_unk == EMU_BD)
+				else if(strstr(_path, "/BDISO")  || (mount_unk == EMU_BD))
 					cobra_mount_bd_disc_image(cobra_iso_list, iso_parts);
 				else
 				{

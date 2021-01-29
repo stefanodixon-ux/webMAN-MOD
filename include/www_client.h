@@ -458,6 +458,24 @@ parse_request:
 					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
 					{
 						char *filename = strrchr(header, '/'); if(filename) filename++;
+
+						play_rco_sound("snd_trophy");
+
+						#ifdef MOUNT_PNG
+						bool is_PNG = (read_file(header, param, 5, 0x18801) == 5) && IS(param, "CD001"); // BD/DVD
+						if(!IS(param, "CD001"))
+							 is_PNG = (read_file(header, param, 5, 0x19319) == 5) && IS(param, "CD001"); // CD
+
+						if(is_PNG)
+						{
+							// show filename
+							if(!(webman_config->minfo & 1)) show_msg(filename);
+
+							strcpy(param, header);
+							sprintf(header, "/mount_ps3%s", param);
+						}
+						else
+						#endif
 						if(filename)
 						{
 							char *pos1 = strcasestr(filename, ".jpg"); if(pos1) *pos1 = NULL;
@@ -481,7 +499,7 @@ parse_request:
 
 							// show filename
 							if(!(webman_config->minfo & 1)) show_msg(filename);
-							init_delay = -10; // prevent show Not in XMB message
+							init_delay = -5; // prevent show Not in XMB message
 
 							// replace header with found full path
 							sprintf(header, "%s", filename);
@@ -2568,7 +2586,7 @@ retry_response:
 					//sprintf(templn, "localAddr: %x", (u32) config.localAddress); _concat(&sbuffer, templn);
 				}
 				else if((conn_s == (int)WM_FILE_REQUEST)) ;
-				else if(webman_config->sman || strstr(param, "/sman.ps3")) {_concat(&sbuffer, "<div id='toolbox'>"); goto skip_code;}
+				else if(webman_config->sman || strstr(param, "/sman.ps3")) {_concat(&sbuffer, "<div id='toolbox'>"); if(islike(param, "/dev_")) goto skip_code1; else goto skip_code2;}
 				else if(!mount_ps3)
 				{
 					#include "www_page.h"

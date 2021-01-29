@@ -130,7 +130,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 		if(*name == '.')
 		{
-			sprintf(fsize, HTML_URL, templn, HTML_DIR);
+			sprintf(fsize, HTML_URL2, "/stat.ps3", param, HTML_DIR);
 		}
 		else if(is_root)
 		{
@@ -473,16 +473,25 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 		slen = sprintf(swap, HTML_URL2,
 						(strstr(pbuffer, "To: ") || strstr(pbuffer, "Path: ")) ? "" :
 						islike(param + 23, "/trophy/NPWR") ? "/delete.ps3" :
+#ifdef COPY_PS3
 						islike(param, HDD0_HOME_DIR) ? "/copy.ps3" :
+#endif
 #ifdef FIX_GAME
 						islike(param, HDD0_GAME_DIR) ? "/fixgame.ps3" :
 #endif
 #ifdef PKG_HANDLER
 						is_ext(param + tlen, ".pkg") ? "/install.ps3" :
 #endif
-						islike(param, "/dev_hdd0/GAMES/covers") ? "" :
-						((isDir(param) || strcasestr(ISO_EXTENSIONS, param + tlen) != NULL) || (strstr(param, "/GAME") != NULL) || (strstr(param, ".ntfs[") != NULL) || (strstr(param, "/GAME") != NULL) || islike(param, "/net") || is_BIN_ENC(param + MAX(tlen - 4, 0))) ? "/mount.ps3" :
-						"", url, label);
+						islike(param + 15, "/covers") ? "" : // /dev_hdd0/GAMES/covers
+#ifdef DEBUG_MEM
+						islike(param, "/dev_hdd0/dump") ? "" :
+#endif
+						((isDir(param) ||
+						 strcasestr(ISO_EXTENSIONS, param + tlen) != NULL) ||
+						 (strstr(param, "/GAME")  != NULL) ||
+						 (strstr(param, ".ntfs[") != NULL) ||
+						 islike(param, "/net") ||
+						 is_BIN_ENC(param + MAX(tlen - 4, 0)) ) ? "/mount.ps3" : "", url, label);
 	}
 
 	// add code to buffer
@@ -581,7 +590,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		sout.size += add_breadcrumb_trail(buffer, param); if(param[10] != ':') _concat(&sout, ":");
 
 		if((param[7] == 'v' || param[1] == 'a') && IS_ON_XMB && (isDir("/dev_bdvd/PS3_GAME") || file_exists("/dev_bdvd/SYSTEM.CNF") || isDir("/dev_bdvd/BDMV") || isDir("/dev_bdvd/VIDEO_TS") || isDir("/dev_bdvd/AVCHD")))
-			_concat(&sout, " <a href=\"/play.ps3\">&lt;Play>&nbsp;</a><br>");
+			_concat(&sout, " [<a href=\"/play.ps3\">Play</a>]<br>");
 		else
 			_concat(&sout, "<br>");
 

@@ -125,9 +125,11 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		mount_on_insert_usb(_IS_ON_XMB_, msg);
 #endif
 
-#ifdef DO_WM_REQUEST_POLLING
+#ifdef WM_REQUEST
 		// Poll requests via local file
-		if((webman_config->combo2 & CUSTOMCMB) || _IS_IN_GAME_) continue; // slowdown polling
+		if(webman_config->launchpad_xml && (webman_config->combo2 & CUSTOMCMB)) continue; // don't poll if PhotoGUI && Combo are both disabled
+
+		if(_IS_IN_GAME_) continue; // slow down poll in-game
 
 		if(file_exists(WMREQUEST_FILE))
 		{
@@ -136,7 +138,6 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 			if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
 		}
 #endif
-
 	}
 
 	sys_ppu_thread_exit(0);

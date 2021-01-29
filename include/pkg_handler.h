@@ -249,7 +249,7 @@ static int download_file(const char *param, char *msg)
 		len = get_param("?url=", pdurl, param, MAX_DLPATH_LEN); if(!islike(pdurl, "http")) goto end_download_process;
 		conv_num = mbstowcs((wchar_t *)pkg_durl,(const char *)pdurl, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
-		len = sprintf(pdpath, "%s", DEFAULT_PKG_PATH);
+		len = sprintf(pdpath, "%s", is_ext(pdurl, ".p3t") ? "/dev_hdd0" : DEFAULT_PKG_PATH);
 	}
 
 	if(conv_num)
@@ -310,6 +310,7 @@ static void installPKG_thread(void)
 		game_ext_interface->installTheme(pkg_path, (char*)"");
 	else
 		game_ext_interface->installPKG(pkg_path);
+
 	installing_pkg = false;
 }
 

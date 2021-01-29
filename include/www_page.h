@@ -21,19 +21,18 @@
 			_concat(&sbuffer, templn);
 		}
 
+skip_code1:
 		if((webman_config->homeb) && (webman_config->home_url[0] > 0))
 		{sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, STR_HOME, HTML_ONCLICK, webman_config->home_url); _concat(&sbuffer, templn);}
 
-		sprintf(templn, HTML_BUTTON_FMT
-						HTML_BUTTON_FMT
+		sprintf(templn, HTML_BUTTON_FMT2
 						HTML_BUTTON_FMT
 
 						#ifdef EXT_GDATA
 						HTML_BUTTON_FMT
 						#endif
 
-						, HTML_BUTTON, STR_EJECT, HTML_ONCLICK, "/eject.ps3"
-						, HTML_BUTTON, STR_INSERT, HTML_ONCLICK, "/insert.ps3"
+						, HTML_BUTTON, "Stat", HTML_ONCLICK, "/stat.ps3", param
 						, HTML_BUTTON, STR_UNMOUNT, HTML_ONCLICK, "/mount.ps3/unmount"
 
 						#ifdef EXT_GDATA
@@ -43,7 +42,7 @@
 
 		_concat(&sbuffer, templn);
 
-skip_code:
+skip_code2:
 		#ifdef COPY_PS3
 		if(((islike(param, "/dev_") && strlen(param) > 12 && !strstr(param,"?")) || islike(param, "/dev_bdvd")) && !strstr(param,".ps3/") && !strstr(param,".ps3?"))
 		{
@@ -73,9 +72,9 @@ skip_code:
 			if(file_exists(FM_SCRIPT_JS))
 			#endif
 			{
-				sprintf(templn, "%s%s\" id=\"bDel\" onclick=\"tg(this,'%s','%s','red');\">", HTML_BUTTON, STR_DELETE, "/delete.ps3", STR_DELETE); _concat(&sbuffer, templn);
+				sprintf(templn, "%s%s\" id=\"bDel\" onclick=\"tg(this,'%s','%s','orange');\">", HTML_BUTTON, STR_DELETE, "/delete.ps3", STR_DELETE); _concat(&sbuffer, templn);
 				sprintf(templn, "%s%s\" id=\"bCut\" onclick=\"tg(this,'%s','%s','magenta');\">", HTML_BUTTON, "Cut", "/cut.ps3", "Cut"); _concat(&sbuffer, templn);
-				sprintf(templn, "%s%s\" id=\"bCpy\" onclick=\"tg(this,'%s','%s','blue');\">", HTML_BUTTON, "Copy", "/cpy.ps3", "Copy"); _concat(&sbuffer, templn);
+				sprintf(templn, "%s%s\" id=\"bCpy\" onclick=\"tg(this,'%s','%s','cyan');\">", HTML_BUTTON, "Copy", "/cpy.ps3", "Copy"); _concat(&sbuffer, templn);
 
 				if(cp_mode) {char *url = tempstr, *title = tempstr + MAX_PATH_LEN; urlenc(url, param); htmlenc(title, cp_path, 0); sprintf(templn, "%s%s\" id=\"bPst\" %s'/paste.ps3%s'\" title=\"%s\">", HTML_BUTTON, "Paste", HTML_ONCLICK, url, title); _concat(&sbuffer, templn);}
 			}

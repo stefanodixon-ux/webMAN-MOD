@@ -27,28 +27,28 @@ function ku(e){
 }
 
 // Right-click menu
-document.write( "<div id='mnu' style='position:fixed;width:180px;background:#333;z-index:9;display:none;padding:5px;box-shadow:3px 3px 6px #222;opacity:0.96'>" +
-				"<a id='m0'>Install PKG</a>" +
-				"<a id='m1'>Mount</a>" +
-				"<a id='m2'>Open<br></a>" +
-				"<a id='v2'>Hex View<br></a>" +
-				"<a id='ms'>Game Info<br></a>" +
-				"<hr>" +
-				"<a id='m3'>Delete<br></a>" +
-				"<a id='m7'>Rename<br></a>" +
-				"<a id='mf' href=\"javascript:t=prompt('New Folder', self.location.pathname);if(t.indexOf('/dev_')==0)self.location='/mkdir.ps3'+t\">New Folder</a>" +
-				"<a id='md'>MD5 Hash<br></a>" +
-				"<hr>" +
-				"<a id='m4'>Cut<br></a>" +
-				"<a id='m5'>Copy<br></a>" +
-				"<a id='m6'>Paste<br></a>" +
-				"<hr>" +
-				"<a id='ml'>Dir by Name<br></a>" +
-				"<a id='ss'>Dir by Size<br></a>" +
-				"<a id='sd'>Dir by Date<br></a>" +
-				"<hr>" +
-				"<a id='m8'>Copy To</a><br>" +
-				"<a id='m9'>Copy & overwrite<br></a>" +
+document.write( "<div id='mnu' style='position:fixed;width:180px;background:#333;z-index:9;display:none;padding:5px;box-shadow:3px 3px 6px #222;opacity:0.96'>"+
+				"<a id='m0'>Install PKG</a>"+
+				"<a id='m1'>Mount</a>"+
+				"<a id='m2'>Open<br></a>"+
+				"<a id='v2'>Hex View<br></a>"+
+				"<a id='ms'>Game Info<br></a>"+
+				"<hr>"+
+				"<a id='m3'>Delete<br></a>"+
+				"<a id='m7'>Rename<br></a>"+
+				"<a id='mf' href=\"javascript:t=prompt('New Folder', self.location.pathname);if(t.indexOf('/dev_')==0)self.location='/mkdir.ps3'+t\">New Folder</a>"+
+				"<a id='md'>MD5 Hash<br></a>"+
+				"<hr>"+
+				"<a id='m4'>Cut<br></a>"+
+				"<a id='m5'>Copy<br></a>"+
+				"<a id='m6'>Paste<br></a>"+
+				"<hr>"+
+				"<a id='ml'>Dir by Name<br></a>"+
+				"<a id='ss'>Dir by Size<br></a>"+
+				"<a id='sd'>Dir by Date<br></a>"+
+				"<hr>"+
+				"<a id='m8'>Copy To</a><br>"+
+				"<a id='m9'>Copy & overwrite<br></a>"+
 				"</div>");
 
 var s,m;
