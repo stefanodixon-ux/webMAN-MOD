@@ -1536,12 +1536,15 @@ parse_request:
 
 				goto exit_handleclient_www;
 			}
-			else if(islike(param, "/earth.ps3") || islike(param, "/canyon.ps3"))
+			else if(islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3"))
 			{
-				u8 visualizer_id = (param[1] == 'c'); // 0 = earth, 1 = canyon
+				u8 visualizer_id =  (param[1] == 'c') ? 1 :
+									(param[1] == 'l') ? 2 : 0; // 0 = earth, 1 = canyon, 2 = lines
 
-				if(param[visualizer_id + 10] == '?')
-					map_visualizer(visualizer_id, (u8)val(param + visualizer_id + 11), param);
+				u8 param_id = (visualizer_id & 1); // 0 = earth/lines, 1 = canyon
+
+				if(param[param_id + 10] == '?')
+					map_visualizer(visualizer_id, (u8)val(param + param_id + 11), param);
 				else
 					map_visualizer(visualizer_id, 0, param);
 

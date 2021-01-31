@@ -463,18 +463,21 @@ static void wwwd_thread(u64 arg)
 
 	led(YELLOW, BLINK_FAST);
 
-#ifdef COPY_PS3
-	memset(cp_path, 0, STD_PATH_LEN);
-#endif
-
 	//WebmanCfg *webman_config = (WebmanCfg*) wmconfig;
 	read_settings();
+
+#ifdef COBRA_ONLY
+ #ifndef LITE_EDITION
+	map_visualizer(2, 0, html_base_path);
+ #endif
+#endif
 
 	if(webman_config->blind) enable_dev_blind(NO_MSG);
 
 	set_buffer_sizes(webman_config->foot);
 
 #ifdef COPY_PS3
+	memset(cp_path, 0, STD_PATH_LEN);
 	parse_script("/dev_hdd0/boot_init.txt");
 #endif
 

@@ -1401,19 +1401,24 @@ static bool do_custom_combo(const char *filename)
 #endif
 
 #ifdef COBRA_ONLY
+ #ifndef LITE_EDITION
 static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 {
-	char *hdd_path = visualizer_id ? (char*)"/dev_hdd0/tmp/canyon" :
-									 (char*)"/dev_hdd0/tmp/earth";
-	char *qrc_path = visualizer_id ? (char*)"/dev_flash/vsh/resource/qgl/canyon.qrc" :
-									 (char*)"/dev_flash/vsh/resource/qgl/earth.qrc";
+	char *hdd_path = (visualizer_id == 1) ? (char*)"/dev_hdd0/tmp/canyon" :
+					 (visualizer_id == 2) ? (char*)"/dev_hdd0/tmp/lines"  :
+											(char*)"/dev_hdd0/tmp/earth";
+	char *qrc_path = (visualizer_id == 1) ? (char*)"/dev_flash/vsh/resource/qgl/canyon.qrc" :
+					 (visualizer_id == 2) ? (char*)"/dev_flash/vsh/resource/qgl/lines.qrc"  :
+											(char*)"/dev_flash/vsh/resource/qgl/earth.qrc";
 
 	if(isDir(hdd_path))
 	{
 		if(!id)
 		{
-			if(visualizer_id)
+			if(visualizer_id == 1)
 				id = webman_config->canyon_id;
+			else if(visualizer_id == 2)
+				id = webman_config->lines_id;
 			else
 				id = webman_config->earth_id;
 			id++;
@@ -1427,15 +1432,18 @@ static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 			sprintf(param, "%s", qrc_path); id = 0;
 		}
 
-		if(visualizer_id)
+		if(visualizer_id == 1)
 			webman_config->canyon_id = id;
+		else if(visualizer_id == 2)
+			webman_config->lines_id  = id;
 		else
 			webman_config->earth_id  = id;
 
 		save_settings();
 	}
 }
-#endif
+ #endif // #ifndef LITE_EDITION
+#endif // #ifdef COBRA_ONLY
 
 #ifdef MOUNT_ROMS
 static void copy_rom_media(char *src_path)

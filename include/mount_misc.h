@@ -121,7 +121,7 @@
 
 			mount_unk = EMU_ROMS;
 
-			if(!(webman_config->app_home) && launch_app_home_icon()) ret = true;
+			if(!(webman_config->app_home) && launch_app_home_icon()) {set_app_home(PKGLAUNCH_DIR); ret = true;}
 
 			goto mounting_done; //goto exit_mount;
 		}

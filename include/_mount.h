@@ -896,6 +896,8 @@ static void set_app_home(const char *game_path)
 	// mount custom app in /app_home/PS3_GAME if has USRDIR/EBOOT.BIN
 	if(!game_path && (webman_config->homeb && is_app_dir(webman_config->home_url, ".")))
 		sys_map_path(APP_HOME_DIR, webman_config->home_url);
+	else if(IS(game_path, PKGLAUNCH_DIR))
+		sys_map_path(APP_HOME_DIR, PKGLAUNCH_DIR "/PS3_GAME");
 	else
 		sys_map_path(APP_HOME_DIR, game_path);
 
