@@ -162,8 +162,9 @@ typedef struct
 	u8 sman;     // 0=original GUI, 1=sman GUI
 	u8 earth_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/earth on each boot
 	u8 msg_icon; // 0=VSH notify with icon, 1=vshtask_notify (info)
+	u8 canyon_id;// 0-255: select a different #.qrc in /dev_hdd0/tmp/canyon on each boot
 
-	u8 padding11[29];
+	u8 padding11[28];
 
 	// spoof console id
 

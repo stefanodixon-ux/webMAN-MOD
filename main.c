@@ -61,6 +61,7 @@
  #undef MOUNT_ROMS
  #undef MOUNT_GAMEI
  #undef PKG_LAUNCHER
+ #undef PHOTO_GUI
 #endif
 
 #ifdef LAST_FIRMWARE_ONLY
@@ -69,6 +70,11 @@
 
 #ifndef WM_REQUEST
  #undef WM_CUSTOM_COMBO
+ #undef PHOTO_GUI
+#endif
+
+#ifndef SLAUNCH_FILE
+ #undef PHOTO_GUI
 #endif
 
 #define IS_ON_XMB		(GetCurrentRunningMode() == 0)

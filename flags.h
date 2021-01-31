@@ -50,6 +50,7 @@
 #define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
 #define NOBD_PATCH		1	// /nobd.ps3
 #define PLAY_MUSIC		1	// experimental support for Play Music on startup
+#define PHOTO_GUI		1	// PhotoGUI: mount games through Photo column
 #define MOUNT_PNG		1	// support fake PNG as ISO
 
 //// TEST FEATURES ////

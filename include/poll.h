@@ -125,9 +125,9 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		mount_on_insert_usb(_IS_ON_XMB_, msg);
 #endif
 
-#ifdef WM_REQUEST
+#ifdef PHOTO_GUI
 		// Poll requests via local file
-		if(webman_config->launchpad_xml && (webman_config->combo2 & CUSTOMCMB)) continue; // don't poll if PhotoGUI && Combo are both disabled
+		if(webman_config->launchpad_xml) continue; // poll wm_request file only if PhotoGUI is enabled
 
 		if(_IS_IN_GAME_) continue; // slow down poll in-game
 

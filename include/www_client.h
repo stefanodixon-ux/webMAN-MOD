@@ -447,8 +447,7 @@ parse_request:
 			ssend(debug_s, "ACC - ");
 			#endif
 
- #ifdef WM_REQUEST
-  #ifdef SLAUNCH_FILE
+ #ifdef PHOTO_GUI
 			if(wm_request)
 			{
 				// Set the content of WMREQUEST_FILE as header
@@ -520,8 +519,7 @@ parse_request:
 				// Delete WMREQUEST_FILE
 				cellFsUnlink(WMREQUEST_FILE);
 			}
-   #endif // #ifdef SLAUNCH_FILE
- #endif // #ifdef WM_REQUEST
+ #endif // #ifdef PHOTO_GUI
 		}
 		else sprintf(header, "GET %s", mc + 1);
 
@@ -1538,12 +1536,14 @@ parse_request:
 
 				goto exit_handleclient_www;
 			}
-			else if(islike(param, "/earth.ps3"))
+			else if(islike(param, "/earth.ps3") || islike(param, "/canyon.ps3"))
 			{
-				if(param[10] == '?')
-					map_earth((u8)val(param + 11), param);
+				u8 visualizer_id = (param[1] == 'c'); // 0 = earth, 1 = canyon
+
+				if(param[visualizer_id + 10] == '?')
+					map_visualizer(visualizer_id, (u8)val(param + visualizer_id + 11), param);
 				else
-					map_earth(0, param);
+					map_visualizer(visualizer_id, 0, param);
 
 				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;

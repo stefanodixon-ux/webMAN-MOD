@@ -1250,13 +1250,9 @@ static int save_settings(void)
 	mute_snd0(webman_config->nosnd0 != prev_nosnd0);
 
 
-#ifdef COBRA_ONLY
- #ifdef WM_REQUEST
-  #ifdef SLAUNCH_FILE
+#ifdef PHOTO_GUI
 	photo_gui = !webman_config->launchpad_xml;
 	if(photo_gui) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PHOTO_GUI, (u64)photo_gui); }
-  #endif
- #endif
 #endif
 
 #ifdef USE_NTFS
@@ -1437,16 +1433,12 @@ static void read_settings(void)
 		webman_config->sman = 1; //default sMAN GUI
 		save_settings();
 	}
-#ifdef COBRA_ONLY
- #ifdef WM_REQUEST
-  #ifdef SLAUNCH_FILE
+#ifdef PHOTO_GUI
 	else
 	{
 		photo_gui = !webman_config->launchpad_xml;
 		if(photo_gui) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PHOTO_GUI, (u64)photo_gui); }
 	}
-  #endif
- #endif
 #endif
 
 	profile = webman_config->profile;

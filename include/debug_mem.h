@@ -12,7 +12,26 @@ static char *hex_dump(char *buffer, int offset, int size)
 #endif
 
 #ifdef DEBUG_MEM
+/*
+static bool bCompare(const unsigned char *pData, const unsigned char *bData, const char *szMask)
+{
+	for (; *szMask; ++szMask, ++pData, ++bData)
+		if (*szMask == 'x' && *pData != *bData) // xx??xxxxxx??xx??xxxxxxxx
+			return false;
 
+	return (*szMask) == NULL;
+}
+
+static unsigned long FindPattern(unsigned long dwAddress, unsigned long dwLen, unsigned char *bData, const char *szMask)
+{
+	unsigned long end_address = dwAddress + dwLen;
+	for (unsigned long addr = dwAddress; addr < end_address; addr++)
+		if (bCompare((unsigned char*)(addr), bData, szMask))
+			return (unsigned long)(addr);
+
+	return 0;
+}
+*/
 #define LV1_UPPER_MEMORY	0x8000000010000000ULL
 #define LV2_UPPER_MEMORY	0x8000000000800000ULL
 

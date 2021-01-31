@@ -1401,23 +1401,37 @@ static bool do_custom_combo(const char *filename)
 #endif
 
 #ifdef COBRA_ONLY
-static void map_earth(u8 id, char *param)
+static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 {
-	if(isDir("/dev_hdd0/tmp/earth"))
-	{
-		if(id)
-			webman_config->earth_id = id;
-		else
-			id = ++(webman_config->earth_id);
+	char *hdd_path = visualizer_id ? (char*)"/dev_hdd0/tmp/canyon" :
+									 (char*)"/dev_hdd0/tmp/earth";
+	char *qrc_path = visualizer_id ? (char*)"/dev_flash/vsh/resource/qgl/canyon.qrc" :
+									 (char*)"/dev_flash/vsh/resource/qgl/earth.qrc";
 
-		sprintf(param, "%s/earth/%i.qrc", TMP_DIR, id);
+	if(isDir(hdd_path))
+	{
+		if(!id)
+		{
+			if(visualizer_id)
+				id = webman_config->canyon_id;
+			else
+				id = webman_config->earth_id;
+			id++;
+		}
+
+		sprintf(param, "%s/%i.qrc", hdd_path, id);
 		if(file_exists(param))
-			{sys_map_path("/dev_flash/vsh/resource/qgl/earth.qrc",  param);}
+			{sys_map_path(qrc_path,  param);}
 		else
 		{
-			webman_config->earth_id = 0;
-			sprintf(param, "/dev_flash/vsh/resource/qgl/earth.qrc");
+			sprintf(param, "%s", qrc_path); id = 0;
 		}
+
+		if(visualizer_id)
+			webman_config->canyon_id = id;
+		else
+			webman_config->earth_id  = id;
+
 		save_settings();
 	}
 }
