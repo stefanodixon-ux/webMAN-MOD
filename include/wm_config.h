@@ -160,12 +160,14 @@ typedef struct
 	char home_url[255]; // url for home button, search path for files not found or path for default application in app_home
 
 	u8 sman;     // 0=original GUI, 1=sman GUI
-	u8 earth_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/earth on each boot
 	u8 msg_icon; // 0=VSH notify with icon, 1=vshtask_notify (info)
+
+	u8 earth_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/earth on each boot
 	u8 canyon_id;// 0-255: select a different #.qrc in /dev_hdd0/tmp/canyon on each boot
 	u8 lines_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/lines on each boot
+	u8 coldboot_id; // 0-255: select a different #.ac3 in /dev_hdd0/tmp/coldboot on each boot
 
-	u8 padding11[27];
+	u8 padding11[26];
 
 	// spoof console id
 

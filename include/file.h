@@ -1400,8 +1400,7 @@ static bool do_custom_combo(const char *filename)
 }
 #endif
 
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
+#ifdef VISUALIZERS
 static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 {
 	char *hdd_path = (visualizer_id == 1) ? (char*)"/dev_hdd0/tmp/canyon" :
@@ -1429,7 +1428,8 @@ static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 			{sys_map_path(qrc_path,  param);}
 		else
 		{
-			sprintf(param, "%s", qrc_path); id = 0;
+			strcpy(param, qrc_path); id = 0;
+			sys_map_path(param, NULL);
 		}
 
 		if(visualizer_id == 1)
@@ -1442,8 +1442,36 @@ static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 		save_settings();
 	}
 }
- #endif // #ifndef LITE_EDITION
-#endif // #ifdef COBRA_ONLY
+
+static void map_coldboot(u8 id, char *param)
+{
+	char *hdd_path = (char*)"/dev_hdd0/tmp/coldboot";
+
+	if(isDir(hdd_path))
+	{
+		if(!id)
+		{
+			id = webman_config->coldboot_id; id++;
+		}
+
+		sprintf(param, "%s/%i.ac3", hdd_path, id);
+
+		if(file_exists(param))
+		{
+			sys_map_path("/dev_flash/vsh/resource/coldboot_stereo.ac3", param);
+			sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
+		}
+		else
+		{
+			strcpy(param, "/dev_flash/vsh/resource/coldboot_stereo.ac3"); id = 0;
+		}
+
+		webman_config->coldboot_id = id;
+
+		save_settings();
+	}
+}
+#endif // #ifdef VISUALIZERS
 
 #ifdef MOUNT_ROMS
 static void copy_rom_media(char *src_path)

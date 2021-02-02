@@ -92,14 +92,14 @@ static void open_browser(char *url, int mode)
 
 static bool IS(const char *a, const char *b)
 {
-	if(!*a) return false;
+	if(!a || !*a) return false;
 	while(*a && (*a == *b)) a++,b++;
 	return !(*a-*b); // compare two strings. returns true if they are identical
 }
 
 static bool _IS(const char *a, const char *b)
 {
-	if(!*a) return false;
+	if(!a || !*a) return false;
 	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
 }
 

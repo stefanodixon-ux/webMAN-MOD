@@ -54,6 +54,8 @@
  #ifndef LITE_EDITION
  #define NET_SUPPORT
  #define USE_INTERNAL_NET_PLUGIN
+ #else
+ #undef VISUALIZERS
  #endif
 #else
  #undef WM_PROXY_SPRX
@@ -62,6 +64,7 @@
  #undef MOUNT_GAMEI
  #undef PKG_LAUNCHER
  #undef PHOTO_GUI
+ #undef VISUALIZERS
 #endif
 
 #ifdef LAST_FIRMWARE_ONLY
@@ -145,7 +148,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.33 MOD"
+#define WM_VERSION			"1.47.34 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -466,10 +469,9 @@ static void wwwd_thread(u64 arg)
 	//WebmanCfg *webman_config = (WebmanCfg*) wmconfig;
 	read_settings();
 
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
+#ifdef VISUALIZERS
+	map_coldboot(0, html_base_path);
 	map_visualizer(2, 0, html_base_path);
- #endif
 #endif
 
 	if(webman_config->blind) enable_dev_blind(NO_MSG);

@@ -1536,6 +1536,7 @@ parse_request:
 
 				goto exit_handleclient_www;
 			}
+ #ifdef VISUALIZERS
 			else if(islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3"))
 			{
 				u8 visualizer_id =  (param[1] == 'c') ? 1 :
@@ -1551,7 +1552,18 @@ parse_request:
 				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
 			}
-#endif
+			else if(islike(param, "/coldboot.ps3"))
+			{
+				if(param[13] == '?')
+					map_coldboot((u8)val(param + 14), param);
+				else
+					map_coldboot(0, param);
+
+				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				goto exit_handleclient_www;
+			}
+ #endif // #ifdef VISUALIZERS
+#endif // #ifdef COBRA_ONLY
 			if(islike(param, "/wait.ps3"))
 			{
 				// /wait.ps3?xmb
@@ -2428,13 +2440,13 @@ retry_response:
 							strcpy(header, param + 1);
 							if(IS(param, "/pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
 							if(IS(param, "/xmb")) {sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
-							if(*html_base_path == '/') {sprintf(param, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
-							if(not_exists(param)) {sprintf(param, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
-							if(not_exists(param)) {sprintf(param, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
-							if(not_exists(param)) {sprintf(param, "%s%s",  HDD0_GAME_DIR, header);} // try /dev_hdd0/game
-							if(not_exists(param)) {sprintf(param, "%s%s", _HDD0_GAME_DIR, header);} // try /dev_hdd0//game
-							if(not_exists(param)) {sprintf(param, "%s/%s", "/dev_hdd0", header);} // try hdd0
-							if(not_exists(param)) {sprintf(param, "%s/%s", "/dev_hdd0/tmp", header);} // try hdd0
+							if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
+							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
+							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
+							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s",  HDD0_GAME_DIR, header);} // try /dev_hdd0/game
+							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s", _HDD0_GAME_DIR, header);} // try /dev_hdd0//game
+							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0", header);} // try hdd0
+							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", header);} // try hdd0
 						}
 					}
 
@@ -2589,7 +2601,11 @@ retry_response:
 					//sprintf(templn, "localAddr: %x", (u32) config.localAddress); _concat(&sbuffer, templn);
 				}
 				else if((conn_s == (int)WM_FILE_REQUEST)) ;
-				else if(webman_config->sman || strstr(param, "/sman.ps3")) {_concat(&sbuffer, "<div id='toolbox'>"); if(islike(param, "/dev_")) goto skip_code1; else goto skip_code2;}
+				else if(webman_config->sman || strstr(param, "/sman.ps3"))
+				{
+					_concat(&sbuffer, "<div id='toolbox'>");
+					if(islike(param, "/dev_")) goto skip_code1; else goto skip_code2;
+				}
 				else if(!mount_ps3)
 				{
 					#include "www_page.h"

@@ -897,7 +897,7 @@ static void set_app_home(const char *game_path)
 	if(!game_path && (webman_config->homeb && is_app_dir(webman_config->home_url, ".")))
 		sys_map_path(APP_HOME_DIR, webman_config->home_url);
 	else if(IS(game_path, PKGLAUNCH_DIR))
-		sys_map_path(APP_HOME_DIR, PKGLAUNCH_DIR "/PS3_GAME");
+		sys_map_path(APP_HOME_DIR, PKGLAUNCH_PS3_GAME);
 	else
 		sys_map_path(APP_HOME_DIR, game_path);
 
@@ -1133,14 +1133,14 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 {
 	bool ret = false;
 	int flen = strlen(_path) - 4; bool mount_iso = false;
-	int cue_offset = 0;
+	s32 cue_offset = 0;
 
 	if(flen < 0) ;
 
 	#ifdef MOUNT_PNG
 	else if(is_ext(_path, ".png"))
 	{
-		cue_offset = 0xE000;
+		cue_offset = 0xE000UL;
 	}
 	#endif
 	else if(is_ext(_path, ".cue") || is_ext(_path, ".ccd"))
@@ -1165,7 +1165,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 
 	mount_iso = mount_iso || file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = emu_type;
 
-	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd") || (cue_offset == 0xE000))
+	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd") || (cue_offset == 0xE000UL))
 	{
 		sys_addr_t sysmem = 0;
 		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)

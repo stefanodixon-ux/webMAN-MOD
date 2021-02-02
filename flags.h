@@ -52,6 +52,7 @@
 #define PLAY_MUSIC		1	// experimental support for Play Music on startup
 #define PHOTO_GUI		1	// PhotoGUI: mount games through Photo column
 #define MOUNT_PNG		1	// support fake PNG as ISO
+#define VISUALIZERS		1	// Rotate visualizers (earth, lines, canyon, coldboot_*.ac3)
 
 //// TEST FEATURES ////
 //#define ALLOW_DISABLE_MAP_PATH	1	// Use SELECT+O to temporarily disable sys_map_path()
