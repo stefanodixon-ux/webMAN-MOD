@@ -175,10 +175,10 @@ typedef struct
 
 	u8 padding13[30];
 
-	u8 earth_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/earth on each boot
-	u8 canyon_id;// 0-255: select a different #.qrc in /dev_hdd0/tmp/canyon on each boot
-	u8 lines_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/lines on each boot
-	u8 coldboot_id; // 0-255: select a different #.ac3 in /dev_hdd0/tmp/coldboot on each boot
+	u8 earth_id;	// 0-127: select a different #.qrc in /dev_hdd0/tmp/earth on each boot, 129-255: use fixed resource
+	u8 canyon_id;	// 0-127: select a different #.qrc in /dev_hdd0/tmp/canyon on each boot, 129-255: use fixed resource
+	u8 lines_id;	// 0-127: select a different #.qrc in /dev_hdd0/tmp/lines on each boot, 129-255: use fixed resource
+	u8 coldboot_id;	// 0-127: select a different #.ac3 in /dev_hdd0/tmp/coldboot on each boot, 129-255: use fixed resource
 
 } /*__attribute__((packed))*/ WebmanCfg;
 

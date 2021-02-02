@@ -425,9 +425,9 @@
 						wait_for("/dev_bdvd", 15);
 
 						sys_map_path(PKGLAUNCH_DIR, NULL);
-						set_app_home (PKGLAUNCH_DIR "/PS3_GAME");
+						set_app_home (PKGLAUNCH_PS3_GAME);
 
-						sys_map_path("/dev_bdvd/PS3_GAME", PKGLAUNCH_DIR "/PS3_GAME");
+						sys_map_path("/dev_bdvd/PS3_GAME", PKGLAUNCH_PS3_GAME);
 						sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", isDir( RETROARCH_DIR0 ) ? RETROARCH_DIR0 "/USRDIR/cores" :
 																		isDir( RETROARCH_DIR1 ) ? RETROARCH_DIR1 "/USRDIR/cores" :
 																								  RETROARCH_DIR2 "/USRDIR/cores" );

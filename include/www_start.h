@@ -146,8 +146,8 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		sys_map_path("/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);
 		sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);
 		#ifdef VISUALIZERS
-		map_visualizer(0, 0, param, 2);
-		map_visualizer(1, 0, param, 2);
+		map_vsh_resource(0, 0, param, 2); // earth.qrc
+		map_vsh_resource(1, 0, param, 2); // canyon.qrc
 		#endif
 		#endif
 

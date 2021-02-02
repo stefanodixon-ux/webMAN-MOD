@@ -5,27 +5,29 @@ __README IS STILL IN PROGRESS, IF YOU SEE ANY ERROR PLEASE TELL ME OR PUSH A COM
 webMAN MOD is a homebrew plugin for PlayStation®3 forked from the original webMAN/sMAN by DeanK
 with many features added.
 
+The application provides extended services for PS3 console like web server, ftp server, file manager,
+netiso, ntfs, gamepad emulation, ps3mapi, tasks automation, memory debugger and more.
 
-Our goal was to create an AIO plugin that include many of the features available on the PS3 Scene
+Our goal is to create an AIO plugin that includes many of the features available on the PS3 Scene
 in an easy and intuitive way. webMAN MOD is the result of the hard work of several users, developers
 and artists that collaborated with development, knowledge, resources, feedback & ideas.
 
 ## Web Commands & General Documentation
-https://www.psx-place.com/threads/webman-mod-web-commands.1508/
+[https://www.psx-place.com/threads/webman-mod-web-commands.1508/](https://www.psx-place.com/threads/webman-mod-web-commands.1508/)
 
 ## Current functionality
 ### General
 - Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.87 CEX, DEX & DECR)
-- Support on REBUG firmware with Cobra feature disabled (ver 4.84.2-4.86.1 CEX & DEX) 
+- Support on REBUG firmware with Cobra feature disabled (ver 4.84.2-4.86.1 CEX, DEX & DECR) 
 - Support on REBUG firmware with Mamba loaded via boot_plugins_nocobra_kernel.txt (ver 4.86.1 CEX & 4.84.2 DEX) 
 - Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.87 HFW
-- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.87 CEX & DEX)
-- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.87 CEX & DEX)
-- Support on classic custom firmware with PRXLoader (ver 3.41-4.87 CEX & DEX)
+- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.87 CEX, DEX & DECR)
+- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.87 CEX, DEX & DECR)
+- Support on classic custom firmware with PRXLoader (ver 3.41-4.87 CEX, DEX & DECR)
 
 - All PS3 Models (including all fat, Slim 20xx, 21xx, 25xx, 3xxx & SuperSlims 4xxx) are supported via PS3HEN payload
 - All PS3 Models capable to downgrade to 3.56 or lower are supported via PS3Xploit Flash Writer (aka PS3Xploit 2.0)
-  See *http://www.psdevwiki.com/ps3/SKU_Models* for compatibility with CFW
+  See *[http://www.psdevwiki.com/ps3/SKU_Models](http://www.psdevwiki.com/ps3/SKU_Models)* for compatibility with CFW
 
 ### sMAN / webMAN vanilla features
 - FTP server with remote control functions (shutdown/restart)
@@ -122,7 +124,7 @@ https://www.psx-place.com/threads/webman-mod-web-commands.1508/
 
 #### Automation
 - Support for user defined combos (pad shortcuts)
-- Virtual pad allows send button events remotely via http://pad.aldostools.org on web browser or with webPAD software (Windows only)
+- Virtual pad allows send button events remotely via [http://pad.aldostools.org](http://pad.aldostools.org) on web browser or with webPAD software (Windows only)
 - Several shortcuts to toggle Cobra, swap Rebug files, mount net0/ or net1/, show IDPS/PSID, etc.
 - Automatic remap to /dev_hdd0/packages on unmount (SELECT+O) allows to use Install All Packages on pkg files stored on HDD0
 - Support for auto-play on startup any supported ISO, game folder or auto-open an URL link. webMAN vanilla only can mount AUTOBOOT.ISO
@@ -177,31 +179,31 @@ https://www.psx-place.com/threads/webman-mod-web-commands.1508/
 - Video REC plugin : Standalone plugin that records video from games. When used, webMAN MOD is unloaded to free memory.
 
 ## Addons
-- ps3netsrv : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
-- prepISO : tool that scans content stored in exFAT/NTFS/ext2/3/4 devices and prepare the settings files needed by RAWSECISO plugin
-- PKG/ROM Launcher : allows the execution of PS3 applications and ROMS via RetroArch. Requires that the debug icon "★ app_home/PS3_GAME" be present on XMB
-- PS2CONFIG : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games
-- WM Themes : Set of packages that customize the look of the XMB icons used by webMAN MOD
-- Reload XMB : PS3 application that forces the reload of XMB icons
-- Boot MAMBA : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87 with Cobra disabled
-- MOVIAN.ISO : Custom ISO to launch MOVIAN
+- [ps3netsrv](https://downgit.github.io/#/home?url=https://github.com/aldostools/webMAN-MOD/tree/master/_Projects_/ps3netsrv) : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
+- [prepISO](https://store.brewology.com/get/homebrew.php?id=310&fid=2188) : tool that scans content stored in exFAT/NTFS/ext2/3/4 devices and prepare the settings files needed by RAWSECISO plugin
+- [PKG/ROM Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2183) : allows the execution of PS3 applications and ROMS via RetroArch. Requires that the debug icon "★ app_home/PS3_GAME" be present on XMB
+- [PS2CONFIG](https://store.brewology.com/get/homebrew.php?id=310&fid=2178) : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games
+- [WM Themes](https://store.brewology.com/ahomebrew.php?brewid=310) : Set of packages that customize the look of the XMB icons used by webMAN MOD
+- [Reload XMB](https://store.brewology.com/get/homebrew.php?id=310&fid=2184) : PS3 application that forces the reload of XMB icons
+- [Boot MAMBA](https://github.com/aldostools/webMAN-MOD/releases) : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87 with Cobra disabled
+- [MOVIAN.ISO](https://github.com/aldostools/webMAN-MOD/releases) : Custom ISO to launch MOVIAN
 
-- PS2 Classics Launcher : PS3 application required to launch PS2 Classics games in .BIN.ENC format
-- PSP Remasters Launcher : PS3 application required to launch PSP Remaster games in ISO format
-- PSP Minis Launcher : PS3 application required to launch PSP Mini games in ISO format
+- [PS2 Classics Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2187) : PS3 application required to launch PS2 Classics games in .BIN.ENC format
+- [PSP Remasters Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2186) : PS3 application required to launch PSP Remaster games in ISO format
+- [PSP Minis Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2185) : PS3 application required to launch PSP Mini games in ISO format
 
-- RetroArch : Required to launch the emulators that run the classic games in ROM format
-- MOVIAN : Required to play audio and videos in non-nantive formats like MKV
-- multiMAN : Optional. Use for dump ISO, download covers, advanced file management
+- [RetroArch](https://store.brewology.com/ahomebrew.php?brewid=152) : Required to launch the emulators that run the classic games in ROM format
+- [MOVIAN](https://store.brewology.com/ahomebrew.php?brewid=196) : Required to play audio and videos in non-nantive formats like MKV
+- [multiMAN](https://store.brewology.com/ahomebrew.php?brewid=24) : Optional. Use for dump ISO, download covers, advanced file management
 
-- webPAD : http://pad.aldostools.org - Online virtual game pad
+- webPAD : [http://pad.aldostools.org](http://pad.aldostools.org) - Online virtual game pad
 
 ## How to build
 Requirements for Windows:
 - git, clone this repository with the following command: *git clone https://github.com/aldostools/webMAN-MOD.git*
-- Official PS3 SDK v3.40 or 4.00 complete leaked version, google is your friend to find it
+- Official PS3 SDK v3.40 or 4.00 complete leaked version (or later), google is your friend to find it
 - GCC (for Windows [MinGW](http://sourceforge.net/projects/mingw) with mingw32-base will be fine) or [Cygwin (x86/x64)](https://cygwin.com/install.html)
-- Open Source PSL1GHT SDK to compile prepISO and PKG Updater only
+- [Open Source PSL1GHT SDK](https://github.com/Estwald/PSDK3v2) to compile prepISO and PKG Updater only
 
 Requirements for GNU/Linux:
 - An x86 linux distribution, Fedora 20 is tested working
@@ -210,10 +212,10 @@ Requirements for GNU/Linux:
 - Official Cell OS Lv-2 leaked toolchain (a 4.1M patched GCC 4.1.1 version)
 - wine for the missing linux tools
 - A compiled Scetool binary, ps3 keys
-- Open Source PSL1GHT SDK to compile prepISO, PKG/ROM Launcher and PKG Updater
+- [Open Source PSL1GHT SDK](https://github.com/Estwald/PSDK3v2) to compile prepISO, PKG/ROM Launcher and PKG Updater
 
 ## Credits
-- All the documentation on *http://www.psdevwiki.com*, and to all the devs who contributed
+- All the documentation on *[http://www.psdevwiki.com](http://www.psdevwiki.com)*, and to all the devs who contributed
 - Cobra team, for their work on Cobra payload and sharing the source code in public (thanks to the request of STLcardsWS)
 - Deank as the creator of webMAN, sMAN, sLaunch, multiMAN / mmCM and many other contributions to the scene
 - Estwald for NTFS library, rawseciso, fake iso, Mamba payload, etc.
@@ -251,7 +253,7 @@ of this software. A similar name or misleading name should NOT be used,
 to avoid confusion about the origin or the version in use.
 
 For futher information about GPL v3, refer to:
-https://www.gnu.org/licenses/gpl-3.0.en.html
+[https://www.gnu.org/licenses/gpl-3.0.en.html](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 THE SOFTWARE IS DISTRIBUTED "AS IS". NO WARRANTY OF ANY KIND IS EXPRESSED
 OR IMPLIED. YOU USE AT YOUR OWN RISK. NEITHER THE AUTHOR, THE LICENSOR NOR
@@ -273,7 +275,7 @@ the software.
 
 
 
-(C) 2010-2020 multiMAN / webMAN by DeanK
+(C) 2010-2021 multiMAN / webMAN by DeanK
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files

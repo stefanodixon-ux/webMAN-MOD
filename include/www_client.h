@@ -1537,29 +1537,26 @@ parse_request:
 				goto exit_handleclient_www;
 			}
  #ifdef VISUALIZERS
-			else if(islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3"))
+			else if(islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3") || islike(param, "/coldboot.ps3"))
 			{
-				u8 visualizer_id =  (param[1] == 'c') ? 1 :
-									(param[1] == 'l') ? 2 : 0; // 0 = earth, 1 = canyon, 2 = lines
+				u8 res_id = (param[1] == 'e') ? 0 :
+							(param[4] == 'y') ? 1 :
+							(param[1] == 'l') ? 2 : 3; // 0 = earth, 1 = canyon, 2 = lines, 3 = coldboot
 
-				u8 param_id = (visualizer_id & 1); // 0 = earth/lines, 1 = canyon
+				char *value = strchr(param, '?');
 
-				if(param[param_id + 10] == '?')
-					map_visualizer(visualizer_id, (u8)val(param + param_id + 11), param, 0);
+				if(value)
+				{
+					u8 id = (u8)val(value + 1);
+					if(get_flag(value, "&fixed")) id |= 0x80;
+					res_id = map_vsh_resource(res_id, id, param, 0); // set resource (or query = 0)
+				}
 				else
-					map_visualizer(visualizer_id, 0, param, 1);
+					res_id = map_vsh_resource(res_id, 0, param, 1); // next resource
 
-				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
-				goto exit_handleclient_www;
-			}
-			else if(islike(param, "/coldboot.ps3"))
-			{
-				if(param[13] == '?')
-					map_coldboot((u8)val(param + 14), param, 0);
-				else
-					map_coldboot(0, param, 1);
+				if(res_id & 0x80) strcat(param, " Fixed");
 
-				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, param, CODE_RETURN_TO_ROOT, param);
 				goto exit_handleclient_www;
 			}
  #endif // #ifdef VISUALIZERS

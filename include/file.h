@@ -1401,82 +1401,61 @@ static bool do_custom_combo(const char *filename)
 #endif
 
 #ifdef VISUALIZERS
-static void map_visualizer(u8 visualizer_id, u8 id, char *param, bool inc)
+static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 {
-	char *hdd_path = (visualizer_id == 1) ? (char*)"/dev_hdd0/tmp/canyon" :
-					 (visualizer_id == 2) ? (char*)"/dev_hdd0/tmp/lines"  :
-											(char*)"/dev_hdd0/tmp/earth";
-	char *qrc_path = (visualizer_id == 1) ? (char*)"/dev_flash/vsh/resource/qgl/canyon.qrc" :
-					 (visualizer_id == 2) ? (char*)"/dev_flash/vsh/resource/qgl/lines.qrc"  :
-											(char*)"/dev_flash/vsh/resource/qgl/earth.qrc";
+	const char *hdd_path =  (res_id == 0) ? "/dev_hdd0/tmp/earth"   : // 0
+							(res_id == 1) ? "/dev_hdd0/tmp/canyon"  : // 1
+							(res_id == 2) ? "/dev_hdd0/tmp/lines"   : // 2
+											"/dev_hdd0/tmp/coldboot"; // 3
+	const char *res_path =  (res_id == 0) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
+							(res_id == 1) ? "/dev_flash/vsh/resource/qgl/canyon.qrc":
+							(res_id == 2) ? "/dev_flash/vsh/resource/qgl/lines.qrc" :
+											"/dev_flash/vsh/resource/coldboot_stereo.ac3";
 
 	if(isDir(hdd_path))
 	{
 		if(!id)
 		{
-			if(visualizer_id == 1)
-				id = webman_config->canyon_id;
-			else if(visualizer_id == 2)
-				id = webman_config->lines_id;
-			else
-				id = webman_config->earth_id;
-
+			switch(res_id)
+			{
+				case 0: id = webman_config->earth_id;
+				case 1: id = webman_config->canyon_id;
+				case 2: id = webman_config->lines_id;
+				case 3: id = webman_config->coldboot_id;
+			}
 			if(inc == 1) id++;
 		}
 
-		sprintf(param, "%s/%i.qrc", hdd_path, id);
+		if(res_id == 3)
+			sprintf(param, "%s/%i.ac3", hdd_path, (id & 0x7F));
+		else
+			sprintf(param, "%s/%i.qrc", hdd_path, (id & 0x7F));
+
 		if(file_exists(param))
-			{sys_map_path(qrc_path,  param);}
+		{
+			sys_map_path(res_path, param);
+			if(res_id == 3)
+				sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
+		}
 		else
 		{
-			strcpy(param, qrc_path); id = 1;
+			strcpy(param, res_path); id = 0;
 			sys_map_path(param, NULL);
 		}
 
-		if(inc == 2) id++;
+		if((inc == 2) && (id < 0x80)) id++;
 
-		if(visualizer_id == 1)
-			webman_config->canyon_id = id;
-		else if(visualizer_id == 2)
-			webman_config->lines_id  = id;
-		else
-			webman_config->earth_id  = id;
+		switch(res_id)
+		{
+			case 0: webman_config->earth_id    = id;
+			case 1: webman_config->canyon_id   = id;
+			case 2: webman_config->lines_id    = id;
+			case 3: webman_config->coldboot_id = id;
+		}
 
 		save_settings();
 	}
-}
-
-static void map_coldboot(u8 id, char *param, u8 inc)
-{
-	char *hdd_path = (char*)"/dev_hdd0/tmp/coldboot";
-
-	if(isDir(hdd_path))
-	{
-		if(!id)
-		{
-			id = webman_config->coldboot_id;
-
-			if(inc == 1) id++;
-		}
-
-		sprintf(param, "%s/%i.ac3", hdd_path, id);
-
-		if(file_exists(param))
-		{
-			sys_map_path("/dev_flash/vsh/resource/coldboot_stereo.ac3", param);
-			sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
-		}
-		else
-		{
-			strcpy(param, "/dev_flash/vsh/resource/coldboot_stereo.ac3"); id = 1;
-		}
-
-		if(inc == 2) id++;
-
-		webman_config->coldboot_id = id;
-
-		save_settings();
-	}
+	return id;
 }
 #endif // #ifdef VISUALIZERS
 
