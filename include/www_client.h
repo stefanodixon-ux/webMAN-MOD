@@ -1545,9 +1545,9 @@ parse_request:
 				u8 param_id = (visualizer_id & 1); // 0 = earth/lines, 1 = canyon
 
 				if(param[param_id + 10] == '?')
-					map_visualizer(visualizer_id, (u8)val(param + param_id + 11), param);
+					map_visualizer(visualizer_id, (u8)val(param + param_id + 11), param, 0);
 				else
-					map_visualizer(visualizer_id, 0, param);
+					map_visualizer(visualizer_id, 0, param, 1);
 
 				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
@@ -1555,9 +1555,9 @@ parse_request:
 			else if(islike(param, "/coldboot.ps3"))
 			{
 				if(param[13] == '?')
-					map_coldboot((u8)val(param + 14), param);
+					map_coldboot((u8)val(param + 14), param, 0);
 				else
-					map_coldboot(0, param);
+					map_coldboot(0, param, 1);
 
 				keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
 				goto exit_handleclient_www;

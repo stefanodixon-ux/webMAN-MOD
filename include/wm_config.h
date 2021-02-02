@@ -162,12 +162,7 @@ typedef struct
 	u8 sman;     // 0=original GUI, 1=sman GUI
 	u8 msg_icon; // 0=VSH notify with icon, 1=vshtask_notify (info)
 
-	u8 earth_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/earth on each boot
-	u8 canyon_id;// 0-255: select a different #.qrc in /dev_hdd0/tmp/canyon on each boot
-	u8 lines_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/lines on each boot
-	u8 coldboot_id; // 0-255: select a different #.ac3 in /dev_hdd0/tmp/coldboot on each boot
-
-	u8 padding11[26];
+	u8 padding11[30];
 
 	// spoof console id
 
@@ -178,7 +173,13 @@ typedef struct
 	char vPSID1[17];
 	char vPSID2[17];
 
-	u8 padding13[34];
+	u8 padding13[30];
+
+	u8 earth_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/earth on each boot
+	u8 canyon_id;// 0-255: select a different #.qrc in /dev_hdd0/tmp/canyon on each boot
+	u8 lines_id; // 0-255: select a different #.qrc in /dev_hdd0/tmp/lines on each boot
+	u8 coldboot_id; // 0-255: select a different #.ac3 in /dev_hdd0/tmp/coldboot on each boot
+
 } /*__attribute__((packed))*/ WebmanCfg;
 
 static u8 wmconfig[sizeof(WebmanCfg)];

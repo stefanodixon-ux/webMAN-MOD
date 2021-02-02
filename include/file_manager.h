@@ -2,9 +2,9 @@
 
 #define ICON_STYLE			"style=\"position:fixed;top:%ipx;right:%ipx;max-height:176px;z-index:-1;display:none\" onerror=\"this.style.display='none';\""
 
-u16 _LINELEN = LINELEN;
-u16 _MAX_PATH_LEN = MAX_PATH_LEN;
-u16 _MAX_LINE_LEN = MAX_LINE_LEN;
+static u16 _LINELEN = LINELEN;
+static u16 _MAX_PATH_LEN = MAX_PATH_LEN;
+static u16 _MAX_LINE_LEN = MAX_LINE_LEN;
 
 #define _48GB_	0xC00000000ULL
 
@@ -46,6 +46,8 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	unsigned long long sbytes = sz; u16 flen, slen;
 
+	const u16 maxlen = MAX_PATH_LEN - 1;
+
 	//////////////////
 	// build labels //
 	//////////////////
@@ -84,13 +86,13 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		if(*version >= '0') {strcat(title, " v"); strcat(title, version);}
 		sprintf(tempstr, "%s%s", HDD0_GAME_DIR, titleid); bool has_updates_dir = file_exists(tempstr);
 
-		sprintf(tempstr, "<label title=\"%s\">%s</label></a>", title, name); snprintf(name, MAX_PATH_LEN - 1, "%s", tempstr);
+		sprintf(tempstr, "<label title=\"%s\">%s</label></a>", title, name); snprintf(name, maxlen, "%s", tempstr);
 
 		// show title & link to patches folder
 		if(has_updates_dir)
-			snprintf(fsize, MAX_PATH_LEN - 1, HTML_URL2, HDD0_GAME_DIR, titleid, title);
+			snprintf(fsize, maxlen, HTML_URL2, HDD0_GAME_DIR, titleid, title);
 		else
-			snprintf(fsize, MAX_PATH_LEN - 1, "%s", title);
+			snprintf(fsize, maxlen, "%s", title);
 
 		// show title id & link to updates
 		if(*titleid && !islike(titleid, "NPWR"))
@@ -98,10 +100,10 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		else
 			sprintf(tempstr, "<div class='sfo'>%s</div>", fsize);
 
-		snprintf(fsize, MAX_PATH_LEN - 1, "%'llu %s%s", sz, sf, tempstr);
+		snprintf(fsize, maxlen, "%'llu %s%s", sz, sf, tempstr);
 
 		#ifdef FIX_GAME
-		if(has_updates_dir) snprintf(fsize, MAX_PATH_LEN - 1, "<a href=\"/fixgame.ps3%s%s\">%'llu %s</a>%s", HDD0_GAME_DIR, titleid, sz, sf, tempstr);
+		if(has_updates_dir) snprintf(fsize, maxlen, "<a href=\"/fixgame.ps3%s%s\">%'llu %s</a>%s", HDD0_GAME_DIR, titleid, sz, sf, tempstr);
 		#endif
 	}
 #endif
@@ -130,7 +132,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 		if(*name == '.')
 		{
-			sprintf(fsize, HTML_URL2, "/stat.ps3", param, HTML_DIR);
+			snprintf(fsize, maxlen, HTML_URL2, "/stat.ps3", param, HTML_DIR);
 		}
 		else if(is_root)
 		{
@@ -163,7 +165,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			}
 			else if(IS(templn, "/app_home"))
 			{
-				sprintf(tempstr, "%s/%08i", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); sprintf(fsize, HTML_URL, tempstr, HTML_DIR);
+				sprintf(tempstr, "%s/%08i", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); snprintf(fsize, maxlen, HTML_URL, tempstr, HTML_DIR);
 			}
 			else
 #if defined(LITE_EDITION) // || defined(USE_NTFS)
@@ -173,7 +175,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				else if(IS(templn, "/dev_blind"))
 					sprintf(fsize, HTML_URL2, "/dev_blind", "?0", HTML_DIR);
 				else
-					sprintf(fsize, "<a href=\"/mount.ps3%s\">%s</a>", templn, HTML_DIR);
+					snprintf(fsize, maxlen, "<a href=\"/mount.ps3%s\">%s</a>", templn, HTML_DIR);
 			}
 #else
 			{
@@ -211,7 +213,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 								"<a href=\"%s\" title=\"%'llu %s (%'llu %s) / %'llu %s (%'llu %s)\">&nbsp; %'8llu %s &nbsp;</a>"
 								"</div></div>", (int)(100.0f * (float)(devSize - freeSize) / (float)devSize), is_ps3_http ? 20 : 18, tempstr, free_mb, STR_MBFREE, freeSize, STR_BYTE, devsize_mb, STR_MEGABYTE, devSize, STR_BYTE, (freeSize < _2MB_) ? free_kb : free_mb, (freeSize < _2MB_) ? STR_KILOBYTE : STR_MEGABYTE);
 				else
-					sprintf(fsize, "<a href=\"%s\">%s</a>", templn, HTML_DIR);
+					snprintf(fsize, maxlen, "<a href=\"%s\">%s</a>", templn, HTML_DIR);
 			}
 #endif
 			if(strstr(fsize, "&lt;")) strcat(fsize, " &nbsp; ");
@@ -223,20 +225,20 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		else if(!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) ))
  #endif
 		{
-			sprintf(fsize, "<a href=\"/copy.ps3%s\" title=\"copy to %s\">%s</a>", islike(templn, param) ? templn + plen : templn, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", HTML_DIR);
+			snprintf(fsize, maxlen, "<a href=\"/copy.ps3%s\" title=\"copy to %s\">%s</a>", islike(templn, param) ? templn + plen : templn, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", HTML_DIR);
 		}
 #endif
 #ifdef FIX_GAME
 		else if(islike(templn, HDD0_GAME_DIR) || (strstr(templn + 10, "/PS3_GAME" ) != NULL))
 		{
-			sprintf(fsize, HTML_URL2, "/fixgame.ps3", templn, HTML_DIR);
+			snprintf(fsize, maxlen, HTML_URL2, "/fixgame.ps3", templn, HTML_DIR);
 		}
 #endif
 		else
 #ifdef PS2_DISC
-			sprintf(fsize, "<a href=\"/mount%s%s\">%s</a>", strstr(name, "[PS2")?".ps2":".ps3", templn, HTML_DIR);
+			snprintf(fsize, maxlen, "<a href=\"/mount%s%s\">%s</a>", strstr(name, "[PS2")?".ps2":".ps3", templn, HTML_DIR);
 #else
-			sprintf(fsize, "<a href=\"/mount.ps3%s\">%s</a>", templn, HTML_DIR);
+			snprintf(fsize, maxlen, "<a href=\"/mount.ps3%s\">%s</a>", templn, HTML_DIR);
 #endif
 
 		// links to home folders
@@ -265,7 +267,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 #ifndef LITE_EDITION
 	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !is_net )
 	{
-		sprintf(fsize, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
+		snprintf(fsize, maxlen, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, " pkg");
 	}
 #endif
@@ -274,7 +276,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
  #ifdef USE_NTFS
 	else if(is_ntfs_path(templn))
 	{
-		sprintf(fsize, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, "/dev_hdd0", sz, sf);
+		snprintf(fsize, maxlen, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, "/dev_hdd0", sz, sf);
 	}
  #endif
 	else if( ((!is_net) && ( strstr(ext13, ".ntfs[") || _IS(ext8, ".BIN.ENC") )) || ((flen > 4) && (strcasestr(ISO_EXTENSIONS, ext) != NULL) && !islike(templn, HDD0_GAME_DIR)) )
@@ -311,7 +313,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "<a href=\"/rename.ps3%s|\">%'llu %s</a>", templn, sz, sf);
 	else if( show_img || _IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi") || _IS(ext, ".mp3") || IS(ext, ".AT3") || IS(ext, ".PAM") )
 	{
-		sprintf(fsize, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
+		snprintf(fsize, maxlen, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
 		if(!wm_icons_exists) ;
 		else if(show_img)
 			sprintf(ftype, " pic");
@@ -335,7 +337,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 #ifdef LOAD_PRX
 	else if(!is_net && ( IS(ext5, ".sprx")))
-		sprintf(fsize, "<a href=\"/loadprx.ps3?slot=6&prx=%s\">%'llu %s</a>", templn, sz, sf);
+		snprintf(fsize, maxlen, "<a href=\"/loadprx.ps3?slot=6&prx=%s\">%'llu %s</a>", templn, sz, sf);
 #endif
 	else if(sbytes < 10240)
 		sprintf(fsize, "%'llu %s", sz, sf);

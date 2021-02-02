@@ -39,7 +39,7 @@ static void setup_parse_settings(char *param)
 {
 	if(!strstr(param, "&ic=")) return;
 
-	memset(webman_config, 0, sizeof(WebmanCfg));
+	memset(webman_config, 0, sizeof(WebmanCfg) - 4);
 
 	get_param("&autop=", webman_config->autoboot_path, param, 255);
 
@@ -340,7 +340,7 @@ static void setup_parse_settings(char *param)
 
 #ifndef ENGLISH_ONLY
 	webman_config->lang = get_valuen(param, "&l=", 0, LANG_CUSTOM);
-	if(webman_config->lang > 22) webman_config->lang = LANG_CUSTOM; // Unknown LANG_XX.TXT
+	if(webman_config->lang > 22) webman_config->lang = LANG_CUSTOM; // Custom LANG_XX.TXT
 
 	update_language();
 #endif
@@ -785,7 +785,7 @@ static void setup_form(char *buffer, char *templn)
 								"&#268;e&scaron;tina",
 								"Sloven&#269;ina",
 
-								"Unknown",
+								"Custom",
 								};
 
 	value = webman_config->lang;

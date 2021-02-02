@@ -1401,7 +1401,7 @@ static bool do_custom_combo(const char *filename)
 #endif
 
 #ifdef VISUALIZERS
-static void map_visualizer(u8 visualizer_id, u8 id, char *param)
+static void map_visualizer(u8 visualizer_id, u8 id, char *param, bool inc)
 {
 	char *hdd_path = (visualizer_id == 1) ? (char*)"/dev_hdd0/tmp/canyon" :
 					 (visualizer_id == 2) ? (char*)"/dev_hdd0/tmp/lines"  :
@@ -1420,7 +1420,8 @@ static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 				id = webman_config->lines_id;
 			else
 				id = webman_config->earth_id;
-			id++;
+
+			if(inc == 1) id++;
 		}
 
 		sprintf(param, "%s/%i.qrc", hdd_path, id);
@@ -1428,9 +1429,11 @@ static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 			{sys_map_path(qrc_path,  param);}
 		else
 		{
-			strcpy(param, qrc_path); id = 0;
+			strcpy(param, qrc_path); id = 1;
 			sys_map_path(param, NULL);
 		}
+
+		if(inc == 2) id++;
 
 		if(visualizer_id == 1)
 			webman_config->canyon_id = id;
@@ -1443,7 +1446,7 @@ static void map_visualizer(u8 visualizer_id, u8 id, char *param)
 	}
 }
 
-static void map_coldboot(u8 id, char *param)
+static void map_coldboot(u8 id, char *param, u8 inc)
 {
 	char *hdd_path = (char*)"/dev_hdd0/tmp/coldboot";
 
@@ -1451,7 +1454,9 @@ static void map_coldboot(u8 id, char *param)
 	{
 		if(!id)
 		{
-			id = webman_config->coldboot_id; id++;
+			id = webman_config->coldboot_id;
+
+			if(inc == 1) id++;
 		}
 
 		sprintf(param, "%s/%i.ac3", hdd_path, id);
@@ -1463,8 +1468,10 @@ static void map_coldboot(u8 id, char *param)
 		}
 		else
 		{
-			strcpy(param, "/dev_flash/vsh/resource/coldboot_stereo.ac3"); id = 0;
+			strcpy(param, "/dev_flash/vsh/resource/coldboot_stereo.ac3"); id = 1;
 		}
+
+		if(inc == 2) id++;
 
 		webman_config->coldboot_id = id;
 
