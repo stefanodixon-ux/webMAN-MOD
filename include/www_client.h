@@ -1548,13 +1548,11 @@ parse_request:
 				if(value)
 				{
 					u8 id = (u8)val(value + 1);
-					if(get_flag(value, "&fixed")) id |= 0x80;
-					res_id = map_vsh_resource(res_id, id, param, 0); // set resource (or query = 0)
+					if(id) id |= 0x80;
+					res_id = map_vsh_resource(res_id, id, param, !value[1]); // set resource (or query if id == 0)
 				}
 				else
-					res_id = map_vsh_resource(res_id, 0, param, 1); // next resource
-
-				if(res_id & 0x80) strcat(param, " Fixed");
+					res_id = map_vsh_resource(res_id, 0, param, 1); // random resource
 
 				keep_alive = http_response(conn_s, header, param, CODE_RETURN_TO_ROOT, param);
 				goto exit_handleclient_www;

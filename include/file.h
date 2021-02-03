@@ -1414,7 +1414,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 
 	if(isDir(hdd_path))
 	{
-		if(!id)
+		if(!id && inc)		// id=0 -> query
 		{
 			switch(res_id)
 			{
@@ -1423,13 +1423,26 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 				case 2: id = webman_config->lines_id;
 				case 3: id = webman_config->coldboot_id;
 			}
-			if(inc == 1) id++;
 		}
 
-		if(res_id == 3)
-			sprintf(param, "%s/%i.ac3", hdd_path, (id & 0x7F));
+		u8 _id;
+		if(inc && (id < 0x80))	// random
+		{
+			CellRtcTick nTick; cellRtcGetCurrentTick(&nTick);
+			_id = nTick.tick % 0x80;
+		}
 		else
-			sprintf(param, "%s/%i.qrc", hdd_path, (id & 0x7F));
+			_id = id & 0x7F;	// set
+
+		do
+		{
+			if(res_id == 3)
+				sprintf(param, "%s/%i.ac3", hdd_path, _id);
+			else
+				sprintf(param, "%s/%i.qrc", hdd_path, _id);
+			_id /= 2;
+		}
+		while(_id && not_exists(param));
 
 		if(file_exists(param))
 		{
@@ -1442,8 +1455,6 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 			strcpy(param, res_path); id = 0;
 			sys_map_path(param, NULL);
 		}
-
-		if((inc == 2) && (id < 0x80)) id++;
 
 		switch(res_id)
 		{
