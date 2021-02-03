@@ -1426,13 +1426,13 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 		}
 
 		u8 _id;
-		if(inc && (id < 0x80))	// random
+		if(inc && !id)	// random
 		{
 			CellRtcTick nTick; cellRtcGetCurrentTick(&nTick);
-			_id = nTick.tick % 0x80;
+			_id = nTick.tick % 0x100;
 		}
 		else
-			_id = id & 0x7F;	// set
+			_id = id;	// set
 
 		do
 		{

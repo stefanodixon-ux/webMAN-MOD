@@ -12,6 +12,7 @@
 #define CODE_GOBACK            1222
 #define CODE_CLOSE_BROWSER     1223
 #define CODE_PLAIN_TEXT        1224
+#define CODE_PREVIEW_FILE      1225
 
 ////////////////////////////////
 #ifndef EMBED_JS
@@ -98,10 +99,20 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		{
 			char *cmd = (char*)msg + 1;
 			sprintf(body, "%s : OK", cmd); if(!(webman_config->minfo & 2)) show_msg(body);
-			if(code == CODE_BREADCRUMB_TRAIL)
+			if(code == CODE_BREADCRUMB_TRAIL || code == CODE_PREVIEW_FILE)
 			{
 				char *p = strchr(cmd, '/');
 				if(p) {body[p - cmd] = NULL; add_breadcrumb_trail(body, p);}
+			}
+			if(code == CODE_PREVIEW_FILE)
+			{
+				char *p = strrchr(msg, '.'); if(p) {get_image_file((char*)msg, p - msg);}
+				if(file_exists(msg))
+				{
+					strcat(body, "<hr><center><img src=\"");
+					strcat(body, msg);
+					strcat(body, "\"></center>");
+				}
 			}
 		}
 		else if(islike(msg, "http"))
@@ -1548,13 +1559,12 @@ parse_request:
 				if(value)
 				{
 					u8 id = (u8)val(value + 1);
-					if(id) id |= 0x80;
 					res_id = map_vsh_resource(res_id, id, param, !value[1]); // set resource (or query if id == 0)
 				}
 				else
 					res_id = map_vsh_resource(res_id, 0, param, 1); // random resource
 
-				keep_alive = http_response(conn_s, header, param, CODE_RETURN_TO_ROOT, param);
+				keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 				goto exit_handleclient_www;
 			}
  #endif // #ifdef VISUALIZERS
