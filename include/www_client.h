@@ -111,7 +111,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 				{
 					strcat(body, "<hr><center><img src=\"");
 					strcat(body, msg);
-					strcat(body, "\"></center>");
+					strcat(body, "\" height=\"50%\"></center>");
 				}
 			}
 		}
@@ -1548,11 +1548,12 @@ parse_request:
 				goto exit_handleclient_www;
 			}
  #ifdef VISUALIZERS
-			else if(islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3") || islike(param, "/coldboot.ps3"))
+			else if(islike(param, "/wallpaper.ps3") || islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3") || islike(param, "/coldboot.ps3"))
 			{
-				u8 res_id = (param[1] == 'e') ? 0 :
-							(param[4] == 'y') ? 1 :
-							(param[1] == 'l') ? 2 : 3; // 0 = earth, 1 = canyon, 2 = lines, 3 = coldboot
+				u8 res_id = (param[1] == 'w') ? 0 :
+							(param[1] == 'e') ? 1 :
+							(param[4] == 'y') ? 2 :
+							(param[1] == 'l') ? 3 : 4; // 0 = wallpaper, 1 = earth, 2 = canyon, 3 = lines, 4 = coldboot
 
 				char *value = strchr(param, '?');
 

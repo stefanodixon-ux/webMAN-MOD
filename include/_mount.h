@@ -942,6 +942,10 @@ static void do_umount_iso(void)
 		cellFsUnlink(DEL_CACHED_ISO);
 		cellFsUnlink(filename);
 	}
+
+	#ifdef VISUALIZERS
+	if(!(webman_config->resource_id[0])) map_vsh_resource(0, 0, filename, 2); // set random wallpaper.png on unmount
+	#endif
 }
 #endif
 

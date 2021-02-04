@@ -39,7 +39,7 @@ static void setup_parse_settings(char *param)
 {
 	if(!strstr(param, "&ic=")) return;
 
-	memset(webman_config, 0, sizeof(WebmanCfg) - 4);
+	memset(webman_config, 0, sizeof(WebmanCfg) - 5); // except resource_id[5]
 
 	get_param("&autop=", webman_config->autoboot_path, param, 255);
 

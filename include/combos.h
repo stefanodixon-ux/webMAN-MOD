@@ -446,9 +446,10 @@
 									if(dd < 100)
 									{
 										char tmp[202]; get_game_info();
+										*days = NULL; if(dd) sprintf(days, "%id ", dd);
 										snprintf(tmp, 200,  "%s %s\n\n"
-															"Play: %id %02d:%02d:%02d\n"
-															"%s", _game_TitleID, _game_Title, dd, hh, mm, ss, msg);
+															"Play: %s%02d:%02d:%02d\n"
+															"%s", _game_TitleID, _game_Title, days, hh, mm, ss, msg);
 										strcpy(msg, tmp);
 									}
 								}

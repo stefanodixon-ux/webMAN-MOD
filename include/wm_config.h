@@ -173,12 +173,14 @@ typedef struct
 	char vPSID1[17];
 	char vPSID2[17];
 
-	u8 padding13[30];
+	u8 padding13[29];
 
-	u8 earth_id;	// 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/earth on each boot
-	u8 canyon_id;	// 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/canyon on each boot
-	u8 lines_id;	// 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/lines on each boot
-	u8 coldboot_id;	// 0=random, 1-255: select specific #.ac3 in /dev_hdd0/tmp/coldboot on each boot
+	u8 resource_id[5];
+	//u8 wallpaper_id;	// [0]: 0=random, 1-255: select specific #.png in /dev_hdd0/tmp/wallpaper on each boot
+	//u8 earth_id;		// [1]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/earth on each boot
+	//u8 canyon_id;		// [2]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/canyon on each boot
+	//u8 lines_id;		// [3]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/lines on each boot
+	//u8 coldboot_id;	// [4]: 0=random, 1-255: select specific #.ac3 in /dev_hdd0/tmp/coldboot on each boot
 
 } /*__attribute__((packed))*/ WebmanCfg;
 

@@ -1403,26 +1403,22 @@ static bool do_custom_combo(const char *filename)
 #ifdef VISUALIZERS
 static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 {
-	const char *hdd_path =  (res_id == 0) ? "/dev_hdd0/tmp/earth"   : // 0
-							(res_id == 1) ? "/dev_hdd0/tmp/canyon"  : // 1
-							(res_id == 2) ? "/dev_hdd0/tmp/lines"   : // 2
-											"/dev_hdd0/tmp/coldboot"; // 3
-	const char *res_path =  (res_id == 0) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
-							(res_id == 1) ? "/dev_flash/vsh/resource/qgl/canyon.qrc":
-							(res_id == 2) ? "/dev_flash/vsh/resource/qgl/lines.qrc" :
+	const char *hdd_path =  (res_id == 0) ? "/dev_hdd0/tmp/wallpaper": // 0
+							(res_id == 1) ? "/dev_hdd0/tmp/earth"    : // 1
+							(res_id == 2) ? "/dev_hdd0/tmp/canyon"   : // 2
+							(res_id == 3) ? "/dev_hdd0/tmp/lines"    : // 3
+											"/dev_hdd0/tmp/coldboot";  // 4
+
+	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
+							(res_id == 2) ? "/dev_flash/vsh/resource/qgl/canyon.qrc":
+							(res_id == 3) ? "/dev_flash/vsh/resource/qgl/lines.qrc" :
 											"/dev_flash/vsh/resource/coldboot_stereo.ac3";
 
 	if(isDir(hdd_path))
 	{
 		if(!id && inc)		// id=0 -> query
 		{
-			switch(res_id)
-			{
-				case 0: id = webman_config->earth_id;
-				case 1: id = webman_config->canyon_id;
-				case 2: id = webman_config->lines_id;
-				case 3: id = webman_config->coldboot_id;
-			}
+			id = webman_config->resource_id[res_id];
 		}
 
 		u8 _id;
@@ -1436,7 +1432,9 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 
 		do
 		{
-			if(res_id == 3)
+			if(res_id == 0)
+				sprintf(param, "%s/%i.png", hdd_path, _id);
+			else if(res_id == 4)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id);
 			else
 				sprintf(param, "%s/%i.qrc", hdd_path, _id);
@@ -1446,25 +1444,32 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 
 		if(file_exists(param))
 		{
-			sys_map_path(res_path, param);
-			if(res_id == 3)
-				sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
+			if(res_id)
+			{
+				sys_map_path(res_path, param);
+				if(res_id == 4)
+					sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
+			}
+			else
+			{
+				char bg[48];
+				sprintf(bg, "%s/%08i/theme/wallpaper.png", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber());
+				cellFsUnlink(bg);
+				return sysLv2FsLink(param, bg);
+			}
 		}
-		else
+		else if(res_id)
 		{
 			strcpy(param, res_path); id = 0;
 			sys_map_path(param, NULL);
 		}
 
-		switch(res_id)
+		if(webman_config->resource_id[res_id] != id)
 		{
-			case 0: webman_config->earth_id    = id;
-			case 1: webman_config->canyon_id   = id;
-			case 2: webman_config->lines_id    = id;
-			case 3: webman_config->coldboot_id = id;
-		}
+			webman_config->resource_id[res_id] = id;
 
-		save_settings();
+			save_settings(); // save if setting changed
+		}
 	}
 	return id;
 }
