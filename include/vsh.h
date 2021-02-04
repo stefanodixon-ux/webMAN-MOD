@@ -557,6 +557,10 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 				if(wait) {if(wait_for_abort(100)) return;}
 			}
 
+			if(mount_unk == APP_GAME) mount_unk = EMU_OFF; // allow abort
+
+			if(wait_for_abort(200)) return;
+
 			if(mount_unk >= EMU_ROMS) sys_ppu_thread_sleep(1);
 
 			if(execute) explore_exec_push(0, false);

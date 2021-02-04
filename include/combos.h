@@ -445,9 +445,11 @@
 
 									if(dd < 100)
 									{
-										char gname[200]; get_game_info();
-										sprintf(gname, "%s %s\n\n", _game_TitleID, _game_Title);
-										sprintf(msg, "%sPlay: %id %02d:%02d:%02d\n%s", gname, dd, hh, mm, ss);
+										char tmp[202]; get_game_info();
+										snprintf(tmp, 200,  "%s %s\n\n"
+															"Play: %id %02d:%02d:%02d\n"
+															"%s", _game_TitleID, _game_Title, dd, hh, mm, ss, msg);
+										strcpy(msg, tmp);
 									}
 								}
 								else
