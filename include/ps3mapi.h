@@ -577,7 +577,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 
 				for(a = 0; a < 0x80; a += step)
 				{
-					if((u64)(buffer_tmp + a) == find) {address = addr + a; addr = 0x4000000; break;}
+					if((u64)(buffer_tmp + a) == find) {address = addr + a; addr = stop; break;}
 				}
 			}
 		}
