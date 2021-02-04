@@ -89,7 +89,7 @@
 	{
 		if(islike(_path, "/net")) ; else // mount ROMS in /net module
 
-		if((strstr(_path, "/ROMS/") != NULL) || (strcasestr(_path, ".SELF") != NULL) || (strcasestr(ROMS_EXTENSIONS, ext) != NULL))
+		if((strstr(_path, "/ROMS/") != NULL) || (strcasestr(_path, ".SELF") != NULL) || (strcasestr(ROMS_EXTENSIONS + 4, ext) != NULL) )
 		{
 			do_umount(false);
 

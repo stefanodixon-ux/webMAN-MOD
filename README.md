@@ -138,7 +138,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Combo L2+L3+R3 allows to set the XMB multimedia player as background/dynamic theme.
 - Support for enable/disable noBD patch needed to remarry BD drive
 - Support for relink identical files in /dev_hdd0/GAMES and /dev_hdd0/game
-- Support for auto-change of VSH resources like coldboot_*.ac3, lines.qrc, canyon.qrc, earth.qrc when system starts.
+- Support for auto-change of random or specific wallpaper and VSH resources like coldboot_*.ac3, lines.qrc, canyon.qrc, earth.qrc when system starts.
 
 #### Stealth features
 - Support for dumping IDPS/PSID/act.dat

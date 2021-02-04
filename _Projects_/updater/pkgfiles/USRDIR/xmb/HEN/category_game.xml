@@ -14,6 +14,8 @@
 			<Query class="type:x-xmb/folder-pixmap" key="seg_gamedebug" src="#seg_gamedebug"/>
 			<Query class="type:x-xmb/folder-pixmap" key="seg_package_files" src="#seg_package_files"/>
 			<Query class="type:x-xmb/folder-pixmap" key="external_xmb" src="xmb://localhost/dev_usb000/external.xml#external"/>
+			<Query class="type:x-xmb/folder-pixmap" key="ps3xploit_xmb" src="xmb://localhost/dev_hdd0/game/PS3XPLOIT/USRDIR/ps3xploit_xmb.xml#ps3xploit_xmb_main"/>
+			<Query class="type:x-xmb/folder-pixmap" key="game_xmbm_hdd0" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/game_main.xml#seg_xmb_hdd0_app"/>
 			<Query class="type:x-xmb/folder-pixmap" key="hen_toolbox_xmb" src="xmb://localhost/dev_hdd0/game/HENTOOLBX/USRDIR/hen_toolbox_xmb.xml#hen_toolbox_xmb_main"/>
 			<Query class="type:x-xmb/folder-pixmap" key="henbrew_store_xmb" src="xmb://localhost/dev_hdd0/game/HENBSTORE/USRDIR/henbrew_store_xmb.xml#henbrew_store_xmb_main"/>
 			<Query class="type:x-xmb/folder-pixmap" key="xmb_app3" attr="xmb_app3" src="xmb://localhost/dev_hdd0/xmlhost/game_plugin/fb.xml#seg_fb"/>
