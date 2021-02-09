@@ -358,17 +358,17 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
 	if(webman_config->chart)
-		sprintf( templn, "<a href=\"%s\">", CPU_RSX_CHART);
+		sprintf(templn, "<a href=\"%s\">", CPU_RSX_CHART);
 	else
-		sprintf( templn, "<a href=\"%s/%08i\">", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
+		sprintf(templn, "<a href=\"%s/%08i\">", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
 
-	sprintf( templn, "<label title=\"Startup\">&#8986;</label> %id %02d:%02d:%02d</a>", dd, hh, mm, ss); buffer += concat(buffer, templn);
+	sprintf(templn, "<label title=\"Startup\"><img src='%s/time.png' style='position:relative;top:8px;'></label>%id %02d:%02d:%02d</a>", WM_ICONS_PATH, dd, hh, mm, ss); buffer += concat(buffer, templn);
 	///////////////////////
 
 	ss = (u32)total_time_in_sec;
 	dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
-	sprintf(templn, "</font><H1>&#x26A1; %'id %02d:%02d:%02d • %'i ON • %'i OFF (%i)</H1>", dd, hh, mm, ss, power_on_ctr, power_off_ctr, power_on_ctr - power_off_ctr); buffer += concat(buffer, templn);
+	sprintf(templn, "</font><H1><img src='%s/power.png' style='position:relative;top:8px;'> %'id %02d:%02d:%02d • %'i ON • %'i OFF (%i)</H1>", WM_ICONS_PATH, dd, hh, mm, ss, power_on_ctr, power_off_ctr, power_on_ctr - power_off_ctr); buffer += concat(buffer, templn);
 
 	if(isDir("/dev_bdvd"))
 	{

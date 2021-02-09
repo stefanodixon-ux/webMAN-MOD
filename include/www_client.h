@@ -1555,12 +1555,12 @@ parse_request:
 							(param[4] == 'y') ? 2 :
 							(param[1] == 'l') ? 3 : 4; // 0 = wallpaper, 1 = earth, 2 = canyon, 3 = lines, 4 = coldboot
 
-				char *value = strchr(param, '?');
+				char *value = strstr(param, ".ps3") + 4; if(*value) ++value;
 
 				if(value)
 				{
-					u8 id = (u8)val(value + 1);
-					res_id = map_vsh_resource(res_id, id, param, !value[1]); // set resource (or query if id == 0)
+					u8 id = (u8)val(value);
+					res_id = map_vsh_resource(res_id, id, param, !value[0]); // set resource (or query if id == 0)
 				}
 				else
 					res_id = map_vsh_resource(res_id, 0, param, 1); // random resource

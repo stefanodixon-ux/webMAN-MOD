@@ -581,10 +581,14 @@ int main()
 	file_copy(APP_USRDIR "/icons/icon_wm_retro.png"    , ICONS_DIR "/icon_wm_retro.png");
 
 	file_copy(APP_USRDIR "/icons/icon_wm_settings.png" , ICONS_DIR "/icon_wm_settings.png");
-	file_copy(APP_USRDIR "/icons/icon_wm_eject.png"    , ICONS_DIR "/icon_wm_eject.png"   );
+	file_copy(APP_USRDIR "/icons/icon_wm_eject.png"    , ICONS_DIR "/icon_wm_eject.png");
+
+	file_copy(APP_USRDIR "/icons/power.png",             ICONS_DIR "/power.png");
+	file_copy(APP_USRDIR "/icons/time.png",              ICONS_DIR "/time.png");
+	file_copy(APP_USRDIR "/icons/find.png",              ICONS_DIR "/find.png");
 
 	if((sysLv2FsStat(APP_USRDIR "/multiman.png", &stat) == SUCCESS) && (stat.st_size == 9894))
-		file_copy(APP_USRDIR "/icons/icon_wm_root.png" , ICONS_DIR "/icon_wm_root.png"    );
+		file_copy(APP_USRDIR "/icons/icon_wm_root.png" , ICONS_DIR "/icon_wm_root.png");
 	else
 		sysLv2FsUnlink(ICONS_DIR "/icon_wm_root.png");
 

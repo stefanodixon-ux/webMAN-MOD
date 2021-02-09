@@ -39,7 +39,7 @@ static void set_file_type(const char *path, const char *filename, char *ftype)
 		sprintf(ftype, " ps3");
 }
 
-static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, char *ename, char *templn, char *name, char *fsize, CellRtcDateTime rDate, unsigned long long sz, char *sf, u8 is_net, u8 show_icon0, u8 is_ps3_http, u8 skip_cmd, u8 sort_by)
+static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, char *ename, char *templn, char *name, char *fsize, CellRtcDateTime rDate, unsigned long long sz, char *sf, u8 is_net, u8 show_icon0, u8 is_ps3_http, u8 skip_cmd, u8 sort_by, char *action)
 {
 	bool is_root = (plen < 4);
 	if(is_root) sz = 0, is_dir = true; // force folders in root -> fix: host_root, app_home
@@ -311,13 +311,13 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 #ifdef COPY_PS3
 	else if( IS(ext, ".bak") )
 		sprintf(fsize, "<a href=\"/rename.ps3%s|\">%'llu %s</a>", templn, sz, sf);
-	else if( show_img || _IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi") || _IS(ext, ".mp3") || IS(ext, ".AT3") || IS(ext, ".PAM") )
+	else if( show_img || _IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi") || _IS(ext, ".mp3") || _IS(ext, ".ac3") || IS(ext, ".AT3") || IS(ext, ".PAM") )
 	{
-		snprintf(fsize, maxlen, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
+		snprintf(fsize, maxlen, "<a href=\"%s%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", action, islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
 		if(!wm_icons_exists) ;
 		else if(show_img)
 			sprintf(ftype, " pic");
-		else if(_IS(ext, ".mp3") || IS(ext, ".AT3"))
+		else if(_IS(ext, ".mp3") || _IS(ext, ".ac3") || IS(ext, ".AT3"))
 			sprintf(ftype, " snd");
 		else
 			sprintf(ftype, " vid");
@@ -332,7 +332,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			|| !memcmp(name, "lv2_kernel", 10)
  #endif
 			)
-		sprintf(fsize, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
+		sprintf(fsize, "<a href=\"%s%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", action, islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
 #endif //#ifdef COPY_PS3
 
 #ifdef LOAD_PRX
@@ -580,6 +580,16 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		u8 jb_games = (strstr(param, "/GAMES") || strstr(param, "/GAMEZ"));
 		u8 show_icon0 = jb_games || (islike(param, "/dev_hdd0/game") || islike(param, HDD0_HOME_DIR));
 
+		char *action = (char*)"/copy.ps3";
+
+#ifdef VISUALIZERS
+		if(islike(param, "/dev_hdd0/tmp/wallpaper")) action = (char*)"/wallpaper.ps3";
+		if(islike(param, "/dev_hdd0/tmp/earth"    )) action = (char*)"/earth.ps3";
+		if(islike(param, "/dev_hdd0/tmp/canyon"   )) action = (char*)"/canyon.ps3";
+		if(islike(param, "/dev_hdd0/tmp/lines"    )) action = (char*)"/lines.ps3";
+		if(islike(param, "/dev_hdd0/tmp/coldboot" )) action = (char*)"/coldboot.ps3";
+#endif
+
 #ifndef LITE_EDITION
 		sprintf(templn, "<img id=\"icon\" " ICON_STYLE ">"
 						"<script>"
@@ -668,7 +678,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 							is_dir = dir_items[n].is_directory; if(is_dir) dirs++;
 
-							flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, dir_items[n].name, fsize, rDate, sz, sf, true, show_icon0, is_ps3_http, skip_cmd, sort_by);
+							flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, dir_items[n].name, fsize, rDate, sz, sf, true, show_icon0, is_ps3_http, skip_cmd, sort_by, action);
 
 							if((flen == 0) || (flen >= _MAX_LINE_LEN)) continue; //ignore lines too long
 							memcpy(line_entry[idx].path, tempstr, FILE_MGR_KEY_LEN + flen + 1); idx++;
@@ -796,7 +806,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 					is_dir = (entry.attribute.st_mode & S_IFDIR); if(is_dir) dirs++;
 
-					flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, entry_name, fsize, rDate, sz, sf, false, show_icon0, is_ps3_http, skip_cmd, sort_by);
+					flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, entry_name, fsize, rDate, sz, sf, false, show_icon0, is_ps3_http, skip_cmd, sort_by, action);
 
 					if((flen == 0) || (flen >= _MAX_LINE_LEN)) continue; //ignore lines too long
 					memcpy(line_entry[idx].path, tempstr, FILE_MGR_KEY_LEN + flen + 1); idx++;

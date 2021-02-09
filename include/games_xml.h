@@ -541,7 +541,8 @@ scan_roms:
 										 XML_PAIR("title","%s") "%s"
 										 XML_PAIR("module_action","%s/mount_ps3%s%s/%s"),
 										 key, icon,
-										 templn, proxy_plugin, localhost, neth, param, enc_dir_name);
+										 templn, proxy_plugin,
+										 localhost, neth, param, enc_dir_name);
 
 						// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
 						if(webman_config->info <= 1)
@@ -671,7 +672,8 @@ next_xml_entry:
 											 XML_PAIR("title","%s") "%s"
 											 XML_PAIR("module_action","%s/mount_ps3%s%s/%s"),
 											 key, icon,
-											 templn, proxy_plugin, localhost, "", param, enc_dir_name);
+											 templn, proxy_plugin,
+											 localhost, "", param, enc_dir_name);
 
 							// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
 							if(webman_config->info <= 1)
@@ -1133,7 +1135,8 @@ save_xml:
 								#ifndef ENGLISH_ONLY
 								fh ? tempstr :
 								#endif
-								roms_path[i], roms_count[i], (roms_count[i] == 1) ? "ROM" : "ROMS"); _concat(&myxml, templn);
+								roms_path[i],
+								roms_count[i], (roms_count[i] == 1) ? "ROM" : "ROMS"); _concat(&myxml, templn);
 			}
 		}
 
