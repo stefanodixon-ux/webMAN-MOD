@@ -17,13 +17,10 @@ static s32 rsx_fifo_pause(u8 pause)
 
 #include "../vsh/vsh.h"
 
-#include <cell/font.h>
-
 // canvas constants
 #define BASE          0xC0000000UL     // local memory base ea
 
-// get pixel offset into framebuffer by x/y coordinates
-//#define OFFSET(x, y) (u32)(offset + (4 * ((x) + ((y) * pitch))))
+// get pixel offset into framebuffer by x coordinates
 #define OFFSET(x) (u32)(offset + (4 * x))
 
 #define _ES32(v)((u32)(((((u32)v) & 0xFF000000) >> 24) | \
@@ -31,27 +28,11 @@ static s32 rsx_fifo_pause(u8 pause)
 		               ((((u32)v) & 0x0000FF00) << 8 ) | \
 		               ((((u32)v) & 0x000000FF) << 24)))
 
-// graphic buffers
-typedef struct _Buffer {
-	u32 *addr;               // buffer address
-	s32  w;                   // buffer width
-	s32  h;                   // buffer height
-} Buffer;
-
 // display values
-static u32 unk1 = 0, offset = 0, pitch = 0;
+static u32 offset = 0, pitch = 0;
 static u32 h = 0, w = 0;
 
 //static DrawCtx ctx;                                 // drawing context
-
-// screenshot
-static u8 bmp_header[] = {
-  0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x0B, 0x00, 0x00, 0x12, 0x0B, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-}; // size: 0x36
-
 
 #ifndef __PAF_H__
 
@@ -73,10 +54,10 @@ extern s32 paf_FFE0FBC9(u32 *pitch, u32 *unk1);  // unk1 = 0x12 color bit depth?
 static void init_graphic(void)
 {
 	// get current display values
-	offset = BASE + *(u32*)0x60201104;          // start offset of current framebuffer
-	getDisplayPitch(&pitch, &unk1); pitch /= 4; // framebuffer pitch size
 	h = getDisplayHeight();                     // display height
 	w = getDisplayWidth();                      // display width
+	getDisplayPitch(&pitch, &offset); pitch /= 4; // framebuffer pitch size
+	offset = BASE + *(u32*)0x60201104;          // start offset of current framebuffer
 }
 
 static void saveBMP(char *path, bool notify_bmp, bool small)
@@ -101,7 +82,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	// max bmp buffer size = 1920 pixel * 3(byte per pixel) = 5760 byte = 6 KB
 
 	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) return;
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) {cellFsClose(fd); return;}
 
 	rsx_fifo_pause(1);
 
@@ -120,12 +101,25 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 
 	// alloc buffers
 	u64 *line_frame = (u64*)sysmem;
-	u8 *bmp_buf = (u8*)sysmem + line_frame_size; // start offset: 8 KB
-	u8 *tmp_buf = (u8*)line_frame;
+	u8 *tmp_buf = (u8*)sysmem;
+	u8 *bmp_buf = tmp_buf + line_frame_size; // start offset: 8 KB
+
+	#define bmp_header			tmp_buf
+	#define bmp_header_size		0x36
+
+	memset(bmp_header, 0, bmp_header_size);
+	bmp_header[0x00] = 0x42;
+	bmp_header[0x01] = 0x4D;
+	bmp_header[0x0A] = bmp_header_size;
+	bmp_header[0x0E] = 0x28;
+	bmp_header[0x1A] = 0x01;
+	bmp_header[0x1C] = 0x18;
+	bmp_header[0x26] = bmp_header[0x2A] = 0x12;
+	bmp_header[0x27] = bmp_header[0x2B] = 0x1B;
 
 	// set bmp header
 	u32 tmp;
-	tmp = _ES32(w * h * 3 + 0x36);
+	tmp = _ES32(w * h * 3 + bmp_header_size);
 	memcpy(bmp_header + 0x02 , &tmp, 4);    // file size
 	tmp = _ES32(w);
 	memcpy(bmp_header + 0x12, &tmp, 4);     // bmp width
@@ -135,7 +129,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	memcpy(bmp_header + 0x22, &tmp, 4);     // bmp data size
 
 	// write bmp header
-	cellFsWrite(fd, (void *)bmp_header, sizeof(bmp_header), NULL);
+	cellFsWrite(fd, (void *)bmp_header, bmp_header_size, NULL);
 
 	// dump...
 	u32 _ww;
@@ -159,12 +153,6 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 
 	// continue rsx rendering
 	rsx_fifo_pause(0);
-
-	// padding
-	s32 rest = (w * 3) % 4, pad = 0;
-	if(rest)
-		pad = 4 - rest;
-	cellFsLseek(fd, pad, CELL_FS_SEEK_SET, 0);
 
 	cellFsClose(fd);
 	sys_memory_free(sysmem);

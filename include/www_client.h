@@ -1260,7 +1260,7 @@ parse_request:
 						bool show = get_flag(filename, "?show");
 
 						if(show && (*filename != '/'))
-							sprintf(header	, "%s/screenshot.bmp", WMTMP);
+							sprintf(header, "%s/screenshot.bmp", WMTMP);
 						else
 							sprintf(header, "%s", filename);
 

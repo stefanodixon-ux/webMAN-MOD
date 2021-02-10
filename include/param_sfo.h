@@ -189,12 +189,12 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 
 	memset(title_id, 0, 10);
 
-	char paramsfo[_4KB_];
-	unsigned char *mem = (u8*)paramsfo;
+	char param_sfo[_4KB_];
+	unsigned char *mem = (u8*)param_sfo;
 
 	check_ps3_game(filename);
 
-	u16 sfo_size = (u16)read_file(filename, paramsfo, _4KB_, 0);
+	u16 sfo_size = (u16)read_file(filename, param_sfo, _4KB_, 0);
 
 	if(sfo_size)
 	{
@@ -208,7 +208,7 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 		{
 			ret = fix_param_sfo(mem, title_id, opcode, sfo_size); // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
 
-			if(ret && opcode == FIX_SFO) save_file(filename, paramsfo, sfo_size);
+			if(ret && opcode == FIX_SFO) save_file(filename, param_sfo, sfo_size);
 		}
 	}
 

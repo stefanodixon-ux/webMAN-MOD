@@ -259,11 +259,11 @@ static bool rec_start(const char *param)
 	sys_ppu_thread_sleep(4);
 
 
-	if(View_Find(REC_PLUGIN) != 0)
+	if(View_Find(REC_PLUGIN))
 	{
 		rec_interface = (rec_plugin_interface *)plugin_GetInterface(View_Find(REC_PLUGIN), 1);
 
-		if(rec_interface != 0)
+		if(rec_interface)
 		{
 			rec_interface->start();
 			return true;
@@ -278,7 +278,7 @@ static bool rec_start(const char *param)
 		reco_open(-1); //reco_open((vsh_memory_container_by_id(1) == NONE ) ? vsh_memory_container_by_id(0) : vsh_memory_container_by_id(1));
 		sys_ppu_thread_sleep(3);
 
-		if(View_Find(REC_PLUGIN) != 0)
+		if(View_Find(REC_PLUGIN))
 		{
 			rec_interface = (rec_plugin_interface *)plugin_GetInterface(View_Find(REC_PLUGIN), 1);
 
@@ -310,27 +310,27 @@ static void toggle_video_rec(const char *param)
 			recOpt = (u32*)((addr << 16) + ((*(u32*)(*(u32*)reco_open + 0x14)) & 0x0000FFFF)); // (u32*)0x72EEC0;
 		}
 
-		if(recording == false)
-		{
-			// not recording yet
-			show_rec_format("Recording started");
-
-			if(rec_start(param) == false)
-			{
-				vshNotify_WithIcon(23, "Recording Error!");
-			}
-			else
-			{
-				recording = true;
-			}
-		}
-		else
+		if(recording)
 		{
 			// we are already recording
 			rec_interface->stop();
 			rec_interface->close(0);
 			vshNotify_WithIcon(22, "Recording finished");
 			recording = false;
+		}
+		else
+		{
+			// not recording yet
+			show_rec_format("Recording started");
+
+			if(rec_start(param))
+			{
+				recording = true;
+			}
+			else
+			{
+				vshNotify_WithIcon(23, "Recording Error!");
+			}
 		}
 	}
 	else
