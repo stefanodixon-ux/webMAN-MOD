@@ -77,6 +77,13 @@
 
 	<View id="seg_webman_redirect_usb_items">
 		<Attributes>
+			<Table key="remap_home">
+				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
+				<Pair key="title"><String>Remap home to USB000</String></Pair>
+				<Pair key="info"><String>Redirect /dev_hdd0/home to /dev_usb000/home</String></Pair>
+				<Pair key="module_name"><String>webrender_plugin</String></Pair>
+				<Pair key="module_action"><String>http://localhost/remap.ps3/dev_hdd0/home&to=/dev_usb000/home</String></Pair>
+			</Table>
 			<Table key="remap_usb0">
 				<Pair key="icon"><String>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</String></Pair>
 				<Pair key="title"><String>Remap USB000 to HDD</String></Pair>
@@ -89,10 +96,11 @@
 				<Pair key="title"><String>Unmap USB000</String></Pair>
 				<Pair key="info"><String>Restore redirection access to USB000</String></Pair>
 				<Pair key="module_name"><String>webrender_plugin</String></Pair>
-				<Pair key="module_action"><String>http://localhost/unmap.ps3/dev_usb000</String></Pair>
+				<Pair key="module_action"><String>http://localhost/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</String></Pair>
 			</Table>
 		</Attributes>
 		<Items>
+			<Item class="type:x-xmb/module-action" key="remap_home"		attr="remap_home"/>
 			<Item class="type:x-xmb/module-action" key="remap_usb0"		attr="remap_usb0"/>
 			<Item class="type:x-xmb/module-action" key="unmap_usb0"		attr="unmap_usb0"/>
 		</Items>
