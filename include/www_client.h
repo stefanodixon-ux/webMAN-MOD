@@ -20,6 +20,8 @@ static bool css_exists = false;
 static bool common_js_exists = false;
 #endif
 
+static char *rlabel = NULL;
+
 #ifdef SYS_ADMIN_MODE
 static u8 check_password(char *param)
 {
@@ -102,8 +104,8 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			sprintf(body, "%s : OK", cmd); if(!(webman_config->minfo & 2)) show_msg(body);
 			if(code == CODE_BREADCRUMB_TRAIL || code == CODE_PREVIEW_FILE)
 			{
-				char *p = strchr(cmd, '/');
-				if(p) {body[p - cmd] = NULL; add_breadcrumb_trail(body, p);}
+				char *p = strchr(filename, '/');
+				if(p) {body[p - filename] = NULL; if(rlabel) {strcat(body, rlabel); strcat(body, ": ");} add_breadcrumb_trail(body, p);}
 			}
 			if(code == CODE_PREVIEW_FILE)
 			{
@@ -115,6 +117,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 					strcat(body, "\" height=\"50%\"></center>");
 				}
 			}
+			rlabel = NULL;
 		}
 		else if(islike(filename, "http"))
 			sprintf(body, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE, filename, filename);
@@ -1561,11 +1564,16 @@ parse_request:
 
 				if(value)
 				{
-					u8 id = (u8)val(value);
+					u8 id = (u8)val(value); if(*value == 'd') id = 255;
 					res_id = map_vsh_resource(res_id, id, param, !value[0]); // set resource (or query if id == 0)
 				}
 				else
 					res_id = map_vsh_resource(res_id, 0, param, 1); // random resource
+
+				if(!res_id)
+					rlabel = (char*)"Random";
+				else
+					rlabel = (char*)"Fixed";
 
 				keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 				goto exit_handleclient_www;
@@ -1802,6 +1810,7 @@ parse_request:
 							save_file(filename, data, APPEND_TEXT); // write_ps3 (add line)
 					}
 				}
+
 				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
 				goto exit_handleclient_www;
 			}
@@ -2232,6 +2241,9 @@ parse_request:
 				char *game_path = param + 12, titleID[10];
 				char *attrib = strstr(game_path, "&attrib=");
 
+				rlabel = (char*)STR_FIXING;
+				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+
 				if(attrib)
 				{
 					u32 attribute = get_valuen32(attrib, "&attrib="); *attrib = NULL;
@@ -2246,7 +2258,6 @@ parse_request:
 				else
 					fix_game(game_path, titleID, FIX_GAME_FORCED); // fix game folder
 
-				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
 				goto exit_handleclient_www;
 			}
  #endif

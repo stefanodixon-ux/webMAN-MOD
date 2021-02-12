@@ -28,8 +28,8 @@ static bool fix_sfo_attribute(unsigned char *mem, u16 sfo_size)
 	{
 		if(!memcmp((char *) &mem[str], "ATTRIBUTE", 9))
 		{
-			if(webman_config->fixgame==FIX_GAME_FORCED) {mem[pos+2]|=0x2; mem[pos+4]|=0xA5; return true;} // PS3_EXTRA + BGM + RemotePlay
-			if(!(mem[pos+2] & 2)) {mem[pos+2]|=0x2; return true;}                                         // PS3_EXTRA
+			if(webman_config->fixgame == FIX_GAME_FORCED) {mem[pos+2]|=0x2; mem[pos+4]|=0xA5; return true;} // PS3_EXTRA + BGM + RemotePlay
+			if(!(mem[pos+2] & 2)) {mem[pos+2]|=0x2; return true;}                                           // PS3_EXTRA
 			break;
 		}
 
@@ -39,7 +39,7 @@ static bool fix_sfo_attribute(unsigned char *mem, u16 sfo_size)
 	return false;
 }
 
-char fix_game_path[7][256]; int plevel = NONE;
+static u8 plevel = 0;
 
 static void fix_game_folder(char *path)
 {
@@ -49,41 +49,38 @@ static void fix_game_folder(char *path)
 
 	if(working && cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
 	{
-		plevel++;
-
 #ifdef COPY_PS3
-		sprintf(current_file, "%s", path);
+		strcpy(current_file, path);
 #endif
-
 		struct CellFsStat s;
 
 		CellFsDirectoryEntry dir; u32 read_e;
 		char *entry_name = dir.entry_name.d_name;
 
-		u16 plen = sprintf(fix_game_path[plevel], "%s/", path);
-		char *path_file = fix_game_path[plevel] + plen;
+		u16 plen = sprintf(path, "%s/", path);
+		char *filename  = path + plen;
 
 		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{
 			if(fix_aborted) break;
 			if(entry_name[0] == '.') continue;
 
-			sprintf(path_file, "%s", entry_name);
+			strcpy(filename, entry_name);
 
 			if(!extcasecmp(entry_name, ".sprx", 5) || !extcasecmp(entry_name, ".self", 5) || IS(entry_name, "EBOOT.BIN"))
 			{
-				if(cellFsStat(fix_game_path[plevel], &s) != CELL_FS_SUCCEEDED || s.st_size < 0x500) continue;
+				if(cellFsStat(path, &s) != CELL_FS_SUCCEEDED || s.st_size < 0x500) continue;
 
 				int fdw, offset; u64 bytes_read = 0; u64 ps3_sys_version = 0;
 
-				cellFsChmod(fix_game_path[plevel], MODE); fixed_count++; //fix file read-write permission
+				cellFsChmod(path, MODE); fixed_count++; //fix file read-write permission
 
-				if(cellFsOpen(fix_game_path[plevel], CELL_FS_O_RDWR, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
+				if(cellFsOpen(path, CELL_FS_O_RDWR, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
 				{
 					cellFsReadWithOffset(fdw, 0xC, (void *)&offset, 4, &bytes_read); offset-=0x78;
 
 				retry_offset:
-					if(offset < 0x90 || offset > 0x800) offset=!extcasecmp(entry_name, ".sprx", 5) ? 0x258 : 0x428;
+					if(offset < 0x90 || offset > 0x800) offset = !extcasecmp(entry_name, ".sprx", 5) ? 0x258 : 0x428;
 					cellFsReadWithOffset(fdw, offset, (void *)&ps3_sys_version, 8, NULL);
 
 					if(ps3_sys_version > CFW_420 && ps3_sys_version < MAX_CFW)
@@ -101,11 +98,15 @@ static void fix_game_folder(char *path)
 				}
 				cellFsClose(fdw);
 			}
-			else if(isDir(fix_game_path[plevel]) && (webman_config->fixgame!=FIX_GAME_QUICK)) fix_game_folder(fix_game_path[plevel]);
+			else if(isDir(path) && (webman_config->fixgame != FIX_GAME_QUICK))
+			{
+				fix_game_folder(path);
+			}
 		}
 
+		path[plen] = NULL;
 		cellFsClosedir(fd);
-		plevel--;
+		if(plevel) plevel--;
 	}
 }
 
@@ -265,7 +266,11 @@ exit_fix:
 
 	// fix update folder
 	sprintf(update_path, "%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
-	if(getTitleID(update_path, title_id, FIX_SFO) || webman_config->fixgame==FIX_GAME_FORCED) {sprintf(update_path, "%s%s/USRDIR", HDD0_GAME_DIR, title_id); fix_game_folder(update_path);}
+	if(getTitleID(update_path, title_id, FIX_SFO) || webman_config->fixgame==FIX_GAME_FORCED)
+	{
+		sprintf(update_path, "%s%s/USRDIR", HDD0_GAME_DIR, title_id);
+		fix_game_folder(update_path);
+	}
 }
 #endif //#ifdef COBRA_ONLY
 

@@ -1438,7 +1438,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id);
 			else
 				sprintf(param, "%s/%i.qrc", hdd_path, _id);
-			_id /= 2;
+			if(id == 0xFF) break; _id /= 2;
 		}
 		while(_id && not_exists(param));
 
@@ -1460,7 +1460,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 		}
 		else if(res_id)
 		{
-			strcpy(param, res_path); id = 0;
+			strcpy(param, res_path); if(id != 0xFF) id = 0;
 			sys_map_path(param, NULL);
 		}
 
