@@ -425,7 +425,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 	if(fh == 0)
 	{
-		char lang_path[34];
+		char lang_path[40];
 
 		if(lang_roms)
 		{
@@ -437,20 +437,21 @@ static bool language(const char *key_name, char *label, const char *default_str)
 		{
 			if(webman_config->lang >= LANG_XX && (webman_config->lang != LANG_CUSTOM)) webman_config->lang = 0;
 
-			const char lang_codes[24][2] = {"EN", "FR", "IT", "ES", "DE", "NL", "PT", "RU", "HU", "PL", "GR", "HR", "BG", "IN", "TR", "AR", "CN", "KR", "JP", "ZH", "DK", "CZ", "SK", "XX"};
+			const char *lang_codes[] = {"EN", "FR", "IT", "ES", "DE", "NL", "PT", "RU", "HU", "PL", "GR", "HR", "BG", "IN", "TR", "AR", "CN", "KR", "JP", "ZH", "DK", "CZ", "SK", "XX"};
 
 			i = webman_config->lang; if(i > LANG_XX) i = LANG_XX;
 
 			sprintf(lang_code, "_%.2s", lang_codes[i]);
 			sprintf(lang_path, "%s/LANG%s.TXT", WM_LANG_PATH, lang_code);
 		}
-		struct CellFsStat buf;
-
-		if(cellFsStat(lang_path, &buf) != CELL_FS_SUCCEEDED) return false; size = (size_t)buf.st_size;
-
-		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0) != CELL_FS_SUCCEEDED) return false;
 
 		lang_pos = 0;
+
+		struct CellFsStat buf;
+
+		if(cellFsStat(lang_path, &buf)) return false; size = (size_t)buf.st_size;
+
+		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0)) return false;
 
 		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE;
 	}
@@ -486,13 +487,19 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 				label[str_len] = NULL;
 
+				if(str_len < do_retry) goto do_retry;
+
 				return true;
 			}
 		}
 
 	} while(lang_pos < size);
 
-	if(do_retry) {cellFsClose(fh); fh = do_retry = lang_pos = 0; goto retry;}
+	if(do_retry)
+	{
+		do_retry:
+		cellFsClose(fh); fh = do_retry = 0; goto retry;
+	}
 
 	return true;
 }

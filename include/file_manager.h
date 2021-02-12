@@ -473,7 +473,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 		else
 #endif
 		slen = sprintf(swap, HTML_URL2,
-						(strstr(pbuffer, "To: ") || strstr(pbuffer, "Path: ")) ? "" :
+						(use_open_path || strstr(pbuffer, "To: ") || strstr(pbuffer, "Path: ")) ? "" :
 						islike(param + 23, "/trophy/NPWR") ? "/delete.ps3" :
 #ifdef COPY_PS3
 						islike(param, HDD0_HOME_DIR) ? "/copy.ps3" :
@@ -485,9 +485,6 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 						is_ext(param + tlen, ".pkg") ? "/install.ps3" :
 #endif
 						islike(param + 15, "/covers") ? "" : // /dev_hdd0/GAMES/covers
-#ifdef DEBUG_MEM
-						islike(param, "/dev_hdd0/dump") ? "" :
-#endif
 						((isDir(param) ||
 						 strcasestr(ISO_EXTENSIONS, param + tlen) != NULL) ||
 						 (strstr(param, "/GAME")  != NULL) ||
@@ -497,10 +494,17 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 	}
 
 	// add code to buffer
+	use_open_path = false;
 
 	strcat(buffer, swap);
 
 	return slen + (buffer - pbuffer);
+}
+
+static int add_breadcrumb_trail2(char *pbuffer, const char *param)
+{
+	use_open_path = true;
+	return add_breadcrumb_trail(pbuffer, param);
 }
 
 static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, char *param, int conn_s, char *tempstr, char *header, u8 is_ps3_http, s8 sort_by, s8 sort_order, char *file_query)

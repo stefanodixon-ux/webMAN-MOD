@@ -1,9 +1,9 @@
 #define ENABLE_INGAME_SCREENSHOT	((int*)getNIDfunc("vshmain",0x981D7E9F,0))[0] -= 0x2C;
 
-int (*vshmain_is_ss_enabled)(void) = NULL;
-int (*set_SSHT_)(int) = NULL;
+static int (*vshmain_is_ss_enabled)(void) = NULL;
+static int (*set_SSHT_)(int) = NULL;
 
-int opd[2] = {0, 0};
+static int opd[2] = {0, 0};
 
 #define EXPLORE_CLOSE_ALL   3
 
@@ -50,225 +50,69 @@ static sys_memory_container_t get_vsh_memory_container(void)
 //------------
 /* Based on PHTNC's code to write VSH Notify notifications with icons */
 
+#define MAX_RCO_IMAGES	51
+
 static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 {
-	char *tex;
-	char *plugin;
+	const char *rco_images[MAX_RCO_IMAGES] = {
+								// system_plugin icons
+								"tex_notification_info",			//0
+								"tex_notification_friend",			//1
+								"tex_notification_headset",			//2
+								"tex_notification_caution",			//3
+								"tex_notification_keypad",			//4
+								"tex_notification_mediasever",		//5
+								"tex_notification_music",			//6
+								"tex_notification_psbutton_insensitive",	//7
+								"tex_notification_settings",		//8
+								"tex_notification_trophy_bronze",	//9
+								"tex_notification_trophy_silver",	//10
+								"tex_notification_trophy_gold",		//11
+								"tex_notification_trophy_platinum",	//12
+								"tex_pointer_hand",					//13
+								"tex_pointer_pen",					//14
+								"tex_pointer_arrow",				//15
+								"tex_pointer_grab",					//16
+								"tex_arrow_right",					//17
+								// explore_plugin icons
+								"tex_psn_big",						//18
+								"tex_psplus_icon",					//19
+								"tex_Signing_In",					//20
+								"tex_new_ws",						//21
+								"tex_check_ws",						//22
+								"tex_urgent_ws",					//23
+								"item_tex_cam_icon",				//24
+								"item_tex_Profile_LevelIcon",		//25
+								"item_tex_ps_store",				//26
+								"tex_album_icon",					//27
+								"item_tex_Players",					//28
+								"tex_indi_NewRoom",					//29
+								"tex_music",						//30
+								"tex_photo",						//31
+								"tex_video",						//32
+								"tex_game",							//33
+								"tex_lock_icon",					//34
+								"tex_indi_Sign_out",				//35-Error icon
+								"tex_indi_Message",					//36
+								"tex_Message_Sent",					//37
+								"item_tex_CardBallon",				//38
+								"tex_loading_icon",					//39
+								"tex_Avatar_Default",				//40
+								"item_tex_disc_bd",					//41-PS3
+								"item_tex_disc_icon",				//42-CD
+								"item_tex_disc_cd_ps2",				//43-PS2
+								"item_tex_disc_ps1",				//44-PSX
+								"item_tex_disc_bd_contents",		//45-BD
+								"item_tex_disc_dvd",				//46-DVD
+								"game_tex_disc_unknown",			//47
+								"item_tex_psp_icon",				//48
+								"tex_indi_AFK",						//49
+								"tex_go_game",						//50
+							};
 
-	plugin = (icon_id >= 18) ? (char*)"explore_plugin" : (char*)"system_plugin";
-
-	switch (icon_id)
-	{
-	case 0:
-		tex = (char*)"tex_notification_info";
-		break;
-
-	case 1:
-		tex = (char*)"tex_notification_friend";
-		break;
-
-	case 2:
-		tex = (char*)"tex_notification_headset";
-		break;
-
-	case 3:
-		tex = (char*)"tex_notification_caution";
-		break;
-
-	case 4:
-		tex = (char*)"tex_notification_keypad";
-		break;
-
-	case 5:
-		tex = (char*)"tex_notification_mediasever";
-		break;
-
-	case 6:
-		tex = (char*)"tex_notification_music";
-		break;
-
-	case 7:
-		tex = (char*)"tex_notification_psbutton_insensitive";
-		break;
-
-	case 8:
-		tex = (char*)"tex_notification_settings";
-		break;
-
-	case 9:
-		tex = (char*)"tex_notification_trophy_bronze";
-		break;
-
-	case 10:
-		tex = (char*)"tex_notification_trophy_silver";
-		break;
-
-	case 11:
-		tex = (char*)"tex_notification_trophy_gold";
-		break;
-
-	case 12:
-		tex = (char*)"tex_notification_trophy_platinum";
-		break;
-
-	case 13:
-		tex = (char*)"tex_pointer_hand";
-		break;
-
-	case 14:
-		tex = (char*)"tex_pointer_pen";
-		break;
-
-	case 15:
-		tex = (char*)"tex_pointer_arrow";
-		break;
-
-	case 16:
-		tex = (char*)"tex_pointer_grab";
-		break;
-
-	case 17:
-		tex = (char*)"tex_arrow_right";
-		break;
-
-	// explore_plugin icons
-	case 18:
-		tex = (char*)"tex_psn_big";
-		break;
-
-	case 19:
-		tex = (char*)"tex_psplus_icon";
-		break;
-
-	case 20:
-		tex = (char*)"tex_Signing_In";
-		break;
-
-	case 21:
-		tex = (char*)"tex_new_ws";
-		break;
-
-	case 22:
-		tex = (char*)"tex_check_ws";
-		break;
-
-	case 23:
-		tex = (char*)"tex_urgent_ws";
-		break;
-
-	case 24:
-		tex = (char*)"item_tex_cam_icon";
-		break;
-
-	case 25:
-		tex = (char*)"item_tex_Profile_LevelIcon";
-		break;
-
-	case 26:
-		tex = (char*)"item_tex_ps_store";
-		break;
-
-	case 27:
-		tex = (char*)"tex_album_icon";
-		break;
-
-	case 28:
-		tex = (char*)"item_tex_Players";
-		break;
-
-	case 29:
-		tex = (char*)"tex_indi_NewRoom";
-		break;
-
-	case 30:
-		tex = (char*)"tex_music";
-		break;
-
-	case 31:
-		tex = (char*)"tex_photo";
-		break;
-
-	case 32:
-		tex = (char*)"tex_video";
-		break;
-
-	case 33:
-		tex = (char*)"tex_game";
-		break;
-
-	case 34:
-		tex = (char*)"tex_lock_icon";
-		break;
-
-	case 35:
-		tex = (char*)"tex_indi_Sign_out"; // Error icon
-		break;
-
-	case 36:
-		tex = (char*)"tex_indi_Message";
-		break;
-
-	case 37:
-		tex = (char*)"tex_Message_Sent";
-		break;
-
-	case 38:
-		tex = (char*)"item_tex_CardBallon";
-		break;
-
-	case 39:
-		tex = (char*)"tex_loading_icon";
-		break;
-
-	case 40:
-		tex = (char*)"tex_Avatar_Default";
-		break;
-
-	case 41:
-		tex = (char*)"item_tex_disc_bd"; //PS3
-		break;
-
-	case 42:
-		tex = (char*)"item_tex_disc_icon"; //CD
-		break;
-
-	case 43:
-		tex = (char*)"item_tex_disc_cd_ps2"; //PS2
-		break;
-
-	case 44:
-		tex = (char*)"item_tex_disc_ps1"; //PSX
-		break;
-
-	case 45:
-		tex = (char*)"item_tex_disc_bd_contents"; //BD
-		break;
-
-	case 46:
-		tex = (char*)"item_tex_disc_dvd"; //DVD
-		break;
-
-	case 47:
-		tex = (char*)"game_tex_disc_unknown";
-		break;
-
-	case 48:
-		tex = (char*)"item_tex_psp_icon";
-		break;
-
-	case 49:
-		tex = (char*)"tex_indi_AFK";
-		break;
-
-	case 50:
-		tex = (char*)"tex_go_game";
-		break;
-
-	default:
-		tex = (char*)"tex_notification_info";
-		plugin = (char*)"system_plugin";
-		break;
-	}
+	if(icon_id >= MAX_RCO_IMAGES) icon_id = 0;
+	char *plugin = (icon_id < 18) ? (char*)"system_plugin" : (char*)"explore_plugin";
+	char *tex = (char*)rco_images[icon_id];
 
 	// custom textures
 	char rco[24], texture[64];

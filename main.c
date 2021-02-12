@@ -313,6 +313,7 @@ static u8 ftp_state = 0;
 static char current_file[STD_PATH_LEN + 1];
 static char cp_path[STD_PATH_LEN + 1];  // cut/copy/paste buffer
 static u8 cp_mode = CP_MODE_NONE;       // 0 = none / 1 = copy / 2 = cut/move
+static s64 file_size(const char* path);
 static void parse_script(const char *script_file);
 static bool script_running = false;
 #endif
@@ -336,6 +337,7 @@ static bool file_exists(const char* path);
 static bool isDir(const char* path);
 static void _file_copy(char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, const char *param);
+static int add_breadcrumb_trail2(char *pbuffer, const char *param);
 
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
@@ -403,6 +405,7 @@ static void get_last_game(char *last_path);
 static void add_game_info(char *buffer, char *templn, u8 is_cpursx);
 static void mute_snd0(bool scan_gamedir);
 
+static bool use_open_path = false;
 static bool from_reboot = false;
 static bool is_busy = false;
 static u8 mount_unk = EMU_OFF;

@@ -101,7 +101,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 		sprintf(dump_file, "/dev_hdd0/dump_%s.bin", param + 10);
 		dump_mem(dump_file, start, (size * _1MB_));
 		strcat(buffer, "<p>Dumped: ");
-		add_breadcrumb_trail(buffer, dump_file);
+		add_breadcrumb_trail2(buffer, dump_file);
 		sprintf(templn, " [" HTML_URL2 "]", "/delete.ps3", dump_file, STR_DELETE); strcat(buffer, templn);
 	}
 }
@@ -239,7 +239,7 @@ view_file:
 	{
 		param += 12; cellFsStat(param, &s);
 		read_file(param, (void*)data, 0x200, address);
-		add_breadcrumb_trail(buffer, param);
+		add_breadcrumb_trail2(buffer, param);
 
 		// MD5
 		buffer += concat(buffer, ": [");

@@ -662,7 +662,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				// show source path
 				strcat(buffer, STR_COPYING); strcat(buffer, " ");
-				add_breadcrumb_trail(buffer, source); strcat(buffer, "<hr>");
+				add_breadcrumb_trail2(buffer, source); strcat(buffer, "<hr>");
 
 				// show image
 				urlenc(_path, target);
@@ -670,7 +670,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 								 _path, enc_dir_name, is_error ? STR_ERROR : "", STR_CPYDEST); strcat(buffer, tempstr);
 
 				// show target path
-				add_breadcrumb_trail(buffer, target); *tempstr = NULL;
+				add_breadcrumb_trail2(buffer, target); *tempstr = NULL;
 
 				if(strstr(target, "/webftp_server")) {sprintf(tempstr, "<HR>%s", STR_SETTINGSUPD);} else
 				if(cp_mode) {char *p = strrchr(_path, '/'); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}

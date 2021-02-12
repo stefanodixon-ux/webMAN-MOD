@@ -457,6 +457,7 @@ static void show_wm_version(char *param)
 	}
 	else
 	{
+		if(!cobra_version) sprintf(cfw_info, "[nonCobra]");
 		sprintf(param,	"%s\n"
 						"%s %s" EDITION, WM_APP_VERSION, fw_version, cfw_info);
 	}

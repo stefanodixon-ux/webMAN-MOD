@@ -23,11 +23,16 @@
 			if(isDir(PKGLAUNCH_DIR)) sys_map_path(PKGLAUNCH_DIR, _path);
 
 			get_value(map_title_id, pos + tid_offset, TITLE_ID_LEN);
-			sprintf(_path, "/dev_hdd0/game/%s", map_title_id);
+			sprintf(_path, "%s/%s", "/dev_hdd0/game", map_title_id);
 			sys_map_path(_path, _path0);
 
-			sys_ppu_thread_sleep(1);
-			launch_app_home_icon();
+			ret = is_app_dir("/dev_hdd0/game", map_title_id);
+
+			if(ret)
+			{
+				sys_ppu_thread_sleep(1);
+				launch_app_home_icon();
+			}
 
 			mount_unk = EMU_GAMEI;
 			goto exit_mount;
@@ -122,6 +127,9 @@
 			mount_unk = EMU_ROMS;
 
 			if(!(webman_config->app_home) && launch_app_home_icon()) {set_app_home(PKGLAUNCH_DIR); ret = true;}
+
+			ret = isDir("/dev_bdvd/PS3_GAME/USRDIR/cores") ||
+				  isDir("/app_home/PS3_GAME/USRDIR/cores");
 
 			goto mounting_done; //goto exit_mount;
 		}

@@ -94,10 +94,11 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 	else
 	{
 		char body[_2KB_];
+		char *filename = (char*)msg;
 
-		if(*msg == '/')
+		if(*filename == '/')
 		{
-			char *cmd = (char*)msg + 1;
+			char *cmd = filename + 1;
 			sprintf(body, "%s : OK", cmd); if(!(webman_config->minfo & 2)) show_msg(body);
 			if(code == CODE_BREADCRUMB_TRAIL || code == CODE_PREVIEW_FILE)
 			{
@@ -106,40 +107,40 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			}
 			if(code == CODE_PREVIEW_FILE)
 			{
-				char *p = strrchr(msg, '.'); if(p) {get_image_file((char*)msg, p - msg);}
-				if(file_exists(msg))
+				char *p = strrchr(filename, '.'); if(p) {get_image_file(filename, p - filename);}
+				if(file_exists(filename))
 				{
 					strcat(body, "<hr><center><img src=\"");
-					strcat(body, msg);
+					strcat(body, filename);
 					strcat(body, "\" height=\"50%\"></center>");
 				}
 			}
 		}
-		else if(islike(msg, "http"))
-			sprintf(body, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE, msg, msg);
+		else if(islike(filename, "http"))
+			sprintf(body, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE, filename, filename);
 #ifdef PKG_HANDLER
 		else if(code == CODE_INSTALL_PKG || code == CODE_DOWNLOAD_FILE)
 		{
 			sprintf(body, "<style>a{%s}</style>%s", HTML_URL_STYLE, (code == CODE_INSTALL_PKG) ? "Installing " : "");
-			char *p = strchr((char*)msg, '\n');
+			char *p = strchr(filename, '\n');
 			if(p)
 			{
 				*p = NULL;
-				if(code == CODE_INSTALL_PKG) add_breadcrumb_trail(body, (char *)msg + 11); else strcat(body, msg);
-				if(code == CODE_DOWNLOAD_FILE || !is_ext(pkg_path, ".p3t")) strcat(body, "<p>To: \0"); add_breadcrumb_trail(body, p + 5);
+				if(code == CODE_INSTALL_PKG) add_breadcrumb_trail(body, filename + 11); else strcat(body, filename);
+				if(code == CODE_DOWNLOAD_FILE || !is_ext(pkg_path, ".p3t")) strcat(body, "<p>To: \0"); add_breadcrumb_trail2(body, p + 5);
 			}
 			else
-				strcat(body, msg);
+				strcat(body, filename);
 
 			code = CODE_HTTP_OK;
 		}
 #endif
 		else
-			sprintf(body, "%s", msg);
+			strcpy(body, msg);
 
 		if(code == CODE_PATH_NOT_FOUND)
 		{
-			strcat(body, "<p>"); add_breadcrumb_trail(body, url + (islike(url, "/mount") ? MOUNT_CMD : 0));
+			strcat(body, "<p>"); add_breadcrumb_trail2(body, url + (islike(url, "/mount") ? MOUNT_CMD : 0));
 		}
 
 		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg(body + 4);
@@ -1270,7 +1271,7 @@ parse_request:
 							sprintf(param, "%s", header); is_binary = true;
 							goto retry_response;
 						}
-						*url = 0; add_breadcrumb_trail(url, header);
+						*url = 0; add_breadcrumb_trail2(url, header);
 					}
 					else
    #endif
@@ -1385,7 +1386,8 @@ parse_request:
 
 					if(klic_polling == KL_GET)
 					{
-						sprintf(buffer, "%s%s\n%s%s", "KLicensee: ", kl, "Content ID: ", (char*)(KLIC_CONTENT_ID_OFFSET));
+						sprintf(buffer, "%s%s\n"
+										"%s%s", "KLicensee: ", kl, "Content ID: ", (char*)(KLIC_CONTENT_ID_OFFSET));
 						show_msg(buffer);
 					}
 
@@ -1450,7 +1452,7 @@ parse_request:
 				else if(param[10] == '$' && param[11] == '\0')
 					{BEEP1; show_persistent_popup = PERSIST, show_info_popup = true;}	// show persistent info ON
 				else if(param[10] == '*' && param[11] == '\0')
-					{BEEP2; show_persistent_popup = 0;}				// show persistent info OFF
+					{if(show_persistent_popup) BEEP2; show_persistent_popup = 0;}		// show persistent info OFF
 				else if(param[10] == '?' && param[11] == '\0')
 					{show_wm_version(param);}						// show webman version
 				else
@@ -1823,7 +1825,7 @@ parse_request:
 				if(stitle_id) cellFsUnlink(FILE_LIST_TXT);
 
 				sprintf(buffer, "Path: ");
-				add_breadcrumb_trail(buffer, path);
+				add_breadcrumb_trail2(buffer, path);
 
 				dir_count = file_count = 0;
 				u64 dir_size = folder_size(path);

@@ -301,11 +301,15 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
+	u8 snd_id = (u8)get_valuen32(param, "&snd=");
 	u8 icon_id = (u8)get_valuen32(param, "&icon=");
+
+	if(snd_id) ps3mapi_sound(snd_id);
 
 	char msg[200]; strcpy(msg, "Hello :)");
 	if(get_param("?msg=", msg, param, 199))
 	{
+		if(icon_id) webman_config->msg_icon = 0; // enable icons
 		vshNotify_WithIcon(icon_id, msg);
 	}
 
@@ -322,11 +326,12 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 					"<table width=\"800\">"
 					"<tr><td class=\"la\"><textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea>"
 					"<br>Icon (0-50): " HTML_NUMBER("icon", "%i", "0", "50")
+					" Sound: (0-9): "  HTML_NUMBER("snd", "%i", "0", "9")
 					"</td></tr>"
 					"<tr><td class=\"ra\">"
 					"<input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr>"
 					"</table></form>",
-					HTML_FORM_METHOD, msg, icon_id, "Send");
+					HTML_FORM_METHOD, msg, icon_id, snd_id, "Send");
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "</td>");
 	concat(buffer, templn);
@@ -960,7 +965,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 							"<td width=\"500\" class=\"la\">",
 							slot, tmp_name); buffer += concat(buffer, templn);
 
-			buffer += add_breadcrumb_trail(buffer, tmp_filename);
+			buffer += add_breadcrumb_trail2(buffer, tmp_filename);
 
 			sprintf(templn, "</td>"
 							"<td width=\"100\" class=\"ra\">"
@@ -1146,7 +1151,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						 "<td width=\"500\" class=\"la\">",
 						slot, tmp_name); buffer += concat(buffer, templn);
 
-				buffer += add_breadcrumb_trail(buffer, tmp_filename);
+				buffer += add_breadcrumb_trail2(buffer, tmp_filename);
 
 				sprintf(templn, "</td>"
 						 "<td width=\"100\" class=\"ra\">"
