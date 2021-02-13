@@ -76,14 +76,15 @@ static void make_fb_xml(void)
 		u16 size = sprintf(myxml, "%s" // XML_HEADER
 								  "<View id=\"seg_fb\">"
 								  "<Attributes>"
-								  "<Table key=\"mgames\">%s"
+								  "<Table key=\"mgames\">"
+								  "%s" // XML_PAIR( icon / icon_rsc )
 								  XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
 								  XML_PAIR("ingame","disable")
-								  XML_PAIR("title","%s%s")
-								  XML_PAIR("info","%s")
+								  XML_PAIR("title","%s%s") // STR_MYGAMES, SUFIX2(profile)
+								  XML_PAIR("info","%s") // STR_LOADGAMES
 								  "</Table>"
 								//"</Attributes><Items>"
-								  "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s",
+								  "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
 								//"</Items></View>"
 								//"</XMBML>"
 								  XML_HEADER,
