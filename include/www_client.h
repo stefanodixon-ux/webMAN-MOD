@@ -3,6 +3,7 @@
 #define CODE_HTTP_OK            200
 #define CODE_BAD_REQUEST        400
 #define CODE_PATH_NOT_FOUND     404
+#define CODE_NOT_IMPLEMENTED    501
 #define CODE_SERVER_BUSY        503
 #define CODE_VIRTUALPAD        1200
 #define CODE_INSTALL_PKG       1201
@@ -109,7 +110,8 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			}
 			if(code == CODE_PREVIEW_FILE)
 			{
-				char *p = strrchr(filename, '.'); if(p) {get_image_file(filename, p - filename);}
+				char *p = strrchr(filename, '.');
+				if(p) get_image_file(filename, p - filename); else strcat(filename, "/PS3_GAME/ICON0.PNG");
 				if(file_exists(filename))
 				{
 					strcat(body, "<hr><center><img src=\"");
@@ -2226,9 +2228,16 @@ parse_request:
 				// /unlocksave.ps3<path>  fix PARAM.SFO in savedata folder
 
 				char *savedata_path = param + 15;
-				scan(savedata_path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);
+				if(*savedata_path != '/') sprintf(savedata_path, "%s/home/%08i", drives[0], xsetting_CC56EB2D()->GetCurrentUserNumber());
 
-				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				if(file_exists(savedata_path))
+				{
+					scan(savedata_path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);
+					keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				}
+				else
+					keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Path not found");
+
 				goto exit_handleclient_www;
 			}
  #endif
@@ -2242,7 +2251,10 @@ parse_request:
 				char *attrib = strstr(game_path, "&attrib=");
 
 				rlabel = (char*)STR_FIXING;
-				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				if(file_exists(game_path))
+					keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, game_path);
+				else
+					keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Path not found");
 
 				if(attrib)
 				{
@@ -2258,6 +2270,7 @@ parse_request:
 				else
 					fix_game(game_path, titleID, FIX_GAME_FORCED); // fix game folder
 
+				vshNotify_WithIcon(33, "Fixed");
 				goto exit_handleclient_www;
 			}
  #endif
@@ -2281,7 +2294,8 @@ parse_request:
  #ifdef USE_NTFS
 			// /mount.ps3/dev_ntfs* => convert ntfs path to cached path
 			if(islike(param, "/mount") && is_ntfs_path(param + 10))
-			{
+
+{
 				char *filename = param + 10;
 				strcpy(header, filename);
 				int flen = get_name(filename, header, GET_WMTMP);
@@ -2416,7 +2430,7 @@ retry_response:
 
 					if(ps3ntfs_stat(param + 5, &bufn) < 0)
 					{
-						keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found");
+						keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Path not found");
 						goto exit_handleclient_www;
 					}
 
@@ -2508,11 +2522,13 @@ retry_response:
 				else
 				{
 					int code =  is_busy ?				 CODE_SERVER_BUSY :
+								strstr(param, ".ps3" ) ? CODE_NOT_IMPLEMENTED :
 								islike(param, "/dev_") ? CODE_PATH_NOT_FOUND :
 														 CODE_BAD_REQUEST;
 
 					http_response(conn_s, header, param, code, is_busy ? "503 Server is Busy" :
-										 (code == CODE_PATH_NOT_FOUND) ? "404 Not found" :
+										 (code == CODE_NOT_IMPLEMENTED)? "501 Not implemented" :
+										 (code == CODE_PATH_NOT_FOUND) ? "404 Path not found" :
 																		 "400 Bad Request");
 
 					keep_alive = 0;
@@ -3323,7 +3339,7 @@ retry_response:
 								}
 								else
 								{
-									keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Not found"); mount_app_home = is_busy = false;
+									keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Path not found"); mount_app_home = is_busy = false;
 									goto exit_handleclient_www;
 								}
 							}
