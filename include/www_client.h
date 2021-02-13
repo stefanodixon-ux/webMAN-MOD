@@ -21,8 +21,6 @@ static bool css_exists = false;
 static bool common_js_exists = false;
 #endif
 
-static char *rlabel = NULL;
-
 #ifdef SYS_ADMIN_MODE
 static u8 check_password(char *param)
 {
@@ -82,7 +80,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 {
 	if(conn_s == (int)WM_FILE_REQUEST) return 0;
 
-	u16 slen; *header = NULL;
+	u16 slen;
 
 	if(code == CODE_VIRTUALPAD || code == CODE_GOBACK || code == CODE_CLOSE_BROWSER)
 	{
@@ -98,6 +96,9 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 	{
 		char body[_2KB_];
 		char *filename = (char*)msg;
+		char *label = header; // used by CODE_PREVIEW_FILE
+
+		if(code != CODE_PREVIEW_FILE) *header = NULL;
 
 		if(*filename == '/')
 		{
@@ -106,7 +107,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			if(code == CODE_BREADCRUMB_TRAIL || code == CODE_PREVIEW_FILE)
 			{
 				char *p = strchr(filename, '/');
-				if(p) {body[p - filename] = NULL; if(rlabel) {strcat(body, rlabel); strcat(body, ": ");} add_breadcrumb_trail(body, p);}
+				if(p) {body[p - filename] = NULL; add_breadcrumb_trail2(body, label, p);}
 			}
 			if(code == CODE_PREVIEW_FILE)
 			{
@@ -114,12 +115,19 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 				if(p) get_image_file(filename, p - filename); else strcat(filename, "/PS3_GAME/ICON0.PNG");
 				if(file_exists(filename))
 				{
-					strcat(body, "<hr><center><img src=\"");
-					strcat(body, filename);
-					strcat(body, "\" height=\"50%\"></center>");
+					char *next = strstr(cp_path, "?next");
+					if(next)
+					{
+						add_url(body, "<a href=\"", cp_path, "\">");
+					}
+					add_url(body, "<hr><center><img src=\"", filename, "\" height=\"50%\" border=0>");
+					if(next)
+					{
+						strcpy(next, "?prev"); // change url to ?prev
+						add_url(body, "<a href=\"", cp_path, "\">"); *cp_path = 0;
+					}
 				}
 			}
-			rlabel = NULL;
 		}
 		else if(islike(filename, "http"))
 			sprintf(body, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE, filename, filename);
@@ -132,7 +140,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			{
 				*p = NULL;
 				if(code == CODE_INSTALL_PKG) add_breadcrumb_trail(body, filename + 11); else strcat(body, filename);
-				if(code == CODE_DOWNLOAD_FILE || !is_ext(pkg_path, ".p3t")) strcat(body, "<p>To: \0"); add_breadcrumb_trail2(body, p + 5);
+				if(code == CODE_DOWNLOAD_FILE || !is_ext(pkg_path, ".p3t")) add_breadcrumb_trail2(body, "<p>To:", p + 5);
 			}
 			else
 				strcat(body, filename);
@@ -145,7 +153,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 		if(code == CODE_PATH_NOT_FOUND)
 		{
-			strcat(body, "<p>"); add_breadcrumb_trail2(body, url + (islike(url, "/mount") ? MOUNT_CMD : 0));
+			add_breadcrumb_trail2(body, "<p>", url + (islike(url, "/mount") ? MOUNT_CMD : 0));
 		}
 
 		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg(body + 4);
@@ -652,6 +660,7 @@ parse_request:
 	#endif
 	#ifdef PS3_BROWSER
 									|| islike(param, "/browser.ps3")
+									|| islike(param, "/xmb.ps3")
 	#endif
 									|| islike(param, "/restart.ps3")
 									|| islike(param, "/shutdown.ps3"));
@@ -1026,38 +1035,39 @@ parse_request:
  #endif // #ifdef PKG_HANDLER
 
  #ifdef PS3_BROWSER
-			if(islike(param, "/browser.ps3"))
+			if(islike(param, "/browser.ps3") || islike(param, "/xmb.ps3"))
 			{
-				// /browser.ps3$rsx_pause                  pause rsx processor
-				// /browser.ps3$rsx_continue               continue rsx processor
-				// /browser.ps3$block_servers              block url of PSN servers in lv2
-				// /browser.ps3$restore_servers            restore url of PSN servers in lv2
-				// /browser.ps3$show_idps                  show idps/psid (same as R2+O)
-				// /browser.ps3$xregistry(<id>)            show value by id from xregistry.sys
-				// /browser.ps3$xregistry(<id>)=<value>    update value by id in xregistry.sys
-				// /browser.ps3$ingame_screenshot          enable screenshot in-game on CFW without the feature (same as R2+O)
-				// /browser.ps3$disable_syscalls           disable CFW syscalls
-				// /browser.ps3$toggle_rebug_mode          toggle rebug mode (swap VSH REX/DEX)
-				// /browser.ps3$toggle_normal_mode         toggle normal mode (swap VSH REX/CEX)
-				// /browser.ps3$toggle_debug_menu          toggle debug menu (DEX/CEX)
-				// /browser.ps3$toggle_cobra               toggle Cobra (swap stage2)
-				// /browser.ps3$toggle_ps2emu              toggle ps2emu
-				// /browser.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
-				// /browser.ps3$disable_classic_ps2_mode   deletes 'classic_ps2_mode' to enable PS2 ISO in PS2 Launcher (old rebug)
-				// /browser.ps3$screenshot_xmb<path>       capture XMB screen
-				// /browser.ps3$screenshot_xmb?show        capture XMB screen show
-				// /browser.ps3$screenshot_xmb?show?fast   capture XMB screen (25% smaller)
-				// /browser.ps3?<url>                      open url on PS3 browser
-				// /browser.ps3/<webman_cmd>               execute webMAN command on PS3 browser
-				// /browser.ps3$<explore_plugin_command>   execute explore_plugin command on XMB (http://www.psdevwiki.com/ps3/Explore_plugin#Example_XMB_Commands)
-				// /browser.ps3*<xmb_plugin_command>       execute xmb_plugin commands on XMB (http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23_Examples)
-				// /browser.ps3$slaunch                    start slaunch
-				// /browser.ps3$vsh_menu                   start vsh_menu
-				// /browser.ps3$home                       go to webMAN Games
-				// /browser.ps3$home*                      go to webMAN Games + reload_category game
-				// /browser.ps3$music                      play xmb music
+				// /browser.ps3?<url>                  open url on PS3 browser
+				// /xmb.ps3$rsx_pause                  pause rsx processor
+				// /xmb.ps3$rsx_continue               continue rsx processor
+				// /xmb.ps3$block_servers              block url of PSN servers in lv2
+				// /xmb.ps3$restore_servers            restore url of PSN servers in lv2
+				// /xmb.ps3$show_idps                  show idps/psid (same as R2+O)
+				// /xmb.ps3$xregistry(<id>)            show value by id from xregistry.sys
+				// /xmb.ps3$xregistry(<id>)=<value>    update value by id in xregistry.sys
+				// /xmb.ps3$disable_syscalls           disable CFW syscalls
+				// /xmb.ps3$toggle_rebug_mode          toggle rebug mode (swap VSH REX/DEX)
+				// /xmb.ps3$toggle_normal_mode         toggle normal mode (swap VSH REX/CEX)
+				// /xmb.ps3$toggle_debug_menu          toggle debug menu (DEX/CEX)
+				// /xmb.ps3$toggle_cobra               toggle Cobra (swap stage2)
+				// /xmb.ps3$toggle_ps2emu              toggle ps2emu
+				// /xmb.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
+				// /xmb.ps3$disable_classic_ps2_mode   deletes 'classic_ps2_mode' to enable PS2 ISO in PS2 Launcher (old rebug)
+				// /xmb.ps3/<webman_cmd>               execute webMAN command on PS3 browser
+				// /xmb.ps3$<explore_plugin_command>   execute explore_plugin command on XMB (http://www.psdevwiki.com/ps3/Explore_plugin#Example_XMB_Commands)
+				// /xmb.ps3*<xmb_plugin_command>       execute xmb_plugin commands on XMB (http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23_Examples)
+				// /xmb.ps3$slaunch                    start slaunch
+				// /xmb.ps3$vsh_menu                   start vsh_menu
+				// /xmb.ps3$home                       go to webMAN Games
+				// /xmb.ps3$home*                      go to webMAN Games + reload_category game
+				// /xmb.ps3$music                      play xmb music
+				// /xmb.ps3$screenshot<path>           capture XMB screen
+				// /xmb.ps3$screenshot?show            capture XMB screen show
+				// /xmb.ps3$screenshot?show?fast       capture XMB screen (25% smaller)
+				// /xmb.ps3$ingame_screenshot          enable screenshot in-game on CFW without the feature (same as R2+O)
 
-				char *param2 = param + 12, *url = param + 13;
+				char *param2 = param + (islike(param, "/xmb.ps3") ? 8 : 12);
+				char *url = param2 + 1;
 
 				if(islike(param2, "$home"))
 				{
@@ -1259,11 +1269,11 @@ parse_request:
 					else
    #endif
    #ifdef XMB_SCREENSHOT
-					if(islike(param2, "$screenshot_xmb"))
+					if(islike(param2, "$screenshot"))
 					{
-						char *filename = param2 + 15;
-						bool fast = get_flag(filename, "?fast");
-						bool show = get_flag(filename, "?show");
+						char *filename = param2 + 11; if(strstr(filename, "/")) filename = strstr(filename, "/");
+						bool fast = get_flag(param2, "?fast");
+						bool show = get_flag(param2, "?show");
 
 						if(show && (*filename != '/'))
 							sprintf(header, "%s/screenshot.bmp", WMTMP);
@@ -1276,7 +1286,7 @@ parse_request:
 							sprintf(param, "%s", header); is_binary = true;
 							goto retry_response;
 						}
-						*url = 0; add_breadcrumb_trail2(url, header);
+						*url = 0; add_breadcrumb_trail2(url, NULL, header);
 					}
 					else
    #endif
@@ -1557,25 +1567,38 @@ parse_request:
  #ifdef VISUALIZERS
 			else if(islike(param, "/wallpaper.ps3") || islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3") || islike(param, "/coldboot.ps3"))
 			{
+				// /wallpaper.ps3?random
+				// /wallpaper.ps3           show selected
+				// /wallpaper.ps3?next      select next id
+				// /wallpaper.ps3?prev      select prev id
+				// /wallpaper.ps3?<id>      set id 1-254 (.jpg)
+				// /wallpaper.ps3?disable   use dev_flash (id=255)
+
+				u8 id;
 				u8 res_id = (param[1] == 'w') ? 0 :
 							(param[1] == 'e') ? 1 :
 							(param[4] == 'y') ? 2 :
 							(param[1] == 'l') ? 3 : 4; // 0 = wallpaper, 1 = earth, 2 = canyon, 3 = lines, 4 = coldboot
 
-				char *value = strstr(param, ".ps3") + 4; if(*value) ++value;
+				char *value = strstr(param, ".ps3") + 4;
+
+				id = *value; *value = 0; sprintf(cp_path, "%s?next", param); *value = id; if(*value) ++value;
 
 				if(value)
 				{
-					u8 id = (u8)val(value); if(*value == 'd') id = 255;
+					id = (u8)val(value);
+					if(*value == 'n') id = ++(webman_config->resource_id[res_id]);
+					if(*value == 'p') id = --(webman_config->resource_id[res_id]);
+					if(*value == 'd') id = 255;
 					res_id = map_vsh_resource(res_id, id, param, !value[0]); // set resource (or query if id == 0)
 				}
 				else
 					res_id = map_vsh_resource(res_id, 0, param, 1); // random resource
 
 				if(!res_id)
-					rlabel = (char*)"Random";
+					sprintf(header, "Random");
 				else
-					rlabel = (char*)"Fixed";
+					sprintf(header, "Fixed");
 
 				keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 				goto exit_handleclient_www;
@@ -1835,8 +1858,7 @@ parse_request:
 
 				if(stitle_id) cellFsUnlink(FILE_LIST_TXT);
 
-				sprintf(buffer, "Path: ");
-				add_breadcrumb_trail2(buffer, path);
+				*buffer = NULL; add_breadcrumb_trail2(buffer, "Path:", path);
 
 				dir_count = file_count = 0;
 				u64 dir_size = folder_size(path);
@@ -2250,7 +2272,8 @@ parse_request:
 				char *game_path = param + 12, titleID[10];
 				char *attrib = strstr(game_path, "&attrib=");
 
-				rlabel = (char*)STR_FIXING;
+				sprintf(header, STR_FIXING);
+
 				if(file_exists(game_path))
 					keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, game_path);
 				else

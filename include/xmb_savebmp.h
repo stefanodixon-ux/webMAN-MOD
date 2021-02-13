@@ -62,7 +62,7 @@ static void init_graphic(void)
 
 static void saveBMP(char *path, bool notify_bmp, bool small)
 {
-	if(!is_ext(path, ".bmp"))
+	if((*path != '/') || !is_ext(path, ".bmp"))
 	{
 		// current date/time
 		CellRtcDateTime t;

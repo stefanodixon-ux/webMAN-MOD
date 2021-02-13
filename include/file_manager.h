@@ -501,9 +501,10 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 	return slen + (buffer - pbuffer);
 }
 
-static int add_breadcrumb_trail2(char *pbuffer, const char *param)
+static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param)
 {
 	use_open_path = true;
+	if(label) {strcat(pbuffer, label); strcat(pbuffer, " ");}
 	return add_breadcrumb_trail(pbuffer, param);
 }
 
@@ -615,7 +616,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 		usb = get_default_usb_drive(0);
 #endif
-		_concat(&sout,  "<style>.sfo{position:absolute;top:300px;right:10px;font-size:14px}td+td{text-align:right}</style>"
+		_concat(&sout,  "<style>.sfo{position:absolute;top:308px;right:10px;font-size:14px}td+td{text-align:right}</style>"
 						"<table id=\"files\" class=\"propfont\">");
 /*
 		if(file_exists("/dev_hdd0/xmlhost/game_plugin/sort.js"))

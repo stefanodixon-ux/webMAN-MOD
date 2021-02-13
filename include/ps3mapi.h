@@ -965,7 +965,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 							"<td width=\"500\" class=\"la\">",
 							slot, tmp_name); buffer += concat(buffer, templn);
 
-			buffer += add_breadcrumb_trail2(buffer, tmp_filename);
+			buffer += add_breadcrumb_trail(buffer, tmp_filename);
 
 			sprintf(templn, "</td>"
 							"<td width=\"100\" class=\"ra\">"
@@ -1151,7 +1151,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						 "<td width=\"500\" class=\"la\">",
 						slot, tmp_name); buffer += concat(buffer, templn);
 
-				buffer += add_breadcrumb_trail2(buffer, tmp_filename);
+				buffer += add_breadcrumb_trail(buffer, tmp_filename);
 
 				sprintf(templn, "</td>"
 						 "<td width=\"100\" class=\"ra\">"

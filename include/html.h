@@ -365,6 +365,13 @@ static size_t utf8dec(char *dst, char *src, u8 cpy2src)
 	return j;
 }
 */
+static void add_url(char *body, const char *prefix, const char *url, const char *sufix)
+{
+	strcat(body, prefix);
+	strcat(body, url);
+	strcat(body, sufix);
+}
+
 static size_t add_radio_button(const char *name, int value, const char *id, const char *label, const char *sufix, bool checked, char *buffer)
 {
 	char templn[MAX_LINE_LEN];
