@@ -103,28 +103,30 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		if(*filename == '/')
 		{
 			char *cmd = filename + 1;
-			sprintf(body, "%s : OK", cmd); if(!(webman_config->minfo & 2)) show_msg(body);
+			sprintf(body, "%s : OK", cmd);
 			if(code == CODE_BREADCRUMB_TRAIL || code == CODE_PREVIEW_FILE)
 			{
 				char *p = strchr(filename, '/');
 				if(p) {body[p - filename] = NULL; add_breadcrumb_trail2(body, label, p);}
 			}
+			else if(!(webman_config->minfo & 2)) show_msg(body);
+
 			if(code == CODE_PREVIEW_FILE)
 			{
 				char *p = strrchr(filename, '.');
 				if(p) get_image_file(filename, p - filename); else strcat(filename, "/PS3_GAME/ICON0.PNG");
 				if(file_exists(filename))
 				{
-					char *next = strstr(cp_path, "?next");
+					char *next = strstr(html_base_path, "?next");
 					if(next)
 					{
-						add_url(body, "<a href=\"", cp_path, "\">");
+						add_url(body, "<a href=\"", html_base_path, "\">");
 					}
 					add_url(body, "<hr><center><img src=\"", filename, "\" height=\"50%\" border=0>");
 					if(next)
 					{
 						strcpy(next, "?prev"); // change url to ?prev
-						add_url(body, "<a href=\"", cp_path, "\">"); *cp_path = 0;
+						add_url(body, "<a href=\"", html_base_path, "\">"); *html_base_path = 0;
 					}
 				}
 			}
@@ -1582,18 +1584,23 @@ parse_request:
 
 				char *value = strstr(param, ".ps3") + 4;
 
-				id = *value; *value = 0; sprintf(cp_path, "%s?next", param); *value = id; if(*value) ++value;
+				// create url ?next
+				{id = *value; *value = 0; sprintf(html_base_path, "%s?next", param); *value = id;}
 
-				if(value)
+				if(*value) ++value;
+
+				if(*value == 'r') {map_vsh_resource(res_id, 0, param, true); *value = 0;}
+
+				if(*value)
 				{
 					id = (u8)val(value);
-					if(*value == 'n') id = ++(webman_config->resource_id[res_id]);
-					if(*value == 'p') id = --(webman_config->resource_id[res_id]);
-					if(*value == 'd') id = 255;
-					res_id = map_vsh_resource(res_id, id, param, !value[0]); // set resource (or query if id == 0)
+					if(*value == 'n') id = ++(webman_config->resource_id[res_id]);	// ?next
+					if(*value == 'p') id = --(webman_config->resource_id[res_id]);	// ?prev
+					if(*value == 'd') id = DEFAULT_RES;								// ?default or ?disable
+					res_id = map_vsh_resource(res_id, id, param, true);				// set resource (or query if id == 0)
 				}
 				else
-					res_id = map_vsh_resource(res_id, 0, param, 1); // random resource
+					res_id = map_vsh_resource(res_id, MAP_SELECTED, param, false);	// random resource
 
 				if(!res_id)
 					sprintf(header, "Random");

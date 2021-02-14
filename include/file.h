@@ -1401,7 +1401,11 @@ static bool do_custom_combo(const char *filename)
 #endif
 
 #ifdef VISUALIZERS
-static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
+
+#define MAP_SELECTED	0x00
+#define DEFAULT_RES		0xFF
+
+static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 {
 	const char *hdd_path =  (res_id == 0) ? "/dev_hdd0/tmp/wallpaper": // 0
 							(res_id == 1) ? "/dev_hdd0/tmp/earth"    : // 1
@@ -1416,19 +1420,19 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 
 	if(isDir(hdd_path))
 	{
-		if(!id && inc)		// id=0 -> query
+		if(!set && !id)	// MAP_SELECTED
 		{
 			id = webman_config->resource_id[res_id];
 		}
 
 		u8 _id;
-		if(inc && !id)	// random
+		if(!id)	// random
 		{
 			CellRtcTick nTick; cellRtcGetCurrentTick(&nTick);
 			_id = nTick.tick % 0x100;
 		}
 		else
-			_id = id;	// set
+			_id = id;	// fixed
 
 		do
 		{
@@ -1438,7 +1442,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id);
 			else
 				sprintf(param, "%s/%i.qrc", hdd_path, _id);
-			if(id == 0xFF) break; _id /= 2;
+			if(id == DEFAULT_RES) break; _id /= 2;
 		}
 		while(_id && not_exists(param));
 
@@ -1460,11 +1464,11 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, bool inc)
 		}
 		else if(res_id)
 		{
-			strcpy(param, res_path); if(id != 0xFF) id = 0;
+			strcpy(param, res_path); if(id != DEFAULT_RES) id = 0;
 			sys_map_path(param, NULL);
 		}
 
-		if(webman_config->resource_id[res_id] != id)
+		if(set && (webman_config->resource_id[res_id] != id))
 		{
 			webman_config->resource_id[res_id] = id;
 

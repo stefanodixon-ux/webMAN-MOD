@@ -147,9 +147,9 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);
 		sys_map_path("/dev_flash/vsh/resource/qgl/lines.qrc", NULL);
 		#ifdef VISUALIZERS
-		map_vsh_resource(0, 0, param, 2); // wallpaper.png
-		map_vsh_resource(1, 0, param, 2); // earth.qrc
-		map_vsh_resource(2, 0, param, 2); // canyon.qrc
+		map_vsh_resource(0, MAP_SELECTED, param, false); // wallpaper.png
+		map_vsh_resource(1, MAP_SELECTED, param, false); // earth.qrc
+		map_vsh_resource(2, MAP_SELECTED, param, false); // canyon.qrc
 		#endif
 		#endif
 
