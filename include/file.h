@@ -1329,19 +1329,19 @@ static u64 syscall_837(const char *device, const char *format, const char *point
 }
 */
 
-static void mount_device(const char *dev_name, const char *sys_dev_name, const char *file_system)
+static void mount_device(const char *dev_path, const char *dev_name, const char *file_system)
 {
 	if(!sys_admin) return;
 
-	if(!dev_name || isDir(dev_name)) return;
+	if(!dev_path || isDir(dev_path)) return;
 
-	if(islike(dev_name, "/dev_blind"))
+	if(islike(dev_path, "/dev_blind"))
 		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_IOS:BUILTIN_FLSH1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_blind", 0, 0, 0, 0, 0);}
-	else if(islike(dev_name, "/dev_hdd1"))
+	else if(islike(dev_path, "/dev_hdd1"))
 		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_UTILITY:HDD1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_hdd1", 0, 0, 0, 0, 0);}
-	else if(!sys_dev_name || !file_system) return;
-	else if((*dev_name == '/') && islike(sys_dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
-		{system_call_8(SC_FS_MOUNT, (u32)sys_dev_name, (u32)file_system, (u32)dev_name, 0, 0, 0, 0, 0);}
+	else if(!dev_name || !file_system) return;
+	else if((*dev_path == '/') && islike(dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
+		{system_call_8(SC_FS_MOUNT, (u32)dev_name, (u32)file_system, (u32)dev_path, 0, 0, 0, 0, 0);}
 }
 
 static void enable_dev_blind(const char *msg)

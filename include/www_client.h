@@ -3338,10 +3338,10 @@ retry_response:
 						{
 							is_mounting = false;
 
-							char *dev_name = (param + 18); // /mount.ps3/unmount<dev_path>
-							if(*dev_name == '/')
+							char *dev_path = (param + 18); // /mount.ps3/unmount<dev_path>
+							if(*dev_path == '/')
 							{
-								if(isDir(dev_name)) {system_call_3(SC_FS_UMOUNT, (uint32_t)dev_name, 0, 1);}
+								if(isDir(dev_path)) {system_call_3(SC_FS_UMOUNT, (uint32_t)dev_path, 0, 1);}
 								sprintf(param, "/"); is_binary = FOLDER_LISTING; mount_app_home = is_busy = false;
 								goto html_response;
 							}
@@ -3351,20 +3351,19 @@ retry_response:
 							strcpy(templn, param);
 
 							// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
-							char *dev_name = (templn + 10), *sys_dev_name = NULL, *fs = (char*)"CELL_FS_FAT";
-							char *pos1 = strstr(dev_name, "&name="), *pos2 = strstr(dev_name, "&fs=");
-							if(pos1) {*pos1 = 0, sys_dev_name = (pos1 + 6);}
-							if(pos2) {*pos2 = 0, fs = (pos2 + 4);}
+							char *dev_path = (templn + 10);
+							char *dev_name = strstr(dev_path, "&name="); if(dev_name) {*dev_name = 0, dev_name += 6;}
+							char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 4;} else fs = (char*)"CELL_FS_FAT\0";
 
-							if(not_exists(dev_name) || sys_dev_name)
+							if(not_exists(dev_path) || dev_name)
 							{
-								mount_device(dev_name, sys_dev_name, fs);
+								mount_device(dev_path, dev_name, fs);
 
 								if(islike(param, "/copy.ps3")) ;
 
-								else if(isDir(dev_name))
+								else if(isDir(dev_path))
 								{
-									strcpy(param, dev_name); is_binary = FOLDER_LISTING; mount_app_home = is_busy = false;
+									strcpy(param, dev_path); is_binary = FOLDER_LISTING; mount_app_home = is_busy = false;
 									goto html_response;
 								}
 								else
