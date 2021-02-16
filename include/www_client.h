@@ -1746,7 +1746,7 @@ parse_request:
 				goto html_response;
 			}
 			else
-			if(islike(param, "/write.ps3") || islike(param, "/write_ps3"))
+			if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3"))
 			{
 				// /write.ps3<path>&t=<text> use | for line break (create text file)
 				// /write_ps3<path>&t=<text> use | for line break (add text to file)
@@ -1845,8 +1845,14 @@ parse_request:
 							save_file(filename, data, APPEND_TEXT); // write_ps3 (add line)
 					}
 				}
+				else if(islike(param, "/trunc.ps3"))
+				{
+					save_file(filename, "", SAVE_ALL);
+				}
 
-				keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
+				header[10] = NULL;
+
+				keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, filename);
 				goto exit_handleclient_www;
 			}
 			if(islike(param, "/stat.ps3") || islike(param, "/chmod.ps3"))
