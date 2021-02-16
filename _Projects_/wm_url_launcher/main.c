@@ -92,6 +92,15 @@ static void urlenc(char *dst, char *src)
 	sprintf(src, "%s", dst);
 }
 
+static bool isdir(const char *path)
+{
+	struct stat s;
+	if(stat(path, &s) == 0)
+		return ((s.st_mode & S_IFDIR) != 0);
+	else
+		return 0;
+}
+
 static bool not_exists(const char *path)
 {
 	struct stat s;
@@ -170,6 +179,13 @@ int main(int argc, const char* argv[])
 	}
 	else
 		return 0; // launch.txt was not found
+
+	if(*param && isdir(path) && strcasestr(param, ".zip") != NULL)
+	{
+		strcpy(url, path); if(strrchr(url, '/')) { *(strrchr(url, '/')) = 0; }
+		zip_directory(url, path, param);
+		return 0;
+	}
 
 	//////////////
 	// process URL

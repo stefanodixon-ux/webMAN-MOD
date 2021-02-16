@@ -43,14 +43,17 @@ static int mkdirs(char* path, int dlen, int plen)
 
 static inline uint64_t min64(uint64_t a, uint64_t b)
 {
-    return a < b ? a : b;
+	return a < b ? a : b;
 }
 
 static void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *zipper)
 {
 	char fullname[256];
 	struct dirent *dirp;
-	int len = strlen(startdir) + 1;
+
+	int ilen = strlen(inputdir);
+	if(ilen <= 0) return;
+
 	DIR *dp = opendir(inputdir);
 
 	if (!dp) {
@@ -58,8 +61,14 @@ static void walk_zip_directory(const char* startdir, const char* inputdir, struc
 		return;
 	}
 
-	if (strlen(inputdir) > len)
-		if (zip_add_dir(zipper, inputdir+len) < 0)
+	int slen = strlen(startdir);
+	if(slen <= 0) return;
+
+	if(inputdir[ilen - 1] != '/') {strcat(inputdir + ilen, "/"); ilen++;}
+	if(startdir[slen - 1] != '/') {strcat(startdir + slen, "/"); slen++;}
+
+	if (ilen > slen)
+		if (zip_add_dir(zipper, inputdir+slen) < 0)
 			return;
 
 	while ((dirp = readdir(dp)) != NULL) {
@@ -67,7 +76,6 @@ static void walk_zip_directory(const char* startdir, const char* inputdir, struc
 			snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
 
 			if (dirp->d_type == DT_DIR) {
-				strcat(fullname, "/");
 				walk_zip_directory(startdir, fullname, zipper);
 			} else {
 				struct zip_source *source = zip_source_file(zipper, fullname, 0, 0);
@@ -75,7 +83,7 @@ static void walk_zip_directory(const char* startdir, const char* inputdir, struc
 					//LOG("Failed to source file to zip: %s", fullname);
 					continue;
 				}
-				if (zip_add(zipper, &fullname[len], source) < 0) {
+				if (zip_add(zipper, &fullname[slen], source) < 0) {
 					zip_source_free(source);
 					//LOG("Failed to add file to zip: %s", fullname);
 				}

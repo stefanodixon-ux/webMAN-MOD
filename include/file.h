@@ -228,6 +228,11 @@ static char *get_ext(const char *path)
 	return (char *)(path + plen);
 }
 
+static char *get_filename(const char *path)
+{
+	return strrchr(path, '/'); // return with slash
+}
+
 static bool is_ext(const char *path, const char *ext)
 {
 	return !extcasecmp(path, ext, 4);
@@ -1483,7 +1488,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 static void copy_rom_media(char *src_path)
 {
 	// get rom name & file extension
-	char *name = strrchr(src_path, '/');
+	char *name = get_filename(src_path);
 	if(!name) return;
 
 	char dst_path[64];
@@ -1505,7 +1510,7 @@ static void copy_rom_media(char *src_path)
 														   {file_copy((char*)PKGLAUNCH_ICON, dst_path, COPY_WHOLE_FILE);}}}
 		}}}
 
-		strcpy(path, src_path); char *path_ = strrchr(path, '/') + 1;
+		strcpy(path, src_path); char *path_ = get_filename(path) + 1;
 
 		const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
 		for(u8 i = 0; i < 5; i++)

@@ -326,7 +326,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// -----------------
 			// get display icon
 			// -----------------
-			char *filename = strrchr(_path, '/'), *icon = tempstr;
+			char *filename = get_filename(_path), *icon = tempstr;
 			{
 				char title_id[TITLEID_LEN], *d_name; *icon = *title_id = NULL;
 				u8  f0 = strstr(filename, ".ntfs[") ? NTFS : 0, is_dir = isDir(source),
@@ -413,7 +413,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							if(not_exists(target))
 							{
 								sprintf(tempstr, "%s", source);
-								strcpy(strrchr(tempstr, '/'), "/stage2.bin");
+								strcpy(get_filename(tempstr), "/stage2.bin");
 								if(file_exists(tempstr)) _file_copy(tempstr, target);
 							}
 
@@ -672,7 +672,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				add_breadcrumb_trail2(buffer, NULL, target); *tempstr = NULL;
 
 				if(strstr(target, "/webftp_server")) {sprintf(tempstr, "<HR>%s", STR_SETTINGSUPD);} else
-				if(cp_mode) {char *p = strrchr(_path, '/'); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
+				if(cp_mode) {char *p = get_filename(_path); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
 
 				if(is_error) {vshNotify_WithIcon(23, STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
 			}
@@ -1066,7 +1066,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 
 		cellFsUnlink(DEL_CACHED_ISO);
 
-		strcat(target, strrchr(source, '/')); // add file name
+		strcat(target, get_filename(source)); // add file name
 
 		if((copy_in_progress || fix_in_progress) == false && not_exists(target))
 		{
@@ -1523,7 +1523,7 @@ exit_mount:
 		char msg[STD_PATH_LEN + 48], *pos;
 
 		// get file name (without path)
-		pos = strrchr(_path, '/');
+		pos = get_filename(_path);
 		sprintf(msg, "\"%s", pos + 1);
 
 		// remove file extension

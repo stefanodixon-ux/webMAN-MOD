@@ -1,10 +1,5 @@
 #define ENABLE_INGAME_SCREENSHOT	((int*)getNIDfunc("vshmain",0x981D7E9F,0))[0] -= 0x2C;
 
-static int (*vshmain_is_ss_enabled)(void) = NULL;
-static int (*set_SSHT_)(int) = NULL;
-
-static int opd[2] = {0, 0};
-
 #define EXPLORE_CLOSE_ALL   3
 
 static void * getNIDfunc(const char * vsh_module, u32 fnid, s32 offset)
@@ -219,6 +214,11 @@ static int get_game_info(void)
 }
 
 #ifndef LITE_EDITION
+static int (*vshmain_is_ss_enabled)(void) = NULL;
+static int (*set_SSHT_)(int) = NULL;
+
+static int opd[2] = {0, 0};
+
 static void enable_ingame_screenshot(void)
 {
 	vshmain_is_ss_enabled = getNIDfunc("vshmain", 0x981D7E9F, 0); //is screenshot enabled?

@@ -368,7 +368,7 @@
 					//mount_unk = netiso_args.emu_mode = EMU_DVD;
 					if(is_ext(netpath, ".pkg"))
 					{
-						pkg_slash = strrchr(netpath, '/'); if(pkg_slash) *pkg_slash = NULL;
+						pkg_slash = get_filename(netpath); if(pkg_slash) *pkg_slash = NULL;
 					}
 					if(is_iso) ;
 					else

@@ -87,7 +87,7 @@ static void parse_script(const char *script_file)
 	#endif
 					if(_islike(line, "ren /"))  {path += 4; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_RENAME, dest);} else cellFsRename(path, dest);} else
 					if(_islike(line, "copy /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_COPY, dest);} else if(isDir(path)) folder_copy(path, dest); else _file_copy(path, dest);} else
-					if(_islike(line, "swap /")) {path += 5; sprintf(cp_path, "%s", path); char *slash = strrchr(cp_path, '/'); sprintf(slash, "/~swap"); cellFsRename(path, cp_path); cellFsRename(dest, path); cellFsRename(cp_path, dest);} else
+					if(_islike(line, "swap /")) {path += 5; sprintf(cp_path, "%s", path); char *slash = get_filename(cp_path); sprintf(slash, "/~swap"); cellFsRename(path, cp_path); cellFsRename(dest, path); cellFsRename(cp_path, dest);} else
 					if(_islike(line, "move /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_MOVE, dest);} else cellFsRename(path, dest);} else
 					if(_islike(line, "list /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);} else
 					if(_islike(line, "cpbk /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}

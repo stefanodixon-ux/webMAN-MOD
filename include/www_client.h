@@ -483,7 +483,7 @@ parse_request:
 					///// Process PhotoGUI request /////
 					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
 					{
-						char *filename = strrchr(header, '/'); if(filename) filename++;
+						char *filename = get_filename(header); if(filename) filename++;
 
 						play_rco_sound("snd_trophy");
 
@@ -919,7 +919,7 @@ parse_request:
 				{
 					*dlpath = NULL; // limit string to url in "Downloading http://blah..."
 
-					char *dlfile = strrchr(msg, '/');
+					char *dlfile = get_filename(msg);
 					if(dlfile) snprintf(filename, STD_PATH_LEN, "%s%s", dlpath + 5, dlfile);
 
 					*dlpath = '\n'; // restore line break
@@ -1715,7 +1715,7 @@ parse_request:
 					else
 #endif
 					cellFsRmdir(param);
-					char *p = strrchr(param, '/'); *p = NULL;
+					char *p = get_filename(param); *p = NULL;
 				}
 				else
 					{delete_history(true); sprintf(param, "/dev_hdd0");}
@@ -1746,7 +1746,7 @@ parse_request:
 				goto html_response;
 			}
 			else
-			if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3"))
+			if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3") || islike(param, "/dozip.ps3"))
 			{
 				// /write.ps3<path>&t=<text> use | for line break (create text file)
 				// /write_ps3<path>&t=<text> use | for line break (add text to file)
@@ -1849,6 +1849,31 @@ parse_request:
 				{
 					save_file(filename, "", SAVE_ALL);
 				}
+				#ifdef COBRA_ONLY
+				else if(islike(param, "/dozip.ps3") && isDir(filename))
+				{
+					char *launch_txt = header;
+
+					#ifdef USE_NTFS
+					if(islike(filename, "/dev_flash") || is_ntfs_path(filename))
+						sprintf(launch_txt, "%s\n%s%s.zip", filename, drives[0], get_filename(filename));
+					else
+						sprintf(launch_txt, "%s\n%s%s.zip", filename, "", filename);
+					#else
+					if(islike(filename, "/dev_flash"))
+						sprintf(launch_txt, "%s\n%s%s.zip", filename, drives[0], get_filename(filename));
+					else
+						sprintf(launch_txt, "%s\n%s%s.zip", filename, "", filename);
+					#endif
+
+					do_umount(false);
+					cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
+					save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", launch_txt, SAVE_ALL);
+
+					launch_app_home_icon();
+					sprintf(header, "/dozip.ps3");
+				}
+				#endif
 
 				header[10] = NULL;
 
@@ -1962,13 +1987,13 @@ parse_request:
 					else
 						cellFsRename(source, dest);
 
-					char *p = strrchr(dest, '/'); *p = NULL;
+					char *p = get_filename(dest); *p = NULL;
 					sprintf(param, "%s", dest);
 					if(do_restart) goto reboot;
 				}
 				else
 				{
-					char *p = strrchr(source, '/'); *p = NULL;
+					char *p = get_filename(source); *p = NULL;
 					sprintf(param, "%s", source);
 					if(!isDir(param)) sprintf(param, "/");
 				}
@@ -1985,7 +2010,7 @@ parse_request:
 				cp_mode = islike(param, "/cut.ps3") ? CP_MODE_MOVE : CP_MODE_COPY;
 				snprintf(cp_path, STD_PATH_LEN, "%s", param + 8);
 				sprintf(param, "%s", cp_path);
-				char *p = strrchr(param, '/'); *p = NULL;
+				char *p = get_filename(param); *p = NULL;
 				if(not_exists(cp_path)) cp_mode = CP_MODE_NONE;
 
 				is_binary = FOLDER_LISTING;
@@ -2003,7 +2028,7 @@ parse_request:
 				{
 					sprintf(source, "/copy.ps3%s", cp_path);
 					sprintf(dest, "%s", param + PASTE_CMD);
-					sprintf(param, "%s", source); strcat(dest, strrchr(param, '/'));
+					sprintf(param, "%s", source); strcat(dest, get_filename(param));
 					is_binary = WEB_COMMAND;
 					goto html_response;
 				}
@@ -2731,7 +2756,7 @@ retry_response:
 										filename, MAX_TEXT_LEN, txt, STR_SAVE); _concat(&sbuffer, tempstr);
 
 						// show filename link
-						char *p = strrchr(filename, '/');
+						char *p = get_filename(filename);
 						if(p)
 						{
 							if(is_ext(p, ".bat")) {sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
@@ -3148,7 +3173,7 @@ retry_response:
 
 							sprintf(tempstr, "%s %s : ", STR_DELETE, ret ? STR_ERROR : ""); _concat(&sbuffer, tempstr);
 							add_breadcrumb_trail(pbuffer, param2); sprintf(tempstr, "<br>");
-							char *pos = strrchr(param2, '/'); if(pos) *pos = NULL;
+							char *pos = get_filename(param2); if(pos) *pos = NULL;
 						}
 
 						_concat(&sbuffer, tempstr);

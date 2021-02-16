@@ -260,7 +260,7 @@ exit_fix:
 	}
 	else
 	{
-		get_name(update_path, strrchr(iso_file, '/') + 1, GET_WMTMP); strcat(update_path, ".SFO\0");
+		get_name(update_path, get_filename(iso_file) + 1, GET_WMTMP); strcat(update_path, ".SFO\0");
 		getTitleID(update_path, title_id, GET_TITLE_ID_ONLY);
 	}
 
@@ -297,7 +297,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 			if(!get_flag(game_path, "/PS3_GAME")) get_flag(game_path, "/USRDIR");
 
 			if(islike(game_path, "/net") || strstr(game_path, ".ntfs["))
-				{get_name(filename, strrchr(game_path, '/') + 1, GET_WMTMP); strcat(filename, ".SFO\0");}
+				{get_name(filename, get_filename(game_path) + 1, GET_WMTMP); strcat(filename, ".SFO\0");}
 			else
 				sprintf(filename, "%s/PARAM.SFO", game_path);
 

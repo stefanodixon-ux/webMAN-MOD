@@ -734,7 +734,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						// --- get d_path & wildcard ---
 						char *pw, *ps, wcard[STD_PATH_LEN]; *wcard = NULL;
 
-						pw = strchr(param, '*'); if(pw) {ps = strrchr(param, '/'); if((ps > param) && (ps < pw)) pw = ps; while(*pw == '*' || *pw == '/') *pw++ = 0; strcpy(wcard, pw); pw = strstr(wcard, "*"); if(pw) *pw = 0; if(!*wcard && !ps) strcpy(wcard, param);}
+						pw = strchr(param, '*'); if(pw) {ps = get_filename(param); if((ps > param) && (ps < pw)) pw = ps; while(*pw == '*' || *pw == '/') *pw++ = 0; strcpy(wcard, pw); pw = strstr(wcard, "*"); if(pw) *pw = 0; if(!*wcard && !ps) strcpy(wcard, param);}
 
 						if(*param == NULL) split = 0;
 

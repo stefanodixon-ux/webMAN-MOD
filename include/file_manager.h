@@ -82,7 +82,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		//get title & app version from PARAM.SFO
 		getTitleID(templn, version, GET_VERSION);
 		getTitleID(title, titleid, GET_TITLE_AND_ID); get_flag(title, " ["); get_flag(title, "\n");
-		get_cover_from_name(tempstr, strrchr(param, '/') + 1, titleid); // get title id from path (if title ID was not found in PARAM.SFO)
+		get_cover_from_name(tempstr, get_filename(param) + 1, titleid); // get title id from path (if title ID was not found in PARAM.SFO)
 		if(*version >= '0') {strcat(title, " v"); strcat(title, version);}
 		sprintf(tempstr, "%s%s", HDD0_GAME_DIR, titleid); bool has_updates_dir = file_exists(tempstr);
 
@@ -460,7 +460,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 
 	// add link to file or folder
 	if(!param[1]) slen = sprintf(swap, "/");
-	else if((param[1] != 'n') && not_exists(param)) slen = sprintf(swap, "%s", strrchr(param, '/') + 1);
+	else if((param[1] != 'n') && not_exists(param)) slen = sprintf(swap, "%s", get_filename(param) + 1);
 	else
 	{
 		tlen = strlen(param) - 4; if(tlen < 0) tlen = 0;
@@ -641,7 +641,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				if(open_remote_dir(ns, param + 5, &abort_connection) >= 0)
 				{
 					strcpy(templn, param); while(templn[plen] == '/') templn[plen--] = NULL; plen++;
-					char *p = strrchr(templn, '/'); if(p) *p = NULL; if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = NULL;}
+					char *p = get_filename(templn); if(p) *p = NULL; if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = NULL;}
 
 					urlenc(swap, templn);
 					flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
@@ -1041,7 +1041,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				t_path_entries swap;
 				for(n = 0; n < (MAX_LAST_GAMES - 1); n++)
 					for(m = (n + 1); m < MAX_LAST_GAMES; m++)
-						if(*lastgames.game[n].path == '/' && *lastgames.game[m].path == '/' && (strcasecmp(strrchr(lastgames.game[n].path, '/'), strrchr(lastgames.game[m].path, '/')) > 0))
+						if(*lastgames.game[n].path == '/' && *lastgames.game[m].path == '/' && (strcasecmp(get_filename(lastgames.game[n].path), get_filename(lastgames.game[m].path)) > 0))
 						{
 							swap = lastgames.game[n];
 							lastgames.game[n] = lastgames.game[m];
@@ -1053,7 +1053,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				{
 					if(*lastgames.game[n].path)
 					{
-						char *name = strrchr(lastgames.game[n].path, '/'); if(!name) name = lastgames.game[n].path; else name++;
+						char *name = get_filename(lastgames.game[n].path); if(!name) name = lastgames.game[n].path; else name++;
 
 						set_file_type(lastgames.game[n].path, name, ftype);
 

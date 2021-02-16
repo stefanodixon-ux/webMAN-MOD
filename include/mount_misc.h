@@ -172,7 +172,7 @@
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 				save_file(WMNOSCAN, NULL, SAVE_ALL); ret = true;
 
-				sprintf(temp, "\"%s\" %s", strrchr(_path, '/') + 1, STR_LOADED2);
+				sprintf(temp, "\"%s\" %s", get_filename(_path) + 1, STR_LOADED2);
 			}
 			else
 				{sprintf(temp, "PS2 Classic\n%s", STR_ERROR); ret = false;}
