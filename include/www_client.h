@@ -488,17 +488,20 @@ parse_request:
 						play_rco_sound("snd_trophy");
 
 						#ifdef MOUNT_PNG
-						bool is_PNG = (read_file(header, param, 5, 0x18801) == 5) && IS(param, "CD001"); // BD/DVD
-						if(!IS(param, "CD001"))
-							 is_PNG = (read_file(header, param, 5, 0x19319) == 5) && IS(param, "CD001"); // CD
-
-						if(is_PNG)
+						if(file_size(header) > _2MB_)
 						{
-							// show filename
-							if(!(webman_config->minfo & 1)) show_msg(filename);
+							bool is_ISO = (read_file(header, param, 5, 0x18801) == 5) && IS(param, "CD001"); // BD/DVD
+							if(!IS(param, "CD001"))
+								 is_ISO = (read_file(header, param, 5, 0x19319) == 5) && IS(param, "CD001"); // CD
 
-							strcpy(param, header);
-							sprintf(header, "/mount_ps3%s", param);
+							if(is_ISO)
+							{
+								// show filename
+								if(!(webman_config->minfo & 1)) show_msg(filename);
+
+								strcpy(param, header);
+								sprintf(header, "/mount_ps3%s", param);
+							}
 						}
 						else
 						#endif

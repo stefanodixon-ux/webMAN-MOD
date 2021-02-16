@@ -76,7 +76,7 @@
  #undef PHOTO_GUI
 #endif
 
-#ifndef SLAUNCH_FILE
+#ifndef LAUNCHPAD
  #undef PHOTO_GUI
 #endif
 

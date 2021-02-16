@@ -815,7 +815,7 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item(0, "Info 1 + 2", (value == 0), buffer);
 	concat(buffer, "</select><br>");
 
-#ifdef LAUNCHPAD
+#ifdef PHOTO_GUI
 	if(file_exists(LAUNCHPAD_FILE_XML))
 		_add_checkbox("lx", "LaunchPad.xml | PhotoGUI (USB0/PICTURE)", !(webman_config->launchpad_xml), buffer);
 	else if(payload_ps3hen || cobra_version >= 0x0820)
