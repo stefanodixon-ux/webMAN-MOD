@@ -70,6 +70,8 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	char *ext = get_ext(name); *fsize = NULL;
 
+	char is_param_sfo = '>';
+
 #ifndef LITE_EDITION
 	//////////////////////////////////////////
 	// show title & title ID from PARAM.SFO //
@@ -77,7 +79,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	if( !is_dir && IS(name, "PARAM.SFO") )
 	{
-		char titleid[10], version[8], title[128]; snprintf(title, 128, "%s", templn);
+		char titleid[10], version[8], title[128]; snprintf(title, 127, "%s", templn);
 
 		//get title & app version from PARAM.SFO
 		getTitleID(templn, version, GET_VERSION);
@@ -86,7 +88,9 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		if(*version >= '0') {strcat(title, " v"); strcat(title, version);}
 		sprintf(tempstr, "%s%s", HDD0_GAME_DIR, titleid); bool has_updates_dir = file_exists(tempstr);
 
-		sprintf(tempstr, "<label title=\"%s\">%s</label></a>", title, name); snprintf(name, maxlen, "%s", tempstr);
+		sprintf(tempstr, " title=\"%s\">%s</a>", title, name); snprintf(name, maxlen, "%s", tempstr);
+
+		is_param_sfo = ' ';
 
 		// show title & link to patches folder
 		if(has_updates_dir)
@@ -384,12 +388,12 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	// -- name column
 	flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
-							 "%c%s\" href=\"%s\"%s>%s</a></td>",
+							 "%c%s\" href=\"%s\"%s%c%s</a></td>",
 							 dclass, ftype, templn,
 #ifndef LITE_EDITION
 							 show_img ? " onmouseover=\"s(this,0);\"" : (is_dir && show_icon0) ? " onmouseover=\"s(this,1);\"" :
 #endif
-							 "", name);
+							 "", is_param_sfo, name);
 
 	// -- size column
 	slen =  sprintf(templn, "<td> %s%s</td>",
@@ -409,8 +413,8 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		if((FILE_MGR_KEY_LEN + flen + slen + dlen) >= _LINELEN)
 		{
 			flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
-									 "%c%s\">%s</a></td>",
-									 dclass, ftype, name);
+									 "%c%s\"%c%s</a></td>",
+									 dclass, ftype, is_param_sfo, name);
 		}
 	}
 

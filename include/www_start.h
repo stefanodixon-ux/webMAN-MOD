@@ -145,7 +145,6 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		#ifdef COBRA_ONLY
 		sys_map_path("/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);
 		sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);
-		sys_map_path("/dev_flash/vsh/resource/qgl/lines.qrc", NULL);
 		#ifdef VISUALIZERS
 		map_vsh_resource(0, MAP_SELECTED, param, false); // wallpaper.png
 		map_vsh_resource(1, MAP_SELECTED, param, false); // earth.qrc

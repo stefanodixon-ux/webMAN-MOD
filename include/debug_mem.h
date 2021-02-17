@@ -125,6 +125,10 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		char *pos = strstr(fname, "&data=");
 		if(pos)
 		{
+			get_flag(fname, "&"); // file name
+			check_path_alias(fname);
+
+			// data write to write
 			if(ISDIGIT(pos[6]))
 				flen = Hex2Bin(pos + 6, templn);
 			else
@@ -134,7 +138,6 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 				for(pos = templn; *pos; ++pos) if(*pos == '|') *pos = '\n';
 			}
 
-			get_flag(fname, "&");
 			found_address = address, found = true;
 			write_file(fname, CELL_FS_O_WRONLY, templn, address, flen, false);
 			goto view_file;
@@ -236,7 +239,7 @@ view_file:
 
 	if(is_file)
 	{
-		param += 12; cellFsStat(param, &s);
+		param += 12; check_path_alias(param); cellFsStat(param, &s);
 		read_file(param, (void*)data, 0x200, address);
 		add_breadcrumb_trail(buffer, param);
 

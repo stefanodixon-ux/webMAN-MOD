@@ -54,19 +54,8 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 	if(scan)
 		if(not_exists(absPath_s))
 		{
-			for(u8 i = 0; i < MAX_DRIVES; i++)
-			{
-				if(i == NET) i = NTFS + 1;
-				sprintf(absPath_s, "%s/%s", drives[i], path);
-				filepath_check(absPath_s);
-				if(file_exists(absPath_s)) return 0;
-			}
-			sprintf(absPath_s, "%s/%s", HDD0_GAME_DIR, path);
+			strcpy(absPath_s, path); check_path_alias(absPath_s); filepath_check(absPath_s);
 			if(file_exists(absPath_s)) return 0;
-			sprintf(absPath_s, "%s/%s", _HDD0_GAME_DIR, path);
-			if(file_exists(absPath_s)) return 0;
-			if(islike(path, "/pkg")) {sprintf(absPath_s, "%s/%s", DEFAULT_PKG_PATH, path + 4);}
-			if(islike(path, "/xmb")) {sprintf(absPath_s, "%s/%s", "/dev_blind/vsh/resource/explore/xmb", path + 4);}
 			sprintf(absPath_s, "%s/%s", cwd, path);
 		}
 

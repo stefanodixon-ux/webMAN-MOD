@@ -736,6 +736,7 @@ parse_request:
 					}
 
 					// check /play.ps3<path>
+					check_path_alias(param2);
 					if(file_exists(param2))
 					{
 						if(wait_for_xmb())
@@ -957,7 +958,7 @@ parse_request:
 				// /install_ps3$           install all webman addons
 				// /install_ps3<path>      install pkg files in <path>
 
-				char *pkg_file = param + 12;
+				char *pkg_file = param + 12; if(*pkg_file == '/') check_path_alias(pkg_file);
 
 				bool install_ps3 = (param[8] == '_');
 
@@ -1297,7 +1298,7 @@ parse_request:
    #endif
 					{
 						if(*param2 == NULL) sprintf(param2, "/");
-						if(*param2 == '/' ) {do_umount(false); sprintf(header, "http://%s%s", local_ip, param2); open_browser(header, 0);} else
+						if(*param2 == '/' ) {do_umount(false); check_path_alias(param2); sprintf(header, "http://%s%s", local_ip, param2); open_browser(header, 0);} else
 						if(*param2 == '$' ) {if(get_explore_interface()) exec_xmb_command(url);} else
 						if(*param2 == '?' ) {do_umount(false);  open_browser(url, 0);} else
 											{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23
@@ -2307,6 +2308,8 @@ parse_request:
 			{
 				char *filename = param + 8, *buffer = header;
 
+				check_path_alias(filename);
+
 				sprintf(buffer, "File: ");
 				add_breadcrumb_trail(buffer, filename);
 
@@ -2331,6 +2334,8 @@ parse_request:
 				char *savedata_path = param + 15;
 				if(*savedata_path != '/') sprintf(savedata_path, "%s/home/%08i", drives[0], xsetting_CC56EB2D()->GetCurrentUserNumber());
 
+				check_path_alias(savedata_path);
+
 				if(file_exists(savedata_path))
 				{
 					scan(savedata_path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);
@@ -2350,6 +2355,9 @@ parse_request:
 
 				char *game_path = param + 12, titleID[10];
 				char *attrib = strstr(game_path, "&attrib=");
+				u32 attribute = get_valuen32(game_path, "&attrib="); if(attrib) *attrib = NULL;
+
+				check_path_alias(game_path);
 
 				sprintf(header, STR_FIXING);
 
@@ -2360,8 +2368,6 @@ parse_request:
 
 				if(attrib)
 				{
-					u32 attribute = get_valuen32(attrib, "&attrib="); *attrib = NULL;
-
 					char sfo[_4KB_];
 					u16 sfo_size = read_file(game_path, sfo, _4KB_, 0);
 					if(patch_param_sfo(game_path, (unsigned char *)sfo, sfo_size, attribute))
@@ -2396,8 +2402,7 @@ parse_request:
  #ifdef USE_NTFS
 			// /mount.ps3/dev_ntfs* => convert ntfs path to cached path
 			if(islike(param, "/mount") && is_ntfs_path(param + 10))
-
-{
+			{
 				char *filename = param + 10;
 				strcpy(header, filename);
 				int flen = get_name(filename, header, GET_WMTMP);
@@ -2567,23 +2572,8 @@ retry_response:
 
 					if(is_net) goto html_response;
 
-					if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);} else
-					if(not_exists(param))
-					{
-						if(!islike(param, "/dev_"))
-						{
-							strcpy(header, param + 1);
-							if(IS(param, "/pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
-							if(IS(param, "/xmb")) {sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
-							if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, header);} // use html path (if path is omitted)
-							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, header);} // try HTML_BASE_PATH
-							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", webman_config->home_url, header);} // try webman_config->home_url
-							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s",  HDD0_GAME_DIR, header);} // try /dev_hdd0/game
-							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s", _HDD0_GAME_DIR, header);} // try /dev_hdd0//game
-							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0", header);} // try hdd0
-							if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", header);} // try hdd0
-						}
-					}
+					if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);}
+					else check_path_alias(param);
 
 					is_binary = is_ntfs || (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED); allow_retry_response = true;
 				}
@@ -2976,6 +2966,7 @@ retry_response:
 							get_param("prx=", templn, param, MAX_PATH_LEN);
 						}
 
+						check_path_alias(templn);
 						prx_found = file_exists(templn);
 
 						if(prx_found || (*templn != '/'))
@@ -3017,6 +3008,8 @@ retry_response:
 					if(islike(param, "/install.ps3") || islike(param, "/install_ps3"))
 					{
 						char *pkg_file = param + 12;
+						check_path_alias(pkg_file);
+
 						strcat(buffer, "Install PKG: <select autofocus onchange=\"window.location='/install.ps3");
 						strcat(buffer, pkg_file);
 						strcat(buffer, "/'+this.value;\"><option>");
@@ -3360,7 +3353,7 @@ retry_response:
 
 						if(!mc) keep_alive = http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser (don't wait for mount)
 
-						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL) && (strstr(param, ".ntfs[PSPISO]") == NULL))
+						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL) && (strstr(param, ".ntfs[PSPISO]") == NULL))\
 						{
 							//sys_ppu_thread_sleep(1);
 
@@ -3418,9 +3411,11 @@ retry_response:
 								goto html_response;
 							}
 						}
+						else if(islike(param, "/copy.ps3")) ;
+
 						else if(!islike(param + 10, "/net") && !islike(param + 10, WMTMP))
 						{
-							strcpy(templn, param);
+							check_path_alias(param + 10); strcpy(templn, param);
 
 							// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
 							char *dev_path = (templn + 10);
@@ -3431,9 +3426,7 @@ retry_response:
 							{
 								mount_device(dev_path, dev_name, fs);
 
-								if(islike(param, "/copy.ps3")) ;
-
-								else if(isDir(dev_path))
+								if(isDir(dev_path))
 								{
 									strcpy(param, dev_path); is_binary = FOLDER_LISTING; mount_app_home = is_busy = false;
 									goto html_response;

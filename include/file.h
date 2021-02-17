@@ -238,6 +238,34 @@ static bool is_ext(const char *path, const char *ext)
 	return !extcasecmp(path, ext, 4);
 }
 
+static void check_path_alias(char *param)
+{
+	if(not_exists(param))
+	{
+		if(!islike(param, "/dev_") && !islike(param, "/net"))
+		{
+			char path[STD_PATH_LEN]; snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
+			if(IS(param, "/pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
+			if(IS(param, "/xmb")) {sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
+			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, path);} // try HTML_BASE_PATH
+			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", webman_config->home_url, path);} // try webman_config->home_url
+			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s",  HDD0_GAME_DIR, path);} // try /dev_hdd0/game
+			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s", _HDD0_GAME_DIR, path);} // try /dev_hdd0//game
+			if(not_exists(param))
+			{
+				for(u8 i = 0; i < MAX_DRIVES; i++)
+				{
+					if(i == NET) i = NTFS + 1;
+					snprintf(param, HTML_RECV_LAST, "%s/%s", drives[i], path);
+					if(file_exists(param)) return;
+				}
+			} // try hdd0
+			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", path);} // try hdd0
+		}
+	}
+}
+
 #ifdef COBRA_ONLY
 static bool is_iso_0(const char *filename)
 {
@@ -412,7 +440,6 @@ static void addlog(const char *msg1, const char *msg2)
 	save_file("/dev_hdd0/wmm.log", msg, APPEND_TEXT);
 }
 */
-
 static int sysLv2FsBdDecrypt(void)
 {
 	system_call_1(SC_BDVD_DECRYPT, (u64) "/dev_bdvd");

@@ -938,6 +938,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
 				{
 					if (!uslot ) uslot = get_free_slot(); // find free slot if slot == 0
 
+					check_path_alias(prx_path);
 					if ( uslot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)prx_path, NULL, 0);}}
 				}
 			}
@@ -1079,6 +1080,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 				char prx_path[STD_PATH_LEN];
 				if(get_param("prx=", prx_path, param, STD_PATH_LEN))
 				{
+					check_path_alias(prx_path);
 					if(strstr(prx_path, "/dev_flash"))
 						load_start(prx_path); // <- load system modules from flash to process
 					else

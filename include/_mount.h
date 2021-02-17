@@ -234,10 +234,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		get_flag(source, "?random=");
 		get_flag(source, "?/sman.ps3");
 
-		// -------------------------
-		// use relative source path
-		// -------------------------
-		if(!islike(source, "/net") && not_exists(source)) {sprintf(templn, "%s/%s", html_base_path, source + 1); if(file_exists(templn)) sprintf(source, "%s", templn);}
+		// ----------------------------------------
+		// Try relative path if source is not found
+		// ----------------------------------------
+		check_path_alias(source);
 
 		// --------------
 		// set mount url
