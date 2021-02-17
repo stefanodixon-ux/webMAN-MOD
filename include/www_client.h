@@ -1746,7 +1746,8 @@ parse_request:
 				goto html_response;
 			}
 			else
-			if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3") || islike(param, "/dozip.ps3"))
+			if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3") ||
+			   islike(param, "/dozip.ps3") || islike(param, "/unzip.ps3"))
 			{
 				// /write.ps3<path>&t=<text> use | for line break (create text file)
 				// /write_ps3<path>&t=<text> use | for line break (add text to file)
@@ -1850,28 +1851,65 @@ parse_request:
 					save_file(filename, "", SAVE_ALL);
 				}
 				#ifdef COBRA_ONLY
-				else if(islike(param, "/dozip.ps3") && isDir(filename))
+				else if(islike(param, "/dozip.ps3") || islike(param, "/unzip.ps3"))
 				{
-					char *launch_txt = header;
+					// /dozip.ps3<path>
+					// /dozip.ps3<path>&to=<dest-path>
+					// /unzip.ps3<zip-file>&to=<dest-path>
 
-					#ifdef USE_NTFS
-					if(islike(filename, "/dev_flash") || is_ntfs_path(filename))
-						sprintf(launch_txt, "%s\n%s%s.zip", filename, drives[0], get_filename(filename));
+					if(IS_ON_XMB)
+					{
+						bool is_unzip = (param[1] == 'u');
+						char *launch_txt = header;
+						char *dest = strstr(filename, "&to=");
+
+						if(dest) {*dest = NULL, dest+=4;}
+
+						if(is_unzip || dest)
+						{
+							if(is_unzip)
+							{
+								if(dest)
+									sprintf(launch_txt, "%s\n%s/", filename, dest);
+								else
+								{
+									int len = sprintf(launch_txt, "%s\n%s", filename, filename);
+									sprintf(get_filename(launch_txt), "/");
+									mkdir_tree(launch_txt + (len / 2));
+								}
+							}
+							else
+								sprintf(launch_txt, "%s\n%s%s.zip", filename, dest, get_filename(filename));
+						}
+						else
+						#ifdef USE_NTFS
+						if(islike(filename, "/dev_flash") || is_ntfs_path(filename))
+							sprintf(launch_txt, "%s\n%s%s.zip", filename, drives[0], get_filename(filename));
+						else
+							sprintf(launch_txt, "%s\n%s%s.zip", filename, "", filename);
+						#else
+						if(islike(filename, "/dev_flash"))
+							sprintf(launch_txt, "%s\n%s%s.zip", filename, drives[0], get_filename(filename));
+						else
+							sprintf(launch_txt, "%s\n%s%s.zip", filename, "", filename);
+						#endif
+
+						do_umount(false);
+						cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
+						save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", launch_txt, SAVE_ALL);
+
+						launch_app_home_icon();
+
+						if(is_unzip)
+							sprintf(header, "/unzip.ps3");
+						else
+							sprintf(header, "/dozip.ps3");
+					}
 					else
-						sprintf(launch_txt, "%s\n%s%s.zip", filename, "", filename);
-					#else
-					if(islike(filename, "/dev_flash"))
-						sprintf(launch_txt, "%s\n%s%s.zip", filename, drives[0], get_filename(filename));
-					else
-						sprintf(launch_txt, "%s\n%s%s.zip", filename, "", filename);
-					#endif
-
-					do_umount(false);
-					cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
-					save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", launch_txt, SAVE_ALL);
-
-					launch_app_home_icon();
-					sprintf(header, "/dozip.ps3");
+					{
+						keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
+						goto exit_handleclient_www;
+					}
 				}
 				#endif
 

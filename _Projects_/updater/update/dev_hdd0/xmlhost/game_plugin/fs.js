@@ -34,6 +34,7 @@ function t2lnks(){
 	"<a id='m4'>Cut<br></a>" +
 	"<a id='m5'>Copy<br></a>" +
 	"<hr>" +
+	"<a id='mz'>Zip Folder<br></a>"+
 	"<a id='m8'>Copy To</a><br>" +
 	"<a id='m9'>Copy & overwrite<br></a>" +
 	"</div>" +
@@ -113,6 +114,9 @@ window.addEventListener('contextmenu',function(e){
 		m7.href='javascript:rn(\"'+p+'\")';m7.style.display=(p.substring(0,5)=='/dev_')?b:n;
 		m8.href='/copy.ps3'+p; m8.text = 'Copy to ' + ((p.indexOf('/dev_hdd')==0) ? "usb" : "hdd0");
 		m9.href='/copy_ps3'+p;
+		mz.href=((c=='d')?'/dozip.ps3':'/unzip.ps3')+p+'<br>';
+		mz.text=((c=='d')?'Zip Folder':'Unzip');exts=/(\.zip|\.rar|\.7z|\.bz2|\.tar|\.tgz)$/i;
+		mz.style.display=(c=='d')?b:(exts.exec(p)?b:n);
 		md.href=((c=='d')?'/stat.ps3':'/md5.ps3')+p;
 		md.text=((c=='d')?'Folder Size':'MD5 Hash');
 		dm.href=((c=='d')?'/chmod.ps3':'/trunc.ps3')+p;

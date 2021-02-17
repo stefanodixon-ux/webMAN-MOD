@@ -1080,6 +1080,9 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLES_512.53</td><td>The Lord of the Rings - The Two Towers (Seigneur des Anneaux - Les Deux Tours)</td></tr>
 <tr><td>CUSTOM</td><td>SLPS_290.03</td><td>The Lord of the Rings - The Two Towers [Collector's Box]</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_212.73</td><td>The Matrix: Path of Neo</td></tr>
+<tr><td>CUSTOM</td><td>SLES_537.59</td><td>The Matrix: Path of Neo</td></tr>
+<tr><td>CUSTOM</td><td>SLES_537.99</td><td>The Matrix: Path of Neo</td></tr>
+<tr><td>CUSTOM</td><td>SLES_534.62</td><td>The Matrix: Path of Neo</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_659.19</td><td>The Rumble Fish</td></tr>
 <tr><td>CUSTOM</td><td>SLES_516.93</td><td>The Suffering</td></tr>
 <tr><td>CUSTOM</td><td>SLES_524.39</td><td>The Suffering</td></tr>
@@ -3629,6 +3632,9 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLPM_675.46</td><td>The Lord of the Rings - The Two Towers</td></tr>
 <tr><td>ENC</td><td>SLES_512.55</td><td>The Lord of the Rings - The Two Towers</td></tr>
 <tr><td>ENC</td><td>SLUS_212.73</td><td>The Matrix: Path of Neo</td></tr>
+<tr><td>ENC</td><td>SLES_537.59</td><td>The Matrix: Path of Neo</td></tr>
+<tr><td>ENC</td><td>SLES_537.99</td><td>The Matrix: Path of Neo</td></tr>
+<tr><td>ENC</td><td>SLES_534.62</td><td>The Matrix: Path of Neo</td></tr>
 <tr><td>ENC</td><td>SLPM_659.19</td><td>The Rumble Fish</td></tr>
 <tr><td>ENC</td><td>SLES_535.26</td><td>The Suffering - Ties That Bind</td></tr>
 <tr><td>ENC</td><td>SLES_535.27</td><td>The Suffering - Ties that Bind</td></tr>
@@ -3777,7 +3783,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2405; i < count; i++) {
+for (i = 2408; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
