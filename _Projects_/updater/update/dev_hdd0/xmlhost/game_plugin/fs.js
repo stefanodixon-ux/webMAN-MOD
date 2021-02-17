@@ -101,7 +101,6 @@ window.addEventListener('contextmenu',function(e){
 		s.color='#fff',b='block',n='none';
 		m.display=b;
 		m.left=(e.clientX+12)+'px';
-		y=e.clientY;w=window.innerHeight;m.top=(((y+220)<w)?(y+12):(w-220))+'px';
 		y=(p.toLowerCase().indexOf('.pkg')>0);w=(p.toLowerCase().indexOf('.iso')>0);
 		m0.href='/install.ps3'+p;m0.style.display=y?b:n;
 		m1.href='/mount.ps3'+p;m1.style.display=!y&&(w||c=='d'||p.indexOf('/GAME')>0||p.indexOf('ISO/')>0)?b:n;
@@ -122,6 +121,7 @@ window.addEventListener('contextmenu',function(e){
 		dm.href=((c=='d')?'/chmod.ps3':'/trunc.ps3')+p;
 		dm.text=((c=='d')?'Fix Permissions':'Truncate');
 		y=p.indexOf('.ps3');if(y>0)p=p.substring(y+4);url=window.location.href;
+		y=e.clientY;w=window.innerHeight;m.top=(((y+mnu.clientHeight)<w)?(y+12):(w-mnu.clientHeight))+'px';
 	}
 },false);
 

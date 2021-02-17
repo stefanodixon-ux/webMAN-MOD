@@ -71,7 +71,6 @@ window.addEventListener('contextmenu',function(e){
 		s.color='#fff',b='block',n='none';
 		m.display=b;
 		m.left=(e.clientX+12)+'px';
-		y=e.clientY;w=window.innerHeight;m.top=(((y+220)<w)?(y+12):(w-220))+'px';
 		y=(p.toLowerCase().indexOf('.pkg')>0);w=(p.toLowerCase().indexOf('.iso')>0);
 		m0.href='/install.ps3'+p;m0.style.display=y?b:n;
 		m1.href='/mount.ps3'+p;m1.style.display=!y&&(w||c=='d'||p.indexOf('/GAME')>0||p.indexOf('ISO/')>0)?b:n;
@@ -96,6 +95,7 @@ window.addEventListener('contextmenu',function(e){
 		ml.href=p.substring(0,p.lastIndexOf("/"));if(url.indexOf('?sort=')<0)ml.href+='?sort=name&desc';
 		ss.href=p.substring(0,p.lastIndexOf("/"))+'?sort=size';if(url.indexOf('?sort=size')>0 && url.indexOf('&desc')<0)ss.href+='&desc';
 		sd.href=p.substring(0,p.lastIndexOf("/"))+'?sort=date';if(url.indexOf('?sort=date')>0 && url.indexOf('&desc')<0)sd.href+='&desc';
+		y=e.clientY;w=window.innerHeight;m.top=(((y+mnu.clientHeight)<w)?(y+12):(w-mnu.clientHeight))+'px';
 	}
 },false);
 

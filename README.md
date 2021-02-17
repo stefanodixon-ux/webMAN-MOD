@@ -109,6 +109,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support edition of small text files (up to 1,300 bytes) via web
 - Folder size statistics & enable permissions
 - Hex File Viewer (internal HDD/FAT32/NTFS/exFAT/ext2/3/4)
+- Experimental support for zip & unzip (rar, 7z, bz2, tgz, tar can be extracted). Requires PKGLAUNCH & /app_home/PS3_GAME icon.
 
 #### Network features
 - Update to latest release from XMB
