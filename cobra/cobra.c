@@ -696,7 +696,7 @@ int cobra_get_disc_type(unsigned int *real_disctype, unsigned int *effective_dis
 	int ret;
 
 	ret = sys_storage_ext_get_disc_type(&rdt, &edt, NULL);
-	if (ret != 0)
+	if (ret)
 		return ret;
 
 	rdt = translate_type(rdt);
@@ -770,7 +770,7 @@ int cobra_disc_auth(void)
 	int ret;
 
 	ret = sys_storage_ext_get_disc_type(&real_disctype, NULL, NULL);
-	if (ret != 0)
+	if (ret)
 		return ret;
 
 	if (real_disctype == 0)
@@ -919,7 +919,7 @@ int cobra_get_disc_phys_info(uint32_t handle, uint8_t layer, DiscPhysInfo *info)
 	response = (ScsiReadDiscStructureFormat0Response *)output;
 	ret = sys_storage_send_device_command(handle, STORAGE_COMMAND_NATIVE, scsi_cmd, sizeof(scsi_cmd), response, sizeof(ScsiReadDiscStructureFormat0Response));
 
-	if (ret != 0)
+	if (ret)
 		return ret;
 
 	memcpy(info, output+4, 17);
@@ -949,7 +949,7 @@ int cobra_get_cd_td(uint32_t handle, TrackDef *td, unsigned int max_tracks, unsi
 	data->outlen = cmd->alloc_length;
 
 	ret = sys_storage_send_device_command(handle, STORAGE_COMMAND_NATIVE, scsi_cmd, sizeof(scsi_cmd), &toc_info, sizeof(toc_info));
-	if (ret != 0)
+	if (ret)
 		return ret;
 
 	cd_num_tracks = toc_info.last_track;
@@ -958,7 +958,7 @@ int cobra_get_cd_td(uint32_t handle, TrackDef *td, unsigned int max_tracks, unsi
 	data->outlen = cmd->alloc_length;
 
 	ret = sys_storage_send_device_command(handle, STORAGE_COMMAND_NATIVE, scsi_cmd, sizeof(scsi_cmd), response, cmd->alloc_length);
-	if (ret != 0)
+	if (ret)
 	{
 		free(response);
 		return ret;
@@ -1005,7 +1005,7 @@ int cobra_get_cd_td(uint32_t handle, TrackDef *td, unsigned int max_tracks, unsi
 		}
 	}
 
-	if (ret != 0)
+	if (ret)
 	{
 		free(response);
 		return ret;
@@ -1281,7 +1281,7 @@ continue_loop:
 
 					if (ntracks == 0)
 					{
-						if (lba != 0)
+						if (lba)
 						{
 							//DPRINTF("First track must be at 00:00:00, but it is at %02d:%02d:%02d\n", minutes, seconds, frames);
 							ret = ENOTSUP;
@@ -1401,7 +1401,7 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 	if (!path)
 	{
 		int ret = sys_map_path("/dev_bdvd", NULL);
-		if (ret != 0)
+		if (ret)
 			return ret;
 
 		sys_map_path("/app_home", "/dev_usb000");
@@ -1416,7 +1416,7 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 	build_blank_iso(title_id);
 
 	int ret = sys_map_path("/dev_bdvd", path);
-	if (ret != 0) return ret;
+	if (ret) return ret;
 
 	sys_map_path("//dev_bdvd", path);
 
@@ -1580,7 +1580,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 		files[0] = (char *)path;
 		ret = sys_storage_ext_mount_dvd_discfile(1, files);
-		if (ret != 0)
+		if (ret)
 		{
 			if (real_disctype != DISC_TYPE_NONE)
 				cobra_send_fake_disc_insert_event();
@@ -1844,7 +1844,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 		files[0] = path;
 		ret = sys_storage_ext_mount_dvd_discfile(1, files);
-		if (ret != 0)
+		if (ret)
 		{
 			if (real_disctype != DISC_TYPE_NONE)
 				cobra_send_fake_disc_insert_event();
@@ -2101,7 +2101,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 
 		files[0] = path;
 		ret = sys_storage_ext_mount_dvd_discfile(1, files);
-		if (ret != 0)
+		if (ret)
 		{
 			if (real_disctype != DISC_TYPE_NONE)
 				cobra_send_fake_disc_insert_event();
@@ -2213,7 +2213,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 		if (emu == EMU_AUTO)
 		{
 			snprintf(umd_file, sizeof(umd_file), "%s/PSP_GAME/PARAM.SFO", root);
-			if (parse_param_sfo(umd_file, "TITLE", title_name) != 0)
+			if (parse_param_sfo(umd_file, "TITLE", title_name))
 			{
 				title_name[0] = 0;
 			}
@@ -2263,12 +2263,12 @@ int cobra_get_usb_device_name(char *mount_point, char *dev_name)
 	sys_device_handle_t handle;
 
 	ret = cellFsUtilGetMountInfoSize(&size);
-	if (ret != 0)
+	if (ret)
 		return ret;
 
 	info = malloc(size*sizeof(CellFsMountInfo));
 	ret = cellFsUtilGetMountInfo(info, size, &size);
-	if (ret != 0)
+	if (ret)
 	{
 		free(info);
 		return ret;
@@ -2338,7 +2338,7 @@ int cobra_get_version(uint16_t *cobra_version, uint16_t *ps3_version)
 	int ret;
 
 	ret = sys_get_version(&version1);
-	if (ret != 0)
+	if (ret)
 		return ret;
 
 	if (cobra_version && sys_get_version2(&version2) == 0)
@@ -2441,7 +2441,7 @@ int cobra_get_ps2_emu_type(void)
 	uint8_t hw_config[8], ret2;
 
 	ret = sys_get_hw_config(&ret2, hw_config);
-	if (ret != 0)
+	if (ret)
 	{
 		return ret;
 	}

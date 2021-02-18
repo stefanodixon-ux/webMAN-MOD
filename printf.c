@@ -316,7 +316,7 @@ int vsnprintf(char *str, size_t size, const char *format, va_list args)
 	 * (Though some of these versions will write to a non-NULL buffer even
 	 * if a size of zero was specified, which violates the standard.)
 	 */
-	if (str == NULL && size != 0)
+	if ((str == NULL) && (size != 0))
 		size = 0;
 
 	while (ch != '\0')
@@ -716,11 +716,11 @@ fmtint(char *str, size_t *len, size_t size, INTMAX_T value, int base, int width,
 		separators = getnumsep(pos);
 
 	zpadlen = precision - pos - separators;
-	spadlen = width                         /* Minimum field width. */
-	    - separators                        /* Number of separators. */
-	    - MAX(precision, pos)               /* Number of integer digits. */
-	    - ((sign != 0) ? 1 : 0)             /* Will we print a sign? */
-	    - ((hexprefix != 0) ? 2 : 0);       /* Will we print a prefix? */
+	spadlen = width             /* Minimum field width. */
+	    - separators            /* Number of separators. */
+	    - MAX(precision, pos)   /* Number of integer digits. */
+	    - (sign      ? 1 : 0)   /* Will we print a sign? */
+	    - (hexprefix ? 2 : 0);  /* Will we print a prefix? */
 
 	if (zpadlen < 0)
 		zpadlen = 0;
@@ -742,7 +742,7 @@ fmtint(char *str, size_t *len, size_t size, INTMAX_T value, int base, int width,
 		OUTCHAR(str, *len, size, ' ');
 		spadlen--;
 	}
-	if (sign != 0)	/* Sign. */
+	if (sign)	/* Sign. */
 		OUTCHAR(str, *len, size, sign);
 	if (hexprefix != 0) {	/* A "0x" or "0X" prefix. */
 		OUTCHAR(str, *len, size, '0');

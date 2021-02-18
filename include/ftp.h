@@ -386,7 +386,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										}
 
 										ps3ntfs_close(fd); ftp_ntfs_transfer_in_progress--;
-										if(!working || err != CELL_FS_OK) ps3ntfs_unlink(filename + 5);
+										if(!working || (err != CELL_FS_OK)) ps3ntfs_unlink(filename + 5);
 									}
 								}
 								else
@@ -431,7 +431,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										}
 
 										cellFsClose(fd);
-										if(!working || err != CELL_FS_OK)
+										if(!working || (err != CELL_FS_OK))
 										{
 											for(u8 n = 0; n < 17; n++)
 											{

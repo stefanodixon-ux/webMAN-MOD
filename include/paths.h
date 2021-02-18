@@ -95,7 +95,7 @@
 
 #define HEN_HFW_SETTINGS		"/dev_hdd0/hen/hfw_settings.xml"
 
-#define FB_XML					"/dev_hdd0/xmlhost/game_plugin/fb.xml"
+#define FB_XML					HTML_BASE_PATH "/fb.xml"
 #ifdef COBRA_ONLY
 #define MY_GAMES_XML			HTML_BASE_PATH "/mygames.xml"
 #else
@@ -105,13 +105,11 @@
 #define GAMELIST_JS				HTML_BASE_PATH "/gamelist.js"
 #define CPU_RSX_CHART			HTML_BASE_PATH "/cpursx.html"
 
-#ifndef EMBED_JS
 #define COMMON_CSS				HTML_BASE_PATH "/common.css"
 #define COMMON_SCRIPT_JS		HTML_BASE_PATH "/common.js"
 #define FM_SCRIPT_JS			HTML_BASE_PATH "/fm.js"
 #define FS_SCRIPT_JS			HTML_BASE_PATH "/fs.js"
 #define GAMES_SCRIPT_JS			HTML_BASE_PATH "/games.js"
-#endif
 
 #define JQUERY_LIB_JS			HTML_BASE_PATH "/jquery.min.js"
 #define JQUERY_UI_LIB_JS		HTML_BASE_PATH "/jquery-ui.min.js"

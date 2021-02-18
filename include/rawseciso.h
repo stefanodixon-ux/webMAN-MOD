@@ -707,7 +707,7 @@ static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 		cd_cache = (u8 *)addr;
 	}
 
-	if(process_read_iso_cmd_iso(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352) != 0)
+	if(process_read_iso_cmd_iso(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352))
 		return FAILED;
 
 	memcpy(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
@@ -768,7 +768,7 @@ static int ejected_disc(void)
 	static int counter = 0;
 	int fd = NONE;
 
-	if(usb_device != 0)
+	if(usb_device)
 	{
 		int r = sys_storage_get_device_info(usb_device, &disc_info);
 		if(r == 0)
@@ -878,7 +878,7 @@ static void eject_thread(u64 arg)
 					sys_event_queue_t command_queue2 = command_queue_ntfs;
 					command_queue_ntfs = SYS_EVENT_QUEUE_NONE;
 
-					if(sys_event_queue_destroy(command_queue2, SYS_EVENT_QUEUE_DESTROY_FORCE) != 0)
+					if(sys_event_queue_destroy(command_queue2, SYS_EVENT_QUEUE_DESTROY_FORCE))
 					{
 						//DPRINTF("Failed in destroying command_queue_ntfs\n");
 					}
@@ -980,7 +980,7 @@ static void rawseciso_thread(u64 arg)
 	if(mode_file != 1)
 	{
 		sec_size = 512ULL;
-		if(args->device != 0)
+		if(args->device)
 		{
 			for(int retry = 0; retry < 16; retry++)
 			{
@@ -1002,7 +1002,7 @@ static void rawseciso_thread(u64 arg)
 	{
 		usb_device = args->device;
 
-		if(usb_device != 0)
+		if(usb_device)
 		{
 			ret = sys_storage_open(usb_device, 0, &handle, 0);
 			if(ret != CELL_OK)
@@ -1201,7 +1201,7 @@ static void rawseciso_thread(u64 arg)
 								offset+= rd;
 								buf = ((char *) buf) + rd;
 
-								if(size != 0)
+								if(size)
 									ret = process_read_iso_cmd_iso(buf, offset, size);
 							}
 						}
@@ -1283,7 +1283,7 @@ exit_rawseciso:
 
 	sys_event_port_disconnect(result_port);
 
-	if(sys_event_port_destroy(result_port) != 0)
+	if(sys_event_port_destroy(result_port))
 	{
 		//DPRINTF("Error destroyng result_port\n");
 	}
@@ -1303,7 +1303,7 @@ static void rawseciso_stop_thread(u64 arg)
 
 	if(command_queue_ntfs != SYS_EVENT_QUEUE_NONE)
 	{
-		if(sys_event_queue_destroy(command_queue_ntfs, SYS_EVENT_QUEUE_DESTROY_FORCE) != 0)
+		if(sys_event_queue_destroy(command_queue_ntfs, SYS_EVENT_QUEUE_DESTROY_FORCE))
 		{
 			//DPRINTF("Failed in destroying command_queue_ntfs\n");
 		}

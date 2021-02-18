@@ -1,9 +1,9 @@
 #ifdef NET_SUPPORT
 
 #ifdef NET3NET4
-	const u8 netsrvs = 5;
+	static const u8 netsrvs = 5;
 #else
-	const u8 netsrvs = 3;
+	static const u8 netsrvs = 3;
 #endif
 
 typedef struct
@@ -492,7 +492,7 @@ static void netiso_thread(__attribute__((unused)) u64 arg)
 		}
 
 		//DPRINTF("sys_event_port_send failed: %x\n", ret);
-		if(ret != 0) break;
+		if(ret) break;
 	}
 
 exit_netiso:
@@ -550,7 +550,7 @@ static void netiso_stop_thread(__attribute__((unused)) u64 arg)
 
 	if(command_queue_net != SYS_EVENT_QUEUE_NONE)
 	{
-		if(sys_event_queue_destroy(command_queue_net, SYS_EVENT_QUEUE_DESTROY_FORCE) != 0)
+		if(sys_event_queue_destroy(command_queue_net, SYS_EVENT_QUEUE_DESTROY_FORCE))
 		{
 			//DPRINTF("Failed in destroying command_queue_net\n");
 		}

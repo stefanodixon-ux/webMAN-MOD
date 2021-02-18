@@ -92,7 +92,7 @@ static void spoof_idps_psid(void)
 		newIDPS[1] = convertH(webman_config->vIDPS2);
 
 		// IDPS must be like 00000001008*00**
-		if((newIDPS[0] & 0xFFFFFFFFFFF0FF00ULL) == 0x0000000100800000ULL && newIDPS[1] != 0)
+		if(((newIDPS[0] & 0xFFFFFFFFFFF0FF00ULL) == 0x0000000100800000ULL) && (newIDPS[1] != 0))
 		{
 #ifdef COBRA_ONLY
 			{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_IDPS, (u64)newIDPS[0], (u64)newIDPS[1]);}

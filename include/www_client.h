@@ -2,6 +2,7 @@
 
 #define CODE_HTTP_OK            200
 #define CODE_BAD_REQUEST        400
+#define CODE_FORBIDDEN          403
 #define CODE_PATH_NOT_FOUND     404
 #define CODE_NOT_IMPLEMENTED    501
 #define CODE_SERVER_BUSY        503
@@ -390,7 +391,7 @@ static void handleclient_www(u64 conn_s_p)
 		// check remote access
 		if(webman_config->bind && is_remote_ip && !islike(remote_ip, webman_config->allow_ip))
 		{
-			keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, STR_ERROR);
+			keep_alive = http_response(conn_s, header, param, CODE_FORBIDDEN, "403 Forbidden");
 
 			goto exit_handleclient_www;
 		}
@@ -1908,7 +1909,7 @@ parse_request:
 					}
 					else
 					{
-						keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
+						keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, "ERROR: Not in XMB!");
 						goto exit_handleclient_www;
 					}
 				}
@@ -2680,11 +2681,15 @@ retry_response:
 				}
 			}
 
-			while((!sysmem) && (BUFFER_SIZE_HTML > 0) && sys_memory_allocate(BUFFER_SIZE_HTML, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) BUFFER_SIZE_HTML -= _64KB_;
+			while((!sysmem) && (BUFFER_SIZE_HTML > 0) && sys_memory_allocate(BUFFER_SIZE_HTML, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) {BUFFER_SIZE_HTML -= _64KB_; sys_ppu_thread_usleep(5000);}
+
+			// one last try before give up
+			if(!sysmem)
+				{BUFFER_SIZE_HTML = _64KB_; sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);}
 
 			if(!sysmem)
 			{
-				keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);
+				keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, "503 Out of memory. Try again.");
 				goto exit_handleclient_www;
 			}
 
@@ -3010,7 +3015,7 @@ retry_response:
 						char *pkg_file = param + 12;
 						check_path_alias(pkg_file);
 
-						strcat(buffer, "Install PKG: <select autofocus onchange=\"window.location='/install.ps3");
+						strcat(buffer, "Install PKG: <select autofocus onchange=\"$('wmsg').style.display='block';window.location='/install.ps3");
 						strcat(buffer, pkg_file);
 						strcat(buffer, "/'+this.value;\"><option>");
 
@@ -3145,9 +3150,9 @@ retry_response:
 						else if(islike(param2 , "?uninstall"))
 						{
 							struct CellFsStat buf;
-							if(cellFsStat("/dev_hdd0/boot_plugins.txt", &buf)             == CELL_FS_SUCCEEDED && buf.st_size < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
-							if(cellFsStat("/dev_hdd0/boot_plugins_nocobra.txt", &buf)     == CELL_FS_SUCCEEDED && buf.st_size < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
-							if(cellFsStat("/dev_hdd0/boot_plugins_nocobra_dex.txt", &buf) == CELL_FS_SUCCEEDED && buf.st_size < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
+							if((cellFsStat("/dev_hdd0/boot_plugins.txt", &buf)             == CELL_FS_SUCCEEDED) && (buf.st_size < 45)) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
+							if((cellFsStat("/dev_hdd0/boot_plugins_nocobra.txt", &buf)     == CELL_FS_SUCCEEDED) && (buf.st_size < 46)) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
+							if((cellFsStat("/dev_hdd0/boot_plugins_nocobra_dex.txt", &buf) == CELL_FS_SUCCEEDED) && (buf.st_size < 46)) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
 
 							// delete files
 							sprintf(param, "plugins/");
@@ -3420,7 +3425,7 @@ retry_response:
 							// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
 							char *dev_path = (templn + 10);
 							char *dev_name = strstr(dev_path, "&name="); if(dev_name) {*dev_name = 0, dev_name += 6;}
-							char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 4;} else fs = (char*)"CELL_FS_FAT\0";
+							char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 3;} else fs = (char*)"CELL_FS_FAT";
 
 							if(not_exists(dev_path) || dev_name)
 							{

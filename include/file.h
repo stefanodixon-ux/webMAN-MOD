@@ -1,8 +1,9 @@
 #define SC_FS_LINK						(810)
 #define SC_FS_MOUNT 					(837)
 #define SC_FS_UMOUNT					(838)
+#define SC_FS_DISK_FREE 				(840)
 
-#define SC_BDVD_DECRYPT					(36)
+#define SC_BDVD_DECRYPT 				(36)
 
 #define NO_MSG							NULL
 
@@ -22,6 +23,7 @@ static u32 copied_count = 0;
 
 #define DEV_NTFS		"/dev_nt"
 
+static void enable_dev_blind(const char *msg);
 static sys_addr_t g_sysmem = NULL;
 
 enum scan_operations
@@ -116,15 +118,45 @@ static void filepath_check(char *file)
 #endif
 }
 
+static void check_path_alias(char *param)
+{
+	if(not_exists(param))
+	{
+		if(!islike(param, "/dev_") && !islike(param, "/net"))
+		{
+			char path[STD_PATH_LEN]; snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
+			if(IS(param, "/pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
+			if(IS(param, "/xmb")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
+			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, path);} // try HTML_BASE_PATH
+			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s/%s", webman_config->home_url, path);} // try webman_config->home_url
+			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s%s",  HDD0_GAME_DIR, path);} // try /dev_hdd0/game
+			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s%s", _HDD0_GAME_DIR, path);} // try /dev_hdd0//game
+			if(not_exists(param))
+			{
+				for(u8 i = 0; i < MAX_DRIVES; i++)
+				{
+					if(i == NET) i = NTFS + 1;
+					snprintf(param, HTML_RECV_LAST, "%s/%s", drives[i], path);
+					if(file_exists(param)) return;
+				}
+			} // try hdd0, usb0, usb1, etc.
+			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", path);} // try hdd0
+		}
+	}
+}
+
+
 static u64 get_free_space(const char *dev_name)
 {
 #ifdef USE_NTFS
 	if(is_ntfs_path(dev_name))
 	{
+		char tmp[8];
+		strncpy(tmp, dev_name + 5, 8); tmp[5] = ':', tmp[7] = 0;
+
 		struct statvfs vbuf;
-		char tmp[STD_PATH_LEN];
-		strcpy(tmp, dev_name); tmp[10] = ':', tmp[12] = 0;
-		ps3ntfs_statvfs(tmp + 5, &vbuf);
+		ps3ntfs_statvfs(tmp, &vbuf);
 		return ((u64)vbuf.f_bfree * (u64)vbuf.f_bsize);
 	}
 #endif
@@ -132,7 +164,6 @@ static u64 get_free_space(const char *dev_name)
 
 	u64 freeSize = 0, devSize = 0;
 
-	#define SC_FS_DISK_FREE		840
 	{system_call_3(SC_FS_DISK_FREE, (u64)(u32)(dev_name), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
 	return freeSize;
 /*
@@ -238,34 +269,6 @@ static bool is_ext(const char *path, const char *ext)
 	return !extcasecmp(path, ext, 4);
 }
 
-static void check_path_alias(char *param)
-{
-	if(not_exists(param))
-	{
-		if(!islike(param, "/dev_") && !islike(param, "/net"))
-		{
-			char path[STD_PATH_LEN]; snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
-			if(IS(param, "/pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
-			if(IS(param, "/xmb")) {sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
-			if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
-			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, path);} // try HTML_BASE_PATH
-			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", webman_config->home_url, path);} // try webman_config->home_url
-			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s",  HDD0_GAME_DIR, path);} // try /dev_hdd0/game
-			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s%s", _HDD0_GAME_DIR, path);} // try /dev_hdd0//game
-			if(not_exists(param))
-			{
-				for(u8 i = 0; i < MAX_DRIVES; i++)
-				{
-					if(i == NET) i = NTFS + 1;
-					snprintf(param, HTML_RECV_LAST, "%s/%s", drives[i], path);
-					if(file_exists(param)) return;
-				}
-			} // try hdd0
-			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", path);} // try hdd0
-		}
-	}
-}
-
 #ifdef COBRA_ONLY
 static bool is_iso_0(const char *filename)
 {
@@ -321,6 +324,9 @@ static void mkdirs(char *param)
 	//cellFsMkdir("/dev_hdd0/PS2ISO", DMODE);
 	//cellFsMkdir("/dev_hdd0/PSXISO", DMODE);
 	//cellFsMkdir("/dev_hdd0/PSPISO", DMODE);
+	#ifdef MOUNT_ROMS
+	cellFsMkdir("/dev_hdd0/ROMS", DMODE);
+	#endif
 
 	sprintf(param, "/dev_hdd0");
 	for(u8 i = 0; i < 9; i++)
@@ -1365,14 +1371,13 @@ static void mount_device(const char *dev_path, const char *dev_name, const char 
 {
 	if(!sys_admin) return;
 
-	if(!dev_path || isDir(dev_path)) return;
+	if(!dev_path || (*dev_path != '/') || isDir(dev_path)) return;
 
 	if(islike(dev_path, "/dev_blind"))
 		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_IOS:BUILTIN_FLSH1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_blind", 0, 0, 0, 0, 0);}
-	else if(islike(dev_path, "/dev_hdd1"))
-		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_UTILITY:HDD1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_hdd1", 0, 0, 0, 0, 0);}
-	else if(!dev_name || !file_system) return;
-	else if((*dev_path == '/') && islike(dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
+	else if(!dev_name || !file_system || islike(dev_path, "/dev_hdd1"))
+		{system_call_8(SC_FS_MOUNT, (u64)(char*)"CELL_FS_UTILITY:HDD1", (u64)(char*)"CELL_FS_FAT", (u32)dev_path, 0, 0, 0, 0, 0);}
+	else if(islike(dev_name, "CELL_FS_") && islike(file_system, "CELL_FS_"))
 		{system_call_8(SC_FS_MOUNT, (u32)dev_name, (u32)file_system, (u32)dev_path, 0, 0, 0, 0, 0);}
 }
 

@@ -185,8 +185,9 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 #endif
 	if(IS_ON_XMB && ((View_Find("game_plugin") != 0) || (View_Find("download_plugin") != 0)) )
 	{
-		sprintf(templn, "<hr><font size=2>&starf; Status: %s %s</font>", (View_Find("download_plugin") != 0) ? "Downloading file" : "",
-																		 (View_Find("game_plugin") != 0) ? "Installing PKG" : ""); buffer += concat(buffer, templn);
+		sprintf(templn, "<hr><font size=2>&starf; Status: %s %s</font>",
+						View_Find("download_plugin") ? "Downloading file" : "",
+						View_Find("game_plugin")     ? "Installing PKG"   : ""); buffer += concat(buffer, templn);
 	}
 
 	if(strstr(param, "?"))

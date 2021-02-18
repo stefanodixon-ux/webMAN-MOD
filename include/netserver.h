@@ -649,7 +649,7 @@ static void handleclient_net(u64 arg)
 					ret = FAILED; // Unknown command received
 			}
 
-			if(ret != 0) break;
+			if(ret) break;
 		}
 		else
 		{
