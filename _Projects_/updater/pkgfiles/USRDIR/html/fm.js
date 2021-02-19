@@ -24,6 +24,7 @@ function rn(f){
 function ku(e){
 	e=e||window.event;
 	if(e.keyCode==113){try{a=document.querySelectorAll('a:hover')[0].pathname.replace('/mount.ps3','');rn(a);}catch(err){}}
+	$('mnu').style.display='none';
 }
 
 // Right-click menu

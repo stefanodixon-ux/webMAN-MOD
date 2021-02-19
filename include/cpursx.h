@@ -363,7 +363,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	else
 		sprintf(templn, "<a href=\"%s/%08i\">", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
 
-	sprintf(templn, "<label title=\"Startup\"><img src='%s/time.png' style='position:relative;top:8px;'></label> %id %02d:%02d:%02d</a>", WM_ICONS_PATH, dd, hh, mm, ss); buffer += concat(buffer, templn);
+	sprintf(templn, "<label title=\"Startup\"><img src='%s/time.png' border=0 style='position:relative;top:8px;'></label> %id %02d:%02d:%02d</a>", WM_ICONS_PATH, dd, hh, mm, ss); buffer += concat(buffer, templn);
 	///////////////////////
 
 	ss = (u32)total_time_in_sec;

@@ -763,15 +763,16 @@ parse_request:
 
 					// default: play.ps3?col=game&seg=seg_device
 					char col[16], seg[80]; *col = *seg = NULL; bool execute = true;
-#ifndef LITE_EDITION
+#ifdef COBRA_ONLY
+					#ifndef LITE_EDITION
 					if(_islike(param2, "movian") || IS(param2, "HTSS00003"))
 													 {sprintf(param2, "col=tv&seg=HTSS00003"); mount_unk = APP_GAME;} else
 					if(_islike(param2, "remoteplay")){sprintf(param2, "col=network&seg=seg_premo");} else
 					if(_islike(param2, "retro"))     {sprintf(param2, "SSNE10000");} else
 					if(_islike(param2, "multiman"))  {sprintf(param2, "BLES80608");} else
 					if(_islike(param2, "rebug"))     {sprintf(param2, "RBGTLBOX2");}
-#endif
-#ifdef COBRA_ONLY
+					#endif
+
 					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
 
 					if(*map_title_id && (*param2 == NULL))

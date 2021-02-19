@@ -120,14 +120,18 @@ static void filepath_check(char *file)
 
 static void check_path_alias(char *param)
 {
-	if(not_exists(param))
+	if(*param && not_exists(param))
 	{
 		if(!islike(param, "/dev_") && !islike(param, "/net"))
 		{
 			char path[STD_PATH_LEN]; snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
-			if(IS(param, "/pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
-			if(IS(param, "/xmb")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(IS(param, "/pkg"))      {sprintf(param, DEFAULT_PKG_PATH);} else
+			if(IS(param, "/xml"))      {*path = 0;} else
+			if(IS(param, "/xmb"))      {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(IS(param, "/cov"))      {sprintf(param, "%s/covers", MM_ROOT_STD);} else
+			if(IS(param, "/cvr"))      {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
 			if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
+
 			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, path);} // try HTML_BASE_PATH
 			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s/%s", webman_config->home_url, path);} // try webman_config->home_url
 			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s%s",  HDD0_GAME_DIR, path);} // try /dev_hdd0/game
