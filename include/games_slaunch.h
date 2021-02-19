@@ -84,4 +84,22 @@ static void close_slaunch_file(int fd)
 	cellFsClose(fd);
 	cellFsChmod(SLAUNCH_FILE, MODE);
 }
+
+static int find_slaunch_game(char *filename, u8 offset)
+{
+	int fsl = 0, ret = 0;
+	if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fsl, NULL, 0) == CELL_FS_SUCCEEDED)
+	{
+		_slaunch slaunch; u64 read_e;
+		char *name = slaunch.name;
+		while(cellFsRead(fsl, &slaunch, sizeof(_slaunch), &read_e) == CELL_FS_SUCCEEDED && read_e > 0)
+		{
+			char *path = slaunch.name + slaunch.path_pos;
+			if((strcasestr(path, filename) == NULL) && (strcasestr(name, filename) == NULL)) continue;
+			ret = sprintf(filename, "%s", path + offset); break;
+		}
+		cellFsClose(fsl);
+	}
+	return ret;
+}
 #endif

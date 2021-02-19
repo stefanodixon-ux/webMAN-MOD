@@ -156,7 +156,7 @@ static char h2a(const char hex)
 	return c;
 }
 
-static inline void urldec(char *url, char *original)
+static void urldec(char *url, char *original)
 {
 	if((strchr(url, '+') != NULL) || (strchr(url, '%') != NULL))
 	{

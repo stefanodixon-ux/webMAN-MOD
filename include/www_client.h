@@ -512,20 +512,7 @@ parse_request:
 							char *pos2 = strcasestr(filename, ".png"); if(pos2) *pos2 = NULL;
 
 							// Find filename in SLAUNCH_FILE
-							int fsl = 0;
-							if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fsl, NULL, 0) == CELL_FS_SUCCEEDED)
-							{
-								_slaunch slaunch; u64 read_e;
-
-								while(cellFsRead(fsl, &slaunch, sizeof(_slaunch), &read_e) == CELL_FS_SUCCEEDED && read_e > 0)
-								{
-									char *path = slaunch.name + slaunch.path_pos;
-									char *templn = slaunch.name;
-									if((strcasestr(path, filename) == NULL) && (strcasestr(templn, filename) == NULL)) continue;
-									sprintf(filename, "%s", path); break;
-								}
-								cellFsClose(fsl);
-							}
+							find_slaunch_game(filename, 0);
 
 							// show filename
 							if(!(webman_config->minfo & 1)) show_msg(filename);
@@ -737,7 +724,13 @@ parse_request:
 					}
 
 					// check /play.ps3<path>
+					if(not_exists(param2))
+					{
+						find_slaunch_game(param2, 10); // search in slaunch.bin
+						urldec(param2, header);
+					}
 					check_path_alias(param2);
+
 					if(file_exists(param2))
 					{
 						if(wait_for_xmb())
@@ -760,6 +753,8 @@ parse_request:
 						is_binary = WEB_COMMAND;
 						goto html_response;
 					}
+					else
+						strcpy(param2, header); // restore original parameter
 
 					// default: play.ps3?col=game&seg=seg_device
 					char col[16], seg[80]; *col = *seg = NULL; bool execute = true;
@@ -3387,6 +3382,7 @@ retry_response:
 					if(forced_mount || islike(param, "/mount.ps3") || islike(param, "/copy.ps3"))
  #endif
 					{
+						// /mount.ps3?<search-name>
 						// /mount.ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}][&to=/app_home]
 						// /mount.ps3/unmount
 						// /mount.ps2/<path>[?random=<x>]
@@ -3421,10 +3417,16 @@ retry_response:
 
 						else if(!islike(param + 10, "/net") && !islike(param + 10, WMTMP))
 						{
-							check_path_alias(param + 10); strcpy(templn, param);
+							char *param2 = param + 10; strcpy(templn, param2);
+							if(not_exists(param2))
+							{
+								find_slaunch_game(param2, 10); // search in slaunch.bin
+								urldec(param2, templn);
+							}
+							check_path_alias(param2);
 
 							// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
-							char *dev_path = (templn + 10);
+							char *dev_path = templn;
 							char *dev_name = strstr(dev_path, "&name="); if(dev_name) {*dev_name = 0, dev_name += 6;}
 							char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 3;} else fs = (char*)"CELL_FS_FAT";
 
