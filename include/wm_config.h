@@ -173,15 +173,19 @@ typedef struct
 	char vPSID1[17];
 	char vPSID2[17];
 
-	u8 padding13[29];
+	u8 padding13[24];
 
-	u8 resource_id[5];
+	u8 resource_id[10];
 	//u8 wallpaper_id;	// [0]: 0=random, 1-255: select specific #.png in /dev_hdd0/tmp/wallpaper on each boot
 	//u8 earth_id;		// [1]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/earth on each boot
 	//u8 canyon_id;		// [2]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/canyon on each boot
 	//u8 lines_id;		// [3]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/lines on each boot
 	//u8 coldboot_id;	// [4]: 0=random, 1-255: select specific #.ac3 in /dev_hdd0/tmp/coldboot on each boot
-
+	//u8 theme_id;		// [5]: 0=random, 1-255: select specific #.p3t in /dev_hdd0/tmp/theme on each boot
+	//u8 last_theme_id;	// [6]: 0=none, 1-255: last selected theme (used to prevent install the current theme again)
+						// [7]: reserved
+						// [8]: reserved
+						// [9]: reserved
 } /*__attribute__((packed))*/ WebmanCfg;
 
 static u8 wmconfig[sizeof(WebmanCfg)];

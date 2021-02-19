@@ -699,6 +699,7 @@ parse_request:
 				// /play.ps3<script-path>        execute script. path must be a .txt or .bat file
 				// /play.ps3?<titleid>           mount npdrm game and start game from app_home icon (e.g IRISMAN00, MANAGUNZ0, NPUB12345, etc.)
 				// /play.ps3?<appname>           play movian, multiman, retroArch, rebug toolbox, remoteplay
+				// /play.ps3?<search-name>       search game by name or path
 
 				u8 ret = 0, is_combo = (param[2] == 'a') ? 0 : (param[1] == 'c') ? 2 : 1; // 0 = /pad.ps3   1 = /play.ps3   2 = /combo.ps3
 
@@ -1568,7 +1569,12 @@ parse_request:
 				goto exit_handleclient_www;
 			}
  #ifdef VISUALIZERS
-			else if(islike(param, "/wallpaper.ps3") || islike(param, "/earth.ps3") || islike(param, "/canyon.ps3") || islike(param, "/lines.ps3") || islike(param, "/coldboot.ps3"))
+			else if(islike(param, "/wallpaper.ps3") ||
+					islike(param, "/earth.ps3")  ||
+					islike(param, "/canyon.ps3") ||
+					islike(param, "/lines.ps3")  ||
+					islike(param, "/theme.ps3")  ||
+					islike(param, "/coldboot.ps3"))
 			{
 				// /wallpaper.ps3?random
 				// /wallpaper.ps3           show selected
@@ -1578,10 +1584,12 @@ parse_request:
 				// /wallpaper.ps3?disable   use dev_flash (id=255)
 
 				u8 id;
-				u8 res_id = (param[1] == 'w') ? 0 :
-							(param[1] == 'e') ? 1 :
-							(param[4] == 'y') ? 2 :
-							(param[1] == 'l') ? 3 : 4; // 0 = wallpaper, 1 = earth, 2 = canyon, 3 = lines, 4 = coldboot
+				u8 res_id = (param[1] == 'w') ? 0: // 0 = wallpaper
+							(param[1] == 'e') ? 1: // 1 = earth
+							(param[4] == 'y') ? 2: // 2 = canyon
+							(param[1] == 'l') ? 3: // 3 = lines
+							(param[1] == 'c') ? 4: // 4 = coldboot
+												5; // 5 = theme
 
 				char *value = strstr(param, ".ps3") + 4;
 

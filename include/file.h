@@ -1452,7 +1452,8 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 1) ? "/dev_hdd0/tmp/earth"    : // 1
 							(res_id == 2) ? "/dev_hdd0/tmp/canyon"   : // 2
 							(res_id == 3) ? "/dev_hdd0/tmp/lines"    : // 3
-											"/dev_hdd0/tmp/coldboot";  // 4
+							(res_id == 4) ? "/dev_hdd0/tmp/coldboot" : // 4
+											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
 
 	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
 							(res_id == 2) ? "/dev_flash/vsh/resource/qgl/canyon.qrc":
@@ -1466,7 +1467,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 			id = webman_config->resource_id[res_id];
 		}
 
-		u8 _id;
+		u8 _id, save = false;
 		if(!id)	// random
 		{
 			CellRtcTick nTick; cellRtcGetCurrentTick(&nTick);
@@ -1481,6 +1482,8 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 				sprintf(param, "%s/%i.png", hdd_path, _id);
 			else if(res_id == 4)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id);
+			else if(res_id == 5)
+				sprintf(param, "%s/%i.p3t", hdd_path, _id);
 			else
 				sprintf(param, "%s/%i.qrc", hdd_path, _id);
 			if(id == DEFAULT_RES) break; _id /= 2;
@@ -1489,6 +1492,18 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 
 		if(file_exists(param))
 		{
+			if(res_id == 5)
+			{
+				if((set || (_id > 0)) && (webman_config->resource_id[6] != _id))
+				{
+					char msg[0x100];
+					scan("/dev_hdd0/theme/", false, "CD_*.p3t", SCAN_DELETE, msg); // delete temporary themes
+					wait_for_xmb();
+					installPKG(param, msg);
+					set = save = true, webman_config->resource_id[6] = _id; // last selected theme
+				}
+			}
+			else
 			if(res_id)
 			{
 				sys_map_path(res_path, param);
@@ -1505,11 +1520,15 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 		}
 		else if(res_id)
 		{
-			strcpy(param, res_path); if(id != DEFAULT_RES) id = 0;
+			if(id != DEFAULT_RES) id = 0;
+			if(res_id == 5)
+				webman_config->resource_id[6] = 0; // reset last selected theme
+			else
+				strcpy(param, res_path);
 			sys_map_path(param, NULL);
 		}
 
-		if(set && (webman_config->resource_id[res_id] != id))
+		if(set && (save || (webman_config->resource_id[res_id] != id)))
 		{
 			webman_config->resource_id[res_id] = id;
 

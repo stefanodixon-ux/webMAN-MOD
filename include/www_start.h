@@ -149,6 +149,7 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		map_vsh_resource(0, MAP_SELECTED, param, false); // wallpaper.png
 		map_vsh_resource(1, MAP_SELECTED, param, false); // earth.qrc
 		map_vsh_resource(2, MAP_SELECTED, param, false); // canyon.qrc
+		map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
 		#endif
 		#endif
 
