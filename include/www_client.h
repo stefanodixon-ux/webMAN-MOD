@@ -1764,10 +1764,14 @@ parse_request:
 				// /write_ps3?f=<path>&t=<text> use | for line break (add text to file)
 				// /write_ps3?f=<path>&t=<text>&line=<num> insert line(s) to text file in line position
 				// /write.ps3?f=<path>&t=<text>&line=<num> replace line of text file in line position
+				// /write.ps3?f=<path>&t=<text>&find=<code> insert text if code is found and text is not found
 				// /write.ps3?f=<path>&t=<hex>&pos=<offset>       (patch file)
+
 				u64 offset = 0; u32 size = 0;
 				char *filename = param + ((param[10] == '/') ? 10 : 13);
 				char *pos = strstr(filename, "&t=");
+				char *find = header; *find = 0;
+
 				if(pos)
 				{
 					*pos = NULL;
@@ -1796,22 +1800,42 @@ parse_request:
 
 						pos = strstr(data, "&line=");
 
+						if(!pos)
+						{
+							pos = strstr(data, "&find=");
+							if(pos) strcpy(find, pos + 6);
+						}
+
 						if(pos)
 						{
 							// write or insert data at line number
 							sys_addr_t sysmem = NULL;
-							if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+							if(sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 							{
 								*pos = NULL, pos += 6;
-								u16 line = val(pos);
 
 								strcat(data, "\n");
 								u16 len = strlen(data);
-
 								char *buffer = (char*)sysmem;
-								size = read_file(filename, buffer, _64KB_, 0);
+								size = read_file(filename, buffer, _128KB_, 0);
 
-								if(line <= 1)
+								u16 line = (u16)val(pos);
+
+								if(*find)
+								{
+									char *pos = strstr(buffer, data);
+									if(!pos)
+									{
+										pos = strstr(buffer, find);
+										if(pos)
+										{
+											for(int i = strlen(pos); i >= 0; i--) pos[i + len] = pos[i];
+											memcpy(pos, data, len);
+											save_file(filename, buffer, SAVE_ALL);
+										}
+									}
+								}
+								else if(line <= 1)
 								{
 									save_file(filename, data, SAVE_ALL); // write line data
 									if(overwrite)
@@ -1824,7 +1848,7 @@ parse_request:
 								}
 								else if(size + len < _64KB_)
 								{
-									u16 i, c = 0, w = 0; --line;
+									u32 i, c = 0, w = 0; --line;
 									// find offset of line to write
 									for(i = 0; i < size; i++) if(buffer[i] == '\n' && (++c >= line)) {i++; break;}
 									// skip line to overwrite
