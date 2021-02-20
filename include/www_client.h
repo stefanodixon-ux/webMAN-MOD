@@ -1764,7 +1764,7 @@ parse_request:
 				// /write_ps3?f=<path>&t=<text> use | for line break (add text to file)
 				// /write_ps3?f=<path>&t=<text>&line=<num> insert line(s) to text file in line position
 				// /write.ps3?f=<path>&t=<text>&line=<num> replace line of text file in line position
-				// /write.ps3?f=<path>&t=<text>&find=<code> insert text if code is found and text is not found
+				// /write.ps3?f=<path>&t=<text>&find=<code> insert <text> before <code> if <text> is not found
 				// /write.ps3?f=<path>&t=<hex>&pos=<offset>       (patch file)
 
 				u64 offset = 0; u32 size = 0;
