@@ -490,7 +490,7 @@ int32_t wwwd_start(uint64_t arg)
 
 	detect_firmware();
 
-	sys_ppu_thread_create(&thread_id_wwwd, wwwd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_WEB_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, "AISCRIPT");
+	sys_ppu_thread_create(&thread_id_wwwd, wwwd_thread, NULL, THREAD_PRIO, 2*THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, "AISCRIPT");
 
 	sys_ppu_thread_exit(0);
 	return SYS_PRX_RESIDENT;

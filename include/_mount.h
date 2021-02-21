@@ -1464,7 +1464,7 @@ static void mount_thread(u64 action)
 	else if(is_ext(_path0, ".txt") || is_ext(_path0, ".bat"))
 	{
 		parse_script(_path0);
-		ret = false;
+		ret = true;
 		goto finish;
 	}
 #endif

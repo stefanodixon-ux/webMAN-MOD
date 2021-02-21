@@ -378,7 +378,7 @@ static void handleclient_www(u64 conn_s_p)
 	char cmd[16], header[HTML_RECV_SIZE], *mc = NULL;
 
  #ifdef WM_REQUEST
-	struct CellFsStat buf; u8 wm_request = (cellFsStat(WMREQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
+	struct CellFsStat buf; u8 wm_request = (wm_url != NULL) || (cellFsStat(WMREQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
 
 	if(!wm_request)
  #endif
@@ -479,8 +479,13 @@ parse_request:
 			if(wm_request)
 			{
 				// Set the content of WMREQUEST_FILE as header
-				if(buf.st_size > 5 && buf.st_size < HTML_RECV_SIZE && read_file(WMREQUEST_FILE, header, buf.st_size, 0) > 4)
+				if(wm_url || (buf.st_size > 5 && buf.st_size < HTML_RECV_SIZE && read_file(WMREQUEST_FILE, header, buf.st_size, 0) > 4))
 				{
+					if(wm_url)
+					{
+						buf.st_size = sprintf(header, "%s", wm_url); wm_url = NULL;
+					}
+
 					///// Process PhotoGUI request /////
 					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
 					{
@@ -1796,7 +1801,9 @@ parse_request:
 						bool overwrite = islike(param, "/write.ps3");
 
 						// convert pipes to line breaks
+						for(pos = data; *pos; ++pos) if(!memcmp(pos, "||", 2)) memcpy(pos, "\r\n", 2);
 						for(pos = data; *pos; ++pos) if(*pos == '|') *pos = '\n';
+						for(pos = data; *pos; ++pos) if(*pos == '`') *pos = '\t';
 
 						pos = strstr(data, "&line=");
 
@@ -3462,7 +3469,7 @@ retry_response:
 							char *dev_name = strstr(dev_path, "&name="); if(dev_name) {*dev_name = 0, dev_name += 6;}
 							char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 3;} else fs = (char*)"CELL_FS_FAT";
 
-							if(not_exists(dev_path) || dev_name)
+							if(islike(dev_path, "/dev_") && (not_exists(dev_path) || dev_name))
 							{
 								mount_device(dev_path, dev_name, fs);
 
@@ -3592,7 +3599,7 @@ exit_handleclient_www:
 	ssend(debug_s, "Request served.\r\n");
 	#endif
 
-	sclose(&conn_s);
+	sclose(&conn_s); wm_url = NULL;
 
 	if(loading_html) loading_html--;
 

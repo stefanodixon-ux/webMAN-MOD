@@ -25,6 +25,7 @@ static u32 copied_count = 0;
 
 static void enable_dev_blind(const char *msg);
 static sys_addr_t g_sysmem = NULL;
+static char *wm_url = NULL; // wm_request
 
 enum scan_operations
 {
@@ -1405,36 +1406,36 @@ static void disable_dev_blind(void)
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
 static void handle_file_request(const char *url)
 {
-	if(url) save_file(WMREQUEST_FILE, url, SAVE_ALL);
+	wm_url = (char*)url;
 
-	if(file_exists(WMREQUEST_FILE))
+	if(wm_url || file_exists(WMREQUEST_FILE))
 	{
 		loading_html++;
 		sys_ppu_thread_t t_id;
-		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
+		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_MOUNT_GAME, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
 	}
 
-	if(url) wait_path(WMREQUEST_FILE, 3, false);
+	while(wm_url) sys_ppu_thread_usleep(100000);
 }
 
 static bool do_custom_combo(const char *filename)
 {
  #if defined(WM_CUSTOM_COMBO)
-	char combo_file[STD_PATH_LEN];
+	char combo_file[128];
 
 	if(*filename == '/')
-		sprintf(combo_file, "%s", filename);
+		snprintf(combo_file, 127, "%s", filename);
 	else
-		sprintf(combo_file, "%s%s", WM_CUSTOM_COMBO, filename); // use default path
+		snprintf(combo_file, 127, "%s%s", WM_CUSTOM_COMBO, filename); // use default path
  #else
 	const char *combo_file = filename;
  #endif
 
 	if(file_exists(combo_file))
 	{
-		_file_copy((char*)combo_file, (char*)WMREQUEST_FILE);
-
-		handle_file_request(NULL);
+		char url[HTML_RECV_SIZE];
+		read_file(combo_file, url, HTML_RECV_SIZE, 0);
+		handle_file_request(combo_file);
 		return true;
 	}
 	return false;
