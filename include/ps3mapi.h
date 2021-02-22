@@ -217,6 +217,11 @@ static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
 		u8 value = get_valuen(param, "mode=", 0, 9);
 		ps3mapi_sound(value);
 	}
+	else if(islike(param, "/beep.ps3"))
+	{
+		u8 value = (u8)val(param + 10);
+		ps3mapi_sound(value);
+	}
 
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s%s</b>"

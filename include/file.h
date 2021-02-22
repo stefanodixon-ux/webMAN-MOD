@@ -125,12 +125,14 @@ static void check_path_alias(char *param)
 	{
 		if(!islike(param, "/dev_") && !islike(param, "/net"))
 		{
-			char path[STD_PATH_LEN]; snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
-			if(IS(param, "/pkg"))      {sprintf(param, DEFAULT_PKG_PATH);} else
-			if(IS(param, "/xml"))      {*path = 0;} else
-			if(IS(param, "/xmb"))      {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
-			if(IS(param, "/cov"))      {sprintf(param, "%s/covers", MM_ROOT_STD);} else
-			if(IS(param, "/cvr"))      {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
+			char path[STD_PATH_LEN];
+			int len = snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
+			if((len == 4) && path[3] == '/') path[3] = 0; // normalize path
+			if(IS(path, "pkg"))        {sprintf(param, DEFAULT_PKG_PATH);} else
+			if(IS(path, "xml"))        {*path = 0;} else
+			if(IS(path, "xmb"))        {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(IS(path, "cov"))        {sprintf(param, "%s/covers", MM_ROOT_STD);} else
+			if(IS(path, "cvr"))        {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
 			if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
 
 			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, path);} // try HTML_BASE_PATH
@@ -1457,6 +1459,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 2) ? "/dev_hdd0/tmp/canyon"   : // 2
 							(res_id == 3) ? "/dev_hdd0/tmp/lines"    : // 3
 							(res_id == 4) ? "/dev_hdd0/tmp/coldboot" : // 4
+							(res_id == 7) ? "/dev_hdd0/tmp/gameboot" : // 7
 											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
 
 	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
@@ -1480,17 +1483,23 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 		else
 			_id = id;	// fixed
 
+		u8 loop = 0;
 		do
 		{
+			if(loop) _id /= 2;
+
 			if(res_id == 0)
-				sprintf(param, "%s/%i.png", hdd_path, _id);
+				sprintf(param, "%s/%i.png", hdd_path, _id); // wallpaper
 			else if(res_id == 4)
-				sprintf(param, "%s/%i.ac3", hdd_path, _id);
+				sprintf(param, "%s/%i.ac3", hdd_path, _id); // coldboot
 			else if(res_id == 5)
-				sprintf(param, "%s/%i.p3t", hdd_path, _id);
+				sprintf(param, "%s/%i.p3t", hdd_path, _id); // theme
+			else if(res_id == 7)
+				sprintf(param, "%s/%i/custom_render_plugin.rco", hdd_path, _id); // gameboot
 			else
-				sprintf(param, "%s/%i.qrc", hdd_path, _id);
-			if(id == DEFAULT_RES) break; _id /= 2;
+				sprintf(param, "%s/%i.qrc", hdd_path, _id); // lines, earth, canyon
+
+			if(id == DEFAULT_RES) break; loop = 1;
 		}
 		while(_id && not_exists(param));
 
@@ -1507,12 +1516,20 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 					set = save = true, webman_config->resource_id[6] = _id; // last selected theme
 				}
 			}
-			else
-			if(res_id)
+			else if(res_id)
 			{
 				sys_map_path(res_path, param);
 				if(res_id == 4)
 					sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
+				else if(res_id == 7)
+				{
+					sprintf(param, "%s/%i/gameboot_multi.ac3", hdd_path, _id);
+					sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3", param);
+					sprintf(param, "%s/%i/gameboot_stereo.ac3", hdd_path, _id);
+					sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", param);
+					sprintf(param, "%s/%i/custom_render_plugin.rco", hdd_path, _id);
+					sys_map_path("/dev_flash/vsh/resource/custom_render_plugin.rco", param);
+				}
 			}
 			else
 			{
@@ -1540,6 +1557,17 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 		}
 	}
 	return id;
+}
+
+static void randomize_vsh_resources(bool apply_theme, char *param)
+{
+	map_vsh_resource(0, MAP_SELECTED, param, false); // wallpaper.png
+	map_vsh_resource(1, MAP_SELECTED, param, false); // earth.qrc
+	map_vsh_resource(2, MAP_SELECTED, param, false); // canyon.qrc
+	map_vsh_resource(3, MAP_SELECTED, param, false); // lines.qrc
+	map_vsh_resource(7, MAP_SELECTED, param, false); // gameboot (custom_render_plugin.rco + gameboot_stereo.ac3/gameboot_multi.ac3)
+	if(!apply_theme) return;
+	map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
 }
 #endif // #ifdef VISUALIZERS
 

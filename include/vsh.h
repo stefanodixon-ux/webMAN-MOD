@@ -466,13 +466,13 @@ static void goto_xmb_home(bool reload_game)
 }
 
 #ifdef PLAY_MUSIC
-static void play_xmb_music(void)
+static void start_xmb_player(const char* column)
 {
 	if(IS_ON_XMB && get_explore_interface())
 	{
 		exec_xmb_command("close_all_list");
 		sys_ppu_thread_sleep(1);
-		exec_xmb_command2("focus_category %s", "music");
+		exec_xmb_command2("focus_category %s", column);
 		exec_xmb_command2("focus_segment_index %s", "-1");
 		if(wait_for_abort(2)) return;
 		parse_pad_command("triangle", 0);

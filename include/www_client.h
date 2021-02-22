@@ -114,7 +114,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 			if(code == CODE_PREVIEW_FILE)
 			{
-				char *p = strrchr(filename, '.');
+				char *p = strrchr(filename, '.'); if(islike(filename, "/dev_hdd0/tmp/gameboot")) p = strrchr(filename, '/');
 				if(p) get_image_file(filename, p - filename); else strcat(filename, "/PS3_GAME/ICON0.PNG");
 				if(file_exists(filename))
 				{
@@ -1086,7 +1086,12 @@ parse_request:
 				#ifdef PLAY_MUSIC
 				if(islike(param2, "$music"))
 				{
-					play_xmb_music();
+					start_xmb_player("music");
+				}
+				else
+				if(islike(param2, "$video"))
+				{
+					start_xmb_player("video");
 				}
 				else
 				#endif
@@ -1575,10 +1580,11 @@ parse_request:
 			}
  #ifdef VISUALIZERS
 			else if(islike(param, "/wallpaper.ps3") ||
-					islike(param, "/earth.ps3")  ||
-					islike(param, "/canyon.ps3") ||
-					islike(param, "/lines.ps3")  ||
-					islike(param, "/theme.ps3")  ||
+					islike(param, "/earth.ps3")     ||
+					islike(param, "/canyon.ps3")    ||
+					islike(param, "/lines.ps3")     ||
+					islike(param, "/theme.ps3")     ||
+					islike(param, "/gameboot.ps3")  ||
 					islike(param, "/coldboot.ps3"))
 			{
 				// /wallpaper.ps3?random
@@ -1594,7 +1600,8 @@ parse_request:
 							(param[4] == 'y') ? 2: // 2 = canyon
 							(param[1] == 'l') ? 3: // 3 = lines
 							(param[1] == 'c') ? 4: // 4 = coldboot
-												5; // 5 = theme
+							(param[1] == 'g') ? 7: // 7 = gameboot
+												5; // 5 = theme (6 = last selected theme)
 
 				char *value = strstr(param, ".ps3") + 4;
 
@@ -2500,7 +2507,7 @@ retry_response:
 							|| islike(param, "/setmem.ps3mapi")
 							|| islike(param, "/getmem.ps3mapi")
 							|| islike(param, "/led.ps3mapi")
-							|| islike(param, "/buzzer.ps3mapi")
+							|| islike(param, "/buzzer.ps3mapi") || islike(param, "/beep.ps3")
 							|| islike(param, "/notify.ps3mapi")
 							|| islike(param, "/syscall.ps3mapi")
 							|| islike(param, "/syscall8.ps3mapi")
@@ -3261,7 +3268,7 @@ retry_response:
 						ps3mapi_home(pbuffer, templn);
 					}
 					else
-					if(islike(param, "/buzzer.ps3mapi"))
+					if(islike(param, "/buzzer.ps3mapi") || islike(param, "/beep.ps3"))
 					{
 						ps3mapi_buzzer(pbuffer, templn, param);
 					}

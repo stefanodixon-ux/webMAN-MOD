@@ -5,7 +5,7 @@
 #define ADD_XMB_ITEM(key)		"<Item class=\"type:x-xmb/module-action\" key=\"" key "\" attr=\"" key "\"/>"
 
 #define XML_HEADER				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><XMBML version=\"1.0\">"
-#define XML_PAIR(key, value) 	"<Pair key=\"" key "\"><String>" value "</String></Pair>"
+#define XML_PAIR(key, value) 	"<Pair key=\"" key "\"><>" value "</></Pair>"
 
 #define XAI_LINK_INC			"<Table key=\"inc\">" XML_PAIR("module_name", WM_PROXY_SPRX) XML_PAIR("bar_action", "none") "</Table>"
 #define WEB_LINK_INC			"<Table key=\"inc\">" XML_PAIR("module_name", "webrender_plugin") "</Table>"
@@ -325,10 +325,10 @@ scan_roms:
 	// --- build group headers ---
 	char *tempstr, *folder_name; tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB);
 
-	char localhost[24]; sprintf(localhost, "http://%s", local_ip);
-	char *proxy_plugin = (char*)WEB_LINK_INC;
+	char localhost[2]; sprintf(localhost, "0"); //sprintf(localhost, "http://%s", local_ip); // "0" = localhost
+	char *proxy_include = (char*)WEB_LINK_INC;
 	#ifdef WM_PROXY_SPRX
-	if((cobra_version > 0) && file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_plugin = (char*)XAI_LINK_INC, *localhost = NULL;}
+	if((cobra_version > 0) && file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_include = (char*)XAI_LINK_INC, *localhost = NULL;}
 	#endif
 
 	if( !scanning_roms && XMB_GROUPS )
@@ -336,12 +336,12 @@ scan_roms:
 		if(!(webman_config->cmask & PS3))
 		{
 			_concat(&myxml_ps3, "<View id=\"seg_wm_ps3_items\"><Attributes>");
-			_concat(&myxml_ps3, proxy_plugin);
+			_concat(&myxml_ps3, proxy_include);
 		}
 		if(!(webman_config->cmask & PS2))
 		{
 			_concat(&myxml_ps2, "<View id=\"seg_wm_ps2_items\"><Attributes>");
-			_concat(&myxml_ps2, proxy_plugin);
+			_concat(&myxml_ps2, proxy_include);
 			if(ps2_launcher)
 			{
 				#ifndef ENGLISH_ONLY
@@ -359,12 +359,12 @@ scan_roms:
 		if(!(webman_config->cmask & PS1))
 		{
 			_concat(&myxml_psx, "<View id=\"seg_wm_psx_items\"><Attributes>");
-			_concat(&myxml_psx, proxy_plugin);
+			_concat(&myxml_psx, proxy_include);
 		}
 		if(!(webman_config->cmask & PSP))
 		{
 			_concat(&myxml_psp, "<View id=\"seg_wm_psp_items\"><Attributes>");
-			_concat(&myxml_psp, proxy_plugin);
+			_concat(&myxml_psp, proxy_include);
 			if(psp_launcher)
 			{
 				#ifndef ENGLISH_ONLY
@@ -382,7 +382,7 @@ scan_roms:
 		if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU))
 		{
 			_concat(&myxml_dvd, "<View id=\"seg_wm_dvd_items\"><Attributes>");
-			_concat(&myxml_dvd, proxy_plugin);
+			_concat(&myxml_dvd, proxy_include);
 			if(webman_config->rxvid)
 			{
 				sprintf(templn, "<Table key=\"rx_video\">"
@@ -548,7 +548,7 @@ scan_roms:
 										 XML_PAIR("title","%s") //"%s"
 										 XML_PAIR("module_action","%s/mount_ps3%s%s/%s"),
 										 key, icon,
-										 templn, //proxy_plugin,
+										 templn, //proxy_include,
 										 localhost, neth, param, enc_dir_name);
 
 						// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
@@ -679,7 +679,7 @@ next_xml_entry:
 											 XML_PAIR("title","%s") //"%s"
 											 XML_PAIR("module_action","%s/mount_ps3%s%s/%s"),
 											 key, icon,
-											 templn, //proxy_plugin,
+											 templn, //proxy_include,
 											 localhost, "", param, enc_dir_name);
 
 							// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
@@ -837,7 +837,7 @@ continue_reading_folder_xml:
 #ifdef MOUNT_ROMS
 	myxml.size = sprintf(myxml.str, "%s"
 						"<View id=\"%s%s\">"
-						"<Attributes>%s", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "", proxy_plugin);
+						"<Attributes>%s", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "", proxy_include);
 
 	if(scanning_roms)
 	{
@@ -899,7 +899,7 @@ continue_reading_folder_xml:
 						XML_PAIR("title","%s")
 						XML_PAIR("info","%s") //"%s"
 						XML_PAIR("module_action","%s/mount_ps3/unmount") "</Table>",
-						wm_icons[11], STR_EJECTDISC, STR_UNMOUNTGAME, /*proxy_plugin,*/ localhost);
+						wm_icons[11], STR_EJECTDISC, STR_UNMOUNTGAME, /*proxy_include,*/ localhost);
 		_concat(&myxml, templn);
 	}
 

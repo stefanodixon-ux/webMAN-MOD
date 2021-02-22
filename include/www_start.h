@@ -146,10 +146,7 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		sys_map_path("/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);
 		sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);
 		#ifdef VISUALIZERS
-		map_vsh_resource(0, MAP_SELECTED, param, false); // wallpaper.png
-		map_vsh_resource(1, MAP_SELECTED, param, false); // earth.qrc
-		map_vsh_resource(2, MAP_SELECTED, param, false); // canyon.qrc
-		map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
+		randomize_vsh_resources(true, param);
 		#endif
 		#endif
 
@@ -159,7 +156,7 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 			vshNotify_WithIcon(6, "Starting Music...\n"
 								  "Press O to abort");
 			if(!wait_for_abort(8 + webman_config->boots))
-				play_xmb_music();
+				start_xmb_player("music");
 			else
 				play_rco_sound("snd_system_ng");
 		}

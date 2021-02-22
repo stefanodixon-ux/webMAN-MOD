@@ -24,9 +24,9 @@ typedef struct
 	int (*DoUnk20)(int,uint64_t);                   // nullsub / PlayIndicate, 2 Parameter: , int value, (0 = show?, 1=update?, -1 = hide) -  (set_playing 0x%x 0x%llx 0x%llx 0x%llx 0x%llx")
 	int (*DoUnk21)(void *);                         // nullsub / 1 Parameter: uint * list (simply both parameter from 20/2 and 3rd terminating = -1)
 	int (*DoUnk22)(void *);                         // 0 Parameter / 1 Parameter:
-	int (*DoUnk23)();                               // -
-	int (*DoUnk24)();                               // 0 Parameter:
-	int (*DoUnk25)();                               // 0 Parameter: // get target id check
+	int (*DoUnk23)(void);                           // -
+	int (*DoUnk24)(void);                           // 0 Parameter:
+	int (*DoUnk25)(void);                           // 0 Parameter: // get target id check
 	int (*DoUnk26)(char *, char *);                 // 2 Parameter: char * (TropViewMode/backup/FaustPreview...) , char * (group/fixed/on...)
 	int (*DoUnk27)(void *);                         // 1 Parameter: char *
 	int (*DoUnk28)(char *, void *);                 // 2 Parameter: char * (ReloadXil/AvcRoomItem/...), uint8 xml?_parameters[]

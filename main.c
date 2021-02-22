@@ -476,6 +476,7 @@ static void wwwd_thread(u64 arg)
 #ifdef VISUALIZERS
 	map_vsh_resource(4, MAP_SELECTED, html_base_path, false); // coldboot_*.ac3
 	map_vsh_resource(3, MAP_SELECTED, html_base_path, false); // lines.qrc
+	*html_base_path = NULL;
 #endif
 
 	if(webman_config->blind) enable_dev_blind(NO_MSG);

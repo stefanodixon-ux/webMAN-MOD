@@ -1145,15 +1145,16 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer,
 					"<div style=\"display:none\"><datalist id=\"cmds\">"
  #ifdef PS3_BROWSER
-					"<option>/browser.ps3$block_servers"
+					"<option>/xmb.ps3$block_servers"
   #ifdef REMOVE_SYSCALLS
-					"<option>/browser.ps3$disable_syscalls?keep_ccapi"
+					"<option>/xmb.ps3$disable_syscalls?keep_ccapi"
   #endif
   #ifdef XMB_SCREENSHOT
-					"<option>/browser.ps3$screenshot_xmb"
+					"<option>/xmb.ps3$screenshot"
   #endif
   #ifdef PLAY_MUSIC
-					"<option>/browser.ps3$music"
+					"<option>/xmb.ps3$video"
+					"<option>/xmb.ps3$music"
   #endif
  #endif //#ifdef PS3_BROWSER
 					"<option>/cpursx.ps3?mode"
@@ -1166,7 +1167,7 @@ static void setup_form(char *buffer, char *templn)
  #endif
  #ifdef PKG_HANDLER
 					"<option>/install_ps3/dev_hdd0/packages"
-					"<option>/buzzer.ps3mapi?mode=2;/move.ps3/dev_hdd0/vsh/task/*.pkg&to=/dev_hdd0/packages"
+					"<option>/beep.ps3;/move.ps3/dev_hdd0/vsh/task/*.pkg&to=/dev_hdd0/packages"
  #endif
 					"</datalist></div>");
 #endif // #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
