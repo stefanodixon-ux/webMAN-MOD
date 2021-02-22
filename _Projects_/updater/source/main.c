@@ -48,6 +48,8 @@
 #define XMBMANPLS_FEATS_DIR  XMBMANPLS_DIR "/USRDIR/FEATURES"
 #define XMBMANPLS_IMAGES_DIR XMBMANPLS_DIR "/USRDIR/IMAGES"
 
+#define RELOADXMB_DIR        "/dev_hdd0//game/RELOADXMB"
+
 #define IRISMAN_USRDIR       "/dev_hdd0//game/IRISMAN01/USRDIR"
 #define PRXLOADER_USRDIR     "/dev_hdd0//game/PRXLOADER/USRDIR"
 
@@ -409,6 +411,7 @@ int main()
 	sysLv2FsMkdir(XMLHOST_DIR, DMODE);
 
 	sysLv2FsMkdir(HDDROOT_DIR "/game", DMODE);
+
 	sysLv2FsMkdir(XMBMANPLS_DIR, DMODE);
 	sysLv2FsMkdir(XMBMANPLS_DIR "/USRDIR", DMODE);
 	sysLv2FsMkdir(XMBMANPLS_IMAGES_DIR, DMODE);
@@ -627,6 +630,12 @@ int main()
 	file_copy(APP_USRDIR "/addons/wm_theme_metalification.pkg"	, RES_DIR "/wm_theme_metalification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_flowerification.pkg"	, RES_DIR "/wm_theme_flowerification.pkg");
+
+	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
+	sysLv2FsMkdir(RELOADXMB_DIR "/USRDIR", DMODE);
+	file_copy(APP_USRDIR "/xmb/RELOADXMB/ICON0.PNG", RELOADXMB_DIR "/ICON0.PNG");
+	file_copy(APP_USRDIR "/xmb/RELOADXMB/PARAM.SFO", RELOADXMB_DIR "/PARAM.SFO");
+	file_copy(APP_USRDIR "/xmb/RELOADXMB/EBOOT.BIN", RELOADXMB_DIR "/USRDIR/EBOOT.BIN");
 
 	sysLv2FsMkdir(PS2CONFIG_DIR, DMODE);
 	sysLv2FsMkdir(PS2CONFIG_USRDIR, DMODE);

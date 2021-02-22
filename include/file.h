@@ -1433,9 +1433,12 @@ static bool do_custom_combo(const char *filename)
 
 	if(file_exists(combo_file))
 	{
-		char url[HTML_RECV_SIZE];
-		read_file(combo_file, url, HTML_RECV_SIZE, 0);
-		handle_file_request(combo_file);
+		//_file_copy((char*)combo_file, (char*)WMREQUEST_FILE);
+		//handle_file_request(NULL);
+		//return true;
+		char *url = html_base_path;
+		read_file(combo_file, url, HTML_RECV_LAST, 0);
+		handle_file_request(url); *html_base_path = NULL;
 		return true;
 	}
 	return false;

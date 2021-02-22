@@ -143,5 +143,3 @@ static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS
 #define STD_PATH_LEN	263 // standard path len (260 characters in NTFS - Windows 10 removed this limit in 2016)
 #define MAX_PATH_LEN	512 // do not change!
 #define MAX_TEXT_LEN	1300 // should not exceed HTML_RECV_SIZE (RECV buffer is unstable above 1400 bytes)
-
-static char html_base_path[MAX_PATH_LEN];

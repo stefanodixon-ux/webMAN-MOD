@@ -1,6 +1,8 @@
 #define HTML_RECV_SIZE	2048
 #define HTML_RECV_LAST	2047
 
+static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
+
 #define ITEM_CHECKED			" checked=\"checked\""
 #define ITEM_SELECTED			" selected=\"selected\""
 

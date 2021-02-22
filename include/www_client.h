@@ -127,7 +127,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 					if(next)
 					{
 						strcpy(next, "?prev"); // change url to ?prev
-						add_url(body, "<a href=\"", html_base_path, "\">"); *html_base_path = 0;
+						add_url(body, "<a href=\"", html_base_path, "\">"); *html_base_path = NULL;
 					}
 				}
 			}
@@ -3391,8 +3391,6 @@ retry_response:
 						mount_app_home = get_flag(param, "&to=/app_home");
 						#endif
 
-						if(!mc) keep_alive = http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser (don't wait for mount)
-
 						if(IS_ON_XMB && !(webman_config->combo2 & PLAY_DISC) && (strstr(param, ".ntfs[BD") == NULL) && (strstr(param, "/PSPISO") == NULL) && (strstr(param, ".ntfs[PSPISO]") == NULL))\
 						{
 							//sys_ppu_thread_sleep(1);
@@ -3409,6 +3407,8 @@ retry_response:
 						if(sysmem) {sys_memory_free(sysmem); sysmem = NULL;}
 
 						if(game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount)) ap_param = 1; // use webman_config->autoplay
+
+						if(!mc) http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser
 
 						keep_alive = 0; is_busy = false;
 
