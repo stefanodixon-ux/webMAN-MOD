@@ -4,6 +4,7 @@ static u16 _LINELEN = LINELEN;
 static u16 _MAX_PATH_LEN = MAX_PATH_LEN;
 static u16 _MAX_LINE_LEN = MAX_LINE_LEN;
 
+#define _1GB_	0x40000000ULL
 #define _48GB_	0xC00000000ULL
 
 #define TABLE_ITEM_PREFIX  "<tr><td><a class=\""
@@ -198,6 +199,14 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 									free_kb    = (unsigned long long)(freeSize>>10),
 									devsize_mb = (unsigned long long)(devSize >>20);
 
+				int d1 = 0;
+				int d2 = 0;
+				if(devSize >= _1GB_)
+				{
+					d1 = (free_mb    % KB) / 100; free_mb /= KB;
+					d2 = (devsize_mb % KB) / 100; devsize_mb /= KB;
+				}
+
 				if(sys_admin && IS(templn, "/dev_flash"))
 					sprintf(tempstr, "%s%s", "/dev_blind", "?1");
 				else if(IS(templn, "/dev_blind"))
@@ -211,9 +220,15 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 				// show graphic bar of device size & free space
 				if(devSize > 0)
+				{
 					sprintf(fsize,  "<div class='bf' style='height:18px;text-align:left;overflow:hidden;'><div class='bu' style='height:18px;width:%i%%'></div><div style='position:relative;top:-%ipx;text-align:right'>"
-								"<a href=\"%s\" title=\"%'llu %s (%'llu %s) / %'llu %s (%'llu %s)\">&nbsp; %'8llu %s &nbsp;</a>"
-								"</div></div>", (int)(100.0f * (float)(devSize - freeSize) / (float)devSize), is_ps3_http ? 20 : 18, tempstr, free_mb, STR_MBFREE, freeSize, STR_BYTE, devsize_mb, STR_MEGABYTE, devSize, STR_BYTE, (freeSize < _2MB_) ? free_kb : free_mb, (freeSize < _2MB_) ? STR_KILOBYTE : STR_MEGABYTE);
+								"<a href=\"%s\" title=\"%'llu.%i %s (%'llu %s) / %'llu.%i %s (%'llu %s)\">&nbsp; %'8llu.%i %s &nbsp;</a>"
+								"</div></div>", (int)(100.0f * (float)(devSize - freeSize) / (float)devSize), is_ps3_http ? 20 : 18, tempstr, free_mb, d1, STR_MBFREE, freeSize, STR_BYTE, devsize_mb, d2, STR_MEGABYTE, devSize, STR_BYTE, (freeSize < _2MB_) ? free_kb : free_mb, d1, (freeSize < _2MB_) ? STR_KILOBYTE : STR_MEGABYTE);
+					if(devSize >= _1GB_)
+					{
+						replace_char(fsize, 'M', 'G');
+					}
+				}
 				else
 					snprintf(fsize, maxlen, "<a href=\"%s\">%s</a>", templn, HTML_DIR);
 			}
