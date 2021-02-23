@@ -1,17 +1,26 @@
 #define AVG_ITEM_SIZE			420
 
-#define QUERY_XMB(key, src) 	"<Query class=\"type:x-xmb/folder-pixmap\" key=\"" key "\" attr=\"" key "\" src=\"" src "\"/>"
-#define QUERY_XMB2(key, src) 	"<Query class=\"type:x-xmb/folder-pixmap\" key=\"" key "\" src=\"" src "\"/>"
-#define ADD_XMB_ITEM(key)		"<Item class=\"type:x-xmb/module-action\" key=\"" key "\" attr=\"" key "\"/>"
+// XML Tags:
+// X = XMBML
+// V = View
+// T = Table
+// A = Attributes
+// P = Pair
+// Q = Query
+// I = Item or Items
 
-#define XML_HEADER				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><XMBML version=\"1.0\">"
-#define XML_PAIR(key, value) 	"<Pair key=\"" key "\"><>" value "</></Pair>"
+#define QUERY_XMB(key, src) 	"<Q class=\"type:x-xmb/folder-pixmap\" key=\"" key "\" attr=\"" key "\" src=\"" src "\"/>"
+#define QUERY_XMB2(key, src) 	"<Q class=\"type:x-xmb/folder-pixmap\" key=\"" key "\" src=\"" src "\"/>"
+#define ADD_XMB_ITEM(key)		"<I class=\"type:x-xmb/module-action\" key=\"" key "\" attr=\"" key "\"/>"
 
-#define XAI_LINK_INC			"<Table key=\"inc\">" XML_PAIR("module_name", WM_PROXY_SPRX) XML_PAIR("bar_action", "none") "</Table>"
-#define WEB_LINK_INC			"<Table key=\"inc\">" XML_PAIR("module_name", "webrender_plugin") "</Table>"
+#define XML_HEADER				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><X version=\"1.0\">"
+#define XML_PAIR(key, value) 	"<P key=\"" key "\"><>" value "</></P>"
+
+#define XAI_LINK_INC			"<T key=\"inc\">" XML_PAIR("module_name", WM_PROXY_SPRX) XML_PAIR("bar_action", "none") "</T>"
+#define WEB_LINK_INC			"<T key=\"inc\">" XML_PAIR("module_name", "webrender_plugin") "</T>"
 #define WEB_LINK_PAIR			XML_PAIR("module_name", "webrender_plugin")
 
-#define STR_NOITEM_PAIR			XML_PAIR("str_noitem", "msg_error_no_content") "</Table>"
+#define STR_NOITEM_PAIR			XML_PAIR("str_noitem", "msg_error_no_content") "</T>"
 
 #define XML_KEY_LEN				7 /* 1 + 6 = Group + 6 chars */
 
@@ -75,26 +84,26 @@ static void make_fb_xml(void)
 	{
 		char *myxml = (char*)sysmem;
 		u16 size = sprintf(myxml, "%s" // XML_HEADER
-								  "<View id=\"seg_fb\">"
-								  "<Attributes>"
-								  "<Table key=\"mgames\">"
+								  "<V id=\"seg_fb\">"
+								  "<A>"
+								  "<T key=\"mgames\">"
 								  "%s" // XML_PAIR( icon / icon_rsc )
 								  XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
 								  XML_PAIR("ingame","disable")
 								  XML_PAIR("title","%s%s") // STR_MYGAMES, SUFIX2(profile)
 								  XML_PAIR("info","%s") // STR_LOADGAMES
-								  "</Table>"
-								//"</Attributes><Items>"
+								  "</T>"
+								//"</A><I>"
 								  "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
-								//"</Items></View>"
-								//"</XMBML>"
+								//"</I></V>"
+								//"</X>"
 								  XML_HEADER,
 								  file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
 										XML_PAIR("icon", WM_ICONS_PATH "/icon_wm_root.png") :
 										XML_PAIR("icon_rsc", "item_tex_ps3util"),
 								  STR_MYGAMES, SUFIX2(profile),
 								  STR_LOADGAMES,
-								  "</Attributes><Items>", MY_GAMES_XML, "</Items></View></XMBML>\r\n");
+								  "</A><I>", MY_GAMES_XML, "</I></V></X>\r\n");
 
 		char *fb_xml = (char *)FB_XML;
 		#ifdef COBRA_ONLY
@@ -335,12 +344,12 @@ scan_roms:
 	{
 		if(!(webman_config->cmask & PS3))
 		{
-			_concat(&myxml_ps3, "<View id=\"seg_wm_ps3_items\"><Attributes>");
+			_concat(&myxml_ps3, "<V id=\"seg_wm_ps3_items\"><A>");
 			_concat(&myxml_ps3, proxy_include);
 		}
 		if(!(webman_config->cmask & PS2))
 		{
-			_concat(&myxml_ps2, "<View id=\"seg_wm_ps2_items\"><Attributes>");
+			_concat(&myxml_ps2, "<V id=\"seg_wm_ps2_items\"><A>");
 			_concat(&myxml_ps2, proxy_include);
 			if(ps2_launcher)
 			{
@@ -348,22 +357,22 @@ scan_roms:
 				char *STR_LAUNCHPS2 =  tempstr; //[48];//	= "Launch PS2 Classic";
 				language("STR_LAUNCHPS2", STR_LAUNCHPS2, "Launch PS2 Classic");
 				#endif
-				sprintf(templn, "<Table key=\"ps2_classic_launcher\">"
+				sprintf(templn, "<T key=\"ps2_classic_launcher\">"
 								XML_PAIR("icon", PS2_CLASSIC_ISO_ICON)
 								XML_PAIR("title","PS2 Classic Launcher")
 								XML_PAIR("info","%s") "%s",
-								STR_LAUNCHPS2, "</Table>"); _concat(&myxml_ps2, templn);
+								STR_LAUNCHPS2, "</T>"); _concat(&myxml_ps2, templn);
 			}
 		}
 		#ifdef COBRA_ONLY
 		if(!(webman_config->cmask & PS1))
 		{
-			_concat(&myxml_psx, "<View id=\"seg_wm_psx_items\"><Attributes>");
+			_concat(&myxml_psx, "<V id=\"seg_wm_psx_items\"><A>");
 			_concat(&myxml_psx, proxy_include);
 		}
 		if(!(webman_config->cmask & PSP))
 		{
-			_concat(&myxml_psp, "<View id=\"seg_wm_psp_items\"><Attributes>");
+			_concat(&myxml_psp, "<V id=\"seg_wm_psp_items\"><A>");
 			_concat(&myxml_psp, proxy_include);
 			if(psp_launcher)
 			{
@@ -371,21 +380,21 @@ scan_roms:
 				char *STR_LAUNCHPSP =  tempstr; //[144];//	= "Launch PSP ISO mounted through webMAN or mmCM";
 				language("STR_LAUNCHPSP", STR_LAUNCHPSP, "Launch PSP ISO mounted through webMAN or mmCM");
 				#endif
-				sprintf(templn, "<Table key=\"cobra_psp_launcher\">"
+				sprintf(templn, "<T key=\"cobra_psp_launcher\">"
 								XML_PAIR("icon","/dev_hdd0//game/%s/ICON0.PNG")
 								XML_PAIR("title","PSP Launcher")
 								XML_PAIR("info","%s") "%s",
 								isDir(PSP_LAUNCHER_REMASTERS) ? PSP_LAUNCHER_REMASTERS_ID : PSP_LAUNCHER_MINIS_ID,
-								STR_LAUNCHPSP, "</Table>"); _concat(&myxml_psp, templn);
+								STR_LAUNCHPSP, "</T>"); _concat(&myxml_psp, templn);
 			}
 		}
 		if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU))
 		{
-			_concat(&myxml_dvd, "<View id=\"seg_wm_dvd_items\"><Attributes>");
+			_concat(&myxml_dvd, "<V id=\"seg_wm_dvd_items\"><A>");
 			_concat(&myxml_dvd, proxy_include);
 			if(webman_config->rxvid)
 			{
-				sprintf(templn, "<Table key=\"rx_video\">"
+				sprintf(templn, "<T key=\"rx_video\">"
 								XML_PAIR("icon","%s")
 								XML_PAIR("title","%s")
 								XML_PAIR("child","segment") "%s",
@@ -543,7 +552,7 @@ scan_roms:
 #ifdef SLAUNCH_FILE
 						if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
 #endif
-						read_e = sprintf(tempstr, "<Table key=\"%04i\" include=\"inc\">"
+						read_e = sprintf(tempstr, "<T key=\"%04i\" include=\"inc\">"
 										 XML_PAIR("icon","%s")
 										 XML_PAIR("title","%s") //"%s"
 										 XML_PAIR("module_action","%s/mount_ps3%s%s/%s"),
@@ -567,7 +576,7 @@ scan_roms:
 							if(f1 < 2) read_e += sprintf(tempstr + read_e, " | JB");
 						}
 
-						sprintf(tempstr + read_e, "</Table>");
+						sprintf(tempstr + read_e, "</T>");
 
 						if(add_xmb_entry(f0, f1, plen + 6, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, item_count, 0)) key++;
 
@@ -674,7 +683,7 @@ next_xml_entry:
 								char *p = strchr(entry.entry_name.d_name, '/'); if(p) {*p = NULL; sprintf(folder_name, "/%s", entry.entry_name.d_name); *p = '/';}
 							}
 
-							read_e = sprintf(tempstr, "<Table key=\"%04i\" include=\"inc\">"
+							read_e = sprintf(tempstr, "<T key=\"%04i\" include=\"inc\">"
 											 XML_PAIR("icon","%s")
 											 XML_PAIR("title","%s") //"%s"
 											 XML_PAIR("module_action","%s/mount_ps3%s%s/%s"),
@@ -698,7 +707,7 @@ next_xml_entry:
 								if(f1 < 2) read_e += sprintf(tempstr + read_e, " | JB");
 							}
 
-							sprintf(tempstr + read_e, "</Table>");
+							sprintf(tempstr + read_e, "</T>");
 
 							if(add_xmb_entry(f0, f1, plen + flen - 13, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, item_count, subfolder)) key++;
 						}
@@ -733,14 +742,14 @@ continue_reading_folder_xml:
 
 	if( !scanning_roms && XMB_GROUPS )
 	{
-		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</Attributes><Items>");}
-		if(!(webman_config->cmask & PS2)) {_concat(&myxml_ps2, "</Attributes><Items>"); if(ps2_launcher) _concat(&myxml_ps2, QUERY_XMB("ps2_classic_launcher", "xcb://127.0.0.1/query?limit=1&cond=Ae+Game:Game.titleId PS2U10000"));}
+		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</A><I>");}
+		if(!(webman_config->cmask & PS2)) {_concat(&myxml_ps2, "</A><I>"); if(ps2_launcher) _concat(&myxml_ps2, QUERY_XMB("ps2_classic_launcher", "xcb://127.0.0.1/query?limit=1&cond=Ae+Game:Game.titleId PS2U10000"));}
 
 #ifdef COBRA_ONLY
-		if(!(webman_config->cmask & PS1)) {_concat(&myxml_psx, "</Attributes><Items>");}
-		if(!(webman_config->cmask & PSP)) {_concat(&myxml_psp, "</Attributes><Items>"); if(psp_launcher) _concat(&myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://127.0.0.1/query?cond=AGL+Game:Game.titleId " PSP_LAUNCHER_REMASTERS_ID " " PSP_LAUNCHER_MINIS_ID));}
+		if(!(webman_config->cmask & PS1)) {_concat(&myxml_psx, "</A><I>");}
+		if(!(webman_config->cmask & PSP)) {_concat(&myxml_psp, "</A><I>"); if(psp_launcher) _concat(&myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://127.0.0.1/query?cond=AGL+Game:Game.titleId " PSP_LAUNCHER_REMASTERS_ID " " PSP_LAUNCHER_MINIS_ID));}
 		if(!(webman_config->cmask & DVD) ||
-		   !(webman_config->cmask & BLU)) {_concat(&myxml_dvd, "</Attributes><Items>"); if(webman_config->rxvid) _concat(&myxml_dvd, QUERY_XMB("rx_video", "#seg_wm_bdvd"));}
+		   !(webman_config->cmask & BLU)) {_concat(&myxml_dvd, "</A><I>"); if(webman_config->rxvid) _concat(&myxml_dvd, QUERY_XMB("rx_video", "#seg_wm_bdvd"));}
 #endif
 	}
 	else
@@ -836,8 +845,8 @@ continue_reading_folder_xml:
 	// --- build xml headers
 #ifdef MOUNT_ROMS
 	myxml.size = sprintf(myxml.str, "%s"
-						"<View id=\"%s%s\">"
-						"<Attributes>%s", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "", proxy_include);
+						"<V id=\"%s%s\">"
+						"<A>%s", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "", proxy_include);
 
 	if(scanning_roms)
 	{
@@ -848,26 +857,26 @@ continue_reading_folder_xml:
 	}
 #else
 	myxml.size = sprintf(myxml.str, "%s"
-						"<View id=\"%s\">"
-						"<Attributes>", XML_HEADER, "seg_mygames");
+						"<V id=\"%s\">"
+						"<A>", XML_HEADER, "seg_mygames");
 #endif
 
 	// --- close view of xml groups
 	if( XMB_GROUPS )
 	{
-		if(!(webman_config->cmask & PS3)) _concat(&myxml_ps3, "</Items></View>");
-		if(!(webman_config->cmask & PS2)) _concat(&myxml_ps2, "</Items></View>");
+		if(!(webman_config->cmask & PS3)) _concat(&myxml_ps3, "</I></V>");
+		if(!(webman_config->cmask & PS2)) _concat(&myxml_ps2, "</I></V>");
 		#ifdef COBRA_ONLY
-		if(!(webman_config->cmask & PS1)) _concat(&myxml_psx, "</Items></View>");
-		if(!(webman_config->cmask & PSP)) _concat(&myxml_psp, "</Items></View>");
+		if(!(webman_config->cmask & PS1)) _concat(&myxml_psx, "</I></V>");
+		if(!(webman_config->cmask & PSP)) _concat(&myxml_psp, "</I></V>");
 		if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU))
 		{
-			_concat(&myxml_dvd, "</Items></View>");
+			_concat(&myxml_dvd, "</I></V>");
 			if(webman_config->rxvid)
 			{
 				_concat(&myxml_dvd,
-					"<View id=\"seg_wm_bdvd\">"
-					"<Items>"
+					"<V id=\"seg_wm_bdvd\">"
+					"<I>"
 					QUERY_XMB("rx_video1",	"xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM"
 											"&genre=Video&sort=+StorageMedia:StorageMedia.sortOrder+StorageMedia:StorageMedia.timeInserted"
 											"&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED"
@@ -877,8 +886,8 @@ continue_reading_folder_xml:
 											"&cond=AGL+Game:Game.titleId RXMOV0000 RXMOVZZZZ+An+Game:Game.category 2D"
 												 "+An+Game:Game.category BV"
 												 "+An+Game:Game.category HG")
-					"</Items>"
-					"</View>");
+					"</I>"
+					"</V>");
 			}
 		}
 		#endif
@@ -894,11 +903,11 @@ continue_reading_folder_xml:
 		language("STR_EJECTDISC", STR_EJECTDISC, "Eject Disc");
 		#endif
 
-		sprintf(templn, "<Table key=\"eject\" include=\"inc\">"
+		sprintf(templn, "<T key=\"eject\" include=\"inc\">"
 						XML_PAIR("icon","%s")
 						XML_PAIR("title","%s")
 						XML_PAIR("info","%s") //"%s"
-						XML_PAIR("module_action","%s/mount_ps3/unmount") "</Table>",
+						XML_PAIR("module_action","%s/mount_ps3/unmount") "</T>",
 						wm_icons[11], STR_EJECTDISC, STR_UNMOUNTGAME, /*proxy_include,*/ localhost);
 		_concat(&myxml, templn);
 	}
@@ -910,7 +919,7 @@ continue_reading_folder_xml:
 		char *STR_PS3FORMAT = buffer; //[40];//	= "PS3 format games";
 		language("STR_PS3FORMAT", STR_PS3FORMAT, "PS3 format games");
 		#endif
-		if( !(webman_config->cmask & PS3)) {sprintf(templn, "<Table key=\"wm_ps3\">"
+		if( !(webman_config->cmask & PS3)) {sprintf(templn, "<T key=\"wm_ps3\">"
 													XML_PAIR("icon","%s")
 													XML_PAIR("title","PLAYSTATION\xC2\xAE\x33")
 													XML_PAIR("info","%'i %s") "%s",
@@ -924,7 +933,7 @@ continue_reading_folder_xml:
 			#else
 			*buffer = NULL;
 			#endif
-											sprintf(templn, "<Table key=\"wm_rom\">"
+											sprintf(templn, "<T key=\"wm_rom\">"
 													XML_PAIR("icon%s", "%s")
 													XML_PAIR("title","ROMS")
 													XML_PAIR("info","%s") "%s",
@@ -937,7 +946,7 @@ continue_reading_folder_xml:
 		char *STR_PS2FORMAT = buffer; //[48];//	= "PS2 format games";
 		language("STR_PS2FORMAT", STR_PS2FORMAT, "PS2 format games");
 		#endif
-		if( !(webman_config->cmask & PS2)) {sprintf(templn, "<Table key=\"wm_ps2\">"
+		if( !(webman_config->cmask & PS2)) {sprintf(templn, "<T key=\"wm_ps2\">"
 													XML_PAIR("icon","%s")
 													XML_PAIR("title","PLAYSTATION\xC2\xAE\x32")
 													XML_PAIR("info","%'i %s") "%s",
@@ -949,7 +958,7 @@ continue_reading_folder_xml:
 		char *STR_PS1FORMAT = buffer; //[48];//	= "PSOne format games";
 		language("STR_PS1FORMAT", STR_PS1FORMAT, "PSOne format games");
 		#endif
-		if( !(webman_config->cmask & PS1)) {sprintf(templn, "<Table key=\"wm_psx\">"
+		if( !(webman_config->cmask & PS1)) {sprintf(templn, "<T key=\"wm_psx\">"
 													XML_PAIR("icon","%s")
 													XML_PAIR("title","PLAYSTATION\xC2\xAE")
 													XML_PAIR("info","%'i %s") "%s",
@@ -959,7 +968,7 @@ continue_reading_folder_xml:
 		char *STR_PSPFORMAT = buffer; //[48];//	= "PSP\xE2\x84\xA2 format games";
 		language("STR_PSPFORMAT", STR_PSPFORMAT, "PSP\xE2\x84\xA2 format games");
 		#endif
-		if( !(webman_config->cmask & PSP)) {sprintf(templn, "<Table key=\"wm_psp\">"
+		if( !(webman_config->cmask & PSP)) {sprintf(templn, "<T key=\"wm_psp\">"
 													XML_PAIR("icon","%s")
 													XML_PAIR("title","PLAYSTATION\xC2\xAEPORTABLE")
 													XML_PAIR("info","%'i %s") "%s",
@@ -973,7 +982,7 @@ continue_reading_folder_xml:
 		language("STR_VIDEO", STR_VIDEO, "Video content");
 		#endif
 		if( !(webman_config->cmask & DVD) ||
-			!(webman_config->cmask & BLU)) {sprintf(templn, "<Table key=\"wm_dvd\">"
+			!(webman_config->cmask & BLU)) {sprintf(templn, "<T key=\"wm_dvd\">"
 													XML_PAIR("icon","%s")
 													XML_PAIR("title","%s")
 													XML_PAIR("info","%'i %s") "%s",
@@ -988,9 +997,9 @@ continue_reading_folder_xml:
 		char *STR_CUSTOMXML = (char*)"XML";
 		#endif
 
-		if(add_custom_xml(templn)) {sprintf(templn, "<Table key=\"wm_custom\">"
+		if(add_custom_xml(templn)) {sprintf(templn, "<T key=\"wm_custom\">"
 											XML_PAIR("icon_rsc","item_tex_ps3util")
-											XML_PAIR("title","%s") "</Table>",
+											XML_PAIR("title","%s") "</T>",
 											STR_CUSTOMXML); _concat(&myxml, templn);}
 	}
 
@@ -1001,7 +1010,7 @@ continue_reading_folder_xml:
 		char *STR_WMSETUP2 = buffer; //[56];//	= "Setup webMAN options";
 		language("STR_WMSETUP2", STR_WMSETUP2, "Setup webMAN options");
 		#endif
-		sprintf(templn, "<Table key=\"setup\">"
+		sprintf(templn, "<T key=\"setup\">"
 						 XML_PAIR("icon","%s")
 						 XML_PAIR("title","%s")
 						 XML_PAIR("info","%s") "%s",
@@ -1013,7 +1022,7 @@ continue_reading_folder_xml:
 		else
 			{sprintf(templn, XML_PAIR("module_action","http://%s/setup.ps3"), local_ip); _concat(&myxml, templn);}
 
-		_concat(&myxml, "</Table>");
+		_concat(&myxml, "</T>");
 	}
 
 	#ifndef ENGLISH_ONLY
@@ -1023,7 +1032,7 @@ continue_reading_folder_xml:
 	// --- Add groups queries (setup + eject + categories)
 	if( XMB_GROUPS )
 	{
-		_concat(&myxml, "</Attributes><Items>");
+		_concat(&myxml, "</A><I>");
 		if( ADD_SETUP )
 		{
 			if(add_xmbm_plus)
@@ -1053,7 +1062,7 @@ continue_reading_folder_xml:
 		#endif
 	 #endif
 		if(add_custom_xml(templn)) _concat(&myxml, templn);
-		_concat(&myxml, "</Items></View>");
+		_concat(&myxml, "</I></V>");
 	}
 
 #ifdef MOUNT_ROMS
@@ -1071,10 +1080,10 @@ save_xml:
 		if(scanning_roms || webman_config->nogrp)
 		{
 			cellFsWrite(fdxml, (char*)myxml_ps3.str, myxml_ps3.size, NULL);
-			cellFsWrite(fdxml, (char*)"</Attributes><Items>", 20, NULL);
+			cellFsWrite(fdxml, (char*)"</A><I>", 20, NULL);
 			cellFsWrite(fdxml, (char*)myxml_ngp.str, myxml_ngp.size, NULL);
 
-			slen = sprintf(buffer, "</Items></View></XMBML>\r\n");
+			slen = sprintf(buffer, "</I></V></X>\r\n");
 		}
 		else
 		{
@@ -1086,7 +1095,7 @@ save_xml:
 			if(!(webman_config->cmask & DVD) ||
 			   !(webman_config->cmask & BLU)) cellFsWrite(fdxml, (char*)myxml_dvd.str, myxml_dvd.size, NULL);
 #endif
-			slen = sprintf(buffer, "</XMBML>\r\n");
+			slen = sprintf(buffer, "</X>\r\n");
 		}
 
 		cellFsWrite(fdxml, (char*)buffer, slen, NULL);
@@ -1116,7 +1125,7 @@ save_xml:
 		// ---- Build ROMS.xml
 		_alloc(&myxml, sysmem_buf);
 		_concat(&myxml, XML_HEADER);
-		_concat(&myxml, "<View id=\"seg_wm_rom_items\"><Attributes>");
+		_concat(&myxml, "<V id=\"seg_wm_rom_items\"><A>");
 
 		#ifndef ENGLISH_ONLY
 		close_language(); lang_roms = 1;
@@ -1131,11 +1140,11 @@ save_xml:
 				language(roms_path[i], tempstr, roms_path[i]);
 				#endif
 
-				sprintf(templn, "<Table key=\"%s\">"
+				sprintf(templn, "<T key=\"%s\">"
 								XML_PAIR("icon%s", "%s")
 								XML_PAIR("title","%s")
 								XML_PAIR("info","%'i %s")
-								"</Table>",
+								"</T>",
 								roms_path[i],
 								covers_exist[7] ? "" : "_rsc",
 								covers_exist[7] ? WM_ICONS_PATH "/icon_wm_album_emu.png" : "item_tex_ps3util",
@@ -1151,7 +1160,7 @@ save_xml:
 		close_language();
 		#endif
 
-		_concat(&myxml, "</Attributes><Items>");
+		_concat(&myxml, "</A><I>");
 
 		// ---- Add roms queries
 		for(u8 i = 0; i < ROM_PATHS; i++)
@@ -1163,7 +1172,7 @@ save_xml:
 			}
 		}
 
-		_concat(&myxml, "</Items></View></XMBML>\r\n");
+		_concat(&myxml, "</I></V></X>\r\n");
 
 		save_file(HTML_BASE_PATH "/ROMS.xml", myxml.str, myxml.size);
 	}
