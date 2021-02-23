@@ -743,11 +743,11 @@ continue_reading_folder_xml:
 	if( !scanning_roms && XMB_GROUPS )
 	{
 		if(!(webman_config->cmask & PS3)) {_concat(&myxml_ps3, "</A><I>");}
-		if(!(webman_config->cmask & PS2)) {_concat(&myxml_ps2, "</A><I>"); if(ps2_launcher) _concat(&myxml_ps2, QUERY_XMB("ps2_classic_launcher", "xcb://127.0.0.1/query?limit=1&cond=Ae+Game:Game.titleId PS2U10000"));}
+		if(!(webman_config->cmask & PS2)) {_concat(&myxml_ps2, "</A><I>"); if(ps2_launcher) _concat(&myxml_ps2, QUERY_XMB("ps2_classic_launcher", "xcb://0/query?limit=1&cond=Ae+Game:Game.titleId PS2U10000"));}
 
 #ifdef COBRA_ONLY
 		if(!(webman_config->cmask & PS1)) {_concat(&myxml_psx, "</A><I>");}
-		if(!(webman_config->cmask & PSP)) {_concat(&myxml_psp, "</A><I>"); if(psp_launcher) _concat(&myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://127.0.0.1/query?cond=AGL+Game:Game.titleId " PSP_LAUNCHER_REMASTERS_ID " " PSP_LAUNCHER_MINIS_ID));}
+		if(!(webman_config->cmask & PSP)) {_concat(&myxml_psp, "</A><I>"); if(psp_launcher) _concat(&myxml_psp, QUERY_XMB("cobra_psp_launcher", "xcb://0/query?cond=AGL+Game:Game.titleId " PSP_LAUNCHER_REMASTERS_ID " " PSP_LAUNCHER_MINIS_ID));}
 		if(!(webman_config->cmask & DVD) ||
 		   !(webman_config->cmask & BLU)) {_concat(&myxml_dvd, "</A><I>"); if(webman_config->rxvid) _concat(&myxml_dvd, QUERY_XMB("rx_video", "#seg_wm_bdvd"));}
 #endif
@@ -877,12 +877,12 @@ continue_reading_folder_xml:
 				_concat(&myxml_dvd,
 					"<V id=\"seg_wm_bdvd\">"
 					"<I>"
-					QUERY_XMB("rx_video1",	"xcb://localhost/query?table=MMS_MEDIA_TYPE_SYSTEM"
+					QUERY_XMB("rx_video1",	"xcb://0/query?table=MMS_MEDIA_TYPE_SYSTEM"
 											"&genre=Video&sort=+StorageMedia:StorageMedia.sortOrder+StorageMedia:StorageMedia.timeInserted"
 											"&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED"
 												 "+Ae+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_DATA"
 												 "+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_BDROM %xCB_MEDIA_TYPE_WM")
-					QUERY_XMB("rx_video2",	"xcb://localhost/query?sort=+Game:Common.titleForSort"
+					QUERY_XMB("rx_video2",	"xcb://0/query?sort=+Game:Common.titleForSort"
 											"&cond=AGL+Game:Game.titleId RXMOV0000 RXMOVZZZZ+An+Game:Game.category 2D"
 												 "+An+Game:Game.category BV"
 												 "+An+Game:Game.category HG")
