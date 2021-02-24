@@ -105,6 +105,12 @@ static bool _IS(const char *a, const char *b)
 	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
 }
 
+static bool bcompare(const char *a, const char *b, u8 len, const char *mask)
+{
+	while(len && ((*a == *b) || (*mask == '*'))) {a++,b++,mask++,len--;}
+	return len;
+}
+
 static char *last_dest = NULL; // for fast concat -avoids find last byte
 static char *prev_dest = NULL;
 
@@ -646,7 +652,8 @@ static u16 get_port(const char *param, const char *label, u16 default_port)
 
 static u8 get_valuen(const char *param, const char *label, u8 min_value, u8 max_value)
 {
-	return RANGE((u8)get_valuen32(param, label), min_value, max_value);
+	u8 value = (u8)get_valuen32(param, label);
+	return RANGE(value, min_value, max_value);
 }
 
 static u8 get_flag(const char *param, const char *label)

@@ -96,6 +96,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, char *param);
 static void ps3mapi_gameplugin(char *buffer, char *templn, char *param);
 static unsigned int get_vsh_plugin_slot_by_name(const char *name, bool unload);
 
+static u64 found_offset = 0;
 static u8 ps3mapi_working = 0;
 
 static int is_syscall_disabled(u32 sc)
@@ -548,6 +549,28 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 	return is_vsh;
 }
 
+static u64 ps3mapi_find_offset(u64 pid, u64 addr, u64 stop, u8 step, char *sfind, u8 len, char *mask)
+{
+	int retval = NONE;
+
+	char mem[0x100]; u8 m = sizeof(mem) - len;
+	for(; addr < stop; addr += sizeof(mem))
+	{
+		{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, addr, (u64)(u32)mem, sizeof(mem)); retval = (int)p1;}
+		if(retval < 0) break;
+
+		for(u8 a = 0; a < m; a += step)
+		{
+			if( !bcompare(mem + a, sfind, len, mask) )
+			{
+				found_offset = (addr + a);
+				return found_offset;
+			}
+		}
+	}
+	return addr;
+}
+
 static void ps3mapi_dump_process(u64 pid, u64 address, u32 size)
 {
 	sys_addr_t sysmem = NULL;
@@ -576,6 +599,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 	u32 pid = 0;
 	u64 address = 0x10000;
 	int length = 0x80;
+	found_offset = 0;
 
 	if(strstr(param, ".ps3mapi?"))
 	{
@@ -585,39 +609,47 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			address = convertH(addr_tmp);
 
 			length = (int)get_valuen32(param, "len=");
-			if(length == 0) {length = 0x80; char *pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
+			//if(length == 0) {length = 0x80; char *pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
 
 			pid = get_valuen32(param, "proc=");
 
+			if(pid && (length == 0))
+			{
+				char value[130];
+				char val_tmp[260];
+				length = get_param("val=", val_tmp, param, 0x100) / 2;
+				Hex2Bin(val_tmp, value);
+				if(length) {system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)value, (u64)length);}
+			}
+
+			if(length == 0) length = 0x80;
 			length = RANGE(length, 1, 0x80);
 		}
 		else
 			pid = GetGameProcessID();
 
-		if(get_param("&find=", addr_tmp, param, 0x20))
+		if(get_param("find=", addr_tmp, param, 0x20))
 		{
-			int retval = NONE, len = strlen(addr_tmp);
-			char sfind[0x10];
-			if(ISDIGIT(*addr_tmp)) {Hex2Bin(addr_tmp, sfind); len /= 2;} else strcpy(sfind, addr_tmp);
+			char sfind[0x21], *mask = addr_tmp;
+			u8 len = snprintf(sfind, 0x20, "%s", addr_tmp);
 
-			u64 addr = address, stop = address + 0x800000;
-			u8 a, step = strstr(param, "&step=1") ? 1 : 4;
-
-			char buffer_tmp[0x90];
-			for(; addr < stop; addr += 0x80)
+			// search hex
+			if(ISDIGIT(*addr_tmp))
 			{
-				{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, addr, (u64)(u32)buffer_tmp, 0x90); retval = (int)p1;}
-				if(retval < 0) break;
+				Hex2Bin(addr_tmp, sfind); len /= 2;
+				for(u8 i = 0, n = 0; i < len; i++, n+=2) mask[i] = addr_tmp[n]; mask[len] = 0;
+			}
+			else if(strstr(param, "&exact"))
+				memset(mask, 0, len);
 
-				for(a = 0; a < 0x80; a += step)
-				{
-					if( !memcmp(buffer_tmp + a, sfind, len) )
-					{
-						address = addr + a;
-						addr = stop;
-						break;
-					}
-				}
+			u64 stop = get_valuen64(param, "stop="); if(stop < address) stop = (address + 0x1000000ULL);
+			u8  step = get_valuen(param, "step=", 0, 0xE0); if(step < 1) step = 4;
+			u8  rep  = get_valuen(param, "rep=", 1, 0xFF);
+			u8  rlen = (rep > 1) ? len : 0;
+
+			while(rep--)
+			{
+				address = ps3mapi_find_offset(pid, address + rlen, stop, step, sfind, len, mask);
 			}
 		}
 
@@ -659,7 +691,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 
 		if(file_exists("/dev_hdd0/mem_dump.bin")) {concat(buffer, " ["); add_breadcrumb_trail2(buffer, NULL, "/dev_hdd0/mem_dump.bin"); concat(buffer, "]");}
 
-		if(!strstr(param, "dump=")) sprintf(templn, " [<a href=\"%s%s\">%s</a>]", param, "&dump=400000", "Dump Process"); else strcpy(templn, "<hr>");
+		if(!strstr(param, "dump=")) sprintf(templn, " [<a href=\"%s%s\">%s</a>]", param, "&dump=400000", "Dump Process");
 		concat(buffer, templn);
 
 		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
@@ -753,7 +785,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 	bool is_ps3mapi_home = (*param == ' ');
 
 	u32 pid = 0;
-	u64 address = 0;
+	u64 address = found_offset;
 	int length = 0;
 	char value[130];
 	char val_tmp[260];
@@ -777,6 +809,8 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 			pid = GetGameProcessID();
 	}
 
+	if(found_offset) address = found_offset; found_offset = 0;
+
 	if(!is_ps3mapi_home && islike(param, "/setmem.ps3mapi")) ps3mapi_getmem(buffer, templn, param);
 
 	if(!is_ps3mapi_home)
@@ -799,7 +833,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 					"<br><br><b><u>%s:</u></b><br>"
 					"<table width=\"800\">"
 					"<tr><td class=\"la\">"
-					"<textarea id=\"val\" name=\"val\" cols=\"110\" rows=\"4\" maxlength=\"199\">%s</textarea></td></tr>"
+					"<textarea id=\"val\" name=\"val\" cols=\"110\" rows=\"4\" maxlength=\"256\">%s</textarea></td></tr>"
 					"<tr><td class=\"ra\"><br>"
 					"<input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr></table></form>", "Address", address, "Value", val_tmp, "Set");
 	concat(buffer, templn);

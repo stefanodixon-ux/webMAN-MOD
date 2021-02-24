@@ -372,7 +372,7 @@ static void handleclient_www(u64 conn_s_p)
 	sys_net_sockinfo_t conn_info;
 
 	u8 max_cc = 0; // count client connections per persistent connection
-	u8 keep_alive = 0;
+	u8 keep_alive = 0, use_keep_alive = 0;
 	u8 ap_param = 0; // 0 = do nothing, 1 = use webman_config->autoplay, 2 = force auto_play
 
 	char cmd[16], header[HTML_RECV_SIZE], *mc = NULL;
@@ -552,7 +552,7 @@ parse_request:
 		{
 			if(strstr(header, "Connection: keep-alive"))
 			{
-				keep_alive = 1;
+				use_keep_alive = keep_alive = 1;
 			}
 
 			if(strstr(header, "x-ps3-browser")) is_ps3_http = 1; else
@@ -3607,7 +3607,7 @@ exit_handleclient_www:
 	if(ap_param)
 		{auto_play(param, --ap_param); ap_param = 0;} // ap_param: 1=from /mount.ps3, 2=from /play.ps3
 
-	if(mc || (keep_alive && loading_html && (++max_cc < MAX_WWW_CC))) goto parse_request;
+	if(mc || (use_keep_alive && keep_alive && loading_html && (++max_cc < MAX_WWW_CC))) goto parse_request;
 
 	#ifdef USE_DEBUG
 	ssend(debug_s, "Request served.\r\n");
