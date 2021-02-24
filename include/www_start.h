@@ -28,7 +28,7 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 
 		// is JAP?
 		int enter_button = 1;
-		xsetting_0AF1F161()->GetEnterButtonAssign(&enter_button);
+		xsettings()->GetEnterButtonAssign(&enter_button);
 		CELL_PAD_CIRCLE_BTN = enter_button ? CELL_PAD_CTRL_CIRCLE : CELL_PAD_CTRL_CROSS;
 	}
 	else //if(conn_s_p == REFRESH_CONTENT)

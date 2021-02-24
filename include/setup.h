@@ -908,7 +908,7 @@ static void setup_form(char *buffer, char *templn)
 
 	#ifdef USE_UACCOUNT
 	//default user account
-	if(!webman_config->uaccount[0]) sprintf(webman_config->uaccount, "%08i", xsetting_CC56EB2D()->GetCurrentUserNumber());
+	if(!webman_config->uaccount[0]) sprintf(webman_config->uaccount, "%08i", xusers()->GetCurrentUserNumber());
 
 	sprintf(templn, "</select> : <a href=\"%s\">%s</a><select name=\"uacc\">", HDD0_HOME_DIR, HDD0_HOME_DIR + 5); concat(buffer, templn);
 	{

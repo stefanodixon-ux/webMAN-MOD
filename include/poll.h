@@ -34,8 +34,8 @@ static void poll_start_play_time(void)
 	#ifdef OFFLINE_INGAME
 		if(net_status >= 0)
 		{
-			xsetting_F48C0548()->GetSettingNet_enable(&status);
-			xsetting_F48C0548()->SetSettingNet_enable(net_status);
+			xnet()->GetSettingNet_enable(&status);
+			xnet()->SetSettingNet_enable(net_status);
 			net_status = NONE; if(net_status && !status) vshNotify_WithIcon(5, ONLINE_TAG);
 			cellFsUnlink(WMNET_DISABLED);
 		}
@@ -73,8 +73,8 @@ static void poll_start_play_time(void)
 
 				if(set_net_setatus)
 				{
-					xsetting_F48C0548()->GetSettingNet_enable(&status);
-					xsetting_F48C0548()->SetSettingNet_enable(net_status < 0 ? 0 : net_status);
+					xnet()->GetSettingNet_enable(&status);
+					xnet()->SetSettingNet_enable(net_status < 0 ? 0 : net_status);
 					if(status && (net_status <= 0)) {save_file(WMNET_DISABLED, NULL, SAVE_ALL); vshNotify_WithIcon(5, OFFLINE_TAG);}
 					net_status = status;
 				}

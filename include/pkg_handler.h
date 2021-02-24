@@ -204,7 +204,7 @@ static int download_file(const char *param, char *msg)
 	int ret = FAILED;
 
 	s32 net_enabled = 0;
-	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+	xnet()->GetSettingNet_enable(&net_enabled);
 
 	if(!net_enabled)
 	{

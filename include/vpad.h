@@ -142,9 +142,9 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 		if((data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_CROSS | CELL_PAD_CTRL_CIRCLE)) && ((param[5] == '=') || (param[6] == '=')))
 		{
 			int enter_button = (data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS);
-			if(strcasestr(param, "swap")) {xsetting_0AF1F161()->GetEnterButtonAssign(&enter_button); enter_button ^= 1;}
+			if(strcasestr(param, "swap")) {xsettings()->GetEnterButtonAssign(&enter_button); enter_button ^= 1;}
 
-			xsetting_0AF1F161()->SetEnterButtonAssign(enter_button);
+			xsettings()->SetEnterButtonAssign(enter_button);
 			return 'X';
 		}
 
@@ -182,7 +182,7 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 static void press_cancel_button(void)
 {
 	int enter_button = 1;
-	xsetting_0AF1F161()->GetEnterButtonAssign(&enter_button);
+	xsettings()->GetEnterButtonAssign(&enter_button);
 
 	if(enter_button)
 		parse_pad_command("circle", 0);

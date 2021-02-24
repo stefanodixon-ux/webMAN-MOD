@@ -77,13 +77,13 @@ static void get_net_info(char *net_type, char *ip)
 {
 	// returns net_type[8], ip[ip_size]
 
-	s32 status = 0; xsetting_F48C0548()->GetSettingNet_enable(&status);
+	s32 status = 0; xnet()->GetSettingNet_enable(&status);
 
 	if(status == 0) {strcpy(net_type, "OFFLINE"); *ip = NULL; return;}
 
 	net_info info;
 	memset(&info, 0, sizeof(net_info));
-	xsetting_F48C0548()->sub_44A47C(&info); //info.ipAddress
+	xnet()->sub_44A47C(&info); //info.ipAddress
 
 	if (info.device == 0) strcpy(net_type, "LAN"); else
 	if (info.device == 1) strcpy(net_type, "WLAN");
@@ -361,7 +361,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	if(webman_config->chart)
 		sprintf(templn, "<a href=\"%s\">", CPU_RSX_CHART);
 	else
-		sprintf(templn, "<a href=\"%s/%08i\">", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
+		sprintf(templn, "<a href=\"%s/%08i\">", HDD0_HOME_DIR, xusers()->GetCurrentUserNumber()); buffer += concat(buffer, templn);
 
 	sprintf(templn, "<label title=\"Startup\"><img src='%s/time.png' border=0 style='position:relative;top:8px;'></label> %id %02d:%02d:%02d</a>", WM_ICONS_PATH, dd, hh, mm, ss); buffer += concat(buffer, templn);
 	///////////////////////

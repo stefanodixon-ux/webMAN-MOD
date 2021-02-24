@@ -1459,7 +1459,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 2) ? "/dev_hdd0/tmp/canyon"   : // 2
 							(res_id == 3) ? "/dev_hdd0/tmp/lines"    : // 3
 							(res_id == 4) ? "/dev_hdd0/tmp/coldboot" : // 4
-							(res_id == 7) ? "/dev_hdd0/tmp/gameboot" : // 7
+						//	(res_id == 7) ? "/dev_hdd0/tmp/gameboot" : // 7
 											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
 
 	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
@@ -1494,8 +1494,8 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id); // coldboot
 			else if(res_id == 5)
 				sprintf(param, "%s/%i.p3t", hdd_path, _id); // theme
-			else if(res_id == 7)
-				sprintf(param, "%s/%i/custom_render_plugin.rco", hdd_path, _id); // gameboot
+			//else if(res_id == 7)
+			//	sprintf(param, "%s/%i/custom_render_plugin.rco", hdd_path, _id); // gameboot
 			else
 				sprintf(param, "%s/%i.qrc", hdd_path, _id); // lines, earth, canyon
 
@@ -1521,7 +1521,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 				sys_map_path(res_path, param);
 				if(res_id == 4)
 					sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
-				else if(res_id == 7)
+				/*else if(res_id == 7)
 				{
 					sprintf(param, "%s/%i/gameboot_multi.ac3", hdd_path, _id);
 					sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3", param);
@@ -1529,12 +1529,12 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 					sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", param);
 					sprintf(param, "%s/%i/custom_render_plugin.rco", hdd_path, _id);
 					sys_map_path("/dev_flash/vsh/resource/custom_render_plugin.rco", param);
-				}
+				}*/
 			}
 			else
 			{
 				char bg[48];
-				sprintf(bg, "%s/%08i/theme/wallpaper.png", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber());
+				sprintf(bg, "%s/%08i/theme/wallpaper.png", HDD0_HOME_DIR, xusers()->GetCurrentUserNumber());
 				cellFsUnlink(bg);
 				return sysLv2FsLink(param, bg);
 			}
@@ -1565,7 +1565,7 @@ static void randomize_vsh_resources(bool apply_theme, char *param)
 	map_vsh_resource(1, MAP_SELECTED, param, false); // earth.qrc
 	map_vsh_resource(2, MAP_SELECTED, param, false); // canyon.qrc
 	map_vsh_resource(3, MAP_SELECTED, param, false); // lines.qrc
-	map_vsh_resource(7, MAP_SELECTED, param, false); // gameboot (custom_render_plugin.rco + gameboot_stereo.ac3/gameboot_multi.ac3)
+//	map_vsh_resource(7, MAP_SELECTED, param, false); // gameboot (custom_render_plugin.rco + gameboot_stereo.ac3/gameboot_multi.ac3)
 	if(!apply_theme) return;
 	map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
 }

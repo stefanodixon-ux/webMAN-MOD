@@ -659,6 +659,7 @@ static u8 get_flag(const char *param, const char *label)
 	return false;
 }
 
+#ifndef LITE_EDITION
 static void replace_char(char *text, char c, char r)
 {
 	char *pos = strchr(text, c);
@@ -667,3 +668,4 @@ static void replace_char(char *text, char c, char r)
 		*pos = r; pos = strchr(text, c);
 	}
 }
+#endif

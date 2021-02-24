@@ -168,7 +168,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			}
 			else if(IS(templn, "/app_home"))
 			{
-				sprintf(tempstr, "%s/%08i", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber()); snprintf(fsize, maxlen, HTML_URL, tempstr, HTML_DIR);
+				sprintf(tempstr, "%s/%08i", HDD0_HOME_DIR, xusers()->GetCurrentUserNumber()); snprintf(fsize, maxlen, HTML_URL, tempstr, HTML_DIR);
 			}
 			else
 #if defined(LITE_EDITION) // || defined(USE_NTFS)
@@ -265,11 +265,11 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 			if(IS(name, "LICDIR"))
 			{
-				sprintf(tempstr, "%s/%08i/savedata", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber());
+				sprintf(tempstr, "%s/%08i/savedata", HDD0_HOME_DIR, xusers()->GetCurrentUserNumber());
 			}
 			else if(islike(name, "NPWR"))
 			{
-				sprintf(tempstr, "%s/%08i/trophy/%s", HDD0_HOME_DIR, xsetting_CC56EB2D()->GetCurrentUserNumber(), name);
+				sprintf(tempstr, "%s/%08i/trophy/%s", HDD0_HOME_DIR, xusers()->GetCurrentUserNumber(), name);
 			}
 
 			if(isDir(tempstr)) sprintf(fsize, "<a href=\"%s\">%s</a>", tempstr, HTML_DIR);

@@ -13,12 +13,12 @@ static void setAutoPowerOff(bool disable)
 
 	if(AutoPowerOffGame < 0)
 	{
-		xsetting_D0261D72()->loadRegistryIntValue(0x33, &AutoPowerOffGame);
-		xsetting_D0261D72()->loadRegistryIntValue(0x32, &AutoPowerOffVideo);
+		xregistry()->loadRegistryIntValue(0x33, &AutoPowerOffGame);
+		xregistry()->loadRegistryIntValue(0x32, &AutoPowerOffVideo);
 	}
 
-	xsetting_D0261D72()->saveRegistryIntValue(0x33, disable ? 0 : AutoPowerOffGame);
-	xsetting_D0261D72()->saveRegistryIntValue(0x32, disable ? 0 : AutoPowerOffVideo);
+	xregistry()->saveRegistryIntValue(0x33, disable ? 0 : AutoPowerOffGame);
+	xregistry()->saveRegistryIntValue(0x32, disable ? 0 : AutoPowerOffVideo);
 
 	if(disable)
 	{

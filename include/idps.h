@@ -203,7 +203,7 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 
 	if(*act_dat)
 	{
-		sprintf(filename, "%s/home/%08i/exdata/act.dat", drives[0], xsetting_CC56EB2D()->GetCurrentUserNumber());
+		sprintf(filename, "%s/home/%08i/exdata/act.dat", drives[0], xusers()->GetCurrentUserNumber());
 		_file_copy(filename, act_dat);
 	}
 
@@ -214,7 +214,7 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 		if(file_exists(act_dat))
 		{
 			add_breadcrumb_trail(param, act_dat); strcat(param, " from: ");
-			sprintf(header, "%s/home/%08i", drives[0], xsetting_CC56EB2D()->GetCurrentUserNumber());
+			sprintf(header, "%s/home/%08i", drives[0], xusers()->GetCurrentUserNumber());
 			add_breadcrumb_trail(param, header); strcat(param, "<br>");
 		}
 	}

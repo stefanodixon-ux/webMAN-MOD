@@ -3,6 +3,10 @@
 #ifndef __XREGISTRY_H__
 #define __XREGISTRY_H__
 
+#define xnet      xsetting_F48C0548
+#define xusers    xsetting_CC56EB2D
+#define xsettings xsetting_0AF1F161
+#define xregistry xsetting_D0261D72
 
 typedef struct xsetting_0AF1F161_class_t  // 28
 {

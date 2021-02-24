@@ -531,10 +531,10 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Kill", HTML_ONCLICK, url);
 		concat(buffer, templn);
 */
-		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Pause", HTML_ONCLICK, "/browser.ps3$rsx_pause");
+		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Pause", HTML_ONCLICK, "/xmb.ps3$rsx_pause");
 		concat(buffer, templn);
 
-		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Continue", HTML_ONCLICK, "/browser.ps3$rsx_continue");
+		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Continue", HTML_ONCLICK, "/xmb.ps3$rsx_continue");
 		concat(buffer, templn);
 
 		sprintf(templn, "<input name=\"proc\" type=\"hidden\" value=\"%u\"><br><br>", pid);
@@ -548,6 +548,27 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 	return is_vsh;
 }
 
+static void ps3mapi_dump_process(u64 pid, u64 address, u32 size)
+{
+	sys_addr_t sysmem = NULL;
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	{
+		int fd;
+		u8 *mem_buf = (u8*)sysmem;
+
+		if(cellFsOpen("/dev_hdd0/mem_dump.bin", CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+		{
+			for(u32 addr = 0; addr < size; addr += _64KB_)
+			{
+				{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, (u64)(address + addr), (u64)(u32)mem_buf, (u64)_64KB_);}
+				cellFsWrite(fd, mem_buf, _64KB_, NULL);
+			}
+			cellFsClose(fd);
+		}
+		sys_memory_free(sysmem);
+	}
+}
+
 static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
@@ -558,40 +579,53 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 
 	if(strstr(param, ".ps3mapi?"))
 	{
-		char addr_tmp[17];
-		if(get_param("addr=", addr_tmp, param, 16))
+		char addr_tmp[0x20];
+		if(get_param("addr=", addr_tmp, param, 0x10))
 		{
 			address = convertH(addr_tmp);
 
 			length = (int)get_valuen32(param, "len=");
 			if(length == 0) {length = 0x80; char *pos = strstr(param, "val="); if(pos) length = strlen(pos + 4) / 2;}
-			length = RANGE(length, 1, 0x80);
 
 			pid = get_valuen32(param, "proc=");
+
+			length = RANGE(length, 1, 0x80);
 		}
 		else
 			pid = GetGameProcessID();
-/*
-		if(get_param("find=", addr_tmp, param, 16))
-		{
-			u64 find = convertH(addr_tmp);
-			u64 addr = address, stop = address + 0x400000;
 
-			int retval = NONE;
-			u8 a, step = strchr(param, '#') ? 1 : 4;
-			char buffer_tmp[0x80];
+		if(get_param("&find=", addr_tmp, param, 0x20))
+		{
+			int retval = NONE, len = strlen(addr_tmp);
+			char sfind[0x10];
+			if(ISDIGIT(*addr_tmp)) {Hex2Bin(addr_tmp, sfind); len /= 2;} else strcpy(sfind, addr_tmp);
+
+			u64 addr = address, stop = address + 0x800000;
+			u8 a, step = strstr(param, "&step=1") ? 1 : 4;
+
+			char buffer_tmp[0x90];
 			for(; addr < stop; addr += 0x80)
 			{
-				{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, addr, (u64)(u32)buffer_tmp, 0x80); retval = (int)p1;}
+				{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, addr, (u64)(u32)buffer_tmp, 0x90); retval = (int)p1;}
 				if(retval < 0) break;
 
 				for(a = 0; a < 0x80; a += step)
 				{
-					if((u64)(buffer_tmp + a) == find) {address = addr + a; addr = stop; break;}
+					if( !memcmp(buffer_tmp + a, sfind, len) )
+					{
+						address = addr + a;
+						addr = stop;
+						break;
+					}
 				}
 			}
 		}
-*/
+
+		if(get_param("dump=", addr_tmp, param, 16))
+		{
+			u32 size = convertH(addr_tmp);
+			if(size >= _64KB_) ps3mapi_dump_process(pid, address, size);
+		}
 	}
 
 	if(!is_ps3mapi_home)
@@ -621,8 +655,16 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 		concat(buffer, templn);
 
 		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&lt;Back</a>", pid, address - 0x2000, pid, address - 0x80); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&gt;&gt;</a><hr>", pid, address + 0x80, pid, address + 0x2000); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%llx\">&gt;&gt;</a>", pid, address + 0x80, pid, address + 0x2000); buffer += concat(buffer, templn);
 
+		if(file_exists("/dev_hdd0/mem_dump.bin")) {concat(buffer, " ["); add_breadcrumb_trail2(buffer, NULL, "/dev_hdd0/mem_dump.bin"); concat(buffer, "]");}
+
+		if(!strstr(param, "dump=")) sprintf(templn, " [<a href=\"%s%s\">%s</a>]", param, "&dump=400000", "Dump Process"); else strcpy(templn, "<hr>");
+		concat(buffer, templn);
+
+		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
+		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>]<hr>", param, "Find", "Find");
+		concat(buffer, templn);
 		char buffer_tmp[length + 1];
 		memset(buffer_tmp, 0, sizeof(buffer_tmp));
 		int retval = NONE;
@@ -1132,7 +1174,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 					 "</tr>",
 					"Slot", "Name", "File name"); buffer += concat(buffer, templn);
 
-		#define MAX_SLOTS	65
+		#define MAX_SLOTS	61
 
 		char tmp_name[30];
 		char tmp_filename[STD_PATH_LEN];
@@ -1165,10 +1207,10 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
 						  HTML_FORM_METHOD_FMT("/gameplugin")
 						  "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
 						  "<input name=\"unload_slot\" type=\"hidden\" value=\"%i\">"
-						  "<input type=\"submit\" value=\" Unload \">"
+						  "<input type=\"submit\" value=\" Unload \" title=\"id=%i\">"
 						  "</form>"
 						 "</td>"
-						"</tr>", HTML_FORM_METHOD, pid, mod_list[slot]);
+						"</tr>", HTML_FORM_METHOD, pid, mod_list[slot], mod_list[slot]);
 			}
 			else
 			{

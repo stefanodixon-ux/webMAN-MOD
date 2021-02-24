@@ -114,7 +114,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 			if(code == CODE_PREVIEW_FILE)
 			{
-				char *p = strrchr(filename, '.'); if(islike(filename, "/dev_hdd0/tmp/gameboot")) p = strrchr(filename, '/');
+				char *p = strrchr(filename, '.'); //if(islike(filename, "/dev_hdd0/tmp/gameboot")) p = strrchr(filename, '/');
 				if(p) get_image_file(filename, p - filename); else strcat(filename, "/PS3_GAME/ICON0.PNG");
 				if(file_exists(filename))
 				{
@@ -1114,6 +1114,13 @@ parse_request:
 					restore_blocked_urls();
 				}
 				else
+ 				/*if(islike(param2, "$dlna"))
+				{
+					int status = 2;
+					if(param2[5] == '?') status = val(param2 + 6);
+					toggle_dlna(status);
+				}
+				else*/
    #ifdef SPOOF_CONSOLEID
 				if(islike(param2, "$show_idps"))
 				{
@@ -1175,12 +1182,12 @@ parse_request:
 						if(size)
 						{
 							pos += 2, len = strlen(pos);
-							xsetting_D0261D72()->saveRegistryStringValue(id, pos, len);
+							xregistry()->saveRegistryStringValue(id, pos, len);
 						}
 						else
 						{
 							value = val(pos + 2);
-							xsetting_D0261D72()->saveRegistryIntValue(id, value);
+							xregistry()->saveRegistryIntValue(id, value);
 						}
 					}
 
@@ -1189,12 +1196,12 @@ parse_request:
 					if(size)
 					{
 						char *pos2 = strstr(param2, ","); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
-						xsetting_D0261D72()->loadRegistryStringValue(id, header, size);
+						xregistry()->loadRegistryStringValue(id, header, size);
 						sprintf(param2 + len, " => %s", header);
 					}
 					else
 					{
-						xsetting_D0261D72()->loadRegistryIntValue(id, &value);
+						xregistry()->loadRegistryIntValue(id, &value);
 						sprintf(param2 + len, " => %i (0x%04x)", value, value);
 					}
 				}
@@ -1584,7 +1591,7 @@ parse_request:
 					islike(param, "/canyon.ps3")    ||
 					islike(param, "/lines.ps3")     ||
 					islike(param, "/theme.ps3")     ||
-					islike(param, "/gameboot.ps3")  ||
+				//	islike(param, "/gameboot.ps3")  ||
 					islike(param, "/coldboot.ps3"))
 			{
 				// /wallpaper.ps3?random
@@ -1600,7 +1607,7 @@ parse_request:
 							(param[4] == 'y') ? 2: // 2 = canyon
 							(param[1] == 'l') ? 3: // 3 = lines
 							(param[1] == 'c') ? 4: // 4 = coldboot
-							(param[1] == 'g') ? 7: // 7 = gameboot
+						//	(param[1] == 'g') ? 7: // 7 = gameboot (deprecated)
 												5; // 5 = theme (6 = last selected theme)
 
 				char *value = strstr(param, ".ps3") + 4;
@@ -1688,12 +1695,12 @@ parse_request:
 				}
 				else
 				{
-					if(param[14] == 0) {status ^= 1; xsetting_F48C0548()->SetSettingNet_enable(status);} else
+					if(param[14] == 0) {status ^= 1; xnet()->SetSettingNet_enable(status);} else
 					if(param[15] == 0) ; else // query status
-					if( param[15] & 1) xsetting_F48C0548()->SetSettingNet_enable(1); else //enable
-					if(~param[15] & 1) xsetting_F48C0548()->SetSettingNet_enable(0);      //disable
+					if( param[15] & 1) xnet()->SetSettingNet_enable(1); else //enable
+					if(~param[15] & 1) xnet()->SetSettingNet_enable(0);      //disable
 
-					xsetting_F48C0548()->GetSettingNet_enable(&status);
+					xnet()->GetSettingNet_enable(&status);
 				}
 
 				sprintf(param, "%s : %s", label ? to_upper(label) : "Network", status ? STR_ENABLED : STR_DISABLED);
@@ -2375,7 +2382,7 @@ parse_request:
 				// /unlocksave.ps3<path>  fix PARAM.SFO in savedata folder
 
 				char *savedata_path = param + 15;
-				if(*savedata_path != '/') sprintf(savedata_path, "%s/home/%08i", drives[0], xsetting_CC56EB2D()->GetCurrentUserNumber());
+				if(*savedata_path != '/') sprintf(savedata_path, "%s/home/%08i", drives[0], xusers()->GetCurrentUserNumber());
 
 				check_path_alias(savedata_path);
 

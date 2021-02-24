@@ -256,10 +256,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			get_flag(param, "/PS3_"); // remove /PS3_GAME
 
 			int discboot = 0xff;
-			xsetting_0AF1F161()->GetSystemDiscBootFirstEnabled(&discboot);
+			xsettings()->GetSystemDiscBootFirstEnabled(&discboot);
 
 			if(discboot == 1)
-				xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(0);
+				xsettings()->SetSystemDiscBootFirstEnabled(0);
 
 #ifdef PS2_DISC
 			if(islike(param, "/mount.ps2"))
@@ -285,7 +285,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			}
 
 			if(discboot == 1)
-				xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(1);
+				xsettings()->SetSystemDiscBootFirstEnabled(1);
 		}
 
 		mount_app_home = false;
@@ -377,7 +377,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				#ifdef USE_UACCOUNT
 				if(!webman_config->uaccount[0])
 				#endif
-					sprintf(webman_config->uaccount, "%08i", xsetting_CC56EB2D()->GetCurrentUserNumber());
+					sprintf(webman_config->uaccount, "%08i", xusers()->GetCurrentUserNumber());
 
 				if(cp_mode)
 				{
@@ -1347,11 +1347,11 @@ static void mount_autoboot(void)
 		{
 			// prevent auto-launch game on boot (last game only). AUTOBOOT.ISO is allowed to auto-launch on boot
 			int discboot = 0xff;
-			xsetting_0AF1F161()->GetSystemDiscBootFirstEnabled(&discboot);
-			if(discboot) xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(0); // disable Disc Boot
+			xsettings()->GetSystemDiscBootFirstEnabled(&discboot);
+			if(discboot) xsettings()->SetSystemDiscBootFirstEnabled(0); // disable Disc Boot
 			if(!islike(path, "/dev_hdd0/game")) mount_game(path, MOUNT_NORMAL);
 			sys_ppu_thread_sleep(5);
-			if(discboot) xsetting_0AF1F161()->SetSystemDiscBootFirstEnabled(1); // restore Disc Boot setting
+			if(discboot) xsettings()->SetSystemDiscBootFirstEnabled(1); // restore Disc Boot setting
 		}
 		else
 		{

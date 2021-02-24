@@ -72,7 +72,7 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 	*abort_connection = 1;
 
 	s32 net_enabled = 0;
-	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+	xnet()->GetSettingNet_enable(&net_enabled);
 
 	if(!net_enabled) return FAILED;
 
@@ -142,7 +142,7 @@ static int remote_stat(int s, const char *path, int *is_directory, s64 *file_siz
 	*abort_connection = 1;
 
 	s32 net_enabled = 0;
-	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+	xnet()->GetSettingNet_enable(&net_enabled);
 
 	if(!net_enabled) return FAILED;
 
@@ -574,7 +574,7 @@ static bool is_netsrv_enabled(u8 server_id)
 	if(server_id > 4) return false;
 
 	s32 net_enabled = 0;
-	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+	xnet()->GetSettingNet_enable(&net_enabled);
 
 	if(!net_enabled) return false;
 
@@ -639,7 +639,7 @@ static int open_remote_dir(int s, const char *path, int *abort_connection)
 	*abort_connection = 1;
 
 	s32 net_enabled = 0;
-	xsetting_F48C0548()->GetSettingNet_enable(&net_enabled);
+	xnet()->GetSettingNet_enable(&net_enabled);
 
 	if(!net_enabled)
 	{

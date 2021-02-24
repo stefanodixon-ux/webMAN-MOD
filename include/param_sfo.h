@@ -101,7 +101,7 @@ static u8 patch_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_siz
 		}
 		else if(!memcmp((char *) &mem[str], "PARAMS", 6))
 		{
-			int userid = xsetting_CC56EB2D()->GetCurrentUserNumber();
+			int userid = xusers()->GetCurrentUserNumber();
 			mem[pos + 24] = (u8)(userid);           // User 1
 			memset((char *) &mem[pos + 28], 0, 16); // PSID
 			memset((char *) &mem[pos + 48], 0, 16); // Account ID

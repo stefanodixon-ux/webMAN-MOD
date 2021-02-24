@@ -333,7 +333,7 @@ static u32 get_system_language(u8 *lang)
 	//u32 val_lang = get_xreg_value("/setting/system/language", 1);
 
 	int val_lang = 1;
-	xsetting_0AF1F161()->GetSystemLanguage(&val_lang);
+	xsettings()->GetSystemLanguage(&val_lang);
 
 	switch(val_lang)
 	{

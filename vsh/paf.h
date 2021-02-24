@@ -4,7 +4,7 @@
 
 // paf_1565FC46  // ?
 
-extern void* paf_AF58E756(void);  // Gets the base of loaded plugins. The pointer returned is used in paf::View::Find to find plugins.
+//extern void* paf_AF58E756(void);  // Gets the base of loaded plugins. The pointer returned is used in paf::View::Find to find plugins.
 #define GetSPRXBaseAddr paf_AF58E756
 
 // paf_A4819ADB  // ? main_mem / rwlock_unlock
