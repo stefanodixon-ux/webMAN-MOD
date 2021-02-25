@@ -79,10 +79,6 @@ static void apply_remaps(void)
 	if(file_exists(path))
 		sys_map_path("/dev_flash/vsh/module/game_ext_plugin.sprx", path);
 
-	// unmap gameboot audio
-	sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  NULL);
-	sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", NULL);
-
 	// redirect firmware update on BD disc to empty folder
 	sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);
 }

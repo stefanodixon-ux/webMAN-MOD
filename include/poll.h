@@ -51,6 +51,10 @@ static void poll_start_play_time(void)
 
 		close_ftp_sessions_idle();
 
+		// unmap gameboot audio
+		sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  NULL);
+		sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", NULL);
+
 	#ifdef OFFLINE_INGAME
 		if((webman_config->spp & 4) || (net_status >= 0))
 		{

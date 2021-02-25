@@ -834,8 +834,8 @@ parse_request:
 				patch_gameboot(val(param + 14));
 				sprintf(param, "/index.ps3");
 			}
-			else*/
-			#endif
+			else
+			#endif*/
 			if(islike(param, "/tempc.html") || islike(param, "/tempf.html"))
 			{
 				u8 t1 = 0, t2 = 0;
@@ -1850,16 +1850,19 @@ parse_request:
 
 								u16 line = (u16)val(pos);
 
-								if(*find)
+								if(*find) // find text
 								{
 									char *pos = strstr(buffer, data);
-									if(!pos)
+									if(!pos) // if buffer does not have the new data
 									{
 										pos = strstr(buffer, find);
-										if(pos)
+										if(pos) // if the text is found
 										{
+											// insert data at found offset (pos)
 											for(int i = strlen(pos); i >= 0; i--) pos[i + len] = pos[i];
 											memcpy(pos, data, len);
+
+											// save file
 											save_file(filename, buffer, SAVE_ALL);
 										}
 									}
