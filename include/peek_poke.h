@@ -280,6 +280,8 @@ static u16 Hex2Bin(const char *src, char *out)
 	if(islike(src, "0x")) src += 2;
 	while(*src && src[1])
 	{
+		if(*src < '0') {++src; continue;} // ignore spaces & line breaks
+
 		value[0] = src[0], value[1] = src[1];
 		*(target++) = (u8)convertH(value);
 		src += 2;

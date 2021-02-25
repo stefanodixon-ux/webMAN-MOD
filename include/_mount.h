@@ -146,6 +146,78 @@ static void auto_play(char *param, u8 play_ps3)
 	}
 }
 
+#ifdef PS3MAPI
+static void patch_gameboot(u8 boot_type)
+{
+	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 50000))
+	{
+		u32 pid_list[16];
+		{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
+
+		u32 pid = 0;
+		for(int i = 0; i < 16; i++)
+		{
+			if(1 < pid_list[i])
+			{
+				pid = pid_list[i];
+				break;
+			}
+		}
+
+		if(pid)
+		{
+			u64 address1, address2;
+			char value[16]; int len;
+
+			const char *id = (boot_type == 1) ? "ps1":
+							 (boot_type == 2) ? "ps2":
+							 (boot_type == 4) ? "psp":
+							 (boot_type == 5) ? "bdv":
+							 (boot_type == 6) ? "dvd":
+							 (boot_type == 7) ? "rom":
+												"ps3";
+
+			len = sprintf(value, "%s_%sboot", "page", "game"); // find "page_gameboot"
+			address1 = ps3mapi_find_offset(pid, 0x100000, 0xFF0000, 4, value, len, value);
+
+			if(address1 > 0x100000)
+			{
+				len = sprintf(value, "%s_", id); // patch "xxx__gameboot"
+				{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address1, (u64)(u32)value, (u64)len);}
+
+				len = sprintf(value, "%slogo", "ps3"); // find ps3logo
+				address2 = ps3mapi_find_offset(pid, address1, 0xFF0000, 4, value, len, value);
+
+				if(address2 > address1)
+				{
+					len = sprintf(value, "%slogo", IS(id, "ps3") ? "psx" : id); // patch xxxlogo
+					{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address2, (u64)(u32)value, (u64)len);}
+				}
+
+				len = sprintf(value, "%s_%sboot", "anim",
+												  strchr(id, 'v') ? "other": // find anim_otherboot for dvd/bdv
+																	"game"); // find anim_gameboot  for ps3/ps2/ps1/psp/rom
+				address2 = ps3mapi_find_offset(pid, address1, 0xFF0000, 4, value, len, value);
+
+				if(address2 > address1)
+				{
+					len = sprintf(value, "%s_", id); // patch xxx__otherboot / xxx__gameboot
+					{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address2, (u64)(u32)value, (u64)len);}
+				}
+			}
+
+			if(isDir("/dev_hdd0/tmp/gameboot"))
+			{
+				char path[48];
+				sprintf(path, "%s/%s_boot_stereo.ac3", "/dev_hdd0/tmp/gameboot", id);
+				sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  file_exists(path) ? path : NULL);
+				sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", file_exists(path) ? path : NULL);
+			}
+		}
+	}
+}
+#endif
+
 static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, bool mount_ps3, bool forced_mount)
 {
 	bool mounted = false, umounted = false;
@@ -950,7 +1022,7 @@ static void do_umount_iso(void)
 
 static void do_umount(bool clean)
 {
-	if(clean) cellFsUnlink(LAST_GAME_TXT);
+	if(clean) {cellFsUnlink(LAST_GAME_TXT); mount_unk = EMU_OFF;}
 
 #ifdef USE_NTFS
 	root_check = true;
@@ -1606,6 +1678,23 @@ exit_mount:
 mounting_done:
 
 #ifdef COBRA_ONLY
+
+	#ifdef PS3MAPI
+	if(mount_unk == EMU_PSX)
+		patch_gameboot(1); // PS1
+	else if(mount_unk == EMU_PS2_DVD || mount_unk == EMU_PS2_CD)
+		patch_gameboot(2); // PS2
+	else if(mount_unk == EMU_PSP)
+		patch_gameboot(4); // PSP
+	else if(mount_unk == EMU_BD)
+		patch_gameboot(5); // BDV
+	else if(mount_unk == EMU_DVD)
+		patch_gameboot(6); // DVD
+	else if((mount_unk == EMU_ROMS) || strstr(_path0, "/ROMS"))
+		patch_gameboot(7); // ROMS
+	else
+		patch_gameboot(3); // PS3
+	#endif
 
 	// ------------------------------------------------------------------
 	// auto-enable gamedata on bdvd if game folder or ISO contains GAMEI

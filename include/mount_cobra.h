@@ -154,6 +154,7 @@
 							u64 msiz = read_file(_path, rawseciso_data, _64KB_, 0);
 							if(msiz > sizeof(rawseciso_args))
 							{
+
 								ret = (cobra_load_vsh_plugin(0, (char*)rawseciso_sprx[n], rawseciso_data, msiz) == CELL_OK);
 								sys_ppu_thread_sleep(1);
 							}
@@ -243,6 +244,8 @@
 
 							if(is_psp)
 							{
+								mount_unk = EMU_PSP;
+
 								ret = (cobra_set_psp_umd(_path, (char*)templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 								//goto copy_pspiso_to_hdd0;
 							}
@@ -365,7 +368,7 @@
 				}
 				else
 				{
-					//mount_unk = netiso_args.emu_mode = EMU_DVD;
+					//mount_unk = netiso_args.emu_mode = EMU_BD;
 					if(is_ext(netpath, ".pkg"))
 					{
 						pkg_slash = get_filename(netpath); if(pkg_slash) *pkg_slash = NULL;
@@ -412,6 +415,8 @@
 
 					else if(is_iso && islike(netpath, "/PSPISO"))
 					{
+						mount_unk = EMU_PSP;
+
 						sprintf(templn, "/dev_bdvd/%s", netpath + 8);
 						sprintf(_path,  "/dev_bdvd/%s", netpath + 8);
 
@@ -422,6 +427,8 @@
 
 					else if(islike(netpath, "/ROMS/"))
 					{
+						mount_unk = EMU_ROMS;
+
 						wait_for("/dev_bdvd", 15);
 
 						sys_map_path(PKGLAUNCH_DIR, NULL);
@@ -435,6 +442,8 @@
 
 					else if(islike(netpath, "/GAMEI/"))
 					{
+						mount_unk = EMU_PS3;
+
 						wait_for("/dev_bdvd", 15);
 						sys_map_path(APP_HOME_DIR, "/dev_bdvd");
 
@@ -678,6 +687,7 @@
 
 				else if(strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || (mount_unk == EMU_PSX))
 				{
+					mount_unk = EMU_PSX;
 					ret = mount_ps_disc_image(_path, cobra_iso_list, 1, EMU_PSX); if(multiCD) check_multipsx = !isDir("/dev_usb000"); // check eject/insert USB000 in mount_on_insert_usb()
 				}
 
@@ -685,10 +695,16 @@
 				// mount DVD / BD ISO
 				// ------------------
 
-				else if(strstr(_path, "/DVDISO") || (mount_unk == EMU_DVD))
-					cobra_mount_dvd_disc_image(cobra_iso_list, iso_parts);
 				else if(strstr(_path, "/BDISO")  || (mount_unk == EMU_BD))
+				{
+					mount_unk = EMU_BD;
 					cobra_mount_bd_disc_image(cobra_iso_list, iso_parts);
+				}
+				else if(strstr(_path, "/DVDISO") || (mount_unk == EMU_DVD))
+				{
+					mount_unk = EMU_DVD;
+					cobra_mount_dvd_disc_image(cobra_iso_list, iso_parts);
+				}
 				else
 				{
 					// mount iso as data

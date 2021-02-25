@@ -549,9 +549,10 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 	return is_vsh;
 }
 
-static u64 ps3mapi_find_offset(u64 pid, u64 addr, u64 stop, u8 step, char *sfind, u8 len, char *mask)
+static u64 ps3mapi_find_offset(u64 pid, u64 addr, u64 stop, u8 step, const char *sfind, u8 len, const char *mask)
 {
 	int retval = NONE;
+	found_offset = addr;
 
 	char mem[0x100]; u8 m = sizeof(mem) - len;
 	for(; addr < stop; addr += sizeof(mem))
@@ -568,7 +569,7 @@ static u64 ps3mapi_find_offset(u64 pid, u64 addr, u64 stop, u8 step, char *sfind
 			}
 		}
 	}
-	return addr;
+	return found_offset;
 }
 
 static void ps3mapi_dump_process(u64 pid, u64 address, u32 size)
@@ -617,8 +618,8 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			{
 				char value[130];
 				char val_tmp[260];
-				length = get_param("val=", val_tmp, param, 0x100) / 2;
-				Hex2Bin(val_tmp, value);
+				get_param("val=", val_tmp, param, 0x100);
+				length = Hex2Bin(val_tmp, value);
 				if(length) {system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)value, (u64)length);}
 			}
 
@@ -633,10 +634,10 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			char sfind[0x21], *mask = addr_tmp;
 			u8 len = snprintf(sfind, 0x20, "%s", addr_tmp);
 
-			// search hex
+			// search hex: 0xAABBCC112233
 			if(ISDIGIT(*addr_tmp))
 			{
-				Hex2Bin(addr_tmp, sfind); len /= 2;
+				len = Hex2Bin(addr_tmp, sfind);
 				for(u8 i = 0, n = 0; i < len; i++, n+=2) mask[i] = addr_tmp[n]; mask[len] = 0;
 			}
 			else if(strstr(param, "&exact"))
@@ -797,10 +798,9 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 		{
 			address = convertH(addr_tmp);
 
-			length = get_param("val=", val_tmp, param, 0x100) / 2;
-			if(length)
+			if(get_param("val=", val_tmp, param, 0x100))
 			{
-				Hex2Bin(val_tmp, value);
+				length = Hex2Bin(val_tmp, value);
 
 				pid = get_valuen32(param, "proc=");
 			}
