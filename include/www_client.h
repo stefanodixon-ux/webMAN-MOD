@@ -2711,7 +2711,7 @@ retry_response:
 
 			if(show_info_popup || islike(param, "/cpursx.ps3")) is_cpursx = 1;
 			else
-			if((is_binary == FOLDER_LISTING) || islike(param, "/index.ps3") || islike(param, "/sman.ps3"))
+			if((is_binary == FOLDER_LISTING) || islike(param, "/index.ps3") || islike(param, "/sman.ps3") || islike(param, "/gameplugin.ps3mapi"))
 			{
 				sys_memory_container_t vsh_mc = get_vsh_memory_container();
 				if(vsh_mc && sys_memory_allocate_from_container(_3MB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_1M, &sysmem) == CELL_OK) BUFFER_SIZE_HTML = _3MB_;

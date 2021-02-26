@@ -283,11 +283,9 @@ view_file:
 			byte = (u8)((lv1 ? peek_lv1(byte_addr) : peekq(byte_addr)) >> 56);
 
 		hilite = found && (byte_addr >= found_address) && (byte_addr < (found_address + flen));
-		if(hilite) buffer += concat(buffer, "<font color=yellow><b>");
+		if(hilite) buffer += concat(buffer, "<font color=#ff0>");
 		sprintf(templn, "%02X ", byte); buffer += concat(buffer, templn);
-		if(hilite) buffer += concat(buffer, "</b></font>");
-
-		if(p == 0x7) buffer += concat(buffer, " ");
+		if(hilite) buffer += concat(buffer, "</font>");
 
 		if(p == 0xF)
 		{
@@ -301,7 +299,7 @@ view_file:
 				if(byte<32 || byte>=127) byte='.';
 
 				hilite = (found && addr >= found_address) && (addr < (found_address + flen));
-				if(hilite) buffer += concat(buffer, "<font color=yellow><b>");
+				if(hilite) buffer += concat(buffer, "<font color=#ff0>");
 				if(byte==0x3C)
 					buffer += concat(buffer, "&lt;");
 				else if(byte==0x3E)
@@ -309,7 +307,7 @@ view_file:
 				else
 					{sprintf(templn,"%c", byte); buffer += concat(buffer, templn);}
 
-				if(hilite) buffer += concat(buffer, "</b></font>");
+				if(hilite) buffer += concat(buffer, "</font>");
 			}
 			buffer += concat(buffer, "<br>");
 		}
