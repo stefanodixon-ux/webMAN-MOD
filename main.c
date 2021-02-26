@@ -479,6 +479,10 @@ static void wwwd_thread(u64 arg)
 	*html_base_path = NULL;
 #endif
 
+#ifdef COBRA_ONLY
+	map_patched_modules();
+#endif
+
 	if(webman_config->blind) enable_dev_blind(NO_MSG);
 
 	set_buffer_sizes(webman_config->foot);

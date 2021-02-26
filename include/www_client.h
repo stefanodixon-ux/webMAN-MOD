@@ -823,19 +823,6 @@ parse_request:
 				sprintf(param, "/index.ps3");
 			}
 			else
-			/*if(islike(param, "/crossdomain.xml"))
-			{
-				sprintf(param, "%s%s", HTML_BASE_PATH, "/crossdomain.xml");
-			}
-			else
-			#ifdef PS3MAPI
-			if(islike(param, "/gameboot.ps3"))
-			{
-				patch_gameboot(val(param + 14));
-				sprintf(param, "/index.ps3");
-			}
-			else
-			#endif*/
 			if(islike(param, "/tempc.html") || islike(param, "/tempf.html"))
 			{
 				u8 t1 = 0, t2 = 0;

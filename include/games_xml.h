@@ -59,6 +59,17 @@ static void sys_map_path2(const char *path1, const char *path2)
 	#endif
 }
 
+static void map_patched_modules(void)
+{
+	// redirect to patched game_ext_plugin.sprx required for gameboot animation & sounds
+	if(file_exists("/dev_hdd0/tmp/gameboot/game_ext_plugin.sprx"))
+		sys_map_path("/dev_flash/vsh/module/game_ext_plugin.sprx", "/dev_hdd0/tmp/gameboot/game_ext_plugin.sprx");
+
+	// redirect to patched libaudio.sprx
+	if(file_exists("/dev_hdd0/tmp/libaudio.sprx"))
+		sys_map_path("/dev_flash/sys/external/libaudio.sprx", "/dev_hdd0/tmp/libaudio.sprx");
+}
+
 static void apply_remaps(void)
 {
 	disable_map_path(false);
@@ -73,11 +84,7 @@ static void apply_remaps(void)
 	//	sys_map_path(HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");
 	}
 
-	// redirect to patched game_ext_plugin.sprx required for gameboot animation & sounds
-	char path[48];
-	sprintf(path, "%s/game_ext_plugin.sprx", "/dev_hdd0/tmp/gameboot");
-	if(file_exists(path))
-		sys_map_path("/dev_flash/vsh/module/game_ext_plugin.sprx", path);
+	map_patched_modules();
 
 	// redirect firmware update on BD disc to empty folder
 	sys_map_path("/dev_bdvd/PS3_UPDATE", SYSMAP_EMPTY_DIR);

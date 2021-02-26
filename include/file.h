@@ -131,6 +131,8 @@ static void check_path_alias(char *param)
 			if(IS(path, "pkg"))        {sprintf(param, DEFAULT_PKG_PATH);} else
 			if(IS(path, "xml"))        {*path = 0;} else
 			if(IS(path, "xmb"))        {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(IS(path, "res"))        {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource");} else
+			if(IS(path, "mod"))        {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/module");} else
 			if(IS(path, "cov"))        {sprintf(param, "%s/covers", MM_ROOT_STD);} else
 			if(IS(path, "cvr"))        {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
 			if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
@@ -141,7 +143,7 @@ static void check_path_alias(char *param)
 			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s%s", _HDD0_GAME_DIR, path);} // try /dev_hdd0//game
 			if(not_exists(param))
 			{
-				for(u8 i = 0; i < MAX_DRIVES; i++)
+				for(u8 i = 0; i < (MAX_DRIVES + 1); i++)
 				{
 					if(i == NET) i = NTFS + 1;
 					snprintf(param, HTML_RECV_LAST, "%s/%s", drives[i], path);

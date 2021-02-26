@@ -129,7 +129,7 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 			if(not_exists(path)) sprintf(path, "/dev_bdvd/PS3_GAME");
 
 			sprintf(templn, "<a href=\"%s\"><img src=\"%s/ICON0.PNG\" height=\"60\" border=0%s></a> "
-							"<a href=\"/%s.ps3mapi?proc=%i\"><small>pid=%i</small></a>",
+							"<a href=\"/%s.ps3mapi?proc=%i\"><small>pid=%08x</small></a>",
 					path, path, " style=\"position:relative;top:20px;\"", (is_cpursx < 3) ? "gameplugin" : "getmem",  GetGameProcessID(), GetGameProcessID()); buffer += concat(buffer, templn);
 
 			buffer += concat(buffer, "</H2></span>");

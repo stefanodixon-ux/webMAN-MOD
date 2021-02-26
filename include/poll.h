@@ -51,9 +51,12 @@ static void poll_start_play_time(void)
 
 		close_ftp_sessions_idle();
 
+	#ifdef PS3MAPI
 		// unmap gameboot audio
 		sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  NULL);
 		sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", NULL);
+		patched_address1 = patched_address2 = patched_address3 = 0x100000;
+	#endif
 
 	#ifdef OFFLINE_INGAME
 		if((webman_config->spp & 4) || (net_status >= 0))
