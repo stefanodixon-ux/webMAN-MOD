@@ -49,6 +49,7 @@
 #define XMBMANPLS_IMAGES_DIR XMBMANPLS_DIR "/USRDIR/IMAGES"
 
 #define RELOADXMB_DIR        "/dev_hdd0//game/RELOADXMB"
+#define PKGLAUNCH_DIR        "/dev_hdd0//game/PKGLAUNCH"
 
 #define IRISMAN_USRDIR       "/dev_hdd0//game/IRISMAN01/USRDIR"
 #define PRXLOADER_USRDIR     "/dev_hdd0//game/PRXLOADER/USRDIR"
@@ -610,6 +611,7 @@ int main()
 	file_copy(APP_USRDIR "/icons/blank.png", ICONS_DIR "/blank.png");
 
 	sysLv2FsUnlink(RES_DIR "/reloadxmb.pkg");
+	sysLv2FsUnlink(RES_DIR "/ROMS_PKG_Launcher.pkg");
 	sysLv2FsUnlink(TMP_DIR "/wm_online_ids.txt");
 
 	if(not_exists(RES_DIR "/wm_online_ids.txt"))
@@ -623,19 +625,22 @@ int main()
 //	file_copy(APP_USRDIR "/addons/PS2_CONFIG.pkg", RES_DIR "/PS2_CONFIG.pkg");
 	file_copy(APP_USRDIR "/addons/PSP_Minis_Launcher.pkg", RES_DIR "/PSP_Minis_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/PSP_Remasters_Launcher.pkg"	, RES_DIR "/PSP_Remasters_Launcher.pkg");
-	file_copy(APP_USRDIR "/addons/Reload_XMB.pkg", RES_DIR "/Reload_XMB.pkg");
 	file_copy(APP_USRDIR "/addons/RELOAD_XMB.ISO", RES_DIR "/RELOAD_XMB.ISO");
-	file_copy(APP_USRDIR "/addons/ROMS_PKG_Launcher.pkg", RES_DIR "/ROMS_PKG_Launcher.pkg");
+//	file_copy(APP_USRDIR "/addons/Reload_XMB.pkg", RES_DIR "/Reload_XMB.pkg");
+//	file_copy(APP_USRDIR "/addons/ROMS_PKG_Launcher.pkg", RES_DIR "/ROMS_PKG_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_standard.pkg", RES_DIR "/wm_theme_standard.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_metalification.pkg"	, RES_DIR "/wm_theme_metalification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_flowerification.pkg"	, RES_DIR "/wm_theme_flowerification.pkg");
-
+/*
 	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
 	sysLv2FsMkdir(RELOADXMB_DIR "/USRDIR", DMODE);
 	file_copy(APP_USRDIR "/xmb/RELOADXMB/ICON0.PNG", RELOADXMB_DIR "/ICON0.PNG");
 	file_copy(APP_USRDIR "/xmb/RELOADXMB/PARAM.SFO", RELOADXMB_DIR "/PARAM.SFO");
 	file_copy(APP_USRDIR "/xmb/RELOADXMB/EBOOT.BIN", RELOADXMB_DIR "/USRDIR/EBOOT.BIN");
+*/
+	sysLv2FsRename(APP_USRDIR "/xmb/RELOADXMB", RELOADXMB_DIR);
+	sysLv2FsRename(APP_USRDIR "/xmb/PKGLAUNCH", PKGLAUNCH_DIR);
 
 	sysLv2FsMkdir(PS2CONFIG_DIR, DMODE);
 	sysLv2FsMkdir(PS2CONFIG_USRDIR, DMODE);

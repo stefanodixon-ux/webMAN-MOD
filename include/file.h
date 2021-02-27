@@ -128,13 +128,14 @@ static void check_path_alias(char *param)
 			char path[STD_PATH_LEN];
 			int len = snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
 			if((len == 4) && path[3] == '/') path[3] = 0; // normalize path
-			if(IS(path, "pkg"))        {sprintf(param, DEFAULT_PKG_PATH);} else
-			if(IS(path, "xml"))        {*path = 0;} else
-			if(IS(path, "xmb"))        {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
-			if(IS(path, "res"))        {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource");} else
-			if(IS(path, "mod"))        {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/module");} else
-			if(IS(path, "cov"))        {sprintf(param, "%s/covers", MM_ROOT_STD);} else
-			if(IS(path, "cvr"))        {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
+			if(IS(path, "pkg"))  {sprintf(param, DEFAULT_PKG_PATH);} else
+			if(IS(path, "xml"))  {*path = 0;} else
+			if(IS(path, "xmb"))  {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(IS(path, "res"))  {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource");} else
+			if(IS(path, "mod"))  {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/module");} else
+			if(IS(path, "cov"))  {sprintf(param, "%s/covers", MM_ROOT_STD);} else
+			if(IS(path, "cvr"))  {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
+			if(islike(path, "res/"))   {sprintf(param, "/dev_blind/vsh/resource/%s", path + 4);} else
 			if(*html_base_path == '/') {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
 
 			if(not_exists(param))      {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, path);} // try HTML_BASE_PATH

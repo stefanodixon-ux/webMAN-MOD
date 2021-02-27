@@ -105,7 +105,7 @@ static bool _IS(const char *a, const char *b)
 	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
 }
 
-#ifdef COBRA_ONLY
+#ifdef PS3MAPI
 static bool bcompare(const char *a, const char *b, u8 len, const char *mask)
 {
 	while(len && ((*a == *b) || (*mask == '*'))) {a++,b++,mask++,len--;}

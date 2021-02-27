@@ -2468,7 +2468,14 @@ int cobra_read_config(CobraConfig *cfg)
 
 	memset((uint8_t*)cfg, 0, sizeof(CobraConfig));
 
-	cfg->size = sizeof(CobraConfig);
+	uint16_t cobra_version;
+	sys_get_version2(&cobra_version);
+
+	if(cobra_version <= 0x0820)
+		cfg->size = sizeof(CobraConfig_Old);
+	else
+		cfg->size = sizeof(CobraConfig);
+
 	return sys_read_cobra_config(cfg);
 }
 
@@ -2476,7 +2483,14 @@ int cobra_write_config(CobraConfig *cfg)
 {
 	if(!cfg) return EINVAL;
 
-	cfg->size = sizeof(CobraConfig);
+	uint16_t cobra_version;
+	sys_get_version2(&cobra_version);
+
+	if(cobra_version <= 0x0820)
+		cfg->size = sizeof(CobraConfig_Old);
+	else
+		cfg->size = sizeof(CobraConfig);
+
 	return sys_write_cobra_config(cfg);
 }
 
