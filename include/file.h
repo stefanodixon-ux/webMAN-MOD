@@ -882,8 +882,9 @@ static int folder_copy(const char *path1, char *path2)
 	return CELL_FS_SUCCEEDED;
 }
 
-static u8 do_chmod = 0;
-static u8 check_md5 = 0;
+static u8  do_chmod = 0;
+static u16 new_mode = 0777;
+static u8  check_md5 = 0;
 static u32 dir_count = 0;
 static u32 file_count = 0;
 static char *stitle_id = NULL;
@@ -944,7 +945,7 @@ static u64 folder_size(const char *path)
 {
 	if(!isDir(path))
 	{
-		if(do_chmod) cellFsChmod(path, MODE);
+		if(do_chmod) cellFsChmod(path, new_mode);
 
 		return file_size(path);
 	}
@@ -989,7 +990,7 @@ static u64 folder_size(const char *path)
 			if(copy_aborted) break;
 			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
-			sprintf(psource, "/%s", entry_name); if(do_chmod) cellFsChmod(source, MODE);
+			sprintf(psource, "/%s", entry_name); if(do_chmod) cellFsChmod(source, new_mode);
 
 			if(isDir(source))
 			{
@@ -1417,7 +1418,7 @@ static void handle_file_request(const char *url)
 	{
 		loading_html++;
 		sys_ppu_thread_t t_id;
-		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_MOUNT_GAME, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
+		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
 	}
 
 	while(wm_url) sys_ppu_thread_usleep(100000);

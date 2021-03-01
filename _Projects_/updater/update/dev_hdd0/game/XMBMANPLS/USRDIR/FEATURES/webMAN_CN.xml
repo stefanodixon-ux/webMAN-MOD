@@ -75,23 +75,35 @@
 
 	<V id="seg_webman_redirect_usb_items">
 		<A>
-			<T key="remap_usb0">
+			<T key="inc">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</></P>
-				<P key="title"><>重映射 USB000 到 HDD</></P>
-				<P key="info"><>重定向 USB000 到 /dev_hdd0/packages</></P>
 				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://localhost/remap.ps3/dev_usb000&to=/dev_hdd0/packages</></P>
 			</T>
-			<T key="unmap_usb0">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</></P>
+			<T key="remap_home" include="inc">
+				<P key="title"><>重映射 home 到 USB000</></P>
+				<P key="info"><>重定向 /dev_hdd0/home 到 /dev_usb000/home</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/home&to=/dev_usb000/home</></P>
+			</T>
+			<T key="remap_usb0" include="inc">
+				<P key="title"><>重映射 USB000 到 HDD</></P>
+				<P key="info"><>重定向 /dev_usb000 到 /dev_hdd0/packages</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_usb000&to=/dev_hdd0/packages</></P>
+			</T>
+			<T key="remap_bdvd" include="inc">
+				<P key="title"><>重映射 USB000 到 BDVD</></P>
+				<P key="info"><>重定向 /dev_usb000 到 /dev_bdvd</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_usb000&to=/dev_bdvd</></P>
+			</T>
+			<T key="unmap_usb0" include="inc">
 				<P key="title"><>取消映射 USB000</></P>
-				<P key="info"><>还原重定向访问到 USB000</></P>
-				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://localhost/unmap.ps3/dev_usb000</></P>
+				<P key="info"><>还原重定向访问到 /dev_usb000</></P>
+				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
 			</T>
 		</A>
 		<I>
+			<I class="type:x-xmb/module-action" key="remap_home" attr="remap_home"/>
 			<I class="type:x-xmb/module-action" key="remap_usb0" attr="remap_usb0"/>
+			<I class="type:x-xmb/module-action" key="remap_bdvd" attr="remap_bdvd"/>
 			<I class="type:x-xmb/module-action" key="unmap_usb0" attr="unmap_usb0"/>
 		</I>
 	</V>
@@ -211,62 +223,237 @@
 	</V>
 
 	<V id="seg_webman_nethost_links_items_net0">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+			</T>
+			<T key="webman_nethost0" include="inc">
+				<P key="title"><>挂载 /net0 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net0/.</></P>
+			</T>
+			<T key="webman_nethost0_pkg" include="inc">
+				<P key="title"><>挂载 /net0/PKG 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net0/PKG</></P>
+			</T>
+			<T key="webman_nethost0_video" include="inc">
+				<P key="title"><>挂载 /net0/VIDEO 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net0/VIDEO</></P>
+			</T>
+			<T key="webman_nethost0_music" include="inc">
+				<P key="title"><>挂载 /net0/MUSIC 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net0/MUSIC</></P>
+			</T>
+			<T key="webman_nethost0_picture" include="inc">
+				<P key="title"><>挂载 /net0/PICTURE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net0/PICTURE</></P>
+			</T>
+			<T key="webman_nethost0_roms" include="inc">
+				<P key="title"><>挂载 /net0/ROMS 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net0/ROMS</></P>
+			</T>
+			<T key="webman_nethost0_pup" include="inc">
+				<P key="title"><>挂载 /net0/FIRMWARE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net0/FIRMWARE</></P>
+			</T>
+		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost0_link2" src="#seg_webman_nethost0_pkg"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost0_link3" src="#seg_webman_nethost0_video"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost0_link4" src="#seg_webman_nethost0_music"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost0_link5" src="#seg_webman_nethost0_picture"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost0_link6" src="#seg_webman_nethost0_roms"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost0_link7" src="#seg_webman_nethost0_pup"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost0_link1" src="#seg_webman_nethost0"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost0_pkg" attr="webman_nethost0_pkg"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost0_video" attr="webman_nethost0_video"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost0_music" attr="webman_nethost0_music"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost0_picture" attr="webman_nethost0_picture"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost0_roms" attr="webman_nethost0_roms"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost0_pup" attr="webman_nethost0_pup"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost0" attr="webman_nethost0"/>
 		</I>
 	</V>
 
 	<V id="seg_webman_nethost_links_items_net1">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+			</T>
+			<T key="webman_nethost1" include="inc">
+				<P key="title"><>挂载 /net1 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net1/.</></P>
+			</T>
+			<T key="webman_nethost1_pkg" include="inc">
+				<P key="title"><>挂载 /net1/PKG 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net1/PKG</></P>
+			</T>
+			<T key="webman_nethost1_video" include="inc">
+				<P key="title"><>挂载 /net1/VIDEO 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net1/VIDEO</></P>
+			</T>
+			<T key="webman_nethost1_music" include="inc">
+				<P key="title"><>挂载 /net1/MUSIC 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net1/MUSIC</></P>
+			</T>
+			<T key="webman_nethost1_picture" include="inc">
+				<P key="title"><>挂载 /net1/PICTURE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net1/PICTURE</></P>
+			</T>
+			<T key="webman_nethost1_roms" include="inc">
+				<P key="title"><>挂载 /net1/ROMS 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net1/ROMS</></P>
+			</T>
+			<T key="webman_nethost1_pup" include="inc">
+				<P key="title"><>挂载 /net1/FIRMWARE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net1/FIRMWARE</></P>
+			</T>
+		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost1_link2" src="#seg_webman_nethost1_pkg"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost1_link3" src="#seg_webman_nethost1_video"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost1_link4" src="#seg_webman_nethost1_music"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost1_link5" src="#seg_webman_nethost1_picture"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost1_link6" src="#seg_webman_nethost1_roms"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost1_link7" src="#seg_webman_nethost1_pup"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost1_link1" src="#seg_webman_nethost1"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost1_pkg" attr="webman_nethost1_pkg"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost1_video" attr="webman_nethost1_video"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost1_music" attr="webman_nethost1_music"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost1_picture" attr="webman_nethost1_picture"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost1_roms" attr="webman_nethost1_roms"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost1_pup" attr="webman_nethost1_pup"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost1" attr="webman_nethost1"/>
 		</I>
 	</V>
 
 	<V id="seg_webman_nethost_links_items_net2">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+			</T>
+			<T key="webman_nethost2" include="inc">
+				<P key="title"><>挂载 /net2 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net2/.</></P>
+			</T>
+			<T key="webman_nethost2_pkg" include="inc">
+				<P key="title"><>挂载 /net2/PKG 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net2/PKG</></P>
+			</T>
+			<T key="webman_nethost2_video" include="inc">
+				<P key="title"><>挂载 /net2/VIDEO 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net2/VIDEO</></P>
+			</T>
+			<T key="webman_nethost2_music" include="inc">
+				<P key="title"><>挂载 /net2/MUSIC 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net2/MUSIC</></P>
+			</T>
+			<T key="webman_nethost2_picture" include="inc">
+				<P key="title"><>挂载 /net2/PICTURE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net2/PICTURE</></P>
+			</T>
+			<T key="webman_nethost2_roms" include="inc">
+				<P key="title"><>挂载 /net2/ROMS 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net2/ROMS</></P>
+			</T>
+			<T key="webman_nethost2_pup" include="inc">
+				<P key="title"><>挂载 /net2/FIRMWARE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net2/FIRMWARE</></P>
+			</T>
+		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost2_link2" src="#seg_webman_nethost2_pkg"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost2_link3" src="#seg_webman_nethost2_video"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost2_link4" src="#seg_webman_nethost2_music"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost2_link5" src="#seg_webman_nethost2_picture"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost2_link6" src="#seg_webman_nethost2_roms"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost2_link7" src="#seg_webman_nethost2_pup"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost2_link1" src="#seg_webman_nethost2"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost2_pkg" attr="webman_nethost2_pkg"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost2_video" attr="webman_nethost2_video"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost2_music" attr="webman_nethost2_music"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost2_picture" attr="webman_nethost2_picture"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost2_roms" attr="webman_nethost2_roms"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost2_pup" attr="webman_nethost2_pup"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost2" attr="webman_nethost2"/>
 		</I>
 	</V>
 
 	<V id="seg_webman_nethost_links_items_net3">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+			</T>
+			<T key="webman_nethost3" include="inc">
+				<P key="title"><>挂载 /net3 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net3/.</></P>
+			</T>
+			<T key="webman_nethost3_pkg" include="inc">
+				<P key="title"><>挂载 /net3/PKG 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net3/PKG</></P>
+			</T>
+			<T key="webman_nethost3_video" include="inc">
+				<P key="title"><>挂载 /net3/VIDEO 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net3/VIDEO</></P>
+			</T>
+			<T key="webman_nethost3_music" include="inc">
+				<P key="title"><>挂载 /net3/MUSIC 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net3/MUSIC</></P>
+			</T>
+			<T key="webman_nethost3_picture" include="inc">
+				<P key="title"><>挂载 /net3/PICTURE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net3/PICTURE</></P>
+			</T>
+			<T key="webman_nethost3_roms" include="inc">
+				<P key="title"><>挂载 /net3/ROMS 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net3/ROMS</></P>
+			</T>
+			<T key="webman_nethost3_pup" include="inc">
+				<P key="title"><>挂载 /net3/FIRMWARE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net3/FIRMWARE</></P>
+			</T>
+		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost3_link2" src="#seg_webman_nethost3_pkg"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost3_link3" src="#seg_webman_nethost3_video"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost3_link4" src="#seg_webman_nethost3_music"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost3_link5" src="#seg_webman_nethost3_picture"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost3_link6" src="#seg_webman_nethost3_roms"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost3_link7" src="#seg_webman_nethost3_pup"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost3_link1" src="#seg_webman_nethost3"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost3_pkg" attr="webman_nethost3_pkg"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost3_video" attr="webman_nethost3_video"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost3_music" attr="webman_nethost3_music"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost3_picture" attr="webman_nethost3_picture"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost3_roms" attr="webman_nethost3_roms"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost3_pup" attr="webman_nethost3_pup"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost3" attr="webman_nethost3"/>
 		</I>
 	</V>
 
 	<V id="seg_webman_nethost_links_items_net4">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+			</T>
+			<T key="webman_nethost4" include="inc">
+				<P key="title"><>挂载 /net4 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net4/.</></P>
+			</T>
+			<T key="webman_nethost4_pkg" include="inc">
+				<P key="title"><>挂载 /net4/PKG 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net4/PKG</></P>
+			</T>
+			<T key="webman_nethost4_video" include="inc">
+				<P key="title"><>挂载 /net4/VIDEO 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net4/VIDEO</></P>
+			</T>
+			<T key="webman_nethost4_music" include="inc">
+				<P key="title"><>挂载 /net4/MUSIC 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net4/MUSIC</></P>
+			</T>
+			<T key="webman_nethost4_picture" include="inc">
+				<P key="title"><>挂载 /net4/PICTURE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net4/PICTURE</></P>
+			</T>
+			<T key="webman_nethost4_roms" include="inc">
+				<P key="title"><>挂载 /net4/ROMS 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net4/ROMS</></P>
+			</T>
+			<T key="webman_nethost4_pup" include="inc">
+				<P key="title"><>挂载 /net4/FIRMWARE 为 /dev_bdvd</></P>
+				<P key="module_action"><>/mount_ps3/net4/FIRMWARE</></P>
+			</T>
+		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost4_link2" src="#seg_webman_nethost4_pkg"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost4_link3" src="#seg_webman_nethost4_video"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost4_link4" src="#seg_webman_nethost4_music"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost4_link5" src="#seg_webman_nethost4_picture"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost4_link6" src="#seg_webman_nethost4_roms"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost4_link7" src="#seg_webman_nethost4_pup"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_nethost4_link1" src="#seg_webman_nethost4"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost4_pkg" attr="webman_nethost4_pkg"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost4_video" attr="webman_nethost4_video"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost4_music" attr="webman_nethost4_music"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost4_picture" attr="webman_nethost4_picture"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost4_roms" attr="webman_nethost4_roms"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost4_pup" attr="webman_nethost4_pup"/>
+			<I class="type:x-xmb/module-action" key="webman_nethost4" attr="webman_nethost4"/>
 		</I>
 	</V>
 
@@ -308,7 +495,7 @@
 				<P key="title"><>刷新网页游戏列表</></P>
 				<P key="info"><>将会更新用于浏览器模式的 HTML 游戏列表</></P>
 				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://localhost/index.ps3?html</></P>
+				<P key="module_action"><>http://0/index.ps3?html</></P>
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_refresh_html" attr="webman_refresh_html"/></I>
@@ -322,7 +509,7 @@
 				<P key="title"><>PS3 webMAN [温度]</></P>
 				<P key="info"><>在网页浏览器中监视 PS3 温度</></P>
 				<P key="module_name"><>webbrowser_plugin</></P>
-				<P key="module_action"><>http://localhost/cpursx.ps3</></P>
+				<P key="module_action"><>http://0/cpursx.ps3</></P>
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_cpursx" attr="webman_cpursx"/></I>
@@ -336,7 +523,7 @@
 				<P key="title"><>PS3 webMAN [游戏]</></P>
 				<P key="info"><>在网页浏览器中列出我的游戏</></P>
 				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://localhost/index.ps3</></P>
+				<P key="module_action"><>http://0/index.ps3</></P>
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_games" attr="webman_games"/></I>
@@ -350,7 +537,7 @@
 				<P key="title"><>PS3 webMAN [文件]</></P>
 				<P key="info"><>在网页浏览器中列出我的文件</></P>
 				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://localhost/</></P>
+				<P key="module_action"><>http://0/</></P>
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_files" attr="webman_files"/></I>
@@ -379,472 +566,10 @@
 				<P key="title"><>PS3 webMAN [设置]</></P>
 				<P key="info"><>设置设备的扫描和启动选项</></P>
 				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://localhost/setup.ps3</></P>
+				<P key="module_action"><>http://0/setup.ps3</></P>
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_setup" attr="webman_setup"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net0 as /dev_bdvd -->
-	<V id="seg_webman_nethost0">
-		<A>
-			<T key="webman_nethost0">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net0 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net0/.</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost0" attr="webman_nethost0"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net0/PKG as /dev_bdvd -->
-	<V id="seg_webman_nethost0_pkg">
-		<A>
-			<T key="webman_nethost0_pkg">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net0/PKG 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net0/PKG</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost0_pkg" attr="webman_nethost0_pkg"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net0/VIDEO as /dev_bdvd -->
-	<V id="seg_webman_nethost0_video">
-		<A>
-			<T key="webman_nethost0_video">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net0/VIDEO 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net0/VIDEO</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost0_video" attr="webman_nethost0_video"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net0/MUSIC as /dev_bdvd -->
-	<V id="seg_webman_nethost0_music">
-		<A>
-			<T key="webman_nethost0_music">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net0/MUSIC 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net0/MUSIC</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost0_music" attr="webman_nethost0_music"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net0/PICTURE as /dev_bdvd -->
-	<V id="seg_webman_nethost0_picture">
-		<A>
-			<T key="webman_nethost0_picture">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net0/PICTURE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net0/PICTURE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost0_picture" attr="webman_nethost0_picture"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net0/ROMS as /dev_bdvd -->
-	<V id="seg_webman_nethost0_roms">
-		<A>
-			<T key="webman_nethost0_roms">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net0/ROMS 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net0/ROMS</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost0_roms" attr="webman_nethost0_roms"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net0/FIRMWARE as /dev_bdvd -->
-	<V id="seg_webman_nethost0_pup">
-		<A>
-			<T key="webman_nethost0_pup">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net0/FIRMWARE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net0/FIRMWARE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost0_pup" attr="webman_nethost0_pup"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net1 as /dev_bdvd -->
-	<V id="seg_webman_nethost1">
-		<A>
-			<T key="webman_nethost1">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net1 为s /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net1/.</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost1" attr="webman_nethost1"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net1/PKG as /dev_bdvd -->
-	<V id="seg_webman_nethost1_pkg">
-		<A>
-			<T key="webman_nethost1_pkg">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net1/PKG 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net1/PKG</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost1_pkg" attr="webman_nethost1_pkg"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net1/VIDEO as /dev_bdvd -->
-	<V id="seg_webman_nethost1_video">
-		<A>
-			<T key="webman_nethost1_video">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net1/VIDEO 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net1/VIDEO</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost1_video" attr="webman_nethost1_video"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net1/MUSIC as /dev_bdvd -->
-	<V id="seg_webman_nethost1_music">
-		<A>
-			<T key="webman_nethost1_music">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net1/MUSIC 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net1/MUSIC</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost1_music" attr="webman_nethost1_music"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net1/PICTURE as /dev_bdvd -->
-	<V id="seg_webman_nethost1_picture">
-		<A>
-			<T key="webman_nethost1_picture">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net1/PICTURE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net1/PICTURE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost1_picture" attr="webman_nethost1_picture"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net1/ROMS as /dev_bdvd -->
-	<V id="seg_webman_nethost1_roms">
-		<A>
-			<T key="webman_nethost1_roms">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net1/ROMS 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net1/ROMS</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost1_roms" attr="webman_nethost1_roms"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net1/FIRMWARE as /dev_bdvd -->
-	<V id="seg_webman_nethost1_pup">
-		<A>
-			<T key="webman_nethost1_pup">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net1/FIRMWARE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net1/FIRMWARE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost1_pup" attr="webman_nethost1_pup"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net2 as /dev_bdvd -->
-	<V id="seg_webman_nethost2">
-		<A>
-			<T key="webman_nethost2">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net2 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net2/.</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost2" attr="webman_nethost2"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net2/PKG as /dev_bdvd -->
-	<V id="seg_webman_nethost2_pkg">
-		<A>
-			<T key="webman_nethost2_pkg">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net2/PKG 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net2/PKG</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost2_pkg" attr="webman_nethost2_pkg"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net2/VIDEO as /dev_bdvd -->
-	<V id="seg_webman_nethost2_video">
-		<A>
-			<T key="webman_nethost2_video">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net2/VIDEO 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net2/VIDEO</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost2_video" attr="webman_nethost2_video"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net2/MUSIC as /dev_bdvd -->
-	<V id="seg_webman_nethost2_music">
-		<A>
-			<T key="webman_nethost2_music">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net2/MUSIC 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net2/MUSIC</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost2_music" attr="webman_nethost2_music"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net2/PICTURE as /dev_bdvd -->
-	<V id="seg_webman_nethost2_picture">
-		<A>
-			<T key="webman_nethost2_picture">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net2/PICTURE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net2/PICTURE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost2_picture" attr="webman_nethost2_picture"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net2/ROMS as /dev_bdvd -->
-	<V id="seg_webman_nethost2_roms">
-		<A>
-			<T key="webman_nethost2_roms">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net2/ROMS 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net2/ROMS</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost2_roms" attr="webman_nethost2_roms"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net2/FIRMWARE as /dev_bdvd -->
-	<V id="seg_webman_nethost2_pup">
-		<A>
-			<T key="webman_nethost2_pup">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net2/FIRMWARE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net2/FIRMWARE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost2_pup" attr="webman_nethost2_pup"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net3/PKG as /dev_bdvd -->
-	<V id="seg_webman_nethost3_pkg">
-		<A>
-			<T key="webman_nethost3_pkg">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net3/PKG 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net3/PKG</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost3_pkg" attr="webman_nethost3_pkg"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net3/VIDEO as /dev_bdvd -->
-	<V id="seg_webman_nethost3_video">
-		<A>
-			<T key="webman_nethost3_video">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net3/VIDEO 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net3/VIDEO</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost3_video" attr="webman_nethost3_video"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net3/MUSIC as /dev_bdvd -->
-	<V id="seg_webman_nethost3_music">
-		<A>
-			<T key="webman_nethost3_music">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net3/MUSIC 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net3/MUSIC</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost3_music" attr="webman_nethost3_music"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net3/PICTURE as /dev_bdvd -->
-	<V id="seg_webman_nethost3_picture">
-		<A>
-			<T key="webman_nethost3_picture">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net3/PICTURE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net3/PICTURE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost3_picture" attr="webman_nethost3_picture"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net3/ROMS as /dev_bdvd -->
-	<V id="seg_webman_nethost3_roms">
-		<A>
-			<T key="webman_nethost3_roms">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net3/ROMS 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net3/ROMS</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost3_roms" attr="webman_nethost3_roms"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net3/FIRMWARE as /dev_bdvd -->
-	<V id="seg_webman_nethost3_pup">
-		<A>
-			<T key="webman_nethost3_pup">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net3/FIRMWARE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net3/FIRMWARE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost3_pup" attr="webman_nethost3_pup"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net4/PKG as /dev_bdvd -->
-	<V id="seg_webman_nethost4_pkg">
-		<A>
-			<T key="webman_nethost4_pkg">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net4/PKG 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net4/PKG</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost4_pkg" attr="webman_nethost4_pkg"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net4/VIDEO as /dev_bdvd -->
-	<V id="seg_webman_nethost4_video">
-		<A>
-			<T key="webman_nethost4_video">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net4/VIDEO 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net4/VIDEO</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost4_video" attr="webman_nethost4_video"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net4/MUSIC as /dev_bdvd -->
-	<V id="seg_webman_nethost4_music">
-		<A>
-			<T key="webman_nethost4_music">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net4/MUSIC 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net4/MUSIC</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost4_music" attr="webman_nethost4_music"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net4/PICTURE as /dev_bdvd -->
-	<V id="seg_webman_nethost4_picture">
-		<A>
-			<T key="webman_nethost4_picture">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net4/PICTURE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net4/PICTURE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost4_picture" attr="webman_nethost4_picture"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net4/ROMS as /dev_bdvd -->
-	<V id="seg_webman_nethost4_roms">
-		<A>
-			<T key="webman_nethost4_roms">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net4/ROMS 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net4/ROMS</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost4_roms" attr="webman_nethost4_roms"/></I>
-	</V>
-
-	<!-- Main > webMAN > Mount /net4/FIRMWARE as /dev_bdvd -->
-	<V id="seg_webman_nethost4_pup">
-		<A>
-			<T key="webman_nethost4_pup">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
-				<P key="title"><>挂载 /net4/FIRMWARE 为 /dev_bdvd</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/mount_ps3/net4/FIRMWARE</></P>
-			</T>
-		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_nethost4_pup" attr="webman_nethost4_pup"/></I>
 	</V>
 
 	<!-- Main > webMAN > Block PSN Servers -->
@@ -899,7 +624,7 @@
 				<P key="title"><>修复挂载的游戏</></P>
 				<P key="info"><>更改最小系统需求为 4.20 (仅文件夹游戏与 hdd0)</></P>
 				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://localhost/fixgame.ps3/dev_bdvd</></P>
+				<P key="module_action"><>http://0/fixgame.ps3/dev_bdvd</></P>
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_gamefix" attr="webman_gamefix"/></I>

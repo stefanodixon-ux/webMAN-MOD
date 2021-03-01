@@ -1706,18 +1706,18 @@ mounting_done:
 			patch_gameboot(10);
 		else if(strstr(_path0, "GEN") || strstr(_path0, "MEGAD") || strstr(_path0, "PICO") || strstr(_path0, "GG") || strstr(_path0, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
 			patch_gameboot(11);
-		else if(strstr(_path0, "NEO")) // NEOCD, FBNEO
+		else if(strstr(_path0, "NEO") || strstr(_path0, "NGP")) // NEOCD, FBNEO, NEO, NEOGEO, NGP
 			patch_gameboot(12);
-		else if(strstr(_path0, "PCE") || strstr(_path0, "PCFX")) // PCE, PCFX
+		else if(strstr(_path0, "PCE") || strstr(_path0, "PCFX") || strstr(_path0, "SGX")) // PCE, PCFX, SGX
 			patch_gameboot(13);
 		else if(strstr(_path0, "MAME"))	// MAME, MAME078, MAME2000, MAME2003, MAMEPLUS
 			patch_gameboot(14);
 		else if(strstr(_path0, "FBA"))	// FBA, FBA2012
 			patch_gameboot(15);
-		else if(strstr(_path0, "ATARI") || strstr(_path0, "STELLA") || strstr(_path0, "LYNX") || strstr(_path0, "JAGUAR")) // ATARI, ATARI2600, ATARI5200, ATARI7800, HATARI, STELLA
+		else if(strstr(_path0, "ATARI") || strstr(_path0, "STELLA") || strstr(_path0, "HANDY") || strstr(_path0, "LYNX") || strstr(_path0, "JAGUAR")) // ATARI, ATARI2600, ATARI5200, ATARI7800, HATARI, HANDY, STELLA
 			patch_gameboot(16);
 		else
-			patch_gameboot(7); // ROMS: 2048, AMIGA, BMSX, BOMBER, CAP32, DOOM, DOSBOX, FMSX, FUSE, GW, HANDY, INTV, JAVAME, LUA, NGP, NXENGINE, O2EM, PALM, POKEMINI, QUAKE, QUAKE2, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, VICE, WSWAM, ZX81
+			patch_gameboot(7); // ROMS: 2048, AMIGA, BMSX, BOMBER, CAP32, DOOM, DOSBOX, FMSX, FUSE, GW, HANDY, INTV, JAVAME, LUA, NXENGINE, O2EM, PALM, POKEMINI, QUAKE, QUAKE2, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, VICE, WSWAM, ZX81
 	}
 	else
 		patch_gameboot(3); // PS3

@@ -475,7 +475,7 @@ parse_request:
 			ssend(debug_s, "ACC - ");
 			#endif
 
- #ifdef PHOTO_GUI
+
 			if(wm_request)
 			{
 				// Set the content of WMREQUEST_FILE as header
@@ -528,6 +528,7 @@ parse_request:
 						}
 					}
 					///// End PhotoGUI request /////
+ #endif // #ifdef PHOTO_GUI
 
 					// Add GET verb
 					if(*header == '/') {strcpy(param, header); buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", param);}
@@ -542,7 +543,6 @@ parse_request:
 				// Delete WMREQUEST_FILE
 				cellFsUnlink(WMREQUEST_FILE);
 			}
- #endif // #ifdef PHOTO_GUI
 		}
 		else sprintf(header, "GET %s", mc + 1);
 
@@ -1969,15 +1969,21 @@ parse_request:
 			}
 			if(islike(param, "/stat.ps3") || islike(param, "/chmod.ps3"))
 			{
-				// /chdmod.ps3<path> - change file permissions
-				// /stat.ps3<path> - count files & folder size
-				// /stat.ps3<path>&id=<title_id> - link identical files in /hdd0/game using MD5
+				// /chdmod.ps3<path>                  - change file permissions to 0777
+				// /chdmod.ps3<path>&mode=<mode>      - change file permissions to specific mode
+				// /stat.ps3<path>                    - count files & folder size
+				// /stat.ps3<path>&id=<title_id>      - link identical files in /hdd0/game using MD5
 				// /stat.ps3<path>&id=<title_id>?fast - don't check MD5
 
 				do_chmod = islike(param, "/chmod.ps3");
 
 				char *buffer = header;
 				char *path = param + (do_chmod ? 10 : 9);
+
+				if(do_chmod)
+				{
+					char *pos = strstr(path, "&mode="); if(pos) {*pos = NULL; new_mode = (u16)val(pos + 6);}
+				}
 
 				check_md5 = !get_flag(path, "?fast");
 				stitle_id = strstr(path, "&id="); if(stitle_id) {*stitle_id = NULL, stitle_id += 4;}
@@ -1997,6 +2003,8 @@ parse_request:
 								"File(s): %llu", buffer, dir_size, dir_size>>20, ((10 * (((u32)dir_size) % _1MB_)) + _512KB_) / _1MB_, dir_count, file_count);
 
 				keep_alive = http_response(conn_s, header, "/stat.ps3", CODE_HTTP_OK, param);
+
+				new_mode = 0777;
 
 				goto exit_handleclient_www;
 			}
