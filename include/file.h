@@ -215,8 +215,7 @@ static bool is_app_dir(const char *path, const char *app_name)
 }
 #endif
 
-#ifdef COPY_PS3
-static s64 file_size(const char* path)
+static s64 file_ssize(const char *path)
 {
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))
@@ -224,42 +223,31 @@ static s64 file_size(const char* path)
 		char tmp[STD_PATH_LEN];
 		strcpy(tmp, path); tmp[10] = ':';
 		struct stat bufn;
-		if(ps3ntfs_stat(tmp + 5, &bufn) < 0) return 0;
+		if(ps3ntfs_stat(tmp + 5, &bufn) < 0) return FAILED;
 		return bufn.st_size;
 	}
 #endif
 
 	struct CellFsStat s;
-	if(cellFsStat(path, &s) != CELL_FS_SUCCEEDED) return 0;
+	if(cellFsStat(path, &s) != CELL_FS_SUCCEEDED) return FAILED;
 	return s.st_size;
 }
-#endif // #ifdef COPY_PS3
-/*
-static bool file_exists(const char* path)
+
+static u64 file_size(const char *path)
 {
-	return (file_size(path) >= 0);
+	s64 fs = file_ssize(path);
+	if(fs <= FAILED) return 0;
+	return fs;
 }
-*/
 
 static bool file_exists(const char *path)
 {
-#ifdef USE_NTFS
-	if(is_ntfs_path(path))
-	{
-		char tmp[STD_PATH_LEN];
-		strcpy(tmp, path); tmp[10] = ':';
-		struct stat bufn;
-		return (ps3ntfs_stat(tmp + 5, &bufn) >= 0);
-	}
-#endif
-
-	struct CellFsStat s;
-	return (cellFsStat(path, &s) == CELL_FS_SUCCEEDED);
+	return (file_ssize(path) >= 0);
 }
 
 static bool not_exists(const char *path)
 {
-	return !file_exists(path);
+	return (file_ssize(path) <= FAILED);
 }
 
 static char *get_ext(const char *path)
@@ -535,7 +523,7 @@ static int file_concat(const char *file1, char *file2)
 
 int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 {
-	struct CellFsStat buf, buf2;
+	struct CellFsStat buf;
 	int fd1, fd2;
 	int64_t ret = FAILED;
 	copy_aborted = false;
@@ -632,10 +620,13 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 	else
 #endif
 	// skip if file already exists with same size
-	if(dont_copy_same_size && (cellFsStat(file2, &buf2) == CELL_FS_SUCCEEDED) && (buf2.st_size == buf.st_size))
+	if(dont_copy_same_size)
 	{
-		copied_count++;
-		return buf.st_size;
+		if(file_ssize(file2) == (s64)buf.st_size)
+		{
+			copied_count++;
+			return buf.st_size;
+		}
 	}
 
 	u64 pos;

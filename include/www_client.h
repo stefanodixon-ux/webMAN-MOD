@@ -494,7 +494,7 @@ parse_request:
 						play_rco_sound("snd_trophy");
 
 						#ifdef MOUNT_PNG
-						if(file_size(header) > _2MB_)
+						if(file_size(header) >= _2MB_)
 						{
 							bool is_ISO = (read_file(header, param, 5, 0x18801) == 5) && IS(param, "CD001"); // BD/DVD
 							if(!IS(param, "CD001"))

@@ -313,7 +313,7 @@ static u8 ftp_state = 0;
 static char current_file[STD_PATH_LEN + 1];
 static char cp_path[STD_PATH_LEN + 1];  // cut/copy/paste buffer
 static u8 cp_mode = CP_MODE_NONE;       // 0 = none / 1 = copy / 2 = cut/move
-static s64 file_size(const char* path);
+static u64 file_size(const char* path);
 static void parse_script(const char *script_file);
 static bool script_running = false;
 #endif

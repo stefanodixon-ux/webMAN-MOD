@@ -209,13 +209,27 @@ static void ps3mapi_sound(u8 value)
 	if(value == 9) { play_rco_sound("snd_system_ng"); }
 }
 
+static void add_sound_list(char *buffer, char *param)
+{
+	add_option_item(1, "Simple", IS_MARKED("snd=1"), buffer);
+	add_option_item(2, "Double", IS_MARKED("snd=2"), buffer);
+	add_option_item(3, "Triple", IS_MARKED("snd=3"), buffer);
+	add_option_item(0, "snd_cancel", IS_MARKED("snd=0"), buffer);
+	add_option_item(4, "snd_cursor", IS_MARKED("snd=4"), buffer);
+	add_option_item(5, "snd_trophy", IS_MARKED("snd=5"), buffer);
+	add_option_item(6, "snd_decide", IS_MARKED("snd=6"), buffer);
+	add_option_item(7, "snd_option", IS_MARKED("snd=7"), buffer);
+	add_option_item(8, "snd_system_ok", IS_MARKED("snd=8"), buffer);
+	add_option_item(9, "snd_system_ng", IS_MARKED("snd=9"), buffer);
+}
+
 static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
 	if(islike(param, "/buzzer.ps3mapi") && param[15] == '?')
 	{
-		u8 value = get_valuen(param, "mode=", 0, 9);
+		u8 value = get_valuen(param, "snd=", 0, 9) | get_valuen(param, "mode=", 0, 9);
 		ps3mapi_sound(value);
 	}
 	else if(islike(param, "/beep.ps3"))
@@ -233,19 +247,10 @@ static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
 	concat(buffer, templn);
 
 	sprintf(templn, "<form id=\"buzzer\" action=\"/buzzer%s<br>"
-					"<b>%s:</b>  <select name=\"mode\">", HTML_FORM_METHOD, "Mode");
+					"<b>%s:</b>  <select name=\"snd\">", HTML_FORM_METHOD, "Sound");
 	concat(buffer, templn);
-	add_option_item(1, "Simple", IS_MARKED("mode=1"), buffer);
-	add_option_item(2, "Double", IS_MARKED("mode=2"), buffer);
-	add_option_item(3, "Triple", IS_MARKED("mode=3"), buffer);
 
-	add_option_item(0, "snd_cancel", IS_MARKED("mode=0"), buffer);
-	add_option_item(4, "snd_cursor", IS_MARKED("mode=4"), buffer);
-	add_option_item(5, "snd_trophy", IS_MARKED("mode=5"), buffer);
-	add_option_item(6, "snd_decide", IS_MARKED("mode=6"), buffer);
-	add_option_item(7, "snd_option", IS_MARKED("mode=7"), buffer);
-	add_option_item(8, "snd_system_ok", IS_MARKED("mode=8"), buffer);
-	add_option_item(9, "snd_system_ng", IS_MARKED("mode=9"), buffer);
+	add_sound_list(buffer, param);
 
 	sprintf(templn, "</select>   <input type=\"submit\" value=\" %s \"/></td></form><br>", "Ring");
 
@@ -307,10 +312,11 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
-	u8 snd_id = (u8)get_valuen32(param, "&snd=");
 	u8 icon_id = (u8)get_valuen32(param, "&icon=");
 
-	if(snd_id) ps3mapi_sound(snd_id);
+	char *snd = strstr(param, "&snd=");
+
+	if(snd && ISDIGIT(*(snd + 5))) ps3mapi_sound(*(snd + 5) - '0');
 
 	char msg[200]; strcpy(msg, "Hello :)");
 	if(get_param("?msg=", msg, param, 199))
@@ -332,12 +338,15 @@ static void ps3mapi_notify(char *buffer, char *templn, char *param)
 					"<table width=\"800\">"
 					"<tr><td class=\"la\"><textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea>"
 					"<br>Icon (0-50): " HTML_NUMBER("icon", "%i", "0", "50")
-					" Sound: (0-9): "  HTML_NUMBER("snd", "%i", "0", "9")
-					"</td></tr>"
+					" Sound: <select name=\"snd\"><option value=''>No Sound", HTML_FORM_METHOD, msg, icon_id);
+	concat(buffer, templn);
+
+	add_sound_list(buffer, param);
+
+	sprintf(templn, "</td></tr>"
 					"<tr><td class=\"ra\">"
 					"<input class=\"bs\" type=\"submit\" value=\" %s \"/></td></tr>"
-					"</table></form>",
-					HTML_FORM_METHOD, msg, icon_id, snd_id, "Send");
+					"</table></form>", "Send");
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "</td>");
 	concat(buffer, templn);

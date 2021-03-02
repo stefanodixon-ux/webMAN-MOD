@@ -1700,7 +1700,7 @@ mounting_done:
 
 	#ifdef PS3MAPI
 	// customize gameboot per console emulator using DeViL303's custom_render_plugin.rco
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 250000))
+	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 300000))
 	{
 		if(mount_unk == EMU_PSX)
 			patch_gameboot(1); // PS1
