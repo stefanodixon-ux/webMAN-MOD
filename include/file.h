@@ -121,6 +121,8 @@ static void filepath_check(char *file)
 
 static void check_path_alias(char *param)
 {
+	if(islike(param, "/dev_blind")) enable_dev_blind(NULL);
+
 	if(*param && not_exists(param))
 	{
 		if(!islike(param, "/dev_") && !islike(param, "/net"))
@@ -1598,7 +1600,7 @@ static void copy_rom_media(char *src_path)
 			char *ext2 = strrchr(path, '.');
 			{strcpy(ext2, ".png"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
 			{strcpy(ext2, ".PNG"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
-														   {file_copy((char*)PKGLAUNCH_ICON, dst_path, COPY_WHOLE_FILE);}}}
+														 {file_copy((char*)PKGLAUNCH_ICON, dst_path, COPY_WHOLE_FILE);}}}
 		}}}
 
 		strcpy(path, src_path); char *path_ = get_filename(path) + 1;

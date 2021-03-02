@@ -475,7 +475,7 @@ parse_request:
 			ssend(debug_s, "ACC - ");
 			#endif
 
-
+#ifndef LITE_EDITION
 			if(wm_request)
 			{
 				// Set the content of WMREQUEST_FILE as header
@@ -485,7 +485,7 @@ parse_request:
 					{
 						buf.st_size = sprintf(header, "%s", wm_url); wm_url = NULL;
 					}
-
+					#ifdef PHOTO_GUI
 					///// Process PhotoGUI request /////
 					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
 					{
@@ -528,7 +528,7 @@ parse_request:
 						}
 					}
 					///// End PhotoGUI request /////
- #endif // #ifdef PHOTO_GUI
+					#endif // #ifdef PHOTO_GUI
 
 					// Add GET verb
 					if(*header == '/') {strcpy(param, header); buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", param);}
@@ -543,6 +543,7 @@ parse_request:
 				// Delete WMREQUEST_FILE
 				cellFsUnlink(WMREQUEST_FILE);
 			}
+#endif // #ifndef LITE_EDITION
 		}
 		else sprintf(header, "GET %s", mc + 1);
 
@@ -1980,6 +1981,8 @@ parse_request:
 				char *buffer = header;
 				char *path = param + (do_chmod ? 10 : 9);
 
+				check_path_alias(path);
+
 				if(do_chmod)
 				{
 					char *pos = strstr(path, "&mode="); if(pos) {*pos = NULL; new_mode = (u16)val(pos + 6);}
@@ -2035,6 +2038,8 @@ parse_request:
 				if(dest) {*dest++ = NULL;} else {dest = strstr(source, "&to="); if(dest) {*dest = NULL, dest+=4;}}
 
 				if(dest && (*dest != '/') && is_ext(source, ".bak")) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
+
+				check_path_alias(source);
 
 				if(islike(source, "/dev_blind") || islike(source, "/dev_hdd1")) mount_device(source, NULL, NULL); // auto-mount source device
 				if(islike(dest,   "/dev_blind") || islike(dest,   "/dev_hdd1")) mount_device(dest,   NULL, NULL); // auto-mount destination device
@@ -2104,6 +2109,7 @@ parse_request:
 
 				cp_mode = islike(param, "/cut.ps3") ? CP_MODE_MOVE : CP_MODE_COPY;
 				snprintf(cp_path, STD_PATH_LEN, "%s", param + 8);
+				check_path_alias(cp_path);
 				sprintf(param, "%s", cp_path);
 				char *p = get_filename(param); *p = NULL;
 				if(not_exists(cp_path)) cp_mode = CP_MODE_NONE;

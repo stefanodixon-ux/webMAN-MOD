@@ -153,7 +153,7 @@ static u32 patched_address3 = 0x100000;
 
 static void patch_gameboot(u8 boot_type)
 {
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 50000))
+	//if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 50000))
 	{
 		u32 pid_list[16];
 		{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
@@ -170,15 +170,16 @@ static void patch_gameboot(u8 boot_type)
 
 		if(pid)
 		{
-			u32 address1, address2, address3;
-			char value[16]; int len;
+			const char *ids[] = { "ps3", "ps1", "ps2", "ps3", "psp", "bdv", "dvd", "rom", // 0-7
+								  "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", // 8-15
+								  "ata", "gby", "cmd", "ids"}; // 16-19
 
-			const char *ids[] = { "ps3", "ps1", "ps2", "ps3", "psp", "bdv", "dvd", "rom",		  // 0-7
-								  "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", "ata"}; // 8-16
-
-			if(boot_type > 16) boot_type = 0;
+			if(boot_type > 19) boot_type = 0;
 
 			const char *id = ids[boot_type];
+
+			u32 address1, address2, address3;
+			char value[16]; int len;
 
 			len = sprintf(value, "%s_%sboot", "page", "game"); // find "page_gameboot"
 			address1 = (u32)ps3mapi_find_offset(pid, 0x100000, 0x1800000, 4, value, len, value, patched_address1);
@@ -208,14 +209,26 @@ static void patch_gameboot(u8 boot_type)
 				}
 			}
 
+			char path[48];
 			if(isDir("/dev_hdd0/tmp/gameboot"))
 			{
 				map_patched_modules();
 
-				char path[48];
 				sprintf(path, "%s/%s_boot_stereo.ac3", "/dev_hdd0/tmp/gameboot", id);
 				sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  file_exists(path) ? path : NULL);
 				sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", file_exists(path) ? path : NULL);
+			}
+
+			const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
+			for(u8 i = 0; i < 5; i++)
+			{
+				sprintf(path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]);
+				if(not_exists(path))
+				{
+					char src_path[40];
+					sprintf(src_path, "%s/%s_%s", "/dev_hdd0/tmp/gameboot", id, media[i]);
+					file_copy(src_path, path, COPY_WHOLE_FILE);
+				}
 			}
 		}
 	}
@@ -1613,7 +1626,9 @@ exit_mount:
 		strcat(msg, "\" "); strcat(msg, STR_LOADED2);
 		if(!(webman_config->minfo & 2))
 		{
-			if((mount_unk >= EMU_PS3) && (mount_unk <= EMU_PSP))
+			if((mount_unk == EMU_PS2_CD) || (mount_unk == EMU_PS2_DVD))
+				vshNotify_WithIcon(43, msg);
+			else if((mount_unk >= EMU_PS3) && (mount_unk <= EMU_PSP))
 				vshNotify_WithIcon(40 + mount_unk, msg);
 			else
 				show_msg(msg);
@@ -1684,43 +1699,53 @@ mounting_done:
 #ifdef COBRA_ONLY
 
 	#ifdef PS3MAPI
-	if(mount_unk == EMU_PSX)
-		patch_gameboot(1); // PS1
-	else if(mount_unk == EMU_PS2_DVD || mount_unk == EMU_PS2_CD)
-		patch_gameboot(2); // PS2
-	else if(mount_unk == EMU_PSP)
-		patch_gameboot(4); // PSP
-	else if(mount_unk == EMU_BD)
-		patch_gameboot(5); // BDV
-	else if(mount_unk == EMU_DVD)
-		patch_gameboot(6); // DVD
-	else if((mount_unk == EMU_ROMS) || strstr(_path0, "/ROMS"))
+	// customize gameboot per console emulator using DeViL303's custom_render_plugin.rco
+	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 250000))
 	{
-		// "rom", "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", "ata" // 7-16
+		if(mount_unk == EMU_PSX)
+			patch_gameboot(1); // PS1
+		else if(mount_unk == EMU_PS2_DVD || mount_unk == EMU_PS2_CD)
+			patch_gameboot(2); // PS2
+		else if(mount_unk == EMU_PSP)
+			patch_gameboot(4); // PSP
+		else if(mount_unk == EMU_BD)
+			patch_gameboot(5); // BDV
+		else if(mount_unk == EMU_DVD)
+			patch_gameboot(6); // DVD
+		else if((mount_unk == EMU_ROMS) || strstr(_path0, "/ROMS"))
+		{
+			// "rom", "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", "ata", "gby", "cmd", "ids" // 7-19
 
-		if(strstr(_path0, "SNES")) // MSNES, SNES, SNES9X, SNES9X2005, SNES9X2010, SNES9X_NEXT
-			patch_gameboot(8);
-		else if(strstr(_path0, "NES") || strstr(_path0, "FCEUMM")) // NES, NESTOPIA, QNES, FCEUMM
-			patch_gameboot(9);
-		else if(strstr(_path0, "GB") || strstr(_path0, "VB") || strstr(_path0, "GAMBATTE") || strstr(_path0, "GPSP"))  // GB, GBA, GBC, MGBA, VBA, VBOY, GPSP, GAMBATTE
-			patch_gameboot(10);
-		else if(strstr(_path0, "GEN") || strstr(_path0, "MEGAD") || strstr(_path0, "PICO") || strstr(_path0, "GG") || strstr(_path0, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
-			patch_gameboot(11);
-		else if(strstr(_path0, "NEO") || strstr(_path0, "NGP")) // NEOCD, FBNEO, NEO, NEOGEO, NGP
-			patch_gameboot(12);
-		else if(strstr(_path0, "PCE") || strstr(_path0, "PCFX") || strstr(_path0, "SGX")) // PCE, PCFX, SGX
-			patch_gameboot(13);
-		else if(strstr(_path0, "MAME"))	// MAME, MAME078, MAME2000, MAME2003, MAMEPLUS
-			patch_gameboot(14);
-		else if(strstr(_path0, "FBA"))	// FBA, FBA2012
-			patch_gameboot(15);
-		else if(strstr(_path0, "ATARI") || strstr(_path0, "STELLA") || strstr(_path0, "HANDY") || strstr(_path0, "LYNX") || strstr(_path0, "JAGUAR")) // ATARI, ATARI2600, ATARI5200, ATARI7800, HATARI, HANDY, STELLA
-			patch_gameboot(16);
+			if(strstr(_path0, "SNES")) // MSNES, SNES, SNES9X, SNES9X2005, SNES9X2010, SNES9X_NEXT
+				patch_gameboot(8); // sns
+			else if(strstr(_path0, "NES") || strstr(_path0, "FCEUMM")) // NES, NESTOPIA, QNES, FCEUMM
+				patch_gameboot(9); // nes
+			else if(strstr(_path0, "GBA") || strstr(_path0, "VBA") || strstr(_path0, "GPSP"))  // GBA, MGBA, VBA, GPSP
+				patch_gameboot(10); // gba
+			else if(strstr(_path0, "GEN") || strstr(_path0, "MEGAD") || strstr(_path0, "PICO") || strstr(_path0, "GG") || strstr(_path0, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
+				patch_gameboot(11); // gen
+			else if(strstr(_path0, "NEO") || strstr(_path0, "NGP")) // NEOCD, FBNEO, NEO, NEOGEO, NGP
+				patch_gameboot(12); // neo
+			else if(strstr(_path0, "PCE") || strstr(_path0, "PCFX") || strstr(_path0, "SGX")) // PCE, PCFX, SGX
+				patch_gameboot(13); // pce
+			else if(strstr(_path0, "MAME"))	// MAME, MAME078, MAME2000, MAME2003, MAMEPLUS
+				patch_gameboot(14); // mam
+			else if(strstr(_path0, "FBA"))	// FBA, FBA2012
+				patch_gameboot(15); // fba
+			else if(strstr(_path0, "ATARI") || strstr(_path0, "STELLA") || strstr(_path0, "HANDY") || strstr(_path0, "LYNX") || strstr(_path0, "JAGUAR")) // ATARI, ATARI2600, ATARI5200, ATARI7800, HATARI, HANDY, STELLA
+				patch_gameboot(16); // ata
+			else if(strstr(_path0, "GB") || strstr(_path0, "GAMBATTE") || strstr(_path0, "VB"))  // GB, GBC, GAMBATTE, VBOY
+				patch_gameboot(17); // gby
+			else if(strstr(_path0, "AMIGA") || strstr(_path0, "VICE"))  // AMIGA, VICE
+				patch_gameboot(18); // cmd
+			else if(strstr(_path0, "DOOM") || strstr(_path0, "QUAKE"))  // DOOM, QUAKE, QUAKE2
+				patch_gameboot(19); // ids
+			else
+				patch_gameboot(7); // rom: 2048, BMSX, BOMBER, CAP32, DOSBOX, FMSX, FUSE, GW, INTV, JAVAME, LUA, NXENGINE, O2EM, PALM, POKEMINI, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, WSWAM, ZX81
+		}
 		else
-			patch_gameboot(7); // ROMS: 2048, AMIGA, BMSX, BOMBER, CAP32, DOOM, DOSBOX, FMSX, FUSE, GW, HANDY, INTV, JAVAME, LUA, NXENGINE, O2EM, PALM, POKEMINI, QUAKE, QUAKE2, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, VICE, WSWAM, ZX81
+			patch_gameboot(3); // PS3
 	}
-	else
-		patch_gameboot(3); // PS3
 	#endif
 
 	// ------------------------------------------------------------------

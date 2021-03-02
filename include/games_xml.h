@@ -100,24 +100,36 @@ static void make_fb_xml(void)
 		u16 size = sprintf(myxml, "%s" // XML_HEADER
 								  "<V id=\"seg_fb\">"
 								  "<A>"
-								  "<T key=\"mgames\">"
-								  "%s" // XML_PAIR( icon / icon_rsc )
-								  XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
-								  XML_PAIR("ingame","disable")
-								  XML_PAIR("title","%s%s") // STR_MYGAMES, SUFIX2(profile)
-								  XML_PAIR("info","%s") // STR_LOADGAMES
-								  "</T>"
-								//"</A><I>"
-								  "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
-								//"</I></V>"
-								//"</X>"
-								  XML_HEADER,
-								  file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
+									"<T key=\"mgames\">"
+									"%s" // XML_PAIR( icon / icon_rsc )
+									XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
+									XML_PAIR("ingame","disable")
+									XML_PAIR("title","%s%s") // STR_MYGAMES, SUFIX2(profile)
+									XML_PAIR("info","%s")	 // STR_LOADGAMES
+									"</T>",
+									XML_HEADER,
+									file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
 										XML_PAIR("icon", WM_ICONS_PATH "/icon_wm_root.png") :
 										XML_PAIR("icon_rsc", "item_tex_ps3util"),
-								  STR_MYGAMES, SUFIX2(profile),
-								  STR_LOADGAMES,
-								  "</A><I>", MY_GAMES_XML, "</I></V></X>\r\n");
+									STR_MYGAMES, SUFIX2(profile),
+									STR_LOADGAMES);
+
+		if(!is_app_home_onxmb())
+		{
+			has_app_home = true;
+			size += sprintf(myxml + size,	"<T key=\"seg_gamedebug\">"
+											XML_PAIR("icon_rsc","tex_album_icon")
+											XML_PAIR("title_rsc","msg_tool_app_home_ps3_game")
+											XML_PAIR("child","segment")
+											"</T>"
+											"%s" // "</A><I>"
+											"<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>"
+											QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
+											"</A><I>", MY_GAMES_XML, "</I></V></X>\r\n");
+		}
+		else
+			size += sprintf(myxml + size, "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
+										  "</A><I>", MY_GAMES_XML, "</I></V></X>\r\n");
 
 		char *fb_xml = (char *)FB_XML;
 		#ifdef COBRA_ONLY
