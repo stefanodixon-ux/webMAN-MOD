@@ -340,6 +340,10 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param);
 static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param);
 static char *get_filename(const char *path);
 
+#ifdef PS3MAPI
+static void patch_gameboot(u8 boot_type);
+#endif
+
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
 int wait_for(const char *path, u8 timeout);

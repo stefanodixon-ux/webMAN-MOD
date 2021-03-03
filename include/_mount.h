@@ -153,7 +153,7 @@ static u32 patched_address3 = 0x100000;
 
 static void patch_gameboot(u8 boot_type)
 {
-	//if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 50000))
+	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 300000))
 	{
 		u32 pid_list[16];
 		{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
@@ -170,7 +170,7 @@ static void patch_gameboot(u8 boot_type)
 
 		if(pid)
 		{
-			const char *ids[] = { "ps3", "ps1", "ps2", "ps3", "psp", "bdv", "dvd", "rom", // 0-7
+			const char *ids[] = { "non", "ps1", "ps2", "ps3", "psp", "bdv", "dvd", "rom", // 0-7
 								  "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", // 8-15
 								  "ata", "gby", "cmd", "ids"}; // 16-19
 
