@@ -199,21 +199,23 @@ static void patch_gameboot(u8 boot_type)
 					ps3mapi_patch_process(pid, address, value, len); patched_address2 = address;
 				}
 
-				len = sprintf(value, "anim_%sboot", "game"); // find anim_gameboot  for ps3/ps2/ps1/psp/rom
+				const char *anim = ((boot_type == 5) || (boot_type == 6)) ? "other" : "game";
+
+				len = sprintf(value, "%s_%sboot", "anim", "game"); // find anim_gameboot  for ps3/ps2/ps1/psp/rom
 				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address3);
 
 				if(address > patched_address1)
 				{
-					len = sprintf(value, "%s__gameboot", id); // patch xxx__otherboot / xxx__gameboot
+					len = sprintf(value, "%s__%sboot", id, anim); // patch xxx__otherboot / xxx__gameboot
 					ps3mapi_patch_process(pid, address, value, len + 1); patched_address3 = address;
 				}
 
-				len = sprintf(value, "anim_%sboot", "other"); // find anim_otherboot for dvd/bdv
+				len = sprintf(value, "%s_%sboot", "anim", "other"); // find anim_otherboot for dvd/bdv
 				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address4);
 
 				if(address > patched_address1)
 				{
-					len = sprintf(value, "%s__gameboot", id); // patch xxx__otherboot / xxx__gameboot
+					len = sprintf(value, "%s__%sboot", id, anim); // patch xxx__otherboot / xxx__gameboot
 					ps3mapi_patch_process(pid, address, value, len + 1); patched_address4 = address;
 				}
 			}

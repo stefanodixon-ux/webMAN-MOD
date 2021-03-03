@@ -233,12 +233,14 @@ static s64 file_ssize(const char *path)
 	return s.st_size;
 }
 
+#ifndef LITE_EDITION
 static u64 file_size(const char *path)
 {
 	s64 fs = file_ssize(path);
 	if(fs <= FAILED) return 0;
 	return fs;
 }
+#endif
 
 static bool file_exists(const char *path)
 {
