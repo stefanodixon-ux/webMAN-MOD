@@ -150,6 +150,7 @@ static void auto_play(char *param, u8 play_ps3)
 static u32 patched_address1 = 0x100000;
 static u32 patched_address2 = 0x100000;
 static u32 patched_address3 = 0x100000;
+static u32 patched_address4 = 0x100000;
 
 static void patch_gameboot(u8 boot_type)
 {
@@ -178,34 +179,42 @@ static void patch_gameboot(u8 boot_type)
 
 			const char *id = ids[boot_type];
 
-			u32 address1, address2, address3;
+			u32 address;
 			char value[16]; int len;
 
 			len = sprintf(value, "%s_%sboot", "page", "game"); // find "page_gameboot"
-			address1 = (u32)ps3mapi_find_offset(pid, 0x100000, 0x1800000, 4, value, len, value, patched_address1);
+			address = (u32)ps3mapi_find_offset(pid, 0x100000, 0x1800000, 4, value, len, value, patched_address1);
 
-			if(address1 > 0x100000)
+			if(address > 0x100000)
 			{
 				len = sprintf(value, "%s_", id); // patch "xxx__gameboot"
-				ps3mapi_patch_process(pid, address1, value, len); patched_address1 = address1;
+				ps3mapi_patch_process(pid, address, value, len); patched_address1 = address;
 
 				len = sprintf(value, "%slogo", "ps3"); // find ps3logo
-				address2 = ps3mapi_find_offset(pid, address1, 0x1800000, 4, value, len, value, patched_address2);
+				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address2);
 
-				if(address2 > address1)
+				if(address > patched_address1)
 				{
 					len = sprintf(value, "%slogo", IS(id, "ps3") ? "psx" : id); // patch xxxlogo
-					ps3mapi_patch_process(pid, address2, value, len); patched_address2 = address2;
+					ps3mapi_patch_process(pid, address, value, len); patched_address2 = address;
 				}
 
-				len = sprintf(value, "anim_%sboot", strchr(id, 'v') ? "other": // find anim_otherboot for dvd/bdv
-																	  "game"); // find anim_gameboot  for ps3/ps2/ps1/psp/rom
-				address3 = ps3mapi_find_offset(pid, address1, 0x1800000, 4, value, len, value, patched_address3);
+				len = sprintf(value, "anim_%sboot", "game"); // find anim_gameboot  for ps3/ps2/ps1/psp/rom
+				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address3);
 
-				if(address3 > address1)
+				if(address > patched_address1)
 				{
-					len = sprintf(value, "%s_", id); // patch xxx__otherboot / xxx__gameboot
-					ps3mapi_patch_process(pid, address3, value, len); patched_address3 = address3;
+					len = sprintf(value, "%s__gameboot", id); // patch xxx__otherboot / xxx__gameboot
+					ps3mapi_patch_process(pid, address, value, len + 1); patched_address3 = address;
+				}
+
+				len = sprintf(value, "anim_%sboot", "other"); // find anim_otherboot for dvd/bdv
+				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address4);
+
+				if(address > patched_address1)
+				{
+					len = sprintf(value, "%s__gameboot", id); // patch xxx__otherboot / xxx__gameboot
+					ps3mapi_patch_process(pid, address, value, len + 1); patched_address4 = address;
 				}
 			}
 
