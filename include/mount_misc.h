@@ -31,7 +31,7 @@
 			if(ret)
 			{
 				sys_ppu_thread_sleep(1);
-				launch_app_home_icon();
+				launch_app_home_icon(webman_config->autoplay);
 			}
 
 			mount_unk = EMU_GAMEI;
@@ -55,7 +55,7 @@
 			ret = file_exists(_path);
 			cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
-			if(ret) launch_app_home_icon();
+			if(ret) launch_app_home_icon(true);
 			goto mounting_done; //goto exit_mount;
 		}
 	}
@@ -80,7 +80,7 @@
 		do_umount(false);
 		set_app_home(_path);
 
-		if(launch_app_home_icon()) ret = true;
+		if(launch_app_home_icon(webman_config->autoplay)) ret = true;
 
 		mount_unk = EMU_MAX;
 		goto exit_mount;
@@ -126,7 +126,7 @@
 
 			mount_unk = EMU_ROMS;
 
-			if(!(webman_config->app_home) && launch_app_home_icon()) {set_app_home(PKGLAUNCH_DIR); ret = true;}
+			if(!(webman_config->app_home) && launch_app_home_icon(webman_config->autoplay)) {set_app_home(PKGLAUNCH_DIR); ret = true;}
 
 			ret = isDir("/dev_bdvd/PS3_GAME/USRDIR/cores") ||
 				  isDir("/app_home/PS3_GAME/USRDIR/cores");

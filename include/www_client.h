@@ -581,7 +581,7 @@ parse_request:
 					{
 						reload_xmb();
 						sys_ppu_thread_sleep(3);
-						if(IS_ON_XMB) launch_app_home_icon();
+						if(IS_ON_XMB) launch_app_home_icon(true);
 					}
 
 					#ifdef WM_REQUEST
@@ -748,7 +748,7 @@ parse_request:
 
 						if(IS(param2, "/app_home"))
 						{
-							launch_app_home_icon();
+							launch_app_home_icon(true);
 							sprintf(param, "/cpursx.ps3");
 						}
 						else
@@ -778,7 +778,7 @@ parse_request:
 					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
 
 					if(*map_title_id && (*param2 == NULL))
-						launch_app_home_icon();
+						launch_app_home_icon(true);
 					else if((*param2 != NULL) && isDir(header))
 					{
 						set_app_home(header);
@@ -1948,7 +1948,7 @@ parse_request:
 						cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
 						save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", launch_txt, SAVE_ALL);
 
-						launch_app_home_icon();
+						launch_app_home_icon(true);
 
 						if(is_unzip)
 							sprintf(header, "/unzip.ps3");

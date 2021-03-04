@@ -448,7 +448,7 @@
 						sys_map_path(APP_HOME_DIR, "/dev_bdvd");
 
 						sys_ppu_thread_sleep(1);
-						launch_app_home_icon();
+						launch_app_home_icon(webman_config->autoplay);
 
 						mount_unk = EMU_GAMEI;
 						goto exit_mount;

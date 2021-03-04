@@ -437,11 +437,11 @@ static void launch_disc(bool exec)
 	exec_xmb_item(category, seg_name, exec);
 }
 
-static bool launch_app_home_icon(void)
+static bool launch_app_home_icon(bool exec)
 {
-	if(not_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN")) launch_disc(true); else
+	if(not_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN")) launch_disc(exec); else
 
-	if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(true);  return true;}
+	if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(exec);  return true;}
 	return false;
 }
 

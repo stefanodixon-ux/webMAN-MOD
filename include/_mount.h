@@ -59,7 +59,7 @@ static void auto_play(char *param, u8 play_ps3)
 #ifdef OFFLINE_INGAME
 	if((strstr(param, OFFLINE_TAG) != NULL)) net_status = 0;
 #endif
-	u8 autoplay = webman_config->autoplay || play_ps3;
+	u8 autoplay = (webman_config->autoplay) || play_ps3;
 
 	if(autoplay)
 	{
@@ -230,8 +230,8 @@ static void patch_gameboot(u8 boot_type)
 				sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", file_exists(path) ? path : NULL);
 			}
 
-			const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
-			for(u8 i = 0; i < 5; i++)
+			const char *media[6] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM", "ICON0.PNG"};
+			for(u8 i = 0; i < 6; i++)
 			{
 				sprintf(path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]);
 				if(not_exists(path))
@@ -395,7 +395,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -------------------
 		if(mount_ps3)
 		{
-			if(mounted && islike(source, "/net") && (strstr(source, "/ROMS/") != NULL)) launch_app_home_icon();
+			if(mounted && islike(source, "/net") && (strstr(source, "/ROMS/") != NULL)) launch_app_home_icon(webman_config->autoplay);
 
 			is_busy = false;
 			return mounted;
@@ -1794,7 +1794,7 @@ mounting_done:
 				{
 					set_app_home(_path0);
 					sys_ppu_thread_sleep(1);
-					launch_app_home_icon();
+					launch_app_home_icon(webman_config->autoplay);
 				}
 			}
 		}

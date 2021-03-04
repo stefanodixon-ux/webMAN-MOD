@@ -153,7 +153,7 @@
 #endif
 							}
 
-							launch_app_home_icon();
+							launch_app_home_icon(true);
 							break;
 						}
 #endif
