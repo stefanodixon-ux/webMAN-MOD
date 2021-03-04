@@ -252,14 +252,17 @@ static u16 string_to_lv2(const char *path, u64 addr)
 }
 #endif
 
-static u64 convertH(char *val)
+static u64 convertH(const char *val)
 {
-	u64 ret = 0; char c;
+	if(!val || (*val == 0)) return 0;
 
-	for(u8 buff, i = 0, n = 0; i < 16 + n; i++)
+	u64 ret = 0; char c; u8 n = 0;
+
+	if(islike(val, "0x")) n = 2;
+
+	for(u8 buff, i = n; i < 16 + n; i++)
 	{
 		if(val[i]==' ') {n++; continue;}
-		if(val[i]=='x') {val[i] = '0', n += 2;}
 
 		c = (val[i] | 0x20);
 		if(c >= '0' && c <= '9') buff = (c - '0');      else
@@ -272,6 +275,14 @@ static u64 convertH(char *val)
 	return ret;
 }
 
+static bool isHEX(const char *value)
+{
+	char c;
+	if(islike(value, "0x")) value += 2;
+	for(; *value; ++value) {c = (*value | 0x20); if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '*'))) return false;}
+	return true;
+}
+
 #ifndef LITE_EDITION
 static u16 Hex2Bin(const char *src, char *out)
 {
@@ -281,6 +292,7 @@ static u16 Hex2Bin(const char *src, char *out)
 	while(*src && src[1])
 	{
 		if(*src <= ' ') {++src; continue;} // ignore spaces & line breaks
+		if(*src == '*') {*(target++) = '*'; src += 2; continue;} // convert mask ** to binary *
 
 		value[0] = src[0], value[1] = src[1];
 		*(target++) = (u8)convertH(value);

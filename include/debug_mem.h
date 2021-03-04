@@ -120,20 +120,40 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	if(is_file)
 	{
 		char *fname = param + 12;
-		address = (u64)get_valuen64(fname, "&offset=");
 
+		char sfind[65];
+		flen = get_param("&find=", sfind, fname, 64);
+
+		address = (u64)get_valuen64(fname, "&offset=");
 		char *pos = strstr(fname, "&data=");
+
+		get_flag(fname, "&"); // file name
+		check_path_alias(fname);
+
+		// find data in file
+		if(flen)
+		{
+			if(isHEX(sfind))
+				{strcpy(templn, sfind); flen = Hex2Bin(templn, sfind);}
+
+			int i, n = (0x400 - flen); u64 faddress = address;
+			while(read_file(fname, templn, 0x400, faddress))
+			{
+				for(i = 0; i < n; i++) if(!bcompare(templn + i, sfind, flen, sfind)) break;
+				faddress += i; if(i < n) {address = found_address = faddress; found = true; break;}
+			}
+		}
+
 		if(pos)
 		{
-			get_flag(fname, "&"); // file name
-			check_path_alias(fname);
+			pos += 6;
 
 			// data write to write
-			if(ISDIGIT(pos[6]))
-				flen = Hex2Bin(pos + 6, templn);
+			if(isHEX(pos))
+				flen = Hex2Bin(pos, templn);
 			else
 			{
-				flen = sprintf(templn, "%s", pos + 6);
+				flen = sprintf(templn, "%s", pos);
 				// convert pipes to line breaks
 				for(pos = templn; *pos; ++pos) if(*pos == '|') *pos = '\n';
 			}
@@ -247,6 +267,10 @@ view_file:
 		buffer += concat(buffer, ": [");
 		sprintf(templn, HTML_URL2, "/md5.ps3", param, "MD5"); buffer += concat(buffer, templn);
 		buffer += concat(buffer, "]");
+
+		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
+		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>] %s%s%s", param - 12, "Find", "Find", "", "", "");
+		buffer += concat(buffer, templn);
 
 		// file navigation
 		u64 max = s.st_size < HEXVIEW_SIZE ? 0 : s.st_size - HEXVIEW_SIZE;

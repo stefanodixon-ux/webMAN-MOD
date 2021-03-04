@@ -641,12 +641,18 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 				char value[BINDATA_SIZE + 1];
 				char val_tmp[HEXDATA_SIZE + 1];
 				get_param("val=", val_tmp, param, HEXDATA_SIZE);
-				length = Hex2Bin(val_tmp, value);
+				if(isHEX(val_tmp))
+					hilite = length = Hex2Bin(val_tmp, value);
+				else
+					hilite = length = sprintf(value, "%s", val_tmp);
 				if(length) ps3mapi_patch_process(pid, address, value, length);
+				length = BINDATA_SIZE;
 			}
-
-			if(length == 0) length = BINDATA_SIZE;
-			length = RANGE(length, 1, BINDATA_SIZE);
+			else
+			{
+				if(length == 0) length = BINDATA_SIZE;
+				length = RANGE(length, 1, BINDATA_SIZE);
+			}
 		}
 		else
 			pid = GetGameProcessID();
@@ -659,7 +665,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			u8 len = snprintf(sfind, 0x20, "%s", addr_tmp);
 
 			// search hex: 0xAABBCC112233
-			if(ISDIGIT(*addr_tmp))
+			if(isHEX(addr_tmp))
 			{
 				len = Hex2Bin(addr_tmp, sfind);
 				for(u8 i = 0, n = 0; i < len; i++, n+=2) mask[i] = addr_tmp[n]; mask[len] = 0;
@@ -723,7 +729,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 		concat(buffer, templn);
 
 		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
-		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>] %s%s</font><hr>", param, "Find", "Find", "<font color=#ff0>", not_found ? "Not found!" : "");
+		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>] %s%s%s", param, "Find", "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
 		concat(buffer, templn);
 		char buffer_tmp[length + 1];
 		memset(buffer_tmp, 0, sizeof(buffer_tmp));
@@ -838,7 +844,10 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 
 			if(get_param("val=", val_tmp, param, HEXDATA_SIZE))
 			{
-				length = Hex2Bin(val_tmp, value);
+				if(isHEX(val_tmp))
+					length = Hex2Bin(val_tmp, value);
+				else
+					length = sprintf(value, "%s", val_tmp);
 			}
 		}
 		else
@@ -879,8 +888,10 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 	if((pid != 0) && (length > 0))
 	{
 		int retval = ps3mapi_patch_process(pid, address, value, length);
-		if(0 <= retval) sprintf(templn, "<br><b><u>%s!</u></b>", "Done");
-		else sprintf(templn, "<br><b><u>%s: %i</u></b>", "Error", retval);
+		if(retval < 0)
+			sprintf(templn, "<br><b><u>%s: %i</u></b>", "Error", retval);
+		else
+			sprintf(templn, "<br><b><u>%s!</u></b>", "Done");
 		concat(buffer, templn);
 	}
 
@@ -1714,7 +1725,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 									if(sys_memory_allocate(BUFFER_SIZE_PS3MAPI, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 									{
 										char *buffer2 = (char*)sysmem;
-										u64 read_e = 0;
+										int read_e = 0;
 										ssend(conn_s_ps3mapi, PS3MAPI_OK_150);
 
 										rr = 0;
@@ -1723,9 +1734,9 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 										while(working)
 										{
-											if((read_e = (u64)recv(data_s, buffer2, BUFFER_SIZE_PS3MAPI, MSG_WAITALL)) > 0)
+											if((read_e = (u32)recv(data_s, buffer2, BUFFER_SIZE_PS3MAPI, MSG_WAITALL)) > 0)
 											{
-												ps3mapi_patch_process(attached_pid, offset, buffer2, (int)read_e);
+												ps3mapi_patch_process(attached_pid, offset, buffer2, read_e);
 												offset += read_e;
 											}
 											else

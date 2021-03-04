@@ -195,7 +195,7 @@ static void patch_gameboot(u8 boot_type)
 
 				if(address > patched_address1)
 				{
-					len = sprintf(value, "%slogo", IS(id, "ps3") ? "psx" : id); // patch xxxlogo
+					len = sprintf(value, "%slogo", (boot_type == 3) ? "psx" : id); // patch xxxlogo
 					ps3mapi_patch_process(pid, address, value, len); patched_address2 = address;
 				}
 
