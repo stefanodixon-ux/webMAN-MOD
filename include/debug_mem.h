@@ -205,23 +205,21 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	else
 	if(islike(param, "/find.lv"))
 	{
-		fvalue = convertH(v + 1);
-
-		if(bits8)  fvalue = (fvalue << 56);
-		if(bits16) fvalue = (fvalue << 48);
-		if(bits32) fvalue = (fvalue << 32);
+		char sfind[33], tfind[33];
+		if(isHEX(v + 1))
+			flen = Hex2Bin(v + 1, sfind);
+		else
+			flen = sprintf(sfind, "%s", v + 1);
 
 		u64 (*peek_mem)(u64) = lv1 ? peek_lv1 : peekq;
 
 		for(addr = address; addr < upper_memory; addr += step)
 		{
-			value = peek_mem(addr);
-
-			if(bits32) value &= 0xffffffff00000000ULL; else
-			if(bits16) value &= 0xffff000000000000ULL; else
-			if(bits8 ) value &= 0xff00000000000000ULL;
-
-			if(value == fvalue) {found = true; break;}
+			value = peek_mem(addr); memcpy(tfind, (char*)&value, 8);
+			if(flen >  8) {value = peek_mem(addr +  8); memcpy(tfind +  8, (char*)&value, 8);}
+			if(flen > 16) {value = peek_mem(addr + 16); memcpy(tfind + 16, (char*)&value, 8);}
+			if(flen > 24) {value = peek_mem(addr + 24); memcpy(tfind + 24, (char*)&value, 8);}
+			if(!bcompare(tfind, sfind, flen, sfind)) {found = true; break;}
 		}
 
 		if(!found)
@@ -284,9 +282,6 @@ view_file:
 	////////////////////////////////
 
 	if(address + HEXVIEW_SIZE > (upper_memory + 8)) address = 0;
-
-	if(!is_file)
-		flen = (bits8) ? 1 : (bits16) ? 2 : (bits32) ? 4 : 8;
 
 #ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }

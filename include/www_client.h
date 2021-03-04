@@ -3397,11 +3397,11 @@ retry_response:
 						// /peek.lv1?<address>
 						// /poke.lv1?<address>=<value>
 						// /find.lv1?<value>
-						// /find.lv1?<start-address>=<value>
+						// /find.lv1?<start-address>=<hex or text value>
 						// /peek.lv2?<address>
 						// /poke.lv2?<address>=<value>
 						// /find.lv2?<value>
-						// /find.lv2?<start-address>=<value>
+						// /find.lv2?<start-address>=<hex or text value>
 						// /hexview.ps3<file-path>
 						// /hexview.ps3<file-path>&offset=<value>
 						// /hexview.ps3<file-path>&offset=<value>&data=<new-value>
