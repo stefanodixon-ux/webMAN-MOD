@@ -12,26 +12,7 @@ static char *hex_dump(char *buffer, int offset, int size)
 #endif
 
 #ifdef DEBUG_MEM
-/*
-static bool bCompare(const unsigned char *pData, const unsigned char *bData, const char *szMask)
-{
-	for (; *szMask; ++szMask, ++pData, ++bData)
-		if (*szMask == 'x' && *pData != *bData) // xx??xxxxxx??xx??xxxxxxxx
-			return false;
 
-	return (*szMask) == NULL;
-}
-
-static unsigned long FindPattern(unsigned long dwAddress, unsigned long dwLen, unsigned char *bData, const char *szMask)
-{
-	unsigned long end_address = dwAddress + dwLen;
-	for (unsigned long addr = dwAddress; addr < end_address; addr++)
-		if (bCompare((unsigned char*)(addr), bData, szMask))
-			return (unsigned long)(addr);
-
-	return 0;
-}
-*/
 #define LV1_UPPER_MEMORY	0x8000000010000000ULL
 #define LV2_UPPER_MEMORY	0x8000000000800000ULL
 
@@ -110,8 +91,8 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
 	u64 address = 0, addr, byte_addr, fvalue, value=0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
-	u8 byte = 0, p = 0, lv1 = 0;
-	bool bits8 = false, bits16 = false, bits32 = false, found = false;
+	u8 byte = 0, p = 0, lv1 = 0, rep = 1;
+	bool bits8 = false, bits16 = false, bits32 = false, found = false, not_found = false;
 	u8 flen = 0, hilite;
 	char *v;
 
@@ -124,8 +105,10 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		char sfind[65];
 		flen = get_param("&find=", sfind, fname, 64);
 
+		char *pos = strstr(fname, "&rep="); if(pos) {rep = (u8)val(pos + 5); *pos = NULL;}
+
 		address = (u64)get_valuen64(fname, "&offset=");
-		char *pos = strstr(fname, "&data=");
+		pos = strstr(fname, "&data=");
 
 		get_flag(fname, "&"); // file name
 		check_path_alias(fname);
@@ -136,12 +119,13 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			if(isHEX(sfind))
 				{strcpy(templn, sfind); flen = Hex2Bin(templn, sfind);}
 
-			int i, n = (0x400 - flen); u64 faddress = address;
-			while(read_file(fname, templn, 0x400, faddress))
+			int i, n = (0x400 - flen); u64 addr = address;
+			while(read_file(fname, templn, 0x400, addr))
 			{
-				for(i = 0; i < n; i++) if(!bcompare(templn + i, sfind, flen, sfind)) break;
-				faddress += i; if(i < n) {address = found_address = faddress; found = true; break;}
+				for(i = 0; i < n; i++) if(!bcompare(templn + i, sfind, flen, sfind) && !(--rep)) break;
+				addr += i; if(i < n) {address = found_address = addr; found = true; break;}
 			}
+			if(rep) not_found = true;
 		}
 
 		if(pos)
@@ -164,9 +148,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		}
 	}
 
-	get_flag(param + 10, "&");
-
-	if(is_file) goto view_file;
+	if(is_file) {get_flag(param + 10, "&"); goto view_file;}
 	address = convertH(param + 10);
 
 	v = strstr(param + 10, "=");
@@ -191,8 +173,16 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 #endif
 	if(islike(param, "/find.lv"))
 	{
-		if(strstr(param,"#")) {step = 4, address &= 0x80000000FFFFFFFCULL;} // find using aligned memory address (4X faster) e.g. /find.lv2?3000=3940ffff#
-		upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;
+		char *pos = strstr(param, "&rep="); if(pos) {rep = (u8)val(pos + 5); *pos = NULL;}
+
+		pos = strchr(param, '#'); if(!pos) pos = strstr(param, "&align");
+		if(pos) {*pos = NULL, step = 4, address &= 0x80000000FFFFFFFCULL;} // find using aligned memory address (4X faster) e.g. /find.lv2?3000=3940ffff#
+
+		pos = strstr(param, "&stop=");
+		if(pos)
+			{upper_memory = (u64)val(pos + 6) | 0x8000000000000000ULL; *pos = NULL;}
+		else
+			{upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;}
 	}
 	else if(strstr(param, "#"))
 		upper_memory = 0x8FFFFFFFFFFFFFF8ULL; // use # to peek/poke any memory address
@@ -219,12 +209,12 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			if(flen >  8) {value = peek_mem(addr +  8); memcpy(tfind +  8, (char*)&value, 8);}
 			if(flen > 16) {value = peek_mem(addr + 16); memcpy(tfind + 16, (char*)&value, 8);}
 			if(flen > 24) {value = peek_mem(addr + 24); memcpy(tfind + 24, (char*)&value, 8);}
-			if(!bcompare(tfind, sfind, flen, sfind)) {found = true; break;}
+			if(!bcompare(tfind, sfind, flen, sfind) && !(--rep)) {address = found_address = addr; found = true; break;}
 		}
 
 		if(!found)
 		{
-			sprintf(templn, "<b><font color=red>%s</font></b><br>", STR_NOTFOUND); buffer += concat(buffer, templn);
+			sprintf(templn, "<font color=#ff0>%s</font><p>", STR_NOTFOUND); buffer += concat(buffer, templn);
 		}
 		else
 		{
@@ -266,14 +256,14 @@ view_file:
 		sprintf(templn, HTML_URL2, "/md5.ps3", param, "MD5"); buffer += concat(buffer, templn);
 		buffer += concat(buffer, "]");
 
-		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
-		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>] %s%s%s", param - 12, "Find", "Find", "", "", "");
-		buffer += concat(buffer, templn);
-
 		// file navigation
 		u64 max = s.st_size < HEXVIEW_SIZE ? 0 : s.st_size - HEXVIEW_SIZE;
 		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=%lli\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=%lli\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=%lli\">&gt;&gt;</a></span><HR>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
+		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=%lli\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=%lli\">&gt;&gt;</a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
+		buffer += concat(buffer, templn);
+
+		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
+		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>] %s%s%s", param - 12, "Find", "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
 		buffer += concat(buffer, templn);
 	}
 
@@ -281,7 +271,7 @@ view_file:
 	// show memory address in hex //
 	////////////////////////////////
 
-	if(address + HEXVIEW_SIZE > (upper_memory + 8)) address = 0;
+	//if(address + HEXVIEW_SIZE > (upper_memory + 8)) address = 0;
 
 #ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
