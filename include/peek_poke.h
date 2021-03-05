@@ -275,6 +275,7 @@ static u64 convertH(const char *val)
 	return ret;
 }
 
+#ifndef LITE_EDITION
 static bool isHEX(const char *value)
 {
 	char c;
@@ -283,7 +284,6 @@ static bool isHEX(const char *value)
 	return true;
 }
 
-#ifndef LITE_EDITION
 static u16 Hex2Bin(const char *src, char *out)
 {
 	char *target = out;

@@ -105,11 +105,13 @@ static bool _IS(const char *a, const char *b)
 	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
 }
 
+#if defined(PS3MAPI) || defined(DEBUG_MEM)
 static bool bcompare(const char *a, const char *b, u8 len, const char *mask)
 {
 	while(len && ((*a == *b) || (*mask == '*'))) {a++,b++,mask++,len--;}
 	return len;
 }
+#endif
 
 static char *last_dest = NULL; // for fast concat -avoids find last byte
 static char *prev_dest = NULL;

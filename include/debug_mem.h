@@ -13,16 +13,41 @@ static char *hex_dump(char *buffer, int offset, int size)
 
 #ifdef DEBUG_MEM
 
+#define LV1		1
+#define LV2		2
+
 #define LV1_UPPER_MEMORY	0x8000000010000000ULL
 #define LV2_UPPER_MEMORY	0x8000000000800000ULL
 
-static void peek_chunk(u64 start, u64 size, u8 *buffer) // read from lv1
+static void poke_chunk_lv1(u32 start, int size, u8 *buffer)
+{
+	for(int offset = 0; offset < size; offset += 8)
+		poke_lv1((start + offset) | 0x8000000000000000ULL, *((u64*)(buffer + offset)));
+}
+
+static void poke_chunk_lv2(u32 start, int size, u8 *buffer)
+{
+	for(int offset = 0; offset < size; offset += 8)
+		pokeq((start + offset) | 0x8000000000000000ULL, *((u64*)(buffer + offset)));
+}
+
+static void peek_chunk_lv1(u64 start, u64 size, u8 *buffer) // read from lv1
 {
 	for(u64 t, i = 0; i < size; i += 8)
 	{
 		t = peek_lv1(start + i); memcpy(buffer + i, &t, 8);
 	}
 }
+
+#ifdef PS3MAPI
+static void peek_chunk_lv2(u64 start, u64 size, u8 *buffer) // read from lv1
+{
+	for(u64 t, i = 0; i < size; i += 8)
+	{
+		t = peekq(start + i); memcpy(buffer + i, &t, 8);
+	}
+}
+#endif
 
 static void dump_mem(char *file, u64 start, u32 dump_size)
 {
@@ -44,7 +69,7 @@ static void dump_mem(char *file, u64 start, u32 dump_size)
 		{
 			for(addr = 0; addr < dump_size; addr += mem_size)
 			{
-				peek_chunk(start + addr, mem_size, mem_buf);
+				peek_chunk_lv1(start + addr, mem_size, mem_buf);
 				cellFsWrite(fd, mem_buf, mem_size, NULL);
 			}
 			cellFsClose(fd);
@@ -61,16 +86,17 @@ static void dump_mem(char *file, u64 start, u32 dump_size)
 static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 {
 	char dump_file[MAX_PATH_LEN]; u64 start=0; u32 size=8;
-	strcat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>]<hr>");
+	strcat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
+	strcat(buffer, "<hr>");
 
 	if(param[9] == '?' && param[10] >= '0')
 	{
-		if(param[10] == 'l' && param[11] == 'v' && param[12] == '1') {size = 16;} else
-		if(param[10] == 'l' && param[11] == 'v' && param[12] == '2') {start = LV2_OFFSET_ON_LV1;} else
+		if(islike(param + 10, "lv1")) {size = 16;} else
+		if(islike(param + 10, "lv2")) {start = LV2_OFFSET_ON_LV1;} else
 		if(param[10] == 'v' /*vsh */) {start = 0x910000;}  else
 		if(param[10] == 'r' /*rsx */) {start = 0x0000028080000000ULL; size=256;}  else
-		if(param[10] == 'f' /*full*/) {size = IS_DEH ? 512 : 256;} else
 		if(param[10] == 'm' /*mem */) {size = IS_DEH ? 512 : 256;} else
+		if(param[10] == 'f' /*full*/) {size = IS_DEH ? 512 : 256;} else
 		{
 			start = convertH(param + 10);
 			if(start >= LV1_UPPER_MEMORY - ((u64)(size * _1MB_))) start = LV1_UPPER_MEMORY - ((u64)(size * _1MB_));
@@ -90,9 +116,9 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 
 static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
-	u64 address = 0, addr, byte_addr, fvalue, value=0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
+	u64 address = 0, addr, byte_addr, value = 0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0, rep = 1;
-	bool bits8 = false, bits16 = false, bits32 = false, found = false, not_found = false;
+	bool found = false, not_found = false;
 	u8 flen = 0, hilite;
 	char *v;
 
@@ -159,10 +185,6 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		flen -= byte; byte = p = 0;
 	}
 
-	bits32 = (flen >4) && (flen<=8);
-	bits16 = (flen >2) && (flen<=4);
-	bits8  = (flen<=2);
-
 	buffer += concat(buffer, "<pre>");
 
 	address|=0x8000000000000000ULL;
@@ -225,17 +247,16 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	else
 	if(islike(param, "/poke.lv"))
 	{
-		value  = convertH(v + 1);
-		fvalue = lv1 ? peek_lv1(address) : peekq(address);
-
-		if(bits32) value = ((u64)(value << 32) | (u64)(fvalue & 0xffffffffULL));      else
-		if(bits16) value = ((u64)(value << 48) | (u64)(fvalue & 0xffffffffffffULL));  else
-		if(bits8)  value = ((u64)(value << 56) | (u64)(fvalue & 0xffffffffffffffULL));
+		char *value = v + 1;
+		if(isHEX(value))
+			flen = Hex2Bin(value, templn);
+		else
+			flen = sprintf(templn, "%s", value);
 
 		if(lv1)
-			poke_lv1(address, value);
+			poke_chunk_lv1(address, flen, (u8 *)templn);
 		else
-			pokeq(address, value);
+			poke_chunk_lv2(address, flen, (u8 *)templn);
 
 		found_address = address; found = true;
 	}

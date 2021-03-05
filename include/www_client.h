@@ -3043,7 +3043,7 @@ retry_response:
 						{
 							if(*templn)
 							{
-								slot = get_vsh_plugin_slot_by_name(templn, false);
+								slot = ps3mapi_get_vsh_plugin_slot_by_name(templn, false);
 								if(islike(param, "/unloadprx.ps3")) prx_found = false;
 							}
 							if((slot < 1) || (slot > 6))
