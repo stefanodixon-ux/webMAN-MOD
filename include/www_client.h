@@ -2189,7 +2189,7 @@ parse_request:
 			}
 	#endif
 
-			if(islike(param, "/syscall.ps3") || islike(param, "/syscall_ps3"))
+			if(islike(param, "/syscall.ps3?") || islike(param, "/syscall_ps3"))
 			{
 				// /syscall.ps3?<syscall-number>|0x<hex-value>|<decimal-value>|<string-value>
 				// e.g. http://localhost/syscall.ps3?392|0x1004|0x07|0x036
