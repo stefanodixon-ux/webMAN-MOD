@@ -162,7 +162,7 @@ static void patch_gameboot(u8 boot_type)
 		u32 pid = 0;
 		for(int i = 0; i < 16; i++)
 		{
-			if(1 < pid_list[i])
+			if(pid_list[i] > 2)
 			{
 				pid = pid_list[i];
 				break;

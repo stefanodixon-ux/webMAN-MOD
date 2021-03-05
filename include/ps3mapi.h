@@ -517,19 +517,19 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 	return is_vsh;
 }
 
-static int ps3mapi_get_memory(u32 pid, u32 address, u8 *mem, u32 size)
+static int ps3mapi_get_memory(u32 pid, u32 address, char *mem, u32 size)
 {
 	if(pid == LV1)
 	{
-		peek_chunk_lv1((address | 0x8000000000000000ULL), size, mem);
+		peek_chunk_lv1((address | 0x8000000000000000ULL), size, (u8*)mem);
 	}
 	else if(pid == LV2)
 	{
-		peek_chunk_lv2((address | 0x8000000000000000ULL), size, mem);
+		peek_chunk_lv2((address | 0x8000000000000000ULL), size, (u8*)mem);
 	}
 	else
 	{
-		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)mem, sizeof(mem));
+		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)mem, size);
 		return (int)p1;
 	}
 	return 0;
@@ -540,13 +540,13 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 	int retval = NONE;
 	found_offset = fallback;
 
-	char mem[0x100]; u8 m = sizeof(mem) - len;
+	char mem[0x100]; int m = sizeof(mem) - len;
 	for(; address < stop; address += sizeof(mem))
 	{
-		retval = ps3mapi_get_memory(pid, address, (u8*)mem, sizeof(mem));
+		retval = ps3mapi_get_memory(pid, address, mem, sizeof(mem));
 		if(retval < 0) break;
 
-		for(u8 offset = 0; offset < m; offset += step)
+		for(int offset = 0; offset < m; offset += step)
 		{
 			if( !bcompare(mem + offset, sfind, len, mask) )
 			{
@@ -564,7 +564,7 @@ static void ps3mapi_dump_process(u32 pid, u32 address, u32 size)
 	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 	{
 		int fd;
-		u8 *mem_buf = (u8*)sysmem;
+		char *mem_buf = (char*)sysmem;
 
 		if(cellFsOpen("/dev_hdd0/mem_dump.bin", CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
@@ -579,19 +579,19 @@ static void ps3mapi_dump_process(u32 pid, u32 address, u32 size)
 	}
 }
 
-static int ps3mapi_patch_process(u32 pid, u32 address, const char *value, int len)
+static int ps3mapi_patch_process(u32 pid, u32 address, const char *new_value, int size)
 {
 	if(pid == LV1)
 	{
-		poke_chunk_lv1(address, len, (u8 *)value);
+		poke_chunk_lv1(address, size, (u8*)new_value);
 	}
 	else if(pid == LV2)
 	{
-		poke_chunk_lv2(address, len, (u8 *)value);
+		poke_chunk_lv2(address, size, (u8*)new_value);
 	}
 	else
 	{
-		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)value, (u64)len);
+		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)new_value, (u64)size);
 		return (int)p1;
 	}
 	return 0;
@@ -722,7 +722,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 		char buffer_tmp[length + 1];
 		memset(buffer_tmp, 0, sizeof(buffer_tmp));
 		int retval = NONE;
-		retval = ps3mapi_get_memory(pid, address, (u8 *)buffer_tmp, length);
+		retval = ps3mapi_get_memory(pid, address, buffer_tmp, length);
 		if(0 <= retval)
 		{
 			// show hex dump
@@ -1738,7 +1738,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 										sys_addr_t sysmem = NULL;
 										if(sys_memory_allocate(BUFFER_SIZE_PS3MAPI, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 										{
-											u8 *buffer2 = (u8 *)sysmem;
+											char *buffer2 = (char *)sysmem;
 											ssend(conn_s_ps3mapi, PS3MAPI_OK_150);
 
 											u32 offset = (u32)convertH(param1);
