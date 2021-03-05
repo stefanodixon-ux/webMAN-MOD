@@ -611,7 +611,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 	u32 address = 0x10000;
 	int length = BINDATA_SIZE;
 	found_offset = 0;
-	u8 hilite = 0;
+	int hilite = 0;
 
 	if(strstr(param, ".ps3mapi?"))
 	{
@@ -628,12 +628,15 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			{
 				char value[BINDATA_SIZE + 1];
 				char val_tmp[HEXDATA_SIZE + 1];
-				get_param("val=", val_tmp, param, HEXDATA_SIZE);
+				char *new_value = val_tmp;
+
+				ps3mapi_get_memory(pid, address, value, BINDATA_SIZE);
+
+				hilite = length = get_param("val=", new_value, param, HEXDATA_SIZE);
 				if(isHEX(val_tmp))
-					hilite = length = Hex2Bin(val_tmp, value);
-				else
-					hilite = length = sprintf(value, "%s", val_tmp);
-				if(length) ps3mapi_patch_process(pid, address, value, length);
+					{hilite = length = Hex2Bin(val_tmp, value); new_value = (char*)value;}
+
+				if(length) ps3mapi_patch_process(pid, address, new_value, length);
 				length = BINDATA_SIZE;
 			}
 			else

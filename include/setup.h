@@ -73,7 +73,7 @@ static void setup_parse_settings(char *param)
 	webman_config->wm_proxy = IS_UNMARKED("wp=1");
 	webman_config->msg_icon = IS_UNMARKED("mn=1");
 #ifdef PLAY_MUSIC
-	webman_config->music = IS_MARKED("ms=1");
+	webman_config->music = get_valuen(param, "&ms=", 0, 2);
 #endif
 #ifdef PKG_HANDLER
 	webman_config->auto_install_pkg = IS_UNMARKED("ai=1");
@@ -840,7 +840,11 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef PLAY_MUSIC
 	add_checkbox("apd", STR_AUTO_PLAY, " • ", (webman_config->autoplay), buffer);
-	_add_checkbox("ms", "XMB Music", (webman_config->music), buffer);
+	concat(buffer, "XMB Media: <select name=\"ms\">");
+	add_option_item(0, STR_DISABLED, (webman_config->music == 0), buffer);
+	add_option_item(1, "Music",      (webman_config->music == 1), buffer);
+	add_option_item(2, "Video",      (webman_config->music == 2), buffer);
+	concat(buffer, "</select><br>");
 #else
 	_add_checkbox("apd", STR_AUTO_PLAY, (webman_config->autoplay), buffer);
 #endif

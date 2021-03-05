@@ -119,7 +119,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	u64 address = 0, addr, byte_addr, value = 0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0, rep = 1;
 	bool found = false, not_found = false;
-	u8 flen = 0, hilite;
+	int flen = 0, hilite;
 	char *v;
 
 	u8 data[HEXVIEW_SIZE]; struct CellFsStat s;
@@ -248,10 +248,18 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	if(islike(param, "/poke.lv"))
 	{
 		char *value = v + 1;
+
+		if(lv1)
+			peek_chunk_lv1(address, 0x400, (u8 *)templn);
+		else
+			peek_chunk_lv2(address, 0x400, (u8 *)templn);
+
+		flen = strlen(value); flen = MIN(flen, 0x400);
+
 		if(isHEX(value))
 			flen = Hex2Bin(value, templn);
 		else
-			flen = sprintf(templn, "%s", value);
+			memcpy(templn, value, flen);
 
 		if(lv1)
 			poke_chunk_lv1(address, flen, (u8 *)templn);

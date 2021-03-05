@@ -153,10 +153,14 @@ if(conn_s_p == START_DAEMON || conn_s_p == REFRESH_CONTENT)
 		#ifdef PLAY_MUSIC
 		if(webman_config->music)
 		{
-			vshNotify_WithIcon(6, "Starting Music...\n"
-								  "Press O to abort");
+			sprintf(param,  "Starting %s...\n"
+							"Press O to abort",
+							(webman_config->music == 2) ? "video" : "music"); param[9] -= 0x20;
+
+			vshNotify_WithIcon(6, param);
+
 			if(!wait_for_abort(8 + webman_config->boots))
-				start_xmb_player("music");
+				start_xmb_player((webman_config->music == 2) ? "video" : "music");
 			else
 				play_rco_sound("snd_system_ng");
 		}
