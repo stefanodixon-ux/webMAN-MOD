@@ -46,7 +46,7 @@ static inline uint64_t min64(uint64_t a, uint64_t b)
 	return a < b ? a : b;
 }
 
-static void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *zipper)
+static void walk_zip_directory(char* startdir, char* inputdir, struct zip *zipper)
 {
 	char fullname[256];
 	struct dirent *dirp;
@@ -93,7 +93,7 @@ static void walk_zip_directory(const char* startdir, const char* inputdir, struc
 	closedir(dp);
 }
 
-int zip_directory(const char* basedir, const char* inputdir, const char* output_filename)
+int zip_directory(char* basedir, char* inputdir, const char* output_filename)
 {
 	int ret;
 	struct zip* archive = zip_open(output_filename, ZIP_CREATE | ZIP_EXCL, &ret);

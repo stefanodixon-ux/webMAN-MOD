@@ -146,106 +146,6 @@ static void auto_play(char *param, u8 play_ps3)
 	}
 }
 
-#ifdef PS3MAPI
-static u32 patched_address1 = 0x100000;
-static u32 patched_address2 = 0x100000;
-static u32 patched_address3 = 0x100000;
-static u32 patched_address4 = 0x100000;
-
-static void patch_gameboot(u8 boot_type)
-{
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 300000))
-	{
-		u32 pid_list[16];
-		{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
-
-		u32 pid = 0;
-		for(int i = 0; i < 16; i++)
-		{
-			if(pid_list[i] > 2)
-			{
-				pid = pid_list[i];
-				break;
-			}
-		}
-
-		if(pid)
-		{
-			const char *ids[] = { "non", "ps1", "ps2", "ps3", "psp", "bdv", "dvd", "rom", // 0-7
-								  "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", // 8-15
-								  "ata", "gby", "cmd", "ids"}; // 16-19
-
-			if(boot_type > 19) boot_type = 0;
-
-			const char *id = ids[boot_type];
-
-			u32 address;
-			char value[16]; int len;
-
-			len = sprintf(value, "%s_%sboot", "page", "game"); // find "page_gameboot"
-			address = (u32)ps3mapi_find_offset(pid, 0x100000, 0x1800000, 4, value, len, value, patched_address1);
-
-			if(address > 0x100000)
-			{
-				len = sprintf(value, "%s_", id); // patch "xxx__gameboot"
-				ps3mapi_patch_process(pid, address, value, len); patched_address1 = address;
-
-				len = sprintf(value, "%slogo", "ps3"); // find ps3logo
-				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address2);
-
-				if(address > patched_address1)
-				{
-					len = sprintf(value, "%slogo", (boot_type == 3) ? "psx" : id); // patch xxxlogo
-					ps3mapi_patch_process(pid, address, value, len); patched_address2 = address;
-				}
-
-				const char *anim = ((boot_type == 5) || (boot_type == 6)) ? "other" : "game";
-
-				len = sprintf(value, "%s_%sboot", "anim", "game"); // find anim_gameboot  for ps3/ps2/ps1/psp/rom
-				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address3);
-
-				if(address > patched_address1)
-				{
-					len = sprintf(value, "%s__%sboot", id, anim); // patch xxx__otherboot / xxx__gameboot
-					ps3mapi_patch_process(pid, address, value, len + 1); patched_address3 = address;
-				}
-
-				len = sprintf(value, "%s_%sboot", "anim", "other"); // find anim_otherboot for dvd/bdv
-				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address4);
-
-				if(address > patched_address1)
-				{
-					len = sprintf(value, "%s__%sboot", id, anim); // patch xxx__otherboot / xxx__gameboot
-					ps3mapi_patch_process(pid, address, value, len + 1); patched_address4 = address;
-				}
-			}
-
-			char path[48];
-			if(isDir("/dev_hdd0/tmp/gameboot"))
-			{
-				map_patched_modules();
-
-				sprintf(path, "%s/%s_boot_stereo.ac3", "/dev_hdd0/tmp/gameboot", id);
-				sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  file_exists(path) ? path : NULL);
-				sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", file_exists(path) ? path : NULL);
-			}
-
-			const char *media[6] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM", "ICON0.PNG"};
-			for(u8 i = 0; i < 6; i++)
-			{
-				sprintf(path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]);
-				if(not_exists(path))
-				{
-					char src_path[40];
-					sprintf(src_path, "%s/%s_%s", "/dev_hdd0/tmp/gameboot", id, media[i]);
-					file_copy(src_path, path, COPY_WHOLE_FILE);
-				}
-			}
-		}
-	}
-}
-#endif
-
 static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, bool mount_ps3, bool forced_mount)
 {
 	bool mounted = false, umounted = false;
@@ -1266,7 +1166,11 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 		if(not_exists(_path)) sprintf(_path, "%s", cobra_iso_list[0]);
 	}
 
-	mount_iso = mount_iso || file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = emu_type;
+	mount_iso |= file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = emu_type;
+
+	// patch PS2 demo disc if title_id is ***D_###.##
+	if((emu_type == EMU_PS2_CD) || (emu_type == EMU_PS2_DVD))
+		if(mount_iso) patch_ps2_demo(cobra_iso_list[0]);
 
 	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd") || (cue_offset == 0xE000UL))
 	{

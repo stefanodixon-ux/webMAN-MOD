@@ -1220,10 +1220,6 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLPS_258.51</td><td>Zettai Zetsumei Toshi 2 - Itetsuita Kioku Tachi [Irem Collection]</td></tr>
 <tr><td>CUSTOM</td><td>SLPS_256.06</td><td>Zettai Zetsumei Toshi 2 - Itetsuita Kioutachi</td></tr>
 <tr><td>CUSTOM</td><td>SLPS_732.04</td><td>Zettai Zetsumi Toshi [PlayStation 2 The Best]</td></tr>
-<tr><td>CUSTOM</td><td>SCKA_200.88</td><td>zzz_unknown_korean_title</td></tr>
-<tr><td>CUSTOM</td><td>SLKA_252.60</td><td>zzz_unknown_korean_title</td></tr>
-<tr><td>CUSTOM</td><td>SLKA_253.14</td><td>zzz_unknown_korean_title</td></tr>
-<tr><td>CUSTOM</td><td>SLKA_254.02</td><td>zzz_unknown_korean_title</td></tr>
 <tr><td>NET</td><td>SLUS_204.61</td><td>BloodRayne</td></tr>
 <tr><td>NET</td><td>NPUD_204.61</td><td>Bloodrayne</td></tr>
 <tr><td>NET</td><td>SLUS_208.62</td><td>Bloodrayne 2</td></tr>
@@ -3791,7 +3787,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2413; i < count; i++) {
+for (i = 2410; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }

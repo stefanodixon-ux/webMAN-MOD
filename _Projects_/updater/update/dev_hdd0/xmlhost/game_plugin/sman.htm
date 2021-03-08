@@ -16,6 +16,34 @@
 <div id="rhtm"><H1 id="msg2">Loading Games <script>dot();</script></H1></div>
 <div id="wmsg"><H1><script>dot();</script></H1></div>
 
+<script>
+function find()
+{
+	var s=prompt('Search:','');
+	if(s){
+		$('rhtm').style.display='block';
+		$('rhtm').innerHTML='<h1>Searching...</h1>';
+		var url=self.location.href;
+		if(url.indexOf('etmem.ps3mapi')>0||url.indexOf('/hexview.ps3')>0){
+			var pos=url.indexOf('&find=');
+			if(pos>0)
+				self.location=url.substring(0,pos)+'&find='+escape(s);
+			else
+				self.location+='&find='+escape(s);
+		}
+		else if(url.indexOf('/peek')>0||url.indexOf('/poke')>0||url.indexOf('/find')>0){
+			var pos=url.indexOf('=');
+			if(pos>0)
+				self.location=url.substring(0,pos).replace('/peek','/find').replace('/poke','/find')+'='+escape(s);
+			else
+				self.location=url.replace('/peek','/find').replace('/poke','/find')+'='+escape(s);
+		}
+		else
+			self.location+='?'+escape(s);
+	}
+}
+</script>
+
 <div id="top_action">
 	<div id="top_buttons">
 	<a onclick="$('rxml').style.display='block';self.location=(event.ctrlKey)?'/refresh.ps3;/sman.ps3':'/refresh.ps3?xmb;/sman.ps3';" class="t_menu"><span id="refresh">Refresh</span></a>
@@ -30,7 +58,7 @@
 	</div>
 
 	<span style="position:absolute;float:right;right:-5px;top:10px;">
-	<a onclick="if(self.location.href.indexOf('/cpursx.ps3')>0){self.location='/cpursx.html';}else{var s=prompt('Search:','');if(s){$('rhtm').style.display='block';self.location+='?'+escape(s)}}"><span id="ngames"></span> &nbsp; <img src="/dev_hdd0/tmp/wm_icons/find.png" style="position:relative;top:6px;"></a></font>
+	<a onclick="if(self.location.href.indexOf('/cpursx.ps3')>0){self.location='/cpursx.html';}else{find();}"><span id="ngames"></span> &nbsp; <img src="/dev_hdd0/tmp/wm_icons/find.png" style="position:relative;top:6px;"></a></font>
 	</span>
 </div>
 

@@ -346,36 +346,26 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	return sbuffer.size;
 }
 
-static void handleclient_www(u64 conn_s_p)
+static void do_web_command(u64 conn_s_p, const char *wm_url)
 {
-	int conn_s = (int)conn_s_p; // main communications socket
-
-	size_t header_len;
-	sys_addr_t sysmem = NULL;
-
-	prev_dest = last_dest = NULL; // init fast concat
+	int conn_s = (int)conn_s_p;
 
 	bool is_ntfs = false;
-	char param[HTML_RECV_SIZE];
-
-	char *file_query = param + HTML_RECV_LAST; *file_query = NULL;
-
-	#include "www_start.h"
-
- #ifdef USE_DEBUG
-	ssend(debug_s, "waiting...");
- #endif
-
-	if(loading_html > 10) loading_html = 0;
-
 	bool is_local = true;
+	size_t header_len;
 	sys_net_sockinfo_t conn_info;
+	sys_addr_t sysmem = NULL;
 
 	u8 max_cc = 0; // count client connections per persistent connection
 	u8 keep_alive = 0, use_keep_alive = 0;
 	u8 ap_param = 0; // 0 = do nothing, 1 = use webman_config->autoplay, 2 = force auto_play
 
+	prev_dest = last_dest = NULL; // init fast concat
+
 	char cmd[16], header[HTML_RECV_SIZE], *mc = NULL;
+
+	char param[HTML_RECV_SIZE];
+	char *file_query = param + HTML_RECV_LAST; *file_query = NULL;
 
  #ifdef WM_REQUEST
 	struct CellFsStat buf; u8 wm_request = (wm_url != NULL) || (cellFsStat(WMREQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
@@ -483,7 +473,7 @@ parse_request:
 				{
 					if(wm_url)
 					{
-						buf.st_size = sprintf(header, "%s", wm_url); wm_url = NULL;
+						buf.st_size = sprintf(header, "%s", wm_url); is_busy = false;
 					}
 					#ifdef PHOTO_GUI
 					///// Process PhotoGUI request /////
@@ -1030,7 +1020,6 @@ parse_request:
 					setPluginInactive();
 					if(do_restart) goto reboot;
 					if(mc) goto exit_handleclient_www;
-					sys_ppu_thread_exit(0);
 				}
 
 				setPluginInactive();
@@ -1314,7 +1303,7 @@ parse_request:
 						if(*param2 == '?' ) {do_umount(false);  open_browser(url, 0);} else
 											{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23
 
-						if(!(webman_config->minfo & 1)) show_msg(url);
+						if(*param2 != '$' ) if(!(webman_config->minfo & 1)) show_msg(url);
 					}
 				}
 				else
@@ -2527,8 +2516,8 @@ retry_response:
 
  #ifdef PS3MAPI
 							|| islike(param, "/home.ps3mapi")
+							|| islike(param, "/getmem.ps3mapi") || islike(param, "/patch.ps3")
 							|| islike(param, "/setmem.ps3mapi")
-							|| islike(param, "/getmem.ps3mapi")
 							|| islike(param, "/led.ps3mapi")
 							|| islike(param, "/buzzer.ps3mapi") || islike(param, "/beep.ps3")
 							|| islike(param, "/notify.ps3mapi")
@@ -2774,7 +2763,7 @@ retry_response:
 
 				if(mount_ps3 && IS_INGAME) {mount_ps3 = false, forced_mount = true, param[6] = '.';}
 
-				if(conn_s != (int)WM_FILE_REQUEST)
+				if(conn_s_p != WM_FILE_REQUEST)
 					sbuffer.size = prepare_html(buffer, templn, param, is_ps3_http, is_cpursx, mount_ps3);
 
 				char *pbuffer = buffer + sbuffer.size;
@@ -2797,7 +2786,7 @@ retry_response:
 					//CellGcmConfig config; cellGcmGetConfiguration(&config);
 					//sprintf(templn, "localAddr: %x", (u32) config.localAddress); _concat(&sbuffer, templn);
 				}
-				else if((conn_s == (int)WM_FILE_REQUEST)) ;
+				else if((conn_s_p == WM_FILE_REQUEST)) ;
 				else if(webman_config->sman || strstr(param, "/sman.ps3"))
 				{
 					_concat(&sbuffer, "<div id='toolbox'>");
@@ -3316,6 +3305,14 @@ retry_response:
 						ps3mapi_syscall8(pbuffer, templn, param);
 					}
 					else
+					if(islike(param, "/patch.ps3"))
+					{
+						// example: /patch.ps3?addr=19A8000&stop=19D0000&find=fs_path&rep=2&offset=16&val=2E4A5047000000002E706E67000000002E676966000000002E626D70000000002E67696D000000002E504E4700
+
+						memcpy(param + 2, ".ps3mapi?", 9); // make alias of /getmem.ps3mapi
+						ps3mapi_getmem(pbuffer, templn, param);
+					}
+					else
 					if(islike(param, "/getmem.ps3mapi"))
 					{
 						ps3mapi_getmem(pbuffer, templn, param);
@@ -3628,10 +3625,22 @@ exit_handleclient_www:
 	#ifdef USE_DEBUG
 	ssend(debug_s, "Request served.\r\n");
 	#endif
+}
 
-	sclose(&conn_s); wm_url = NULL;
+static void handleclient_www(u64 conn_s_p)
+{
+	int conn_s = (int)conn_s_p;
+
+ #ifdef USE_DEBUG
+	ssend(debug_s, "waiting...");
+ #endif
+
+	if(loading_html > 10) loading_html = 0;
+
+	do_web_command(conn_s_p, NULL);
 
 	if(loading_html) loading_html--;
 
+	sclose(&conn_s);
 	sys_ppu_thread_exit(0);
 }

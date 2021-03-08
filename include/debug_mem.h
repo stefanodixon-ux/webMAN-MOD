@@ -39,7 +39,6 @@ static void peek_chunk_lv1(u64 start, u64 size, u8 *buffer) // read from lv1
 	}
 }
 
-#ifdef PS3MAPI
 static void peek_chunk_lv2(u64 start, u64 size, u8 *buffer) // read from lv1
 {
 	for(u64 t, i = 0; i < size; i += 8)
@@ -47,7 +46,6 @@ static void peek_chunk_lv2(u64 start, u64 size, u8 *buffer) // read from lv1
 		t = peekq(start + i); memcpy(buffer + i, &t, 8);
 	}
 }
-#endif
 
 static void dump_mem(char *file, u64 start, u32 dump_size)
 {
@@ -202,7 +200,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 
 		pos = strstr(param, "&stop=");
 		if(pos)
-			{upper_memory = (u64)val(pos + 6) | 0x8000000000000000ULL; *pos = NULL;}
+			{upper_memory = convertH(pos + 6) | 0x8000000000000000ULL; *pos = NULL;}
 		else
 			{upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;}
 	}

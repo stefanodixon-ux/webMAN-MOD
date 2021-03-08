@@ -118,6 +118,8 @@ static char *prev_dest = NULL;
 
 static size_t concat(char *dest, const char *src)
 {
+	if(!dest) return 0;
+
 	if(last_dest && (dest == prev_dest))
 		dest = last_dest;
 	else

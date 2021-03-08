@@ -25,7 +25,6 @@ static u32 copied_count = 0;
 
 static void enable_dev_blind(const char *msg);
 static sys_addr_t g_sysmem = NULL;
-static char *wm_url = NULL; // wm_request
 
 enum scan_operations
 {
@@ -1405,18 +1404,12 @@ static void disable_dev_blind(void)
 }
 
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
-static void handle_file_request(const char *url)
+static void handle_file_request(const char *wm_url)
 {
-	wm_url = (char*)url;
-
 	if(wm_url || file_exists(WMREQUEST_FILE))
 	{
-		loading_html++;
-		sys_ppu_thread_t t_id;
-		if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
+		do_web_command(WM_FILE_REQUEST, wm_url);
 	}
-
-	while(wm_url) sys_ppu_thread_usleep(100000);
 }
 
 static bool do_custom_combo(const char *filename)
@@ -1434,9 +1427,6 @@ static bool do_custom_combo(const char *filename)
 
 	if(file_exists(combo_file))
 	{
-		//_file_copy((char*)combo_file, (char*)WMREQUEST_FILE);
-		//handle_file_request(NULL);
-		//return true;
 		char *url = html_base_path;
 		read_file(combo_file, url, HTML_RECV_LAST, 0);
 		handle_file_request(url); *html_base_path = NULL;

@@ -392,7 +392,9 @@ static int installPKG(const char *pkgpath, char *msg);
 static void installPKG_all(const char *path, bool delete_after_install);
 #endif
 
+static void start_www(u64 conn_s_p);
 static void handleclient_www(u64 conn_s_p);
+static void do_web_command(u64 conn_s_p, const char *wm_url);
 
 static void do_umount(bool clean);
 static void mount_autoboot(void);
@@ -457,6 +459,8 @@ static u8 mount_unk = EMU_OFF;
 #include "include/cpursx.h"
 #include "include/togglers.h"
 
+#include "include/patch_gameboot.h"
+#include "include/patch_ps2demo.h"
 #include "include/_mount.h"
 #include "include/file_manager.h"
 
@@ -467,6 +471,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/show_msg2.h"
 
 #include "include/www_client.h"
+#include "include/www_start.h"
 
 static void wwwd_thread(u64 arg)
 {
@@ -532,7 +537,7 @@ static void wwwd_thread(u64 arg)
 		sys_ppu_thread_create(&thread_id_ftpd, ftpd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_FTP_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_FTP); // start ftp daemon immediately
 
 	sys_ppu_thread_t t_id;
-	sys_ppu_thread_create(&t_id, handleclient_www, (u64)START_DAEMON, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
+	sys_ppu_thread_create(&t_id, start_www, (u64)START_DAEMON, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
 
 #ifdef PS3NET_SERVER
 	if(!webman_config->netsrvd && (webman_config->ftp_port != NETPORT))

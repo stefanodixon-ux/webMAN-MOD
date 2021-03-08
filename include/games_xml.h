@@ -234,7 +234,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		if(!webman_config->refr || not_exists(MY_GAMES_XML))
 		{
 			sys_ppu_thread_t t_id;
-			sys_ppu_thread_create(&t_id, handleclient_www, (u64)REFRESH_CONTENT, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
+			sys_ppu_thread_create(&t_id, start_www, REFRESH_CONTENT, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
 		}
 
 		return true; // mount autoboot & refresh xml
@@ -1261,7 +1261,7 @@ static void refresh_xml(char *msg)
 
 	// refresh XML
 	sys_ppu_thread_t t_id;
-	sys_ppu_thread_create(&t_id, handleclient_www, (u64)REFRESH_CONTENT, THREAD_PRIO_HIGH, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
+	sys_ppu_thread_create(&t_id, start_www, REFRESH_CONTENT, THREAD_PRIO_HIGH, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
 
 	// refresh SND0 settings for new installed games only with combo SELECT+R3+L1+R1 (reload_xmb)
 	CellPadData pad_data = pad_read();

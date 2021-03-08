@@ -118,8 +118,8 @@ static void start_vsh_gui(bool vsh_menu)
 
 #ifdef PS3MAPI
 
-static void ps3mapi_syscall8(char *buffer, char *templn, char *param);
-static void ps3mapi_setmem(char *buffer, char *templn, char *param);
+static void ps3mapi_syscall8(char *buffer, char *templn, const char *param);
+static void ps3mapi_setmem(char *buffer, char *templn, const char *param);
 
 static u32 found_offset = 0;
 static u8 ps3mapi_working = 0;
@@ -148,7 +148,7 @@ static void ps3mapi_sound(u8 value)
 	if(value == 9) { play_rco_sound("snd_system_ng"); }
 }
 
-static void add_sound_list(char *buffer, char *param)
+static void add_sound_list(char *buffer, const char *param)
 {
 	add_option_item(1, "Simple", IS_MARKED("snd=1"), buffer);
 	add_option_item(2, "Double", IS_MARKED("snd=2"), buffer);
@@ -162,7 +162,7 @@ static void add_sound_list(char *buffer, char *param)
 	add_option_item(9, "snd_system_ng", IS_MARKED("snd=9"), buffer);
 }
 
-static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
+static void ps3mapi_buzzer(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
@@ -197,7 +197,7 @@ static void ps3mapi_buzzer(char *buffer, char *templn, char *param)
 	concat(buffer, templn);
 }
 
-static void ps3mapi_led(char *buffer, char *templn, char *param)
+static void ps3mapi_led(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
@@ -247,7 +247,7 @@ static void ps3mapi_led(char *buffer, char *templn, char *param)
 	concat(buffer, templn);
 }
 
-static void ps3mapi_notify(char *buffer, char *templn, char *param)
+static void ps3mapi_notify(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
@@ -298,7 +298,7 @@ static bool add_sc_checkbox(int sc, const char *id, const char *label, char *buf
 	return disabled;
 }
 
-static void ps3mapi_syscall(char *buffer, char *templn, char *param)
+static void ps3mapi_syscall(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
@@ -376,7 +376,7 @@ static void ps3mapi_syscall(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home && islike(param, "/syscall.ps3mapi")) {ps3mapi_syscall8(buffer, templn, param);}
 }
 
-static void ps3mapi_syscall8(char *buffer, char *templn, char *param)
+static void ps3mapi_syscall8(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 	int ret_val = NONE;
@@ -451,6 +451,24 @@ static void ps3mapi_get_process_name_by_id(u32 pid, char *name, u16 size)
 {
 	memset(name, 0, size);
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_NAME_BY_PID, (u64)pid, (u64)(u32)name);
+}
+
+static u32 get_current_pid(void)
+{
+	if(IS_INGAME)
+		return GetGameProcessID();
+
+	u32 pid_list[16];
+	{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
+
+	for(int i = 0; i < 16; i++)
+	{
+		if(pid_list[i] > 2)
+		{
+			return pid_list[i];
+		}
+	}
+	return 0;
 }
 
 static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
@@ -602,7 +620,7 @@ static int ps3mapi_patch_process(u32 pid, u32 address, const char *new_value, in
 #define BINDATA_LEN		"256"
 #define HEXDATA_LEN		"512"
 
-static void ps3mapi_getmem(char *buffer, char *templn, char *param)
+static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 	bool not_found = false;
@@ -621,34 +639,14 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 			address = convertH(addr_tmp);
 
 			length = (int)get_valuen32(param, "len=");
-
-			pid = get_valuen32(param, "proc=");
-
-			if(pid && (length == 0))
-			{
-				char value[BINDATA_SIZE + 1];
-				char val_tmp[HEXDATA_SIZE + 1];
-				char *new_value = val_tmp;
-
-				ps3mapi_get_memory(pid, address, value, BINDATA_SIZE);
-
-				hilite = length = get_param("val=", new_value, param, HEXDATA_SIZE);
-				if(isHEX(val_tmp))
-					{hilite = length = Hex2Bin(val_tmp, value); new_value = (char*)value;}
-
-				if(length) ps3mapi_patch_process(pid, address, new_value, length);
-				length = BINDATA_SIZE;
-			}
-			else
-			{
-				if(length == 0) length = BINDATA_SIZE;
-				length = RANGE(length, 1, BINDATA_SIZE);
-			}
+			if(length == 0) length = BINDATA_SIZE;
+			length = RANGE(length, 1, BINDATA_SIZE);
 		}
 		else
-			pid = GetGameProcessID();
+			pid = get_current_pid();
 
 		if(!pid) pid = get_valuen32(param, "proc=");
+		if(!pid) pid = get_current_pid();
 
 		if(get_param("find=", addr_tmp, param, 0x20))
 		{
@@ -665,23 +663,45 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 				memset(mask, 0, len);
 
 			u32 addr = address;
-			u32 stop = get_valuen64(param, "stop="); if(stop < address) stop = (address + 0x1000000ULL);
+			u32 stop = 0; char *pos = strstr(param, "&stop=");
+			if(pos) stop = convertH(pos + 6); if(stop < address) stop = (address + 0x1000000ULL);
 			u8  step = get_valuen(param, "step=", 0, 0xE0); if(step < 1) step = 4;
 			u8  rep  = get_valuen(param, "rep=", 1, 0xFF);
-			u8  rlen = (rep > 1) ? len : 0;
 
 			while(rep--)
 			{
-				address = ps3mapi_find_offset(pid, address + rlen, stop, step, sfind, len, mask, addr);
+				address = ps3mapi_find_offset(pid, address, stop, step, sfind, len, mask, addr);
 				if(address == addr) {not_found = true; break;}
+				if(rep) address += step;
 			}
 			if(!not_found) hilite = len;
 		}
 
-		if(get_param("dump=", addr_tmp, param, 16))
+		if(!not_found) // ignore dump / patch_process if find returned not found
 		{
-			u32 size = convertH(addr_tmp);
-			if(size >= _64KB_) ps3mapi_dump_process(pid, address, size);
+			int offset = (int)get_valuen64(param, "&offset="); address += offset;
+
+			if(get_param("dump=", addr_tmp, param, 16))
+			{
+				u32 size = convertH(addr_tmp);
+				if(size >= _64KB_) ps3mapi_dump_process(pid, address, size);
+			}
+
+			if(strstr(param, "&val="))
+			{
+				char value[BINDATA_SIZE + 1];
+				char val_tmp[HEXDATA_SIZE + 1];
+				char *new_value = val_tmp;
+
+				ps3mapi_get_memory(pid, address, value, BINDATA_SIZE);
+
+				hilite = length = get_param("val=", new_value, param, HEXDATA_SIZE);
+				if(isHEX(val_tmp))
+					{hilite = length = Hex2Bin(val_tmp, value); new_value = (char*)value;}
+
+				if(length) {ps3mapi_patch_process(pid, address, new_value, length);}
+				length = BINDATA_SIZE;
+			}
 		}
 	}
 
@@ -816,7 +836,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home && islike(param, "/getmem.ps3mapi")) ps3mapi_setmem(buffer, templn, param);
 }
 
-static void ps3mapi_setmem(char *buffer, char *templn, char *param)
+static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
@@ -842,7 +862,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 			}
 		}
 		else
-			pid = GetGameProcessID();
+			pid = get_current_pid();
 
 		if(!pid) pid = get_valuen32(param, "proc=");
 	}
@@ -891,7 +911,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, char *param)
 	if(!is_ps3mapi_home) concat(buffer, "<br>" HTML_RED_SEPARATOR); else concat(buffer, "<br>");
 }
 
-static void ps3mapi_setidps(char *buffer, char *templn, char *param)
+static void ps3mapi_setidps(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
@@ -1001,7 +1021,7 @@ static void add_plugins_list(char *buffer, char *templn, u8 is_vsh)
 	}
 }
 
-static void ps3mapi_vshplugin(char *buffer, char *templn, char *param)
+static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
@@ -1176,7 +1196,7 @@ static sys_prx_id_t stop_unload(sys_prx_id_t id)
 	}
 }
 
-static void ps3mapi_gameplugin(char *buffer, char *templn, char *param)
+static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
