@@ -39,13 +39,14 @@ static void parse_script(const char *script_file)
 
 	if(file_exists(script_file))
 	{
+		u32 max_size = _64KB_;
 		sys_addr_t sysmem = NULL;
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)) return;
+		if(sys_memory_allocate(max_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)) return;
 
 		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0;
 		u8 exec_mode = true, enable_db = true, do_else = true;
-		size_t buffer_size = read_file(script_file, buffer, _64KB_, 0); buffer[buffer_size] = 0;
-		char log_file[STD_PATH_LEN + 1] = TMP_DIR "/log.txt";
+		size_t buffer_size = read_file(script_file, buffer, max_size, 0); buffer[buffer_size] = 0;
+		char log_file[STD_PATH_LEN] = SC_LOG_FILE;
 
 		script_running = true;
 
@@ -103,9 +104,10 @@ static void parse_script(const char *script_file)
 	#endif
 					if(_islike(line, "del /"))     {path += 4; char *wildcard = strstr(path, "*"); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
 					if(_islike(line, "md /"))      {path += 3; mkdir_tree(path);} else
+					if(_islike(line, "wait xmb"))  {wait_for_xmb();} else
 					if(_islike(line, "wait /"))    {path += 5; wait_for(path, 5);} else
-					if(_islike(line, "lwait /"))   {path += 6; wait_for(path, 10);} else
 					if(_islike(line, "wait "))     {line += 5; wait_path("/dev_hdd0", (u8)val(line), false);} else
+					if(_islike(line, "lwait /"))   {path += 6; wait_for(path, 10);} else
 					#ifdef PS3MAPI
 					if(_islike(line, "beep"))      {ps3mapi_sound(line[4] - '0');} else
 					#else
@@ -113,7 +115,7 @@ static void parse_script(const char *script_file)
 					#endif
 					if(_islike(line, "popup "))    {line += 6; show_msg(line);} else
 					if(_islike(line, "log "))      {line += 4; save_file(log_file, line, APPEND_TEXT);} else
-					if(_islike(line, "logfile /")) {path += 8; sprintf(log_file, "%s", path);} else
+					if(_islike(line, "logfile /")) {path += 8; snprintf(log_file, STD_PATH_LEN, "%s", path);} else
 	#ifdef UNLOCK_SAVEDATA
 					if(_islike(line, "unlock /"))  {path += 7; scan(path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);} else
 	#endif

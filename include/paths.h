@@ -44,6 +44,8 @@
 #define WMREQUEST_FILE		TMP_DIR "/wm_request"			// webMAN request file
 #define WMNET_DISABLED		TMP_DIR "/wm_netdisabled"		// webMAN config file to re-enable network
 
+#define SC_LOG_FILE			TMP_DIR "/log.txt"
+
 #define WMONLINE_GAMES		WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
 #define WMOFFLINE_GAMES		WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
 

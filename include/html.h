@@ -1,6 +1,10 @@
 #define HTML_RECV_SIZE	2048
 #define HTML_RECV_LAST	2047
 
+#define ORANGE		0xf90
+#define MAGENTA		0xf0f
+#define CYAN		0x0ff
+
 static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 
 #define ITEM_CHECKED			" checked=\"checked\""
@@ -55,8 +59,8 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 
 #define HTML_BODY_END			"</font></body></html>" /* size: 21 */
 
-#define HTML_BLU_SEPARATOR		"<hr color=\"#0099FF\"/>"
-#define HTML_RED_SEPARATOR		"<hr color=\"#FF0000\"/>"
+#define HTML_BLU_SEPARATOR		"<hr color=\"blue\"/>"
+#define HTML_RED_SEPARATOR		"<hr color=\"red\"/>"
 
 #define SCRIPT_SRC_FMT			"<script src=\"%s\"></script>"
 #define HTML_REDIRECT_TO_URL	"<script>setTimeout(function(){self.location=\"%s\"},%i);</script>"

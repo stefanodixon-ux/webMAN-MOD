@@ -44,10 +44,11 @@ static void start_www(u64 conn_s_p)
 
 
 		//////////// usb ports ////////////
+		char *dev_name = templn;
 		for(u8 indx = 5, d = 6; d < 128; d++)
 		{
-			sprintf(templn, "/dev_usb%03i", d);
-			if(isDir(templn)) {strcpy(drives[indx++], templn); if(indx > 6) break;}
+			sprintf(dev_name, "/dev_usb%03i", d);
+			if(isDir(dev_name)) {strcpy(drives[indx++], dev_name); if(indx > 6) break;}
 		}
 		///////////////////////////////////
 
@@ -55,12 +56,13 @@ static void start_www(u64 conn_s_p)
 		check_cover_folders(templn);
 
 		// Use system icons if wm_icons don't exist
+		char *icon_path = templn;
 		for(u8 i = 0; i < 14; i++)
 		{
 			if(not_exists(wm_icons[i]))
 			{	// Check /dev_flash/vsh/resource/explore/icon/
-				sprintf(templn, VSH_RESOURCE_DIR "explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], templn);
-				if(file_exists(templn)) continue;
+				sprintf(icon_path, VSH_RESOURCE_DIR "explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], icon_path);
+				if(file_exists(icon_path)) continue;
 
 				// If not found, use /dev_flash/vsh/resource/explore/user/
 				char *icon = wm_icons[i] + 32;

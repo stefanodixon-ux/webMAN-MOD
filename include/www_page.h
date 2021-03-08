@@ -72,9 +72,9 @@ skip_code2:
 			if(file_exists(FM_SCRIPT_JS))
 			#endif
 			{
-				sprintf(templn, "%s%s\" id=\"bDel\" onclick=\"tg(this,'%s','%s','orange');\">", HTML_BUTTON, STR_DELETE, "/delete.ps3", STR_DELETE); _concat(&sbuffer, templn);
-				sprintf(templn, "%s%s\" id=\"bCut\" onclick=\"tg(this,'%s','%s','magenta');\">", HTML_BUTTON, "Cut", "/cut.ps3", "Cut"); _concat(&sbuffer, templn);
-				sprintf(templn, "%s%s\" id=\"bCpy\" onclick=\"tg(this,'%s','%s','cyan');\">", HTML_BUTTON, "Copy", "/cpy.ps3", "Copy"); _concat(&sbuffer, templn);
+				sprintf(templn, "%s%s\" id=\"%s\" onclick=\"tg(this,'%s','%s','#%x');\">", HTML_BUTTON, STR_DELETE, "bDel", "/delete.ps3", STR_DELETE, ORANGE); _concat(&sbuffer, templn);
+				sprintf(templn, "%s%s\" id=\"%s\" onclick=\"tg(this,'%s','%s','#%x');\">", HTML_BUTTON, "Cut", "bCut", "/cut.ps3", "Cut", MAGENTA); _concat(&sbuffer, templn);
+				sprintf(templn, "%s%s\" id=\"%s\" onclick=\"tg(this,'%s','%s','#%x');\">", HTML_BUTTON, "Copy", "bCpy", "/cpy.ps3", "Copy", CYAN); _concat(&sbuffer, templn);
 
 				if(cp_mode) {char *url = tempstr, *title = tempstr + MAX_PATH_LEN; urlenc(url, param); htmlenc(title, cp_path, 0); sprintf(templn, "%s%s\" id=\"bPst\" %s'/paste.ps3%s'\" title=\"%s\">", HTML_BUTTON, "Paste", HTML_ONCLICK, url, title); _concat(&sbuffer, templn);}
 			}

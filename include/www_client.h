@@ -473,7 +473,12 @@ parse_request:
 				{
 					if(wm_url)
 					{
-						buf.st_size = sprintf(header, "%s", wm_url); is_busy = false;
+						is_busy = false;
+
+						if(*header == '/')
+							buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", wm_url);
+						else
+							buf.st_size = snprintf(header, HTML_RECV_SIZE, "%s", wm_url);
 					}
 					#ifdef PHOTO_GUI
 					///// Process PhotoGUI request /////
@@ -526,8 +531,8 @@ parse_request:
 					// make proper URL replacing spaces with +
 					for(size_t n = buf.st_size; n > 4; n--) if(header[n] == ' ') header[n] = '+';
 
-					// Retry /play.ps3* while IS_INGAME
-					if(islike(header, "GET /play.ps3")) {if(IS_INGAME && (++retry < 30)) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}
+					// Retry for 30 seconds /play.ps3 command while IS_INGAME
+					if(islike(header + 4, "/play.ps3")) {if(IS_INGAME && (++retry < 30)) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}
 				}
 
 				// Delete WMREQUEST_FILE
