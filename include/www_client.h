@@ -465,7 +465,7 @@ parse_request:
 			ssend(debug_s, "ACC - ");
 			#endif
 
-#ifndef LITE_EDITION
+#ifdef WM_REQUEST
 			if(wm_request)
 			{
 				// Set the content of WMREQUEST_FILE as header

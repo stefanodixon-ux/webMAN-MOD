@@ -313,7 +313,7 @@ static u8 ftp_state = 0;
 static char current_file[STD_PATH_LEN + 1];
 static char cp_path[STD_PATH_LEN + 1];  // cut/copy/paste buffer
 static u8 cp_mode = CP_MODE_NONE;       // 0 = none / 1 = copy / 2 = cut/move
-static s64 file_size(const char* path);
+static u64 file_size(const char* path);
 static void parse_script(const char *script_file);
 static bool script_running = false;
 #endif
@@ -339,6 +339,10 @@ static void _file_copy(char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, const char *param);
 static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param);
 static char *get_filename(const char *path);
+
+#ifdef PS3MAPI
+static void patch_gameboot(u8 boot_type);
+#endif
 
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
@@ -388,7 +392,9 @@ static int installPKG(const char *pkgpath, char *msg);
 static void installPKG_all(const char *path, bool delete_after_install);
 #endif
 
+static void start_www(u64 conn_s_p);
 static void handleclient_www(u64 conn_s_p);
+static void do_web_command(u64 conn_s_p, const char *wm_url);
 
 static void do_umount(bool clean);
 static void mount_autoboot(void);
@@ -453,6 +459,8 @@ static u8 mount_unk = EMU_OFF;
 #include "include/cpursx.h"
 #include "include/togglers.h"
 
+#include "include/patch_gameboot.h"
+#include "include/patch_ps2demo.h"
 #include "include/_mount.h"
 #include "include/file_manager.h"
 
@@ -463,9 +471,13 @@ static u8 mount_unk = EMU_OFF;
 #include "include/show_msg2.h"
 
 #include "include/www_client.h"
+#include "include/www_start.h"
 
 static void wwwd_thread(u64 arg)
 {
+	memset(webman_config, 0, sizeof(WebmanCfg));
+	sys_admin = 1; // set admin mode if ADMIN combo L2+R2+TRIANGLE is disabled
+
 	enable_dev_blind(NO_MSG);
 
 	set_buffer_sizes(0);
@@ -477,8 +489,7 @@ static void wwwd_thread(u64 arg)
 
 	working = 0;
 
-	wwwd_stop();
-	sys_ppu_thread_exit(0);
+	{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);}
 }
 
 /***********************************************************************
@@ -490,7 +501,7 @@ int32_t wwwd_start(uint64_t arg)
 
 	detect_firmware();
 
-	sys_ppu_thread_create(&thread_id_wwwd, wwwd_thread, NULL, THREAD_PRIO, 2*THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, "AISCRIPT");
+	sys_ppu_thread_create(&thread_id_wwwd, wwwd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_128KB, SYS_PPU_THREAD_CREATE_JOINABLE, "AISCRIPT");
 
 	sys_ppu_thread_exit(0);
 	return SYS_PRX_RESIDENT;

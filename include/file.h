@@ -443,7 +443,7 @@ int save_file(const char *file, const char *mem, s64 size)
 static void addlog(const char *msg1, const char *msg2, u64 i)
 {
 	char msg[200];
-	sprintf(msg, "%s %s %llx", msg1, msg2, i);
+	snprintf(msg, 199, "%llx %s %s", i, msg1, msg2);
 	save_file("/dev_hdd0/wmm.log", msg, APPEND_TEXT);
 }
 */
