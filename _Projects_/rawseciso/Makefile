@@ -32,7 +32,8 @@ CLEANFILES = $(PRX_DIR)/$(PPU_SPRX_TARGET)
 all:
 	$(MAKE) $(PPU_OBJS_DEPENDS)
 	$(PPU_PRX_STRIP) --strip-debug --strip-section-header $(PPU_PRX_TARGET)
-#	$(MAKE_FSELF) $(PPU_PRX_TARGET) $(PPU_SPRX_TARGET)
+	$(MAKE_FSELF) $(PPU_PRX_TARGET) $(PPU_SPRX_TARGET)
+#	scetool --sce-type=SELF --compress-data=TRUE --skip-sections=FALSE --key-revision=07 --self-ctrl-flags=4000000000000000000000000000000000000000000000000000000000000002 --self-auth-id=1010000001000003 --self-add-shdrs=TRUE --self-vendor-id=01000002 --self-app-version=0001000000000000 --self-type=APP --self-fw-version=0003005000000000 --encrypt "raw_iso.prx" "raw_iso.prx"
 	cp -r $(ROOT_PATH)/data data
 	$(ROOT_PATH)/scetool -0 SELF -1 TRUE -s FALSE -2 0A -3 1070000052000001 -4 01000002 -5 APP -6 0003004000000000 -A 0001000000000000 -e $(PPU_PRX_TARGET) $(PPU_SPRX_TARGET)
 	rm -r data objs $(PPU_PRX_TARGET) *.sym

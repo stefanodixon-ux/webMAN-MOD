@@ -1009,26 +1009,30 @@ static void do_umount(bool clean)
 		}
  #endif
 
- #ifdef USE_INTERNAL_PLUGIN
 		// unload internal netiso or rawiso plugin
 		{
+		#if defined(USE_INTERNAL_NET_PLUGIN) || defined(USE_INTERNAL_NTFS_PLUGIN)
 			sys_ppu_thread_t t_id;
 			u64 exit_code;
+		#endif
 		#ifdef USE_INTERNAL_NET_PLUGIN
 			sys_ppu_thread_create(&t_id, netiso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
 			sys_ppu_thread_join(t_id, &exit_code);
 		#endif
+		#ifdef USE_INTERNAL_NTFS_PLUGIN
 			sys_ppu_thread_create(&t_id, rawseciso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
 			sys_ppu_thread_join(t_id, &exit_code);
+		#endif
 
 			// wait for unload of netiso or rawiso plugin
-		#ifdef USE_INTERNAL_NET_PLUGIN
+		#if defined(USE_INTERNAL_NET_PLUGIN) && defined(USE_INTERNAL_NTFS_PLUGIN)
 			while(netiso_loaded || rawseciso_loaded) {sys_ppu_thread_usleep(100000); if(is_mounting) break;}
-		#else
+		#elif defined(USE_INTERNAL_NET_PLUGIN)
+			while(netiso_loaded) {sys_ppu_thread_usleep(100000); if(is_mounting) break;}
+		#elif defined(USE_INTERNAL_NTFS_PLUGIN)
 			while(rawseciso_loaded) {sys_ppu_thread_usleep(100000); if(is_mounting) break;}
 		#endif
 		}
- #endif
 
 		// send fake eject
 		sys_ppu_thread_usleep(4000);

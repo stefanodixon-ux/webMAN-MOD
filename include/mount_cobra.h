@@ -126,7 +126,7 @@
 			if(ntfs_ext)
 			{
 
-	#ifdef USE_INTERNAL_PLUGIN
+	#ifdef USE_INTERNAL_NTFS_PLUGIN
 				// ------------------------------------------------------------------------------------------------------------
 				// launch ntfs psx & isos tagged [raw] with external rawseciso sprx (if available) (due support for multi PSX)
 				// ------------------------------------------------------------------------------------------------------------
@@ -163,14 +163,14 @@
 
 							sys_memory_free(addr);
 
-	#ifdef USE_INTERNAL_PLUGIN
+	#ifdef USE_INTERNAL_NTFS_PLUGIN
 							if(ret) goto mounted_ntfs;
 	#endif
 						}
 					}
 				}
 
-	#ifdef USE_INTERNAL_PLUGIN
+	#ifdef USE_INTERNAL_NTFS_PLUGIN
 				sys_addr_t addr = 0;
 				if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) == CELL_OK)
 				{
@@ -186,7 +186,7 @@
 
 					sys_memory_free(addr);
 				}
-	#endif //#ifdef USE_INTERNAL_PLUGIN
+	#endif //#ifdef USE_INTERNAL_NTFS_PLUGIN
 
 		mounted_ntfs:
 

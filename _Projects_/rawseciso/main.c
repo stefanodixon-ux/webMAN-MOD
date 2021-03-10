@@ -43,7 +43,7 @@ SYS_MODULE_STOP(rawseciso_stop);
 
 #define DISC_TYPE_NONE			0
 
-#define MAX_TRACKS	80
+#define MAX_TRACKS	98
 
 enum EMU_TYPE
 {
@@ -60,9 +60,11 @@ enum EMU_TYPE
 
 #define EMU_PSX_MULTI (EMU_PSX + 16)
 
+#define	_8KB_		0x02000UL
 #define	_40KB_		0x0A000UL
 #define	_64KB_		0x10000UL
 #define	_128KB_		0x20000UL
+#define	_256KB_		0x40000UL
 
 #define OK	  0
 #define FAILED -1
@@ -182,6 +184,8 @@ sys_event_port_t result_port;
 
 static int mode_file = 0, cd_sector_size_param = 0;
 
+#define CD_SECTOR_SIZE_2048			2048
+
 static uint64_t size_sector = 512;
 static uint32_t CD_SECTOR_SIZE_2352 = 2352;
 
@@ -293,8 +297,8 @@ static inline void get_next_read(uint64_t discoffset, uint64_t bufsize, uint64_t
 		uint64_t last;
 		uint64_t sz;
 
-		if(i == 0 && mode_file > 1)
-			sz = (((uint64_t)sections_size[i]) * 2048ULL);
+		if((i == 0) && (mode_file > 1))
+			sz = (((uint64_t)sections_size[i]) * CD_SECTOR_SIZE_2048);
 		else
 			sz = (((uint64_t)sections_size[i]) * size_sector);
 
@@ -332,7 +336,7 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 	//DPRINTF("read iso: %p %lx %lx\n", buf, offset, size);
 	remaining = size;
 
-	while(remaining > 0)
+	while(remaining)
 	{
 		uint64_t pos, readsize;
 		int idx;
@@ -345,7 +349,7 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 
 		get_next_read(offset, remaining, &pos, &readsize, &idx, size_sector);
 
-		if(idx == NONE || sections[idx] == 0xFFFFFFFF)
+		if((idx == NONE) || (sections[idx] == 0xFFFFFFFF))
 		{
 			memset(buf, 0, readsize);
 			buf += readsize;
@@ -369,12 +373,12 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 				else
 					ret = sys_storage_read(handle, 0, sector, 1, last_sect_buf, &r, 0);
 
-				if(ret == OK && r == 1)
+				if((ret == OK) && (r == 1))
 					last_sect = sector;
 				else
 					last_sect = 0xffffffff;
 
-				if(ret != OK || r != 1)
+				if((ret != OK) || (r != 1))
 				{
 					if(emu_mode == EMU_PSX_MULTI) return (int) 0x8001000A; // EBUSY
 
@@ -384,7 +388,7 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 
 						while(ntfs_running)
 						{
-							if(sys_storage_get_device_info(usb_device, &disc_info) == 0)
+							if(sys_storage_get_device_info(usb_device, &disc_info) == OK)
 							{
 								ret = sys_storage_open(usb_device, 0, &handle, 0);
 								if(ret == OK) break;
@@ -419,11 +423,11 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 			readsize -= csize;
 		}
 
-		if(readsize > 0)
+		if(readsize)
 		{
 			uint32_t n = readsize / size_sector;
 
-			if(n > 0)
+			if(n)
 			{
 				uint64_t s;
 
@@ -433,22 +437,22 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 					r = 0;
 					ret = sys_storage_read(handle, 0, sector, n, buf, &r, 0);
 
-					if(ret == OK && r == n)
+					if((ret == OK) && (r == n))
 						last_sect = sector + n - 1;
 					else
 						last_sect = 0xffffffff;
 
-					if(ret != OK || r != n)
+					if((ret != OK) || (r != n))
 					{
 						if(emu_mode == EMU_PSX_MULTI) return (int) 0x8001000A; // EBUSY
 
-						if(ret == (int) 0x80010002 || ret == (int) 0x8001002D)
+						if((ret == (int) 0x80010002) || (ret == (int) 0x8001002D))
 						{
 							if(handle != SYS_DEVICE_HANDLE_NONE) sys_storage_close(handle); handle = SYS_DEVICE_HANDLE_NONE;
 
 							while(ntfs_running)
 							{
-								if(sys_storage_get_device_info(usb_device, &disc_info) == 0)
+								if(sys_storage_get_device_info(usb_device, &disc_info) == OK)
 								{
 									ret = sys_storage_open(usb_device, 0, &handle, 0);
 									if(ret == OK) break;
@@ -478,7 +482,7 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 				readsize -= s;
 			}
 
-			if(readsize > 0)
+			if(readsize)
 			{
 				sector = sections[idx] + pos / size_sector;
 				for(x = 0; x < 16; x++)
@@ -491,12 +495,12 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 					else
 						ret = sys_storage_read(handle, 0, sector, 1, last_sect_buf, &r, 0);
 
-					if(ret == OK && r == 1)
+					if((ret == OK) && (r == 1))
 						last_sect = sector;
 					else
 						last_sect = 0xffffffff;
 
-					if(ret != OK || r != 1)
+					if((ret != OK) || (r != 1))
 					{
 						if(emu_mode == EMU_PSX_MULTI) return (int) 0x8001000A; // EBUSY
 
@@ -506,7 +510,7 @@ static int process_read_iso_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 
 							while(ntfs_running)
 							{
-								if(sys_storage_get_device_info(usb_device, &disc_info) == 0)
+								if(sys_storage_get_device_info(usb_device, &disc_info) == OK)
 								{
 									ret = sys_storage_open(usb_device, 0, &handle, 0);
 									if(ret == OK) break;
@@ -556,7 +560,7 @@ static int process_read_file_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 
 	remaining = size;
 
-	while(remaining > 0)
+	while(remaining)
 	{
 		uint64_t pos, p, readsize;
 		int idx;
@@ -564,7 +568,7 @@ static int process_read_file_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 
 		get_next_read(offset, remaining, &pos, &readsize, &idx, 2048);
 
-		if(idx == NONE || path_name[0x200 * idx] == 0)
+		if((idx == NONE) || (path_name[0x200 * idx] == 0))
 		{
 			memset(buf, 0, readsize);
 			buf += readsize;
@@ -591,9 +595,8 @@ static int process_read_file_cmd(uint8_t *buf, uint64_t offset, uint64_t size)
 			}
 
 			p = 0;
-			ret = cellFsLseek(discfd, pos, SEEK_SET, &p);
-			if(!ret) ret = cellFsRead(discfd, buf, readsize, &p);
-			if(ret != OK)
+			ret = cellFsReadWithOffset(discfd, pos, buf, readsize, &p);
+			if(ret)
 			{
 				last_index = NONE;
 
@@ -656,7 +659,7 @@ static int process_read_psx_cmd(uint8_t *buf, uint64_t offset, uint64_t size, ui
 		}
 	}
 
-	while(remaining > 0)
+	while(remaining)
 	{
 		uint64_t pos, p, readsize = (uint64_t)CD_SECTOR_SIZE_2352;
 
@@ -665,12 +668,12 @@ static int process_read_psx_cmd(uint8_t *buf, uint64_t offset, uint64_t size, ui
 			rel = 0;
 
 			pos = offset;
-			if(ssector == 2048) { if(sect_size >= CD_SECTOR_SIZE_2352) pos += 24ULL; readsize = 2048ULL;}
+			if(ssector == CD_SECTOR_SIZE_2048) { if(sect_size >= CD_SECTOR_SIZE_2352) pos += 24ULL; readsize = CD_SECTOR_SIZE_2048;}
 			else
 			{
-				if(sect_size == 2048)
+				if(sect_size == CD_SECTOR_SIZE_2048)
 				{
-					rel = 24; readsize = 2048ULL;
+					rel = 24; readsize = CD_SECTOR_SIZE_2048;
 					memset(&buf[0], 0x0, 24);
 					memset(&buf[1], 0xff, 10);
 					buf[0x12] = buf[0x16]= 8;
@@ -687,9 +690,8 @@ static int process_read_psx_cmd(uint8_t *buf, uint64_t offset, uint64_t size, ui
 
 			if(!psx_isos_desc[psx_indx * 2 + 0])
 			{
-				ret = cellFsLseek(discfd, pos, SEEK_SET, &p);
-				if(!ret) ret = cellFsRead(discfd, buf + rel, readsize, &p);
-				if(ret != OK)
+				ret = cellFsReadWithOffset(discfd, pos, buf + rel, readsize, &p);
+				if(ret)
 				{
 					if(ret == (int) 0x8001002B) return (int) 0x8001000A; // EBUSY
 
@@ -723,38 +725,37 @@ static inline void my_memcpy(uint8_t *dst, uint8_t *src, int size)
 
 static inline void my_memcpy64(uint64_t *dst, uint64_t src, int size)
 {
-	for(int64_t i = 0; i < size; i++) dst[i] = lv2peek(src + i*8ULL);
+	for(int64_t i = 0; i < size; i += 8) dst[i] = lv2peek(src + i);
 }
 
-
-static uint32_t cached_cd_sector=0x80000000;
+static uint32_t cached_cd_sector = 0x80000000;
 
 static int process_read_cd_2048_cmd(uint8_t *buf, uint32_t start_sector, uint32_t sector_count)
 {
-	uint32_t capacity = sector_count * 2048;
-	uint32_t fit = capacity/CD_SECTOR_SIZE_2352;
+	uint32_t capacity = sector_count * CD_SECTOR_SIZE_2048;
+	uint32_t fit = capacity / CD_SECTOR_SIZE_2352;
 	uint32_t rem = (sector_count-fit);
 	uint32_t i;
 	uint8_t *in = buf;
 	uint8_t *out = buf;
 
-	if(fit > 0)
+	if(fit)
 	{
 		process_read_iso_cmd(buf, start_sector * CD_SECTOR_SIZE_2352, fit * CD_SECTOR_SIZE_2352);
 
 		for(i = 0; i < fit; i++)
 		{
-			my_memcpy(out, in+24, 2048);
+			my_memcpy(out, in + 24, CD_SECTOR_SIZE_2048);
 			in += CD_SECTOR_SIZE_2352;
-			out += 2048;
+			out += CD_SECTOR_SIZE_2048;
 			start_sector++;
 		}
 	}
 
 	for(i = 0; i < rem; i++)
 	{
-		process_read_iso_cmd(out, (start_sector * CD_SECTOR_SIZE_2352)+24, 2048);
-		out += 2048;
+		process_read_iso_cmd(out, (start_sector * CD_SECTOR_SIZE_2352) + 24, CD_SECTOR_SIZE_2048);
+		out += CD_SECTOR_SIZE_2048;
 		start_sector++;
 	}
 
@@ -767,7 +768,7 @@ static int process_read_cd_2352_cmd(uint8_t *buf, uint32_t sector, uint32_t rema
 
 	if(remaining <= CD_CACHE_SIZE)
 	{
-		int dif = (int)cached_cd_sector-sector;
+		int dif = (int)cached_cd_sector - sector;
 
 		if(ABS(dif) < CD_CACHE_SIZE)
 		{
@@ -824,7 +825,7 @@ static int process_read_cd_2352_cmd(uint8_t *buf, uint32_t sector, uint32_t rema
 		sys_addr_t addr;
 
 		int ret = sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr);
-		if(ret != OK)
+		if(ret)
 		{
 			DPRINTF("sys_memory_allocate failed: %x\n", ret);
 			return ret;
@@ -833,7 +834,7 @@ static int process_read_cd_2352_cmd(uint8_t *buf, uint32_t sector, uint32_t rema
 		cd_cache = (uint8_t *)addr;
 	}
 
-	if(process_read_iso_cmd(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352) != CELL_OK)
+	if(process_read_iso_cmd(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352) /* != CELL_OK*/)
 		return FAILED;
 
 	memcpy(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
@@ -844,9 +845,9 @@ static int process_read_cd_2352_cmd(uint8_t *buf, uint32_t sector, uint32_t rema
 static void get_psx_track_datas(void)
 {
 	uint32_t track_datas[4];
-	uint8_t buff[2048];
+	uint8_t buff[CD_SECTOR_SIZE_2048];
 	uint64_t lv2_addr = 0x8000000000000050ULL;
-	lv2_addr+= 16ULL * psx_indx;
+	lv2_addr += 16ULL * psx_indx;
 
 	my_memcpy64((uint64_t*)(uint32_t)track_datas, lv2_addr, 16ULL);
 
@@ -859,21 +860,22 @@ static void get_psx_track_datas(void)
 		tracks[num_tracks].track_number = 1;
 		tracks[num_tracks].track_start_addr = 0;
 		num_tracks++;
-
 	}
 	else
 	{
-		lv2_addr = 0x8000000000000000ULL + (uint64_t) track_datas[2];
+		lv2_addr = 0x8000000000000000ULL | (uint64_t) track_datas[2];
 		my_memcpy64((uint64_t*)buff, lv2_addr, track_datas[3]);
 
 		while(k < (int) track_datas[3])
 		{
 			tracks[num_tracks].adr_control = (buff[k + 1] != 0x14) ? 0x10 : 0x14;
 			tracks[num_tracks].track_number = num_tracks + 1;
-			tracks[num_tracks].track_start_addr = ((uint32_t) buff[k + 4] << 24) | ((uint32_t) buff[k + 5] << 16) |
-												  ((uint32_t) buff[k + 6] << 8)  | ((uint32_t) buff[k + 7]);
+			tracks[num_tracks].track_start_addr = ((uint32_t) buff[k + 4] << 24) |
+												  ((uint32_t) buff[k + 5] << 16) |
+												  ((uint32_t) buff[k + 6] << 8)  |
+												  ((uint32_t) buff[k + 7]);
 			num_tracks++;
-			k+= 8;
+			k += 8;
 		}
 
 		if(num_tracks > 1) num_tracks--;
@@ -895,7 +897,7 @@ static int ejected_disc(void)
 	if(usb_device)
 	{
 		int r = sys_storage_get_device_info(usb_device, &disc_info);
-		if(r == 0)
+		if(r == OK)
 		{
 			counter++;
 
@@ -903,7 +905,7 @@ static int ejected_disc(void)
 			{
 				if(handle != SYS_DEVICE_HANDLE_NONE) sys_storage_close(handle); handle = SYS_DEVICE_HANDLE_NONE;
 
-				if(sys_storage_open(usb_device, 0, &handle, 0) == 0)
+				if(sys_storage_open(usb_device, 0, &handle, 0) == OK)
 				{
 					sys_set_leds(1 , 1);
 					ejected = 0;
@@ -1001,7 +1003,7 @@ static void eject_thread(uint64_t arg)
 					sys_event_queue_t command_queue2 = command_queue;
 					command_queue = SYS_EVENT_QUEUE_NONE;
 
-					if(sys_event_queue_destroy(command_queue2, SYS_EVENT_QUEUE_DESTROY_FORCE) != CELL_OK)
+					if(sys_event_queue_destroy(command_queue2, SYS_EVENT_QUEUE_DESTROY_FORCE) /*!= CELL_OK*/)
 					{
 						DPRINTF("Failed in destroying command_queue\n");
 					}
@@ -1030,7 +1032,7 @@ static void eject_thread(uint64_t arg)
 				ret = sys_event_queue_create(&command_queue, &queue_attr, 0, 1);
 				if(ret == OK) {eject_running = 1; ret = sys_storage_ext_mount_discfile_proxy(result_port, command_queue, emu_mode & 0xF, discsize, 256*1024, (num_tracks | cd_sector_size_param), tracks);}
 
-				if(ret != OK) psx_indx = (psx_indx - 1) & 7;
+				if(ret) psx_indx = (psx_indx - 1) & 7;
 				else {fake_insert_event(real_disctype);}
 			}
 		}
@@ -1060,7 +1062,7 @@ static void rawseciso_thread(uint64_t arg)
 	num_sections = 0;
 	CD_SECTOR_SIZE_2352 = 2352;
 
-	emu_mode = args->emu_mode & 1023;
+	emu_mode = args->emu_mode & 0x3FF;
 
 	if(emu_mode != EMU_PSX_MULTI)
 	{
@@ -1096,7 +1098,7 @@ static void rawseciso_thread(uint64_t arg)
 		{
 			for(int i = 0; i < 16; i++)
 			{
-				if(sys_storage_get_device_info(args->device, &disc_info) == 0)
+				if(sys_storage_get_device_info(args->device, &disc_info) == OK)
 				{
 					size_sector  = (uint32_t) disc_info.sector_size;
 					break;
@@ -1108,7 +1110,7 @@ static void rawseciso_thread(uint64_t arg)
 
 	}
 	else
-		size_sector = 2048ULL;
+		size_sector = CD_SECTOR_SIZE_2048;
 
 	if(mode_file != 1)
 	{
@@ -1117,7 +1119,7 @@ static void rawseciso_thread(uint64_t arg)
 		if(usb_device)
 		{
 			ret = sys_storage_open(usb_device, 0, &handle, 0);
-			if(ret != OK)
+			if(ret)
 			{
 				DPRINTF("sys_storage_open : %x\n", ret);
 				sys_memory_free((sys_addr_t)args);
@@ -1184,7 +1186,7 @@ static void rawseciso_thread(uint64_t arg)
 	else
 	{
 		num_tracks = 0;
-		discsize = discsize * size_sector + ((mode_file > 1) ? (uint64_t) (2048 * sections[0] ) : 0ULL) ;
+		discsize = discsize * size_sector + ((mode_file > 1) ? (uint64_t) (CD_SECTOR_SIZE_2048 * sections[0] ) : 0ULL) ;
 		is_cd2352 = 0;
 	}
 
@@ -1192,7 +1194,7 @@ static void rawseciso_thread(uint64_t arg)
 	DPRINTF("discsize = %lx%08lx\n", discsize>>32, discsize);
 
 	ret = sys_event_port_create(&result_port, 1, SYS_EVENT_PORT_NO_NAME);
-	if(ret != OK)
+	if(ret)
 	{
 		DPRINTF("sys_event_port_create failed: %x\n", ret);
 		if(handle != SYS_DEVICE_HANDLE_NONE) sys_storage_close(handle);
@@ -1202,7 +1204,7 @@ static void rawseciso_thread(uint64_t arg)
 
 	sys_event_queue_attribute_initialize(queue_attr);
 	ret = sys_event_queue_create(&command_queue, &queue_attr, 0, 1);
-	if(ret != OK)
+	if(ret)
 	{
 		DPRINTF("sys_event_queue_create failed: %x\n", ret);
 		sys_event_port_destroy(result_port);
@@ -1222,15 +1224,15 @@ static void rawseciso_thread(uint64_t arg)
 	{
 		get_psx_track_datas();
 
-		sys_ppu_thread_create(&thread_id2, eject_thread, 0, 3000, 0x2000, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME"_eject");
+		sys_ppu_thread_create(&thread_id2, eject_thread, 0, 3000, _8KB_, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME"_eject");
 	}
 
-	ret = sys_storage_ext_mount_discfile_proxy(result_port, command_queue, emu_mode & 0xF, discsize, 256*1024, (num_tracks | cd_sector_size_param), tracks);
+	ret = sys_storage_ext_mount_discfile_proxy(result_port, command_queue, emu_mode & 0xF, discsize, _256KB_, (num_tracks | cd_sector_size_param), tracks);
 	DPRINTF("mount = %x\n", ret);
 
 	fake_insert_event(real_disctype);
 
-	if(ret != OK)
+	if(ret)
 	{
 		sys_event_port_disconnect(result_port);
 		// Queue destroyed in stop thread sys_event_queue_destroy(command_queue);
@@ -1256,9 +1258,9 @@ static void rawseciso_thread(uint64_t arg)
 		}
 
 		ret = sys_event_queue_receive(command_queue, &event, 0);
-		if(ret != OK)
+		if(ret)
 		{
-			if((command_queue == SYS_EVENT_QUEUE_NONE || eject_running == 2) && ret !=0)
+			if((command_queue == SYS_EVENT_QUEUE_NONE || eject_running == 2) && (ret != OK))
 			{
 				if(!ntfs_running) break;
 
@@ -1285,8 +1287,8 @@ static void rawseciso_thread(uint64_t arg)
 			{
 				if(is_cd2352)
 				{
-					if(is_cd2352 == 1) ret = process_read_cd_2048_cmd(buf, offset/2048, size/2048);
-					else ret = process_read_psx_cmd(buf, offset/2048, size/2048, 2048);
+					if(is_cd2352 == 1) ret = process_read_cd_2048_cmd(buf, offset / CD_SECTOR_SIZE_2048, size / CD_SECTOR_SIZE_2048);
+					else ret = process_read_psx_cmd(buf, offset / CD_SECTOR_SIZE_2048, size / CD_SECTOR_SIZE_2048, CD_SECTOR_SIZE_2048);
 				}
 				else
 				{
@@ -1296,9 +1298,9 @@ static void rawseciso_thread(uint64_t arg)
 						ret = process_read_file_cmd(buf, offset, size);
 					else
 					{
-						if(offset < (((uint64_t)sections_size[0]) * 2048ULL))
+						if(offset < (((uint64_t)sections_size[0]) * CD_SECTOR_SIZE_2048))
 						{
-							uint32_t rd = sections_size[0] * 2048;
+							uint32_t rd = sections_size[0] * CD_SECTOR_SIZE_2048;
 
 							if(rd > size) rd = size;
 							ret = process_read_file_cmd(buf, offset, rd);
@@ -1346,7 +1348,7 @@ static void rawseciso_thread(uint64_t arg)
 			break;
 		}
 
-		if(ret != OK) break;
+		if(ret) break;
 	}
 
 	do_run = 0;
@@ -1392,12 +1394,10 @@ int rawseciso_start(uint64_t arg)
 		uint64_t *argp = (uint64_t*)(uint32_t)arg;
 		sys_addr_t sysmem;
 
-		if(sys_memory_allocate(64 * 1024, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 		{
-			uint64_t *args = (uint64_t*)sysmem;
-			for(uint16_t i = 0; i < 0x2000; i++) args[i] = argp[i]; // copy arguments 64KB
-
-			sys_ppu_thread_create(&thread_id, rawseciso_thread, (uint64_t)(uint32_t)args, -0x1d8, 0x2000, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME);
+			memcpy((void *)sysmem, argp, _64KB_);
+			sys_ppu_thread_create(&thread_id, rawseciso_thread, (uint64_t)sysmem, -0x1d8, _8KB_, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME);
 		}
 	}
 	// Exit thread using directly the syscall and not the user mode library or we will crash
@@ -1455,7 +1455,7 @@ int rawseciso_stop(void)
 	sys_ppu_thread_t t;
 	uint64_t exit_code;
 
-	sys_ppu_thread_create(&t, rawseciso_stop_thread, 0, 0, 0x2000, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
+	sys_ppu_thread_create(&t, rawseciso_stop_thread, 0, 0, _8KB_, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
 	sys_ppu_thread_join(t, &exit_code);
 
 	finalize_module();

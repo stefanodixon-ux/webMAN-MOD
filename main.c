@@ -1,5 +1,3 @@
-#define USE_INTERNAL_PLUGIN 1
-
 #include <sdk_version.h>
 #include <cellstatus.h>
 #include <cell/cell_fs.h>
@@ -49,14 +47,16 @@
  #define MOUNT_GAMEI
 #endif
 
-#undef NET_SUPPORT
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
- #define NET_SUPPORT
- #define USE_INTERNAL_NET_PLUGIN
+  #define NET_SUPPORT
+  #define USE_INTERNAL_NET_PLUGIN
  #else
- #undef VISUALIZERS
+  #undef VISUALIZERS
+  #undef NET_SUPPORT
+  #undef USE_INTERNAL_NET_PLUGIN
  #endif
+ #define USE_INTERNAL_NTFS_PLUGIN
 #else
  #undef WM_PROXY_SPRX
  #undef PS3MAPI
@@ -65,6 +65,9 @@
  #undef PKG_LAUNCHER
  #undef PHOTO_GUI
  #undef VISUALIZERS
+ #undef NET_SUPPORT
+ #undef USE_INTERNAL_NET_PLUGIN
+ #undef USE_INTERNAL_NTFS_PLUGIN
 #endif
 
 #ifdef LAST_FIRMWARE_ONLY

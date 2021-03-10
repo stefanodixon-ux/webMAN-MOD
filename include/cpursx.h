@@ -165,21 +165,21 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	if(sys_admin && !webman_config->sman && !strstr(param, "/sman.ps3")) {sprintf(templn, " [<a href=\"/shutdown.ps3\">%s</a>] [<a href=\"/restart.ps3\">%s</a>]", STR_SHUTDOWN, STR_RESTART ); buffer += concat(buffer, templn);}
 
-	add_game_info(buffer, templn, 0);
+	add_game_info(buffer, templn, 0); *templn = 0;
 
 #ifdef COPY_PS3
 	if(copy_in_progress)
 	{
-		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/copy.ps3", STR_COPYING, current_file, copied_count, STR_FILES); buffer += concat(buffer, templn);
+		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/copy.ps3", STR_COPYING, current_file, copied_count, STR_FILES);
 	}
 	else if(fix_in_progress)
 	{
-		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/fixgame.ps3", STR_FIXING, current_file, fixed_count, STR_FILES); buffer += concat(buffer, templn);
+		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/fixgame.ps3", STR_FIXING, current_file, fixed_count, STR_FILES);
 	}
 	else
 	if(ftp_state)
 	{
-		sprintf(templn, "<hr><font size=2>FTP: %s %s</font>", (ftp_state == 1) ? "Sending " : "Receiving ", current_file); buffer += concat(buffer, templn);
+		sprintf(templn, "<hr><font size=2>FTP: %s %s</font>", (ftp_state == 1) ? "Sending " : "Receiving ", current_file);
 	}
 	else
 #endif
@@ -187,8 +187,9 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	{
 		sprintf(templn, "<hr><font size=2>&starf; Status: %s %s</font>",
 						View_Find("download_plugin") ? "Downloading file" : "",
-						View_Find("game_plugin")     ? "Installing PKG"   : ""); buffer += concat(buffer, templn);
+						View_Find("game_plugin")     ? "Installing PKG"   : "");
 	}
+	if(*templn) buffer += concat(buffer, templn);
 
 	if(strstr(param, "?"))
 	{

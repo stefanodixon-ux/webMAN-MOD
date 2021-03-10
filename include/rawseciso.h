@@ -99,7 +99,7 @@ typedef struct
 
 static u32 CD_SECTOR_SIZE_2352 = 2352;
 
-#ifdef USE_INTERNAL_PLUGIN
+#ifdef USE_INTERNAL_NTFS_PLUGIN
 
 #ifdef RAWISO_PSX_MULTI
 typedef struct
@@ -1326,4 +1326,4 @@ static void rawseciso_stop_thread(u64 arg)
 	sys_ppu_thread_exit(0);
 }
 
-#endif //#ifdef USE_INTERNAL_PLUGIN
+#endif //#ifdef USE_INTERNAL_NTFS_PLUGIN

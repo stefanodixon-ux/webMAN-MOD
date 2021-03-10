@@ -1,4 +1,4 @@
-#define USE_INTERNAL_PLUGIN 1
+#define USE_INTERNAL_NTFS_PLUGIN 1
 
 #include <sdk_version.h>
 #include <cellstatus.h>
