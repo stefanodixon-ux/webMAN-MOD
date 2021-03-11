@@ -39,6 +39,16 @@ static void restore_cfw_syscalls(void)
 	syscalls_removed = (peekq(TOC) == SYSCALLS_UNAVAILABLE);
 	#endif
 
+	if(syscalls_removed)
+	{
+		if(!webman_config->nobeep) { BEEP2 }
+		vshNotify_WithIcon(35, "Failed to restore CFW Syscalls");
+	}
+	else
+	{
+		if(!webman_config->nobeep) { BEEP1 }
+		vshNotify_WithIcon(22, "CFW Syscalls restored");
+	}
 
 	if(payload_ps3hen)
 	{

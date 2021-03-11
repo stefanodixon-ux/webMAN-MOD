@@ -1625,6 +1625,8 @@ mounting_done:
 			patch_gameboot(1); // PS1
 		else if(mount_unk == EMU_PS2_DVD || mount_unk == EMU_PS2_CD)
 			patch_gameboot(2); // PS2
+		else if(mount_unk == EMU_PS3)
+			patch_gameboot(3); // PS3
 		else if(mount_unk == EMU_PSP)
 			patch_gameboot(4); // PSP
 		else if(mount_unk == EMU_BD)
@@ -1663,7 +1665,7 @@ mounting_done:
 				patch_gameboot(7); // rom: 2048, BMSX, BOMBER, CAP32, DOSBOX, FMSX, FUSE, GW, INTV, JAVAME, LUA, NXENGINE, O2EM, PALM, POKEMINI, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, WSWAM, ZX81
 		}
 		else
-			patch_gameboot(3); // PS3
+			patch_gameboot(0); // None
 	}
 	#endif
 

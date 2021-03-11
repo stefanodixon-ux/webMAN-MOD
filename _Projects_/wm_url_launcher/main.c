@@ -299,7 +299,7 @@ int main(int argc, const char* argv[])
 			}
 
 			if(*path)
-				{urlenc(url, path); sprintf(url, "GET /mount_ps3%s HTTP/1.0\r\n", path);}
+				{urlenc(url, path); sprintf(url, "GET /mount.ps3%s HTTP/1.0\r\n", path);}
 			else
 			{
 				// clean extract folder

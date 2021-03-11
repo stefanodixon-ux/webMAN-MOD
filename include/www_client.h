@@ -725,6 +725,8 @@ parse_request:
 						#endif
 					}
 
+					strcpy(header, param2); // backup original request
+
 					// check /play.ps3<path>
 					if(not_exists(param2))
 					{
@@ -759,7 +761,7 @@ parse_request:
 						strcpy(param2, header); // restore original parameter
 
 					// default: play.ps3?col=game&seg=seg_device
-					char col[16], seg[80]; *col = *seg = NULL; bool execute = true;
+					char col[16], seg[80]; *col = *seg = NULL;
 #ifdef COBRA_ONLY
 					#ifndef LITE_EDITION
 					if(_islike(param2, "movian") || IS(param2, "HTSS00003"))
@@ -773,21 +775,30 @@ parse_request:
 					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
 
 					if(*map_title_id && (*param2 == NULL))
+					{
+						patch_gameboot(0);
 						launch_app_home_icon(true);
+					}
 					else if((*param2 != NULL) && isDir(header))
 					{
-						set_app_home(header);
+						patch_gameboot(3); // PS3
 
-						if(is_app_home_onxmb()) mount_unk = APP_GAME; else execute = false;
+						set_app_home(header);
+						sys_ppu_thread_sleep(1);
+
+						mount_unk = APP_GAME;
+						launch_app_home_icon(true);
 					}
 					else
 #endif
 					{
+#ifdef COBRA_ONLY
+						patch_gameboot(0);
+#endif
 						get_param("col=", col, param2, 16); // game / video / friend / psn / network / music / photo / tv
-						get_param("col=", seg, param2, 80);
+						get_param("seg=", seg, param2, 80);
+						exec_xmb_item(col, seg, true);
 					}
-
-					exec_xmb_item(col, seg, execute);
 					mount_unk = EMU_OFF;
 				}
 
@@ -1073,6 +1084,19 @@ parse_request:
 					goto_xmb_home(param2[5] != 0);
 				}
 				else
+				#ifdef COBRA_ONLY
+				if(islike(param2, "$eject"))
+				{
+					cobra_send_fake_disc_eject_event();
+				}
+				else
+				if(islike(param2, "$insert"))
+				{
+					cobra_send_fake_disc_insert_event();
+					cobra_disc_auth();
+				}
+				else
+				#endif
 				#ifdef PLAY_MUSIC
 				if(islike(param2, "$music"))
 				{
@@ -3121,18 +3145,22 @@ retry_response:
 					{
 						// /extgd.ps3          toggle external GAME DATA
 						// /extgd.ps3?         show status of external GAME DATA
+						// /extgd.ps3?status   show status of external GAME DATA
 						// /extgd.ps3?1        enable external GAME DATA
 						// /extgd.ps3?enable   enable external GAME DATA
 						// /extgd.ps3?0        disable external GAME DATA
 						// /extgd.ps3?disable  disable external GAME DATA
 
-						if( param[10] != '?') extgd ^= 1; else //toggle
-						if( param[11] & 1)    extgd  = 1; else //enable
-						if(~param[11] & 1)    extgd  = 0;      //disable
+						if( param[10] == 0)   extgd ^= 1; else	//toggle
+						if( param[11] != 0 && param[11] != 's') //status
+						{
+							if( param[11] & 1) extgd = 1; else	//enable
+							if(~param[11] & 1) extgd = 0;		//disable
+						}
 
 						_concat(&sbuffer, "External Game DATA: ");
 
-						if(set_gamedata_status(extgd, true))
+						if((param[11] != 's') && set_gamedata_status(extgd, true))
 							_concat(&sbuffer, STR_ERROR);
 						else
 							_concat(&sbuffer, extgd ? STR_ENABLED : STR_DISABLED);

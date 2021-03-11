@@ -189,6 +189,13 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 						View_Find("download_plugin") ? "Downloading file" : "",
 						View_Find("game_plugin")     ? "Installing PKG"   : "");
 	}
+	/*else
+	{
+		unsigned int real_disctype, effective_disctype, iso_disctype;
+		cobra_get_disc_type(&real_disctype, &effective_disctype, &iso_disctype);
+		sprintf(templn, "<font size=2>Disc Type: real=%i, effective=%i, iso=%i</font><br>", real_disctype, effective_disctype, iso_disctype);
+	}*/
+
 	if(*templn) buffer += concat(buffer, templn);
 
 	if(strstr(param, "?"))
