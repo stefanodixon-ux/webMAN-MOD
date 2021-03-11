@@ -48,14 +48,32 @@
 
 	if(isDir(PKGLAUNCH_DIR))
 	{
-		if( !extcasecmp(_path, ".self", 5)    || (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL) ||
-			((strstr(_path, "/PS3~") != NULL) && _IS(ext, ".zip"))
+		if(  !extcasecmp(_path, ".self", 5) || (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL) ||
+			(!strstr(_path, "/ROMS") && _IS(ext, ".zip"))
 		)
 		{
+			// patch title name in PARAM.SFO of PKGLAUNCH
+			copy_rom_media((char*)"/PKG Launcher"); is_busy = false;
+
 			ret = file_exists(_path);
+			set_app_home(PKGLAUNCH_DIR);
 			cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
 			if(ret) launch_app_home_icon(true);
+
+			if(strstr(_path, "/PSXISO"))
+				mount_unk = EMU_PSX; // PS1
+			else if(strstr(_path, "/PS2ISO"))
+				mount_unk = EMU_PS2_DVD; // PS2
+			else if(strstr(_path, "/PS3ISO"))
+				mount_unk = EMU_PS3; // PS3
+			else if(strstr(_path, "/PSPISO"))
+				mount_unk = EMU_PSP; // PSP
+			else if(strstr(_path, "/BDISO"))
+				mount_unk = EMU_BD; // BDV
+			else if(mount_unk == EMU_DVD)
+				mount_unk = EMU_DVD; // DVD
+
 			goto mounting_done; //goto exit_mount;
 		}
 	}

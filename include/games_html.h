@@ -320,12 +320,16 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 	if(IS_NTFS)
 		return (flen > 13) && (strstr(entry_name + flen - 13, ".ntfs[") != NULL);
 	else
+	{
+		if(IS_ISO_FOLDER && (_IS(ext, ".zip") || _IS(ext, ".7z"))) return true;
+
 		return ((IS_ISO_FOLDER || IS_VIDEO_FOLDER)  && (flen > 4) && (
 				(              _IS(ext, ".iso")) ||
 				((flen > 6) && _IS(entry_name + flen - 6, ".iso.0")) ||
 				((IS_PS2ISO) && strcasestr(".bin|.img|.mdf|.enc", ext)) ||
 				((IS_PSXISO || IS_DVDISO || IS_BDISO) && strcasestr(ISO_EXTENSIONS + 17, ext))
 				));
+	}
 #else
 	return (IS_PS2ISO && flen > 8 && IS(entry_name + flen - 8, ".BIN.ENC"));
 #endif

@@ -1591,7 +1591,7 @@ static void copy_rom_media(char *src_path)
 		const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
 		for(u8 i = 0; i < 5; i++)
 		{
-			sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]);
+			sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]); cellFsUnlink(dst_path);
 			strcpy(ext + 1, media[i]);
 			if(file_exists(src_path))
 				file_copy(src_path, dst_path, COPY_WHOLE_FILE);
@@ -1600,8 +1600,6 @@ static void copy_rom_media(char *src_path)
 				strcpy(path_, media[i]);
 				if(file_exists(path))
 					file_copy(path, dst_path, COPY_WHOLE_FILE);
-				else
-					cellFsUnlink(dst_path);
 			}
 		}
 		*ext = NULL;

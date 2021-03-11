@@ -160,14 +160,15 @@ static void start_www(u64 conn_s_p)
 			if(wait_for_abort(1)) sys_ppu_thread_exit(0);
 			if(webman_config->music)
 			{
+				bool is_video = (webman_config->music == 2);
 				sprintf(templn, "Starting %s...\n"
 								"Press O to abort",
-								(webman_config->music == 2) ? "video" : "music"); templn[9] -= 0x20;
+								is_video ? "video" : "music"); templn[9] -= 0x20;
 
-				vshNotify_WithIcon(6, templn);
+				vshNotify_WithIcon(is_video ? 32 : 30, templn);
 
 				if(!wait_for_abort(8 + webman_config->boots))
-					start_xmb_player((webman_config->music == 2) ? "video" : "music");
+					start_xmb_player(is_video ? "video" : "music");
 				else
 					play_rco_sound("snd_system_ng");
 			}

@@ -6,6 +6,7 @@
 #include <sys/process.h>
 #include <untar.h>
 #include <un7zip.h>
+#include <unrar.h>
 
 #define RETROARCH0	"/dev_hdd0//game/RETROARCH/USRDIR/cores"
 #define RETROARCH1	"/dev_hdd0//game/SSNE10000/USRDIR/cores"
@@ -63,6 +64,31 @@ static char h2a(char hex)
 	return c;
 }
 
+static void urldec(char *url)
+{
+	if(strchr(url, '%'))
+	{
+		u16 pos = 0; char c;
+		for(u16 i = 0; url[i] >= ' '; i++, pos++)
+		{
+			if(url[i] == '+')
+				url[pos] = ' ';
+			else if(url[i] != '%')
+				url[pos] = url[i];
+			else
+			{
+				url[pos] = 0; u8 n = 2; if(url[i+1]=='u') {i++, n+=2;}
+				while(n--)
+				{
+					url[pos] <<= 4, c = (url[++i] | 0x20);
+					if(c >= '0' && c <= '9') url[pos] += c -'0';      else
+					if(c >= 'a' && c <= 'f') url[pos] += c -'a' + 10;
+				}
+			}
+		}
+		url[pos] = 0;
+	}
+}
 static void urlenc(char *dst, char *src)
 {
 	size_t j = 0;
@@ -188,6 +214,111 @@ int main(int argc, const char* argv[])
 	}
 
 	//////////////
+	// extract ISO
+	//////////////
+	int flen = strlen(path) - 4; if(flen < 0) flen = 0;
+	char *ext = path + flen; if(ext[1] == '.') ++ext;
+
+	bool is_zip = (strcasestr(ext, ".zip") == ext);
+	bool is_rar = (strcasestr(ext, ".rar") == ext);
+	bool is_7z  = (strcasestr(ext, ".7z")  == ext);
+	bool is_bz2 = (strcasestr(ext, ".bz2") == ext);
+	bool is_tar = (strcasestr(ext, ".tar") == ext);
+	bool is_tgz = (strcasestr(ext, ".tgz") == ext) || (strcasestr(ext, ".gz") == ext);
+
+	char *dest_path = param;
+	if(*dest_path != '/')
+	{
+		urldec(path);
+
+		if(strstr(path, "/PSXISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PSXISO/");
+		if(strstr(path, "/PSPISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PSPISO/");
+		if(strstr(path, "/PS2ISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PS2ISO/");
+		if(strstr(path, "/PS3ISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PS3ISO/");
+		if(strstr(path, "/DVDISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/DVDISO/");
+		if(strstr(path, "/BDISO"))  sprintf(dest_path, "/dev_hdd0/tmp/extract/BDISO/");
+
+		if((is_zip || is_rar || is_bz2 || is_tgz || is_tar || is_7z) && (*dest_path == '/'))
+		{
+			sprintf(url, "%s%s", dest_path, "last_archive.log");
+			if(file_exists(url))
+			{
+				fp = fopen(url, "rb");
+				fread((void *) url, 1, MAX_LEN, fp);
+				fclose(fp);
+			}
+
+			// extract archive
+			if(strcmp(url, path))
+			{
+				// clean extract folder
+				int fd; sysFSDirent dir;
+				sysLv2FsOpenDir(dest_path, &fd);
+				if(fd >= 0)
+				{
+					size_t read;
+					while(!sysLv2FsReadDir(fd, &dir, &read) && read)
+						if(dir.d_name[0] != '.') {sprintf(url, "%s%s", dest_path, dir.d_name); sysLv2FsUnlink(url);}
+					sysLv2FsCloseDir(fd);
+				}
+
+				// log last extracted archive
+				sprintf(url, "%s%s", dest_path, "last_archive.log");
+				log_file(url, path);
+
+				// extract archive
+				if(is_zip)
+					extract_zip(path, dest_path);
+				else if(is_7z)
+					Extract7zFile(path, dest_path);
+				else if(is_bz2)
+					untar_bz2(path, dest_path);
+				else if(is_tgz)
+					untar_gz(path, dest_path);
+				else if(is_tar)
+					untar(path, dest_path);
+			}
+
+			// find ISO
+			{
+				*path = 0;
+				int fd; sysFSDirent dir;
+				sysLv2FsOpenDir(dest_path, &fd);
+				if(fd >= 0)
+				{
+					char *ext; size_t read;
+
+					while(!sysLv2FsReadDir(fd, &dir, &read) && read)
+					{
+						ext = dir.d_name + dir.d_namlen - 4;
+						if(dir.d_namlen > 4)
+							if(strcasestr(".iso|.bin|.cue|.img|.mdf", ext)) {sprintf(path, "%s/%s", dest_path, dir.d_name); break;}
+					}
+					sysLv2FsCloseDir(fd);
+				}
+			}
+
+			if(*path)
+				{urlenc(url, path); sprintf(url, "GET /mount_ps3%s HTTP/1.0\r\n", path);}
+			else
+			{
+				// clean extract folder
+				int fd; sysFSDirent dir;
+				sysLv2FsOpenDir(dest_path, &fd);
+				if(fd >= 0)
+				{
+					size_t read;
+					while(!sysLv2FsReadDir(fd, &dir, &read) && read)
+						if(dir.d_name[0] != '.') {sprintf(url, "%s%s", dest_path, dir.d_name); sysLv2FsUnlink(url);}
+					sysLv2FsCloseDir(fd);
+				}
+
+				*url = *path = 0; // do nothing & exit
+			}
+		}
+	}
+
+	//////////////
 	// process URL
 	//////////////
 	if(*url)
@@ -201,16 +332,6 @@ int main(int argc, const char* argv[])
 	}
 
 	if(not_exists(path)) return 0; // path must exists
-
-	int flen = strlen(path) - 4; if(flen < 0) flen = 0;
-	char *ext = path + flen; if(ext[1] == '.') ++ext;
-
-	bool is_zip = (strcasestr(ext, ".zip") == ext);
-	bool is_rar = (strcasestr(ext, ".rar") == ext);
-	bool is_7z  = (strcasestr(ext, ".7z")  == ext);
-	bool is_bz2 = (strcasestr(ext, ".bz2") == ext);
-	bool is_tar = (strcasestr(ext, ".tar") == ext);
-	bool is_tgz = (strcasestr(ext, ".tgz") == ext) || (strcasestr(ext, ".gz") == ext);
 
 	if((is_zip && ((*param == '/') || (strstr(path, "/PS3~") != NULL))) ||
 		is_rar || is_bz2 || is_tgz || is_tar || is_7z )
@@ -240,7 +361,8 @@ int main(int argc, const char* argv[])
 
 		if(*dest_path == '/')
 		{
-			strcat(dest_path, "/");
+			int len = strlen(dest_path); if(len > 0) --len;
+			if(dest_path[len] != '/') strcat(dest_path, "/");
 
 			if(is_zip)
 				extract_zip(path, dest_path);
