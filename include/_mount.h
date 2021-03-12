@@ -102,9 +102,9 @@ static void auto_play(char *param, u8 play_ps3)
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
-				if(explore_exec_push(250, true))	// move to psp_launcher folder and open it
-				if(autoplay && !explore_exec_push(500, false))	// start psp_launcher
-					autoplay = false;
+				if(explore_exec_push(250, true))					// move to psp_launcher folder and open it
+					if(autoplay && !explore_exec_push(500, false))	// start psp_launcher
+						autoplay = false;
 			}
 		}
 		else
@@ -277,7 +277,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 #endif
 			if(!mount_ps3 && !forced_mount && get_game_info())
 			{
-				sprintf(tempstr, "<H3>%s : <a href=\"/mount.ps3/unmount\">%s %s</a></H3><hr><a href=\"/mount_ps3%s\">", STR_UNMOUNTGAME, _game_TitleID, _game_Title, templn); strcat(buffer, tempstr);
+				if(islike(_game_TitleID, "PKGLAUNCH"))
+				{
+					mounted = mount_game(source, MOUNT_NORMAL);
+				}
+				else
+					sprintf(tempstr, "<H3>%s : <a href=\"/mount.ps3/unmount\">%s %s</a></H3><hr><a href=\"/mount_ps3%s\">", STR_UNMOUNTGAME, _game_TitleID, _game_Title, templn); strcat(buffer, tempstr);
 			}
 			else
 			{

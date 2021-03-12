@@ -1235,6 +1235,8 @@ parse_request:
 					disable_cfw_syscalls(strcasestr(param, "ccapi")!=NULL);
 				}
 				else
+   #endif
+   #ifdef PS3MAPI
 				if(islike(param2, "$restore_syscalls"))
 				{
 					restore_cfw_syscalls();
