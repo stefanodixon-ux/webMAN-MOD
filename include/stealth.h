@@ -39,15 +39,25 @@ static void restore_cfw_syscalls(void)
 	syscalls_removed = (peekq(TOC) == SYSCALLS_UNAVAILABLE);
 	#endif
 
+#ifndef ENGLISH_ONLY
+	char STR_RSTCFWSYS[80];//	= "CFW Syscalls restored!";
+	char STR_RSTCFWSYSF[80];//	= "Failed to restore CFW Syscalls";
+
+	language("STR_RSTCFWSYS", STR_RSTCFWSYS, "CFW Syscalls restored!");
+	language("STR_RSTCFWSYSF", STR_RSTCFWSYSF, "Failed to remove CFW Syscalls");
+
+	close_language();
+#endif
+
 	if(syscalls_removed)
 	{
 		if(!webman_config->nobeep) { BEEP2 }
-		vshNotify_WithIcon(35, "Failed to restore CFW Syscalls");
+		vshNotify_WithIcon(35, STR_RSTCFWSYSF);
 	}
 	else
 	{
-		if(!webman_config->nobeep) { BEEP1 }
-		vshNotify_WithIcon(22, "CFW Syscalls restored");
+		if(!webman_config->nobeep) play_rco_sound("snd_trophy");
+		vshNotify_WithIcon(22, STR_RSTCFWSYS);
 	}
 
 	if(payload_ps3hen)
@@ -163,11 +173,9 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 	else
 	{
 #ifndef ENGLISH_ONLY
-		char STR_CFWSYSRIP[128];//	= "Removal History files & CFW Syscalls in progress...";
 		char STR_RMVCFWSYS[136];//	= "History files & CFW Syscalls deleted OK!";
 		char STR_RMVCFWSYSF[80];//	= "Failed to remove CFW Syscalls";
 
-		language("STR_CFWSYSRIP", STR_CFWSYSRIP, "Removal History files & CFW Syscalls in progress...");
 		language("STR_RMVCFWSYS", STR_RMVCFWSYS, "History files & CFW Syscalls deleted OK!");
 		language("STR_RMVCFWSYSF", STR_RMVCFWSYSF, "Failed to remove CFW Syscalls");
 
@@ -175,13 +183,12 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 #endif
 		if(url_count) restore_blocked_urls();
 
-		show_msg(STR_CFWSYSRIP);
 		remove_cfw_syscalls(keep_ccapi);
 		delete_history(true);
 
 		if(syscalls_removed)
 		{
-			if(!webman_config->nobeep) { BEEP1 }
+			if(!webman_config->nobeep) play_rco_sound("snd_trophy");
 			vshNotify_WithIcon(18, STR_RMVCFWSYS);
 		}
 		else
@@ -296,6 +303,10 @@ static void block_online_servers(bool notify)
 
 	if(notify)
 	{
-		if(url_count > 0) vshNotify_WithIcon(18, "PSN servers blocked");
+		if(url_count > 0)
+		{
+			if(!webman_config->nobeep) play_rco_sound("snd_trophy");
+			vshNotify_WithIcon(18, "PSN servers blocked");
+		}
 	}
 }

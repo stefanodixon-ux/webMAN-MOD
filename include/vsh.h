@@ -243,7 +243,7 @@ static bool abort_autoplay(void)
 		(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CIRCLE)))
 	{
 		if((mount_unk == APP_GAME) || ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2))) return false;
-		if(webman_config->autoplay && !webman_config->nobeep) BEEP2;
+		if(webman_config->autoplay && !webman_config->nobeep) play_rco_sound("snd_system_ng");
 		return true;
 	}
 	return false;

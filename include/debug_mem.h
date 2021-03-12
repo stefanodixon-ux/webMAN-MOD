@@ -76,7 +76,7 @@ static void dump_mem(char *file, u64 start, u32 dump_size)
 		show_msg("Memory dump completed!");
 	}
 
-	{ BEEP2 }
+	play_rco_sound("snd_trophy");
 
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 }

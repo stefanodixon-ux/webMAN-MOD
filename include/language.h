@@ -67,7 +67,6 @@ static char STR_HOME[8] = "Home";
 #define STR_LANGAMES	"Scan for LAN games/videos"
 #define STR_ANYUSB		"Wait for any USB device to be ready"
 #define STR_ADDUSB		"Wait additionally for each selected USB device to be ready"
-#define STR_SPOOFID		"Change idps and psid in lv2 memory at system startup"
 #define STR_DELCFWSYS	"Disable CFW syscalls and delete history files at system startup"
 #define STR_MEMUSAGE	"Plugin memory usage"
 #define STR_PLANG		"Plugin language"
@@ -115,6 +114,8 @@ static char STR_HOME[8] = "Home";
 #define STR_CFWSYSRIP	"Removal History files & CFW Syscalls in progress..."
 #define STR_RMVCFWSYS	"History files & CFW Syscalls deleted OK!"
 #define STR_RMVCFWSYSF	"Failed to remove CFW Syscalls"
+#define STR_RSTCFWSYS	"CFW Syscalls restored!"
+#define STR_RSTCFWSYSF	"Failed to restore CFW Syscalls"
 
 #define STR_RMVWMCFG	WM_APPNAME " config reset in progress..."
 #define STR_RMVWMCFGOK	"Done! Restart within 3 seconds"

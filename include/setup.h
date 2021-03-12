@@ -445,7 +445,6 @@ static void setup_form(char *buffer, char *templn)
 	char STR_LANGAMES[96];//	= "Scan for LAN games/videos";
 	char STR_ANYUSB[88];//		= "Wait for any USB device to be ready";
 	char STR_ADDUSB[136];//		= "Wait additionally for each selected USB device to be ready";
-//	char STR_SPOOFID[112];//	= "Change idps and psid in lv2 memory at system startup";
 	char STR_DELCFWSYS[144];//	= "Disable CFW syscalls and delete history files at system startup";
 	char STR_MEMUSAGE[80];//	= "Plugin memory usage";
 	char STR_PLANG[40];//		= "Plugin language";
@@ -502,7 +501,6 @@ static void setup_form(char *buffer, char *templn)
 	language("STR_LANGAMES",  STR_LANGAMES,  "Scan for LAN games/videos");
 	language("STR_ANYUSB",    STR_ANYUSB,    "Wait for any USB device to be ready");
 	language("STR_ADDUSB",    STR_ADDUSB,    "Wait additionally for each selected USB device to be ready");
-//	language("STR_SPOOFID",   STR_SPOOFID,   "Change idps and psid in lv2 memory at system startup");
 	language("STR_DELCFWSYS", STR_DELCFWSYS, "Disable CFW syscalls and delete history files at system startup");
 	language("STR_MEMUSAGE",  STR_MEMUSAGE,  "Plugin memory usage");
 	language("STR_PLANG",     STR_PLANG,     "Plugin language");
@@ -861,9 +859,6 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef SPOOF_CONSOLEID
-	//Change idps and psid in lv2 memory at system startup
-	//sprintf(templn, "<u> %s:</u><br>", STR_SPOOFID); concat(buffer, templn);
-
 	concat(buffer, "<span id='ht'>");
 
 	add_checkbox("id1", "IDPS", " : ", (webman_config->sidps), buffer);

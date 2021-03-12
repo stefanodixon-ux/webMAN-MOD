@@ -1070,7 +1070,10 @@ parse_request:
 				// /xmb.ps3$vsh_menu                   start vsh_menu
 				// /xmb.ps3$home                       go to webMAN Games
 				// /xmb.ps3$home*                      go to webMAN Games + reload_category game
+				// /xmb.ps3$eject                      eject emulated disc (hide disc icon)
+				// /xmb.ps3$insert                     insert emulated disc (show disc icon)
 				// /xmb.ps3$music                      play xmb music
+				// /xmb.ps3$video                      play xmb video
 				// /xmb.ps3$screenshot<path>           capture XMB screen
 				// /xmb.ps3$screenshot?show            capture XMB screen show
 				// /xmb.ps3$screenshot?show?fast       capture XMB screen (25% smaller)
@@ -1230,6 +1233,11 @@ parse_request:
 				if(islike(param2, "$disable_syscalls"))
 				{
 					disable_cfw_syscalls(strcasestr(param, "ccapi")!=NULL);
+				}
+				else
+				if(islike(param2, "$restore_syscalls"))
+				{
+					restore_cfw_syscalls();
 				}
 				else
    #endif
@@ -1600,12 +1608,17 @@ parse_request:
 				goto exit_handleclient_www;
 			}
  #ifdef VISUALIZERS
+			else if(islike(param, "/gameboot.ps3"))
+			{
+				// /gameboot.ps3?<id>      set gameboot <0-19>
+				patch_gameboot(val(param + 14));
+				keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
+			}
 			else if(islike(param, "/wallpaper.ps3") ||
 					islike(param, "/earth.ps3")     ||
 					islike(param, "/canyon.ps3")    ||
 					islike(param, "/lines.ps3")     ||
 					islike(param, "/theme.ps3")     ||
-				//	islike(param, "/gameboot.ps3")  ||
 					islike(param, "/coldboot.ps3"))
 			{
 				// /wallpaper.ps3?random

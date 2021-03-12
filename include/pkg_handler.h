@@ -393,8 +393,6 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 		{
 			if(is_ext(dir.d_name, ".pkg"))
 			{
-				if(!webman_config->nobeep) { BEEP1 }
-
 				sprintf(path_file, "%s", dir.d_name);
 
 				char msg[MAX_PATH_LEN];
