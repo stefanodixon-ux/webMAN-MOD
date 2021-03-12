@@ -141,26 +141,20 @@ static void auto_play(char *param, u8 play_ps3)
 
 		if(strstr(param, "BDISO") || strstr(param, "DVDISO"))
 		{
-			bool focus_disc = false;
-			if(isDir("/dev_bdvd/VIDEO"))
+			char path[20];
+			const char *folder[8] = {"VIDEO", "MOVIES", "MUSIC", "PICTURE", "PHOTOS", "COMICS", "EBOOK", "MAGAZINE"};
+			for(u8 i = 0; i < 8; i++)
 			{
-				exec_xmb_command2("focus_category %s", "video");
-				focus_disc = true;
-			}
-			else if(isDir("/dev_bdvd/MUSIC"))
-			{
-				exec_xmb_command2("focus_category %s", "music");
-				focus_disc = true;
-			}
-			else if(isDir("/dev_bdvd/PICTURE"))
-			{
-				exec_xmb_command2("focus_category %s", "photo");
-				focus_disc = true;
-			}
-			if(focus_disc)
-			{
-				sys_ppu_thread_sleep(3);
-				exec_xmb_command("focus_segment_index seg_data_device");
+				sprintf(path, "/dev_bdvd/%s", folder[i]);
+				if(isDir(path))
+				{
+					const char *category =  (i < 2) ? "video" :
+											(i < 3) ? "music" : "photo";
+					exec_xmb_command2("focus_category %s", category);
+					sys_ppu_thread_sleep(3);
+					exec_xmb_command("focus_segment_index seg_data_device");
+					break;
+				}
 			}
 		}
 

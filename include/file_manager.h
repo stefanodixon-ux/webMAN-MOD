@@ -758,9 +758,10 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		else
 #endif
 		{
+			bool is_bdvd = islike(param, "/dev_bdvd");
 			CellFsDirectoryEntry entry; u32 read_f;
 			CellFsDirent entry_s; u64 read_e; // list root folder using the slower readdir
-			char *entry_name = (is_root) ? entry_s.d_name : entry.entry_name.d_name;
+			char *entry_name = (is_root | is_bdvd) ? entry_s.d_name : entry.entry_name.d_name;
 
 #ifdef USE_NTFS
 			if(is_ntfs && !param[11])
@@ -785,7 +786,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				}
 				else
 #endif
-				if(is_root) {if((cellFsReaddir(fd, &entry_s, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break;}
+				if(is_root | is_bdvd) {if((cellFsReaddir(fd, &entry_s, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break;}
 				else
 				if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
 
@@ -816,7 +817,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					}
 					if(templn[flen - 1] == '/') templn[flen--] = NULL;
 
-					if(is_root)
+					if(is_root | is_bdvd)
 					{
 						struct CellFsStat buf;
 						cellFsStat(templn, &buf);
