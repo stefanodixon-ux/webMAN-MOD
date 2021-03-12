@@ -139,6 +139,31 @@ static void auto_play(char *param, u8 play_ps3)
 			autoplay = false;
 		}
 
+		if(strstr(param, "BDISO") || strstr(param, "DVDISO"))
+		{
+			bool focus_disc = false;
+			if(isDir("/dev_bdvd/VIDEO"))
+			{
+				exec_xmb_command2("focus_category %s", "video");
+				focus_disc = true;
+			}
+			else if(isDir("/dev_bdvd/MUSIC"))
+			{
+				exec_xmb_command2("focus_category %s", "music");
+				focus_disc = true;
+			}
+			else if(isDir("/dev_bdvd/PICTURE"))
+			{
+				exec_xmb_command2("focus_category %s", "photo");
+				focus_disc = true;
+			}
+			if(focus_disc)
+			{
+				sys_ppu_thread_sleep(3);
+				exec_xmb_command("focus_segment_index seg_data_device");
+			}
+		}
+
 		if(autoplay)
 		{
 			explore_exec_push(2, false);
@@ -253,13 +278,20 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		if(!is_copy)
 #endif
 		{
-			get_flag(param, "/PS3_"); // remove /PS3_GAME
+			if(isDir(source)) get_flag(param, "/PS3_GAME"); // remove /PS3_GAME
 
 			int discboot = 0xff;
 			xsettings()->GetSystemDiscBootFirstEnabled(&discboot);
 
 			if(discboot == 1)
 				xsettings()->SetSystemDiscBootFirstEnabled(0);
+
+			{
+				// prevent auto focus before execute PKGLAUNCH
+				char *ext = get_ext(source);
+				if(mount_ps3 && (!strstr(source, "/ROMS")) && (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL))
+					param[6] = '.';
+			}
 
 #ifdef PS2_DISC
 			if(islike(param, "/mount.ps2"))
@@ -822,6 +854,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				}
 			}
 #endif // #ifdef PS2_DISC
+
+			// auto-focus Data Disc
+			if(mounted && (strstr(source, "DVDISO") || strstr(source, "BDISO"))) auto_play(param, false);
 		}
 
 		// -------------
@@ -1490,7 +1525,7 @@ static void mount_thread(u64 action)
 
 	if(*_path == '/')
 	{
-		get_flag(_path, "/PS3_"); // remove PS3_GAME
+		if(isDir(_path)) get_flag(_path, "/PS3_GAME"); // remove PS3_GAME
 	}
 
 	// ---------------------------------------------

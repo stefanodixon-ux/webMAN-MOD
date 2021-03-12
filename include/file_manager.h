@@ -316,7 +316,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, show_img ? " pic" : " rom");
 	}
-	else if( ((strcasestr(templn, ".SELF") != NULL) || _IS(ext, ".zip") || (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL)))
+	else if( ((strcasestr(templn, ".SELF") != NULL) || (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL)))
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, " pkg");

@@ -48,7 +48,7 @@
 
 	if(isDir(PKGLAUNCH_DIR))
 	{
-		if(  !extcasecmp(_path, ".self", 5) || (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL) ||
+		if(  !extcasecmp(_path, ".self", 5) || (strcasestr(ARCHIVE_EXTENSIONS + 4, ext) != NULL) ||
 			(!strstr(_path, "/ROMS") && _IS(ext, ".zip"))
 		)
 		{
@@ -56,9 +56,10 @@
 			copy_rom_media((char*)"/PKG Launcher"); is_busy = false;
 
 			ret = file_exists(_path);
-			set_app_home(PKGLAUNCH_DIR);
 			cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
+			set_app_home(PKGLAUNCH_DIR);
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
+			sys_ppu_thread_sleep(2);
 			if(ret) launch_app_home_icon(true);
 
 			if(strstr(_path, "/PSXISO"))

@@ -6,6 +6,8 @@
 
 #include <io/pad.h>
 
+#include "gui.h"
+
 #define SUCCESS 0
 #define FAILED -1
 
@@ -397,6 +399,14 @@ int main()
 		) full = true;
 	if(button & (BUTTON_L2 | BUTTON_R2)) update_images = true;
 //---
+
+	// Show message
+	Init_Graph();
+	cls();
+	DrawString(20, 216+24, "Installing webMAN MOD...");
+	SetFontAutoCenter(0);
+	tiny3d_Flip();
+	sleep(2);
 
 	full_on_nocobra = (file_exists(HDDROOT_DIR "/kernel/mamba_484C.bin")) &&
 					 ((file_exists(HDDROOT_DIR "/boot_plugins_kernel_nocobra.txt")) || (file_exists(PLUGINS_DIR "/boot_plugins_kernel_nocobra _dex.txt")));
