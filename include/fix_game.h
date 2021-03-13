@@ -118,7 +118,7 @@ static u64 getlba(const char *s1, u16 n1, const char *s2, u16 n2, u16 *start)
 		if(memcmp(&s1[n], s2, n2) == 0)
 		{
 			while(n > 0x1D && s1[n--] != 0x01); n-=0x1C, fixed_count++;
-			u32 lba = (s1[n+0] & 0xFF) + ((s1[n+1] & 0xFF) << 8) + ((s1[n+2] & 0xFF) << 16) + ((s1[n+3] & 0xFF) << 24);
+			u32 lba = (s1[n] & 0xFF) + ((s1[n+1] & 0xFF) << 8) + ((s1[n+2] & 0xFF) << 16) + ((s1[n+3] & 0xFF) << 24);
 			*start = n + 0x1C + n2;
 			return lba;
 		}
@@ -144,7 +144,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 	if(cellFsOpen(iso_file, CELL_FS_O_RDWR, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
 		u64 chunk_size=_4KB_; char chunk[chunk_size]; u64 ps3_sys_version;
-		u64 bytes_read = 0, lba = 0, pos=0xA000ULL;
+		u64 bytes_read = 0, lba = 0, pos = 0xA000ULL;
 
 		bool fix_sfo = true, fix_eboot = true, fix_ver = false;
 

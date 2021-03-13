@@ -91,9 +91,9 @@ static void auto_play(char *param, u8 play_ps3)
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->ps2l && file_exists(PS2_CLASSIC_ISO_PATH))
 			{
-				if(explore_exec_push(250, true))	// move to ps2_launcher folder and open it
-				if(autoplay && !explore_exec_push(500, false))	// start ps2_launcher
-					autoplay = false;
+				if(explore_exec_push(250, true))					// move to ps2_launcher folder and open it
+					if(autoplay && !explore_exec_push(500, false))	// start ps2_launcher
+						autoplay = false;
 			}
 		}
 		else
@@ -151,8 +151,8 @@ static void auto_play(char *param, u8 play_ps3)
 					const char *category =  (i < 2) ? "video" :
 											(i < 3) ? "music" : "photo";
 					exec_xmb_command2("focus_category %s", category);
-					sys_ppu_thread_sleep(3);
-					exec_xmb_command("focus_segment_index seg_data_device");
+					if(!wait_for_abort(3))
+						exec_xmb_command("focus_segment_index seg_data_device");
 					break;
 				}
 			}
@@ -1207,12 +1207,12 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 	mount_iso |= file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = emu_type;
 
 	// patch PS2 demo disc if title_id is ***D_###.##
-	if((emu_type == EMU_PS2_CD) || (emu_type == EMU_PS2_DVD))
+	if(emu_type != EMU_PSX)
 		if(mount_iso) patch_ps2_demo(cobra_iso_list[0]);
 
 	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd") || (cue_offset == 0xE000UL))
 	{
-		sys_addr_t sysmem = 0;
+		sys_addr_t sysmem = NULL;
 		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 		{
 			char *cue_buf = (char*)sysmem;

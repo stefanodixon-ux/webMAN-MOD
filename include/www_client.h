@@ -1609,12 +1609,21 @@ parse_request:
 
 				goto exit_handleclient_www;
 			}
+			else if(islike(param, "/app_home.ps3"))
+			{
+				char *path = param + 13; if(*path == '?') ++path;
+				check_path_alias(path);
+				set_app_home(path);
+				*header = NULL;
+
+				if(!mc) keep_alive = http_response(conn_s, header, path, CODE_PREVIEW_FILE, path);
+			}
  #ifdef VISUALIZERS
 			else if(islike(param, "/gameboot.ps3"))
 			{
 				// /gameboot.ps3?<id>      set gameboot <0-19>
 				patch_gameboot(val(param + 14));
-				keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
+				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 			}
 			else if(islike(param, "/wallpaper.ps3") ||
 					islike(param, "/earth.ps3")     ||

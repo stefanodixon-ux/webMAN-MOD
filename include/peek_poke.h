@@ -265,8 +265,8 @@ static u64 convertH(const char *val)
 		if(val[i]==' ') {n++; continue;}
 
 		c = (val[i] | 0x20);
-		if(c >= '0' && c <= '9') buff = (c - '0');      else
-		if(c >= 'a' && c <= 'f') buff = (c - 'a' + 10); else
+		if(c >= '0' && c <= '9') buff = (c - '0'); else
+		if(c >= 'a' && c <= 'f') buff = (c - 'W'); else // <= c - 'a' + 10
 		return ret;
 
 		ret = (ret << 4) | buff;
@@ -280,7 +280,11 @@ static bool isHEX(const char *value)
 {
 	char c;
 	if(islike(value, "0x")) value += 2;
-	for(; *value; ++value) {c = (*value | 0x20); if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '*'))) return false;}
+	for(; *value; ++value)
+	{
+		c = (*value | 0x20);
+		if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '*'))) return false;
+	}
 	return true;
 }
 

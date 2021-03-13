@@ -1394,7 +1394,6 @@ int cobra_create_mds(char *path, uint64_t size_in_sectors, DiscPhysInfo *layer0,
 
 static uint8_t gm = 01;
 
-//int cobra_map_game(const char *path, const char *title_id, int *special_mode)
 int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 {
 /*
@@ -1411,8 +1410,6 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 	if (!title_id || strlen(title_id) != 9)
 		return EINVAL;
 */
-	//int sm = 0;
-
 	build_blank_iso(title_id);
 
 	int ret = sys_map_path("/dev_bdvd", path);
@@ -1458,11 +1455,8 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 		ret = sys_storage_ext_mount_ps3_discfile(1, files);
 
 		cobra_send_fake_disc_insert_event();
-		//sm = 1;
 		sys_timer_usleep(20000);
 	}
-
-	//if (special_mode) *special_mode = sm;
 
 	return 0;
 }

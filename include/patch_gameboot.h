@@ -70,19 +70,21 @@ static void patch_gameboot(u8 boot_type)
 				map_patched_modules();
 
 				sprintf(path, "%s/%s_boot_stereo.ac3", "/dev_hdd0/tmp/gameboot", id);
-				sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  file_exists(path) ? path : NULL);
-				sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", file_exists(path) ? path : NULL);
-			}
 
-			const char *media[6] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM", "ICON0.PNG"};
-			for(u8 i = 0; i < 6; i++)
-			{
-				sprintf(path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]);
-				if(not_exists(path))
+				const char *snd = file_exists(path) ? path : NULL;
+				sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  snd);
+				sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", snd);
+
+				const char *media[6] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM", "ICON0.PNG"};
+				for(u8 i = 0; i < 6; i++)
 				{
-					char src_path[40];
-					sprintf(src_path, "%s/%s_%s", "/dev_hdd0/tmp/gameboot", id, media[i]);
-					file_copy(src_path, path, COPY_WHOLE_FILE);
+					sprintf(path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]);
+					if(not_exists(path))
+					{
+						char src_path[40];
+						sprintf(src_path, "%s/%s_%s", "/dev_hdd0/tmp/gameboot", id, media[i]);
+						file_copy(src_path, path, COPY_WHOLE_FILE);
+					}
 				}
 			}
 		}
