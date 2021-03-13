@@ -79,11 +79,14 @@ static void restore_cfw_syscalls(void)
 
 #endif // #ifdef PS3MAPI
 
-static void restore_blocked_urls(void)
+static void restore_blocked_urls(bool notify)
 {
-	// restore blocked servers (XMB only)
-	//if(IS_ON_XMB)
-		{for(u8 u = 0; u < url_count; u++) poke_lv1(blocked_url[u][0], blocked_url[u][1]); url_count = 0;}
+	if(!url_count) return;
+
+	if(notify) vshNotify_WithIcon(22, "PSN servers restored");
+
+	// restore blocked servers
+	{for(u8 u = 0; u < url_count; u++) poke_lv1(blocked_url[u][0], blocked_url[u][1]); url_count = 0;}
 }
 
 static void remove_cfw_syscall8(void)
@@ -94,7 +97,7 @@ static void remove_cfw_syscall8(void)
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 	#endif
 
-	restore_blocked_urls();
+	restore_blocked_urls(true);
 
 	u64 sc_null = peekq(SYSCALL_TABLE), toc = peekq(TOC);
 
@@ -181,7 +184,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 
 		close_language();
 #endif
-		if(url_count) restore_blocked_urls();
+		restore_blocked_urls(false);
 
 		remove_cfw_syscalls(keep_ccapi);
 		delete_history(true);

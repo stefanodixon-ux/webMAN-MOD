@@ -1128,7 +1128,7 @@ parse_request:
 				else
  				if(islike(param2, "$restore_servers"))
 				{
-					restore_blocked_urls();
+					restore_blocked_urls(true);
 				}
 				else
  				/*if(islike(param2, "$dlna"))
@@ -3067,18 +3067,15 @@ retry_response:
 						}
 						#endif
 
+						*templn = 0;
 						if(param[12] == '/') sprintf(templn, "%s", param + 12); else
 						if(param[14] == '/') sprintf(templn, "%s", param + 14); else
 						{
-							sprintf(templn, "%s/%s", "/dev_hdd0/plugins", "webftp_server.sprx");
-							if(not_exists(templn)) sprintf(templn + 31, "_ps3mapi.sprx");
-							if(not_exists(templn)) sprintf(templn + 10, "webftp_server.sprx");
-							if(not_exists(templn)) sprintf(templn + 23, "_ps3mapi.sprx");
-
 							get_param("prx=", templn, param, MAX_PATH_LEN);
 						}
 
-						check_path_alias(templn);
+						if(*templn == '/')
+							check_path_alias(templn);
 						prx_found = file_exists(templn);
 
 						if(prx_found || (*templn != '/'))
