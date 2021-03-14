@@ -70,12 +70,11 @@
 */
 		bool reboot = false;
 
-		u8 n, poll_pads;
+		u8 n;
 
-		CellPadData pad_data; init_delay = 0;
+		init_delay = 0;
 
 		CellPadInfo2 padinfo;
-		poll_pads = (cellPadGetInfo2(&padinfo) == CELL_OK);
 
 		#define PERSIST  248
 
@@ -97,7 +96,7 @@
 				}
 				else
 #endif
-				if(poll_pads)
+				if(cellPadGetInfo2(&padinfo) == CELL_OK)
 				{
 					for(u8 p = 0; p < 8; p++)
 						if((padinfo.port_status[p] == CELL_PAD_STATUS_CONNECTED) && (cellPadGetData(p, &pad_data) == CELL_PAD_OK) && (pad_data.len > 0)) break;

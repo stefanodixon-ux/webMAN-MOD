@@ -597,7 +597,7 @@
 
 					webman_config->ps2emu = pad_select_netemu(_path, webman_config->ps2emu);
 
-					enable_ps2netemu_cobra(webman_config->ps2emu);
+					enable_ps2netemu_cobra(webman_config->ps2emu); // 0 = ps2emu, 1 = ps2_netemu
 
 					mount_unk = EMU_PS2_DVD;
 

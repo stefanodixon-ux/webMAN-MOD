@@ -52,12 +52,12 @@ static void restore_cfw_syscalls(void)
 	if(syscalls_removed)
 	{
 		if(!webman_config->nobeep) { BEEP2 }
-		vshNotify_WithIcon(35, STR_RSTCFWSYSF);
+		vshNotify_WithIcon(ICON_ERROR, STR_RSTCFWSYSF);
 	}
 	else
 	{
 		if(!webman_config->nobeep) play_rco_sound("snd_trophy");
-		vshNotify_WithIcon(22, STR_RSTCFWSYS);
+		vshNotify_WithIcon(ICON_CHECK, STR_RSTCFWSYS);
 	}
 
 	if(payload_ps3hen)
@@ -83,7 +83,7 @@ static void restore_blocked_urls(bool notify)
 {
 	if(!url_count) return;
 
-	if(notify) vshNotify_WithIcon(22, "PSN servers restored");
+	if(notify) vshNotify_WithIcon(ICON_CHECK, "PSN servers restored");
 
 	// restore blocked servers
 	{for(u8 u = 0; u < url_count; u++) poke_lv1(blocked_url[u][0], blocked_url[u][1]); url_count = 0;}
@@ -171,7 +171,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 	if(syscalls_removed)
 	{
 		if(!webman_config->nobeep) { BEEP2 }
-		vshNotify_WithIcon(23, STR_CFWSYSALRD);
+		vshNotify_WithIcon(ICON_EXCLAMATION, STR_CFWSYSALRD);
 	}
 	else
 	{
@@ -192,12 +192,12 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 		if(syscalls_removed)
 		{
 			if(!webman_config->nobeep) play_rco_sound("snd_trophy");
-			vshNotify_WithIcon(18, STR_RMVCFWSYS);
+			vshNotify_WithIcon(ICON_PSN, STR_RMVCFWSYS);
 		}
 		else
 		{
 			if(!webman_config->nobeep) { BEEP2 }
-			vshNotify_WithIcon(35, STR_RMVCFWSYSF);
+			vshNotify_WithIcon(ICON_ERROR, STR_RMVCFWSYSF);
 		}
 	}
 
@@ -233,7 +233,7 @@ static void block_online_servers(bool notify)
 	{
 		if(IS_INGAME) return; // not in XMB
 
-		if(notify) vshNotify_WithIcon(18, "Blocking PSN servers");
+		if(notify) vshNotify_WithIcon(ICON_PSN, "Blocking PSN servers");
 
 		#ifdef COBRA_ONLY
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
@@ -243,7 +243,7 @@ static void block_online_servers(bool notify)
 
 		if(peekq(TOC) == SYSCALLS_UNAVAILABLE)
 		{
-			vshNotify_WithIcon(3, STR_CFWSYSALRD);
+			vshNotify_WithIcon(ICON_CAUTION, STR_CFWSYSALRD);
 		}
 		else
 		{
@@ -309,7 +309,7 @@ static void block_online_servers(bool notify)
 		if(url_count > 0)
 		{
 			if(!webman_config->nobeep) play_rco_sound("snd_trophy");
-			vshNotify_WithIcon(18, "PSN servers blocked");
+			vshNotify_WithIcon(ICON_PSN, "PSN servers blocked");
 		}
 	}
 }

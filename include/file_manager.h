@@ -950,7 +950,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					sprintf(templn, "%s", wm_icons[dt]); show_icon = true;
 				}
 
-				for(u16 m = idx; m < 8; m++) _concat(&sout, "<BR>");
+				for(u16 m = idx; m < 7; m++) _concat(&sout, "<BR>");
 
 				if(show_icon || show_icon0)
 					{urlenc(swap, templn); sprintf(templn, "<script>icon.src=\"%s\";icon.style.display='block';</script>", swap); _concat(&sout, templn);}

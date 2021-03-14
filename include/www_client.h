@@ -315,9 +315,9 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 
 	sprintf(templn, "</head>%s", HTML_BODY); _concat(&sbuffer, templn);
 
-	char coverflow[40]; if(file_exists(MOBILE_HTML)) sprintf(coverflow, " [<a href=\"/games.ps3\">Coverflow</a>]"); else *coverflow = NULL;
+	char *coverflow = NULL; if(file_exists(MOBILE_HTML)) coverflow = (char*)" [<a href=\"/games.ps3\">Coverflow</a>]";
 
-	size_t tlen = sprintf(templn, "<b>" WM_APP_VERSION " %s <font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_TRADBY, STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
+	size_t tlen = sprintf(templn, "<b>" WM_APP_VERSION "<br><font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
 
 #ifdef SYS_ADMIN_MODE
 	if(sys_admin)
@@ -1090,13 +1090,21 @@ parse_request:
 				#ifdef COBRA_ONLY
 				if(islike(param2, "$eject"))
 				{
-					cobra_send_fake_disc_eject_event();
+					if(islike(param2 + 6, "/dev_usb"))
+						fake_eject_event(USB_MASS_STORAGE((u8)val(param2 + 14)));
+					else
+						cobra_send_fake_disc_eject_event();
 				}
 				else
 				if(islike(param2, "$insert"))
 				{
-					cobra_send_fake_disc_insert_event();
-					cobra_disc_auth();
+					if(islike(param2 + 7, "/dev_usb"))
+						fake_insert_event(USB_MASS_STORAGE((u8)val(param2 + 15)), DEVICE_TYPE_USB);
+					else
+					{
+						cobra_send_fake_disc_insert_event();
+						cobra_disc_auth();
+					}
 				}
 				else
 				#endif
@@ -1272,6 +1280,16 @@ parse_request:
 					toggle_ps2emu();
 				}
 				else
+				if(islike(param2, "$ps2emu"))
+				{
+					enable_ps2netemu_cobra(0); // enable ps2_emu on fat consoles only
+				}
+				else
+				if(islike(param2, "$ps2_netemu"))
+				{
+					enable_ps2netemu_cobra(1); // enable ps2_netemu on fat consoles only
+				}
+				else
 				if(strstr(param2, "le_classic_ps2_mode"))
 				{
 					bool classic_ps2_enabled;
@@ -1361,9 +1379,11 @@ parse_request:
 				// /fixgame.ps3$abort
 				do_restart = false;
 
-				if(copy_in_progress) {copy_aborted = true; vshNotify_WithIcon(23, STR_CPYABORT);}   // /copy.ps3$abort
+				if(copy_in_progress) {copy_aborted = true; vshNotify_WithIcon(ICON_EXCLAMATION, STR_CPYABORT);}   // /copy.ps3$abort
+				#ifdef FIX_GAME
 				else
-				if(fix_in_progress)  {fix_aborted = true;  vshNotify_WithIcon(23, "Fix aborted!");} // /fixgame.ps3$abort
+					if(fix_in_progress)  {fix_aborted = true;  vshNotify_WithIcon(ICON_EXCLAMATION, "Fix aborted!");} // /fixgame.ps3$abort
+				#endif
 
 				sprintf(param, "/");
 			}
@@ -1424,7 +1444,7 @@ parse_request:
 													 "File: ",       (char*)(KLIC_PATH_OFFSET));
 				}
 				else
-					{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; vshNotify_WithIcon(23, "KLIC: Not in-game!");}
+					{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; vshNotify_WithIcon(ICON_EXCLAMATION, "KLIC: Not in-game!");}
 
 
 				sprintf(prev, "%s", ((klic_polling_status) ? (klic_polling ? "Auto-Log: Running" : "Auto-Log: Stopped") :
@@ -1498,14 +1518,6 @@ parse_request:
 				// /popup.ps3?<msg>&icon=<id>&snd=<id>
 				// /popup.ps3?<msg>&icon=<rsc_icon> (e.g. /popup.ps3?Hello&icon=item_tex_cam_facebook)
 				// /popup.ps3?<msg>&icon=<rsc_icon>&rco=<plugin_name> (e.g. /popup.ps3?Hello&icon=item_tex_NewAvc&rco=explore_plugin)
-
-				#ifdef PS3MAPI
-				char *snd = strstr(param, "&snd=");
-				if(snd)
-				{
-					if(ISDIGIT(snd[5])) ps3mapi_sound(snd[5] - '0'); *snd = NULL;
-				}
-				#endif
 
 				if(param[10] == '\0')
 					{show_info_popup = true;}						// show info once
@@ -2486,7 +2498,7 @@ parse_request:
 				else
 					fix_game(game_path, titleID, FIX_GAME_FORCED); // fix game folder
 
-				vshNotify_WithIcon(33, "Fixed");
+				vshNotify_WithIcon(ICON_GAME, "Fixed");
 				goto exit_handleclient_www;
 			}
  #endif

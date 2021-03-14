@@ -118,14 +118,13 @@ static void usb_keep_awake(u8 sector)
 	u32 r, usb_handle = NONE;
 
 	char tmp[_2KB_];
-	for(u8 i = 0; i < 6; i++)
+	for(u8 i = 1; i <= 6; i++)
 	{
-		u8 f0 = (u8)val(drives[i + 1] + 8);
+		u8 f0 = (u8)val(drives[i] + 8);
 		if(sys_storage_open(USB_MASS_STORAGE(f0), 0, &usb_handle, 0) == CELL_OK)
 		{
 			sys_storage_read(usb_handle, 0, sector, 1, tmp, &r, 0);
 			sys_storage_close(usb_handle);
-			//sprintf(tmp, "/dev_usb00%i: Read %i sectors @ %i offset", f0, r, sector); show_msg(tmp);
 		}
 	}
 }

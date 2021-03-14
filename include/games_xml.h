@@ -694,8 +694,7 @@ next_xml_entry:
 #ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
 #endif
-							if(webman_config->tid && HAS_TITLE_ID && strlen(templn) < 50 && strstr(templn, " [") == NULL) {sprintf(enc_dir_name, " [%s]", title_id); strcat(templn, enc_dir_name);}
-
+							add_title_id(templn, title_id);
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
 							// subfolder name
@@ -1257,7 +1256,7 @@ static void refresh_xml(char *msg)
 	webman_config->profile = profile; save_settings();
 
 	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
-	vshNotify_WithIcon(39, msg);
+	vshNotify_WithIcon(ICON_NOTIFY, msg);
 
 	// refresh XML
 	sys_ppu_thread_t t_id;
@@ -1274,7 +1273,7 @@ static void refresh_xml(char *msg)
 	while(refreshing_xml && working) sys_ppu_thread_sleep(1);
 
 	sprintf(msg, "%s XML%s: OK", STR_REFRESH, SUFIX2(profile));
-	vshNotify_WithIcon(33, msg);
+	vshNotify_WithIcon(ICON_GAME, msg);
 
 	setPluginInactive();
 }

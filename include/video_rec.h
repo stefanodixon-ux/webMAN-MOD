@@ -315,7 +315,7 @@ static void toggle_video_rec(const char *param)
 			// we are already recording
 			rec_interface->stop();
 			rec_interface->close(0);
-			vshNotify_WithIcon(22, "Recording finished");
+			vshNotify_WithIcon(ICON_CHECK, "Recording finished");
 			recording = false;
 		}
 		else
@@ -329,7 +329,7 @@ static void toggle_video_rec(const char *param)
 			}
 			else
 			{
-				vshNotify_WithIcon(23, "Recording Error!");
+				vshNotify_WithIcon(ICON_EXCLAMATION, "Recording Error!");
 			}
 		}
 	}

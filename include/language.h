@@ -5,8 +5,6 @@
 
 static char STR_HOME[8] = "Home";
 
-#define STR_TRADBY	"<br>"
-
 #define STR_FILES		"Files"
 #define STR_GAMES		"Games"
 #define STR_SETUP		"Setup"
@@ -174,8 +172,6 @@ static char STR_HOME[8] = "Home";
 static int fh;
 
 static char lang_code[3]			= "";
-
-static char STR_TRADBY[120];//		= "<br>";
 
 static char STR_FILES[24];//		= "Files";
 static char STR_GAMES[24];//		= "Games";
@@ -514,14 +510,13 @@ static void update_language(void)
 {
 	fh = 0;
 
+	*COVERS_PATH = NULL;
+
 	// initialize variables with default values
 	sprintf(STR_SETTINGSUPD, "%s%s", "Settings updated.<br>", "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
 
-	*COVERS_PATH = NULL;
-
-	if(language("STR_TRADBY", STR_TRADBY, "<br>"))
+	if(language("STR_FILES", STR_FILES, "Files"))
 	{
-		language("STR_FILES", STR_FILES, "Files");
 		language("STR_GAMES", STR_GAMES, "Games");
 		language("STR_SETUP", STR_SETUP, "Setup");
 		language("STR_HOME", STR_HOME, "Home");
@@ -593,7 +588,6 @@ static void update_language(void)
 		language("IP_ADDRESS", local_ip, local_ip);
 		language("SEARCH_URL", search_url, "http://google.com/search?q=");
 
-		strcpy(STR_TRADBY, "<br>");
 /*
 #ifdef COBRA_ONLY
 		language("STR_DISCOBRA", STR_DISCOBRA);

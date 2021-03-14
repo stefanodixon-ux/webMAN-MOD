@@ -151,7 +151,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.34 MOD"
+#define WM_VERSION			"1.47.35 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -422,6 +422,7 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/buffer_size.h"
 #include "include/eject_insert.h"
+#include "include/vsh_notify.h"
 #include "include/vsh.h"
 
 #ifdef COBRA_ONLY
@@ -439,6 +440,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/ps2_disc.h"
 #include "include/ps2_classic.h"
 #include "include/xmb_savebmp.h"
+#include "include/ingame_screenshot.h"
 #include "include/singstar.h"
 #include "include/autopoweroff.h"
 

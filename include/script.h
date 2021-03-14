@@ -109,7 +109,7 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "wait "))     {line += 5; wait_path("/dev_hdd0", (u8)val(line), false);} else
 					if(_islike(line, "lwait /"))   {path += 6; wait_for(path, 10);} else
 					#ifdef PS3MAPI
-					if(_islike(line, "beep"))      {ps3mapi_sound((u8)(line[4] - '0'));} else
+					if(_islike(line, "beep"))      {play_sound_id((u8)(line[4]));} else
 					#else
 					if(_islike(line, "beep"))      {if(line[4] == '3') {BEEP3;} else if(line[4] == '2') {BEEP2;} else {BEEP1;}} else
 					#endif

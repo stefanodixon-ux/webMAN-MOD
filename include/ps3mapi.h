@@ -133,21 +133,6 @@ static int is_syscall_disabled(u32 sc)
 	return ret_val;
 }
 
-static void ps3mapi_sound(u8 value)
-{
-	if(value == 1) { BEEP1 }
-	if(value == 2) { BEEP2 }
-	if(value == 3) { BEEP3 }
-
-	if(value == 0) { play_rco_sound("snd_cancel"); }
-	if(value == 4) { play_rco_sound("snd_cursor"); }
-	if(value == 5) { play_rco_sound("snd_trophy"); }
-	if(value == 6) { play_rco_sound("snd_decide"); }
-	if(value == 7) { play_rco_sound("snd_option"); }
-	if(value == 8) { play_rco_sound("snd_system_ok"); }
-	if(value == 9) { play_rco_sound("snd_system_ng"); }
-}
-
 static void add_sound_list(char *buffer, const char *param)
 {
 	add_option_item(1, "Simple", IS_MARKED("snd=1"), buffer);
@@ -169,12 +154,11 @@ static void ps3mapi_buzzer(char *buffer, char *templn, const char *param)
 	if(islike(param, "/buzzer.ps3mapi") && param[15] == '?')
 	{
 		u8 value = get_valuen(param, "snd=", 0, 9) | get_valuen(param, "mode=", 0, 9);
-		ps3mapi_sound(value);
+		play_sound_id(value);
 	}
 	else if(islike(param, "/beep.ps3"))
 	{
-		u8 value = (u8)val(param + 10);
-		ps3mapi_sound(value);
+		play_sound_id(param[10]);
 	}
 
 	if(!is_ps3mapi_home)
@@ -255,7 +239,7 @@ static void ps3mapi_notify(char *buffer, char *templn, const char *param)
 
 	char *snd = strstr(param, "&snd=");
 
-	if(snd && ISDIGIT(*(snd + 5))) ps3mapi_sound(*(snd + 5) - '0');
+	if(snd && ISDIGIT(snd[5])) play_sound_id(snd[5]);
 
 	char msg[200]; strcpy(msg, "Hello :)");
 	if(get_param("?msg=", msg, param, 199))
@@ -1482,7 +1466,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	ssend(conn_s_ps3mapi, PS3MAPI_OK_230);
 
-	sprintf(buffer, PS3MAPI_CONNECT_NOTIF, inet_ntoa(conn_info.remote_adr)); vshNotify_WithIcon(5, buffer);
+	sprintf(buffer, PS3MAPI_CONNECT_NOTIF, inet_ntoa(conn_info.remote_adr)); vshNotify_WithIcon(ICON_NETWORK, buffer);
 
 	while(connactive == 1 && working)
 	{
@@ -1576,7 +1560,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else if(islike(cmd, "BUZZER"))
 					{
-						ps3mapi_sound(cmd[6] - '0');
+						play_sound_id(cmd[6]);
 
 						ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 					}
@@ -2027,7 +2011,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 	}
 
 	sprintf(buffer, PS3MAPI_DISCONNECT_NOTIF, inet_ntoa(conn_info.remote_adr));
-	vshNotify_WithIcon(5, buffer);
+	vshNotify_WithIcon(ICON_NETWORK, buffer);
 
 	if(pasv_s >= 0) sclose(&pasv_s);
 	sclose(&conn_s_ps3mapi);
@@ -2085,7 +2069,7 @@ static void ps3mapi_thread(__attribute__((unused)) u64 arg)
 end:
 		sclose(&list_s);
 	}
-	else vshNotify_WithIcon(23, (char *)"PS3MAPI Server not loaded!");
+	else vshNotify_WithIcon(ICON_EXCLAMATION, (char *)"PS3MAPI Server not loaded!");
 
 	sys_ppu_thread_exit(0);
 }

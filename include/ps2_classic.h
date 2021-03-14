@@ -13,20 +13,20 @@ static int get_cobra_ps2netemu_status(void)
 	return (int)p1;
 }
 
-static void enable_ps2netemu_cobra(int param)
+static void enable_ps2netemu_cobra(int emu)
 {
 #ifdef SPOOF_CONSOLEID
 	if ((eid0_idps[0] & 0x00000000000000FF) > 0x04) return; // 0x01 = CECH-A*, 0x02 = CECH-B, 0x03 = CECH-C, 0x04 = CECH-E
 #endif
-	int status = get_cobra_ps2netemu_status();
+	int status = get_cobra_ps2netemu_status(); // 0 = ps2emu, 1 = ps2_netemu
 
-	if(status < 0 || status == param) return;
+	if(status < 0 || status == emu) return;
 
-	system_call_2(SC_COBRA_SYSCALL8, (u64) SYSCALL8_OPCODE_ENABLE_PS2NETEMU, (u64) param);
+	system_call_2(SC_COBRA_SYSCALL8, (u64) SYSCALL8_OPCODE_ENABLE_PS2NETEMU, (u64) emu);
 
 	if(pad_data.len > 0)
 	{
-		show_status(webman_config->ps2emu ? "ps2_netemu.self" : "ps2_emu.self", STR_ENABLED);
+		show_status(emu ? "ps2_netemu.self" : "ps2_emu.self", STR_ENABLED);
 	}
 }
 #endif

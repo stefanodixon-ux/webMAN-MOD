@@ -57,7 +57,7 @@ static void dump_mem(char *file, u64 start, u32 dump_size)
 
 	if(start < 0x0000028080000000ULL) start |= 0x8000000000000000ULL;
 
-	vshNotify_WithIcon(49, "Dumping memory...");
+	vshNotify_WithIcon(ICON_WAIT, "Dumping memory...");
 
 	if(sys_memory_allocate(mem_size, SYS_MEMORY_PAGE_SIZE_64K, &sys_mem) == CELL_OK)
 	{

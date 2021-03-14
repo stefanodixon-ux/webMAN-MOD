@@ -75,6 +75,14 @@ enum paths_ids
 
 static u8 loading_games = 0;
 
+static void add_title_id(char *templn, char *title_id)
+{
+	if(webman_config->tid && HAS_TITLE_ID)
+	{
+		int tlen = strlen(templn); if((tlen < 50) && !strstr(templn, " [")) sprintf(templn + tlen, " [%s]", title_id);
+	}
+}
+
 #ifdef COBRA_ONLY
 #ifdef NET_SUPPORT
 //static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0);
@@ -169,9 +177,9 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		sprintf(data[v3_entry].name, "%s", tempstr + strlen(param) + 1);
 	}
 
-	if(webman_config->tid && HAS_TITLE_ID && strlen(templn) < 50 && strstr(templn, " [") == NULL) {sprintf(enc_dir_name, " [%s]", title_id); strcat(templn, enc_dir_name);}
-
+	add_title_id(templn, title_id);
 	urlenc(enc_dir_name, data[v3_entry].name);
+
 	get_default_icon(icon, param, data[v3_entry].name, data[v3_entry].is_directory, title_id, ns, ((neth[4] & 0x0F) + NET), f1);
 
 	if(SHOW_COVERS_OR_ICON0 && (NO_ICON || (webman_config->nocov == SHOW_ICON0))) {get_name(tempstr, data[v3_entry].name, GET_WMTMP); strcat(tempstr, ".PNG"); if(file_exists(tempstr)) strcpy(icon, tempstr);}
@@ -801,9 +809,7 @@ next_html_entry:
 #ifdef SLAUNCH_FILE
 							if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
 #endif
-
-							if(webman_config->tid && HAS_TITLE_ID && strlen(templn) < 50 && strstr(templn, " [") == NULL) {sprintf(enc_dir_name, " [%s]", title_id); strcat(templn, enc_dir_name);}
-
+							add_title_id(templn, title_id);
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
 							templn[80] = NULL; // truncate title name
