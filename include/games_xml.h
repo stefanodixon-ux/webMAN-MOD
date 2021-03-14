@@ -1,4 +1,4 @@
-#define AVG_ITEM_SIZE			420
+#define AVG_ITEM_SIZE			360
 
 // XML Tags:
 // X = XMBML
