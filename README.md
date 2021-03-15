@@ -47,6 +47,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 
 #### Installer & GUIs
 - Easy installer/updater with 4 editions: full, lite, standard (rebug) & nonCobra.
+- Built-in online updater from XMB menu
 - New icons created by Berion & Brunolee
 - VSH Menu integration (hold SELECT to show the menu)
 - sLaunch GUI integration (hold START or R2+L2 on XMB to show the game menu GUI)
@@ -74,29 +75,35 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Optional Video subfolder to "Bluray™ and DVD" folder (Display RetroXMB videos, videos on USB devices and Data Disc icon)
 - Extended system information via /cpursx.ps3 (Title ID, game icon, APP Version, IDPS/PSID, CFW version, last played game, console's run time & number of boots)
 - Display of Play time & startup time to SELECT+START and /cpursx.ps3 (Use SELECT+START+R2 to display Game ID, Title, play time and more in-Game info)
-- Use "home" path to define default path for /app_home/PS3_GAME on start up and for R2+START (e.g. make app_home start multiMAN or IRISMAN)
+- Use "home" path to define default path for /app_home/PS3_GAME on start up and for R2+START (e.g. make "★ app_home/PS3_GAME" start multiMAN, IRISMAN, Rebug Toolbox, etc.)
+- Set a "home" application to app_home/PS3_GAME when a game is unmounted or through a combo using the web command /app_home.ps3<path>
 - Support for list & launch NPDRM games stored /dev_hdd0/game or GAMEI folder on USB FAT32 & NET host, in addition to ISOs and JB folders
 - Support for exclude games by file name & Title ID using wm_ignore.txt
+- Display notifications with custom icons & sound
 
 #### Extended mount of game
+- Automatic focus to category column & disc icon based on content type
 - Support for multiCD PSXISO games stored as ISO in HDD0 / USB FAT32. Eject/Insert a USB0 device to mount the next CD
 - It can mount PSP games stored on exFAT/NTFS/ext2/3/4/NET devices without copy the file to the internal HDD (1.47.27) - Requires prepISO 1.27 or later
 - It can mount PS2 Classics games on PS2 Classic Launcher (.BIN.ENC)
 - It can mount PSX games with CD sector sizes: 2352, 2048, 2336, 2448, 2328, 2340, 2368
 - Automatic CONFIG creation for PS2ISOs and PS2 Classic using config database from ManaGunZ or the database of CONFIG created by the installer
+- Automatic patching of black listed PS2 demos (SCED***** & SLED*****)
 - Scanning & launch of package files extracted to GAMEI folder on USB FAT32 & NET host. Folders' name can be title_id or content_id
 - Support for launch SELF applications via PKG/ROM Launcher or through the XMB icon: ★ app_home/PS3_GAME
 - Integrated external gameDATA allows installation of packages & game data on external USB drives
 - Integrated prepNTFS allows to scan PS3ISO, PSXISO, BDISO & DVDISO on NTFS devices without need to run prepISO/prepNTFS
 - Support for *.ntfs[BDFILE]* (fake ISO created by IRISMAN or prepISO/prepNTFS) - Used to play AVI/MP4 movies or install large packages stored on NTFS
 - Support to mount exFAT/NTFS games using raw_iso.sprx (rawseciso by Estwald) - Supports fake ISO
-- Option to mount ISO also in app_home/PS3_GAME icon.
+- Option to mount ISO also in app_home/PS3_GAME icon
 - Support last_game.txt / autoboot on nonCobra edition
 - Auto install PKG mounted from exFAT/ext/NTFS (reduce steps needed to install a PKG)
+- Experimental support for mount ISOs compressed in zip & 7-zip archives.
+- Gameboot per system emulator. Requires Multi Gameboot MOD by DeViL303. Supports 20 Gameboots animations.
 
 #### Emulation features
 - ROMS support through PKG/ROM Launcher and RetroArch (support internal HDD/USB/NET storage with custom icons & background images)
-- Enable selection of emulator for PS1 and PS2 on B/C consoles
+- Enable selection of emulator for PS1 and PS2 on B/C consoles (L2 = ps*_emu, R2 = ps*_netemu, R1 = toggle emulator during mount process)
 - PS2 Launcher / PSP Launchers can be integrated into webMAN Games menu for easy access
 - Auto install / auto select PSP emulator for PSP games using decrypted MINIS.EDAT / MINIS2.EDAT
 
@@ -107,9 +114,9 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Shorter URL to access paths & files. Use "home" path in /setup.ps3 for search in a user defined folder.
 - Support for MD5 hash verification of files stored on PS3 (internal HDD & USB FAT32 only)
 - Support edition of small text files (up to 1,300 bytes) via web
-- Folder size statistics & enable permissions
+- Folder size statistics & change permissions
 - Hex File Viewer (internal HDD/FAT32/NTFS/exFAT/ext2/3/4)
-- Experimental support for zip & unzip (rar, 7z, bz2, tgz, tar can be extracted). Requires PKGLAUNCH & /app_home/PS3_GAME icon.
+- Experimental support for zip & unzip (rar, 7z, bz2, tgz, tar can be extracted). Requires PKGLAUNCH & app_home/PS3_GAME icon.
 
 #### Network features
 - Update to latest release from XMB
@@ -133,16 +140,18 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support batch script automation at startup (dev_hdd0/boot_init.txt or dev_hdd0/autoexec.bat) or played at any time (/play.ps3/<script-file>.bat)
 - Launch mounted games with /play.ps3 command. Once a game is mounted via html, click on the displayed icon to launch the game on the PS3.
 - Execute XMB functions with /play.ps3 command. (e.g: /play.ps3?col=network&seg=seg_premo) <- this will start Remote Play server from XMB.
-- A comprehensive set of web commands and features for customization (link in Web Commands Documentation)
 - Multiple Web Commands interfaces via HTTP, FTP, PS3MAPI, file polling (dev_hdd0/tmp/wm_request)
-- Option for auto-play music when the system starts or through a combo that calls /browser.ps3$music
-- Combo L2+L3+R3 allows to set the XMB multimedia player as background/dynamic theme.
+- Option for auto-play music or video when the system starts or through a combo that calls /browser.ps3$music or /browser.ps3$video
+- Combo L3+R3+L2 allows to set the XMB multimedia player as background/dynamic theme.
+- Combo L3+R3+L2+R2 allows to browse the XMB during packages installation.
+- Support for auto-map libsound.sprx from /dev_hdd0/tmp
 - Support for enable/disable noBD patch needed to remarry BD drive
-- Support for relink identical files in /dev_hdd0/GAMES and /dev_hdd0/game
-- Support for auto-change of random or specific wallpaper and VSH resources like coldboot_*.ac3, lines.qrc, canyon.qrc, earth.qrc when system starts.
+- Support for relink identical files in /dev_hdd0/GAMES and /dev_hdd0/game using /stat.ps3<path>&id=<title_id>?fast
+- Support for auto-change of random or specific wallpaper and VSH resources like backgrounds, themes, coldboot_*.ac3, lines.qrc, canyon.qrc, earth.qrc when system starts.
+- A comprehensive set of web commands and features for customization. Link in [Web Commands Documentation](https://www.psx-place.com/threads/webman-mod-web-commands.1508/)
 
 #### Stealth features
-- Support for dumping IDPS/PSID/act.dat
+- Support for dumping and spoofing IDPS/PSID/act.dat
 - Support for automatic or manual removal of CFW syscalls and spoof console id (IDPS/PSID)
 - "Offline" mode (blocks some PSN/tracking servers) and automatic restore when CFW syscalls are removed. Game updates still work in this mode. (v1.33.03)
 - Scan for games on the stealth folder "/video"
@@ -163,6 +172,10 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - MIN+ memory profile (same as MIN but uses 512K and 2.5X more buffer for PS3 games)
 - MAX+ memory profile (same as MAX 1280K for PS3 games, others buffer is reduced, eg: 2X less buffer for ftp and 4X for DVD etc...)
 - Support for up to 3MB from 4 available VSH memory containers [MC] (bg, fg, debug, app)
+- Search for text or binary strings and wildcard patterns in LV1, LV2, process memory range or binary files
+- Patch LV1, LV2, process memory or in binary files. Can be chained with search for text or binary strings and patterns.
+- Dump full RAM, LV1, LV2, VSH, RSX or a process memory range.
+- Support for remote view & update XRegistry settings
 - Remote syscalls
 
 #### Screen & video capture
@@ -218,23 +231,23 @@ Requirements for GNU/Linux:
 ## Credits
 - All the documentation on *[http://www.psdevwiki.com](http://www.psdevwiki.com)*, and to all the devs who contributed
 - Cobra team, for their work on Cobra payload and sharing the source code in public (thanks to the request of STLcardsWS)
-- Deank as the creator of webMAN, sMAN, sLaunch, multiMAN / mmCM and many other contributions to the scene
+- Deank as the original creator of webMAN, sMAN, sLaunch, multiMAN / mmCM and many other contributions to the scene
 - Estwald for NTFS library, rawseciso, fake iso, Mamba payload, etc.
 - Aldo Vargas (aldostools) for all his works on this project!
 - Zar & m@tsumot0 for starting the modding project
 - NzV for PS3 Manager API (aka PS3MAPI), Mamba/PRX Loader & Mamba improvements
 - bguerville for ps3xploit, tools, web downloader & package installer modules and port of ntfslib
 - The team that ported NTFS library from PSL1ght to PS3 SDK (freddy38510, bguerville, Zar, deank, Joonie)
-- Mysis, who wrote some useful libs and reverse engineering VSH Exports functions: http://www.ps3devwiki.com/ps3/VSH#Exports
+- Mysis, who wrote some useful libs and did the reverse engineering of [VSH Exports functions](http://www.ps3devwiki.com/ps3/VSH#Exports)
 - 3141card for VSH Menu POC & Littlebalup for his enhancement/new features
 - jjolano (John Olano) for OpenFTP server
 - OsirisX for PS3XPAD and the source code needed for gamepad emulation
 - Berion & Brunolee for the graphics & icons
-- bucanero port of libraries for zip, rar, 7zip
+- bucanero port of libraries for zip, rar, 7-zip, bz2, tgz, tar
 - lmirel port of libraries for exFAT
 - PSX-SCENE, PSX-PLACE, PLAYSTATIONHAX, PS3HAX & other scene websites/users, who translated, helped in the testing process
 
-Special thanks to Joonie, Habib & Rebug Team, flatz, haxxxen, devil303, Rancid-O, EvilNat, KW, naehrwert, MiralaTijera
+Special thanks to Joonie, Habib & Rebug Team, flatz, haxxxen, DeViL303, Rancid-O, EvilNat, KW, naehrwert, MiralaTijera
 
 
 ## License

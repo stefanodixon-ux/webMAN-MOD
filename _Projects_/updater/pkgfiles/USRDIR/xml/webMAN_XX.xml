@@ -742,6 +742,12 @@
 	<!-- Main > Update webMAN MOD -->
 	<V id="seg_webman_update">
 		<A>
+			<T key="webman_help">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
+				<P key="title"><>PS3 webMAN MOD [Help]</></P>
+				<P key="module_name"><>webrender_plugin</></P>
+				<P key="module_action"><>http://0/help.html</></P>
+			</T>
 			<T key="wm_update_link">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
@@ -752,6 +758,7 @@
 		</A>
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="wm_update_link" attr="wm_update_link" src="#seg_webman_update_sublink"/>
+			<I class="type:x-xmb/module-action" key="webman_help" attr="webman_help"/>
 		</I>
 	</V>
 
