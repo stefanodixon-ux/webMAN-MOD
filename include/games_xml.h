@@ -114,7 +114,7 @@ static void make_fb_xml(void)
 									STR_MYGAMES, SUFIX2(profile),
 									STR_LOADGAMES);
 
-		if(!is_app_home_onxmb())
+		if(!(webman_config->app_home) && !is_app_home_onxmb())
 		{
 			has_app_home = true;
 			size += sprintf(myxml + size,	"<T key=\"seg_gamedebug\">"
