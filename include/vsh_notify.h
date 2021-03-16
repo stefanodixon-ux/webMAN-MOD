@@ -103,7 +103,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 							};
 
 	if(icon_id >= MAX_RCO_IMAGES) icon_id = 0;
-	char *plugin = (icon_id < 18) ? (char*)"system_plugin" : (char*)"explore_plugin";
+	char *plugin = (char*)"explore_plugin";
 	char *tex = (char*)rco_images[icon_id];
 
 	// custom textures
@@ -111,18 +111,27 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 	char *pos = strstr(msg, "&icon=");
 	if(pos)
 	{
-		if(get_param("&icon=", texture, pos, 63))
+		icon_id = get_valuen(pos, "&icon=", 0, 50);
+
+		if(icon_id || pos[6] == '0')
 		{
-			tex = (char*)texture;
-			plugin = (char*)"explore_plugin";
+			tex = (char*)rco_images[icon_id];
+		}
+		else if(get_param("&icon=", texture, pos, 63))
+		{
+			tex = texture, icon_id = MAX_RCO_IMAGES;
 
 			if(get_param("&rco=", rco, pos, 23))
 			{
 				plugin = (char*)rco;
 			}
+			else if(islike(texture, "tex_notification"))
+				plugin = (char*)"system_plugin";
 		}
 		*pos = NULL;
 	}
+
+	if(icon_id < 18) plugin = (char*)"system_plugin";
 
 	if(IS_INGAME || webman_config->msg_icon)
 		return vshtask_notify(msg);
@@ -163,16 +172,8 @@ static void show_msg(const char *text)
 		*snd = NULL;
 	}
 
-	char *param = strstr(msg, "&icon=");
-	if(param)
-	{
-		u8 icon_id = (u8)val(param + 6);
-
-		if(param[6] == '0' || icon_id)
-			*param = NULL;
-
-		vshNotify_WithIcon(icon_id, msg);
-	}
+	if(strstr(msg, "&icon="))
+		vshNotify_WithIcon(0, msg);
 	else
 		vshtask_notify(msg);
 }

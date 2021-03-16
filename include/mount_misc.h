@@ -62,18 +62,9 @@
 			sys_ppu_thread_sleep(2);
 			if(ret) launch_app_home_icon(true);
 
-			if(strstr(_path, "/PSXISO"))
-				mount_unk = EMU_PSX; // PS1
-			else if(strstr(_path, "/PS2ISO"))
-				mount_unk = EMU_PS2_DVD; // PS2
-			else if(strstr(_path, "/PS3ISO"))
-				mount_unk = EMU_PS3; // PS3
-			else if(strstr(_path, "/PSPISO"))
-				mount_unk = EMU_PSP; // PSP
-			else if(strstr(_path, "/BDISO"))
-				mount_unk = EMU_BD; // BDV
-			else if(mount_unk == EMU_DVD)
-				mount_unk = EMU_DVD; // DVD
+			#ifdef PS3MAPI
+			set_mount_type(_path);
+			#endif
 
 			goto mounting_done; //goto exit_mount;
 		}

@@ -1652,55 +1652,7 @@ mounting_done:
 #ifdef COBRA_ONLY
 
 	#ifdef PS3MAPI
-	// customize gameboot per console emulator using DeViL303's custom_render_plugin.rco
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 300000))
-	{
-		if(mount_unk == EMU_PSX)
-			patch_gameboot(1); // PS1
-		else if(mount_unk == EMU_PS2_DVD || mount_unk == EMU_PS2_CD)
-			patch_gameboot(2); // PS2
-		else if(mount_unk == EMU_PS3)
-			patch_gameboot(3); // PS3
-		else if(mount_unk == EMU_PSP)
-			patch_gameboot(4); // PSP
-		else if(mount_unk == EMU_BD)
-			patch_gameboot(5); // BDV
-		else if(mount_unk == EMU_DVD)
-			patch_gameboot(6); // DVD
-		else if((mount_unk == EMU_ROMS) || strstr(_path0, "/ROMS"))
-		{
-			// "rom", "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", "ata", "gby", "cmd", "ids" // 7-19
-
-			if(strstr(_path0, "SNES")) // MSNES, SNES, SNES9X, SNES9X2005, SNES9X2010, SNES9X_NEXT
-				patch_gameboot(8); // sns
-			else if(strstr(_path0, "NES") || strstr(_path0, "FCEUMM")) // NES, NESTOPIA, QNES, FCEUMM
-				patch_gameboot(9); // nes
-			else if(strstr(_path0, "GBA") || strstr(_path0, "VBA") || strstr(_path0, "GPSP"))  // GBA, MGBA, VBA, GPSP
-				patch_gameboot(10); // gba
-			else if(strstr(_path0, "GEN") || strstr(_path0, "MEGAD") || strstr(_path0, "PICO") || strstr(_path0, "GG") || strstr(_path0, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
-				patch_gameboot(11); // gen
-			else if(strstr(_path0, "NEO") || strstr(_path0, "NGP")) // NEOCD, FBNEO, NEO, NEOGEO, NGP
-				patch_gameboot(12); // neo
-			else if(strstr(_path0, "PCE") || strstr(_path0, "PCFX") || strstr(_path0, "SGX")) // PCE, PCFX, SGX
-				patch_gameboot(13); // pce
-			else if(strstr(_path0, "MAME"))	// MAME, MAME078, MAME2000, MAME2003, MAMEPLUS
-				patch_gameboot(14); // mam
-			else if(strstr(_path0, "FBA"))	// FBA, FBA2012
-				patch_gameboot(15); // fba
-			else if(strstr(_path0, "ATARI") || strstr(_path0, "STELLA") || strstr(_path0, "HANDY") || strstr(_path0, "LYNX") || strstr(_path0, "JAGUAR")) // ATARI, ATARI2600, ATARI5200, ATARI7800, HATARI, HANDY, STELLA
-				patch_gameboot(16); // ata
-			else if(strstr(_path0, "GB") || strstr(_path0, "GAMBATTE") || strstr(_path0, "VB"))  // GB, GBC, GAMBATTE, VBOY
-				patch_gameboot(17); // gby
-			else if(strstr(_path0, "AMIGA") || strstr(_path0, "VICE"))  // AMIGA, VICE
-				patch_gameboot(18); // cmd
-			else if(strstr(_path0, "DOOM") || strstr(_path0, "QUAKE"))  // DOOM, QUAKE, QUAKE2
-				patch_gameboot(19); // ids
-			else
-				patch_gameboot(7); // rom: 2048, BMSX, BOMBER, CAP32, DOSBOX, FMSX, FUSE, GW, INTV, JAVAME, LUA, NXENGINE, O2EM, PALM, POKEMINI, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, WSWAM, ZX81
-		}
-		else
-			patch_gameboot(0); // None
-	}
+	patch_gameboot_by_type(mount_unk, _path0);
 	#endif
 
 	// ------------------------------------------------------------------

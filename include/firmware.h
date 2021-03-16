@@ -42,7 +42,7 @@ static u64 sc_142 = 0;
 
 //#define IS_HEN (lv2_peek_hen(0x8000000000003d90ULL)!=0x386000014e800020ULL)
 
-struct platform_info {
+static struct platform_info {
 	u32 firmware_version;
 } info;
 

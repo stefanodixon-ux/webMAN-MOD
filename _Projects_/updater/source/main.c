@@ -886,8 +886,10 @@ int main()
 		file_copy(APP_USRDIR "/LANG_XX.TXT", LANG_DIR "/LANG_XX.TXT");
 
 	// skip update custom combo file
-	if(not_exists(TMP_DIR "/wm_custom_combo"))
-		file_copy(APP_USRDIR "/wm_custom_combo", TMP_DIR "/wm_custom_combo");
+	if(not_exists(COMBO_DIR "wm_custom_r2_square"))
+		file_copy(APP_USRDIR "/wm_custom_combo", COMBO_DIR "wm_custom_r2_square");
+	if(file_exists(COMBO_DIR "wm_custom_r2_square"))
+		sysLv2FsUnlink(TMP_DIR "/wm_custom_combo");
 
 	// resource files sprx (wm_proxy, libfs, raw_iso, netiso, video_rec)
 	sysLv2FsUnlink(TMP_DIR "/idle_plugin.sprx");

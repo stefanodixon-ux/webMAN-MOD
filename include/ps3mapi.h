@@ -615,6 +615,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 	found_offset = 0;
 	int hilite = 0;
 
+	char *find = (char*)"";
 	if(strstr(param, ".ps3mapi?"))
 	{
 		char addr_tmp[0x20];
@@ -626,14 +627,13 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			if(length == 0) length = BINDATA_SIZE;
 			length = RANGE(length, 1, BINDATA_SIZE);
 		}
-		else
-			pid = get_current_pid();
 
 		if(!pid) pid = get_valuen32(param, "proc=");
 		if(!pid) pid = get_current_pid();
 
 		if(get_param("find=", addr_tmp, param, 0x20))
 		{
+			find = strstr(param, "find=") + 5;
 			char sfind[0x21], *mask = addr_tmp;
 			u8 len = snprintf(sfind, 0x20, "%s", addr_tmp);
 
@@ -641,7 +641,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			if(isHEX(addr_tmp))
 			{
 				len = Hex2Bin(addr_tmp, sfind);
-				for(u8 i = 0, n = 0; i < len; i++, n+=2) mask[i] = addr_tmp[n]; mask[len] = 0;
+				for(u8 i = 0, n = 0; i < len; i++, n+=2) mask[i] = addr_tmp[n]; sfind[len] = mask[len] = 0;
 			}
 			else if(strstr(param, "&exact"))
 				memset(mask, 0, len);
@@ -655,8 +655,11 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			while(rep--)
 			{
 				address = ps3mapi_find_offset(pid, address, stop, step, sfind, len, mask, addr);
-				if(address == addr) {not_found = true; break;}
-				if(rep) address += step;
+				if(rep)
+				{
+					if(address == addr) {not_found = true; break;}
+					address += step;
+				}
 			}
 			if(!not_found) hilite = len;
 		}
@@ -723,8 +726,8 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		if(!strstr(param, "dump=")) sprintf(templn, " [<a href=\"%s%s\">%s</a>]", param, "&dump=400000", "Dump Process");
 		concat(buffer, templn);
 
-		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
-		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>] %s%s%s", param, "Find", "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
+		char *pos = strstr(param, "&addr="); if(pos) *pos = 0;
+		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&addr=%x&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param, address + 0x10, "Find", find, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
 		concat(buffer, templn);
 		char buffer_tmp[length + 1];
 		memset(buffer_tmp, 0, sizeof(buffer_tmp));

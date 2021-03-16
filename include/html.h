@@ -653,14 +653,17 @@ static u32 get_valuen32(const char *param, const char *label)
 
 static u16 get_port(const char *param, const char *label, u16 default_port)
 {
-	u16 port = RANGE((u16)get_valuen32(param, label), 0, 65535);
-	if(port == 0) port = default_port;
+	u16 port = (u16)get_valuen32(param, label);
+	if(port)
+		port = RANGE(port, 1, 65535);
+	else
+		port = default_port;
 	return port;
 }
 
 static u8 get_valuen(const char *param, const char *label, u8 min_value, u8 max_value)
 {
-	u8 value = (u8)get_valuen32(param, label);
+	u8 value = (u8)get_valuen64(param, label);
 	return RANGE(value, min_value, max_value);
 }
 

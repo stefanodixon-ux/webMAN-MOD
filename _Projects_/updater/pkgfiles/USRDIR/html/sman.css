@@ -33,7 +33,7 @@ table{border-spacing:0;border-collapse:collapse;white-space: nowrap;}
 .la{text-align:left;float:left}.ra{text-align:right;float:right;}
 
 label:hover{color:#FFFFFF;text-decoration:none;}
-input[type="submit"],.bs,input[type="button"]{border:1px;padding:6px 10px;border-radius:4px;cursor:pointer;}
+input[type="submit"],.bs,input[type="button"]{border:1px;padding:6px 10px;border-radius:4px;cursor:pointer;min-width:60px;}
 .bs:hover,input[type="submit"]:hover,input[type="button"]:hover{background:none #048;color:#FFF;}
 
 #top_action a{color:#e0e0e0;cursor:pointer;}

@@ -97,7 +97,7 @@ position:absolute;bottom:0px;top:0px;left:0px;right:0px;margin:auto;}
 	from {background-color:#ccc;}
 	to {background-color:#048;}
 }
-.bs,input[type="button"]{border:1px;padding:6px 10px;border-radius:4px;cursor:pointer;}
+.bs,input[type="button"]{border:1px;padding:6px 10px;border-radius:4px;cursor:pointer;min-width:80px;}
 .bs:hover,input[type="button"]:hover{background:none #048;color:#FFF;animation-name:bs_highlight;animation-duration: 0.8s;}
 
 label:hover{text-shadow:1px 1px 5px #CCC;}

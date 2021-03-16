@@ -120,13 +120,13 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	int flen = 0, hilite;
 	char *v;
 
+	char sfind[65]; memset(sfind, 0, 65);
 	u8 data[HEXVIEW_SIZE]; struct CellFsStat s;
 	bool is_file = islike(param, "/hexview.ps3/");
 	if(is_file)
 	{
 		char *fname = param + 12;
 
-		char sfind[65];
 		flen = get_param("&find=", sfind, fname, 64);
 
 		char *pos = strstr(fname, "&rep="); if(pos) {rep = (u8)val(pos + 5); *pos = NULL;}
@@ -285,12 +285,15 @@ view_file:
 
 		// file navigation
 		u64 max = s.st_size < HEXVIEW_SIZE ? 0 : s.st_size - HEXVIEW_SIZE;
-		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=%lli\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=%lli\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=%lli\">&gt;&gt;</a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
+		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=0x%llx\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=0x%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=0x%llx\">&gt;&gt;</a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
 		buffer += concat(buffer, templn);
 
 		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
-		sprintf(templn, " [<a href=\"javascript:void(location.href='http://'+location.hostname+'%s&find='+window.prompt('%s'));\">%s</a>] %s%s%s", param - 12, "Find", "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
+		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&offset=0x%llx&data='+prompt('%s').toString());\">%s</a>]", param - 12, address, "Write", "Write");
+		buffer += concat(buffer, templn);
+
+		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&offset=0x%llx&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param - 12, address + 0x10, "Find", sfind, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
 		buffer += concat(buffer, templn);
 	}
 

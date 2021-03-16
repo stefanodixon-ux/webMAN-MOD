@@ -90,4 +90,75 @@ static void patch_gameboot(u8 boot_type)
 		}
 	}
 }
-#endif
+
+static void patch_gameboot_by_type(u8 emu_type, const char *path)
+{
+	// customize gameboot per console emulator using DeViL303's custom_render_plugin.rco
+	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 300000))
+	{
+		if(emu_type == EMU_PSX)
+			patch_gameboot(1); // PS1
+		else if(emu_type == EMU_PS2_DVD || emu_type == EMU_PS2_CD)
+			patch_gameboot(2); // PS2
+		else if(emu_type == EMU_PS3)
+			patch_gameboot(3); // PS3
+		else if(emu_type == EMU_PSP)
+			patch_gameboot(4); // PSP
+		else if(emu_type == EMU_BD)
+			patch_gameboot(5); // BDV
+		else if(emu_type == EMU_DVD)
+			patch_gameboot(6); // DVD
+		else if((emu_type == EMU_ROMS) || strstr(path, "/ROMS"))
+		{
+			// "rom", "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", "ata", "gby", "cmd", "ids" // 7-19
+
+			if(strstr(path, "SNES")) // MSNES, SNES, SNES9X, SNES9X2005, SNES9X2010, SNES9X_NEXT
+				patch_gameboot(8); // sns
+			else if(strstr(path, "NES") || strstr(path, "FCEUMM")) // NES, NESTOPIA, QNES, FCEUMM
+				patch_gameboot(9); // nes
+			else if(strstr(path, "GBA") || strstr(path, "VBA") || strstr(path, "GPSP"))  // GBA, MGBA, VBA, GPSP
+				patch_gameboot(10); // gba
+			else if(strstr(path, "GEN") || strstr(path, "MEGAD") || strstr(path, "PICO") || strstr(path, "GG") || strstr(path, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
+				patch_gameboot(11); // gen
+			else if(strstr(path, "NEO") || strstr(path, "NGP")) // NEOCD, FBNEO, NEO, NEOGEO, NGP
+				patch_gameboot(12); // neo
+			else if(strstr(path, "PCE") || strstr(path, "PCFX") || strstr(path, "SGX")) // PCE, PCFX, SGX
+				patch_gameboot(13); // pce
+			else if(strstr(path, "MAME"))	// MAME, MAME078, MAME2000, MAME2003, MAMEPLUS
+				patch_gameboot(14); // mam
+			else if(strstr(path, "FBA"))	// FBA, FBA2012
+				patch_gameboot(15); // fba
+			else if(strstr(path, "ATARI") || strstr(path, "STELLA") || strstr(path, "HANDY") || strstr(path, "LYNX") || strstr(path, "JAGUAR")) // ATARI, ATARI2600, ATARI5200, ATARI7800, HATARI, HANDY, STELLA
+				patch_gameboot(16); // ata
+			else if(strstr(path, "GB") || strstr(path, "GAMBATTE") || strstr(path, "VB"))  // GB, GBC, GAMBATTE, VBOY
+				patch_gameboot(17); // gby
+			else if(strstr(path, "AMIGA") || strstr(path, "VICE"))  // AMIGA, VICE
+				patch_gameboot(18); // cmd
+			else if(strstr(path, "DOOM") || strstr(path, "QUAKE"))  // DOOM, QUAKE, QUAKE2
+				patch_gameboot(19); // ids
+			else
+				patch_gameboot(7); // rom: 2048, BMSX, BOMBER, CAP32, DOSBOX, FMSX, FUSE, GW, INTV, JAVAME, LUA, NXENGINE, O2EM, PALM, POKEMINI, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, WSWAM, ZX81
+		}
+		else
+			patch_gameboot(0); // None
+	}
+}
+
+static void set_mount_type(const char *path)
+{
+	if(strstr(path, "PSXISO"))
+		mount_unk = EMU_PSX; // PS1
+	else if(strstr(path, "PS2ISO"))
+		mount_unk = EMU_PS2_DVD; // PS2
+	else if(strstr(path, "PS3ISO"))
+		mount_unk = EMU_PS3; // PS3
+	else if(strstr(path, "PSPISO"))
+		mount_unk = EMU_PSP; // PSP
+	else if(strstr(path, "BDISO"))
+		mount_unk = EMU_BD; // BDV
+	else if(strstr(path, "DVDISO"))
+		mount_unk = EMU_DVD; // DVD
+	else if(strstr(path, "ROMS"))
+		mount_unk = EMU_ROMS; // ROMS
+}
+#endif //#ifdef PS3MAPI
