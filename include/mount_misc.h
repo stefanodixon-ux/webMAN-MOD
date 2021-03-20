@@ -62,9 +62,7 @@
 			sys_ppu_thread_sleep(2);
 			if(ret) launch_app_home_icon(true);
 
-			#ifdef PS3MAPI
 			set_mount_type(_path);
-			#endif
 
 			goto mounting_done; //goto exit_mount;
 		}

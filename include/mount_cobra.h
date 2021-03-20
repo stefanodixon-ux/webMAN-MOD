@@ -126,6 +126,7 @@
 			char *ntfs_ext = strstr(_path, ".ntfs[");
 			if(ntfs_ext)
 			{
+				set_mount_type(_path);
 
 	#ifdef USE_INTERNAL_NTFS_PLUGIN
 				// ------------------------------------------------------------------------------------------------------------
@@ -155,7 +156,6 @@
 							u64 msiz = read_file(_path, rawseciso_data, _64KB_, 0);
 							if(msiz > sizeof(rawseciso_args))
 							{
-
 								ret = (cobra_load_vsh_plugin(0, (char*)rawseciso_sprx[n], rawseciso_data, msiz) == CELL_OK);
 								sys_ppu_thread_sleep(1);
 							}
@@ -245,8 +245,6 @@
 
 							if(is_psp)
 							{
-								mount_unk = EMU_PSP;
-
 								ret = (cobra_set_psp_umd(_path, (char*)templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 								//goto copy_pspiso_to_hdd0;
 							}

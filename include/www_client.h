@@ -796,9 +796,6 @@ parse_request:
 					else
 #endif
 					{
-#ifdef COBRA_ONLY
-						patch_gameboot(0);
-#endif
 						get_param("col=", col, param2, 16); // game / video / friend / psn / network / music / photo / tv
 						get_param("seg=", seg, param2, 80);
 						exec_xmb_item(col, seg, true);

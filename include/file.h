@@ -273,17 +273,23 @@ static bool is_ext(const char *path, const char *ext)
 }
 
 #ifdef COBRA_ONLY
+static bool change_ext(char *filename, int num_ext, const char *file_ext[])
+{
+	int flen = strlen(filename) - 4;
+	for(u8 e = 0; e < num_ext; e++)
+	{
+		sprintf(filename + flen, "%s", file_ext[e]);
+		if(file_exists(filename)) return true;
+	}
+	return false;
+}
+
 static void change_cue2iso(char *cue_file)
 {
 	if(is_ext(cue_file, ".cue") || is_ext(cue_file, ".ccd"))
 	{
-		int flen = strlen(cue_file) - 4;
 		const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
-		for(u8 e = 0; e < 8; e++)
-		{
-			sprintf(cue_file + flen, "%s", iso_ext[e]);
-			if(file_exists(cue_file)) break;
-		}
+		change_ext(cue_file, 8, iso_ext);
 	}
 }
 

@@ -74,53 +74,38 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		else if(ntfs_m == mDVD) emu_mode = EMU_DVD;
 		else if(ntfs_m == mPSX)
 		{
-			int fd = NONE;
-
 			emu_mode = EMU_PSX;
 
 			if(ps3ntfs_stat(path, &bufn) < 0) return;
 			cd_sector_size = default_cd_sector_size(bufn.st_size);
 
 			// detect CD sector size
-			fd = ps3ntfs_open(path, O_RDONLY, 0);
-			if(fd >= 0)
+			if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
 			{
-				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
-				{
-					char *buffer = (char*)sysmem_p;
-					ps3ntfs_seek64(fd, 0, SEEK_SET);
-					ps3ntfs_read(fd, (void *)buffer, _48KB_);
-					cd_sector_size = detect_cd_sector_size(buffer);
-				}
-				ps3ntfs_close(fd);
+				char *buffer = (char*)sysmem_p;
+				read_file(path, buffer, _48KB_, 0);
+				cd_sector_size = detect_cd_sector_size(buffer);
 			}
 
 			if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
 			else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 
 			const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
-			for(u8 e = 0; e < 4; e++)
-			{
-				strcpy(path + plen - extlen, cue_ext[e]);
-				fd = ps3ntfs_open(path, O_RDONLY, 0);
-				if(fd >= 0) break;
-			}
 
-			if(fd >= 0)
+			if(change_ext(path, 4, cue_ext))
 			{
 				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
 				{
 					char *cue_buf = (char*)sysmem_p;
-					int cue_size = ps3ntfs_read(fd, (void *)cue_buf, _8KB_);
+					int cue_size = read_file(path, cue_buf, _8KB_, 0);
 
 					char *templn = path;
 					num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);
 				}
-				ps3ntfs_close(fd);
 			}
 		}
 
-		p_args = (rawseciso_args *)plugin_args; memset(p_args, 0x0, sizeof(rawseciso_args));
+		p_args = (rawseciso_args *)plugin_args; memset(p_args, 0, sizeof(rawseciso_args));
 		p_args->device = device_id;
 		p_args->emu_mode = emu_mode;
 		p_args->num_sections = parts;

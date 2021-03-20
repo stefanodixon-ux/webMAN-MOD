@@ -1,5 +1,6 @@
 #ifdef PS3MAPI
 
+#define MIN_RCO_SIZE			300000
 #define BASE_PATCH_ADDRESS		0x800000UL
 
 static u32 patched_address1 = BASE_PATCH_ADDRESS;
@@ -7,10 +8,34 @@ static u32 patched_address2 = BASE_PATCH_ADDRESS;
 static u32 patched_address3 = BASE_PATCH_ADDRESS;
 static u32 patched_address4 = BASE_PATCH_ADDRESS;
 
+static bool is_patching_gameboot = false;
+
+static void set_mount_type(const char *path)
+{
+	if(strstr(path, "PSXISO"))
+		mount_unk = EMU_PSX; // PS1
+	else if(strstr(path, "PS2ISO"))
+		mount_unk = EMU_PS2_DVD; // PS2
+	else if(strstr(path, "PS3ISO"))
+		mount_unk = EMU_PS3; // PS3
+	else if(strstr(path, "PSPISO"))
+		mount_unk = EMU_PSP; // PSP
+	else if(strstr(path, "BDISO"))
+		mount_unk = EMU_BD; // BDV
+	else if(strstr(path, "DVDISO"))
+		mount_unk = EMU_DVD; // DVD
+	else if(strstr(path, "/ROMS"))
+		mount_unk = EMU_ROMS; // ROMS
+}
+
 static void patch_gameboot(u8 boot_type)
 {
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 300000))
+	if(is_patching_gameboot) return;
+
+	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= MIN_RCO_SIZE))
 	{
+		is_patching_gameboot = true;
+
 		u32 pid = get_current_pid();
 
 		if(pid)
@@ -88,27 +113,31 @@ static void patch_gameboot(u8 boot_type)
 				}
 			}
 		}
+
+		is_patching_gameboot = false;
 	}
 }
 
-static void patch_gameboot_by_type(u8 emu_type, const char *path)
+static void patch_gameboot_by_type(const char *path)
 {
 	// customize gameboot per console emulator using DeViL303's custom_render_plugin.rco
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= 300000))
+	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= MIN_RCO_SIZE))
 	{
-		if(emu_type == EMU_PSX)
+		set_mount_type(path);
+
+		if(mount_unk == EMU_PSX)
 			patch_gameboot(1); // PS1
-		else if(emu_type == EMU_PS2_DVD || emu_type == EMU_PS2_CD)
+		else if(mount_unk == EMU_PS2_DVD || mount_unk == EMU_PS2_CD)
 			patch_gameboot(2); // PS2
-		else if(emu_type == EMU_PS3)
+		else if(mount_unk == EMU_PS3)
 			patch_gameboot(3); // PS3
-		else if(emu_type == EMU_PSP)
+		else if(mount_unk == EMU_PSP)
 			patch_gameboot(4); // PSP
-		else if(emu_type == EMU_BD)
+		else if(mount_unk == EMU_BD)
 			patch_gameboot(5); // BDV
-		else if(emu_type == EMU_DVD)
+		else if(mount_unk == EMU_DVD)
 			patch_gameboot(6); // DVD
-		else if((emu_type == EMU_ROMS) || strstr(path, "/ROMS"))
+		else if(mount_unk == EMU_ROMS)
 		{
 			// "rom", "sns", "nes", "gba", "gen", "neo", "pce", "mam", "fba", "ata", "gby", "cmd", "ids" // 7-19
 
@@ -143,22 +172,7 @@ static void patch_gameboot_by_type(u8 emu_type, const char *path)
 			patch_gameboot(0); // None
 	}
 }
-
-static void set_mount_type(const char *path)
-{
-	if(strstr(path, "PSXISO"))
-		mount_unk = EMU_PSX; // PS1
-	else if(strstr(path, "PS2ISO"))
-		mount_unk = EMU_PS2_DVD; // PS2
-	else if(strstr(path, "PS3ISO"))
-		mount_unk = EMU_PS3; // PS3
-	else if(strstr(path, "PSPISO"))
-		mount_unk = EMU_PSP; // PSP
-	else if(strstr(path, "BDISO"))
-		mount_unk = EMU_BD; // BDV
-	else if(strstr(path, "DVDISO"))
-		mount_unk = EMU_DVD; // DVD
-	else if(strstr(path, "ROMS"))
-		mount_unk = EMU_ROMS; // ROMS
-}
+#else
+#define set_mount_type(a)
+#define patch_gameboot_by_type(a)
 #endif //#ifdef PS3MAPI

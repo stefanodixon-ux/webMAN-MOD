@@ -226,8 +226,8 @@ static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IX
 
 static u8 profile = 0;
 
-static u8 loading_html = 0;
-static u8 refreshing_xml = 0;
+static volatile u8 loading_html = 0;
+static volatile u8 refreshing_xml = 0;
 
 #ifdef SYS_BGM
 static u8 system_bgm = 0;

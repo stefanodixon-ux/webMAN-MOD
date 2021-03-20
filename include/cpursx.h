@@ -170,7 +170,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 #ifdef COPY_PS3
 	if(copy_in_progress)
 	{
-		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/copy.ps3", STR_COPYING, current_file, copied_count, STR_FILES);
+		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/copy.ps3", STR_COPYING, current_file, copied_count + 1, STR_FILES);
 	}
 	else if(fix_in_progress)
 	{

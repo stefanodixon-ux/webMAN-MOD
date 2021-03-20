@@ -1193,11 +1193,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 	else if(_path[flen] == '.')
 	{
 		const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
-		for(u8 e = 0; e < 4; e++)
-		{
-			sprintf(_path + flen, "%s", cue_ext[e]);
-			if(file_exists(_path)) break;
-		}
+		change_ext(_path, 4, cue_ext);
 		if(not_exists(_path)) sprintf(_path, "%s", cobra_iso_list[0]);
 	}
 
@@ -1648,9 +1644,7 @@ mounting_done:
 
 #ifdef COBRA_ONLY
 
-	#ifdef PS3MAPI
-	patch_gameboot_by_type(mount_unk, _path0);
-	#endif
+	patch_gameboot_by_type(_path0);
 
 	// ------------------------------------------------------------------
 	// auto-enable gamedata on bdvd if game folder or ISO contains GAMEI
