@@ -470,7 +470,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		if(_IS(ext, ".css"))
 			strcat(header, "text/css");
 		else
-		if(_IS(ext, ".txt") || _IS(ext, ".log") || _IS(ext, ".ini") || _IS(ext, ".cfg") || IS(ext, ".HIP") || IS(ext, ".HIS"))
+		if(_IS(ext, ".txt") || _IS(ext, ".log") || _IS(ext, ".ini") || _IS(ext, ".cfg") || IS(ext, ".HIP") || IS(ext, ".HIS") || IS(ext, ".HIP") || IS(ext, ".CNF"))
 			strcat(header, "text/plain");
 		else
 		if(_IS(ext, ".svg"))

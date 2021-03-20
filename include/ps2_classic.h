@@ -138,7 +138,7 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 static void copy_ps2config(char *config, const char *_path)
 {
 	size_t len = sprintf(config, "%s.CONFIG", _path); // <name>.BIN.ENC.CONFIG
-	if(not_exists(config) && len > 15) strcpy(config + len - 15, ".CONFIG\0"); // remove .BIN.ENC
+	if(not_exists(config) && len > 15) sprintf(config + len - 15, ".CONFIG"); // remove .BIN.ENC
 	if(not_exists(config))
 	{
 		char title_id[TITLE_ID_LEN + 1];

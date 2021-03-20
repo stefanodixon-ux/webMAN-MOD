@@ -106,6 +106,7 @@
 
 			char *cobra_iso_list[iso_parts], iso_list[iso_parts][path_len + 2];
 
+			change_cue2iso(_path);
 			sprintf(iso_list[0], "%s", _path);
 			cobra_iso_list[0] = (char*)iso_list[0];
 

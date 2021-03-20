@@ -4,8 +4,10 @@ static u16 plugin_active = 0;
 
 #define AUTO_POWER_OFF_BACKUP_FILE   WMTMP "/auto_power_off"
 
-static int AutoPowerOffGame = -1;
-static int AutoPowerOffVideo = -1;
+static int AutoPowerOff[2] = {-1, -1};
+
+#define AutoPowerOffGame	AutoPowerOff[0]
+#define AutoPowerOffVideo	AutoPowerOff[1]
 
 static void setAutoPowerOff(bool disable)
 {
@@ -22,13 +24,7 @@ static void setAutoPowerOff(bool disable)
 
 	if(disable)
 	{
-		int fd;
-		if(cellFsOpen(AUTO_POWER_OFF_BACKUP_FILE, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
-		{
-			cellFsWrite(fd, (void *)&AutoPowerOffGame,  sizeof(int), NULL);
-			cellFsWrite(fd, (void *)&AutoPowerOffVideo, sizeof(int), NULL);
-			cellFsClose(fd);
-		}
+		save_file(AUTO_POWER_OFF_BACKUP_FILE, (char *)&AutoPowerOff, 2 * sizeof(int));
 	}
 	else
 		cellFsUnlink(AUTO_POWER_OFF_BACKUP_FILE);
@@ -36,13 +32,8 @@ static void setAutoPowerOff(bool disable)
 
 static void restoreAutoPowerOff(void)
 {
-	int fd;
-	if(cellFsOpen(AUTO_POWER_OFF_BACKUP_FILE, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+	if(read_file(AUTO_POWER_OFF_BACKUP_FILE, (char *)&AutoPowerOff, 2 * sizeof(int), 0))
 	{
-		cellFsRead(fd, &AutoPowerOffGame,  sizeof(int), NULL);
-		cellFsRead(fd, &AutoPowerOffVideo, sizeof(int), NULL);
-		cellFsClose(fd);
-
 		setAutoPowerOff(false);
 	}
 }

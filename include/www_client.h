@@ -439,17 +439,21 @@ again3:
 parse_request:
 
   {
-	u8 retry = 0, served = 0, is_binary = WEB_COMMAND;	// served http request?, is_binary: 0 = http command, 1 = file, 2 = folder listing
-	s8 sort_order = 1, sort_by = 0;
-	u64 c_len = 0;
+	u8 retry, served, is_binary;	// served http request?, is_binary: 0 = http command, 1 = file, 2 = folder listing
+	s8 sort_order, sort_by;
+	u64 c_len;
 
-	u8 is_cpursx = 0;
-	u8 is_popup = 0, auto_mount = 0;
-	u8 is_ps3_http = 0;
+	u8 is_cpursx;
+	u8 is_popup, auto_mount;
+	u8 is_ps3_http;
 
 	#ifdef USE_NTFS
 	skip_prepntfs = false;
 	#endif
+
+	retry = served = 0; is_binary = WEB_COMMAND;
+	is_ps3_http  = auto_mount = is_popup = is_cpursx = 0; c_len = 0;
+	sort_order = 1, sort_by = 0;
 
 //// process commands ////
 
@@ -2704,7 +2708,7 @@ retry_response:
 					if(buf.st_mode & S_IFDIR) {is_binary = FOLDER_LISTING;} // folder listing
 				}
 				#ifdef COPY_PS3
-				else if(allow_retry_response && islike(param, "/dev_") && strstr(param, "*") != NULL)
+				else if(allow_retry_response && islike(param, "/dev_") && strchr(param, '*') != NULL)
 				{
 					bool reply_html = !strstr(param, "//");
 					char *FILE_LIST = reply_html ? (char*)FILE_LIST_HTM : (char*)FILE_LIST_TXT;
@@ -3664,7 +3668,7 @@ send_response:
 				*buffer = NULL;
 			}
 		}
-		else if(loading_html && (*header == 0) && (++retry < 5))
+		else if(++retry < 250) // if(loading_html && (*header == 0) && (++retry < 5))
 		{
 			served = 0; // data no received
 			continue;

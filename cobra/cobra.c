@@ -691,7 +691,6 @@ int cobra_lib_finalize(void)
 */
 int cobra_get_disc_type(unsigned int *real_disctype, unsigned int *effective_disctype, unsigned int *iso_disctype)
 {
-	sys_emu_state_t emu_state;
 	unsigned int rdt, edt;
 	int ret;
 
@@ -699,22 +698,21 @@ int cobra_get_disc_type(unsigned int *real_disctype, unsigned int *effective_dis
 	if (ret)
 		return ret;
 
-	rdt = translate_type(rdt);
-	edt = translate_type(edt);
-
 	if (real_disctype)
 	{
-		*real_disctype = rdt;
+		*real_disctype = translate_type(rdt);
 	}
 
 	if (effective_disctype)
 	{
-		*effective_disctype = edt;
+		*effective_disctype = translate_type(edt);
 	}
 
 	if (iso_disctype)
 	{
 		*iso_disctype = DISC_TYPE_NONE;
+
+		sys_emu_state_t emu_state;
 
 		emu_state.size = sizeof(sys_emu_state_t);
 		ret = sys_storage_ext_get_emu_state(&emu_state);
@@ -840,22 +838,26 @@ int cobra_mount_bd_disc_image(char *files[], unsigned int num)
 	return sys_storage_ext_mount_bd_discfile(num, files);
 }
 
+static void init_tracks(int num_tracks, TrackDef *tracks, ScsiTrackDescriptor *scsi_tracks)
+{
+	memset(scsi_tracks, 0, sizeof(scsi_tracks));
+
+	for (int i = 0; i < num_tracks; i++)
+	{
+		scsi_tracks[i].adr_control = (tracks[i].is_audio) ? 0x10 : 0x14;
+		scsi_tracks[i].track_number = i + 1;
+		scsi_tracks[i].track_start_addr = tracks[i].lba;
+	}
+}
+
 int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tracks)
 {
 	if (!file || !tracks) return EINVAL;
 
 	num_tracks = RANGE(num_tracks, 1, MAX_TRACKS);
 
-	ScsiTrackDescriptor scsi_tracks[MAX_TRACKS];
-
-	memset(scsi_tracks, 0, sizeof(scsi_tracks));
-
-	for (unsigned int i = 0; i < num_tracks; i++)
-	{
-		scsi_tracks[i].adr_control = (tracks[i].is_audio) ? 0x10 : 0x14;
-		scsi_tracks[i].track_number = i + 1;
-		scsi_tracks[i].track_start_addr = tracks[i].lba;
-	}
+	ScsiTrackDescriptor scsi_tracks[num_tracks];
+	init_tracks(num_tracks, tracks, scsi_tracks);
 
 	return sys_storage_ext_mount_psx_discfile(file, num_tracks, scsi_tracks);
 }
@@ -864,18 +866,12 @@ int cobra_mount_ps2_disc_image(char *files[], int num, TrackDef *tracks, unsigne
 {
 	if (!files || !tracks) return EINVAL;
 
-	num_tracks = 1; if(num < 1) num = 1;
+	num_tracks = RANGE(num_tracks, 1, MAX_TRACKS);
 
-	ScsiTrackDescriptor scsi_tracks[1];
+	ScsiTrackDescriptor scsi_tracks[num_tracks];
+	init_tracks(num_tracks, tracks, scsi_tracks);
 
-	memset(scsi_tracks, 0, sizeof(scsi_tracks));
-
-	for (unsigned int i = 0; i < num_tracks; i++)
-	{
-		scsi_tracks[i].adr_control = (tracks[i].is_audio) ? 0x10 : 0x14;
-		scsi_tracks[i].track_number = i + 1;
-		scsi_tracks[i].track_start_addr = tracks[i].lba;
-	}
+	num = RANGE(num, 1, 32);
 
 	return sys_storage_ext_mount_ps2_discfile(num, files, num_tracks, scsi_tracks);
 }
@@ -1426,7 +1422,7 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 		{
 			CellFsStat stat;
 			sprintf(mpath, "%s/PS3_GM%02i", path, gm);
-			if(cellFsStat(mpath, &stat) != CELL_FS_SUCCEEDED)
+			if(cellFsStat(mpath, &stat))
 			{
 				gm = 01; sprintf(mpath, "%s/PS3_GM%02i", path, gm);
 			}
@@ -1442,15 +1438,13 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 
 	sys_storage_ext_get_disc_type(&real_disctype, NULL, NULL);
 
-	if (real_disctype == 0)
+	if (real_disctype == DISC_TYPE_NONE)
 	{
 		cobra_send_fake_disc_eject_event();
 		sys_timer_usleep(20000);
 
 		char *files[1];
-		const char blank_iso[24] = "/dev_hdd0/vsh/task.dat";
-
-		files[0] = (char*)blank_iso;
+		files[0] = (char*)"/dev_hdd0/vsh/task.dat";
 
 		ret = sys_storage_ext_mount_ps3_discfile(1, files);
 
@@ -2440,11 +2434,11 @@ int cobra_get_ps2_emu_type(void)
 		return ret;
 	}
 
-	if (hw_config[6]&1)
+	if (hw_config[6] & 1)
 	{
 		ret = PS2_EMU_HW;
 	}
-	else if (hw_config[0]&0x20)
+	else if (hw_config[0] & 0x20)
 	{
 		ret = PS2_EMU_GX;
 	}

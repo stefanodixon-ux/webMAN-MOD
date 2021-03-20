@@ -167,7 +167,7 @@ static void auto_play(char *param, u8 play_ps3)
 
 static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, bool mount_ps3, bool forced_mount)
 {
-	bool mounted = false, umounted = false;
+	bool mounted = false, umounted = false, check_alias = true;
 
 	// ---------------------
 	// unmount current game
@@ -183,6 +183,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			if(mount_ps3) {mount_app_home = false; return false;}
 			umounted = true;
 		}
+		check_alias = false;
 	}
 
 	// -----------------
@@ -195,6 +196,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 		if(mount_ps3) {mount_app_home = false; return false;}
 		umounted = true;
+		check_alias = false;
 	}
 #endif
 
@@ -256,7 +258,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// ----------------------------------------
 		// Try relative path if source is not found
 		// ----------------------------------------
-		check_path_alias(source);
+		if(check_alias) check_path_alias(source);
 
 		// --------------
 		// set mount url
@@ -1186,12 +1188,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 	#endif
 	else if(is_ext(_path, ".cue") || is_ext(_path, ".ccd"))
 	{
-		const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
-		for(u8 e = 0; e < 8; e++)
-		{
-			sprintf(cobra_iso_list[0] + flen, "%s", iso_ext[e]);
-			mount_iso = file_exists(cobra_iso_list[0]); if(mount_iso) break;
-		}
+		change_cue2iso(cobra_iso_list[0]);
 	}
 	else if(_path[flen] == '.')
 	{

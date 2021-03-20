@@ -128,6 +128,7 @@ static void check_path_alias(char *param)
 		{
 			char path[STD_PATH_LEN];
 			int len = snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
+			char *wildcard = strchr(path, '*'); if(wildcard) *wildcard = 0;
 			if((len == 4) && path[3] == '/') path[3] = 0; // normalize path
 			if(IS(path, "pkg"))  {sprintf(param, DEFAULT_PKG_PATH);} else
 			if(IS(path, "xml"))  {*path = 0;} else
@@ -149,10 +150,11 @@ static void check_path_alias(char *param)
 				{
 					if(i == NET) i = NTFS + 1;
 					snprintf(param, HTML_RECV_LAST, "%s/%s", drives[i], path);
-					if(file_exists(param)) return;
+					if(file_exists(param)) break;
 				}
 			} // try hdd0, usb0, usb1, etc.
 			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", path);} // try hdd0
+			if(wildcard) {*wildcard = '*'; strcat(param, wildcard);}
 		}
 	}
 }
@@ -271,6 +273,20 @@ static bool is_ext(const char *path, const char *ext)
 }
 
 #ifdef COBRA_ONLY
+static void change_cue2iso(char *cue_file)
+{
+	if(is_ext(cue_file, ".cue") || is_ext(cue_file, ".ccd"))
+	{
+		int flen = strlen(cue_file) - 4;
+		const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
+		for(u8 e = 0; e < 8; e++)
+		{
+			sprintf(cue_file + flen, "%s", iso_ext[e]);
+			if(file_exists(cue_file)) break;
+		}
+	}
+}
+
 static bool is_iso_0(const char *filename)
 {
 	#ifdef MOUNT_PNG

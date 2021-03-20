@@ -119,11 +119,11 @@ inline int strncasecmp(const char *s1, const char *s2, size_t n) {return stdc_B6
 extern int stdc_B6D92AC3(const char *s1, const char *s2);								// strcasecmp()
 inline int strcasecmp(const char *s1, const char *s2) {return stdc_B6D92AC3(s1, s2);}
 
-extern char *stdc_E40BA755(char *str, const char *delimiters);							// strtok()
-inline char* strtok(char *str, const char *delimiters) {return stdc_E40BA755(str, delimiters);}
+//extern char *stdc_E40BA755(char *str, const char *delimiters);							// strtok()
+//inline char* strtok(char *str, const char *delimiters) {return stdc_E40BA755(str, delimiters);}
 
-extern struct tm *stdc_266311A0(const time_t *timer);									// localtime()
-inline struct tm* localtime(const time_t *timer) {return stdc_266311A0(timer);}
+//extern struct tm *stdc_266311A0(const time_t *timer);									// localtime()
+//inline struct tm* localtime(const time_t *timer) {return stdc_266311A0(timer);}
 
 //internal
 
@@ -345,16 +345,16 @@ size_t strcspn(const char *s1, const char *s2)
 int extcasecmp(const char *s1, const char *s2, size_t n);
 int extcasecmp(const char *s1, const char *s2, size_t n)
 {
-	size_t s = strlen(s1);
-	if(n > s) return -1;
-	return strncasecmp(s1 + (s - n), s2, n);
+	int s = strlen(s1) - n;
+	if(s < 0) return -1;
+	return strncasecmp(s1 + s, s2, n);
 }
 
 int extcmp(const char *s1, const char *s2, size_t n);
 int extcmp(const char *s1, const char *s2, size_t n)
 {
-	size_t s = strlen(s1);
-	if(n > s) return -1;
-	if(n == 8 && !memcmp(s2, ".BIN.ENC", n)) return strncasecmp(s1 + (s - n), s2, n);
-	return memcmp(s1 + (s - n), s2, n);
+	int s = strlen(s1) - n;
+	if(s < 0) return -1;
+	if(n == 8 && !memcmp(s2, ".BIN.ENC", n)) return strncasecmp(s1 + s, s2, n);
+	return memcmp(s1 + s, s2, n);
 }

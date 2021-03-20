@@ -282,7 +282,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "%'llu %s", sz, sf);
 
 #ifndef LITE_EDITION
-	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !is_net )
+	else if( (sbytes <= MAX_TEXT_LEN) && ( (strcasestr(".txt|.ini|.log|.sfx|.xml|.cfg|.cnf|.his|.hip|.bup|.css|.html|conf|name|.bat", ext) != NULL) || islike(name, "wm_custom_") || (strcasestr(ext, ".js") != NULL) ) && !is_net )
 	{
 		snprintf(fsize, maxlen, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, " pkg");
@@ -950,7 +950,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					sprintf(templn, "%s", wm_icons[dt]); show_icon = true;
 				}
 
-				for(u16 m = idx; m < 7; m++) _concat(&sout, "<BR>");
+				for(u16 m = idx; m < 10; m++) _concat(&sout, "<BR>");
 
 				if(show_icon || show_icon0)
 					{urlenc(swap, templn); sprintf(templn, "<script>icon.src=\"%s\";icon.style.display='block';</script>", swap); _concat(&sout, templn);}
