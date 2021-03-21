@@ -702,7 +702,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 								 _path, enc_dir_name, is_error ? STR_ERROR : "", STR_CPYDEST); strcat(buffer, tempstr);
 
 				// show target path
-				add_breadcrumb_trail2(buffer, NULL, target); *tempstr = NULL;
+				use_open_path = true; add_breadcrumb_trail(buffer, target); *tempstr = NULL;
 
 				if(strstr(target, "/webftp_server")) {sprintf(tempstr, "<HR>%s", STR_SETTINGSUPD);} else
 				if(cp_mode) {char *p = get_filename(_path); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
@@ -820,8 +820,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				sprintf(target, "%s", source);
 				if(strstr(target, "Sing"))
 				{
-					if(strstr(target, "/PS3ISO")) {strcpy(strstr(target, "/PS3ISO"), "/PS2DISC\0"); is_iso = 1;}
-					if(strstr(target, ".ntfs[PS3ISO]")) {strcpy(target, "/dev_hdd0/PS2DISC\0"); is_iso = 1;}
+					char *pos = strstr(target, "/PS3ISO");
+					if(pos)
+						{sprintf(pos, "/PS2DISC"); is_iso = 1;}
+					else if(strstr(target, ".ntfs[PS3ISO]"))
+						{sprintf(target, "/dev_hdd0/PS2DISC"); is_iso = 1;}
 				}
 
 				// -----------------------------
@@ -1149,8 +1152,8 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
-			if(file_copy((char*)"/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, _4KB_) >= CELL_FS_SUCCEEDED) break;
-			if(file_copy((char*)"/dev_bdvd/PS3_GM01/PARAM.SFO", destpath, _4KB_) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy((char*)"/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy((char*)"/dev_bdvd/PS3_GM01/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}

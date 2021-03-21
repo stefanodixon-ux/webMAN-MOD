@@ -776,7 +776,7 @@ int cobra_disc_auth(void)
 
 	if (real_disctype == DEVICE_TYPE_PS3_BD || real_disctype == DEVICE_TYPE_PS3_DVD)
 	{
-		static uint8_t buf[1024]; memset(buf, 0, 1024);
+		static uint8_t buf[1024]; memset(buf, 0, sizeof(buf));
 
 		sys_ss_disc_auth(0x5007, (uint64_t)(uint32_t)buf);
 	}
@@ -1794,7 +1794,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 		return EABORT;
 	}
 
-	int fd; uint8_t sector[2048]; memset(sector, 0, 2048);
+	int fd; uint8_t sector[2048]; memset(sector, 0, sizeof(sector));
 
 	if (cellFsOpen(path, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
@@ -2045,7 +2045,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 		return ESYSVER;
 	}
 
-	//uint8_t sector[2048]; memset(sector, 0, 2048);
+	//uint8_t sector[2048]; memset(sector, 0, sizeof(sector));
 	uint8_t *sector = (uint8_t*)malloc(1024);
 
 	int fd;
@@ -2287,7 +2287,7 @@ int cobra_get_usb_device_name(char *mount_point, char *dev_name)
 	if (ret == 0)
 	{
 		uint8_t cmd[64];
-		memset(cmd, 0, 64);
+		memset(cmd, 0, sizeof(cmd));
 
 		UfiCmdInquiry *inquiry_cmd = (UfiCmdInquiry *)(cmd+4);
 

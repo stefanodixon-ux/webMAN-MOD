@@ -322,7 +322,7 @@
 								show_rec_format(msg);
 							}
 							else
-								{memset(msg, 0, 256); toggle_video_rec(msg); n = 0;} // SELECT+R3  Record Video
+								{memset(msg, 0, sizeof(msg)); toggle_video_rec(msg); n = 0;} // SELECT+R3  Record Video
 
 							break;
 						}
@@ -345,7 +345,7 @@
 							if(do_custom_combo("l2_r2_select_start")) break;
 							else
   #endif
-								{BEEP2; memset(msg, 0, 256); saveBMP(msg, true, false); n = 0; break;} // L2 + R2 + SELECT + START
+								{BEEP2; memset(msg, 0, sizeof(msg)); saveBMP(msg, true, false); n = 0; break;} // L2 + R2 + SELECT + START
 							}
 							else
  #endif
@@ -408,14 +408,17 @@
 								char cfw_info[24];
 								get_cobra_version(cfw_info);
 
-								char smax[32];
-								if(fan_ps2_mode) sprintf(smax, "   PS2 Mode");
+								char smax[24];
+								if(fan_ps2_mode)
+									sprintf(smax, "   PS2 Mode");
 								else if(webman_config->fanc == FAN_AUTO2)
 									sprintf(smax, "   MAX: AUTO");
 								else if(max_temp)
 									sprintf(smax, "   MAX: %i°C", max_temp);
 								else if(webman_config->fanc == DISABLED)
-									sprintf(smax, "   SYSCON"); else memset(smax, 0, 16);
+									sprintf(smax, "   SYSCON");
+								else
+									memset(smax, 0, sizeof(smax));
 
 								get_temperature(0, &t1); // CPU
 								get_temperature(1, &t2); // RSX

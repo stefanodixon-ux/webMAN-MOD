@@ -92,7 +92,6 @@ static u64 peek(u64 addr)
 	return peekq(addr | 0x8000000000000000ULL);
 }
 
-
 #ifdef COBRA_ONLY
 ///////////////// LV1/LV2 POKE HEN ////////////////
 static void lv2_poke_fan_hen(u64 addr, u64 value)

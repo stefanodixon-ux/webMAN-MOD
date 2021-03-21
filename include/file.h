@@ -393,6 +393,11 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 	return read_e;
 }
 
+static u16 read_sfo(const char *file, char *data)
+{
+	return (u16)read_file(file, data, _4KB_, 0);
+}
+
 static int write_file(const char *file, int flags, const char *data, u64 offset, int size, bool crlf)
 {
 	int fd = 0;
@@ -1146,7 +1151,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			else if(fop == SCAN_UNLOCK_SAVE)
 			{
 				char sfo[_4KB_];
-				u16 sfo_size = read_file(entry, sfo, _4KB_, 0);
+				u16 sfo_size = read_sfo(entry, sfo);
 				if(unlock_param_sfo(entry, (unsigned char *)sfo, sfo_size))
 				{
 					save_file(entry, (void*)sfo, sfo_size);

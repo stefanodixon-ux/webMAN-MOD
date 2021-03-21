@@ -502,7 +502,7 @@ static void wwwd_thread(u64 arg)
 	set_buffer_sizes(webman_config->foot);
 
 #ifdef COPY_PS3
-	memset(cp_path, 0, STD_PATH_LEN);
+	memset(cp_path, 0, sizeof(cp_path));
 	parse_script("/dev_hdd0/boot_init.txt");
 #endif
 

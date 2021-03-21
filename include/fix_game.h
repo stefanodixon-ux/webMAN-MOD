@@ -307,7 +307,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 			char paramsfo[_4KB_];
 			unsigned char *mem = (u8*)paramsfo;
 
-			u64 bytes_read = read_file(filename, paramsfo, _4KB_, 0);
+			u64 bytes_read = read_sfo(filename, paramsfo);
 			if(is_sfo(mem))
 			{
 				// fix ps3 extra or bgm + remoteplay + ps3 extra
@@ -337,7 +337,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 				{
 					sprintf(filename, "%s%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id, i ? "" : "/C00");
 
-					bytes_read = read_file(filename, paramsfo, _4KB_, 0);
+					bytes_read = read_sfo(filename, paramsfo);
 					if(is_sfo(mem))
 					{
 						// fix ps3 extra or bgm + remoteplay + ps3 extra

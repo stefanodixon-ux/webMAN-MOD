@@ -79,14 +79,14 @@ static void reset_usb_ports(char *_path)
 static void eject_insert(u8 eject, u8 insert)
 {
 	u8 atapi_cmnd2[56];
-	u8* atapi_cmnd = atapi_cmnd2;
+	u8 *atapi_cmnd = atapi_cmnd2;
 	int dev_id;
 
 	{system_call_4(SC_STORAGE_OPEN, BDVD_DRIVE, 0, (u64)(u32) &dev_id, 0);}
 
 	if(eject)
 	{
-		memset(atapi_cmnd, 0, 56);
+		memset(atapi_cmnd, 0, sizeof(atapi_cmnd2));
 		atapi_cmnd[0x00] = 0x1b; // OPERATION CODE (1Bh)
 		atapi_cmnd[0x01] = 0x01; // IMMED (Immediate) bit
 		atapi_cmnd[0x04] = 0x02; // LOEJ (2) + START (0) = Eject Disc
@@ -100,7 +100,7 @@ static void eject_insert(u8 eject, u8 insert)
 
 	if(insert)
 	{
-		memset(atapi_cmnd, 0, 56);
+		memset(atapi_cmnd, 0, sizeof(atapi_cmnd2));
 		atapi_cmnd[0x00] = 0x1b; // OPERATION CODE (1Bh)
 		atapi_cmnd[0x01] = 0x01; // IMMED (Immediate) bit
 		atapi_cmnd[0x04] = 0x03; // LOEJ (2) + START (1) = Load Disc

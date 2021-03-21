@@ -19,16 +19,18 @@ static char *hex_dump(char *buffer, int offset, int size)
 #define LV1_UPPER_MEMORY	0x8000000010000000ULL
 #define LV2_UPPER_MEMORY	0x8000000000800000ULL
 
-static void poke_chunk_lv1(u32 start, int size, u8 *buffer)
+static void poke_chunk_lv1(u64 start, int size, u8 *buffer)
 {
+	start |= 0x8000000000000000ULL;
 	for(int offset = 0; offset < size; offset += 8)
-		poke_lv1((start + offset) | 0x8000000000000000ULL, *((u64*)(buffer + offset)));
+		poke_lv1(start + offset, *((u64*)(buffer + offset)));
 }
 
-static void poke_chunk_lv2(u32 start, int size, u8 *buffer)
+static void poke_chunk_lv2(u64 start, int size, u8 *buffer)
 {
+	start |= 0x8000000000000000ULL;
 	for(int offset = 0; offset < size; offset += 8)
-		pokeq((start + offset) | 0x8000000000000000ULL, *((u64*)(buffer + offset)));
+		pokeq(start + offset, *((u64*)(buffer + offset)));
 }
 
 static void peek_chunk_lv1(u64 start, u64 size, u8 *buffer) // read from lv1
@@ -120,7 +122,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	int flen = 0, hilite;
 	char *v;
 
-	char sfind[65]; memset(sfind, 0, 65);
+	char sfind[65]; memset(sfind, 0, sizeof(sfind));
 	u8 data[HEXVIEW_SIZE]; struct CellFsStat s;
 	bool is_file = islike(param, "/hexview.ps3/");
 	if(is_file)

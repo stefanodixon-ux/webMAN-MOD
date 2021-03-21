@@ -4,7 +4,7 @@
 a:hover{color:#FFFFFF;text-decoration:none;}
 a:visited{color:#f0f0f0;text-decoration:none;}
 a:active{color:#F0F0F0;text-decoration:none;}
-a:link{color:#e0e0e0;text-decoration:none;}
+a:link{color:#e0e0e0;text-decoration:none;text-shadow:1px 1px #505050;}
 a.f:visited{color:#E0E0E0;text-decoration:none;}
 a.f:hover{color:#FFFFFF;text-decoration:none;}
 a.f:active{color:#F8F8F8;text-decoration:none;}
@@ -39,7 +39,7 @@ input[type="submit"],.bs,input[type="button"]{border:1px;padding:6px 10px;border
 #top_action a{color:#e0e0e0;cursor:pointer;}
 #left_action a{color:#e0e0e0;cursor:pointer;}
 
-body,td,th{color:#f0f0f0;}
+body,td,th{color:#f0f0f0;text-shadow:1px 1px #505050;}
 select,input {border-radius: 8px; padding: 2px;}
 textarea {border-radius: 8px; padding: 5px; margin-bottom: 5px;}
 

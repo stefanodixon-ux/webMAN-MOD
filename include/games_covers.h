@@ -540,7 +540,7 @@ static int get_title_and_id_from_sfo(char *param_sfo, char *title_id, const char
 
 	// read param.sfo
 	unsigned char *mem = (u8*)data;
-	u64 sfo_size = read_file(param_sfo, data, _4KB_, 0);
+	u16 sfo_size = read_sfo(param_sfo, data);
 	char *title = param_sfo;
 
 	// get title_id & title from PARAM.SFO
@@ -548,7 +548,7 @@ static int get_title_and_id_from_sfo(char *param_sfo, char *title_id, const char
 	{
 		if((IS_HDD0 && islike(param_sfo + 9, "/game/")) || islike(param_sfo + 11, "/GAMEI/") || strstr(param_sfo, "_00-")) use_filename = false;
 
-		parse_param_sfo(mem, title_id, title, (u16)sfo_size);
+		parse_param_sfo(mem, title_id, title, sfo_size);
 
 		if(SHOW_COVERS) get_cover_by_titleid(icon, title_id);
 

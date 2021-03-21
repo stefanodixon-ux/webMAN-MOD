@@ -22,7 +22,6 @@ static int get_line(char *templn, const char *cue_buf, const int buf_size, const
 	int l = 0;
 	int len = MIN(buf_size, MAX_LINE_LEN);
 
-	bool eol = false;
 	int lp = start;
 
 	for(; lp < buf_size; lp++)
@@ -31,11 +30,9 @@ static int get_line(char *templn, const char *cue_buf, const int buf_size, const
 
 		if(cue_buf[lp] != '\n' && cue_buf[lp] != '\r')
 		{
-			if(eol) break;
+			if(l) break;
 			if(l < len) templn[l++] = cue_buf[lp];
 		}
-		else
-			eol = true;
 	}
 
 	templn[l] = NULL;

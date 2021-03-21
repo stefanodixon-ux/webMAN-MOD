@@ -396,7 +396,7 @@ static void setup_parse_settings(char *param)
 #endif
 
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
-	char command[256]; size_t cmdlen = 0; memset(command, 0, 256);
+	char command[256]; size_t cmdlen = 0; memset(command, 0, sizeof(command));
 
 	cmdlen = get_param("ccbo=", command, param, 255);
 

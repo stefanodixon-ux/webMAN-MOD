@@ -914,7 +914,7 @@ parse_request:
 				// /download.ps3?url=<url>            (see pkg_handler.h for details)
 				// /download.ps3?to=<path>&url=<url>
 
-				char msg[MAX_LINE_LEN], filename[STD_PATH_LEN + 1]; memset(msg, 0, MAX_LINE_LEN); *filename = NULL;
+				char msg[MAX_LINE_LEN], filename[STD_PATH_LEN + 1]; memset(msg, 0, sizeof(msg)); *filename = NULL;
 
 				setPluginActive();
 
@@ -1011,7 +1011,7 @@ parse_request:
 					}
 				}
 
-				char msg[MAX_LINE_LEN]; memset(msg, 0, MAX_LINE_LEN);
+				char msg[MAX_LINE_LEN]; memset(msg, 0, sizeof(msg));
 
 				setPluginActive();
 
@@ -1425,7 +1425,7 @@ parse_request:
 					while((klic_polling == KL_AUTO) && IS_ON_XMB && working) sys_ppu_thread_usleep(500000);
 				}
 
-				char kl[0x120], prev[0x200], buffer[0x200]; memset(kl, 0, 120);
+				char kl[0x120], prev[0x200], buffer[0x200]; memset(kl, 0, sizeof(kl));
 
 				if(IS_INGAME)
 				{
@@ -1545,7 +1545,7 @@ parse_request:
 
 				char *path1 = header, *path2 = header + MAX_PATH_LEN, *url = header + 2 * MAX_PATH_LEN, *title = header + 2 * MAX_PATH_LEN;
 
-				memset(header, 0, HTML_RECV_SIZE);
+				memset(header, 0, sizeof(header));
 
 				#ifdef ALLOW_DISABLE_MAP_PATH
 				// /remap.ps3?status                  status of map path
@@ -2200,7 +2200,7 @@ parse_request:
 			if(islike(param, "/minver.ps3"))
 			{
 				u8 data[0x20];
-				memset(data, 0, 0x20);
+				memset(data, 0, sizeof(data));
 
 				int ret = GetApplicableVersion(data);
 				if(ret)
@@ -2490,7 +2490,7 @@ parse_request:
 				if(attrib)
 				{
 					char sfo[_4KB_];
-					u16 sfo_size = read_file(game_path, sfo, _4KB_, 0);
+					u16 sfo_size = read_sfo(game_path, sfo);
 					if(patch_param_sfo(game_path, (unsigned char *)sfo, sfo_size, attribute))
 					{
 						save_file(game_path, (void*)sfo, sfo_size);
@@ -2713,7 +2713,6 @@ retry_response:
 					if(reply_html)
 					{
 						#ifndef EMBED_JS
-						memset(header, HTML_RECV_SIZE, 0);
 						sprintf(header, SCRIPT_SRC_FMT, FS_SCRIPT_JS);
 						save_file(FILE_LIST, HTML_HEADER, SAVE_ALL);
 						save_file(FILE_LIST, header, APPEND_TEXT);
@@ -3165,12 +3164,17 @@ retry_response:
 						// /videorec.ps3?<video-rec-params> {mp4, jpeg, psp, hd, avc, aac, pcm, 64, 128, 384, 512, 768, 1024, 1536, 2048}
 						// /videorec.ps3?<path>&video=<format>&audio=<format>
 
-						toggle_video_rec(param + 13);
-						_concat(&sbuffer,	"<a class=\"f\" href=\"/dev_hdd0\">/dev_hdd0/</a><a href=\"/dev_hdd0/VIDEO\">VIDEO</a>:<p>"
-										"Video recording: <a href=\"/videorec.ps3\">");
-						_concat(&sbuffer, recording ? STR_ENABLED : STR_DISABLED);
-						_concat(&sbuffer, "</a><p>");
-						if(!recording) {sprintf(param, "<a class=\"f\" href=\"%s\">%s</a><br>", (char*)recOpt[0x6], (char*)recOpt[0x6]); _concat(&sbuffer, param);}
+						char *video_path = param[13] ? param + 13 : (char*)"/dev_hdd0/VIDEO";
+
+						if(IS_INGAME)
+							toggle_video_rec(video_path);
+
+						use_open_path = true;
+						add_breadcrumb_trail(buffer, video_path);
+						sprintf(html_base_path, ":<p>Video recording: <a href=\"%s\">%s</a></p>", param, recording ? STR_ENABLED : STR_DISABLED);
+						_concat(&sbuffer, html_base_path);
+
+						if(!recording && recOpt) {sprintf(param, "<a class=\"f\" href=\"%s\">%s</a><br>", (char*)&recOpt[0x6], (char*)&recOpt[0x6]); _concat(&sbuffer, param);}
 					}
  #endif
  #ifdef EXT_GDATA
@@ -3270,10 +3274,9 @@ retry_response:
 						}
 						else if(islike(param2 , "?uninstall"))
 						{
-							struct CellFsStat buf;
-							if((cellFsStat("/dev_hdd0/boot_plugins.txt", &buf)             == CELL_FS_SUCCEEDED) && (buf.st_size < 45)) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
-							if((cellFsStat("/dev_hdd0/boot_plugins_nocobra.txt", &buf)     == CELL_FS_SUCCEEDED) && (buf.st_size < 46)) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
-							if((cellFsStat("/dev_hdd0/boot_plugins_nocobra_dex.txt", &buf) == CELL_FS_SUCCEEDED) && (buf.st_size < 46)) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
+							if(file_size("/dev_hdd0/boot_plugins.txt")             < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
+							if(file_size("/dev_hdd0/boot_plugins_nocobra.txt")     < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
+							if(file_size("/dev_hdd0/boot_plugins_nocobra_dex.txt") < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
 
 							// delete files
 							sprintf(param, "plugins/");

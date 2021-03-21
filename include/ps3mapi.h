@@ -721,7 +721,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&lt;Back</a>", pid, address - 0x2000, pid, address - BINDATA_SIZE); buffer += concat(buffer, templn);
 		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&gt;&gt;</a>", pid, address + BINDATA_SIZE, pid, address + 0x2000); buffer += concat(buffer, templn);
 
-		if(file_exists("/dev_hdd0/mem_dump.bin")) {concat(buffer, " ["); add_breadcrumb_trail2(buffer, NULL, "/dev_hdd0/mem_dump.bin"); concat(buffer, "]");}
+		if(file_exists("/dev_hdd0/mem_dump.bin")) {add_breadcrumb_trail2(buffer, " [", "/dev_hdd0/mem_dump.bin"); concat(buffer, " ]");}
 
 		if(!strstr(param, "dump=")) sprintf(templn, " [<a href=\"%s%s\">%s</a>]", param, "&dump=400000", "Dump Process");
 		concat(buffer, templn);

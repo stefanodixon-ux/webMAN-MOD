@@ -322,7 +322,7 @@
 							char *cue_buf = malloc(_4KB_);
 							if(cue_buf)
 							{
-								s64 cue_size = read_file(TEMP_NET_PSXCUE, cue_buf, _4KB_, 0);
+								u16 cue_size = read_sfo(TEMP_NET_PSXCUE, cue_buf);
 								cellFsUnlink(TEMP_NET_PSXCUE);
 
 								num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);

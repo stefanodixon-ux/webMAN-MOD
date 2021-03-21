@@ -482,7 +482,7 @@ static void wwwd_thread(u64 arg)
 
 	set_buffer_sizes(0);
 
-	memset(cp_path, 0, STD_PATH_LEN);
+	memset(cp_path, 0, sizeof(cp_path));
 	parse_script("/dev_hdd0/game/UTBSCRIPT/USRDIR/script.txt");
 
 	sys_ppu_thread_usleep(5);
