@@ -48,7 +48,8 @@
 
 	if(isDir(PKGLAUNCH_DIR))
 	{
-		if(  !extcasecmp(_path, ".self", 5) || (strcasestr(ARCHIVE_EXTENSIONS + 4, ext) != NULL) ||
+		if( !extcasecmp(_path, ".self", 5) ||
+			(strcasestr(ARCHIVE_EXTENSIONS + 4, ext) != NULL) ||
 			(!strstr(_path, "/ROMS") && _IS(ext, ".zip"))
 		)
 		{
@@ -60,9 +61,8 @@
 			set_app_home(PKGLAUNCH_DIR);
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
 			sys_ppu_thread_sleep(2);
+			patch_gameboot_by_type(_path);
 			if(ret) launch_app_home_icon(true);
-
-			set_mount_type(_path);
 
 			goto mounting_done; //goto exit_mount;
 		}
@@ -74,6 +74,8 @@
 
 		if(!ret)
 		{
+			char *pos = strstr(_path0, "/USRDIR"); if(pos) *pos = NULL;
+
 			if(islike(_path0, HDD0_GAME_DIR))
 			{
 				sprintf(_path, "%s%s", HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0/game/
@@ -84,6 +86,7 @@
 			}
 			ret = isDir(_path);
 		}
+
 
 		do_umount(false);
 		set_app_home(_path);

@@ -19,28 +19,30 @@ static int parse_lba(const char *templn, int ret_value)
 
 static int get_line(char *templn, const char *cue_buf, const int buf_size, const int start)
 {
-	*templn = NULL;
-	int lp = start;
-	u8 line_found = 0;
+	int l = 0;
+	int len = MIN(buf_size, MAX_LINE_LEN);
 
-	for(int l = 0; l < MAX_LINE_LEN; l++)
+	bool eol = false;
+	int lp = start;
+
+	for(; lp < buf_size; lp++)
 	{
-		if(l>=buf_size) break;
-		if(lp<buf_size && cue_buf[lp]>0 && cue_buf[lp]!='\n' && cue_buf[lp]!='\r')
+		if(!cue_buf[lp]) break;
+
+		if(cue_buf[lp] != '\n' && cue_buf[lp] != '\r')
 		{
-			templn[l] = cue_buf[lp++];
-			templn[l + 1] = NULL;
+			if(eol) break;
+			if(l < len) templn[l++] = cue_buf[lp];
 		}
 		else
-		{
-			while(cue_buf[lp]=='\n' || cue_buf[lp]=='\r') {line_found = 1; if(lp < buf_size) lp++; else break;}
-			break; //EOF
-		}
+			eol = true;
 	}
 
-	if(!line_found) return NONE;
+	templn[l] = NULL;
 
-	return lp;
+	if(l) return lp;
+
+	return NONE;
 }
 
 static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_size, TrackDef *tracks)

@@ -273,9 +273,14 @@ static void launch_disc(bool exec)
 
 static bool launch_app_home_icon(bool exec)
 {
-	if(not_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN")) launch_disc(exec); else
-
-	if(is_app_home_onxmb()) {mount_unk = APP_GAME; launch_disc(exec);  return true;}
+	if(not_exists("/app_home/PS3_GAME/USRDIR/EBOOT.BIN") && not_exists("/app_home/USRDIR/EBOOT.BIN"))
+		launch_disc(exec);
+	else if(is_app_home_onxmb())
+	{
+		mount_unk = APP_GAME;
+		launch_disc(exec);
+		return true;
+	}
 	return false;
 }
 

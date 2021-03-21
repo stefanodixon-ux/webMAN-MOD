@@ -168,6 +168,11 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	add_game_info(buffer, templn, 0); *templn = 0;
 
 #ifdef COPY_PS3
+	if(ftp_state)
+	{
+		sprintf(templn, "<hr><font size=2>FTP: %s %s</font>", (ftp_state == 1) ? "Sending " : "Receiving ", current_file);
+	}
+	else
 	if(copy_in_progress)
 	{
 		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/copy.ps3", STR_COPYING, current_file, copied_count + 1, STR_FILES);
@@ -175,11 +180,6 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	else if(fix_in_progress)
 	{
 		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/fixgame.ps3", STR_FIXING, current_file, fixed_count, STR_FILES);
-	}
-	else
-	if(ftp_state)
-	{
-		sprintf(templn, "<hr><font size=2>FTP: %s %s</font>", (ftp_state == 1) ? "Sending " : "Receiving ", current_file);
 	}
 	else
 #endif

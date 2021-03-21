@@ -562,7 +562,7 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 #endif
 
 #ifdef COPY_PS3
-	sprintf(current_file, "%s", file2);
+	if(!ftp_state) sprintf(current_file, "%s", file2);
 #endif
 
 #ifdef USE_NTFS

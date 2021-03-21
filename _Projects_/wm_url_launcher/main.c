@@ -208,10 +208,21 @@ int main(int argc, const char* argv[])
 	else
 		return 0; // launch.txt was not found
 
+	///////////////////////
+	// init screen display
+	///////////////////////
 	Init_Graph();
 
 	cls();
 
+	///////////////////////
+	// process path + param
+	///////////////////////
+	if(strstr(path, "/EBOOT.BIN") || strstr(path, ".self") || strstr(path, ".SELF")) goto exec;
+
+	///////////////////////
+	// zip path to param
+	///////////////////////
 	if(*param && isdir(path) && strcasestr(param, ".zip") != NULL)
 	{
 		sprintf(url, "Zipping %s", path);
@@ -354,6 +365,9 @@ int main(int argc, const char* argv[])
 
 	if(not_exists(path)) return 0; // path must exists
 
+	///////////////////////
+	// extract archive
+	///////////////////////
 	if((is_zip && ((*param == '/') || (strstr(path, "/PS3~") != NULL))) ||
 		is_rar || is_bz2 || is_tgz || is_tar || is_7z )
 	{
@@ -421,11 +435,6 @@ int main(int argc, const char* argv[])
 
 		return 0;
 	}
-
-	///////////////////////
-	// process path + param
-	///////////////////////
-	if(strstr(path, "/EBOOT.BIN") != NULL || strcasestr(path, ".self") != NULL) ; else
 
 	// find executable
 	if(*param == 0)
@@ -730,6 +739,8 @@ int main(int argc, const char* argv[])
 
 		if(not_exists(path)) *param = 0;
 	}
+
+exec:
 
 	if(*param)
 	{

@@ -310,7 +310,7 @@ static u16 cobra_version = 0;
 static bool is_mounting = false;
 static bool copy_aborted = false;
 static u8 automount = 0;
-static u8 ftp_state = 0;
+static u8 ftp_state = 0; //  1 = sending, 2 = receiving
 
 #ifdef COPY_PS3
 static char current_file[STD_PATH_LEN + 1];
