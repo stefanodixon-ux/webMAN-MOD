@@ -1149,7 +1149,8 @@ save_xml:
 
 		if(webman_config->root)
 		{
-			_file_copy(xml_file, (char*)FB_XML);
+			sprintf(templn, "/%s", FB_XML); // force copy file instead of link (using //dev_hdd0)
+			_file_copy(xml_file, templn);
 			write_file(FB_XML, CELL_FS_O_WRONLY, "fb\"     ", 66, 8, false); // replace seg_mygames with seg_fb
 
 			if(get_explore_interface())
