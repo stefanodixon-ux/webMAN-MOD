@@ -155,7 +155,7 @@ typedef struct
 	uint8_t allow_restore_sc;	// 1 = Allow to restore CFW syscalls | 0 = Does not allow to restore CFW syscalls
 	uint8_t skip_existing_rif;	// 1 = Skip if .rif already exists   | 0 = Does not skip if .rif already exists
 	uint8_t photo_gui;			// 1 = Allow Photo GUI               | 0 = Does not allow Photo GUI
-	uint8_t auto_earth;			// 1 = Allow auto-map earth.qrc      | 0 = Does not allow auto-map earth.qrc
+	uint8_t auto_earth;			// deprecated
 	uint8_t auto_dev_blind;		// 1 = Allow auto-mount /dev_blind   | 0 = Does not allow auto-mount /dev_blind
 } __attribute__((packed)) CobraConfig;
 

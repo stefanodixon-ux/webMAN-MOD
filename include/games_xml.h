@@ -27,6 +27,15 @@
 #define XMB_GROUPS				(!webman_config->nogrp)
 #define ADD_SETUP				(!webman_config->nosetup)
 
+#define APP_HOME_SEGMENT		"<T key=\"seg_gamedebug\">" \
+								XML_PAIR("icon_rsc","tex_album_icon") \
+								XML_PAIR("title_rsc","msg_tool_app_home_ps3_game") \
+								XML_PAIR("child","segment") \
+								"</T>" \
+								"</A><I>" \
+								"<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>"
+
+
 typedef struct
 {
 	char value[1 + XML_KEY_LEN + 4];
@@ -114,34 +123,29 @@ static void make_fb_xml(void)
 									STR_MYGAMES, SUFIX2(profile),
 									STR_LOADGAMES);
 
+		char *prefix = (char*)"</A><I>";
 		if(!(webman_config->app_home) && !is_app_home_onxmb())
 		{
-			has_app_home = true;
-			size += sprintf(myxml + size,	"<T key=\"seg_gamedebug\">"
-											XML_PAIR("icon_rsc","tex_album_icon")
-											XML_PAIR("title_rsc","msg_tool_app_home_ps3_game")
-											XML_PAIR("child","segment")
-											"</T>"
-											"%s" // "</A><I>"
-											"<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>"
-											QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
-											"</A><I>", MY_GAMES_XML, "</I></V></X>\r\n");
+			has_app_home = !(webman_config->root);
+			prefix = (char*)APP_HOME_SEGMENT, MY_GAMES_XML;
 		}
-		else
-			size += sprintf(myxml + size, "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
-										  "</A><I>", MY_GAMES_XML, "</I></V></X>\r\n");
+
+		size += sprintf(myxml + size, "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
+									  prefix, MY_GAMES_XML, "</I></V></X>\r\n");
 
 		char *fb_xml = (char *)FB_XML;
 		#ifdef COBRA_ONLY
 		if(payload_ps3hen)
 		{
 			fb_xml = (char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml";
-			cellFsUnlink(FB_XML);
 			sys_map_path((char *)FB_XML, (char *)fb_xml);
 		}
 		#endif
 
-		save_file(fb_xml, myxml, size);
+		cellFsUnlink(FB_XML);
+		if(!(webman_config->root))
+			save_file(fb_xml, myxml, size);
+
 		sys_memory_free(sysmem);
 
 		if(payload_ps3hen && IS_ON_XMB)
@@ -871,7 +875,7 @@ continue_reading_folder_xml:
 #ifdef MOUNT_ROMS
 	myxml.size = sprintf(myxml.str, "%s"
 						"<V id=\"%s%s\">"
-						"<A>%s", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "", proxy_include);
+						"<A>", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "");
 
 	if(scanning_roms)
 	{
@@ -1057,7 +1061,21 @@ continue_reading_folder_xml:
 	// --- Add groups queries (setup + eject + categories)
 	if( XMB_GROUPS )
 	{
-		_concat(&myxml, "</A><I>");
+		if(webman_config->root && !(webman_config->app_home) && !is_app_home_onxmb())
+		{
+			has_app_home = true;
+			_concat(&myxml, "<T key=\"seg_gamedebug\">"
+							XML_PAIR("icon_rsc","tex_album_icon")
+							XML_PAIR("title_rsc","msg_tool_app_home_ps3_game")
+							XML_PAIR("child","segment")
+							"</T>"
+							"</A><I>"
+							"<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>"
+					);
+		}
+		else
+			_concat(&myxml, "</A><I>");
+
 		if( ADD_SETUP )
 		{
 			if(add_xmbm_plus)
@@ -1126,7 +1144,19 @@ save_xml:
 		cellFsWrite(fdxml, (char*)buffer, slen, NULL);
 		cellFsClose(fdxml);
 
-		cellFsChmod(MY_GAMES_XML, MODE);
+		cellFsChmod(xml_file, MODE);
+
+		if(webman_config->root)
+		{
+			_file_copy(xml_file, (char*)FB_XML);
+			write_file(FB_XML, CELL_FS_O_WRONLY, "fb\"     ", 66, 8, false); // replace seg_mygames with seg_fb
+			if(get_explore_interface())
+			{
+				exec_xmb_command2("focus_category %s", "game");			 // return focus to game column
+				exec_xmb_command2("focus_segment_index %s", "xmb_app3"); // focus on webMAN Games
+				exec_xmb_command2("reload_category %s", "game");
+			}
+		}
 	}
 
 #ifdef MOUNT_ROMS

@@ -98,6 +98,7 @@ static void setup_parse_settings(char *param)
 	webman_config->noBD = IS_MARKED("bd=1"); apply_noBD_patches(webman_config->noBD);
 #endif
 
+	webman_config->root    = IS_UNMARKED("rt=1");
 	webman_config->nosetup = IS_MARKED("ns=1");
 	webman_config->nogrp   = IS_MARKED("ng=1");
 	webman_config->sman    = IS_MARKED("sm=1");
@@ -725,6 +726,7 @@ static void setup_form(char *buffer, char *templn)
 	//game listing
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR);
 
+	_add_checkbox("rt", STR_MYGAMES, !(webman_config->root), buffer);
 	_add_checkbox("rf", STR_CONTSCAN, (webman_config->refr), buffer);
 
 #ifdef LAUNCHPAD
