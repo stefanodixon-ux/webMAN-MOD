@@ -27,15 +27,6 @@
 #define XMB_GROUPS				(!webman_config->nogrp)
 #define ADD_SETUP				(!webman_config->nosetup)
 
-#define APP_HOME_SEGMENT		"<T key=\"seg_gamedebug\">" \
-								XML_PAIR("icon_rsc","tex_album_icon") \
-								XML_PAIR("title_rsc","msg_tool_app_home_ps3_game") \
-								XML_PAIR("child","segment") \
-								"</T>" \
-								"</A><I>" \
-								"<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>"
-
-
 typedef struct
 {
 	char value[1 + XML_KEY_LEN + 4];
@@ -105,33 +96,7 @@ static void make_fb_xml(void)
 	sys_addr_t sysmem = NULL;
 	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 	{
-		char *myxml = (char*)sysmem;
-		u16 size = sprintf(myxml, "%s" // XML_HEADER
-								  "<V id=\"seg_fb\">"
-								  "<A>"
-									"<T key=\"mgames\">"
-									"%s" // XML_PAIR( icon / icon_rsc )
-									XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
-									XML_PAIR("ingame","disable")
-									XML_PAIR("title","%s%s") // STR_MYGAMES, SUFIX2(profile)
-									XML_PAIR("info","%s")	 // STR_LOADGAMES
-									"</T>",
-									XML_HEADER,
-									file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
-										XML_PAIR("icon", WM_ICONS_PATH "/icon_wm_root.png") :
-										XML_PAIR("icon_rsc", "item_tex_ps3util"),
-									STR_MYGAMES, SUFIX2(profile),
-									STR_LOADGAMES);
-
-		char *prefix = (char*)"</A><I>";
-		if(!(webman_config->app_home) && !is_app_home_onxmb())
-		{
-			has_app_home = !(webman_config->root);
-			prefix = (char*)APP_HOME_SEGMENT, MY_GAMES_XML;
-		}
-
-		size += sprintf(myxml + size, "%s" QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
-									  prefix, MY_GAMES_XML, "</I></V></X>\r\n");
+		cellFsUnlink(FB_XML);
 
 		char *fb_xml = (char *)FB_XML;
 		#ifdef COBRA_ONLY
@@ -142,9 +107,45 @@ static void make_fb_xml(void)
 		}
 		#endif
 
-		cellFsUnlink(FB_XML);
 		if(!(webman_config->root))
+		{
+			char *myxml = (char*)sysmem;
+			u16 size = sprintf(myxml, "%s" // XML_HEADER
+									  "<V id=\"seg_fb\">"
+									  "<A>"
+										"<T key=\"mgames\">"
+										"%s" // XML_PAIR( icon / icon_rsc )
+										XML_PAIR("icon_notation","WNT_XmbItemSavePS3")
+										XML_PAIR("ingame","disable")
+										XML_PAIR("title","%s%s") // STR_MYGAMES, SUFIX2(profile)
+										XML_PAIR("info","%s")	 // STR_LOADGAMES
+										"</T>",
+										XML_HEADER,
+										file_exists(WM_ICONS_PATH "/icon_wm_root.png") ?
+											XML_PAIR("icon", WM_ICONS_PATH "/icon_wm_root.png") :
+											XML_PAIR("icon_rsc", "item_tex_ps3util"),
+										STR_MYGAMES, SUFIX2(profile),
+										STR_LOADGAMES);
+
+			if(!(webman_config->app_home) && !is_app_home_onxmb())
+			{
+				has_app_home = !(webman_config->root);
+				size += sprintf(myxml + size, "%s", "<T key=\"gamedebug\">"
+													XML_PAIR("icon_rsc","tex_album_icon")
+													XML_PAIR("title_rsc","msg_tool_app_home_ps3_game")
+													XML_PAIR("child","segment")
+													"</T></A><I>");
+				size += sprintf(myxml + size, "<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>");
+			}
+			else
+				size += sprintf(myxml + size, "</A><I>");
+
+			size += sprintf(myxml + size, QUERY_XMB("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
+										  MY_GAMES_XML, "</I></V></X>\r\n");
+
 			save_file(fb_xml, myxml, size);
+			memset(myxml, 0, size);
+		}
 
 		sys_memory_free(sysmem);
 
@@ -875,7 +876,7 @@ continue_reading_folder_xml:
 #ifdef MOUNT_ROMS
 	myxml.size = sprintf(myxml.str, "%s"
 						"<V id=\"%s%s\">"
-						"<A>", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "");
+						"<A>%s", XML_HEADER, scanning_roms ? "seg_wm_rom_" : "seg_mygames", scanning_roms ? roms_path[roms_index] : "", proxy_include);
 
 	if(scanning_roms)
 	{
@@ -1061,17 +1062,15 @@ continue_reading_folder_xml:
 	// --- Add groups queries (setup + eject + categories)
 	if( XMB_GROUPS )
 	{
-		if(webman_config->root && !(webman_config->app_home) && !is_app_home_onxmb())
+		if(!scanning_roms && webman_config->root && !(webman_config->app_home) && !is_app_home_onxmb())
 		{
 			has_app_home = true;
-			_concat(&myxml, "<T key=\"seg_gamedebug\">"
+			_concat(&myxml, "<T key=\"gamedebug\">"
 							XML_PAIR("icon_rsc","tex_album_icon")
 							XML_PAIR("title_rsc","msg_tool_app_home_ps3_game")
 							XML_PAIR("child","segment")
-							"</T>"
-							"</A><I>"
-							"<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>"
-					);
+							"</T></A><I>");
+			_concat(&myxml, "<Q class=\"type:x-xcb/game-debug\" key=\"game_debug\" attr=\"game_debug\"/>");
 		}
 		else
 			_concat(&myxml, "</A><I>");
@@ -1123,7 +1122,7 @@ save_xml:
 		if(scanning_roms || webman_config->nogrp)
 		{
 			cellFsWrite(fdxml, (char*)myxml_ps3.str, myxml_ps3.size, NULL);
-			cellFsWrite(fdxml, (char*)"</A><I>", 20, NULL);
+			cellFsWrite(fdxml, (char*)"</A><I>", 7, NULL);
 			cellFsWrite(fdxml, (char*)myxml_ngp.str, myxml_ngp.size, NULL);
 
 			slen = sprintf(buffer, "</I></V></X>\r\n");
