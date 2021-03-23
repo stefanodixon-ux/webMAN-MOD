@@ -542,8 +542,8 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 	int retval = NONE;
 	found_offset = fallback;
 
-	char mem[0x100]; int m = sizeof(mem) - len;
-	for(; address < stop; address += sizeof(mem))
+	char mem[0x100]; int m = sizeof(mem) - len; u8 gap = len + 0x10 - (len % 0x10);
+	for(; address < stop; address += sizeof(mem) - gap)
 	{
 		retval = ps3mapi_get_memory(pid, address, mem, sizeof(mem));
 		if(retval < 0) break;
@@ -618,7 +618,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 	char *find = (char*)"";
 	if(strstr(param, ".ps3mapi?"))
 	{
-		char addr_tmp[0x20];
+		char addr_tmp[0x60];
 		if(get_param("addr=", addr_tmp, param, 0x10))
 		{
 			address = convertH(addr_tmp);
@@ -631,11 +631,11 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		if(!pid) pid = get_valuen32(param, "proc=");
 		if(!pid) pid = get_current_pid();
 
-		if(get_param("find=", addr_tmp, param, 0x20))
+		if(get_param("find=", addr_tmp, param, 0x60))
 		{
 			find = strstr(param, "find=") + 5;
-			char sfind[0x21], *mask = addr_tmp;
-			u8 len = snprintf(sfind, 0x20, "%s", addr_tmp);
+			char sfind[0x60], *mask = addr_tmp;
+			u8 len = snprintf(sfind, 0x60, "%s", addr_tmp);
 
 			// search hex: 0xAABBCC112233
 			if(isHEX(addr_tmp))
@@ -652,16 +652,21 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			u8  step = get_valuen(param, "step=", 0, 0xE0); if(step < 1) step = 4;
 			u8  rep  = get_valuen(param, "rep=", 1, 0xFF);
 
+			address += step;
+
 			while(rep--)
 			{
 				address = ps3mapi_find_offset(pid, address, stop, step, sfind, len, mask, addr);
 				if(rep)
 				{
-					if(address == addr) {not_found = true; break;}
+					if(address == addr) break;
 					address += step;
 				}
 			}
-			if(!not_found) hilite = len;
+			if(address == addr)
+				not_found = true;
+			else
+				hilite = len;
 		}
 
 		if(!not_found) // ignore dump / patch_process if find returned not found
@@ -727,7 +732,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		concat(buffer, templn);
 
 		char *pos = strstr(param, "&addr="); if(pos) *pos = 0;
-		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&addr=%x&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param, address + 0x10, "Find", find, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
+		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&addr=%x&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param, address, "Find", find, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
 		concat(buffer, templn);
 		char buffer_tmp[length + 1];
 		memset(buffer_tmp, 0, sizeof(buffer_tmp));

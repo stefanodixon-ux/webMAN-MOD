@@ -1100,7 +1100,7 @@ continue_reading_folder_xml:
 		if(!(webman_config->cmask & PS1) && item_count[gPSX]) _concat(&myxml, QUERY_XMB("wm_psx", "#seg_wm_psx_items"));
 		if(!(webman_config->cmask & PSP) && item_count[gPSP]) _concat(&myxml, QUERY_XMB("wm_psp", "#seg_wm_psp_items"));
 		if((!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU))
-										 && item_count[gPSP]) _concat(&myxml, QUERY_XMB("wm_dvd", "#seg_wm_dvd_items"));
+										 && item_count[gDVD]) _concat(&myxml, QUERY_XMB("wm_dvd", "#seg_wm_dvd_items"));
 		#ifdef MOUNT_ROMS
 		if(c_roms) _concat(&myxml, QUERY_XMB("wm_rom", "xmb://localhost" HTML_BASE_PATH "/ROMS.xml#seg_wm_rom_items"));
 		#endif

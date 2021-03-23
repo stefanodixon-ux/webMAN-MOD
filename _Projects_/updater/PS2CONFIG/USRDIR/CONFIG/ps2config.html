@@ -779,6 +779,11 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLUS_214.94</td><td>Need for Speed - Carbon [Collector's Edition]</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_203.62</td><td>Need for Speed - Hot Pursuit 2</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_216.58</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>CUSTOM</td><td>SLES_550.02</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>CUSTOM</td><td>SLES_550.03</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>CUSTOM</td><td>SLES_550.04</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>CUSTOM</td><td>SLES_550.05</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>CUSTOM</td><td>SLES_550.06</td><td>Need for Speed - ProStreet</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_218.01</td><td>Need for Speed - Undercover</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_210.65</td><td>Need for Speed - Underground 2</td></tr>
 <tr><td>CUSTOM</td><td>SLES_527.25</td><td>Need for Speed - Underground 2</td></tr>
@@ -3293,6 +3298,11 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLUS_214.94</td><td>Need for Speed - Carbon [Collector's Edition]</td></tr>
 <tr><td>ENC</td><td>SLUS_203.62</td><td>Need for Speed - Hot Pursuit 2</td></tr>
 <tr><td>ENC</td><td>SLUS_216.58</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>ENC</td><td>SLES_550.02</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>ENC</td><td>SLES_550.03</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>ENC</td><td>SLES_550.04</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>ENC</td><td>SLES_550.05</td><td>Need for Speed - ProStreet</td></tr>
+<tr><td>ENC</td><td>SLES_550.06</td><td>Need for Speed - ProStreet</td></tr>
 <tr><td>ENC</td><td>SLUS_218.01</td><td>Need for Speed - Undercover</td></tr>
 <tr><td>ENC</td><td>SLUS_210.65</td><td>Need for Speed - Underground 2</td></tr>
 <tr><td>ENC</td><td>SLES_527.25</td><td>Need for Speed - Underground 2</td></tr>
@@ -3797,7 +3807,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2410; i < count; i++) {
+for (i = 2420; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }

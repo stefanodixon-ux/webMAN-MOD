@@ -122,14 +122,14 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	int flen = 0, hilite;
 	char *v;
 
-	char sfind[65]; memset(sfind, 0, sizeof(sfind));
+	char sfind[0x60]; memset(sfind, 0, sizeof(sfind));
 	u8 data[HEXVIEW_SIZE]; struct CellFsStat s;
 	bool is_file = islike(param, "/hexview.ps3/");
 	if(is_file)
 	{
 		char *fname = param + 12;
 
-		flen = get_param("&find=", sfind, fname, 64);
+		flen = get_param("&find=", sfind, fname, 0x60);
 
 		char *pos = strstr(fname, "&rep="); if(pos) {rep = (u8)val(pos + 5); *pos = NULL;}
 
