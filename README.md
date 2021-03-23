@@ -245,9 +245,10 @@ Requirements for GNU/Linux:
 - Berion & Brunolee for the graphics & icons
 - bucanero port of libraries for zip, rar, 7-zip, bz2, tgz, tar
 - lmirel port of libraries for exFAT
+- DeViL303 for ideas, gameboot mods, XML mods, help module (based on XMB offline documentation tool by xp3riments)
 - PSX-SCENE, PSX-PLACE, PLAYSTATIONHAX, PS3HAX & other scene websites/users, who translated, helped in the testing process
 
-Special thanks to Joonie, Habib & Rebug Team, flatz, haxxxen, DeViL303, Rancid-O, EvilNat, KW, naehrwert, MiralaTijera
+Special thanks to Joonie, Habib & Rebug Team, flatz, haxxxen, Rancid-O, EvilNat, KW, naehrwert, MiralaTijera
 
 
 ## License
