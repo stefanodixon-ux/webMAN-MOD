@@ -636,7 +636,7 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 		if(buf.st_size > get_free_space("/dev_hdd0")) return FAILED;
 	}
 
-	if(allow_sc36 && islike(file1, "/dvd_bdvd"))
+	if(allow_sc36 && islike(file1, "/dev_bdvd"))
 		sysLv2FsBdDecrypt(); // decrypt dev_bdvd files
 
 #ifdef USE_NTFS
@@ -832,7 +832,7 @@ static int folder_copy(const char *path1, char *path2)
 
 	if(is_ntfs || cellFsOpendir(path1, &fd) == CELL_FS_SUCCEEDED)
 	{
-		if(islike(path1, "/dvd_bdvd"))
+		if(islike(path1, "/dev_bdvd"))
 			{allow_sc36 = false; sysLv2FsBdDecrypt();} // decrypt dev_bdvd files
 
 #ifdef USE_NTFS
