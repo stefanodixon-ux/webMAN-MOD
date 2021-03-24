@@ -25,6 +25,7 @@ PPU_PRX_LDLIBS	=	-lfs_stub -lnet_stub -lrtc_stub -lio_stub -lgcm_sys_stub \
 					-lsysPrxForUser_export_stub \
 					-lvsh_export_stub \
 					-lvshcommon_export_stub \
+					-lsysutil_music_stub -lsysutil_search_stub \
 					-lpaf_export_stub \
 					-lvshmain_export_stub \
 					-lvshtask_export_stub \

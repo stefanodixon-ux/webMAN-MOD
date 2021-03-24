@@ -3,28 +3,28 @@
 #include <stdlib.h>
 
 typedef struct sys_prx_dbg_get_module_list_t {
-	uint64_t size;				
+	uint64_t size;
 	uint32_t unk0;
 	uint32_t max;
 	sys_prx_user_p_prx_id_t idlist;
 	uint32_t count;				// ?
-	sys_prx_user_p_stop_level_t levellist;	
+	sys_prx_user_p_stop_level_t levellist;
 	uint32_t unk1;
 } sys_prx_dbg_get_module_list_t;
 
 
 typedef struct sys_prx_dbg_module_info_t {
-	uint64_t size;				
-	char name[30];				
-	char version[2];			
-	uint32_t modattribute;		
-	uint32_t start_entry;		
-	uint32_t stop_entry;		
-	uint32_t all_segments_num;	
-	sys_prx_user_pchar_t filename;	
-	uint32_t filename_size;		
-	uint32_t segments_num;		
-	sys_prx_user_segment_vector_t segments;	
+	uint64_t size;
+	char name[30];
+	char version[2];
+	uint32_t modattribute;
+	uint32_t start_entry;
+	uint32_t stop_entry;
+	uint32_t all_segments_num;
+	sys_prx_user_pchar_t filename;
+	uint32_t filename_size;
+	uint32_t segments_num;
+	sys_prx_user_segment_vector_t segments;
 } sys_prx_dbg_module_info_t;
 
 typedef struct sys_process_info_t {

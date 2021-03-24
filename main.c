@@ -441,6 +441,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/ps2_classic.h"
 #include "include/xmb_savebmp.h"
 #include "include/ingame_screenshot.h"
+#include "include/ingame_music.h"
 #include "include/singstar.h"
 #include "include/autopoweroff.h"
 

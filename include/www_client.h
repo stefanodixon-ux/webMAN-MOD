@@ -830,8 +830,7 @@ parse_request:
 				reload_xmb();
 				sprintf(param, "/index.ps3");
 			}
-			else
-			if(islike(param, "/tempc.html") || islike(param, "/tempf.html"))
+			else if(islike(param, "/tempc.html") || islike(param, "/tempf.html"))
 			{
 				u8 t1 = 0, t2 = 0;
 				get_temperature(0, &t1); // CPU // 3E030000 -> 3E.03°C -> 62.(03/256)°C
@@ -839,8 +838,6 @@ parse_request:
 
 				u8 st, mode, unknown;
 				sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
-
-				sprintf(header, "%s%s", HTML_BASE_PATH, param); strcpy(param, header);
 
 				sprintf(header, "function setGaugeValues(){"
 								"cpu=%i;"
