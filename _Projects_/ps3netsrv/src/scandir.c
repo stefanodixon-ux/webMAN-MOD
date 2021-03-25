@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "compat.h"
 #include "dirent2.h"
 
 int alphasort(const void *_a, const void *_b);
@@ -73,26 +72,11 @@ scandir(const char *dirname,
 
 	if ((dir = opendir2(dirname)) == NULL) return FAILED;
 
-	#ifndef WIN32
-	char *fullpath = NULL;
-	#endif
-
 	used = 0;
 	allocated = 2;
 	namelist = malloc(allocated * sizeof(struct dirent2 *));
 	if (!namelist)
 		goto error;
-
-	#ifndef WIN32
-	int dlen = strlen(dirname) + 1;
-
-	fullpath = malloc(dlen + 2048 + 1);
-	if (!fullpath)
-		goto error;
-	strcpy(fullpath, dirname);
-	strcat(fullpath, "/");
-	char *pname = fullpath + dlen;
-	#endif
 
 	while ((ent = readdir2(dir)) != NULL)
 	{
@@ -101,7 +85,7 @@ scandir(const char *dirname,
 		/* duplicate struct direct for this entry */
 		flen = strlen(ent->d_name);
 		len = offsetof(struct dirent2, d_name) + flen + 1;
-		if ((ent2 = malloc(len)) == NULL) goto error;
+		if ((ent2 = malloc(len)) == NULL) return FAILED;
 
 		if (used >= allocated)
 		{
@@ -111,33 +95,11 @@ scandir(const char *dirname,
 			goto error;
 		}
 
-		#ifndef WIN32
-		// Check type if d_type is DT_UNKOWN
-		if( !((ent->d_type & DT_DIR) || (ent->d_type & DT_REG)) )
-		{
-			strcpy(pname, ent->d_name); // set file name to full path
-
-			DIR2* dt = opendir2(fullpath);
-			if (dt)
-			{
-				closedir2(dt);
-				ent->d_type |= DT_DIR;
-			}
-			else
-				ent->d_type |= DT_REG;
-		}
-		#endif
-
 		ent->d_namlen = flen;
 		memcpy(ent2, ent, len);
 		namelist[used++] = ent2;
 	}
 	closedir2(dir);
-
-	#ifndef WIN32
-	if (fullpath)
-		free(fullpath);
-	#endif
 
 	if (compar)
 		qsort(namelist, used, sizeof(struct dirent2 *),
@@ -156,10 +118,5 @@ error:
 
 		free(namelist);
 	}
-	#ifndef WIN32
-	if (fullpath)
-		free(fullpath);
-	#endif
-
 	return FAILED;
 }
