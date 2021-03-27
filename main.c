@@ -317,7 +317,6 @@ static char current_file[STD_PATH_LEN + 1];
 static char cp_path[STD_PATH_LEN + 1];  // cut/copy/paste buffer
 static u8 cp_mode = CP_MODE_NONE;       // 0 = none / 1 = copy / 2 = cut/move
 static u64 file_size(const char* path);
-static void parse_script(const char *script_file);
 static bool script_running = false;
 #endif
 
@@ -467,13 +466,13 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/patch_gameboot.h"
 #include "include/patch_ps2demo.h"
+#include "include/script.h"
 #include "include/_mount.h"
 #include "include/file_manager.h"
 
 #include "include/pkg_handler.h"
 #include "include/poll.h"
 #include "include/md5.h"
-#include "include/script.h"
 #include "include/show_msg2.h"
 
 #include "include/www_client.h"

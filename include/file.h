@@ -35,7 +35,8 @@ enum scan_operations
 	SCAN_RENAME = 4,
 	SCAN_COPYBK = 5,	// rename source to source + .bak after copy
 	SCAN_UNLOCK_SAVE = 6,
-	SCAN_LIST_SIZE = 7
+	SCAN_LIST_SIZE = 7,
+	SCAN_TRUNCATE  = 8
 };
 
 #ifdef USE_NTFS
@@ -1045,6 +1046,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if(recursive == RECURSIVE_DELETE) ; else
 	if(!sys_admin || !working) return FAILED;
 
+
 #ifdef USE_NTFS
 	if((fop == SCAN_DELETE) && !wildcard && !isDir(path))
 	{
@@ -1057,7 +1059,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if((fop == SCAN_DELETE) && !wildcard && !isDir(path)) return cellFsUnlink(path);
 #endif
 
-	if((fop == SCAN_DELETE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
+	if((fop == SCAN_DELETE || fop == SCAN_TRUNCATE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
 	size_t wildcard_len = (wildcard) ? strlen(wildcard) : 0;
 	char *wildcard1 = NULL, *wildcard2 = NULL, wcard[wildcard_len + 1];
@@ -1158,6 +1160,10 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 				}
 			}
 #endif
+			else if(fop == SCAN_TRUNCATE)
+			{
+				save_file(entry, "", SAVE_ALL);
+			}
 			else if(fop == SCAN_COPY || fop == SCAN_COPYBK)
 			{
 				file_copy(entry, dest_entry, COPY_WHOLE_FILE); // copy ntfs & cellFS

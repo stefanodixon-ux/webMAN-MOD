@@ -15,6 +15,7 @@
 // swap <path>=<path>
 // ren <path>=<path>
 
+// wait xmb
 // wait <1-9 secs>
 // wait <path>
 // lwait <path>
@@ -158,6 +159,15 @@ static void parse_script(const char *script_file)
 		sys_memory_free(sysmem);
 
 		script_running = false;
+	}
+}
+
+static void on_xmb_script(void)
+{
+	if(file_exists("/dev_hdd0/onxmb.bat"))
+	{
+		wait_for_xmb();
+		parse_script("/dev_hdd0/onxmb.bat");
 	}
 }
 

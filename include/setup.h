@@ -556,10 +556,10 @@ static void setup_form(char *buffer, char *templn)
 	//Scan for content
 	concat(buffer, "<td nowrap valign=top>");
 
-	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33", h ? " (" : "<br>",  !(webman_config->cmask & PS3), buffer);
+	add_checkbox("ps3", "PLAYSTATION\xC2\xAE\x33"," (", !(webman_config->cmask & PS3), buffer);
+	add_checkbox("ap", "/app_home",  h ? "," : ")<br>" , !(webman_config->app_home), buffer);
 	if(h)
 	{
-		add_checkbox("ap", "/app_home", "," , !(webman_config->app_home), buffer);
 		add_checkbox("gmi", "GAMEI", ")<br>",  (webman_config->gamei), buffer);
 	}
 

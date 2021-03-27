@@ -1954,7 +1954,21 @@ parse_request:
 				}
 				else if(islike(param, "/trunc.ps3"))
 				{
-					save_file(filename, "", SAVE_ALL);
+					// /trunc.ps3<path>
+					// /trunc.ps3<path-pattern>
+
+					char *wildcard = strstr(filename, "*");
+					if(wildcard)
+					{
+						wildcard = strrchr(filename, '/'); *wildcard++ = NULL;
+						scan(filename, true, wildcard, SCAN_TRUNCATE, NULL);
+					}
+					else if(isDir(filename))
+					{
+						scan(filename, true, NULL, SCAN_TRUNCATE, NULL);
+					}
+					else
+						save_file(filename, "", SAVE_ALL);
 				}
 				#ifdef COBRA_ONLY
 				else if(islike(param, "/dozip.ps3") || islike(param, "/unzip.ps3"))
@@ -2107,7 +2121,7 @@ parse_request:
 					char *wildcard = strstr(source, "*");
 					if(wildcard)
 					{
-						*wildcard++ = NULL;
+						wildcard = strrchr(source, '/'); *wildcard++ = NULL;
 						scan(source, true, wildcard, SCAN_MOVE, dest);
 					}
 					else if(islike(param, "/move.ps3"))
@@ -2720,7 +2734,11 @@ retry_response:
 						#endif
 					}
 
-					char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
+					char *wildcard = strstr(param, "*");
+					if(wildcard)
+					{
+						wildcard = strrchr(param, '/'); *wildcard++ = NULL;
+					}
 					scan(param, true, wildcard, (reply_html ? SCAN_LIST_SIZE : SCAN_LIST), FILE_LIST);
 
 					sprintf(param, "%s", FILE_LIST);
@@ -3321,9 +3339,7 @@ retry_response:
 							char *wildcard = strstr(param2, "*");
 							if(wildcard)
 							{
-								if(!strstr(wildcard + 1, "*"))
-									while((*wildcard != '/') && wildcard > param2) --wildcard;
-								*wildcard++ = NULL;
+								wildcard = strrchr(param2, '/'); *wildcard++ = NULL;
 							}
 							//ret = del(param2, islike(param, "/delete.ps3"));
 							ret = scan(param2, islike(param, "/delete.ps3"), wildcard, SCAN_DELETE, NULL);

@@ -19,12 +19,18 @@ static void poll_start_play_time(void)
  #ifdef WM_PROXY_SPRX
 		if(gTick.tick != rTick.tick)
 		{
+			gTick = rTick;
+
 			apply_remaps(); // re-apply remaps returning to XMB
 
 			#ifdef VISUALIZERS
 			char *param = html_base_path;
 			randomize_vsh_resources(false, param);
 			*param = NULL;
+			#endif
+
+			#ifdef COPY_PS3
+			on_xmb_script();
 			#endif
 		}
  #endif
