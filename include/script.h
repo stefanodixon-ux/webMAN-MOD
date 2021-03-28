@@ -167,6 +167,7 @@ static void on_xmb_script(void)
 	if(file_exists("/dev_hdd0/onxmb.bat"))
 	{
 		wait_for_xmb();
+		sys_ppu_thread_sleep(3);
 		parse_script("/dev_hdd0/onxmb.bat");
 	}
 }

@@ -733,7 +733,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 
 		char *pos = strstr(param, "&addr="); if(pos) *pos = 0;
 		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&addr=%x&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param, address, "Find", find, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
-		concat(buffer, templn);
+		concat(buffer, templn); if(pos) *pos = '&';
 		char buffer_tmp[length + 1];
 		memset(buffer_tmp, 0, sizeof(buffer_tmp));
 		int retval = NONE;
