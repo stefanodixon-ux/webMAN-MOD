@@ -160,6 +160,106 @@ static void make_fb_xml(void)
 	}
 }
 
+#ifndef LITE_EDITION
+static bool use_imgfont = false;
+
+static void add_tag(char *tags, u16 code)
+{
+	char tag[4] = {0xEF, (code >> 8), (code & 0xFF), 0};
+	strcat(tags, tag);
+}
+#endif
+
+static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *filename, char *title_id, u8 f0, u8 f1, u8 s)
+{
+	char tags[20] = {' ', 0}; u8 info = webman_config->info & 0xF;
+
+	#ifndef LITE_EDITION
+	if(use_imgfont && (webman_config->info & 0x10))
+	{
+		if(IS_HDD0)  add_tag(tags, 0x918F); else
+		if(f0 >= 1 && f0 <= 6) add_tag(tags, 0x919A); else
+		if(IS_NTFS)  add_tag(tags, 0x92B3); else
+		if(IS_NET)   add_tag(tags, 0x9192); else
+		if(f0 == 13) add_tag(tags, 0x90BB); else // SD
+		if(f0 == 14) add_tag(tags, 0x90BA); else // MS
+		if(f0 == 15) add_tag(tags, 0x90B9); 	 // CF
+
+		if(f1 <= id_PS3ISO)   add_tag(tags, 0x95A8); else
+		if(f1 == id_PS2ISO)   add_tag(tags, 0x95A7); else
+		if(f1 == id_PSXISO)   add_tag(tags, 0x95A6); else
+		if(f1 == id_PSXGAMES) add_tag(tags, 0x95A6); else
+		if(f1 == id_PSPISO)	  add_tag(tags, 0x95B5); else
+		if(f1 == id_ROMS)	  add_tag(tags, 0x95BC); else
+		if(f1 == id_GAMEI)	  add_tag(tags, 0x96B1); else
+		if(f1 == id_NPDRM)	  add_tag(tags, 0x96B0); else
+		if(f1 == id_BDISO)	  add_tag(tags, 0x9196); else
+		if(f1 == id_DVDISO)	  add_tag(tags, 0x9197);
+
+		#ifdef MOUNT_ROMS
+		if(f1 == id_ROMS)
+		{
+			if(roms_index >= 66 && roms_index <= 71) add_tag(tags, 0x9680); else // SNES
+			if(roms_index >= 41 && roms_index <= 44) add_tag(tags, 0x95A1); else // NES
+			if(roms_index >= 56 && roms_index <= 60) add_tag(tags, 0x9594); else // GEN
+			if(roms_index >= 49 && roms_index <= 52) add_tag(tags, 0x9592); else // GBA
+			if(roms_index == 46)                     add_tag(tags, 0x9593); else // GBC
+			if(roms_index >= 45 && roms_index <= 48) add_tag(tags, 0x9591); else // GB
+			if(roms_index >= 61 && roms_index <= 62) add_tag(tags, 0x959D); else // GG
+			if(roms_index >=  2 && roms_index <=  6) add_tag(tags, 0x97BE); else // MAME
+			if(roms_index >=  7 && roms_index <=  9) add_tag(tags, 0x97BD); else // FBA
+			if(roms_index >= 34 && roms_index <= 36) add_tag(tags, 0x95A0); else // NEO
+			if(roms_index == 25)                     add_tag(tags, 0x9882); else // DOOM
+			if(roms_index >= 26 && roms_index <= 27) add_tag(tags, 0x9883); else // QUAKE
+			if(roms_index >= 10 && roms_index <= 18) add_tag(tags, 0x9883); else // ATARI
+			if(roms_index == 40)                     add_tag(tags, 0x95A3); else // NGP
+			if(roms_index >= 21 && roms_index <= 22) add_tag(tags, 0x9590); else // VICE
+			if(roms_index >= 37 && roms_index <= 39) add_tag(tags, 0x95A4); else // PCE
+			if(roms_index >= 32 && roms_index <= 33) add_tag(tags, 0x959E); else // MSX
+			if(roms_index == 75)                     add_tag(tags, 0x9682);      // WSWAM
+		}
+		#endif
+
+		if(f1 < id_PS3ISO) add_tag(tags, 0x96B2); else // GAMES / GAMEZ
+		if(strcasestr(filename, ".bin")) add_tag(tags, 0x91BE); else
+		if(strcasestr(filename, ".iso")) add_tag(tags, 0x9288); else
+		if(strcasestr(filename, ".img")) add_tag(tags, 0x9287); else
+		if(strcasestr(filename, ".mdf")) add_tag(tags, 0x928A); else
+		if(strcasestr(filename, ".zip")) add_tag(tags, 0x90B6); else
+		if(strcasestr(filename, ".rar")) add_tag(tags, 0x90B5); else
+		if(strcasestr(filename, ".7z"))  add_tag(tags, 0x90B0); else
+		if(IS_NTFS)
+		{
+			if(strcasestr(filename, ".pkg")) add_tag(tags, 0x90B3); else
+			if(strcasestr(filename, ".avi")) add_tag(tags, 0x93A6); else
+			if(strcasestr(filename, ".mp4")) add_tag(tags, 0x93AE); else
+			if(strcasestr(filename, ".mp3")) add_tag(tags, 0x93AD); else
+			if(strcasestr(filename, ".p3t")) add_tag(tags, 0x96A4);
+		}
+	}
+	#endif
+
+	// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none, 0x10 = tags
+	if(info <= 1)
+	{
+		if((info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
+		sprintf(tempstr, XML_PAIR("info","%s/%s%s%s"), drives[f0], paths[f1], folder_name, tags);
+	}
+	else if(info == 2)
+	{
+		if(HAS_TITLE_ID)
+			sprintf(tempstr, XML_PAIR("info","%s | %s%s"), title_id, drives[f0] + s, tags);
+		else
+			sprintf(tempstr, XML_PAIR("info","%s%s"), drives[f0] + s, tags);
+	}
+	else if(webman_config->info == 0x13)
+	{
+		sprintf(tempstr, XML_PAIR("info","%s"), tags);
+	}
+
+	strcat(tempstr, "</T>");
+}
+
 static bool add_custom_xml(char *query_xmb)
 {
 	char *custom_xml = query_xmb + 800;
@@ -339,10 +439,10 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	#ifdef MOUNT_ROMS
 	#define ROM_PATHS	76
-	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME078", "MAME2000", "MAME2003", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "BOMBER", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "QUAKE2", "JAVAME", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "GPSP", "VBOY", "VBA", "MGBA", "PALM", "POKEMINI", "GENESIS", "GEN", "MEGAD", "MEGADRIVE", "PICO", "GG", "GEARBOY", "ZX81", "FUSE", "SCUMMVM", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "UZEM", "VECX", "WSWAM" };
+	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME078", "MAME2000", "MAME2003", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "BOMBER", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "QUAKE2", "JAVAME", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "GPSP", "VBA", "MGBA", "VBOY", "PALM", "POKEMINI", "GENESIS", "GEN", "MEGAD", "MEGADRIVE", "PICO", "GG", "GEARBOY", "ZX81", "FUSE", "SCUMMVM", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "UZEM", "VECX", "WSWAM" };
 	u16 roms_count[ROM_PATHS]; u32 count_roms = 0;
-	u8 roms_index = 0;
 	#endif
+	u8 roms_index = 0;
 
 	#ifdef SLAUNCH_FILE
 	int fdsl = create_slaunch_file();
@@ -442,7 +542,7 @@ scan_roms:
 
 	char param[STD_PATH_LEN], icon[STD_PATH_LEN], subpath[STD_PATH_LEN], enc_dir_name[1024];
 
-	u8 i0, is_net = 0;
+	u8 is_net = 0;
 
 	// --- scan xml content ---
 	#if defined(MOUNT_GAMEI) || defined(MOUNT_ROMS)
@@ -462,7 +562,7 @@ scan_roms:
 	{
 		if(check_drive(f0)) continue;
 
-		i0 = f0, is_net = IS_NET;
+		is_net = IS_NET;
 
 		if(conn_s_p == START_DAEMON)
 		{
@@ -528,11 +628,11 @@ scan_roms:
 			if(scanning_roms)
 			{
 				if(is_net)
-					{sprintf(param, "/ROMS%s/%s", SUFIX(uprofile), roms_path[roms_index]);}
+					sprintf(param, "/ROMS%s/%s", SUFIX(uprofile), roms_path[roms_index]);
 				else if(IS_NTFS)
-					{sprintf(param, "%s/USRDIR/cores/roms/%s", RETROARCH_DIR, roms_path[roms_index]); i0 = 0;}
+					sprintf(param, "%s/USRDIR/cores/roms/%s", RETROARCH_DIR, roms_path[roms_index]);
 				else
-					{sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);}
+					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);
 			}
 			else
 			#endif
@@ -593,23 +693,9 @@ scan_roms:
 										 templn, //proxy_include,
 										 localhost, neth, param, enc_dir_name);
 
-						// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
-						if(webman_config->info <= 1)
-						{
-							if((webman_config->info == 1) & HAS_TITLE_ID) {sprintf(folder_name, " | %s" , title_id);} else *folder_name = NULL;
-							read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s%s%s"), neth, param, folder_name);
-						}
-						else if(webman_config->info == 2)
-						{
-							if(HAS_TITLE_ID)
-								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), title_id, drives[f0] + 1);
-							else
-								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s"), drives[f0] + 1);
+						*folder_name = NULL;
 
-							if(f1 < 2) read_e += sprintf(tempstr + read_e, " | JB");
-						}
-
-						sprintf(tempstr + read_e, "</T>");
+						add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 1);
 
 						if(add_xmb_entry(f0, f1, plen + 6, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, item_count, 0)) key++;
 
@@ -723,23 +809,7 @@ next_xml_entry:
 											 templn, //proxy_include,
 											 localhost, "", param, enc_dir_name);
 
-							// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none
-							if(webman_config->info <= 1)
-							{
-								if((webman_config->info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
-								read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s/%s%s"), drives[i0], paths[f1], folder_name);
-							}
-							else if(webman_config->info == 2)
-							{
-								if(HAS_TITLE_ID)
-									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s | %s"), title_id, drives[i0] + 5);
-								else
-									read_e += sprintf(tempstr + read_e, XML_PAIR("info","%s"), drives[i0] + 5);
-
-								if(f1 < 2) read_e += sprintf(tempstr + read_e, " | JB");
-							}
-
-							sprintf(tempstr + read_e, "</T>");
+							add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 5);
 
 							if(add_xmb_entry(f0, f1, plen + flen - 13, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, item_count, subfolder)) key++;
 						}

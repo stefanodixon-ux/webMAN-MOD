@@ -8,6 +8,10 @@ static void start_www(u64 conn_s_p)
 		apply_remaps();
 		#endif
 
+		#ifndef LITE_EDITION
+		use_imgfont = (file_ssize(IMAGEFONT_PATH) > 778500);
+		#endif
+
 		char templn[MAX_LINE_LEN];
 
 		if(conn_s_p == START_DAEMON)

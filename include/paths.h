@@ -8,6 +8,7 @@
 #define SYS_COBRA_PATH		"/dev_blind/sys/"
 #define REBUG_TOOLBOX		"/dev_hdd0//game/RBGTLBOX2/USRDIR/"
 #define COLDBOOT_PATH		"/dev_blind/vsh/resource/coldboot.raf"
+#define IMAGEFONT_PATH		"/dev_flash/vsh/resource/imagefont.bin"
 #define ORG_LIBFS_PATH		"/dev_flash/sys/external/libfs.sprx"
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 
