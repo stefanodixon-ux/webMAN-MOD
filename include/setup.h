@@ -802,6 +802,7 @@ static void setup_form(char *buffer, char *templn)
 
 	value = webman_config->info;
 	concat(buffer, "Info <select name=\"xi\">");
+	#ifndef LITE_EDITION
 					add_option_item(0x03, "None",             (value == 0x03), buffer);
 	if(use_imgfont) add_option_item(0x13, "Tags",             (value == 0x13), buffer);
 					add_option_item(0x02, "ID",               (value == 0x02), buffer);
@@ -810,6 +811,12 @@ static void setup_form(char *buffer, char *templn)
 	if(use_imgfont) add_option_item(0x10, "Path + Tags",      (value == 0x10), buffer);
 					add_option_item(0x01, "Path + ID",        (value == 0x01), buffer);
 	if(use_imgfont) add_option_item(0x11, "Path + ID + Tags", (value == 0x11), buffer);
+	#else
+	add_option_item(0x03, "None",      (value == 0x03), buffer);
+	add_option_item(0x02, "ID",        (value == 0x02), buffer);
+	add_option_item(0x00, "Path",      (value == 0x00), buffer);
+	add_option_item(0x01, "Path + ID", (value == 0x01), buffer);
+	#endif
 
 	value = webman_config->minfo;
 	concat(buffer, "</select> • Mount Info <select name=\"mi\">");

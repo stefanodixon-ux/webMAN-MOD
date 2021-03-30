@@ -177,28 +177,31 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 	#ifndef LITE_EDITION
 	if(use_imgfont && (webman_config->info & 0x10))
 	{
-		if(IS_HDD0)  add_tag(tags, 0x918F); else
-		if(f0 >= 1 && f0 <= 6) add_tag(tags, 0x919A); else
-		if(IS_NTFS)  add_tag(tags, 0x92B3); else
-		if(IS_NET)   add_tag(tags, 0x9788); else
+		// TAG#1
+		if(IS_HDD0)  add_tag(tags, 0x918F); else // HDD
+		if(f0 >= 1 && f0 <= 6) add_tag(tags, 0x919A); else // USB
+		if(IS_NTFS)  add_tag(tags, 0x92B3); else // NTFS
+		if(IS_NET)   add_tag(tags, 0x9788); else // NET
 		if(f0 == 13) add_tag(tags, 0x90BB); else // SD
 		if(f0 == 14) add_tag(tags, 0x90BA); else // MS
 		if(f0 == 15) add_tag(tags, 0x90B9); 	 // CF
 
-		if(f1 <= id_PS3ISO)   add_tag(tags, 0x95A8); else
-		if(f1 == id_PS2ISO)   add_tag(tags, 0x95A7); else
-		if(f1 == id_PSXISO)   add_tag(tags, 0x95A6); else
-		if(f1 == id_PSXGAMES) add_tag(tags, 0x95A6); else
-		if(f1 == id_PSPISO)	  add_tag(tags, 0x95B5); else
-		if(f1 == id_ROMS)	  add_tag(tags, 0x95BC); else
-		if(f1 == id_GAMEI)	  add_tag(tags, 0x96B1); else
-		if(f1 == id_NPDRM)	  add_tag(tags, 0x96B0); else
-		if(f1 == id_BDISO)	  add_tag(tags, 0x9196); else
-		if(f1 == id_DVDISO)	  add_tag(tags, 0x9197);
+		// TAG#2
+		if(f1 <= id_PS3ISO)   add_tag(tags, 0x95A8); else // PS3
+		if(f1 == id_PS2ISO)   add_tag(tags, 0x95A7); else // PS2
+		if(f1 == id_PSXISO)   add_tag(tags, 0x95A6); else // PS1
+		if(f1 == id_PSXGAMES) add_tag(tags, 0x95A6); else // PS1
+		if(f1 == id_PSPISO)	  add_tag(tags, 0x95B5); else // PSP
+		if(f1 == id_ROMS)	  add_tag(tags, 0x95BC); else // ROM
+		if(f1 == id_GAMEI)	  add_tag(tags, 0x96B1); else // GAMEI
+		if(f1 == id_NPDRM)	  add_tag(tags, 0x96B0); else // GAME
+		if(f1 == id_BDISO)	  add_tag(tags, 0x90BC); else // BD
+		if(f1 == id_DVDISO)	  add_tag(tags, 0x90BF);	  // DVD
 
 		#ifdef MOUNT_ROMS
 		if(f1 == id_ROMS)
 		{
+			// TAG#3
 			if(roms_index >= 66 && roms_index <= 71) add_tag(tags, 0x9680); else // SNES
 			if(roms_index >= 41 && roms_index <= 44) add_tag(tags, 0x95A1); else // NES
 			if(roms_index >= 56 && roms_index <= 60) add_tag(tags, 0x9594); else // GEN
@@ -220,22 +223,23 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 		}
 		#endif
 
-		if(f1 == 0) add_tag(tags, 0x96B2); else // GAMES
-		if(f1 == 1) add_tag(tags, 0x97B2); else // GAMEZ
-		if(strcasestr(filename, ".bin")) add_tag(tags, 0x91BE); else
-		if(strcasestr(filename, ".iso")) add_tag(tags, 0x9288); else
-		if(strcasestr(filename, ".img")) add_tag(tags, 0x9287); else
-		if(strcasestr(filename, ".mdf")) add_tag(tags, 0x928A); else
-		if(strcasestr(filename, ".zip")) add_tag(tags, 0x90B6); else
-		if(strcasestr(filename, ".rar")) add_tag(tags, 0x90B5); else
-		if(strcasestr(filename, ".7z"))  add_tag(tags, 0x90B0); else
+		// TAG#4
+		if(f1 == 0)                      add_tag(tags, 0x96B2); else // GAMES
+		if(f1 == 1)                      add_tag(tags, 0x97B2); else // GAMEZ
+		if(strcasestr(filename, ".bin")) add_tag(tags, 0x91BE); else // BIN
+		if(strcasestr(filename, ".iso")) add_tag(tags, 0x9288); else // ISO
+		if(strcasestr(filename, ".img")) add_tag(tags, 0x9287); else // IMG
+		if(strcasestr(filename, ".mdf")) add_tag(tags, 0x928A); else // MDF
+		if(strcasestr(filename, ".zip")) add_tag(tags, 0x90B6); else // ZIP
+		if(strcasestr(filename, ".rar")) add_tag(tags, 0x90B5); else // RAR
+		if(strcasestr(filename, ".7z"))  add_tag(tags, 0x90B0); else // 7Z
 		if(IS_NTFS)
 		{
-			if(strcasestr(filename, ".pkg")) add_tag(tags, 0x90B3); else
-			if(strcasestr(filename, ".avi")) add_tag(tags, 0x93A6); else
-			if(strcasestr(filename, ".mp4")) add_tag(tags, 0x93AE); else
-			if(strcasestr(filename, ".mp3")) add_tag(tags, 0x93AD); else
-			if(strcasestr(filename, ".p3t")) add_tag(tags, 0x96A4);
+			if(strcasestr(filename, ".pkg")) add_tag(tags, 0x90B3); else // PKG
+			if(strcasestr(filename, ".avi")) add_tag(tags, 0x93A6); else // AVI
+			if(strcasestr(filename, ".mp4")) add_tag(tags, 0x93AE); else // MP4
+			if(strcasestr(filename, ".mp3")) add_tag(tags, 0x93AD); else // MP3
+			if(strcasestr(filename, ".p3t")) add_tag(tags, 0x96A4);		 // P3T
 		}
 	}
 	#endif
@@ -244,7 +248,7 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 	if(info <= 1)
 	{
 		if((info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
-		sprintf(tempstr, XML_PAIR("info","%s/%s%s%s"), drives[f0], paths[f1], folder_name, tags);
+		sprintf(tempstr, XML_PAIR("info","%s/%s%s%s"), drives[f0] + s, (f1 == id_NPDRM) ? "game" : paths[f1], folder_name, tags);
 	}
 	else if(info == 2)
 	{
@@ -552,7 +556,7 @@ scan_roms:
 
 	int ns = NONE; u8 uprofile = profile;
 
-	bool is_npdrm = webman_config->npdrm && (!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb()); strcpy(paths[id_GAMEZ], is_npdrm ? "game" : "GAMEZ");
+	bool allow_npdrm = webman_config->npdrm && (!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb());
 
 	#ifdef NET_SUPPORT
 	int abort_connection = 0;
@@ -564,6 +568,8 @@ scan_roms:
 		if(check_drive(f0)) continue;
 
 		is_net = IS_NET;
+
+		if(allow_npdrm) {strcpy(paths[id_GAMEZ], IS_HDD0 ? "game" : "GAMEZ"); allow_npdrm = IS_HDD0;}
 
 		if(conn_s_p == START_DAEMON)
 		{
@@ -601,8 +607,6 @@ scan_roms:
 				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
 				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
-
-				if(is_npdrm && !IS_HDD0) {is_npdrm = false; strcpy(paths[id_GAMEZ], "GAMEZ");}
 
 #ifdef NET_SUPPORT
 				if(is_net)
@@ -664,13 +668,16 @@ scan_roms:
 
 				plen = strlen(param);
 
+				bool is_game_dir = (allow_npdrm && (f1 == id_GAMEZ));
+
 				while((!is_net && (!cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) && read_e > 0))
 #ifdef NET_SUPPORT
 					|| (is_net && (v3_entry < v3_entries))
 #endif
 					)
 				{
-					if(key >= max_xmb_items) break; if(is_npdrm && (f1 == id_GAMEZ) && !islike(entry.entry_name.d_name, "NP")) continue;
+					if(key >= max_xmb_items) break;
+					if(is_game_dir && !islike(entry.entry_name.d_name, "NP")) continue;
 #ifdef NET_SUPPORT
 					if(is_net)
 					{
@@ -755,7 +762,7 @@ next_xml_entry:
 							}
 							else
 #endif
-							if(is_npdrm && (f1 == id_GAMEZ))
+							if(is_game_dir)
 								read_e = sprintf(templn, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name);
 							else
 							{
@@ -770,7 +777,7 @@ next_xml_entry:
 
 							if(!is_iso)
 							{
-								if(is_npdrm && (f1 == id_GAMEZ)) sprintf(templn + read_e - 17, "/PARAM.SFO");
+								if(is_game_dir) sprintf(templn + read_e - 17, "/PARAM.SFO");
 								get_title_and_id_from_sfo(templn, title_id, entry.entry_name.d_name, icon, tempstr, 0);
 							}
 							else
@@ -810,7 +817,7 @@ next_xml_entry:
 											 templn, //proxy_include,
 											 localhost, "", param, enc_dir_name);
 
-							add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 5);
+							add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, is_game_dir ? id_NPDRM : f1, 5);
 
 							if(add_xmb_entry(f0, f1, plen + flen - 13, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, item_count, subfolder)) key++;
 						}
