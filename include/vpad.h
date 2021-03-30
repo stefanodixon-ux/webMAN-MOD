@@ -221,7 +221,7 @@ static u8 pad_select_netemu(const char *path, u8 value)
 {
 	if(strstr(path, "[netemu]")) value = 1;
 
-	pad_data = pad_read();
+	pad_data = pad_read(); // hold L2 = emu, R2 = netemu, R1 = toggle emu / netemu
 	if(pad_data.len > 0)
 	{
 		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2) return 0; // emu

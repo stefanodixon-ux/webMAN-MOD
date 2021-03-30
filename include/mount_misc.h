@@ -91,7 +91,7 @@
 		do_umount(false);
 		set_app_home(_path);
 
-		if(launch_app_home_icon(webman_config->autoplay)) ret = true;
+		if(launch_app_home_icon(webman_config->autoplay | force_ap)) ret = true;
 
 		mount_unk = EMU_MAX;
 		goto exit_mount;

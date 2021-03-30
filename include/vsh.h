@@ -72,7 +72,7 @@ static int get_game_info(void)
 
 static bool abort_autoplay(void)
 {
-	CellPadData pad_data = pad_read(); // abort auto-play holding L2 or pressing arrow keys
+	pad_data = pad_read(); // abort auto-play holding L2 or pressing arrow keys
 	if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & (CELL_PAD_CTRL_DOWN | CELL_PAD_CTRL_UP | CELL_PAD_CTRL_LEFT | CELL_PAD_CTRL_RIGHT)) ||
 		(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_CIRCLE)))
 	{
@@ -354,7 +354,7 @@ static void reload_xmb(void)
 #else
 static void reload_xmb(void)
 {
-	CellPadData pad_data = pad_read();
+	pad_data = pad_read(); // hold L2 to cancel reload xmb
 	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
 
 	if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))

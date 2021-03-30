@@ -11,10 +11,17 @@
 // [PS2]     PS2 extracted folders in /PS2DISC (needs PS2_DISC compilation flag)
 // [netemu]  Mount ps2/psx game with netemu
 
+// hold CROSS = force Auto-Play
+// hold CIRCLE = cancel Auto-Play
+// hold L2 = mount PSX with ps1_emu / PS2 with ps2_emu
+// hold R2 = mount PSX with ps1_netemu / PS2 with ps2_netemu / disable syscalls on PS3
+// hold R1 = toggle emu / netemu
+
 #define TITLEID_LEN		10
 
 static int8_t check_multipsx = NONE;
 
+static u8 force_ap = 0;
 static u8 mount_app_home = false; // force mount JB folder in /app_home (false = use webman_config->app_home)
 
 #ifdef MOUNT_GAMEI
@@ -51,15 +58,15 @@ typedef struct
 // /copy.ps3/<path>[&to=<destination>]
 
 #ifdef COPY_PS3
-u8 usb = 1; // first connected usb drive [used by /copy.ps3 & in the tooltips for /copy.ps3 links in the file manager]. 1 = /dev_usb000
+static u8 usb = 1; // first connected usb drive [used by /copy.ps3 & in the tooltips for /copy.ps3 links in the file manager]. 1 = /dev_usb000
 #endif
 
-static void auto_play(char *param, u8 play_ps3)
+static void auto_play(char *param, u8 force_autoplay)
 {
 #ifdef OFFLINE_INGAME
 	if((strstr(param, OFFLINE_TAG) != NULL)) net_status = 0;
 #endif
-	u8 autoplay = (webman_config->autoplay) || play_ps3;
+	u8 autoplay = (webman_config->autoplay) || force_autoplay;
 
 	if(autoplay)
 	{
@@ -73,7 +80,7 @@ static void auto_play(char *param, u8 play_ps3)
 
 	if(IS_ON_XMB)
 	{
-		CellPadData pad_data = pad_read();
+		pad_data = pad_read(); // check if holding L2 to cancel auto-play
 		bool atag = (strcasestr(param, AUTOPLAY_TAG) != NULL) || (autoplay);
  #ifdef REMOVE_SYSCALLS
 		bool l2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2));
@@ -1348,7 +1355,7 @@ static void mount_autoboot(void)
 
 	bool do_mount = false;
 
-	CellPadData pad_data = pad_read();
+	pad_data = pad_read(); // check if holding L2+R2 to prevent auto-mount on startup
 
 	// prevent auto-mount on startup if L2+R2 is pressed
 	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))) { if(!webman_config->nobeep) BEEP2; return;}
@@ -1393,7 +1400,7 @@ static void mount_autoboot(void)
 		}
 		else
 		{
-			if(mount_game(path, MOUNT_NORMAL)) auto_play(path, 0);
+			if(mount_game(path, MOUNT_NORMAL)) auto_play(path, false);
 		}
 	}
 }
@@ -1636,7 +1643,7 @@ exit_mount:
 #ifdef REMOVE_SYSCALLS
 	else if(mount_unk == EMU_PS3)
 	{
-		CellPadData pad_data = pad_read();
+		pad_data = pad_read(); // check if holding R2 to disable syscalls on PS3
 		bool otag = (strcasestr(_path, ONLINE_TAG) != NULL);
 		bool r2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2));
 		if((!r2 && otag) || (r2 && !otag)) disable_cfw_syscalls(webman_config->keep_ccapi);
@@ -1684,7 +1691,7 @@ mounting_done:
 				{
 					set_app_home(_path0);
 					sys_ppu_thread_sleep(1);
-					launch_app_home_icon(webman_config->autoplay);
+					launch_app_home_icon(webman_config->autoplay | force_ap);
 				}
 			}
 		}

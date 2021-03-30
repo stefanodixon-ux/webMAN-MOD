@@ -139,7 +139,7 @@ static void parse_script(const char *script_file)
 						if(_islike(line, "not exist /")) {path += 10; ret = not_exists(path);}
 						else
 						{
-							CellPadData pad_data = pad_read();
+							pad_data = pad_read(); // check for hold L1 or R1 in script
 							if(pad_data.len > 0)
 							{
 								if(_islike(line, "L1")) {ret = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1);}

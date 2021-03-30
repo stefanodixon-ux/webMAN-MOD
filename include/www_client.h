@@ -358,7 +358,7 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 
 	u8 max_cc = 0; // count client connections per persistent connection
 	u8 keep_alive = 0, use_keep_alive = 0;
-	u8 ap_param = 0; // 0 = do nothing, 1 = use webman_config->autoplay, 2 = force auto_play
+	u8 ap_param = 0; force_ap = 0; // 0 = do nothing, 1 = use webman_config->autoplay, 2 = force auto_play
 
 	prev_dest = last_dest = NULL; // init fast concat
 
@@ -3516,7 +3516,14 @@ retry_response:
 
 						if(sysmem) {sys_memory_free(sysmem); sysmem = NULL;}
 
-						if(game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount)) ap_param = 1; // use webman_config->autoplay
+						u8 ap = 1; // use webman_config->autoplay
+						if(webman_config->autoplay == 0)
+						{
+							pad_data = pad_read(); // check if holding CROSS to force auto-play
+							if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS)) force_ap = ap = 2; // force auto_play
+						}
+
+						if(game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount)) ap_param = ap;
 
 						if(!mc) http_response(conn_s, header, param, CODE_CLOSE_BROWSER, HTML_CLOSE_BROWSER); //auto-close browser
 

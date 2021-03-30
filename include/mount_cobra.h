@@ -746,7 +746,7 @@
 		else
 		{
 		#ifdef EXTRA_FEAT
-			CellPadData pad_data = pad_read();
+			pad_data = pad_read(); // hold select to eject disc
 
 			int special_mode = 0;
 			if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_SELECT)) special_mode = true; //mount also app_home / eject disc
