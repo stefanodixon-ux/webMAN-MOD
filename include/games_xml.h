@@ -180,7 +180,7 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 		if(IS_HDD0)  add_tag(tags, 0x918F); else
 		if(f0 >= 1 && f0 <= 6) add_tag(tags, 0x919A); else
 		if(IS_NTFS)  add_tag(tags, 0x92B3); else
-		if(IS_NET)   add_tag(tags, 0x9192); else
+		if(IS_NET)   add_tag(tags, 0x9788); else
 		if(f0 == 13) add_tag(tags, 0x90BB); else // SD
 		if(f0 == 14) add_tag(tags, 0x90BA); else // MS
 		if(f0 == 15) add_tag(tags, 0x90B9); 	 // CF
@@ -211,7 +211,7 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 			if(roms_index >= 34 && roms_index <= 36) add_tag(tags, 0x95A0); else // NEO
 			if(roms_index == 25)                     add_tag(tags, 0x9882); else // DOOM
 			if(roms_index >= 26 && roms_index <= 27) add_tag(tags, 0x9883); else // QUAKE
-			if(roms_index >= 10 && roms_index <= 18) add_tag(tags, 0x9883); else // ATARI
+			if(roms_index >= 10 && roms_index <= 18) add_tag(tags, 0x97BA); else // ATARI
 			if(roms_index == 40)                     add_tag(tags, 0x95A3); else // NGP
 			if(roms_index >= 21 && roms_index <= 22) add_tag(tags, 0x9590); else // VICE
 			if(roms_index >= 37 && roms_index <= 39) add_tag(tags, 0x95A4); else // PCE
@@ -220,7 +220,8 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 		}
 		#endif
 
-		if(f1 < id_PS3ISO) add_tag(tags, 0x96B2); else // GAMES / GAMEZ
+		if(f1 == 0) add_tag(tags, 0x96B2); else // GAMES
+		if(f1 == 1) add_tag(tags, 0x97B2); else // GAMEZ
 		if(strcasestr(filename, ".bin")) add_tag(tags, 0x91BE); else
 		if(strcasestr(filename, ".iso")) add_tag(tags, 0x9288); else
 		if(strcasestr(filename, ".img")) add_tag(tags, 0x9287); else
