@@ -731,13 +731,13 @@ int main()
 	}
 
 	// webMAN LaunchPad icons
-	file_copy(APP_USRDIR "/icons/icon_lp_ps3.png"      , ICONS_DIR "/icon_lp_ps3.png");
-	file_copy(APP_USRDIR "/icons/icon_lp_psx.png"      , ICONS_DIR "/icon_lp_psx.png");
-	file_copy(APP_USRDIR "/icons/icon_lp_ps2.png"      , ICONS_DIR "/icon_lp_ps2.png");
-	file_copy(APP_USRDIR "/icons/icon_lp_psp.png"      , ICONS_DIR "/icon_lp_psp.png");
-	file_copy(APP_USRDIR "/icons/icon_lp_dvd.png"      , ICONS_DIR "/icon_lp_dvd.png");
-	file_copy(APP_USRDIR "/icons/icon_lp_blu.png"      , ICONS_DIR "/icon_lp_blu.png");
-	file_copy(APP_USRDIR "/icons/icon_lp_nocover.png"  , ICONS_DIR "/icon_lp_nocover.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_ps3.png"    , ICONS_DIR "/icon_lp_ps3.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_psx.png"    , ICONS_DIR "/icon_lp_psx.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_ps2.png"    , ICONS_DIR "/icon_lp_ps2.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_psp.png"    , ICONS_DIR "/icon_lp_psp.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_dvd.png"    , ICONS_DIR "/icon_lp_dvd.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_blu.png"    , ICONS_DIR "/icon_lp_blu.png");
+	file_copy(APP_USRDIR "/icons/icon_lp_nocover.png", ICONS_DIR "/icon_lp_nocover.png");
 
 	// XMBM+ webMAN
 	sysLv2FsMkdir(XMBMANPLS_DIR, DMODE);
@@ -885,10 +885,12 @@ int main()
 	if(not_exists(LANG_DIR "/LANG_XX.TXT"))
 		file_copy(APP_USRDIR "/LANG_XX.TXT", LANG_DIR "/LANG_XX.TXT");
 
+	sysLv2FsUnlink(COMBO_DIR "wm_custom_r2_square"); // delete bad file
+
 	// skip update custom combo file
-	if(not_exists(COMBO_DIR "wm_custom_r2_square"))
-		file_copy(APP_USRDIR "/wm_custom_combo", COMBO_DIR "wm_custom_r2_square");
-	if(file_exists(COMBO_DIR "wm_custom_r2_square"))
+	if(not_exists(COMBO_DIR "/wm_custom_r2_square"))
+		file_copy(APP_USRDIR "/wm_custom_combo", COMBO_DIR "/wm_custom_r2_square");
+	if(file_exists(COMBO_DIR "/wm_custom_r2_square"))
 		sysLv2FsUnlink(TMP_DIR "/wm_custom_combo");
 
 	// resource files sprx (wm_proxy, libfs, raw_iso, netiso, video_rec)

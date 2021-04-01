@@ -2,6 +2,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <style>
+body {background-color:#333;color:#CCC}
+
 .dot-elastic {
 	position: relative;
 	width: 10px;
@@ -103,6 +105,8 @@
 	margin-bottom: 12px; /* Add some space below the input */
 	border-radius: 10px;
 	outline-color: navy;
+	background-color: #333;
+	color: yellow;
 }
 
 #dbTable {
@@ -128,27 +132,27 @@
 	position: -webkit-sticky;
 	position: sticky;
 	top: 125px;
-	background-color: #f1f1f1;
+	background-color: #111;
 }
 
 #dbTable tr.header {
-	background-color: #f1f1f1;
+	background-color: #111;
 }
 
 #dbTable tr:hover {
-	background-color: #f1f1f1;
-	color: #33D;
+	background-color: #222;
+	color: yellow;
 }
 
-H1 a {color:#334; text-decoration:none;}
+H1 a {color:#88F; text-decoration:none;}
 
-#category {position:absolute; top:15px; right:2px; color:navy; font-family:arial; font-size:20px; border-radius:5px;}
+#category {position:absolute; top:15px; right:2px; color:navy; font-family:arial; font-size:20px; border-radius:5px; background-color: #333; color:yellow;}
 
 div.sticky {
 	position: -webkit-sticky;
 	position: sticky;
 	top: 10px;
-	background-color: white;
+	background-color: #333;
 }
 
 #sorting {
@@ -158,34 +162,36 @@ div.sticky {
 	width:200px;
 	font-size:60px;
 	font-family:arial;
-	background-color:#f0f0f0;
+	background-color:#444;
 	padding:20px;
 	border-width:5px;
-	box-shadow: 15px 15px 15px #ccc;
+	box-shadow: 15px 15px 15px #111;
 	border-radius: 10px;
 	opacity:0.9;
 }
 
 #clear {
-	position:fixed;
-	top: 87px;
-	right: 24px;
+	position:absolute;
+	top: 78px;
+	right: 20px;
 	font-size: 24px;
 	font-family: Arial;
 	color: #ccc;
 	cursor: pointer;
+	z-index:99;
 }
 
 #clear:hover {
-	color: blue;
+	color: yellow;
 }
 
 small {font-size:12px; color:#aaa}
 
 #compat {font-size:10px; font-family:arial;}
 #compat a {text-decoration:none; color:#ccc;}
-#compat a:hover {text-decoration:underline; color:blue;}
-#title:hover {color:#339;}
+#compat a:hover {text-decoration:underline; color:yellow;}
+#releases {color:white}
+#releases:hover, #title:hover {color:yellow;}
 </style>
 <title>PS2 CONFIG Database</title>
 </head>
@@ -199,15 +205,15 @@ small {font-size:12px; color:#aaa}
 </tr></table>
 </div>
 
-<div style="position:fixed;top:0px;width:100%;height:125px;background-color:white;"></div>
+<div style="position:fixed;top:0px;width:100%;height:125px;background-color:#333;"></div>
 <div class="sticky">
 <h1>
 <a id="title" href="https://www.psx-place.com/threads/compatibility-list-ps2-on-ps3.1306/">PS2 CONFIG Database</a> -
-<a href="https://github.com/aldostools/webMAN-MOD/releases" title="Download webMAN MOD"><font size="3" color="#aac"> PS2 on PS3</font></a></br>
+<a id="releases" href="https://github.com/aldostools/webMAN-MOD/releases" title="Download webMAN MOD"><font size="3"> PS2 on PS3</font></a></br>
 <div id="compat"><a href="https://www.psdevwiki.com/ps3/PS2_Classics_Emulator_Compatibility_List" target="_blank">PS2 Classics Emulator Compatibility List</a> &bull; <a href="https://www.psx-place.com/resources/ps2-classics-gui.638/"> PS2 Classic GUI</a> &bull; <a href="https://store.brewology.com/ahomebrew.php?brewid=290">PS2 Classic Launcher</a></div>
 </h1>
 <input type="text" id="txtSrchDB" onkeyup="doSearch();" placeholder="Search for names..">
-<div id="clear" onclick="input.value='';doSearch();">X</div>
+<span id="clear" onclick="input.value='';doSearch();">X</span>
 <select accesskey="c" tabindex="-1" id="category" onchange="category=this.value;doSearch();input.select();" ondblclick="this.value=category='ALL';doSearch();">
 <option value="ALL"   >CUSTOM + NET + GX + SOFT</option>
 <option value="CUSTOM">CUSTOM</option>

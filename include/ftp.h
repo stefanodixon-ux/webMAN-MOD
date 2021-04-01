@@ -306,7 +306,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											if(read_e)
 											{
 												#ifdef UNLOCK_SAVEDATA
-												if(webman_config->unlock_savedata && (read_e < 8192)) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
+												if(webman_config->unlock_savedata && (read_e < _4KB_)) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
 												#endif
 												if(send(data_s, buffer2, (size_t)read_e, 0) < 0) break; // FAILED
 											}
@@ -420,9 +420,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											if(read_e > 0)
 											{
 												#ifdef UNLOCK_SAVEDATA
-												if(webman_config->unlock_savedata && (read_e < 8192)) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
+												if(webman_config->unlock_savedata && (read_e < 4096)) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
 												#endif
-												if(cellFsWrite(fd, buffer2, read_e, NULL) != CELL_FS_SUCCEEDED) break; // FAILED
+												if(cellFsWrite(fd, buffer2, read_e, NULL)) break; // FAILED
 											}
 											else if(read_e < 0)
 												break; // FAILED
@@ -770,7 +770,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								if(is_ntfs) {if(ps3ntfs_dirnext(pdir, entry_name, &bufn) != CELL_OK) break; entry.attribute.st_mode = bufn.st_mode, entry.attribute.st_size = bufn.st_size, entry.attribute.st_mtime = bufn.st_mtime;}
 								else
 #endif
-								if(is_root) {if((cellFsReaddir(fd, &entry_s, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0)) break;}
+								if(is_root) {if(cellFsReaddir(fd, &entry_s, &read_e) || !read_e) break;}
 								else
 								if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
 

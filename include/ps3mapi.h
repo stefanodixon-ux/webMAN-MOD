@@ -1037,22 +1037,17 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 				case 4: sprintf(tmp_filename + 22, "_nocobra.txt"); if(IS_DEX) sprintf(tmp_filename + 30, "_dex.txt"); break;
 			}
 
-			int fdw = 0;
-			if(cellFsOpen(tmp_filename, CELL_FS_O_CREAT|CELL_FS_O_WRONLY|CELL_FS_O_TRUNC, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
+			sprintf(templn, "<p><a href=\"%s\" style=\"padding:8px;background:#900;border-radius:8px;\">%s</a><p>", tmp_filename, tmp_filename); concat(buffer, templn);
+
+			save_file(tmp_filename, "", SAVE_ALL);
+			for (unsigned int slot = 1; slot < 7; slot++)
 			{
-				sprintf(templn, "<p><a href=\"%s\" style=\"padding:8px;background:#900;border-radius:8px;\">%s</a><p>", tmp_filename, tmp_filename); concat(buffer, templn);
+				ps3mapi_get_vsh_plugin_info(slot, tmp_name, templn);
 
-				for (unsigned int slot = 1; slot < 7; slot++)
+				if(*templn)
 				{
-					ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
-
-					if(*tmp_filename)
-					{
-						size_t flen = sprintf(templn, "%s\n", tmp_filename);
-						cellFsWrite(fdw, (void *)templn, flen, NULL);
-					}
+					save_file(tmp_filename, templn, APPEND_TEXT);
 				}
-				cellFsClose(fdw);
 			}
 		}
 		else

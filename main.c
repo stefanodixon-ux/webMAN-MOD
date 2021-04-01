@@ -431,11 +431,11 @@ static u8 mount_unk = EMU_OFF;
 #include "include/rawseciso.h"
 #include "include/netclient.h"
 #include "include/netserver.h"
-
 #endif //#ifdef COBRA_ONLY
 
 #include "include/webchat.h"
 #include "include/file.h"
+#include "include/vsh_random_res.h"
 #include "include/ps2_disc.h"
 #include "include/ps2_classic.h"
 #include "include/xmb_savebmp.h"

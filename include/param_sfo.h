@@ -75,9 +75,9 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 #ifdef UNLOCK_SAVEDATA
 static u8 patch_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size, u32 attribute)
 {
-	if(not_exists(param_sfo)) return false;
-
 	if(!strstr(param_sfo, "/PARAM.SFO")) return false;
+
+	if(not_exists(param_sfo)) return false;
 
 	u8 save = 0;
 
