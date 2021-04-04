@@ -9,7 +9,7 @@ static void start_www(u64 conn_s_p)
 		#endif
 
 		#ifndef LITE_EDITION
-		use_imgfont = (file_ssize(IMAGEFONT_PATH) > 778500);
+		use_imgfont = (file_ssize(IMAGEFONT_PATH) > 1020000);
 		#endif
 
 		char templn[MAX_LINE_LEN];

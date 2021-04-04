@@ -2277,8 +2277,8 @@ parse_request:
 
 				if(sc == 840)
 				{	// FS_DISK_FREE
-					ret = get_free_space(params + 4);
-					sprintf(param, "%ll bytes free", ret);
+					ret = get_free_space(params + 4); strcpy(header, params + 4);
+					sprintf(param, "<a href=%s>%s</a>: %llu bytes free (%u GB)", header, header, ret, ret>>30);
 				}
 				else
 				if(sc == 200 || sc == 904)
@@ -2312,6 +2312,17 @@ parse_request:
 				}
 
 				keep_alive = http_response(conn_s, header, "/syscall.ps3", is_plain ? CODE_PLAIN_TEXT : CODE_HTTP_OK, param);
+				goto exit_handleclient_www;
+			}
+			else if(islike(param, "/unlockhdd.ps3"))
+			{
+				// /unlockhdd.ps3
+				hdd_unlock_space();
+
+				u64 ret = get_free_space(drives[0]);
+				sprintf(param, "<a href=%s>%s</a>: %llu bytes free (%u GB)", drives[0], drives[0], ret, ret>>30);
+
+				keep_alive = http_response(conn_s, header, "/unlockhdd.ps3", CODE_HTTP_OK, param);
 				goto exit_handleclient_www;
 			}
 

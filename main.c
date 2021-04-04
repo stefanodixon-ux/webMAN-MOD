@@ -358,6 +358,7 @@ int wait_for(const char *path, u8 timeout);
 #include "include/wm_config.h"
 #include "include/html.h"
 #include "include/peek_poke.h"
+#include "include/hdd_unlock_space.h"
 #include "include/idps.h"
 #include "include/led.h"
 #include "include/vpad.h"

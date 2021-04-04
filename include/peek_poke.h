@@ -123,19 +123,22 @@ static u64 lv1_peek_hen(u64 addr)
 ///////////////////////////////////////////////////
 #endif
 
-/*
-static void lv2poke32(u64 addr, u32 value)
+/***********************************************************************
+* lv2 peek 32 bit
+***********************************************************************/
+static u32 lv2_peek_32(u64 addr)
 {
-	u64 new_value = (((u64) value) <<32) | (peekq(addr) & 0xffffffffULL);
-	pokeq(addr, new_value);
+	return (u32)(peekq(addr) >>32);
 }
 
-static u32 lv2peek32(u64 addr)
+/***********************************************************************
+* lv2 poke 32 bit
+***********************************************************************/
+static void lv2_poke_32(u64 addr, u32 value)
 {
-	u32 ret = (u32) (peekq(addr) >> 32ULL);
-	return ret;
+	u64 value_org = peekq(addr);
+	pokeq(addr, (value_org & 0xFFFFFFFFULL) | (((u64)value) <<32));
 }
-*/
 
 #ifndef COBRA_ONLY
 static inline void remove_lv2_memory_protection(void)
