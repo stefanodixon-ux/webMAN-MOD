@@ -2277,7 +2277,8 @@ parse_request:
 
 				if(sc == 840)
 				{	// FS_DISK_FREE
-					ret = get_free_space(params + 4); strcpy(header, params + 4);
+					strcpy(header, params);
+					ret = get_free_space(header);
 					sprintf(param, "<a href=%s>%s</a>: %llu bytes free (%u GB)", header, header, ret, ret>>30);
 				}
 				else
@@ -2322,7 +2323,7 @@ parse_request:
 				u64 ret = get_free_space(drives[0]);
 				sprintf(param, "<a href=%s>%s</a>: %llu bytes free (%u GB)", drives[0], drives[0], ret, ret>>30);
 
-				keep_alive = http_response(conn_s, header, "/unlockhdd.ps3", CODE_HTTP_OK, param);
+				keep_alive = http_response(conn_s, header, "/unlockhdd.ps3", CODE_RETURN_TO_ROOT, param);
 				goto exit_handleclient_www;
 			}
 
