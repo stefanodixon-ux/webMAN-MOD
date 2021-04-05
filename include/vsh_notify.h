@@ -161,7 +161,7 @@ static void show_msg(const char *text)
 	char msg[200];
 	snprintf(msg, 199, "%s", text);
 
-	char *snd = strstr(text, "&snd=");
+	char *snd = strstr(msg, "&snd=");
 	if(snd)
 	{
 		if(ISDIGIT(snd[5]))
