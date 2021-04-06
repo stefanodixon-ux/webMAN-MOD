@@ -464,7 +464,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		if(_IS(ext, ".htm") || _IS(ext5, ".html") || _IS(ext5, ".shtm"))
 			{strcat(header, "text/html"); set_base_path = true;}
 		else
-		if(_IS(ext, ".js"))
+		if(_IS(ext + 1, ".js"))
 			strcat(header, "text/javascript");
 		else
 		if(_IS(ext, ".css"))
