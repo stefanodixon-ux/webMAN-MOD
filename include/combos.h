@@ -457,11 +457,13 @@
 								}
 								else
 								{
-									int hdd_free = (int)(get_free_space("/dev_hdd0")>>20);
+									char *str_free = STR_MBFREE;
 									int mem_free = (int)(meminfo.avail>>10);
-									sprintf(msg + len,  "%s: %i %s\n"
+									int hdd_free = (int)(get_free_space(drives[0])>>20), dm = (hdd_free % KB) / 100;
+									if(hdd_free > 1024) {hdd_free /= KB, str_free = STR_GBFREE;}
+									sprintf(msg + len,  "%s: %i.%i %s\n"
 														"%s: %i %s\n",
-														STR_STORAGE, hdd_free, STR_MBFREE,
+														STR_STORAGE, hdd_free, dm, str_free,
 														STR_MEMORY,  mem_free, STR_KBFREE);
 								}
 

@@ -133,6 +133,7 @@ STR_XMLRF			[ﻥﺎﻟا ٣ ﻦﺸﻴﺘﺴﻳﺎﻠﺒﻟا ﻡﺎﻈﻧ ﻞﻴ
 
 STR_STORAGE			[ﻦﻳﺰﺨﺘﻟا ﻡﺎﻈﻧ]
 STR_MEMORY			[ﺓﺮﻓﻮﺘﻤﻟا ﺓﺮﻜﻟﺬﻟا]
+STR_GBFREE			[ﺮﻓﻮﺘﻣ ﺐﻏ]
 STR_MBFREE			[ﺮﻓﻮﺘﻣ ﺐﻣ]
 STR_KBFREE			[ﺮﻓﻮﺘﻣ ﺐﻛ]
 

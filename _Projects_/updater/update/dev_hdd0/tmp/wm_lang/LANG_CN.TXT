@@ -133,6 +133,7 @@ STR_XMLRF			[游戏列表已刷新 (<a href="/dev_hdd0/xmlhost/game_plugin/mygam
                 	
 STR_STORAGE			[系统存储]
 STR_MEMORY			[可用内存]
+STR_GBFREE			[GB 可用]
 STR_MBFREE			[MB 可用]
 STR_KBFREE			[KB 可用]
 

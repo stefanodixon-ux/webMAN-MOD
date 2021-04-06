@@ -133,6 +133,7 @@ STR_XMLRF			[Zoznam hier obnovený (<a href="/dev_hdd0/xmlhost/game_plugin/mygam
 
 STR_STORAGE			[Systémové úložisko]
 STR_MEMORY			[Pamäť k dispozícii]
+STR_GBFREE			[GB voľné]
 STR_MBFREE			[MB voľné]
 STR_KBFREE			[KB voľné]
 

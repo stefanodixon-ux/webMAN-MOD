@@ -133,6 +133,7 @@ STR_XMLRF		[Game list refreshed (<a href=/dev_hdd0/xmlhost/game_plugin/mygamesxm
 
 STR_STORAGE		[Systeem opslag]
 STR_MEMORY		[Geheugen beschikbaar]
+STR_GBFREE		[GB vrij]
 STR_MBFREE		[MB vrij]
 STR_KBFREE		[KB vrij]
 

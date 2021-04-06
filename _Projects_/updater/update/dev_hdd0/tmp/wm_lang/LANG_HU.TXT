@@ -21,7 +21,7 @@ STR_COPYING			[Másolás]
 STR_CPYDEST			[Célmappa]
 STR_CPYFINISH		[A másolás befejeződött!]
 STR_CPYABORT		[A másolás megszakadt!]
-STR_DELETE		[Töröl]
+STR_DELETE			[Töröl]
 
 STR_SCAN1			[Keresés ezeken a meghajtókon]
 STR_SCAN2			[Tartalom keresése]
@@ -133,6 +133,7 @@ STR_XMLRF			[Játéklista frissítve (<a href=/dev_hdd0/xmlhost/game_plugin/myga
 
 STR_STORAGE			[Lemezterület]
 STR_MEMORY			[Memória]
+STR_GBFREE			[Szabad GB]
 STR_MBFREE			[Szabad MB]
 STR_KBFREE			[Szabad KB]
 

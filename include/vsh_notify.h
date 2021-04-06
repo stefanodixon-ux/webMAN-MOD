@@ -158,8 +158,8 @@ static void show_msg(const char *text)
 	//	vshtask_notify = getNIDfunc("vshtask", 0xA02D46E7, 0);
 	//if(!vshtask_notify) return;
 
-	char msg[200];
-	snprintf(msg, 199, "%s", text);
+	char msg[240];
+	snprintf(msg, 240, "%s", text);
 
 	char *snd = strstr(msg, "&snd=");
 	if(snd)

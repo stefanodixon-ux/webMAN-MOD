@@ -115,6 +115,7 @@ STR_MOVIELOADED [Film indlæst med succes. Start film fra disk ikonet<br>under V
 STR_XMLRF [Spil liste opdateret (<a href="/dev_hdd0/xmlhost/game_plugin/mygames.xml">mygames.xml</a>).<br>Klik <a href="/restart.ps3">her</a> for at genstarte dit PLAYSTATION®3 system nu.]
 STR_STORAGE [System lagring]
 STR_MEMORY [Hukommelse til rådighed]
+STR_GBFREE [GB fri]
 STR_MBFREE [MB fri]
 STR_KBFREE [KB fri]
 STR_FANCTRL3 [Fan Kontrol:]

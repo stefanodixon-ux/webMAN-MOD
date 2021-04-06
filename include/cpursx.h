@@ -295,20 +295,19 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	*templn = NULL;
 
-	int hdd_free;
+	int hdd_free, dm; char *str_free;
 
 #ifndef LITE_EDITION
 	for(u8 d = 1; d < 7; d++)
 	{
 		if(isDir(drives[d]))
 		{
-			hdd_free = (int)(get_free_space(drives[d])>>20);
-			sprintf(param, "<br><a href=\"%s\">USB%.3s: %'d %s</a>", drives[d], drives[d] + 8, hdd_free, STR_MBFREE); strcat(templn, param);
+			hdd_free = (int)(get_free_space(drives[d])>>20); dm = (hdd_free % KB) / 100; str_free = STR_MBFREE;
+			if(hdd_free > 1024) {hdd_free /= KB, str_free = STR_GBFREE;}
+			sprintf(param, "<br><a href=\"%s\">USB%.3s: %'d.%i %s</a>", drives[d], drives[d] + 8, hdd_free, dm, str_free); strcat(templn, param);
 		}
 	}
 #endif
-
-	hdd_free = (int)(get_free_space("/dev_hdd0")>>20);
 
 	sprintf(param,	"<hr><font size=\"42px\">"
 					"<b><a class=\"s\" href=\"/cpursx.ps3?up\">"
@@ -325,13 +324,16 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	else
 		sprintf(max_temp1, "/games.ps3");
 
+	hdd_free = (int)(get_free_space(drives[0])>>20); dm = (hdd_free % KB) / 100; str_free = STR_MBFREE;
+	if(hdd_free > 1024) {hdd_free /= KB, str_free = STR_GBFREE;}
+
 	sprintf(param,	"<a class=\"s\" href=\"%s\">"
 					"MEM: %'d KB %s</a><br>"
-					"<a href=\"%s\">HDD: %'d %s</a>%s<hr>"
+					"<a href=\"%s\">HDD: %'d.%i %s</a>%s<hr>"
 					"<a class=\"s\" href=\"/cpursx.ps3?mode\">"
 					"%s %i%% (0x%X)</a><br>",
 					max_temp1, (meminfo.avail>>10), IS_ON_XMB ? "(XMB)" : "",
-					drives[0], hdd_free, STR_MBFREE, templn,
+					drives[0], hdd_free, dm, str_free, templn,
 					STR_FANCH2, (int)((int)fan_speed * 100) / 255, fan_speed); buffer += concat(buffer, param);
 
 	if(!max_temp && webman_config->fanc && !is_ps3_http )

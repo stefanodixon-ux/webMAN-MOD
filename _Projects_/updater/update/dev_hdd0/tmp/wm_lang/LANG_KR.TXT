@@ -133,6 +133,7 @@ STR_XMLRF			[게임 리스트 재검색 (<a href=/dev_hdd0/xmlhost/game_plugin/m
 
 STR_STORAGE			[시스템 저장]
 STR_MEMORY			[메모리 사용가능]
+STR_GBFREE			[GB free]
 STR_MBFREE			[MB free]
 STR_KBFREE			[KB free]
 

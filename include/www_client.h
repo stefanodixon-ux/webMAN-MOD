@@ -1722,29 +1722,51 @@ parse_request:
 				// /netstatus.ps3?stop-ps3mapi  stop ps3mapi server
 				// /netstatus.ps3?stop          stop ps3mapi+net+ftp servers
 
-				s32 status = 0; char *label = NULL;
+				// /netstatus.ps3?start-ftp      start ftp server
+				// /netstatus.ps3?start-netsrv   start net server
+				// /netstatus.ps3?start-ps3mapi  start ps3mapi server
 
-				if(param[15] == 'f') {label = param + 15, status = ftp_working;} else //ftp
+				s32 status = 0; char *label = NULL, *params = param + 15;
+
+				if(*params == 'f') {label = params, status = ftp_working;} else //ftp
 #ifdef PS3NET_SERVER
-				if(param[15] == 'n') {label = param + 15, status = net_working;} else //netsrv
+				if(*params == 'n') {label = params, status = net_working;} else //netsrv
 #endif
 #ifdef PS3MAPI
-				if(param[15] == 'p') {label = param + 15, status = ps3mapi_working;} else //ps3mapi
+				if(*params == 'p') {label = params, status = ps3mapi_working;} else //ps3mapi
 #endif
-				if( param[15] == 's') //stop
+				if(*params == 's') // start / stop
 				{
-					if( param[19] == 0 || param[20] == 'f') {label = param + 20, ftp_working = 0;} //ftp
+					if(params[2] == 'a')
+					{
+						char *service = params + 6; // start-***
+						if(!ftp_working && (*service == 'f'))
+							sys_ppu_thread_create(&thread_id_ftpd, ftpd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_FTP_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_FTP); // start ftp daemon immediately
 #ifdef PS3NET_SERVER
-					if( param[19] == 0 || param[20] == 'n') {label = param + 20, net_working = 0;} //netsrv
+						if(!net_working && (*service == 'n'))
+							sys_ppu_thread_create(&thread_id_netsvr, netsvrd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_NET_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVR);
 #endif
 #ifdef PS3MAPI
-					if( param[19] == 0 || param[20] == 'p') {label = param + 20, ps3mapi_working = 0;} //ps3mapi
+						if(!ps3mapi_working && (*service == 'p'))
+							sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);
 #endif
+					}
+					else // if(params[2] == 'o')
+					{
+						char *service = params + 5; // stop-***
+						if( !params[4] || (*service == 'f')) {label = service, ftp_working = 0;} //ftp
+#ifdef PS3NET_SERVER
+						if( !params[4] || (*service == 'n')) {label = service, net_working = 0;} //netsrv
+#endif
+#ifdef PS3MAPI
+						if( !params[4] || (*service == 'p')) {label = service, ps3mapi_working = 0;} //ps3mapi
+#endif
+					}
 				}
 				else
 				{
-					if(param[14] == 0) {status ^= 1; xnet()->SetSettingNet_enable(status);} else
-					if(param[15] == 0) ; else // query status
+					if(*params == 0) ; else // query status
+					if(!param[14]) {status ^= 1; xnet()->SetSettingNet_enable(status);} else
 					if( param[15] & 1) xnet()->SetSettingNet_enable(1); else //enable
 					if(~param[15] & 1) xnet()->SetSettingNet_enable(0);      //disable
 
@@ -2278,8 +2300,8 @@ parse_request:
 				if(sc == 840)
 				{	// FS_DISK_FREE
 					strcpy(header, params);
-					ret = get_free_space(header);
-					sprintf(param, "<a href=%s>%s</a>: %llu bytes free (%u GB)", header, header, ret, ret>>30);
+					ret = get_free_space(header); int dm = ((ret>>20) % KB) / 100;
+					sprintf(param, "<a href=%s>%s</a>: %i.%i %s (%llu %s)", header, header, ret>>30, dm, STR_GBFREE, ret, STR_BYTE);
 				}
 				else
 				if(sc == 200 || sc == 904)
@@ -2320,8 +2342,8 @@ parse_request:
 				// /unlockhdd.ps3
 				hdd_unlock_space();
 
-				u64 ret = get_free_space(drives[0]);
-				sprintf(param, "<a href=%s>%s</a>: %llu bytes free (%u GB)", drives[0], drives[0], ret, ret>>30);
+				u64 ret = get_free_space(drives[0]); int dm = ((ret>>20) % KB) / 100;
+				sprintf(param, "<a href=%s>%s</a>: %i.%i %s (%llu %s)", drives[0], drives[0], ret>>30, dm, STR_GBFREE, ret, STR_BYTE);
 
 				keep_alive = http_response(conn_s, header, "/unlockhdd.ps3", CODE_RETURN_TO_ROOT, param);
 				goto exit_handleclient_www;

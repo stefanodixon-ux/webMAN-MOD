@@ -133,6 +133,7 @@ STR_XMLRF		[Popis igara je osvjezen (<a href="/dev_hdd0/xmlhost/game_plugin/myga
 
 STR_STORAGE		[Sistemska pohrana]
 STR_MEMORY		[Dostupna memorija]
+STR_GBFREE		[GB slobodno]
 STR_MBFREE		[MB slobodno]
 STR_KBFREE		[KB slobodno]
 

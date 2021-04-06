@@ -133,6 +133,7 @@ STR_XMLRF		[Seznam her obnoven (<a href="/dev_hdd0/xmlhost/game_plugin/mygames.x
 
 STR_STORAGE		[Systémová paměť]
 STR_MEMORY		[Dostupná paměť]
+STR_GBFREE		[GB volné]
 STR_MBFREE		[MB volné]
 STR_KBFREE		[KB volné]
 

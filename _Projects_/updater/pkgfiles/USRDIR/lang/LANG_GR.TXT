@@ -133,6 +133,7 @@ STR_XMLRF		[Λίστα παιχνιδιών ενημέρωμενη(<a href="/dev
 
 STR_STORAGE		[Αποθηκευτικός χώρος]
 STR_MEMORY		[Διαθέσιμη μνήμη]
+STR_GBFREE		[GB ελεύθερα]
 STR_MBFREE		[MB ελεύθερα]
 STR_KBFREE		[KB ελεύθερα]
 

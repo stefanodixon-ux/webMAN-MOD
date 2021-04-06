@@ -133,6 +133,7 @@ STR_XMLRF		[Lista contenuti aggiornata (<a href="/dev_hdd0/xmlhost/game_plugin/m
 
 STR_STORAGE		[Disco di sistema]
 STR_MEMORY		[Memoria]
+STR_GBFREE		[GB liberi]
 STR_MBFREE		[MB liberi]
 STR_KBFREE		[KB liberi]
 

@@ -133,6 +133,7 @@ STR_XMLRF		[Lista de juegos actualizada (<a href="/dev_hdd0/xmlhost/game_plugin/
 
 STR_STORAGE		[Almacenamiento]
 STR_MEMORY		[Memoria]
+STR_GBFREE		[GB libres]
 STR_MBFREE		[MB libres]
 STR_KBFREE		[KB libres]
 

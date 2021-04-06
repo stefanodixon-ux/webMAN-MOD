@@ -133,6 +133,7 @@ STR_XMLRF		[Liste des jeux rafraîchit (<a href="/dev_hdd0/xmlhost/game_plugin/m
 
 STR_STORAGE		[Stockage]
 STR_MEMORY		[Mémoire]
+STR_GBFREE		[Go de libre]
 STR_MBFREE		[Mo de libre]
 STR_KBFREE		[Ko de libre]
 

@@ -133,6 +133,7 @@ STR_XMLRF			[Oyun listesi yenilendi (<a href="/dev_hdd0/xmlhost/game_plugin/myga
 
 STR_STORAGE			[Disk]
 STR_MEMORY			[Bellek]
+STR_GBFREE			[GB boş]
 STR_MBFREE			[MB boş]
 STR_KBFREE			[KB boş]
 

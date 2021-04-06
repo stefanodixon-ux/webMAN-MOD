@@ -133,8 +133,9 @@ STR_XMLRF		[Список игр обновлён (<a href=/dev_hdd0/xmlhost/game
 
 STR_STORAGE		[Хранилище системы]
 STR_MEMORY		[памяти]
-STR_MBFREE		[Mb свободно]
-STR_KBFREE		[Kb свободно]
+STR_GBFREE		[Гб свободно]
+STR_MBFREE		[Мб свободно]
+STR_KBFREE		[Кб свободно]
 
 STR_FANCTRL3	[Управление кулером:]
 STR_ENABLED		[Включено]

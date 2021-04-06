@@ -134,6 +134,7 @@ STR_XMLRF		[Game list refreshed (<a href="/dev_hdd0/xmlhost/game_plugin/mygames.
 STR_FIRMWARE	[FW]
 STR_STORAGE		[HDD]
 STR_MEMORY		[Memory]
+STR_GBFREE		[GB free]
 STR_MBFREE		[MB free]
 STR_KBFREE		[KB free]
 

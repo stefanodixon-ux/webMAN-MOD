@@ -133,6 +133,7 @@ STR_XMLRF		[Lista gier odświeżona (<a href=/dev_hdd0/xmlhost/game_plugin/mygam
 
 STR_STORAGE		[Przestrzeń dysku]
 STR_MEMORY		[Pamięć]
+STR_GBFREE		[GB]
 STR_MBFREE		[MB]
 STR_KBFREE		[KB]
 

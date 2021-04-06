@@ -199,12 +199,13 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 									free_kb    = (unsigned long long)(freeSize>>10),
 									devsize_mb = (unsigned long long)(devSize >>20);
 
-				int d1 = 0;
-				int d2 = 0;
+				int d1 = (free_mb    % KB) / 100;
+				int d2 = (devsize_mb % KB) / 100;
+				char *str_free = STR_MBFREE, *str_mb = STR_MEGABYTE;
 				if(devSize >= _1GB_)
 				{
-					d1 = (free_mb    % KB) / 100; free_mb /= KB;
-					d2 = (devsize_mb % KB) / 100; devsize_mb /= KB;
+					free_mb /= KB, devsize_mb /= KB;
+					str_free = STR_GBFREE, str_mb = STR_GIGABYTE;
 				}
 
 				if(sys_admin && IS(templn, "/dev_flash"))
@@ -222,12 +223,13 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				if(devSize > 0)
 				{
 					sprintf(fsize,  "<div class='bf' style='height:18px;text-align:left;overflow:hidden;'><div class='bu' style='height:18px;width:%i%%'></div><div style='position:relative;top:-%ipx;text-align:right'>"
-								"<a href=\"%s\" title=\"%'llu.%i %s (%'llu %s) / %'llu.%i %s (%'llu %s)\">&nbsp; %'8llu.%i %s &nbsp;</a>"
-								"</div></div>", (int)(100.0f * (float)(devSize - freeSize) / (float)devSize), is_ps3_http ? 20 : 18, tempstr, free_mb, d1, STR_MBFREE, freeSize, STR_BYTE, devsize_mb, d2, STR_MEGABYTE, devSize, STR_BYTE, (freeSize < _2MB_) ? free_kb : free_mb, d1, (freeSize < _2MB_) ? STR_KILOBYTE : STR_MEGABYTE);
-					if(devSize >= _1GB_)
-					{
-						replace_char(fsize, 'M', 'G');
-					}
+									"<a href=\"%s\" title=\"%'llu.%i %s (%'llu %s) / %'llu.%i %s (%'llu %s)\">&nbsp; %'8llu.%i %s &nbsp;</a>"
+									"</div></div>", (int)(100.0f * (float)(devSize - freeSize) / (float)devSize),
+									is_ps3_http ? 20 : 18, tempstr,
+									free_mb, d1, str_free, freeSize, STR_BYTE,
+									devsize_mb, d2, str_mb, devSize, STR_BYTE,
+									(freeSize < _2MB_) ? free_kb : free_mb, d1,
+									(freeSize < _2MB_) ? STR_KILOBYTE : str_mb);
 				}
 				else
 					snprintf(fsize, maxlen, "<a href=\"%s\">%s</a>", templn, HTML_DIR);
@@ -1029,7 +1031,10 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 			if(param[1] != 'n')
 			{
-				sprintf(templn, " %'d %s", (int)(get_free_space(param)>>20), STR_MBFREE);
+				char *str_free = STR_MBFREE;
+				int dev_free = (int)(get_free_space(param)>>20), dm = (dev_free % KB) / 100;
+				if(dev_free > 1024) {dev_free /= KB, str_free = STR_GBFREE;}
+				sprintf(templn, " %'d.%i %s", dev_free, dm, str_free);
 				_concat(&sout, templn);
 			}
 

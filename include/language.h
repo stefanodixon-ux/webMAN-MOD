@@ -148,6 +148,7 @@ static char STR_HOME[8] = "Home";
 #define STR_FIRMWARE	"Firmware"
 #define STR_STORAGE		"System storage"
 #define STR_MEMORY		"Memory"
+#define STR_GBFREE		"GB free"
 #define STR_MBFREE		"MB free"
 #define STR_KBFREE		"KB free"
 
@@ -229,6 +230,7 @@ static char STR_LOADED2[48];//		= "loaded   ";
 static char STR_FIRMWARE[10];//		= "Firmware";
 static char STR_STORAGE[40];//		= "System storage";
 static char STR_MEMORY[48];//		= "Memory available";
+static char STR_GBFREE[24];//		= "GB free";
 static char STR_MBFREE[24];//		= "MB free";
 static char STR_KBFREE[24];//		= "KB free";
 
@@ -570,6 +572,7 @@ static void update_language(void)
 		language("STR_FIRMWARE", STR_FIRMWARE, "Firmware");
 		language("STR_STORAGE", STR_STORAGE, "System storage");
 		language("STR_MEMORY", STR_MEMORY, "Memory available");
+		language("STR_GBFREE", STR_GBFREE, "GB free");
 		language("STR_MBFREE", STR_MBFREE, "MB free");
 		language("STR_KBFREE", STR_KBFREE, "KB free");
 

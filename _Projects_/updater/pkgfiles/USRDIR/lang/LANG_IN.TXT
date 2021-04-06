@@ -133,6 +133,7 @@ STR_XMLRF		[Daftar game segarkan (<a href=/dev_hdd0/xmlhost/game_plugin/mygames.
 
 STR_STORAGE		[Sistem penyimpanan]
 STR_MEMORY		[Memori yang tersedia]
+STR_GBFREE		[GB sisa]
 STR_MBFREE		[MB sisa]
 STR_KBFREE		[KB sisa]
 

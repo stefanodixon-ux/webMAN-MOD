@@ -133,6 +133,7 @@ STR_XMLRF		[ゲームの一覧を更新しました(mygames.xml)。<br><a href=\
 
 STR_STORAGE		[システム記憶装置]
 STR_MEMORY		[有効メモリ]
+STR_GBFREE		[GB 空き]
 STR_MBFREE		[MB 空き]
 STR_KBFREE		[KB 空き]
 

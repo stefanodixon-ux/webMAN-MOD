@@ -133,6 +133,7 @@ STR_XMLRF			[Листата с игрите е опреснена (<a href="/dev
                 	
 STR_STORAGE			[Системна памет]
 STR_MEMORY			[Свободна памет]
+STR_GBFREE			[ГБ свободни]
 STR_MBFREE			[МБ свободни]
 STR_KBFREE			[КБ свободни]
 
