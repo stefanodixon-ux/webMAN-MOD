@@ -176,7 +176,7 @@ typedef struct
 
 	u8 padding13[24];
 
-	u8 resource_id[10];
+	u8 resource_id[12];
 	//u8 wallpaper_id;	// [0]: 0=random, 1-255: select specific #.png in /dev_hdd0/tmp/wallpaper on each boot
 	//u8 earth_id;		// [1]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/earth on each boot
 	//u8 canyon_id;		// [2]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/canyon on each boot
@@ -184,9 +184,11 @@ typedef struct
 	//u8 coldboot_id;	// [4]: 0=random, 1-255: select specific #.ac3 in /dev_hdd0/tmp/coldboot on each boot
 	//u8 theme_id;		// [5]: 0=random, 1-255: select specific #.p3t in /dev_hdd0/tmp/theme on each boot
 	//u8 last_theme_id;	// [6]: 0=none, 1-255: last selected theme (used to prevent install the current theme again)
-						// [7]: reserved
+	//u8 impose_id;		// [7]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/impose on each boot
 						// [8]: reserved
 						// [9]: reserved
+						//[10]: reserved
+						//[11]: reserved
 } /*__attribute__((packed))*/ WebmanCfg;
 
 static u8 wmconfig[sizeof(WebmanCfg)];

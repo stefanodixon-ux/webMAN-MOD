@@ -1640,6 +1640,7 @@ parse_request:
 					islike(param, "/canyon.ps3")    ||
 					islike(param, "/lines.ps3")     ||
 					islike(param, "/theme.ps3")     ||
+					islike(param, "/impose.ps3")    ||
 					islike(param, "/coldboot.ps3"))
 			{
 				// /wallpaper.ps3?random
@@ -1655,7 +1656,7 @@ parse_request:
 							(param[4] == 'y') ? 2: // 2 = canyon
 							(param[1] == 'l') ? 3: // 3 = lines
 							(param[1] == 'c') ? 4: // 4 = coldboot
-						//	(param[1] == 'g') ? 7: // 7 = gameboot (deprecated)
+							(param[1] == 'i') ? 7: // 7 = impose
 												5; // 5 = theme (6 = last selected theme)
 
 				char *value = strstr(param, ".ps3") + 4;

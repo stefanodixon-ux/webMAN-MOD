@@ -10,13 +10,14 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 2) ? "/dev_hdd0/tmp/canyon"   : // 2
 							(res_id == 3) ? "/dev_hdd0/tmp/lines"    : // 3
 							(res_id == 4) ? "/dev_hdd0/tmp/coldboot" : // 4
-						//	(res_id == 7) ? "/dev_hdd0/tmp/gameboot" : // 7
+							(res_id == 7) ? "/dev_hdd0/tmp/impose"   : // 7
 											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
 
 	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
 							(res_id == 2) ? "/dev_flash/vsh/resource/qgl/canyon.qrc":
 							(res_id == 3) ? "/dev_flash/vsh/resource/qgl/lines.qrc" :
-											"/dev_flash/vsh/resource/coldboot_stereo.ac3";
+							(res_id == 4) ? "/dev_flash/vsh/resource/coldboot_stereo.ac3":
+											"/dev_flash/vsh/resource/impose_plugin.rco"; // 7
 
 	if(isDir(hdd_path))
 	{
@@ -45,8 +46,8 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id); // coldboot
 			else if(res_id == 5)
 				sprintf(param, "%s/%i.p3t", hdd_path, _id); // theme
-			//else if(res_id == 7)
-			//	sprintf(param, "%s/%i/custom_render_plugin.rco", hdd_path, _id); // gameboot
+			else if(res_id == 7)
+				sprintf(param, "%s/%i.rco", hdd_path, _id); // impose
 			else
 				sprintf(param, "%s/%i.qrc", hdd_path, _id); // lines, earth, canyon
 
@@ -116,7 +117,7 @@ static void randomize_vsh_resources(bool apply_theme, char *param)
 	map_vsh_resource(1, MAP_SELECTED, param, false); // earth.qrc
 	map_vsh_resource(2, MAP_SELECTED, param, false); // canyon.qrc
 	map_vsh_resource(3, MAP_SELECTED, param, false); // lines.qrc
-//	map_vsh_resource(7, MAP_SELECTED, param, false); // gameboot (custom_render_plugin.rco + gameboot_stereo.ac3/gameboot_multi.ac3)
+	map_vsh_resource(7, MAP_SELECTED, param, false); // impose_plugin.rco
 	if(!apply_theme) return;
 	map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
 }
