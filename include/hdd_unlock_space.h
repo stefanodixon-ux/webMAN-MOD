@@ -27,7 +27,7 @@ static u64 get_ufs_sb_addr(void)
 /***********************************************************************
 * unlock hdd by picard(aka 3141card)
 ***********************************************************************/
-static void hdd_unlock_space(void)
+static void hdd_unlock_space(char unlock)
 {
 	u64 sb_addr = get_ufs_sb_addr();
 
@@ -39,6 +39,9 @@ static void hdd_unlock_space(void)
 
 	u32 minfree = lv2_peek_32(sb_addr + 0x3C);
 	u32 optim   = lv2_peek_32(sb_addr + 0x80);
+
+	if(unlock == 'e') {minfree = 8, optim = 0;} // enable
+	if(unlock == 'd') {minfree = 1, optim = 1;} // disable
 
 	// toggle: original / new
 	if((minfree == 8) && (optim == 0))

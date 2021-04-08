@@ -2341,7 +2341,9 @@ parse_request:
 			else if(islike(param, "/unlockhdd.ps3"))
 			{
 				// /unlockhdd.ps3
-				hdd_unlock_space();
+				// /unlockhdd.ps3?enable
+				// /unlockhdd.ps3?disable
+				hdd_unlock_space(param[15]);
 
 				u64 ret = get_free_space(drives[0]); int dm = ((ret>>20) % KB) / 100;
 				sprintf(param, "<a href=%s>%s</a>: %i.%i %s (%llu %s)", drives[0], drives[0], ret>>30, dm, STR_GBFREE, ret, STR_BYTE);

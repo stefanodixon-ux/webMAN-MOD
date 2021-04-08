@@ -188,19 +188,14 @@ static void ps3mapi_led(char *buffer, char *templn, const char *param)
 	if(islike(param, "/led.ps3mapi") && param[12] == '?')
 	{
 		int color = get_valuen(param, "color=", 0, 2);
+		int mode  = get_valuen(param, "mode=", 0, 6);
+		int mode2 = mode; if(mode >= 4) color = 2;
+		if(mode == 4) {mode = 1, mode2 = 2;}
+		if(mode == 5) {mode = 2, mode2 = 3;}
+		if(mode == 6) {mode = 3, mode2 = 2;}
 
-		if(color == 0) color = RED;	  else
-		if(color == 1) color = GREEN; else
-		if(color == 2) color = GREEN | RED; //YELLOW
-
-		int mode = get_valuen(param, "mode=", 0, 3);
-
-		//if(mode == 1) mode = ON;		 else
-		//if(mode == 2) mode = BLINK_FAST; else
-		//if(mode == 3) mode = BLINK_SLOW;
-
-		if(color & RED)   { system_call_2(SC_SYS_CONTROL_LED, RED  , mode); }
-		if(color & GREEN) { system_call_2(SC_SYS_CONTROL_LED, GREEN, mode); }
+		if((color == 0) || (color == 2)) { system_call_2(SC_SYS_CONTROL_LED, RED, mode); }
+		if((color == 1) || (color == 2)) { system_call_2(SC_SYS_CONTROL_LED, GREEN, mode2); }
 	}
 
 	if(!is_ps3mapi_home)
@@ -215,8 +210,8 @@ static void ps3mapi_led(char *buffer, char *templn, const char *param)
 	sprintf(templn, "<form id=\"led\" action=\"/led%s<br>"
 					"<b>%s:</b>  <select name=\"color\">", HTML_FORM_METHOD,  "Color"); concat(buffer, templn);
 
-	add_option_item(0, "Red",				IS_MARKED("color=0"), buffer);
-	add_option_item(1, "Green",			  IS_MARKED("color=1"), buffer);
+	add_option_item(0, "Red",				 IS_MARKED("color=0"), buffer);
+	add_option_item(1, "Green",				 IS_MARKED("color=1"), buffer);
 	add_option_item(2, "Yellow (Red+Green)", IS_MARKED("color=2"), buffer);
 
 	sprintf(templn, "</select>   <b>%s:</b>  <select name=\"mode\">", "Mode"); concat(buffer, templn);
@@ -225,6 +220,9 @@ static void ps3mapi_led(char *buffer, char *templn, const char *param)
 	add_option_item(1, "On",		 IS_MARKED("mode=1"), buffer);
 	add_option_item(2, "Blink fast", IS_MARKED("mode=2"), buffer);
 	add_option_item(3, "Blink slow", IS_MARKED("mode=3"), buffer);
+	add_option_item(4, "Blink alt1", IS_MARKED("mode=4"), buffer);
+	add_option_item(5, "Blink alt2", IS_MARKED("mode=5"), buffer);
+	add_option_item(6, "Blink alt3", IS_MARKED("mode=6"), buffer);
 
 	sprintf(templn, "</select>   <input type=\"submit\" value=\" %s \"/></form><br>", "Set");
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "</table></td>");
