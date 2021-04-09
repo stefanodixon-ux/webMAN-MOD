@@ -27,27 +27,33 @@ static u64 get_ufs_sb_addr(void)
 /***********************************************************************
 * unlock hdd by picard(aka 3141card)
 ***********************************************************************/
-static void hdd_unlock_space(char unlock)
+static u32 hdd_unlock_space(char unlock, u8 opt)
 {
 	u64 sb_addr = get_ufs_sb_addr();
 
 	if(sb_addr == 0)
 	{
 		BEEP3;  // fail
-		return;
+		return 0;
 	}
 
-	u32 minfree = lv2_peek_32(sb_addr + 0x3C);
-	u32 optim   = lv2_peek_32(sb_addr + 0x80);
+	u32 minfree;
+	u32 optim;
 
-	if(unlock == 'e') {minfree = 8, optim = 0;} // enable
-	if(unlock == 'd') {minfree = 1, optim = 1;} // disable
+	if(unlock == 'e') unlock = 1; else // enable
+	if(unlock == 'd') unlock = 0; else // disable
+	if(unlock >= '0' && unlock <= '9') unlock -= '0'; else // 0-9
+	{
+		minfree = lv2_peek_32(sb_addr + 0x3C);
+		optim   = lv2_peek_32(sb_addr + 0x80);
+		unlock  = (minfree == 8) && (optim == 0); // toggle
+	}
 
 	// toggle: original / new
-	if((minfree == 8) && (optim == 0))
+	if(unlock)
 	{
-		minfree = 1;
-		optim   = 1;
+		minfree = unlock;
+		optim   = opt;
 		BEEP1;  // success
 	}
 	else
@@ -60,4 +66,6 @@ static void hdd_unlock_space(char unlock)
 	// write patch
 	lv2_poke_32(sb_addr + 0x3C, minfree);
 	lv2_poke_32(sb_addr + 0x80, optim);
+
+	return minfree | (optim<<8);
 }
