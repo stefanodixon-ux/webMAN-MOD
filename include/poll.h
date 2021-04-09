@@ -29,9 +29,7 @@ static void poll_start_play_time(void)
 			*param = NULL;
 			#endif
 
-			#ifdef COPY_PS3
-			on_xmb_script();
-			#endif
+			start_event(EVENT_ON_XMB);
 		}
  #endif
 #endif

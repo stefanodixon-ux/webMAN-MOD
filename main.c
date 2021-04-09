@@ -505,7 +505,7 @@ static void wwwd_thread(u64 arg)
 
 #ifdef COPY_PS3
 	memset(cp_path, 0, sizeof(cp_path));
-	parse_script("/dev_hdd0/boot_init.txt");
+	start_event(EVENT_BOOT_INIT);
 #endif
 
 	if(webman_config->fanc)
@@ -572,9 +572,7 @@ again_debug:
 
 	led(YELLOW, OFF);
 
-#ifdef COPY_PS3
-	parse_script("/dev_hdd0/autoexec.bat");
-#endif
+	start_event(EVENT_AUTOEXEC);
 
 	////////////////////////////////////////
 

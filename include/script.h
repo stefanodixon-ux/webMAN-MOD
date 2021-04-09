@@ -28,6 +28,10 @@
 
 // <webman_cmd> e.g. /mount.ps3<path>
 
+#define EVENT_BOOT_INIT	1
+#define EVENT_AUTOEXEC	2
+#define	EVENT_ON_XMB	3
+
 #ifdef COPY_PS3
 
 #define line	buffer	/* "line", "path" and "buffer" are synonyms */
@@ -80,12 +84,8 @@ static void parse_script(const char *script_file)
 					char *wildcard = strstr(line, "*");
 	#ifdef COBRA_ONLY
 					if(_islike(line, "map /"))  {line += 4;}
-		#ifndef WM_REQUEST
-					if(*line == '/') {if(IS(path, "/app_home")) set_app_home(path); else sys_map_path(path, dest);} else
-		#else
 					if(*line == '/') {if(IS_WEB_COMMAND(line)) handle_file_request(line); else if(IS(path, "/app_home")) set_app_home(path); else sys_map_path(path, dest);} else
-		#endif
-	#elif defined(WM_REQUEST)
+	#else
 					if(*line == '/') {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
 	#endif
 					if(_islike(line, "ren /"))  {path += 4; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_RENAME, dest);} else cellFsRename(path, dest);} else
@@ -100,9 +100,7 @@ static void parse_script(const char *script_file)
 				else if(_islike(line, "end")) {exec_mode = do_else = true;}
 				else if(exec_mode)
 				{
-	#ifdef WM_REQUEST
 					if(*line == '/')               {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
-	#endif
 					if(_islike(line, "del /"))     {path += 4; char *wildcard = strstr(path, "*"); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
 					if(_islike(line, "md /"))      {path += 3; mkdir_tree(path);} else
 					if(_islike(line, "wait xmb"))  {wait_for_xmb();} else
@@ -162,18 +160,32 @@ static void parse_script(const char *script_file)
 	}
 }
 
-static void on_xmb_script(void)
+static void script_thread(u64 event_id)
 {
-	if(file_exists("/dev_hdd0/onxmb.bat"))
+	if(event_id == 1)
+		parse_script("/dev_hdd0/boot_init.txt");
+	else if(event_id == 2)
+		parse_script("/dev_hdd0/autoexec.bat");
+	else if(file_exists("/dev_hdd0/onxmb.bat"))
 	{
 		wait_for_xmb();
 		sys_ppu_thread_sleep(3);
 		parse_script("/dev_hdd0/onxmb.bat");
 	}
+
+	sys_ppu_thread_exit(0);
+}
+
+static void start_event(u8 id)
+{
+	sys_ppu_thread_t t_id;
+	sys_ppu_thread_create(&t_id, script_thread, id, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
 }
 
 #undef line
 #undef path
 #undef IS_WEB_COMMAND
 
+#else
+#define start_event(a)
 #endif // #ifdef COPY_PS3
