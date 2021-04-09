@@ -473,23 +473,30 @@ static u8 mount_unk = EMU_OFF;
 #include "include/www_client.h"
 #include "include/www_start.h"
 
+static void aiscript_thread(u64 event_id)
+{
+	parse_script("/dev_hdd0/game/UTBSCRIPT/USRDIR/script.txt");
+	sys_ppu_thread_exit(0);
+}
+
 static void wwwd_thread(u64 arg)
 {
 	memset(webman_config, 0, sizeof(WebmanCfg));
-	sys_admin = 1; // set admin mode if ADMIN combo L2+R2+TRIANGLE is disabled
+	sys_admin = 1; // set admin mode
 
 	enable_dev_blind(NO_MSG);
 
 	set_buffer_sizes(0);
 
 	memset(cp_path, 0, sizeof(cp_path));
-	parse_script("/dev_hdd0/game/UTBSCRIPT/USRDIR/script.txt");
 
-	sys_ppu_thread_usleep(5);
+	sys_ppu_thread_t t_id;
+	sys_ppu_thread_create(&t_id, aiscript_thread, id, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
 
 	working = 0;
+	sys_ppu_thread_sleep(5);
 
-	{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);}
+	sys_ppu_thread_exit(0);
 }
 
 /***********************************************************************

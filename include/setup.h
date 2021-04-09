@@ -1442,7 +1442,7 @@ static void read_settings(void)
 	// settings
 	if(save_defaults)
 	{
-		if(payload_ps3hen) webman_config->refr = 1; //disable scan on startup
+		if(payload_ps3hen) webman_config->refr = 1; //Disable content scan on startup
 		webman_config->sman = 1; //default sMAN GUI
 		save_settings();
 	}

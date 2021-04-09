@@ -741,14 +741,14 @@ parse_request:
 
 					if(file_exists(param2))
 					{
-						if(wait_for_xmb())
-						{
-							keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, param);
-							goto exit_handleclient_www;
-						}
-
 						if(IS(param2, "/app_home"))
 						{
+							if(wait_for_xmb())
+							{
+								keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, param);
+								goto exit_handleclient_www;
+							}
+
 							launch_app_home_icon(true);
 							sprintf(param, "/cpursx.ps3");
 						}
@@ -756,7 +756,11 @@ parse_request:
 						{
 							strcpy(header, param2);
 							sprintf(param, "/mount.ps3%s", header);
-							ap_param = 2; // force auto_play
+
+							if(is_ext(header, ".bat") || is_ext(header, ".txt"))
+								ap_param = 0; // do not auto_play
+							else
+								ap_param = 2; // force auto_play
 						}
 						is_binary = WEB_COMMAND;
 						goto html_response;
