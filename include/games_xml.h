@@ -59,6 +59,10 @@ static void sys_map_path2(const char *path1, const char *path2)
 	#endif
 }
 
+#ifndef LITE_EDITION
+static bool use_imgfont = false;
+#endif
+
 static void map_patched_modules(void)
 {
 	// redirect to patched game_ext_plugin.sprx required for gameboot animation & sounds
@@ -68,6 +72,10 @@ static void map_patched_modules(void)
 	// redirect to patched libaudio.sprx
 	if(file_exists("/dev_hdd0/tmp/libaudio.sprx"))
 		sys_map_path("/dev_flash/sys/external/libaudio.sprx", "/dev_hdd0/tmp/libaudio.sprx");
+
+	#ifndef LITE_EDITION
+	use_imgfont = (file_ssize(IMAGEFONT_PATH) > 900000);
+	#endif
 }
 
 static void apply_remaps(void)
@@ -161,8 +169,6 @@ static void make_fb_xml(void)
 }
 
 #ifndef LITE_EDITION
-static bool use_imgfont = false;
-
 static void add_tag(char *tags, u16 code)
 {
 	char tag[4] = {0xEF, (code >> 8), (code & 0xFF), 0};
@@ -351,6 +357,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 		return true; // mount autoboot & refresh xml
 	}
+
+	apply_remaps();
 
 	sys_addr_t sysmem = NULL;
 

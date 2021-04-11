@@ -285,7 +285,7 @@ static bool isHEX(const char *value)
 	for(; *value; ++value)
 	{
 		c = (*value | 0x20);
-		if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '*'))) return false;
+		if(!(ISDIGIT(c) || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '*'))) return false;
 	}
 	return true;
 }

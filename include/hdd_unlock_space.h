@@ -42,7 +42,7 @@ static u32 hdd_unlock_space(char unlock, u8 opt)
 
 	if(unlock == 'e') unlock = 1; else // enable
 	if(unlock == 'd') unlock = 0; else // disable
-	if(unlock >= '0' && unlock <= '9') unlock -= '0'; else // 0-9
+	if(ISDIGIT(unlock)) unlock -= '0'; else // 0-9
 	{
 		minfree = lv2_peek_32(sb_addr + 0x3C);
 		optim   = lv2_peek_32(sb_addr + 0x80);

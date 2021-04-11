@@ -1,4 +1,0 @@
-/write.ps3/dev_hdd0/category_game.xml&t=```<Query||````class="type:x-xmb/folder-pixmap"||````key="ultimate_toolbox"||````src="xmb://localhost/dev_hdd0/game/ULTOOLBOX/USRDIR/Ultimate_Toolbox.xml#main_menu"||````/>||&find=```<Query||````class="type:x-xmb/folder-pixmap"||````key="xmb_app3"
-wait 3
-beep2
-/popup.ps3?Script Executed

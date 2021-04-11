@@ -250,6 +250,8 @@ setTimeout(function(){
 <tbody>
 <tr><td>CUSTOM</td><td>SCES_533.58</td><td>24 - The Game</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_212.68</td><td>24 - The Game</td></tr>
+<tr><td>CUSTOM</td><td>SLES_501.09</td><td>7 Blades</td></tr>
+<tr><td>CUSTOM</td><td>SLPM_650.08</td><td>7 Blades</td></tr>
 <tr><td>CUSTOM</td><td>SCES_504.10</td><td>Ace Combat - Distant Thunder</td></tr>
 <tr><td>CUSTOM</td><td>SCES_524.24</td><td>Ace Combat - Squadron Leader</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_201.52</td><td>Ace Combat 4 - Shattered Skies</td></tr>
@@ -2688,6 +2690,8 @@ setTimeout(function(){
 <tr><td>SOFT</td><td>SLPS_250.87</td><td>WWF SmackDown! Just Bring It</td></tr>
 <tr><td>ENC</td><td>SCES_533.58</td><td>24 - The Game</td></tr>
 <tr><td>ENC</td><td>SLUS_212.68</td><td>24 - The Game</td></tr>
+<tr><td>ENC</td><td>SLES_501.09</td><td>7 Blades</td></tr>
+<tr><td>ENC</td><td>SLPM_650.08</td><td>7 Blades</td></tr>
 <tr><td>ENC</td><td>SCES_504.10</td><td>Ace Combat - Distant Thunder</td></tr>
 <tr><td>ENC</td><td>SCES_524.24</td><td>Ace Combat - Squadron Leader</td></tr>
 <tr><td>ENC</td><td>SLPS_250.52</td><td>Ace Combat 4 - Shattered Skies</td></tr>
@@ -3849,7 +3853,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2436; i < count; i++) {
+for (i = 2440; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }

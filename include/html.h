@@ -191,8 +191,8 @@ static void urldec(char *url, char *original)
 				while(n--)
 				{
 					url[pos] <<= 4, c = (url[++i] | 0x20);
-					if(c >= '0' && c <= '9') url[pos] += c -'0';      else
-					if(c >= 'a' && c <= 'f') url[pos] += c -'a' + 10;
+					if(c >= '0' && c <= '9') url[pos] += (c - '0'); else
+					if(c >= 'a' && c <= 'f') url[pos] += (c - 'W'); // <= c - 'a' + 10
 				}
 			}
 		}

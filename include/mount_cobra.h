@@ -632,10 +632,10 @@
 											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') &&
 											(tempID[3] == 'S' || tempID[3] == 'M' || tempID[3] == 'J' || tempID[3] == 'A') &&
 											(tempID[4] == '_' && tempID[8] == '.') &&
-											(tempID[5] >= '0' && tempID[5] <= '9') &&
-											(tempID[6] >= '0' && tempID[6] <= '9') &&
-											(tempID[7] >= '0' && tempID[7] <= '9') &&
-											(tempID[9] >= '0' && tempID[9] <= '9')
+											ISDIGIT(tempID[5]) &&
+											ISDIGIT(tempID[6]) &&
+											ISDIGIT(tempID[7]) &&
+											ISDIGIT(tempID[9])
 										   )
 										{
 											char temp[STD_PATH_LEN];
