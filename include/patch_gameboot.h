@@ -145,7 +145,7 @@ static void patch_gameboot_by_type(const char *path)
 				patch_gameboot(8); // sns
 			else if(strstr(path, "NES") || strstr(path, "FCEUMM")) // NES, NESTOPIA, QNES, FCEUMM
 				patch_gameboot(9); // nes
-			else if(strstr(path, "GBA") || strstr(path, "VBA") || strstr(path, "GPSP"))  // GBA, MGBA, VBA, GPSP
+			else if(strstr(path, "GBA") || strstr(path, "VBA") || strstr(path, "DS"))  // GBA, MGBA, VBA, DS
 				patch_gameboot(10); // gba
 			else if(strstr(path, "GEN") || strstr(path, "MEGAD") || strstr(path, "PICO") || strstr(path, "GG") || strstr(path, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
 				patch_gameboot(11); // gen
