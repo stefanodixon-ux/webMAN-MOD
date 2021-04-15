@@ -668,9 +668,6 @@
 						if(mount_unk == EMU_PS2_DVD)
 							mount_ps_disc_image(templn, cobra_iso_list, iso_parts, EMU_PS2_DVD);
 
-						// set fan to PS2 mode (constant fan speed)
-						if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
-
 						// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 						save_file(WMNOSCAN, NULL, SAVE_ALL);
 

@@ -1006,6 +1006,7 @@ static void do_umount(bool clean)
 
 	cellFsUnlink("/dev_hdd0/tmp/game/ICON0.PNG"); // remove XMB disc icon
 
+	ps2_classic_mounted = false;
 	if(fan_ps2_mode) reset_fan_mode(); // restore normal fan mode
 
 #ifdef COBRA_ONLY
@@ -1211,7 +1212,12 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 
 	// patch PS2 demo disc if title_id is ***D_###.##
 	if(emu_type != EMU_PSX)
+	{
 		if(mount_iso) patch_ps2_demo(cobra_iso_list[0]);
+
+		// set fan to PS2 mode (constant fan speed)
+		if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
+	}
 
 	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd") || (cue_offset == 0xE000UL))
 	{
@@ -1259,7 +1265,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 static void mount_on_insert_usb(bool on_xmb, char *msg)
 {
 	// Auto-mount x:\AUTOMOUNT.ISO or JB game found on root of USB devices (dev_usb00x, dev_sd, dev_ms, dev_cf)
-	if(is_mounting) ;
+	if(is_mounting || ps2_classic_mounted) ;
 
 	else if(on_xmb)
 	{
@@ -1446,6 +1452,7 @@ static void mount_thread(u64 action)
 	// fix mount errors
 	// -----------------
 
+	ps2_classic_mounted = false;
 	if(fan_ps2_mode) reset_fan_mode();
 
 	// -----------------------------

@@ -274,7 +274,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	char max_temp1[128], max_temp2[64]; *max_temp2 = NULL;
 
-	if(fan_ps2_mode)
+	if(fan_ps2_mode || ps2_classic_mounted)
 	{
 		sprintf(max_temp1, " (PS2 Mode: %i%%)", webman_config->ps2_rate);
 	}

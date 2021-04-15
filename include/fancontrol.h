@@ -39,6 +39,7 @@ u64 get_fan_policy_offset  = 0;
 u64 set_fan_policy_offset  = 0;
 u64 restore_set_fan_policy = 0; // set in firmware.h
 
+static bool ps2_classic_mounted = false;
 static bool fan_ps2_mode = false; // temporary disable dynamic fan control
 
 static void get_temperature(u32 _dev, u8 *temp)
@@ -75,7 +76,7 @@ static void sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknow
 
 static void set_fan_speed(u8 new_fan_speed)
 {
-	if(fan_ps2_mode) return; //do not change fan settings while PS2 game is mounted
+	if(fan_ps2_mode || ps2_classic_mounted) return; //do not change fan settings while PS2 game is mounted
 
 	if(get_fan_policy_offset)
 	{
@@ -128,7 +129,7 @@ static u8 original_fanc = ENABLED;
 
 static void enable_fan_control(u8 enable)
 {
-	if(enable == PS2_MODE_OFF)	fan_ps2_mode = false;					else
+	if(enable == PS2_MODE_OFF)	fan_ps2_mode = false; else
 	if(enable == ENABLE_SC8)	webman_config->fanc = original_fanc;	else
 	if(enable == ENABLE_AUTO2)	webman_config->fanc = FAN_AUTO2;		else // 2 = AUTO2
 	if(enable <= ENABLED)		webman_config->fanc = enable;			else // 1 = ENABLED / 0 = SYSCON

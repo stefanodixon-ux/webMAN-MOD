@@ -178,7 +178,7 @@
 
 				copy_ps2icon(temp, _path);
 
-				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
+				if(webman_config->fanc) {restore_fan(SET_PS2_MODE); ps2_classic_mounted = true;} //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 				save_file(WMNOSCAN, NULL, SAVE_ALL); ret = true;

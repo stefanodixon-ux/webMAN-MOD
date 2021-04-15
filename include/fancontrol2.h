@@ -1,4 +1,4 @@
-	if(fan_ps2_mode) /* skip dynamic fan control */; else
+	if(fan_ps2_mode || ps2_classic_mounted) /* skip dynamic fan control */; else
 
 	// dynamic fan control
 	if(max_temp)
