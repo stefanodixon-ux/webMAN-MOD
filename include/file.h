@@ -1477,38 +1477,41 @@ static void copy_rom_media(char *src_path)
 	if(!name) return;
 
 	char dst_path[64];
+	char path[MAX_LINE_LEN];
+	const char *PS3_GAME[2] = { "/PS3_GAME", ""};
 
 	char *ext  = strrchr(++name, '.');
 	if(ext)
 	{
-		char path[MAX_LINE_LEN];
-
-		// copy rom icon to ICON0.PNG
-		sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "ICON0.PNG");
-		{strcpy(ext, ".png"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
-		{strcpy(ext, ".PNG"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
+		for(u8 p = 0; p < 2; p++)
 		{
-			sprintf(path, "%s/%s", WMTMP, name);
-			char *ext2 = strrchr(path, '.');
-			{strcpy(ext2, ".png"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
-			{strcpy(ext2, ".PNG"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
-														 {file_copy((char*)PKGLAUNCH_ICON, dst_path, COPY_WHOLE_FILE);}}}
-		}}}
-
-		strcpy(path, src_path); char *path_ = get_filename(path) + 1;
-
-		const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
-		for(u8 i = 0; i < 5; i++)
-		{
-			sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, media[i]); cellFsUnlink(dst_path);
-			strcpy(ext + 1, media[i]);
-			if(file_exists(src_path))
-				file_copy(src_path, dst_path, COPY_WHOLE_FILE);
-			else
+			// copy rom icon to ICON0.PNG
+			sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], "ICON0.PNG");
+			{strcpy(ext, ".png"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
+			{strcpy(ext, ".PNG"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
 			{
-				strcpy(path_, media[i]);
-				if(file_exists(path))
-					file_copy(path, dst_path, COPY_WHOLE_FILE);
+				sprintf(path, "%s/%s", WMTMP, name);
+				char *ext2 = strrchr(path, '.');
+				{strcpy(ext2, ".png"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
+				{strcpy(ext2, ".PNG"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
+															 {file_copy((char*)PKGLAUNCH_ICON, dst_path, COPY_WHOLE_FILE);}}}
+			}}}
+
+			strcpy(path, src_path); char *path_ = get_filename(path) + 1;
+
+			const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
+			for(u8 i = 0; i < 5; i++)
+			{
+				sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], media[i]); cellFsUnlink(dst_path);
+				strcpy(ext + 1, media[i]);
+				if(file_exists(src_path))
+					file_copy(src_path, dst_path, COPY_WHOLE_FILE);
+				else
+				{
+					strcpy(path_, media[i]);
+					if(file_exists(path))
+						file_copy(path, dst_path, COPY_WHOLE_FILE);
+				}
 			}
 		}
 		*ext = NULL;
