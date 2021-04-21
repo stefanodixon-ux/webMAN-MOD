@@ -378,13 +378,9 @@
 
 								cellRtcGetCurrentTick(&pTick);
 
-								u8 speed = fan_speed;
-								if(fan_ps2_mode) speed = (int)(255.f*(float)(webman_config->ps2_rate + 1) / 100.f); else
-								if((webman_config->fanc == DISABLED) && (get_fan_policy_offset > 0))
 								{
 									u8 st, mode, unknown;
 									sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
-									speed = fan_speed;
 								}
 
 								_meminfo meminfo;
@@ -409,7 +405,7 @@
 								get_cobra_version(cfw_info);
 
 								char smax[24];
-								if(fan_ps2_mode)
+								if(fan_ps2_mode || ps2_classic_mounted)
 									sprintf(smax, "   PS2 Mode");
 								else if(webman_config->fanc == FAN_AUTO2)
 									sprintf(smax, "   MAX: AUTO");
@@ -434,7 +430,7 @@
 											 "%s: %s%02d:%02d:%02d%s\n"
 											 "%s : %s %s\n"
 											 "IP: %s  %s  %s\n",
-											 t1, RSX, t2, (int)(((int)speed*100)/255),
+											 t1, RSX, t2, (int)(((int)fan_speed*100)/255),
 											 bb ? "Play" : "Startup", days, hh, mm, ss, smax,
 											 STR_FIRMWARE, fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
 												  (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "");
@@ -498,7 +494,7 @@
 									webman_config->man_rate = RANGE(webman_config->man_rate, 20, 95); //%
 									webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate);
 									webman_config->man_speed = RANGE(webman_config->man_speed, MIN_FANSPEED_8BIT, MAX_FANSPEED_8BIT);
-									set_fan_speed(webman_config->man_speed);
+									set_fan_speed(webman_config->man_speed + 1);
 									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 								}
 								save_settings();
@@ -531,7 +527,7 @@
 									if(webman_config->man_rate>20) {if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->man_rate -= 5; else webman_config->man_rate -= 1;}
 									webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate);
 									webman_config->man_speed = RANGE(webman_config->man_speed, MIN_FANSPEED_8BIT, MAX_FANSPEED_8BIT);
-									set_fan_speed(webman_config->man_speed);
+									set_fan_speed(webman_config->man_speed + 1);
 									sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 								}
 								save_settings();

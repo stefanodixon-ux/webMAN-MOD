@@ -46,6 +46,10 @@ enum xmb_groups
 
 static bool scanning_roms = false;
 
+#ifndef LITE_EDITION
+static bool use_imgfont = false;
+#endif
+
 #ifdef COBRA_ONLY
 static void sys_map_path2(const char *path1, const char *path2)
 {
@@ -58,10 +62,6 @@ static void sys_map_path2(const char *path1, const char *path2)
 	{system_call_2(35, (uint64_t)(uint32_t)path1, (uint64_t)(uint32_t)path2);}
 	#endif
 }
-
-#ifndef LITE_EDITION
-static bool use_imgfont = false;
-#endif
 
 static void map_patched_modules(void)
 {
@@ -358,7 +358,9 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		return true; // mount autoboot & refresh xml
 	}
 
+	#ifdef COBRA_ONLY
 	apply_remaps();
+	#endif
 
 	sys_addr_t sysmem = NULL;
 
