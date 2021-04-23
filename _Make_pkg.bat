@@ -1,19 +1,19 @@
 @echo off
 title Building webMAN_MOD_1.47.xx_Updater.pkg ...
 
-copy /Y webftp_server_full.sprx                _Projects_\updater\update\dev_hdd0\plugins\webftp_server.sprx
-copy /Y webftp_server_noncobra.sprx            _Projects_\updater\update\dev_hdd0\plugins\webftp_server_noncobra.sprx
+if exist webftp_server_full.sprx                copy /Y webftp_server_full.sprx                _Projects_\updater\update\dev_hdd0\plugins\webftp_server.sprx
+if exist webftp_server_noncobra.sprx            copy /Y webftp_server_noncobra.sprx            _Projects_\updater\update\dev_hdd0\plugins\webftp_server_noncobra.sprx
 
-move /Y webftp_server_lite.sprx                _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_full.sprx                _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server.sprx                     _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_english.sprx             _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_ps3mapi.sprx             _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_noncobra.sprx            _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_ccapi.sprx               _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_rebug_cobra_english.sprx _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_rebug_cobra_ps3mapi.sprx _Projects_\updater\pkgfiles\USRDIR
-move /Y webftp_server_rebug_cobra_multi23.sprx _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_lite.sprx                move /Y webftp_server_lite.sprx                _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_full.sprx                move /Y webftp_server_full.sprx                _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server.sprx                     move /Y webftp_server.sprx                     _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_english.sprx             move /Y webftp_server_english.sprx             _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_ps3mapi.sprx             move /Y webftp_server_ps3mapi.sprx             _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_noncobra.sprx            move /Y webftp_server_noncobra.sprx            _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_ccapi.sprx               move /Y webftp_server_ccapi.sprx               _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_rebug_cobra_english.sprx move /Y webftp_server_rebug_cobra_english.sprx _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_rebug_cobra_ps3mapi.sprx move /Y webftp_server_rebug_cobra_ps3mapi.sprx _Projects_\updater\pkgfiles\USRDIR
+if exist webftp_server_rebug_cobra_multi23.sprx move /Y webftp_server_rebug_cobra_multi23.sprx _Projects_\updater\pkgfiles\USRDIR
 
 cls
 cd _Projects_\updater

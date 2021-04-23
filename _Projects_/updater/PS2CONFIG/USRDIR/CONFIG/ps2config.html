@@ -1189,6 +1189,7 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SCUS_976.21</td><td>Twisted Metal - Head-On [Extra Twisted Edition]</td></tr>
 <tr><td>CUSTOM</td><td>SLES_512.20</td><td>Ty - The Tazmanian Tiger</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_205.71</td><td>Ty the Tasmanian Tiger</td></tr>
+<tr><td>CUSTOM</td><td>SLUS_212.09</td><td>Urban Reign</td></tr>
 <tr><td>CUSTOM</td><td>SLES_546.44</td><td>Valkyrie Profile 2 - Silmeria</td></tr>
 <tr><td>CUSTOM</td><td>SLES_546.45</td><td>Valkyrie Profile 2 - Silmeria</td></tr>
 <tr><td>CUSTOM</td><td>SLES_546.46</td><td>Valkyrie Profile 2 - Silmeria</td></tr>
@@ -3775,6 +3776,7 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SCUS_976.21</td><td>Twisted Metal - Head-On [Extra Twisted Edition]</td></tr>
 <tr><td>ENC</td><td>SLES_512.20</td><td>Ty - The Tazmanian Tiger</td></tr>
 <tr><td>ENC</td><td>SLUS_205.71</td><td>Ty the Tasmanian Tiger</td></tr>
+<tr><td>ENC</td><td>SLUS_212.09</td><td>Urban Reign</td></tr>
 <tr><td>ENC</td><td>SLES_546.48</td><td>Valkyrie Profile 2 - Silmeria</td></tr>
 <tr><td>ENC</td><td>SLPM_664.19</td><td>Valkyrie Profile 2 - Silmeria</td></tr>
 <tr><td>ENC</td><td>SLES_546.44</td><td>Valkyrie Profile 2 - Silmeria</td></tr>
@@ -3853,7 +3855,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2443; i < count; i++) {
+for (i = 2445; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
