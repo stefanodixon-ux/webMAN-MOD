@@ -768,6 +768,8 @@ next_xml_entry:
 
 								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
 
+								if(getTitleID(param_sfo, templn, IS_GAME_DATA)) continue;
+
 								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
 							else

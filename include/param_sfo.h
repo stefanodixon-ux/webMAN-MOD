@@ -4,7 +4,8 @@ enum SFO_Operation_Codes
 	SHOW_WARNING,
 	GET_TITLE_AND_ID,
 	GET_VERSION,
-	GET_TITLE_ID_ONLY
+	GET_TITLE_ID_ONLY,
+	IS_GAME_DATA
 };
 
 static bool is_sfo(unsigned char *mem)
@@ -167,15 +168,17 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 	return ret;
 }
 
-static void get_app_ver(unsigned char *mem, char *version, u16 sfo_size)
+static void get_param_sfo(unsigned char *mem, const char *field, char *value, u8 value_len, u16 sfo_size)
 {
 	READ_SFO_HEADER()
 
+	u8 len = strlen(field);
+
 	FOR_EACH_SFO_FIELD()
 	{
-		if(!memcmp((char *) &mem[str], "APP_VER", 7))
+		if(!memcmp((char *) &mem[str], field, len))
 		{
-			strncpy(version, (char *) &mem[pos], 6);
+			strncpy(value, (char *) &mem[pos], value_len);
 			break;
 		}
 
@@ -200,13 +203,21 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 	{
 		// get titleid
 		if(opcode == GET_VERSION)
-			get_app_ver(mem, title_id, sfo_size);                 // get game version (app_ver)
-		else
-		if(opcode == GET_TITLE_AND_ID)
-			parse_param_sfo(mem, title_id, filename, sfo_size);   // get titleid & return title in the file name (used to backup games in _mount.h)
+		{
+			char *app_ver = title_id;
+			get_param_sfo(mem, "APP_VER", app_ver, 6, sfo_size);   // get game version (app_ver)
+		}
+		else if(opcode == IS_GAME_DATA)
+		{
+			char *category = title_id;
+			get_param_sfo(mem, "CATEGORY", category, 4, sfo_size); // get category & return if it is GD
+			return islike(category, "GD");
+		}
+		else if(opcode == GET_TITLE_AND_ID)
+			parse_param_sfo(mem, title_id, filename, sfo_size);    // get titleid & return title in the file name (used to backup games in _mount.h)
 		else
 		{
-			ret = fix_param_sfo(mem, title_id, opcode, sfo_size); // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
+			ret = fix_param_sfo(mem, title_id, opcode, sfo_size);  // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
 
 			if(ret && opcode == FIX_SFO) save_file(filename, param_sfo, sfo_size);
 		}
