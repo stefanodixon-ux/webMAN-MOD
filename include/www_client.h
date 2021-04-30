@@ -1636,7 +1636,7 @@ parse_request:
 			else if(islike(param, "/gameboot.ps3"))
 			{
 				// /gameboot.ps3?<id>      set gameboot <0-19>
-				patch_gameboot(val(param + 14));
+				patch_gameboot(val(param + 14)); *header = NULL;
 				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 			}
 			else if(islike(param, "/wallpaper.ps3") ||
@@ -1731,7 +1731,7 @@ parse_request:
 				// /netstatus.ps3?start-netsrv   start net server
 				// /netstatus.ps3?start-ps3mapi  start ps3mapi server
 
-				s32 status = 0; char *label = NULL, *params = param + 15;
+				s32 status = 0; char *label = NULL, *params = param + 15; xnet()->GetSettingNet_enable(&status);
 
 				if(*params == 'f') {label = params, status = ftp_working;} else //ftp
 #ifdef PS3NET_SERVER
@@ -1746,25 +1746,25 @@ parse_request:
 					{
 						char *service = params + 6; // start-***
 						if(!ftp_working && (*service == 'f'))
-							sys_ppu_thread_create(&thread_id_ftpd, ftpd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_FTP_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_FTP); // start ftp daemon immediately
+							{label = service, status = 1; sys_ppu_thread_create(&thread_id_ftpd, ftpd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_FTP_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_FTP);} // start ftp daemon immediately
 #ifdef PS3NET_SERVER
 						if(!net_working && (*service == 'n'))
-							sys_ppu_thread_create(&thread_id_netsvr, netsvrd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_NET_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVR);
+							{label = service, status = 1; sys_ppu_thread_create(&thread_id_netsvr, netsvrd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_NET_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVR);}
 #endif
 #ifdef PS3MAPI
 						if(!ps3mapi_working && (*service == 'p'))
-							sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);
+							{label = service, status = 1; sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);}
 #endif
 					}
 					else // if(params[2] == 'o')
 					{
 						char *service = params + 5; // stop-***
-						if( !params[4] || (*service == 'f')) {label = service, ftp_working = 0;} //ftp
+						if( !params[4] || (*service == 'f')) {label = service, ftp_working = status = 0;} //ftp
 #ifdef PS3NET_SERVER
-						if( !params[4] || (*service == 'n')) {label = service, net_working = 0;} //netsrv
+						if( !params[4] || (*service == 'n')) {label = service, net_working = status = 0;} //netsrv
 #endif
 #ifdef PS3MAPI
-						if( !params[4] || (*service == 'p')) {label = service, ps3mapi_working = 0;} //ps3mapi
+						if( !params[4] || (*service == 'p')) {label = service, ps3mapi_working = status = 0;} //ps3mapi
 #endif
 					}
 				}
