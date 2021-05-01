@@ -442,6 +442,7 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLES_512.13</td><td>DragonBall Z - Budokai</td></tr>
 <tr><td>CUSTOM</td><td>SCES_500.06</td><td>Drakan - The Ancients' Gates</td></tr>
 <tr><td>CUSTOM</td><td>SCUS_971.28</td><td>Drakan - The Ancients' Gates</td></tr>
+<tr><td>CUSTOM</td><td>SLUS_207.32</td><td>Drakengard</td></tr>
 <tr><td>CUSTOM</td><td>SLES_539.86</td><td>DreamWorks La Gang del Bosco</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_201.13</td><td>Driving Emotion Type S</td></tr>
 <tr><td>CUSTOM</td><td>SLES_500.73</td><td>Driving Emotion Type-S</td></tr>
@@ -530,6 +531,8 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLPM_657.01</td><td>Ghosthunter</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_201.78</td><td>Giants - Citizen Kabuto</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_202.94</td><td>Gitaroo Man</td></tr>
+<tr><td>CUSTOM</td><td>SLES_506.53</td><td>Gitaroo Man</td></tr>
+<tr><td>CUSTOM</td><td>SLPM_620.62</td><td>Gitaroo Man (Trial Version)</td></tr>
 <tr><td>CUSTOM</td><td>SLES_544.90</td><td>God Hand</td></tr>
 <tr><td>CUSTOM</td><td>SCES_531.33</td><td>God of War</td></tr>
 <tr><td>CUSTOM</td><td>SCKA_300.02</td><td>God of War</td></tr>
@@ -2929,6 +2932,7 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLKA_251.74</td><td>DragonBall Z - Budokai</td></tr>
 <tr><td>ENC</td><td>SCES_500.06</td><td>Drakan - The Ancients' Gates</td></tr>
 <tr><td>ENC</td><td>SCUS_971.28</td><td>Drakan - The Ancients' Gates</td></tr>
+<tr><td>ENC</td><td>SLUS_207.32</td><td>Drakengard</td></tr>
 <tr><td>ENC</td><td>SLES_539.86</td><td>DreamWorks La Gang del Bosco</td></tr>
 <tr><td>ENC</td><td>SLUS_201.13</td><td>Driving Emotion Type S</td></tr>
 <tr><td>ENC</td><td>SLES_500.73</td><td>Driving Emotion Type-S</td></tr>
@@ -3026,6 +3030,8 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SCES_514.63</td><td>Ghosthunter</td></tr>
 <tr><td>ENC</td><td>SLUS_201.78</td><td>Giants - Citizen Kabuto</td></tr>
 <tr><td>ENC</td><td>SLUS_202.94</td><td>Gitaroo Man</td></tr>
+<tr><td>ENC</td><td>SLES_506.53</td><td>Gitaroo Man</td></tr>
+<tr><td>ENC</td><td>SLPM_620.62</td><td>Gitaroo Man (Trial Version)</td></tr>
 <tr><td>ENC</td><td>SLES_544.90</td><td>God Hand</td></tr>
 <tr><td>ENC</td><td>NPED_000.52</td><td>God Hand</td></tr>
 <tr><td>ENC</td><td>SCKA_300.06</td><td>God of War II</td></tr>
@@ -3857,7 +3863,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2445; i < count; i++) {
+for (i = 2449; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
