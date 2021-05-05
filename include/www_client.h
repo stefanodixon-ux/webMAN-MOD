@@ -715,6 +715,8 @@ parse_request:
 				{
 					char *param2 = param + 9; if(*param2 == '?') param2++;
 
+					if((*param2 == NULL) && is_app_dir("/app_home", "PS3_GAME") && !is_app_dir("/dev_bdvd", "PS3_GAME")) goto launch_app;
+
 					if(islike(param2, "snd_"))
 					{
 						play_rco_sound(param2);
@@ -743,6 +745,7 @@ parse_request:
 					{
 						if(IS(param2, "/app_home"))
 						{
+			launch_app:
 							if(wait_for_xmb())
 							{
 								keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, param);
@@ -1731,6 +1734,10 @@ parse_request:
 				// /netstatus.ps3?start-netsrv   start net server
 				// /netstatus.ps3?start-ps3mapi  start ps3mapi server
 
+				// /netstatus.ps3?reset-ftp      restart ftp server
+				// /netstatus.ps3?reset-netsrv   restart net server
+				// /netstatus.ps3?reset-ps3mapi  restart ps3mapi server
+
 				s32 status = 0; char *label = NULL, *params = param + 15; xnet()->GetSettingNet_enable(&status);
 
 				if(*params == 'f') {label = params, status = ftp_working;} else //ftp
@@ -1740,9 +1747,21 @@ parse_request:
 #ifdef PS3MAPI
 				if(*params == 'p') {label = params, status = ps3mapi_working;} else //ps3mapi
 #endif
-				if(*params == 's') // start / stop
+				if(*params == 's' || *params == 'r') // start / stop / reset
 				{
-					if(params[2] == 'a')
+					if(params[2] == 'o' || *params == 'r')
+					{
+						char *service = params + 5; // stop-***
+						if( !params[4] || (*service == 'f')) {label = service, ftp_working = status = 0;} //ftp
+#ifdef PS3NET_SERVER
+						if( !params[4] || (*service == 'n')) {label = service, net_working = status = 0;} //netsrv
+#endif
+#ifdef PS3MAPI
+						if( !params[4] || (*service == 'p')) {label = service, ps3mapi_working = status = 0;} //ps3mapi
+#endif
+						if(*params == 'r') sys_ppu_thread_sleep(2);
+					}
+					if(params[2] == 'a' || *params == 'r')
 					{
 						char *service = params + 6; // start-***
 						if(!ftp_working && (*service == 'f'))
@@ -1754,17 +1773,6 @@ parse_request:
 #ifdef PS3MAPI
 						if(!ps3mapi_working && (*service == 'p'))
 							{label = service, status = 1; sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);}
-#endif
-					}
-					else // if(params[2] == 'o')
-					{
-						char *service = params + 5; // stop-***
-						if( !params[4] || (*service == 'f')) {label = service, ftp_working = status = 0;} //ftp
-#ifdef PS3NET_SERVER
-						if( !params[4] || (*service == 'n')) {label = service, net_working = status = 0;} //netsrv
-#endif
-#ifdef PS3MAPI
-						if( !params[4] || (*service == 'p')) {label = service, ps3mapi_working = status = 0;} //ps3mapi
 #endif
 					}
 				}
