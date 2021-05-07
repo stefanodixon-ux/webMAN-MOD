@@ -958,6 +958,8 @@ setTimeout(function(){
 <tr><td>CUSTOM</td><td>SLUS_204.30</td><td>Savage Skies</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_211.11</td><td>Scarface: The World is Yours</td></tr>
 <tr><td>CUSTOM</td><td>SLES_541.82</td><td>Scarface: The World is Yours</td></tr>
+<tr><td>CUSTOM</td><td>SLES_541.84</td><td>Scarface: The World is Yours</td></tr>
+<tr><td>CUSTOM</td><td>SLES_542.71</td><td>Scarface: The World is Yours</td></tr>
 <tr><td>CUSTOM</td><td>SLUS_219.00</td><td>Scooby-Doo! First Frights</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_624.52</td><td>Sega Ages 2500 Series Vol.01 - Phantasy Star Generation: 1</td></tr>
 <tr><td>CUSTOM</td><td>SLPM_625.53</td><td>Sega Ages 2500 Series Vol.17 - Phantasy Star Generation: 2</td></tr>
@@ -3525,6 +3527,8 @@ setTimeout(function(){
 <tr><td>ENC</td><td>SLUS_204.30</td><td>Savage Skies</td></tr>
 <tr><td>ENC</td><td>SLUS_211.11</td><td>Scarface: The World is Yours</td></tr>
 <tr><td>ENC</td><td>SLES_541.82</td><td>Scarface: The World is Yours</td></tr>
+<tr><td>ENC</td><td>SLES_541.84</td><td>Scarface: The World is Yours</td></tr>
+<tr><td>ENC</td><td>SLES_542.71</td><td>Scarface: The World is Yours</td></tr>
 <tr><td>ENC</td><td>SLUS_219.00</td><td>Scooby-Doo! First Frights</td></tr>
 <tr><td>ENC</td><td>SLPM_624.52</td><td>Sega Ages 2500 Series Vol.01 - Phantasy Star Generation: 1</td></tr>
 <tr><td>ENC</td><td>SLPM_625.53</td><td>Sega Ages 2500 Series Vol.17 - Phantasy Star Generation: 2</td></tr>
@@ -3955,7 +3959,7 @@ function doSearch() {
 		}
 	}
 	cols = table.getElementsByTagName("th");
-	if(count == 1) cols[2].innerText="Title"; else cols[2].innerText=count.toLocaleString() + " Titles"
+	if(count == 1) cols[2].innerText="Title"; else cols[2].innerHTML="<font color=#FFF>" + count.toLocaleString() + " Titles"
 	input.focus();
 }
 
