@@ -460,7 +460,7 @@ parse_request:
 	while(!served && working)
 	{
 		served++;
-		*header = NULL;
+		memset(header, 0, HTML_RECV_SIZE);
 		keep_alive = 0;
 
 		if(!mc)
@@ -484,6 +484,9 @@ parse_request:
 						else
 							buf.st_size = snprintf(header, HTML_RECV_SIZE, "%s", wm_url);
 					}
+
+					for(u16 n = 0; header[n]; n++) {if(header[n] == '\t') header[n] = ' ';}
+
 					#ifdef PHOTO_GUI
 					///// Process PhotoGUI request /////
 					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
@@ -565,10 +568,6 @@ parse_request:
 			ssplit(header, param, HTML_RECV_LAST, cmd, 15);
 
 			char *param_original = header; // used in /download.ps3
-
- #ifdef WM_REQUEST
-			if(wm_request) { for(size_t n = 0; param[n]; n++) {if(param[n] == '\t') param[n] = ' ';} } wm_request = 0;
- #endif
 
 			if((refreshing_xml == 0) && islike(param, "/refresh"))
 			{
@@ -1775,6 +1774,25 @@ parse_request:
 							{label = service, status = 1; sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);}
 #endif
 					}
+				}
+				else if(*params == 'i' && params[2] == '=') // /netstatus.ps3?ip=<address>
+				{
+					xnet()->SetSettingNet_ipAddress((address *)&params[3]);
+				}
+				else if(*params == 'm' && params[4] == '=') // /netstatus.ps3?mask=<ip-mask>
+				{
+					xnet()->SetSettingNet_ipAddress((address *)&params[5]);
+				}
+				else if(*params == 'r' && params[5] == '=') // /netstatus.ps3?route=<address>
+				{
+					xnet()->SetSettingNet_defaultRoute((address *)&params[6]);
+				}
+				else if(*params == 'd' && params[4] == '=') // /netstatus.ps3?dns1=<address>
+				{
+					if(params[3] == '2')
+						xnet()->SetSettingNet_secondaryDns((address *)&params[5]);
+					else
+						xnet()->SetSettingNet_primaryDns((address *)&params[5]);
 				}
 				else
 				{
@@ -3568,7 +3586,7 @@ retry_response:
 						if(sysmem) {sys_memory_free(sysmem); sysmem = NULL;}
 
 						u8 ap = 1; // use webman_config->autoplay
-						if(webman_config->autoplay == 0)
+						if((webman_config->autoplay == 0) && !(webman_config->combo2 & PLAY_DISC))
 						{
 							pad_data = pad_read(); // check if holding CROSS to force auto-play
 							if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS)) force_ap = ap = 2; // force auto_play

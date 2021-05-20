@@ -1429,11 +1429,12 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 	int conn_s_ps3mapi = (int)conn_s_ps3mapi_p; // main communications socket
 	int data_s = NONE;							// data socket
 	int pasv_s = NONE;
+	int rlen;
 
 	int connactive = 1;							// whether the ps3mapi connection is active or not
 	int dataactive = 0;							// prevent the data connection from being closed at the end of the loop
 
-	char buffer[PS3MAPI_RECV_SIZE];
+	char buffer[PS3MAPI_RECV_SIZE + 1];
 	char cmd[20], param1[PS3MAPI_MAX_LEN + 1], param2[PS3MAPI_MAX_LEN + 1];
 
 	#define PS3MAPI_OK_150	"150 OK: Binary status okay; about to open data connection.\r\n"
@@ -1471,8 +1472,10 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	while(connactive == 1 && working)
 	{
-		if(working && (recv(conn_s_ps3mapi, buffer, PS3MAPI_RECV_SIZE, 0) > 0))
+		if(working && (rlen = (int)recv(conn_s_ps3mapi, buffer, PS3MAPI_RECV_SIZE, 0) > 0))
 		{
+			buffer[rlen] = NULL;
+
 			char *p = strstr(buffer, "\r\n");
 			if(p) *p = NULL; else break;
 

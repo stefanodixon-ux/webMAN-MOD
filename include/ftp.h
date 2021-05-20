@@ -178,7 +178,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	char cmd[16], param[STD_PATH_LEN], filename[STD_PATH_LEN], source[STD_PATH_LEN]; // used as source parameter in RNFR and COPY commands
 	char *cpursx = filename, *tempcwd = filename, *d_path = param, *pasv_output = param;
 	struct CellFsStat buf;
-	int fd, pos;
+	int fd, pos, rlen;
 
 	bool is_ntfs = false, do_sc36 = true;
 
@@ -210,7 +210,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	while(connactive && working && ftp_session)
 	{
-		int rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
+		rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
 		{
 			buffer[rlen] = NULL;
