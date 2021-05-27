@@ -47,7 +47,6 @@
 #define NOSINGSTAR		1	// remove SingStar icon from XMB  (thanks to bguerville)
 #define CALC_MD5		1	// /md5.ps3/<file>
 #define LAUNCHPAD		1	// create /dev_hdd0/tmp/wm_lauchpad.xml
-#define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
 #define NOBD_PATCH		1	// /nobd.ps3
 #define PLAY_MUSIC		1	// experimental support for Play Music on startup
 #define PHOTO_GUI		1	// PhotoGUI: mount games through Photo column
@@ -62,3 +61,4 @@
 //#define AUTO_EJECT_DISC	1	// eject disc holding SELECT on mount
 //#define RAWISO_PSX_MULTI		// support for multi PSX from Iris Manager (it's incomplete - only rawseciso.h code is complete) (thanks to Estwald)
 //#define SECURE_FILE_ID	// hook savedata plugin to capture secure file id (this feature is currently broken)
+//#define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.

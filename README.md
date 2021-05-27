@@ -155,7 +155,6 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support for automatic or manual removal of CFW syscalls and spoof console id (IDPS/PSID)
 - "Offline" mode (blocks some PSN/tracking servers) and automatic restore when CFW syscalls are removed. Game updates still work in this mode. (v1.33.03)
 - Scan for games on the stealth folder "/video"
-- Auto unlock savedata during download & copy operations (removes account id, PSID & copy protection
 
 #### Safety & security features
 - Improved temperature monitoring (max & min fan speed, auto#2 mode, improved algorithm for dynamic fan control)
