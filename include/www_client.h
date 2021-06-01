@@ -3504,7 +3504,7 @@ retry_response:
 
 						_concat(&sbuffer, "noBD: ");
 
-						// noBD LV1 4.75 - 4.87
+						// noBD LV1 4.75 - 4.88
 						if(ALLOW_NOBD)
 						{
 							if(!param[9])

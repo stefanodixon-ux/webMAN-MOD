@@ -105,8 +105,8 @@ static void start_www(u64 conn_s_p)
 			}
 			else
 			{
-				cobra_config->spoof_version = 0x0487;
-				cobra_config->spoof_revision = 0x000109a5; // 4.86 = 0x00010938 // 4.85 = 0x0001091d
+				cobra_config->spoof_version = 0x0488;
+				cobra_config->spoof_revision = 0x000109f5; // 4.87 = 000109a5 // 4.86 = 0x00010938 // 4.85 = 0x0001091d
 			}
 
 			if( cobra_config->ps2softemu == 0 && cobra_get_ps2_emu_type() == PS2_EMU_SW )
