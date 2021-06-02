@@ -565,7 +565,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
  #ifdef LAUNCHPAD
 				if(launchpad_mode)
 				{
-					flen = sprintf(tempstr, "http://%s/%s", local_ip, path);
+					flen = sprintf(tempstr, "http://%s%s", local_ip, path);
 					if(flen >= MAX_LINE_LEN) continue; //ignore lines too long
 					sprintf(line_entry[idx].path, "%s", tempstr);
 					flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, slaunch.id, icon, false);

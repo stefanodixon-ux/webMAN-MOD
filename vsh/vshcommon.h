@@ -99,7 +99,8 @@ extern uint32_t vshcommon_A20E43DB(int32_t, const char* eventName, int32_t, int3
 
 // vshcommon_21806775  // ?
 
-// vshcommon_F55812AE  // ?
+extern int vshcommon_F55812AE(int32_t, wchar_t* text, int32_t, int32_t);
+#define ShowButtonNavigationText vshcommon_F55812AE
 
 // vshcommon_61D17188  // ?
 // vshcommon_EA790023  // ?

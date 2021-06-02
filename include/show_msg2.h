@@ -1,9 +1,5 @@
 #ifndef LITE_EDITION
 
-#ifndef PKG_HANDLER
-#include "../vsh/xmb_plugin.h"
-#endif
-
 #define XMB2					0x584d4232
 
 // ~0 = L"\uF880" = Dualshock circle button-Button
@@ -28,6 +24,27 @@
 
 static void show_msg2(char* msg)
 {
+	uint32_t system_plugin_handle = View_Find("system_plugin");
+	if (system_plugin_handle == 0)
+		return;
+
+	uint32_t widget = FindWidget(system_plugin_handle, "page_autooff_guide");
+	if (widget == 0)
+		return;
+
+	int len = strlen(msg) + 1;
+
+	wchar_t wmsg[len];
+	mbstowcs((wchar_t*)wmsg, (const char*)msg, len);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
+
+	for (int i = 0; i < len; i++) if (wmsg[i] == 0x7E) { wmsg[i] = 0xF850 + (u8)wmsg[i + 1], wmsg[++i] = 0x20; }
+
+	ShowButtonNavigationText(widget, wmsg, 4, 0);
+}
+
+/*
+static void show_msg2(char* msg)
+{
 	int view = View_Find("xmb_plugin");
 	if(view)
 	{
@@ -42,5 +59,5 @@ static void show_msg2(char* msg)
 		xmb2_interface->showMsg(wmsg); // usage: xmb2_interface->showMsg(L"text");
 	}
 }
-
+*/
 #endif // #ifndef LITE_EDITION

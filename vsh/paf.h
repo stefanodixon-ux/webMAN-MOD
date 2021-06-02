@@ -1,7 +1,6 @@
 #ifndef __PAF_H__
 #define __PAF_H__
 
-
 // paf_1565FC46  // ?
 
 //extern void* paf_AF58E756(void);  // Gets the base of loaded plugins. The pointer returned is used in paf::View::Find to find plugins.
@@ -25,8 +24,10 @@ extern uint32_t *paf_23AFB290(uint32_t arg, uint32_t id);  // gets Interface fro
 // paf_0A1DC401  // sets Interface from plugin 	uint32_t SetInterface(unknown, uint32_t identifier, void *ptr_structure)
 // paf_2361E649  // ?
 // paf_2166E819  // ? PageActivate
-// paf_794CEACB  // finds widget in a plugin 	Example: plugin->FindWidget(return from paf_F21655F3, "page_autooff_guide")
 // paf_E014D3BA  // ?
+
+extern uint32_t paf_794CEACB(uint32_t plugin, const char* widget); // paf_794CEACB  // finds widget in a plugin 	Example: plugin->FindWidget(return from paf_F21655F3, "page_autooff_guide")
+#define FindWidget paf_794CEACB
 
 extern uint32_t paf_50CDB465(uint32_t plugin, const char *sound);  // finds/gets Sound resource 	uint32_t paf_50CDB465(uint32_t plugin /*paf_F21655F3*/, const char *sound)
 #define GetRCOSound paf_50CDB465
