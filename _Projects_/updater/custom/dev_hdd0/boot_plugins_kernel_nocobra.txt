@@ -1,1 +1,1 @@
-/dev_hdd0/plugins/kernel/mamba_487C.bin
+/dev_hdd0/plugins/kernel/mamba_488C.bin
