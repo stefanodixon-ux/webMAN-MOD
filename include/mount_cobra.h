@@ -554,7 +554,7 @@
 						// check if decrypted MINIS.EDAT is detected
 						if(edat)
 						{
-							if(!islike(templn, "NPD"))
+							if(!islike(templn, "NPD") && !payload_ps3hen)
 							{
 								// install psp_emulator.self with support for decrypted MINIS.EDAT
 								if((c_firmware >= 4.82f) && file_exists(WM_RES_PATH "/psp_emulator.self"))
