@@ -16,6 +16,19 @@ static void backup_cfw_syscalls(void)
 		sc_backup[sc] = peekq( SYSCALL_PTR(sc_disable[sc]) );
 }
 
+static void disable_signin_dialog(void)
+{
+	if(file_exists(NPSIGNIN_PLUGIN_OFF))
+	{
+		sys_map_path(NPSIGNIN_PLUGIN_RCO, NPSIGNIN_PLUGIN_OFF);
+	}
+}
+
+static void enable_signin_dialog(void)
+{
+	sys_map_path(NPSIGNIN_PLUGIN_RCO, NULL);
+}
+
 static void restore_cfw_syscalls(void)
 {
 	#ifdef COBRA_ONLY
@@ -44,7 +57,7 @@ static void restore_cfw_syscalls(void)
 	char STR_RSTCFWSYSF[80];//	= "Failed to restore CFW Syscalls";
 
 	language("STR_RSTCFWSYS", STR_RSTCFWSYS, "CFW Syscalls restored!");
-	language("STR_RSTCFWSYSF", STR_RSTCFWSYSF, "Failed to remove CFW Syscalls");
+	language("STR_RSTCFWSYSF", STR_RSTCFWSYSF, "Failed to restore CFW Syscalls");
 
 	close_language();
 #endif
@@ -56,6 +69,7 @@ static void restore_cfw_syscalls(void)
 	}
 	else
 	{
+		disable_signin_dialog();
 		if(!webman_config->nobeep) play_rco_sound("snd_trophy");
 		vshNotify_WithIcon(ICON_CHECK, STR_RSTCFWSYS);
 	}
@@ -81,6 +95,8 @@ static void restore_cfw_syscalls(void)
 
 static void restore_blocked_urls(bool notify)
 {
+	enable_signin_dialog();
+
 	if(!url_count) return;
 
 	if(notify) vshNotify_WithIcon(ICON_CHECK, "PSN servers restored");
@@ -196,6 +212,7 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 		}
 		else
 		{
+			disable_signin_dialog();
 			if(!webman_config->nobeep) { BEEP2 }
 			vshNotify_WithIcon(ICON_ERROR, STR_RMVCFWSYSF);
 		}

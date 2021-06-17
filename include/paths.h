@@ -12,6 +12,9 @@
 #define ORG_LIBFS_PATH		"/dev_flash/sys/external/libfs.sprx"
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
 
+#define NPSIGNIN_PLUGIN_RCO		"/dev_flash/vsh/resource/npsignin_plugin.rco"
+#define NPSIGNIN_PLUGIN_OFF		"/dev_hdd0/tmp/wm_res/npsignin_plugin.rco"
+
 #define XMB_DISC_ICON		"/dev_hdd0/tmp/game/ICON0.PNG"
 #define CATEGORY_GAME_XML	"/dev_flash/vsh/resource/explore/xmb/category_game.xml"
 

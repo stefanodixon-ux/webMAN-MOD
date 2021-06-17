@@ -1188,6 +1188,9 @@ parse_request:
 					int value, len, size = 0; param2 += 11;
 					int id = val(param2);
 
+					if(id >= 0x28 && id < 0x3D)
+						size = 1;
+
 					switch (id)
 					{
 						case 0x09: // "/setting/np/titleId"
@@ -1203,34 +1206,64 @@ parse_request:
 						case 0x6C: // "/setting/net/adhocSsidPrefix"
 						case 0x7C: // "/setting/wboard/baseUri"
 									size = 0x80;
+									break;
+						case 0x5E:
+						case 0x6E:
+						case 0x78:
+						case 0x79:
+						case 0x82:
+						case 0x83:
+						case 0xC8:
+						case 0xD2:
+						case 0xD3:
+						case 0xDC:
+						case 0xDD:
+									size = 0x81;
+									break;
+						case 0x6F:
+						case 0x96:
+									size = 1;
+									break;
 					}
 
 					char *pos = strstr(param2, ")="); // save
 					if(pos)
 					{
-						if(size)
+						if(size >= 0x80)
 						{
 							pos += 2, len = strlen(pos);
-							xregistry()->saveRegistryStringValue(id, pos, len);
+							if(size == 0x81)
+								xusers()->SetRegistryString(xusers()->GetCurrentUserNumber(), id, pos, len);
+							else
+								xregistry()->saveRegistryStringValue(id, pos, len);
 						}
 						else
 						{
 							value = val(pos + 2);
-							xregistry()->saveRegistryIntValue(id, value);
+							if(size)
+								xusers()->SetRegistryValue(xusers()->GetCurrentUserNumber(), id, value);
+							else
+								xregistry()->saveRegistryIntValue(id, value);
 						}
 					}
 
 					len = strlen(param2);
 
-					if(size)
+					if(size >= 0x80)
 					{
 						char *pos2 = strstr(param2, ","); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
-						xregistry()->loadRegistryStringValue(id, header, size);
+						if(size == 0x81)
+							xusers()->GetRegistryString(xusers()->GetCurrentUserNumber(), id, header, size);
+						else
+							xregistry()->loadRegistryStringValue(id, header, size);
 						sprintf(param2 + len, " => %s", header);
 					}
 					else
 					{
-						xregistry()->loadRegistryIntValue(id, &value);
+						if(size)
+							xusers()->GetRegistryValue(xusers()->GetCurrentUserNumber(), id, &value);
+						else
+							xregistry()->loadRegistryIntValue(id, &value);
 						sprintf(param2 + len, " => %i (0x%04x)", value, value);
 					}
 				}

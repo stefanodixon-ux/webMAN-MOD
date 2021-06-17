@@ -151,7 +151,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.35 MOD"
+#define WM_VERSION			"1.47.36 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -488,14 +488,14 @@ static void wwwd_thread(u64 arg)
 	//WebmanCfg *webman_config = (WebmanCfg*) wmconfig;
 	read_settings();
 
-#ifdef VISUALIZERS
+#ifdef COBRA_ONLY
+	#ifdef VISUALIZERS
 	map_vsh_resource(4, MAP_SELECTED, html_base_path, false); // coldboot_*.ac3
 	map_vsh_resource(3, MAP_SELECTED, html_base_path, false); // lines.qrc
 	map_vsh_resource(7, MAP_SELECTED, html_base_path, false); // impose_plugin.rco
 	*html_base_path = NULL;
-#endif
+	#endif
 
-#ifdef COBRA_ONLY
 	map_patched_modules();
 #endif
 

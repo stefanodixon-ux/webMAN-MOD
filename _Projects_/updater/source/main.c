@@ -629,6 +629,8 @@ int main()
 	if(not_exists(RES_DIR "/wm_ignore.txt"))
 		file_copy(APP_USRDIR "/res/wm_ignore.txt",     RES_DIR "/wm_ignore.txt");
 
+	file_copy(APP_USRDIR "/res/npsignin_plugin.rco",     RES_DIR "/npsignin_plugin.rco");
+
 	// webMAN ADD-ONS
 	file_copy(APP_USRDIR "/addons/boot_mamba.pkg", RES_DIR "/boot_mamba.pkg");
 	file_copy(APP_USRDIR "/addons/prepNTFS.pkg", RES_DIR "/prepNTFS.pkg");

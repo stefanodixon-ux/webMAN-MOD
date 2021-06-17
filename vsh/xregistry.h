@@ -490,9 +490,9 @@ typedef struct xsetting_CC56EB2D_class_t  // 42
 	int32_t (*sub_486A58)(void);
 	int32_t (*sub_486A1C)(void);
 	int32_t (*sub_4869E0)(void);
-	int32_t (*GetRegistryValue)(uint32_t userid, uint32_t packetid, uint32_t *value);
+	int32_t (*GetRegistryValue)(uint32_t userid, uint32_t packetid, int *value);
 	int32_t (*GetRegistryString)(uint32_t userid, uint32_t packetid, char * value, uint32_t maxlen);
-	int32_t (*SetRegistryValue)(uint32_t userid, uint32_t packetid, uint32_t value);
+	int32_t (*SetRegistryValue)(uint32_t userid, uint32_t packetid, int value);
 	int32_t (*SetRegistryString)(uint32_t userid, uint32_t packetid, char *value, uint32_t maxlen);
 	int32_t (*sub_486814)(void);
 	int32_t (*sub_4867D8)(void);
@@ -517,75 +517,75 @@ typedef struct xsetting_CC56EB2D_class_t  // 42
 	int32_t (*sub_48623C)(void);
 	int32_t (*sub_4861D4)(void);
 /*
-	int GetRegistryKeyboardType()	{int v; DoUnk16_GetRegistryValue(0,0x14, &v);return v;}
-	int GetRegistryKeyboardJapaneseInput()	{int v; DoUnk16_GetRegistryValue(0,0x15, &v);return v;}
-	int GetRegistryKeyboardTradChineseInput()	{int v; DoUnk16_GetRegistryValue(0,0x16, &v);return v;}
-	int GetRegistryKeyboardBind()	{int v; DoUnk16_GetRegistryValue(0,0x17, &v);return v;}
-	int GetRegistryKeyboardRepeatStartingTime()	{int v; DoUnk16_GetRegistryValue(0,0x18, &v);return v;}
-	int GetRegistryKeyboardRepeadSpeed()	{int v; DoUnk16_GetRegistryValue(0,0x19, &v);return v;}
-	int GetRegistryMouseType()	{int v; DoUnk16_GetRegistryValue(0,0x1E, &v);return v;}
-	int GetRegistryMouseSpeed()	{int v; DoUnk16_GetRegistryValue(0,0x1F, &v);return v;}
-	int GetRegistryBrowserHomeUri(char * uri)	{return DoUnk17_GetRegistryString(0,0x28,uri,0x80);}
-	int GetRegistryBrowserCookieMode()	{int v; DoUnk16_GetRegistryValue(0,0x29, &v);return v;}
-	int GetRegistryBrowserJavascript()	{int v; DoUnk16_GetRegistryValue(0,0x2A, &v);return v;}
-	int GetRegistryBrowserDisplayMode()	{int v; DoUnk16_GetRegistryValue(0,0x2B, &v);return v;}
-	int GetRegistryBrowserExitConfirmation()	{int v; DoUnk16_GetRegistryValue(0,0x2C, &v);return v;}
-	int GetRegistryBrowserOverscan()	{int v; DoUnk16_GetRegistryValue(0,0x2D, &v);return v;}
-	int GetRegistryBrowserWindowSize()	{int v; DoUnk16_GetRegistryValue(0,0x2E, &v);return v;}
-	int GetRegistryBrowserFontSize()	{int v; DoUnk16_GetRegistryValue(0,0x2F, &v);return v;}
-	int GetRegistryBrowserEncoding()	{int v; DoUnk16_GetRegistryValue(0,0x30, &v);return v;}
-	int GetRegistryBrowserCacheSize()	{int v; DoUnk16_GetRegistryValue(0,0x31, &v);return v;}
-	int GetRegistryBrowserRestoreWindow()	{int v; DoUnk16_GetRegistryValue(0,0x32, &v);return v;}
-	int GetRegistryBrowserPopupBlock()	{int v; DoUnk16_GetRegistryValue(0,0x33, &v);return v;}
-	int GetRegistryBrowserDpi()	{int v; DoUnk16_GetRegistryValue(0,0x34, &v);return v;}
-	int GetRegistryBrowserInterlaceFilter()	{int v; DoUnk16_GetRegistryValue(0,0x35, &v);return v;}
-	int GetRegistryBrowserIfilter()	{int v; DoUnk16_GetRegistryValue(0,0x36, &v);return v;}
-	int GetRegistryBrowserIfilterAddress()	{int v; DoUnk16_GetRegistryValue(0,0x37, &v);return v;}
-	int GetRegistryBrowserIfilterPort()	{int v; DoUnk16_GetRegistryValue(0,0x38, &v);return v;}
-	int GetRegistryBrowserIfilterUsername()	{int v; DoUnk16_GetRegistryValue(0,0x39, &v);return v;}
-	int GetRegistryBrowserIfilterPassword()	{int v; DoUnk16_GetRegistryValue(0,0x3A, &v);return v;}
-	int GetRegistryBrowserIfilterBase64()	{int v; DoUnk16_GetRegistryValue(0,0x3B, &v);return v;}
-	int GetRegistryBrowserTrendEula()	{int v; DoUnk16_GetRegistryValue(0,0x3C, &v);return v;}
-	int GetRegistryBrowserTrendEnable()	{int v; DoUnk16_GetRegistryValue(0,0x3D, &v);return v;}
-	int GetRegistryInputForecastDictionary()	{int v; DoUnk16_GetRegistryValue(0,0x46, &v);return v;}
-	int GetRegistryInputTenKeyInputType()	{int v; DoUnk16_GetRegistryValue(0,0x47, &v);return v;}
-	int GetRegistryInputForecastDictionaryCh()	{int v; DoUnk16_GetRegistryValue(0,0x48, &v);return v;}
-	int GetRegistryInputKeyLayoutType()	{int v; DoUnk16_GetRegistryValue(0,0x49, &v);return v;}
-	int GetRegistryEdyEula()	{int v; DoUnk16_GetRegistryValue(0,0x50, &v);return v;}
-	int GetRegistryThemeWallpaper()	{int v; DoUnk16_GetRegistryValue(0,0x5A, &v);return v;}
-	int GetRegistryThemeFont()	{int v; DoUnk16_GetRegistryValue(0,0x5B, &v);return v;}
-	int GetRegistryThemeFontEu()	{int v; DoUnk16_GetRegistryValue(0,0x5C, &v);return v;}
-	int GetRegistryThemeFontRu()	{int v; DoUnk16_GetRegistryValue(0,0x5D, &v);return v;}
-	int GetRegistryThemeFile(char * f)	{return DoUnk17_GetRegistryString(0,0x5E,f,0x80);}
-	int GetRegistryThemeColor()	{int v; DoUnk16_GetRegistryValue(0,0x5F, &v);return v;}
-	int GetRegistryThemeEndarkbg()	{int v; DoUnk16_GetRegistryValue(0,0x60, &v);return v;}
-	int GetRegistryMicPitchshift()	{int v; DoUnk16_GetRegistryValue(0,0x64, &v);return v;}
-	int GetRegistryUserRestoreSignInPassword(char * p)	{return DoUnk17_GetRegistryString(0,0x6E,p,0x80);}
-	int GetRegistryUserRestoreSignInStatus()	{int v; DoUnk16_GetRegistryValue(0,0x6F, &v);return v;}
-	int GetRegistryYtaccountAccountid(char * a)	{return DoUnk17_GetRegistryString(0,0x78,a,0x80);}
-	int GetRegistryYtaccountPassword(char * p)	{return DoUnk17_GetRegistryString(0,0x79,p,0x80);}
-	int GetRegistryNpGuestCountry(char * c)	{return DoUnk17_GetRegistryString(0,0x82,c,0x80);}
-	int GetRegistryNpGuestLang(char * l)	{return DoUnk17_GetRegistryString(0,0x83,l,0x80);}
-	int GetRegistryNpGuestBirth()	{int v; DoUnk16_GetRegistryValue(0,0x84, &v);return v;}
-	int GetRegistryWBoardEnable()	{int v; DoUnk16_GetRegistryValue(0,0x8C, &v);return v;}
-	int GetRegistryWBoardFocusMask(){int v; DoUnk16_GetRegistryValue(0,0x8D, &v);return v;}
-	int GetRegistryNetOnlineFlag()	{int v; DoUnk16_GetRegistryValue(0,0x96, &v);return v;}
-	int GetRegistryFacebookAccount(char * a)	{return DoUnk17_GetRegistryString(0,0xC8,a,0x80);}
-	int GetRegistryFacebookSessionKey()	{int v; DoUnk16_GetRegistryValue(0,0xC9, &v);return v;}
-	int GetRegistryFacebookSessionSecret()	{int v; DoUnk16_GetRegistryValue(0,0xCA, &v);return v;}
-	int GetRegistryFacebookUid()	{int v; DoUnk16_GetRegistryValue(0,0xCB, &v);return v;}
-	int GetRegistryFacebookTrophy()	{int v; DoUnk16_GetRegistryValue(0,0xCC, &v);return v;}
-	int GetRegistryFacebookPurchase()	{int v; DoUnk16_GetRegistryValue(0,0xCD, &v);return v;}
-	int GetRegistryFacebookGameEvent()	{int v; DoUnk16_GetRegistryValue(0,0xCE, &v);return v;}
-	int GetRegistryFacebookHknwEnable()	{int v; DoUnk16_GetRegistryValue(0,0xCF, &v);return v;}
-	int GetRegistryFacebookAccessToken()	{int v; DoUnk16_GetRegistryValue(0,0xD0, &v);return v;}
-	int GetRegistryFacebookGameIntegrations()	{int v; DoUnk16_GetRegistryValue(0,0xD1, &v);return v;}
-	int GetRegistryPicasaMail(char * m)	{return DoUnk17_GetRegistryString(0,0xD2,m,0x80);}
-	int GetRegistryPicasaPassword(char * p)	{return DoUnk17_GetRegistryString(0,0xD3,p,0x80);}
-	int GetRegistryPicasaHknwEnable()	{int v; DoUnk16_GetRegistryValue(0,0xD4, &v);return v;}
-	int GetRegistryFlickrMail(char * m)	{return DoUnk17_GetRegistryString(0,0xDC,m,0x80);}
-	int GetRegistryFlickrPassword(char * p)	{return DoUnk17_GetRegistryString(0,0xDD,p,0x80);}
-	int GetRegistryFacebookRating()	{int v; DoUnk16_GetRegistryValue(0,0xE6, &v);return v;}
+	int GetRegistryKeyboardType()	{int v; GetRegistryValue(0,0x14, &v);return v;}
+	int GetRegistryKeyboardJapaneseInput()	{int v; GetRegistryValue(0,0x15, &v);return v;}
+	int GetRegistryKeyboardTradChineseInput()	{int v; GetRegistryValue(0,0x16, &v);return v;}
+	int GetRegistryKeyboardBind()	{int v; GetRegistryValue(0,0x17, &v);return v;}
+	int GetRegistryKeyboardRepeatStartingTime()	{int v; GetRegistryValue(0,0x18, &v);return v;}
+	int GetRegistryKeyboardRepeadSpeed()	{int v; GetRegistryValue(0,0x19, &v);return v;}
+	int GetRegistryMouseType()	{int v; GetRegistryValue(0,0x1E, &v);return v;}
+	int GetRegistryMouseSpeed()	{int v; GetRegistryValue(0,0x1F, &v);return v;}
+	int GetRegistryBrowserHomeUri(char * uri)	{return GetRegistryString(0,0x28,uri,0x80);}
+	int GetRegistryBrowserCookieMode()	{int v; GetRegistryValue(0,0x29, &v);return v;}
+	int GetRegistryBrowserJavascript()	{int v; GetRegistryValue(0,0x2A, &v);return v;}
+	int GetRegistryBrowserDisplayMode()	{int v; GetRegistryValue(0,0x2B, &v);return v;}
+	int GetRegistryBrowserExitConfirmation()	{int v; GetRegistryValue(0,0x2C, &v);return v;}
+	int GetRegistryBrowserOverscan()	{int v; GetRegistryValue(0,0x2D, &v);return v;}
+	int GetRegistryBrowserWindowSize()	{int v; GetRegistryValue(0,0x2E, &v);return v;}
+	int GetRegistryBrowserFontSize()	{int v; GetRegistryValue(0,0x2F, &v);return v;}
+	int GetRegistryBrowserEncoding()	{int v; GetRegistryValue(0,0x30, &v);return v;}
+	int GetRegistryBrowserCacheSize()	{int v; GetRegistryValue(0,0x31, &v);return v;}
+	int GetRegistryBrowserRestoreWindow()	{int v; GetRegistryValue(0,0x32, &v);return v;}
+	int GetRegistryBrowserPopupBlock()	{int v; GetRegistryValue(0,0x33, &v);return v;}
+	int GetRegistryBrowserDpi()	{int v; GetRegistryValue(0,0x34, &v);return v;}
+	int GetRegistryBrowserInterlaceFilter()	{int v; GetRegistryValue(0,0x35, &v);return v;}
+	int GetRegistryBrowserIfilter()	{int v; GetRegistryValue(0,0x36, &v);return v;}
+	int GetRegistryBrowserIfilterAddress()	{int v; GetRegistryValue(0,0x37, &v);return v;}
+	int GetRegistryBrowserIfilterPort()	{int v; GetRegistryValue(0,0x38, &v);return v;}
+	int GetRegistryBrowserIfilterUsername()	{int v; GetRegistryValue(0,0x39, &v);return v;}
+	int GetRegistryBrowserIfilterPassword()	{int v; GetRegistryValue(0,0x3A, &v);return v;}
+	int GetRegistryBrowserIfilterBase64()	{int v; GetRegistryValue(0,0x3B, &v);return v;}
+	int GetRegistryBrowserTrendEula()	{int v; GetRegistryValue(0,0x3C, &v);return v;}
+	int GetRegistryBrowserTrendEnable()	{int v; GetRegistryValue(0,0x3D, &v);return v;}
+	int GetRegistryInputForecastDictionary()	{int v; GetRegistryValue(0,0x46, &v);return v;}
+	int GetRegistryInputTenKeyInputType()	{int v; GetRegistryValue(0,0x47, &v);return v;}
+	int GetRegistryInputForecastDictionaryCh()	{int v; GetRegistryValue(0,0x48, &v);return v;}
+	int GetRegistryInputKeyLayoutType()	{int v; GetRegistryValue(0,0x49, &v);return v;}
+	int GetRegistryEdyEula()	{int v; GetRegistryValue(0,0x50, &v);return v;}
+	int GetRegistryThemeWallpaper()	{int v; GetRegistryValue(0,0x5A, &v);return v;}
+	int GetRegistryThemeFont()	{int v; GetRegistryValue(0,0x5B, &v);return v;}
+	int GetRegistryThemeFontEu()	{int v; GetRegistryValue(0,0x5C, &v);return v;}
+	int GetRegistryThemeFontRu()	{int v; GetRegistryValue(0,0x5D, &v);return v;}
+	int GetRegistryThemeFile(char * f)	{return GetRegistryString(0,0x5E,f,0x80);}
+	int GetRegistryThemeColor()	{int v; GetRegistryValue(0,0x5F, &v);return v;}
+	int GetRegistryThemeEndarkbg()	{int v; GetRegistryValue(0,0x60, &v);return v;}
+	int GetRegistryMicPitchshift()	{int v; GetRegistryValue(0,0x64, &v);return v;}
+	int GetRegistryUserRestoreSignInPassword(char * p)	{return GetRegistryString(0,0x6E,p,0x80);}
+	int GetRegistryUserRestoreSignInStatus()	{int v; GetRegistryValue(0,0x6F, &v);return v;}
+	int GetRegistryYtaccountAccountid(char * a)	{return GetRegistryString(0,0x78,a,0x80);}
+	int GetRegistryYtaccountPassword(char * p)	{return GetRegistryString(0,0x79,p,0x80);}
+	int GetRegistryNpGuestCountry(char * c)	{return GetRegistryString(0,0x82,c,0x80);}
+	int GetRegistryNpGuestLang(char * l)	{return GetRegistryString(0,0x83,l,0x80);}
+	int GetRegistryNpGuestBirth()	{int v; GetRegistryValue(0,0x84, &v);return v;}
+	int GetRegistryWBoardEnable()	{int v; GetRegistryValue(0,0x8C, &v);return v;}
+	int GetRegistryWBoardFocusMask(){int v; GetRegistryValue(0,0x8D, &v);return v;}
+	int GetRegistryNetOnlineFlag()	{int v; GetRegistryValue(0,0x96, &v);return v;}
+	int GetRegistryFacebookAccount(char * a)	{return GetRegistryString(0,0xC8,a,0x80);}
+	int GetRegistryFacebookSessionKey()	{int v; GetRegistryValue(0,0xC9, &v);return v;}
+	int GetRegistryFacebookSessionSecret()	{int v; GetRegistryValue(0,0xCA, &v);return v;}
+	int GetRegistryFacebookUid()	{int v; GetRegistryValue(0,0xCB, &v);return v;}
+	int GetRegistryFacebookTrophy()	{int v; GetRegistryValue(0,0xCC, &v);return v;}
+	int GetRegistryFacebookPurchase()	{int v; GetRegistryValue(0,0xCD, &v);return v;}
+	int GetRegistryFacebookGameEvent()	{int v; GetRegistryValue(0,0xCE, &v);return v;}
+	int GetRegistryFacebookHknwEnable()	{int v; GetRegistryValue(0,0xCF, &v);return v;}
+	int GetRegistryFacebookAccessToken()	{int v; GetRegistryValue(0,0xD0, &v);return v;}
+	int GetRegistryFacebookGameIntegrations()	{int v; GetRegistryValue(0,0xD1, &v);return v;}
+	int GetRegistryPicasaMail(char * m)	{return GetRegistryString(0,0xD2,m,0x80);}
+	int GetRegistryPicasaPassword(char * p)	{return GetRegistryString(0,0xD3,p,0x80);}
+	int GetRegistryPicasaHknwEnable()	{int v; GetRegistryValue(0,0xD4, &v);return v;}
+	int GetRegistryFlickrMail(char * m)	{return GetRegistryString(0,0xDC,m,0x80);}
+	int GetRegistryFlickrPassword(char * p)	{return GetRegistryString(0,0xDD,p,0x80);}
+	int GetRegistryFacebookRating()	{int v; GetRegistryValue(0,0xE6, &v);return v;}
 	int SetRegistryWBoardFocusMask(int v){ return DoUnk18_SetRegistryValue(0,0x8D, v);}
 */
 } xsetting_CC56EB2D_class;
