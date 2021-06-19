@@ -748,6 +748,9 @@ next_xml_entry:
 
 						if(key >= max_xmb_items) break;
 
+						// skip duplicated game in /dev_hdd0
+						if(is_dupe(f0, f1, entry.entry_name.d_name, templn)) continue;
+
 						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
 
 						if(IS_JB_FOLDER)

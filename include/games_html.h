@@ -111,6 +111,11 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 	*icon = *title_id = NULL;
 
+	// skip duplicated games in /dev_hdd0
+	sprintf(templn, "%s%s/%s", drives[0], param, data[v3_entry].name);
+	if(file_exists(templn)) return FAILED;
+
+	// get name
 	if(IS_PS3_TYPE) //PS3 games only (0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI")
 	{
 		if(data[v3_entry].is_directory)
@@ -146,6 +151,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	else
 		{get_name(templn, data[v3_entry].name, NO_EXT);}
 
+	// check for /title/title.iso
 	if(data[v3_entry].is_directory && IS_ISO_FOLDER)
 	{
 		const char *iso_ext[10] = {"iso", "ISO", "iso.0", "ISO.0", "bin", "BIN", "mdf", "MDF", "img", "IMG"};
@@ -310,6 +316,24 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	}
 
 	to_upper(skey + (is_html ? 0 : 1));
+}
+
+static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *templn)
+{
+	if(!f0) return false;
+
+	if(IS_NTFS)
+	{
+		sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
+		char *ext = strstr(templn, ".ntfs["); if(!ext) return true;
+		sprintf(ext, ".iso"); if(file_exists(templn)) return true;
+		sprintf(ext, ".ISO"); if(file_exists(templn)) return true;
+		sprintf(ext, ".bin"); if(file_exists(templn)) return true; *ext = NULL;
+	}
+	else
+		sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
+
+	return file_exists(templn);
 }
 
 static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
@@ -744,6 +768,9 @@ list_games:
 #endif // #ifdef NET_SUPPORT
 					{
 						if(entry.entry_name.d_name[0] == '.') continue;
+
+						// skip duplicated game in /dev_hdd0
+						if(is_dupe(f0, f1, entry.entry_name.d_name, templn)) continue;
 
 //////////////////////////////
 						subfolder = 0;
