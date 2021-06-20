@@ -425,6 +425,8 @@
 								char days[6]; *days = NULL;
 								if(dd) sprintf(days, "%id ", dd);
 
+								syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+
 								u16 len =
 								sprintf(msg, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
 											 "%s: %s%02d:%02d:%02d%s\n"

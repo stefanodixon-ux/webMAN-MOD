@@ -35,7 +35,7 @@ static void get_cobra_version(char *cfw_info)
 	// returns cfw_info[22]
 
 #ifdef COBRA_ONLY
-	if(syscalls_removed && peekq(TOC) != SYSCALLS_UNAVAILABLE) syscalls_removed = false;
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 
 	if(!cobra_version && !syscalls_removed) sys_get_cobra_version();
 

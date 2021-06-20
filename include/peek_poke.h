@@ -11,6 +11,8 @@
 #define SYSCALL8_OPCODE_PS3MAPI			0x7777
 #define PS3MAPI_OPCODE_LV1_POKE			0x1009
 
+#define CFW_SYSCALLS_REMOVED(a)			((lv2_peek_hen(a) & 0xFFFFFFFFFF000000) != 0x8000000000000000)
+
 /////////////////// LV1 PEEK //////////////////////
 static u64 lv1_peek_cfw(u64 addr)
 {
@@ -46,13 +48,13 @@ static u64 lv2_peek_cfw(u64 addr) //sc8 + LV2_OFFSET_ON_LV1
 	return (u64) p1;
 }
 
-#ifdef COBRA_ONLY
 static u64 lv2_peek_hen(u64 addr) //sc6
 {
 	system_call_1(SC_PEEK_LV2, addr);
 	return (u64) p1;
 }
 
+#ifdef COBRA_ONLY
 static u64 lv2_peek_ps3mapi(u64 addr) //sc8 + ps3mapi
 {
 	system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV2_PEEK, addr);

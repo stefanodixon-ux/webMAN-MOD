@@ -6,16 +6,6 @@ static u64 blocked_url[MAX_BLOCKED_URL][2]; u8 url_count = 0;
 
 #ifdef REMOVE_SYSCALLS
 
-#ifdef PS3MAPI
-
-static u64 sc_backup[CFW_SYSCALLS];
-
-static void backup_cfw_syscalls(void)
-{
-	for(u8 sc = 0; sc < CFW_SYSCALLS; sc++)
-		sc_backup[sc] = peekq( SYSCALL_PTR(sc_disable[sc]) );
-}
-
 static void disable_signin_dialog(void)
 {
 	if(file_exists(NPSIGNIN_PLUGIN_OFF))
@@ -27,6 +17,16 @@ static void disable_signin_dialog(void)
 static void enable_signin_dialog(void)
 {
 	sys_map_path(NPSIGNIN_PLUGIN_RCO, NULL);
+}
+
+#ifdef PS3MAPI
+
+static u64 sc_backup[CFW_SYSCALLS];
+
+static void backup_cfw_syscalls(void)
+{
+	for(u8 sc = 0; sc < CFW_SYSCALLS; sc++)
+		sc_backup[sc] = peekq( SYSCALL_PTR(sc_disable[sc]) );
 }
 
 static void restore_cfw_syscalls(void)
@@ -41,7 +41,7 @@ static void restore_cfw_syscalls(void)
 	for(u8 sc = 0; sc < CFW_SYSCALLS; sc++)
 		lv2_poke_ps3mapi( SYSCALL_PTR(sc_disable[sc]), sc_backup[sc] );
 
-	syscalls_removed = (peekq(TOC) == SYSCALLS_UNAVAILABLE);
+	syscalls_removed = (lv2_peek_hen(TOC) == SYSCALLS_UNAVAILABLE);
 
 	//ps3mapi_key = 0;
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
@@ -49,7 +49,7 @@ static void restore_cfw_syscalls(void)
 	for(u8 sc = 0; sc < CFW_SYSCALLS; sc++)
 		pokeq( SYSCALL_PTR(sc_disable[sc]), sc_backup[sc] );
 
-	syscalls_removed = (peekq(TOC) == SYSCALLS_UNAVAILABLE);
+	syscalls_removed = (lv2_peek_hen(TOC) == SYSCALLS_UNAVAILABLE);
 	#endif
 
 #ifndef ENGLISH_ONLY
@@ -115,7 +115,7 @@ static void remove_cfw_syscall8(void)
 
 	restore_blocked_urls(true);
 
-	u64 sc_null = peekq(SYSCALL_TABLE), toc = peekq(TOC);
+	u64 sc_null = lv2_peek_hen(SYSCALL_TABLE), toc = lv2_peek_hen(TOC);
 
 	// disable syscall 8 only if others cfw syscalls were disabled
 	if(syscalls_removed || toc == SYSCALLS_UNAVAILABLE || toc == sc_null)
@@ -133,7 +133,7 @@ static void remove_cfw_syscall8(void)
 
 static void remove_cfw_syscalls(bool keep_ccapi)
 {
-	detect_firmware();
+	detect_firmware(); syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 
 	if(!SYSCALL_TABLE || syscalls_removed) return;
 

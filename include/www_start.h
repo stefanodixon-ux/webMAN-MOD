@@ -122,9 +122,9 @@ static void start_www(u64 conn_s_p)
 			if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT }
 
 			#ifdef COBRA_ONLY
+			#ifdef REMOVE_SYSCALLS
 			disable_signin_dialog();
 
-			#ifdef REMOVE_SYSCALLS
 			if(webman_config->spp & 1) //remove syscalls & history
 			{
 				if(!payload_ps3hen) sys_ppu_thread_sleep(5); do_sleep = false;

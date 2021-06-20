@@ -74,6 +74,12 @@ static u16 sc_disable[CFW_SYSCALLS] = {200, 201, 202, 203, 204, 1022, 6, 7, 10, 
 #endif
 
 #ifdef COBRA_ONLY
+
+#ifdef REMOVE_SYSCALLS
+static void disable_signin_dialog(void);
+static void enable_signin_dialog(void);
+#endif
+
 static void ps3mapi_get_vsh_plugin_info(unsigned int slot, char *tmp_name, char *tmp_filename)
 {
 	memset(tmp_name, 0, 30);
@@ -368,6 +374,10 @@ static void ps3mapi_syscall8(char *buffer, char *templn, const char *param)
 	{
 		u8 mode = get_valuen(param, "mode=", 0, 5);
 
+		#ifdef REMOVE_SYSCALLS
+		if(mode) enable_signin_dialog();
+		#endif
+
 		{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA, (mode == 5)); }
 
 		if( mode <= 3 ) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, (u64)mode); }
@@ -396,6 +406,10 @@ static void ps3mapi_syscall8(char *buffer, char *templn, const char *param)
 	{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); ret_val = (int)p1;}
 
 	syscalls_removed = (ret_val != 0); peek_lv1 = (syscalls_removed) ? lv1_peek_ps3mapi : lv1_peek_cfw;
+
+	#ifdef REMOVE_SYSCALLS
+	if(!syscalls_removed) disable_signin_dialog();
+	#endif
 
 	if(ret_val < 0)
 	{
