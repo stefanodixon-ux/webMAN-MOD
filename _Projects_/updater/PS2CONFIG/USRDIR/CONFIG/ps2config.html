@@ -537,6 +537,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_513.43<td>Galerians Ash</tr>
 <tr><td>CUSTOM<td>SLUS_213.93<td>Gallop Racer 2006</tr>
 <tr><td>CUSTOM<td>SLPM_661.86<td>Game ni Nattayo! Dokuru-chan</tr>
+<tr><td>CUSTOM<td>SLUS_210.77<td>Gauntlet: Seven Sorrows</tr>
+<tr><td>CUSTOM<td>SLES_536.67<td>Gauntlet: Seven Sorrows</tr>
 <tr><td>CUSTOM<td>SCKA_200.27<td>Ghost in the Shell - Stand Alone Complex</tr>
 <tr><td>CUSTOM<td>SCPS_150.64<td>Ghost in the Shell - Stand Alone Complex</tr>
 <tr><td>CUSTOM<td>SLUS_210.06<td>Ghost in the Shell - Stane Alone Complex</tr>
@@ -3063,6 +3065,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_205.60<td>Galerians Ash</tr>
 <tr><td>ENC<td>SLUS_213.93<td>Gallop Racer 2006</tr>
 <tr><td>ENC<td>SLPM_661.86<td>Game ni Nattayo! Dokuru-chan</tr>
+<tr><td>ENC<td>SLUS_210.77<td>Gauntlet: Seven Sorrows</tr>
+<tr><td>ENC<td>SLES_536.67<td>Gauntlet: Seven Sorrows</tr>
 <tr><td>ENC<td>SCPS_150.64<td>Ghost in the Shell - Stand Alone Complex</tr>
 <tr><td>ENC<td>SCKA_200.27<td>Ghost in the Shell - Stand Alone Complex</tr>
 <tr><td>ENC<td>SLUS_210.06<td>Ghost in the Shell - Stane Alone Complex</tr>
@@ -3922,7 +3926,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 2470; i < count; i++) {
+for (i = 2479; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
