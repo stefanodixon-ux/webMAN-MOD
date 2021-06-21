@@ -406,6 +406,7 @@ static void ps3mapi_syscall8(char *buffer, char *templn, const char *param)
 	{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); ret_val = (int)p1;}
 
 	syscalls_removed = (ret_val != 0); peek_lv1 = (syscalls_removed) ? lv1_peek_ps3mapi : lv1_peek_cfw;
+	if(!syscalls_removed) disable_signin_dialog();
 
 	#ifdef REMOVE_SYSCALLS
 	if(!syscalls_removed) disable_signin_dialog();

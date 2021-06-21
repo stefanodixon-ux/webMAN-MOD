@@ -426,6 +426,7 @@
 								if(dd) sprintf(days, "%id ", dd);
 
 								syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+								if(!syscalls_removed) disable_signin_dialog();
 
 								u16 len =
 								sprintf(msg, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
@@ -455,10 +456,10 @@
 								}
 								else
 								{
-									char *str_free = STR_MBFREE;
+									char *str_free = (char *)STR_MBFREE;
 									int mem_free = (int)(meminfo.avail>>10);
 									int hdd_free = (int)(get_free_space(drives[0])>>20), dm = (hdd_free % KB) / 100;
-									if(hdd_free > 1024) {hdd_free /= KB, str_free = STR_GBFREE;}
+									if(hdd_free > 1024) {hdd_free /= KB, str_free = (char *)STR_GBFREE;}
 									sprintf(msg + len,  "%s: %i.%i %s\n"
 														"%s: %i %s\n",
 														STR_STORAGE, hdd_free, dm, str_free,

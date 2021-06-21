@@ -862,10 +862,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							else
 							{
 								int mb_free, dm;
-								char *slash = strchr(d_path + 1, '/'), *str_free = STR_MBFREE;
+								char *slash = strchr(d_path + 1, '/'), *str_free = (char *)STR_MBFREE;
 								if(slash) *slash = '\0';
 								mb_free = (get_free_space(d_path)>>20), dm = (mb_free % KB) / 100;
-								if(mb_free > 1024) {mb_free /= KB, str_free = STR_GBFREE;}
+								if(mb_free > 1024) {mb_free /= KB, str_free = (char *)STR_GBFREE;}
 								sprintf(buffer, "226 [%s] [ %i.%i %s %s]\r\n", d_path, mb_free, dm, str_free, cpursx);
 								ssend(conn_s_ftp, buffer);
 							}

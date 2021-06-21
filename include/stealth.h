@@ -8,15 +8,19 @@ static u64 blocked_url[MAX_BLOCKED_URL][2]; u8 url_count = 0;
 
 static void disable_signin_dialog(void)
 {
+	#ifdef COBRA_ONLY
 	if(file_exists(NPSIGNIN_PLUGIN_OFF))
 	{
 		sys_map_path(NPSIGNIN_PLUGIN_RCO, NPSIGNIN_PLUGIN_OFF);
 	}
+	#endif
 }
 
 static void enable_signin_dialog(void)
 {
+	#ifdef COBRA_ONLY
 	sys_map_path(NPSIGNIN_PLUGIN_RCO, NULL);
+	#endif
 }
 
 #ifdef PS3MAPI
@@ -51,6 +55,8 @@ static void restore_cfw_syscalls(void)
 
 	syscalls_removed = (lv2_peek_hen(TOC) == SYSCALLS_UNAVAILABLE);
 	#endif
+
+	if(!syscalls_removed) disable_signin_dialog();
 
 #ifndef ENGLISH_ONLY
 	char STR_RSTCFWSYS[80];//	= "CFW Syscalls restored!";
@@ -133,7 +139,9 @@ static void remove_cfw_syscall8(void)
 
 static void remove_cfw_syscalls(bool keep_ccapi)
 {
-	detect_firmware(); syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	detect_firmware();
+
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 
 	if(!SYSCALL_TABLE || syscalls_removed) return;
 
@@ -152,9 +160,7 @@ static void remove_cfw_syscalls(bool keep_ccapi)
 	for(u8 sc = initial_sc; sc < CFW_SYSCALLS; sc++)
 		pokeq(SYSCALL_PTR( sc_disable[sc] ), sc_null);
 
-	u64 sc8  = peekq(SYSCALL_PTR(8)) | peekq(SYSCALL_PTR(9));
-
-	syscalls_removed = (sc8 == SYSCALLS_UNAVAILABLE || sc8 == sc_null);
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 
 	#ifdef COBRA_ONLY
 	if(syscalls_removed)

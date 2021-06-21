@@ -32,12 +32,9 @@ static void poll_start_play_time(void)
 			start_event(EVENT_ON_XMB);
 		}
  #endif
-		if(syscalls_removed)
-		{
-			// check if syscalls were restored
-			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
-			if(!syscalls_removed) disable_signin_dialog();
-		}
+		// check if syscalls were restored
+		syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+		if(!syscalls_removed) disable_signin_dialog();
 #endif
 		gTick = rTick;
 

@@ -2,6 +2,7 @@
 * Copyright (c) 2021 by picard(aka 3141card)
 * This file is released under the GPLv2.
 */
+#ifndef LITE_EDITION
 
 #define LV2_START    0x8000000000000000ULL
 #define LV2_END      0x8000000000800000ULL
@@ -69,3 +70,5 @@ static u32 hdd_unlock_space(char unlock, u8 opt)
 
 	return minfree | (optim<<8);
 }
+
+#endif //#ifndef LITE_EDITION

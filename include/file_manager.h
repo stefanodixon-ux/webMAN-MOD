@@ -1031,9 +1031,9 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 			if(param[1] != 'n')
 			{
-				char *str_free = STR_MBFREE;
+				char *str_free = (char *)STR_MBFREE;
 				int dev_free = (int)(get_free_space(param)>>20), dm = (dev_free % KB) / 100;
-				if(dev_free > 1024) {dev_free /= KB, str_free = STR_GBFREE;}
+				if(dev_free > 1024) {dev_free /= KB, str_free = (char *)STR_GBFREE;}
 				sprintf(templn, " %'d.%i %s", dev_free, dm, str_free);
 				_concat(&sout, templn);
 			}

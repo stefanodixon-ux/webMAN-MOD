@@ -36,6 +36,7 @@ static void get_cobra_version(char *cfw_info)
 
 #ifdef COBRA_ONLY
 	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	if(!syscalls_removed) disable_signin_dialog();
 
 	if(!cobra_version && !syscalls_removed) sys_get_cobra_version();
 
@@ -324,8 +325,8 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	else
 		sprintf(max_temp1, "/games.ps3");
 
-	hdd_free = (int)(get_free_space(drives[0])>>20); dm = (hdd_free % KB) / 100; str_free = STR_MBFREE;
-	if(hdd_free > 1024) {hdd_free /= KB, str_free = STR_GBFREE;}
+	hdd_free = (int)(get_free_space(drives[0])>>20); dm = (hdd_free % KB) / 100; str_free = (char *)STR_MBFREE;
+	if(hdd_free > 1024) {hdd_free /= KB, str_free = (char *)STR_GBFREE;}
 
 	sprintf(param,	"<a class=\"s\" href=\"%s\">"
 					"MEM: %'d KB %s</a><br>"

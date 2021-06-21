@@ -714,7 +714,9 @@ parse_request:
 				{
 					char *param2 = param + 9; if(*param2 == '?') param2++;
 
+					#ifdef COBRA_ONLY
 					if((*param2 == NULL) && is_app_dir("/app_home", "PS3_GAME") && !is_app_dir("/dev_bdvd", "PS3_GAME")) goto launch_app;
+					#endif
 
 					if(islike(param2, "snd_"))
 					{
@@ -742,6 +744,7 @@ parse_request:
 
 					if(file_exists(param2))
 					{
+						#ifdef COBRA_ONLY
 						if(IS(param2, "/app_home"))
 						{
 			launch_app:
@@ -755,6 +758,7 @@ parse_request:
 							sprintf(param, "/cpursx.ps3");
 						}
 						else
+						#endif
 						{
 							strcpy(header, param2);
 							sprintf(param, "/mount.ps3%s", header);

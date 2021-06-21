@@ -125,6 +125,7 @@ static u64 lv1_peek_hen(u64 addr)
 ///////////////////////////////////////////////////
 #endif
 
+#ifndef LITE_EDITION
 /***********************************************************************
 * lv2 peek 32 bit
 ***********************************************************************/
@@ -141,6 +142,7 @@ static void lv2_poke_32(u64 addr, u32 value)
 	u64 value_org = peekq(addr);
 	pokeq(addr, (value_org & 0xFFFFFFFFULL) | (((u64)value) <<32));
 }
+#endif
 
 #ifndef COBRA_ONLY
 static inline void remove_lv2_memory_protection(void)
