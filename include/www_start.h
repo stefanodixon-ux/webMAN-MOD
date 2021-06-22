@@ -122,6 +122,8 @@ static void start_www(u64 conn_s_p)
 			if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT }
 
 			#ifdef COBRA_ONLY
+			lock_psp_launchers();
+
 			#ifdef REMOVE_SYSCALLS
 			disable_signin_dialog();
 

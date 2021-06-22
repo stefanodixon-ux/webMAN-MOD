@@ -8,6 +8,8 @@ static void patch_ps2_demo(const char *iso_file)
 	read_file(iso_file, data, 0x3C, 0x80A0);
 	root = offset = *((u32*)(data + 2)) * 0x800; // 0x105 * 800
 
+	#define GAME_EXT_BLACKLISTED "SCUS97275SCUS97474SCUS97545SCUS97340SCUS97341SCUS97342SCUS97442"
+
 	for(u8 entry = 0; entry < 0x20; entry++)
 	{
 		read_file(iso_file, data, 0x3C, offset);
@@ -17,7 +19,7 @@ static void patch_ps2_demo(const char *iso_file)
 
 			if(*title_id)
 			{
-				if(!memcmp(entry_name, title_id, 0xD))
+				if(!memcmp(entry_name, title_id, 0xD) || (strstr(GAME_EXT_BLACKLISTED, title_id) != NULL))
 				{
 					entry_name[3] = 'X'; // patch exe name in directory
 					write_file(iso_file, CELL_FS_O_WRONLY, data, offset, 0x3C, false);
@@ -37,7 +39,7 @@ static void patch_ps2_demo(const char *iso_file)
 				if(exe_name)
 				{
 					memcpy(title_id, exe_name, 0xD);
-					if((title_id[0] == 'S') && (title_id[3] == 'D') && (title_id[4] == '_') & (title_id[8] == '.')) // S**D_###.##;1
+					if((title_id[0] == 'S') && ((title_id[1] == 'C') || (title_id[3] == 'D')) && (title_id[4] == '_') & (title_id[8] == '.')) // S**D_###.##;1
 					{
 						exe_name[3] = 'X'; // patch SYSTEM.CNF
 

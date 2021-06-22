@@ -512,6 +512,7 @@
 
 					mount_unk = EMU_PSP;
 
+					unlock_psp_launchers();
 					cobra_unset_psp_umd();
 
 					if(file_exists(iso_list[0]))
