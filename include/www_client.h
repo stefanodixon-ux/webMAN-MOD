@@ -1690,7 +1690,7 @@ parse_request:
 				// /wallpaper.ps3           show selected
 				// /wallpaper.ps3?next      select next id
 				// /wallpaper.ps3?prev      select prev id
-				// /wallpaper.ps3?<id>      set id 1-254 (.jpg)
+				// /wallpaper.ps3?<id>      set id 1-254 (.png)
 				// /wallpaper.ps3?disable   use dev_flash (id=255)
 
 				u8 id;

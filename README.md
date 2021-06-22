@@ -82,6 +82,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Display notifications with custom icons & sound
 
 #### Extended mount of game
+- Automatic launch of game when mounted from XMB keeping pressed the X button
 - Automatic focus to category column & disc icon based on content type
 - Support for multiCD PSXISO games stored as ISO in HDD0 / USB FAT32. Eject/Insert a USB0 device to mount the next CD
 - It can mount PSP games stored on exFAT/NTFS/ext2/3/4/NET devices without copy the file to the internal HDD (1.47.27) - Requires prepISO 1.27 or later
@@ -108,7 +109,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Auto install / auto select PSP emulator for PSP games using decrypted MINIS.EDAT / MINIS2.EDAT
 
 #### File management & navigation
-- Improvements on File Manager (file & folder icons, links to navigate faster, mount ISO, mount net0/ or net1/, preview images, copy/paste/delete files & folders)
+- Improvements on File Manager (file & folder icons, links to navigate faster, mount ISO, mount net0/ or net1/, preview images, file truncation, copy/paste/delete files & folders)
 - Copy operations use shadow copy on hdd0 for faster copy operations
 - It can rip a game from disc to hdd0 or copy from hdd0 to usb000 or from usb00x to hdd0.
 - Shorter URL to access paths & files. Use "home" path in /setup.ps3 for search in a user defined folder.
@@ -117,6 +118,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Folder size statistics & change permissions
 - Hex File Viewer (internal HDD/FAT32/NTFS/exFAT/ext2/3/4)
 - Experimental support for zip & unzip (rar, 7z, bz2, tgz, tar can be extracted). Requires PKGLAUNCH & app_home/PS3_GAME icon.
+- Unlock up to 8% more space on internal HDD using /unlockhdd.ps3 Thanks to 3141card (picard)
 
 #### Network features
 - Update to latest release from XMB
@@ -137,7 +139,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Automatic remap to /dev_hdd0/packages on unmount (SELECT+O) allows to use Install All Packages on pkg files stored on HDD0
 - Support for auto-play on startup any supported ISO, game folder or auto-open an URL link. webMAN vanilla only can mount AUTOBOOT.ISO
 - Support for auto-fix games that require higher FW version (4.20 and later)
-- Support batch script automation at startup (dev_hdd0/boot_init.txt or dev_hdd0/autoexec.bat) or played at any time (/play.ps3/<script-file>.bat)
+- Support batch script automation at startup (dev_hdd0/boot_init.txt or dev_hdd0/autoexec.bat), when XMB is loaded (/dev_hdd0/onxmb.bat) or played at any time (/play.ps3/<script-file>.bat)
 - Launch mounted games with /play.ps3 command. Once a game is mounted via html, click on the displayed icon to launch the game on the PS3.
 - Execute XMB functions with /play.ps3 command. (e.g: /play.ps3?col=network&seg=seg_premo) <- this will start Remote Play server from XMB.
 - Multiple Web Commands interfaces via HTTP, FTP, PS3MAPI, file polling (dev_hdd0/tmp/wm_request)
@@ -147,10 +149,11 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Support for auto-map libsound.sprx from /dev_hdd0/tmp
 - Support for enable/disable noBD patch needed to remarry BD drive
 - Support for relink identical files in /dev_hdd0/GAMES and /dev_hdd0/game using /stat.ps3<path>&id=<title_id>?fast
-- Support for auto-change of random or specific wallpaper and VSH resources like backgrounds, themes, coldboot_*.ac3, lines.qrc, canyon.qrc, earth.qrc when system starts.
+- Support for auto-change of random or specific wallpaper and VSH resources like backgrounds, themes, impose, coldboot_*.ac3, lines.qrc, canyon.qrc, earth.qrc when system starts.
 - A comprehensive set of web commands and features for customization. Link in [Web Commands Documentation](https://www.psx-place.com/threads/webman-mod-web-commands.1508/)
 
 #### Stealth features
+- Automatic block of Sign In to PSN while CFW syscalls are enabled (thanks to DeViL303 for the modded screen).
 - Support for dumping and spoofing IDPS/PSID/act.dat
 - Support for automatic or manual removal of CFW syscalls and spoof console id (IDPS/PSID)
 - "Offline" mode (blocks some PSN/tracking servers) and automatic restore when CFW syscalls are removed. Game updates still work in this mode. (v1.33.03)
@@ -244,11 +247,12 @@ Requirements for GNU/Linux:
 - Berion & Brunolee for the graphics & icons
 - bucanero port of libraries for zip, rar, 7-zip, bz2, tgz, tar
 - lmirel port of libraries for exFAT
-- DeViL303 for ideas, gameboot mods, XML mods, help module (based on XMB offline documentation tool by xp3riments)
+- DeViL303 for ideas, gameboot mods, Sign In blocker, XML mods, help module (based on XMB offline documentation tool by xp3riments)
 - PSX-SCENE, PSX-PLACE, PLAYSTATIONHAX, PS3HAX & other scene websites/users, who translated, helped in the testing process
 
 Special thanks to Joonie, Habib & Rebug Team, flatz, haxxxen, Rancid-O, EvilNat, KW, naehrwert, MiralaTijera
 
+Thanks also to kozarovv, mrjaredbeta, agrippa, nifengyuexia and all other contributors & testers of PS2 CONFIGs.
 
 ## License
 ### webMAN MOD
