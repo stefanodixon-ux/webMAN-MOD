@@ -131,7 +131,7 @@ STR_MOVIELOADED		[Película cargada correctamente. Puedes reproducirla seleccion
 
 STR_XMLRF			[Lista de juegos actualizada (<a href="/dev_hdd0/xmlhost/game_plugin/mygames.xml">mygames.xml</a>).<br>Pulsa <a href="/restart.ps3">aquí</a> para reiniciar el sistema PLAYSTATION®3.]
 
-STR_STORAGE			[Almacenamiento del sistema]
+STR_STORAGE			[Almacenamiento]
 STR_MEMORY			[Memoria]
 STR_GBFREE		[GB libres]
 STR_MBFREE			[MB libres]
