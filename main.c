@@ -493,6 +493,7 @@ static void wwwd_thread(u64 arg)
 	map_vsh_resource(4, MAP_SELECTED, html_base_path, false); // coldboot_*.ac3
 	map_vsh_resource(3, MAP_SELECTED, html_base_path, false); // lines.qrc
 	map_vsh_resource(7, MAP_SELECTED, html_base_path, false); // impose_plugin.rco
+	map_vsh_resource(8, MAP_SELECTED, html_base_path, false); // xmb_plugin_normal.rco + xmb_ingame.rco
 	*html_base_path = NULL;
 	#endif
 

@@ -185,7 +185,7 @@ typedef struct
 	//u8 theme_id;		// [5]: 0=random, 1-255: select specific #.p3t in /dev_hdd0/tmp/theme on each boot
 	//u8 last_theme_id;	// [6]: 0=none, 1-255: last selected theme (used to prevent install the current theme again)
 	//u8 impose_id;		// [7]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/impose on each boot
-						// [8]: reserved
+	//u8 psn_icons_id	// [8]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/psn_icons on each boot
 						// [9]: reserved
 						//[10]: reserved
 						//[11]: reserved

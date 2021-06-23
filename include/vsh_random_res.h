@@ -11,12 +11,14 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 3) ? "/dev_hdd0/tmp/lines"    : // 3
 							(res_id == 4) ? "/dev_hdd0/tmp/coldboot" : // 4
 							(res_id == 7) ? "/dev_hdd0/tmp/impose"   : // 7
+							(res_id == 8) ? "/dev_hdd0/tmp/psn_icons": // 8
 											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
 
 	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
 							(res_id == 2) ? "/dev_flash/vsh/resource/qgl/canyon.qrc":
 							(res_id == 3) ? "/dev_flash/vsh/resource/qgl/lines.qrc" :
 							(res_id == 4) ? "/dev_flash/vsh/resource/coldboot_stereo.ac3":
+							(res_id == 8) ? "/dev_flash/vsh/resource/xmb_plugin_normal.rco":
 											"/dev_flash/vsh/resource/impose_plugin.rco"; // 7
 
 	if(isDir(hdd_path))
@@ -48,6 +50,8 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 				sprintf(param, "%s/%i.p3t", hdd_path, _id); // theme
 			else if(res_id == 7)
 				sprintf(param, "%s/%i.rco", hdd_path, _id); // impose
+			else if(res_id == 8)
+				sprintf(param, "%s/%i/xmb_plugin_normal.rco", hdd_path, _id); // psn_icons
 			else
 				sprintf(param, "%s/%i.qrc", hdd_path, _id); // lines, earth, canyon
 
@@ -73,15 +77,12 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 				sys_map_path(res_path, param);
 				if(res_id == 4)
 					sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
-				/*else if(res_id == 7)
+				if(res_id == 8)
 				{
-					sprintf(param, "%s/%i/gameboot_multi.ac3", hdd_path, _id);
-					sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3", param);
-					sprintf(param, "%s/%i/gameboot_stereo.ac3", hdd_path, _id);
-					sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", param);
-					sprintf(param, "%s/%i/custom_render_plugin.rco", hdd_path, _id);
-					sys_map_path("/dev_flash/vsh/resource/custom_render_plugin.rco", param);
-				}*/
+					sprintf(param, "%s/%i/xmb_ingame.rco", hdd_path, _id); // psn_icons
+					sys_map_path("/dev_flash/vsh/resource/xmb_ingame.rco",  param);
+					sprintf(param, "%s/%i.png", hdd_path, _id); // show preview
+				}
 			}
 			else
 			{
@@ -94,6 +95,8 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 		else if(res_id)
 		{
 			if(id != DEFAULT_RES) id = 0;
+			if(res_id == 8)
+				sys_map_path("/dev_flash/vsh/resource/xmb_ingame.rco",  NULL);
 			if(res_id == 5)
 				webman_config->resource_id[6] = 0; // reset last selected theme
 			else
@@ -118,6 +121,7 @@ static void randomize_vsh_resources(bool apply_theme, char *param)
 	map_vsh_resource(2, MAP_SELECTED, param, false); // canyon.qrc
 	map_vsh_resource(3, MAP_SELECTED, param, false); // lines.qrc
 	map_vsh_resource(7, MAP_SELECTED, param, false); // impose_plugin.rco
+	map_vsh_resource(8, MAP_SELECTED, param, false); // xmb_plugin_normal.rco + xmb_ingame.rco
 	if(!apply_theme) return;
 	map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
 }

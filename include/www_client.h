@@ -1684,6 +1684,7 @@ parse_request:
 					islike(param, "/lines.ps3")     ||
 					islike(param, "/theme.ps3")     ||
 					islike(param, "/impose.ps3")    ||
+					islike(param, "/psn_icons.ps3") ||
 					islike(param, "/coldboot.ps3"))
 			{
 				// /wallpaper.ps3?random
@@ -1700,6 +1701,7 @@ parse_request:
 							(param[1] == 'l') ? 3: // 3 = lines
 							(param[1] == 'c') ? 4: // 4 = coldboot
 							(param[1] == 'i') ? 7: // 7 = impose
+							(param[1] == 'p') ? 8: // 8 = psn_icons
 												5; // 5 = theme (6 = last selected theme)
 
 				char *value = strstr(param, ".ps3") + 4;
