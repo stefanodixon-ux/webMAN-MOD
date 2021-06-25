@@ -178,8 +178,8 @@
 							goto reboot; // vsh reboot
 						}
 						else
-						if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_R3)) && // reset-safe mode
-							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))        // SELECT+R3+L2+R2
+						if( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_R3)) &&       // reset-safe mode
+							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) && IS_ON_XMB // SELECT+R3+L2+R2
 							)
 						{
 							if(!sys_admin || IS_INGAME) continue; // allow reset config only for sys_admin on XMB
@@ -259,7 +259,7 @@
 						}
  #ifdef VIDEO_REC
 						else
-						if(!(webman_config->combo2 & VIDRECORD) && pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_R3)) // SELECT + R3
+						if(!(webman_config->combo2 & VIDRECORD) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_R3))) // SELECT + R3
 						{
 							// SELECT+R3+L2+R2  = Record video with video_rec plugin (IN-GAME ONLY)
 							// SELECT+R3+L2     = Select video rec setting
