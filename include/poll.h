@@ -33,8 +33,11 @@ static void poll_start_play_time(void)
 		}
  #endif
 		// check if syscalls were restored
-		syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
-		if(!syscalls_removed) disable_signin_dialog();
+		if(syscalls_removed != CFW_SYSCALLS_REMOVED(TOC))
+		{
+			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+			if(!syscalls_removed) disable_signin_dialog();
+		}
 #endif
 		gTick = rTick;
 

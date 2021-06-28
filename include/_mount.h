@@ -1285,7 +1285,9 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 
 	else if(on_xmb)
 	{
-		if(!isDir("/dev_bdvd"))
+		if(webman_config->poll) ;
+
+		else if(!isDir("/dev_bdvd"))
 		{
 			if(webman_config->autob)
 				for(u8 f0 = 1; f0 < 16; f0++)
