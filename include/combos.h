@@ -862,8 +862,8 @@
  #endif
 						if(!(webman_config->combo & SHOW_IDPS) && ( (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN)) == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN) ) && IS_ON_XMB) // L2+R2+O
 						{
-							// L2+R2+O + [L1/R1/R1+R1] = Open Browser file manager / cpursx / games / setup
-							// L2+R2+X + [L1/R1/R1+R1] = Open Browser file manager / cpursx / games / setup (JAP)
+							// L2+R2+O + [L1/R1/L1+R1] = Open Browser file manager / cpursx / games / setup
+							// L2+R2+X + [L1/R1/L1+R1] = Open Browser file manager / cpursx / games / setup (JAP)
 #ifdef WM_CUSTOM_COMBO
 								 if(do_custom_combo("l2_r2_circle")) ;
 							else if(do_custom_combo("l2_r2_l1_circle")) ;
