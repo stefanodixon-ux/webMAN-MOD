@@ -3,7 +3,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style>
 body {background-color:#333;color:#CCC}
-
 .dot-elastic {
 	position: relative;
 	width: 10px;
@@ -13,14 +12,12 @@ body {background-color:#333;color:#CCC}
 	color: #9880ff;
 	animation: dot-elastic 1s infinite linear;
 }
-
 .dot-elastic::before, .dot-elastic::after {
 	content: '';
 	display: inline-block;
 	position: absolute;
 	top: 0;
 }
-
 .dot-elastic::before {
 	left: -15px;
 	width: 10px;
@@ -30,7 +27,6 @@ body {background-color:#333;color:#CCC}
 	color: #9880ff;
 	animation: dot-elastic-before 1s infinite linear;
 }
-
 .dot-elastic::after {
 	left: 15px;
 	width: 10px;
@@ -40,7 +36,6 @@ body {background-color:#333;color:#CCC}
 	color: #9880ff;
 	animation: dot-elastic-after 1s infinite linear;
 }
-
 @keyframes dot-elastic-before {
 	0% {
 		transform: scale(1, 1);
@@ -58,7 +53,6 @@ body {background-color:#333;color:#CCC}
 		transform: scale(1, 1);
 	}
 }
-
 @keyframes dot-elastic {
 	0% {
 		transform: scale(1, 1);
@@ -76,7 +70,6 @@ body {background-color:#333;color:#CCC}
 		transform: scale(1, 1);
 	}
 }
-
 @keyframes dot-elastic-after {
 	0% {
 		transform: scale(1, 1);
@@ -94,7 +87,6 @@ body {background-color:#333;color:#CCC}
 		transform: scale(1, 1);
 	}
 }
-
 #txtSrchDB {
 	background-position: 10px 12px; /* Position the search icon */
 	background-repeat: no-repeat; /* Do not repeat the icon image */
@@ -108,7 +100,6 @@ body {background-color:#333;color:#CCC}
 	background-color: #333;
 	color: yellow;
 }
-
 #dbTable {
 	border-collapse: collapse; /* Collapse borders */
 	width: 100%; /* Full-width */
@@ -116,47 +107,38 @@ body {background-color:#333;color:#CCC}
 	font-size: 18px; /* Increase font-size */
 	font-family: Arial;
 }
-
 #dbTable th, #dbTable td {
 	text-align: left; /* Left-align text */
 	padding: 9px 12px 6px 12px; /* Add padding */
 }
-
 #dbTable tr {
 	/* Add a bottom border to all table rows */
 	border-bottom: 1px solid #ddd;
 	cursor: pointer;
 }
-
 #dbTable th {
 	position: -webkit-sticky;
 	position: sticky;
 	top: 125px;
 	background-color: #111;
 }
-
 #dbTable tr.header {
 	background-color: #111;
 }
-
 #dbTable tr:hover {
 	background-color: #222;
 	color: yellow;
 }
-
 H1 a {color:#88F; text-decoration:none;}
-
 #btn1 {position:absolute; top:15px; right:365px; color:navy; font-family:arial; font-size:20px; border-radius:5px; background-color: #333; color:#aaa;}
 #btn2 {position:absolute; top:15px; right:305px; color:navy; font-family:arial; font-size:20px; border-radius:5px; background-color: #333; color:#aaa;}
 #category {position:absolute; top:15px; right:2px; color:navy; font-family:arial; font-size:20px; border-radius:5px; background-color: #333; color:yellow;}
-
 div.sticky {
 	position: -webkit-sticky;
 	position: sticky;
 	top: 10px;
 	background-color: #333;
 }
-
 #sorting {
 	position:fixed;
 	top:45%;
@@ -171,7 +153,6 @@ div.sticky {
 	border-radius: 10px;
 	opacity:0.9;
 }
-
 #clear {
 	position:absolute;
 	top: 78px;
@@ -182,13 +163,10 @@ div.sticky {
 	cursor: pointer;
 	z-index:99;
 }
-
 #clear:hover {
 	color: yellow;
 }
-
 small {font-size:12px; color:#aaa}
-
 #compat {font-size:10px; font-family:arial;}
 #compat a {text-decoration:none; color:#ccc;}
 #compat a:hover {text-decoration:underline; color:yellow;}
@@ -197,7 +175,6 @@ small {font-size:12px; color:#aaa}
 </style>
 <title>PS2 CONFIG Database</title>
 </head>
-
 <body onload="dbLinks();">
 <div style="position:fixed;top:0px;left:0px;width:100%;height:125px;background-color:#333;"></div>
 <div class="sticky">
@@ -218,23 +195,19 @@ small {font-size:12px; color:#aaa}
 <option value="SOFT"  >SOFT</option>
 <option value="ENC"   >ENC (PS2 Classics)</option>
 </select>
-
 </div>
-
 <script>
 function $(id){return document.getElementById(id);}
 var input = $("txtSrchDB");
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const q = urlParams.get('q');
-
 setTimeout(function(){
 	input.value = q;
 	input.focus();
 	input.select();
 }, 1);
 </script>
-
 <table id="dbTable">
 <thead>
 <tr class="header">
@@ -682,91 +655,49 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPS_258.51<td>Zettai Zetsumei Toshi 2 - Itetsuita Kioku Tachi [Irem Collection]</tr>
 <tr><td>NET<td>SCPS_150.96<td>Ape Escape 3 / Saru! Get You! 3 / サルゲッチュ3</tr>
 <tr><td>NET<td>SLUS_204.61<td>BloodRayne</tr>
-<tr><td>NET<td>NPUD_204.61<td>Bloodrayne</tr>
 <tr><td>NET<td>SLUS_208.62<td>Bloodrayne 2</tr>
-<tr><td>NET<td>NPUD_208.62<td>Bloodrayne 2</tr>
-<tr><td>NET<td>NPUD_212.69<td>Bully</tr>
 <tr><td>NET<td>SLUS_212.69<td>Bully</tr>
-<tr><td>NET<td>NPJD_000.04<td>Contra Shattered Soldier</tr>
 <tr><td>NET<td>SCPS_150.04<td>Dark Cloud</tr>
-<tr><td>NET<td>NPJC_000.02<td>Dark Cloud</tr>
 <tr><td>NET<td>SLUS_200.71<td>Dead or Alive 2 - Hardcore</tr>
-<tr><td>NET<td>NPUD_200.71<td>Dead Or Alive 2 - Hardcore</tr>
 <tr><td>NET<td>SLPS_250.26<td>Dead or Alive 2 - Hardcore</tr>
-<tr><td>NET<td>NPJD_000.11<td>Dead Or Alive 2 - Hardcore</tr>
 <tr><td>NET<td>SLES_529.55<td>Deadly Strike</tr>
-<tr><td>NET<td>NPED_000.27<td>Deadly Strike</tr>
 <tr><td>NET<td>SLES_526.31<td>Digimon Rumble Arena 2</tr>
 <tr><td>NET<td>SLES_517.55<td>Disney/Pixar's Finding Nemo</tr>
 <tr><td>NET<td>SLPM_250.26<td>DOA2-Hardcore</tr>
 <tr><td>NET<td>SLES_507.73<td>Donald Duck - Phantomias Platyrhynchos Kineticus</tr>
-<tr><td>NET<td>NPJD_000.05<td>Dragon Force</tr>
 <tr><td>NET<td>SLUS_207.66<td>Fatal Frame 2 - Crimson Butterfly</tr>
-<tr><td>NET<td>NPUD_207.66<td>Fatal Frame 2 - Crimson Butterfly</tr>
 <tr><td>NET<td>SLES_544.90<td>God Hand</tr>
-<tr><td>NET<td>NPED_000.52<td>God Hand</tr>
 <tr><td>NET<td>SLUS_207.12<td>Gradius V</tr>
-<tr><td>NET<td>NPUD_207.12<td>Gradius V</tr>
 <tr><td>NET<td>SLES_529.27<td>Grand Theft Auto - San Andreas</tr>
 <tr><td>NET<td>SLUS_209.46<td>Grand Theft Auto - San Andreas</tr>
-<tr><td>NET<td>NPUD_209.46<td>Grand Theft Auto - San Andreas</tr>
-<tr><td>NET<td>NPED_000.70<td>Grand Theft Auto - San Andreas</tr>
 <tr><td>NET<td>SLUS_205.52<td>Grand Theft Auto - Vice City</tr>
-<tr><td>NET<td>NPUD_205.52<td>Grand Theft Auto - Vice City</tr>
 <tr><td>NET<td>SLES_503.30<td>Grand Theft Auto III</tr>
-<tr><td>NET<td>NPED_000.63<td>Grand Theft Auto III</tr>
 <tr><td>NET<td>SLUS_200.62<td>Grand Theft Auto III</tr>
-<tr><td>NET<td>NPUD_200.62<td>Grand Theft Auto III</tr>
 <tr><td>NET<td>SLUS_216.04<td>GRIMgRiMoiRe</tr>
-<tr><td>NET<td>NPUD_216.04<td>GRIMgRiMoiRe</tr>
 <tr><td>NET<td>SLPS_253.60<td>Katamari Damacy</tr>
-<tr><td>NET<td>NPJD_000.20<td>Katamari Damacy</tr>
-<tr><td>NET<td>NPUD_210.08<td>Katamari Damacy</tr>
 <tr><td>NET<td>SLUS_202.75<td>Kessen 2</tr>
-<tr><td>NET<td>NPUD_202.75<td>Kessen 2</tr>
 <tr><td>NET<td>SLUS_208.47<td>La Pucelle - Tactics</tr>
-<tr><td>NET<td>NPUD_208.47<td>La Pucelle: Tactics</tr>
 <tr><td>NET<td>SLPM_551.14<td>Mana-Khemia 2 - Ochita Gakuen to Renkinjutsushi-tachi</tr>
-<tr><td>NET<td>NPJD_000.40<td>Mana Khemia 2 - Ochita Gakuen to Renkinjutsushi-tachi</tr>
 <tr><td>NET<td>SLUS_208.27<td>Manhunt</tr>
-<tr><td>NET<td>NPUD_208.27<td>Manhunt</tr>
 <tr><td>NET<td>SLES_503.25<td>Max Payne</tr>
-<tr><td>NET<td>NPED_001.45<td>Max Payne</tr>
 <tr><td>NET<td>SLUS_219.44<td>Nickelodeon Dora's Big Birthday Adventure</tr>
-<tr><td>NET<td>NPUD_219.44<td>Nickelodeon Dora's Big Birthday Adventure</tr>
 <tr><td>NET<td>SLUS_215.77<td>Odin Sphere</tr>
-<tr><td>NET<td>NPUD_215.77<td>Odin Sphere</tr>
-<tr><td>NET<td>NPJD_000.28<td>Phantasy Star Complete Collection</tr>
 <tr><td>NET<td>SCUS_971.42<td>Primal - Civilization Is Only Skin Deep</tr>
-<tr><td>NET<td>NPUC_971.42<td>Primal</tr>
 <tr><td>NET<td>SLUS_211.20<td>Psychonauts</tr>
-<tr><td>NET<td>NPUD_211.20<td>Psychonauts</tr>
-<tr><td>NET<td>NPJD_000.79<td>Raw Danger!</tr>
 <tr><td>NET<td>SLUS_202.72<td>Rayman Arena</tr>
-<tr><td>NET<td>NPUD_202.72<td>Rayman Arena</tr>
 <tr><td>NET<td>SLUS_204.42<td>Red Faction 2</tr>
-<tr><td>NET<td>NPUD_204.42<td>Red Faction 2</tr>
 <tr><td>NET<td>SLUS_204.71<td>Rygar - The Legendary Adventure</tr>
-<tr><td>NET<td>NPUD_204.71<td>Rygar - The Legendary Adventure</tr>
 <tr><td>NET<td>SLPM_657.78<td>Sega Ages 2500 Series Vol.18 - Dragon Force</tr>
 <tr><td>NET<td>SLPM_627.75<td>Sega Ages 2500 Series Vol.32 - Phantasy Star Complete Collection</tr>
 <tr><td>NET<td>SLPM_622.47<td>Shin Contra</tr>
 <tr><td>NET<td>SLUS_209.74<td>Shin Megami Tensei - Digital Devil Saga</tr>
-<tr><td>NET<td>NPUD_209.74<td>Shin Megami Tensei - Digital Devil Saga 1</tr>
 <tr><td>NET<td>SLUS_209.11<td>Shin Megami Tensei - Nocturne</tr>
-<tr><td>NET<td>NPUD_209.11<td>Shin Megami Tensei - Nocturne</tr>
 <tr><td>NET<td>SLUS_216.21<td>Shin Megami Tensei - Persona 3 FES</tr>
-<tr><td>NET<td>NPUD_216.21<td>Shin Megami Tensei - Persona 3 FES</tr>
 <tr><td>NET<td>SLUS_217.82<td>Shin Megami Tensei - Persona 4</tr>
-<tr><td>NET<td>NPUD_217.82<td>Shin Megami Tensei - Persona 4</tr>
 <tr><td>NET<td>SCUS_973.55<td>Siren</tr>
-<tr><td>NET<td>NPUC_973.55<td>Siren</tr>
 <tr><td>NET<td>SLES_820.05<td>Summoner</tr>
-<tr><td>NET<td>NPED_002.72<td>Summoner</tr>
-<tr><td>NET<td>NPUC_972.64<td>Syphon Filter The Omega Strain</tr>
 <tr><td>NET<td>SCUS_972.64<td>Syphon Filter - The Omega Strain</tr>
 <tr><td>NET<td>SLPS_251.13<td>Zettai Zetsumei Toshi</tr>
-<tr><td>NET<td>NPJD_000.80<td>Zettai Zetsumei Toshi (Disaster Report)</tr>
 <tr><td>NET<td>SLPS_732.04<td>Zettai Zetsumei Toshi [PlayStation 2 The Best]</tr>
 <tr><td>NET<td>SLPS_256.06<td>Zettai Zetsumei Toshi 2 - Itetsuita Kioutachi</tr>
 <tr><td>GX<td>SCES_533.58<td>24 - The Game</tr>
@@ -3313,11 +3244,9 @@ setTimeout(function(){
 <tr><td>ENC<td>SCKA_200.88<td>zzz_unknown_korean_title</tr>
 </tbody>
 </table>
-
 <script>
 var PS2Classics = false;
 var table = $("dbTable");
-
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
@@ -3325,20 +3254,15 @@ for (i = 1872; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
-
 var category = urlParams.get('cat');
 if (category == null) 
 	category = "ALL";
 $("category").value = category.toUpperCase();
 doSearch();
-
 function doSearch() {
-
 	// Declare variables
 	var td, txtValue, cols, cat = category;
-
 	PS2Classics = (cat == "ENC");
-
 	var filter = input.value.replace(/\s/g, '.+').replace(/\*/g, '.+').replace(/seco/g, '2eco');
 	var filter2 = input.value.replace(".", "").replace(/\s/g, '.+').replace(/[-_]/g, '').replace(/\*/g, '.+');
 	var dolike = (input.value.indexOf('*')>=0);
@@ -3347,10 +3271,8 @@ function doSearch() {
 		if(input.value.substr(0,1)!='*')filter="^"+filter;
 		if(input.value.substr(input.value.length-1,1)!='*')filter=filter+"$";
 	}
-
 	var reg1 = new RegExp(filter, "i");
 	var reg2 = new RegExp(filter2, "i");
-
 	// Loop through all table rows, and hide those who don't match the search query
 	for (count = i = 0; i < tr.length; i++) {
 		if(PS2Classics == (i < classics))
@@ -3368,7 +3290,6 @@ function doSearch() {
 					}
 				}
 			}
-
 			td = cols[2];
 			if (td) {
 				txtValue = td.textContent || td.innerText;
@@ -3394,7 +3315,6 @@ function doSearch() {
 	if(count == 1) cols[2].innerText="Title"; else cols[2].innerHTML="<font color=#FFF>" + count.toLocaleString() + " Titles"
 	input.focus();
 }
-
 function dlCONFIG(elem)
 {
 	var cols = elem.getElementsByTagName('td');
@@ -3402,13 +3322,11 @@ function dlCONFIG(elem)
 	url += (cols[0].innerText=="ENC") ? ".ENC" : ".CONFIG";
 	if(window.event.composedPath().indexOf('https:')<0)
 		self.location = url;
-
 	url = "https://psxdatacenter.com/psx2/images2/covers/" + cols[1].innerText.replace("_","-").replace(".","") + ".jpg";
 	cover.style="display:block;z-index:99;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (event.clientX + 50) + ";top:"+ (event.clientY-150);
 	if(window.event.composedPath().indexOf('https:')<0)
 		image.src = url;
 }
-
 function dbLinks() {
 	if (!document.getElementsByTagName || !document.createTextNode) return;
 	for (i = 0; i < tr.length; i++) {
@@ -3416,14 +3334,12 @@ function dbLinks() {
 		tr[i].onmouseover = function() {cover.style="display:none;";}
 	}
 }
-
 input.addEventListener('paste', (e) => {
 	e.preventDefault();
 	const text = (e.originalEvent || e).clipboardData.getData('text/plain');
 	window.document.execCommand('insertText', false, text);
 	doSearch();
 });
-
 window.addEventListener('keydown',kd,false);
 function kd(e)
 {
@@ -3458,20 +3374,15 @@ function kd(e)
 		e.preventDefault();
 	}
 }
-
 function sortTable(colID) {
 	if(count <= 1) return;
-
 	if(count > 100) $("sorting").style.display="block";
-
 	setTimeout(function(){
 		var r, i, x, y, len, b = 0;
 		var rows = tbody.rows;
 		len = rows.length - 1;
 		if(PS2Classics) b = classics; else len = classics;
-
 		{while(len > b && rows[len-1].style.display=='none') --len; len++;}
-
 		for (r = b; r < len; r++) {
 			rows[r].lc = rows[r].children[colID].innerHTML.toLowerCase();
 		}
