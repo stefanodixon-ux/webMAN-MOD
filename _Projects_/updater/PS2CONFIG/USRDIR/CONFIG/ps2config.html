@@ -640,7 +640,6 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_200.94<td>X Squad</tr>
 <tr><td>CUSTOM<td>SLUS_204.69<td>Xenosaga - Episode I: Der Wille zur Macht</tr>
 <tr><td>CUSTOM<td>SLPS_290.02<td>Xenosaga - Episode I: Chikara e no Ishi</tr>
-<tr><td>CUSTOM<td>SLPS_258.51<td>Zettai Zetsumei Toshi 2 - Itetsuita Kioku Tachi [Irem Collection]</tr>
 <tr><td>NET<td>SCPS_150.96<td>Ape Escape 3 / Saru! Get You! 3 / サルゲッチュ3</tr>
 <tr><td>NET<td>SLUS_204.61<td>BloodRayne</tr>
 <tr><td>NET<td>SLUS_208.62<td>Bloodrayne 2</tr>
@@ -678,6 +677,7 @@ setTimeout(function(){
 <tr><td>NET<td>SLUS_202.72<td>Rayman Arena</tr>
 <tr><td>NET<td>SLUS_204.42<td>Red Faction 2</tr>
 <tr><td>NET<td>SLUS_204.71<td>Rygar - The Legendary Adventure</tr>
+<tr><td>NET<td>SLPM_624.52<td>Sega Ages 2500 Series Vol.01 - Phantasy Star Generation: 1</tr>
 <tr><td>NET<td>SLPM_625.53<td>Sega Ages 2500 Series Vol.17 - Phantasy Star Generation: 2</tr>
 <tr><td>NET<td>SLPM_657.78<td>Sega Ages 2500 Series Vol.18 - Dragon Force</tr>
 <tr><td>NET<td>SLPM_627.75<td>Sega Ages 2500 Series Vol.32 - Phantasy Star Complete Collection</tr>
@@ -3229,7 +3229,6 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPM_620.51<td>Yanya Caballista - featuring Gawoo</tr>
 <tr><td>ENC<td>SLPS_251.13<td>Zettai Zetsumei Toshi</tr>
 <tr><td>ENC<td>NPJD_000.80<td>Zettai Zetsumei Toshi (Disaster Report)</tr>
-<tr><td>ENC<td>SLPS_258.51<td>Zettai Zetsumei Toshi 2 - Itetsuita Kioku Tachi [Irem Collection]</tr>
 <tr><td>ENC<td>SLPS_256.06<td>Zettai Zetsumei Toshi 2 - Itetsuita Kioutachi</tr>
 <tr><td>ENC<td>SLKA_253.14<td>zzz_unknown_korean_title</tr>
 <tr><td>ENC<td>SLKA_252.60<td>zzz_unknown_korean_title</tr>
@@ -3243,7 +3242,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 1828; i < count; i++) {
+for (i = 1824; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }
