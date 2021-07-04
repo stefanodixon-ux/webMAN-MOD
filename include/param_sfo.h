@@ -225,3 +225,13 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 
 	return ret;
 }
+
+static void get_local_app_ver(char *app_ver, char *title_id, char *param_sfo)
+{
+	if(*app_ver && *title_id)
+	{
+		char app_ver2[8]; *app_ver2 = NULL;
+		sprintf(param_sfo, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+		getTitleID(param_sfo, app_ver2, GET_VERSION); if(*app_ver2) strcpy(app_ver, app_ver2);
+	}
+}

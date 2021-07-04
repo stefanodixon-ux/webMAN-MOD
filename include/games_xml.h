@@ -263,7 +263,7 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 		else
 			sprintf(tempstr, XML_PAIR("info","%s%s"), drives[f0] + s, tags);
 	}
-	else if(webman_config->info == 0x13)
+	else if(webman_config->info & 0x13)
 	{
 		sprintf(tempstr, XML_PAIR("info","%s"), tags);
 	}
@@ -659,7 +659,7 @@ scan_roms:
 			{
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, plen;
-				char title_id[12];
+				char title_id[12], app_ver[8];
 				u8 is_iso = 0;
 
 #ifdef NET_SUPPORT
@@ -697,7 +697,7 @@ scan_roms:
 
 						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
 
-						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, f1, 0) == FAILED) {v3_entry++; continue;}
+						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 0) == FAILED) {v3_entry++; continue;}
 
 						if(ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) {v3_entry++; continue;}
 #ifdef SLAUNCH_FILE
@@ -712,6 +712,8 @@ scan_roms:
 										 localhost, neth, param, enc_dir_name);
 
 						*folder_name = NULL;
+
+						if(*app_ver) {strcat(title_id, " | v"); strcat(title_id, app_ver);}
 
 						add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 1);
 
@@ -788,15 +790,17 @@ next_xml_entry:
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
 						{
-							*icon = *title_id = NULL;
+							*app_ver = *icon = *title_id = NULL;
 
 							if(!is_iso)
 							{
 								if(is_game_dir) sprintf(templn + read_e - 17, "/PARAM.SFO");
+								if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
 								get_title_and_id_from_sfo(templn, title_id, entry.entry_name.d_name, icon, tempstr, 0);
 							}
 							else
 							{
+								if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
 #ifndef COBRA_ONLY
 								get_name(templn, entry.entry_name.d_name, NO_EXT);
 #else
@@ -824,6 +828,8 @@ next_xml_entry:
 								char *p = strchr(entry.entry_name.d_name, '/'); if(p) {*p = NULL; sprintf(folder_name, "/%s", entry.entry_name.d_name); *p = '/';}
 							}
 
+							get_local_app_ver(app_ver, title_id, tempstr);
+
 							read_e = sprintf(tempstr, "<T key=\"%04i\" include=\"inc\">"
 											 XML_PAIR("icon","%s")
 											 XML_PAIR("title","%s") //"%s"
@@ -831,6 +837,8 @@ next_xml_entry:
 											 key, icon,
 											 templn, //proxy_include,
 											 localhost, "", param, enc_dir_name);
+
+							if(*app_ver) {strcat(title_id, " | v"); strcat(title_id, app_ver);}
 
 							add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, is_game_dir ? id_NPDRM : f1, 5);
 

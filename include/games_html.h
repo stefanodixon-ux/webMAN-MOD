@@ -86,9 +86,9 @@ static void add_title_id(char *templn, char *title_id)
 #ifdef COBRA_ONLY
 #ifdef NET_SUPPORT
 //static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0);
-static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *templn, char *tempstr, char *enc_dir_name, char *icon, char *title_id, u8 f1, u8 is_html)
+static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *templn, char *tempstr, char *enc_dir_name, char *icon, char *title_id, char *app_ver, u8 f1, u8 is_html)
 {
-	int abort_connection = 0, is_directory = 0; s64 file_size; u64 mtime, ctime, atime;
+	int abort_connection = 0, is_directory = 0; s64 file_size; u64 mtime, ctime, atime; *app_ver = NULL;
 
 	if(data[v3_entry].is_directory == false)
 	{
@@ -144,7 +144,18 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			copy_net_file(templn, enc_dir_name, ns, COPY_WHOLE_FILE);
 		}
 
+							if(*app_ver && *title_id)
+							{
+								char app_ver2[8], *param_sfo = tempstr; *app_ver2 = NULL;
+								sprintf(param_sfo, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+								getTitleID(param_sfo, app_ver2, GET_VERSION); if(*app_ver2) strcpy(app_ver, app_ver2);
+							}
+
+		if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
+
 		get_title_and_id_from_sfo(templn, title_id, data[v3_entry].name, icon, tempstr, 0);
+
+		get_local_app_ver(app_ver, title_id, tempstr);
 	}
 	else if(is_html)
 		{get_name(enc_dir_name, data[v3_entry].name, NO_EXT); htmlenc(templn, enc_dir_name, 1);}
@@ -687,7 +698,7 @@ list_games:
 #endif
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, slen;
-				char title_id[12];
+				char title_id[12], app_ver[8];
 				u8 is_iso = 0;
 
 #ifdef NET_SUPPORT
@@ -717,7 +728,7 @@ list_games:
 					{
 						if((ls == false) && (li == 0) && (f1 > 1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
 
-						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, f1, 1) == FAILED) {v3_entry++; continue;}
+						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 1) == FAILED) {v3_entry++; continue;}
 
 #ifdef SLAUNCH_FILE
 						if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);

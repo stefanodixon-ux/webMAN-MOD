@@ -204,7 +204,7 @@ static void setup_parse_settings(char *param)
 	if(IS_UNMARKED("vrc=1")) webman_config->combo2|=VIDRECORD;
 #endif
 
-	webman_config->info  = get_valuen(param, "&xi=", 0, 0x13); // XMB info level
+	webman_config->info  = get_valuen(param, "&xi=", 0, 0x33); // XMB info level
 	webman_config->minfo = get_valuen(param, "&mi=", 0, 3);    // Mount info level
 
 	webman_config->wmstart = IS_MARKED("wn=1");
@@ -803,14 +803,19 @@ static void setup_form(char *buffer, char *templn)
 	value = webman_config->info;
 	concat(buffer, "Info <select name=\"xi\">");
 	#ifndef LITE_EDITION
-					add_option_item(0x03, "None",             (value == 0x03), buffer);
-	if(use_imgfont) add_option_item(0x13, "Tags",             (value == 0x13), buffer);
-					add_option_item(0x02, "ID",               (value == 0x02), buffer);
-	if(use_imgfont) add_option_item(0x12, "ID + Tags",        (value == 0x12), buffer);
-					add_option_item(0x00, "Path",             (value == 0x00), buffer);
-	if(use_imgfont) add_option_item(0x10, "Path + Tags",      (value == 0x10), buffer);
-					add_option_item(0x01, "Path + ID",        (value == 0x01), buffer);
-	if(use_imgfont) add_option_item(0x11, "Path + ID + Tags", (value == 0x11), buffer);
+	use_imgfont = (file_ssize(IMAGEFONT_PATH) > 900000);
+					add_option_item(0x03, "None",                       (value == 0x03), buffer);
+	if(use_imgfont) add_option_item(0x13, "Tags",                       (value == 0x13), buffer);
+					add_option_item(0x02, "ID",                         (value == 0x02), buffer);
+	if(use_imgfont) add_option_item(0x12, "ID + Tags",                  (value == 0x12), buffer);
+					add_option_item(0x22, "ID + Version",               (value == 0x02), buffer);
+	if(use_imgfont) add_option_item(0x32, "ID + Version + Tags",        (value == 0x32), buffer);
+					add_option_item(0x00, "Path",                       (value == 0x00), buffer);
+	if(use_imgfont) add_option_item(0x10, "Path + Tags",                (value == 0x10), buffer);
+					add_option_item(0x01, "Path + ID",                  (value == 0x01), buffer);
+	if(use_imgfont) add_option_item(0x11, "Path + ID + Tags",           (value == 0x11), buffer);
+					add_option_item(0x21, "Path + ID + Version",        (value == 0x21), buffer);
+	if(use_imgfont) add_option_item(0x31, "Path + ID + Version + Tags", (value == 0x31), buffer);
 	#else
 	add_option_item(0x03, "None",      (value == 0x03), buffer);
 	add_option_item(0x02, "ID",        (value == 0x02), buffer);
