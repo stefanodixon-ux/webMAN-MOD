@@ -293,6 +293,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_503.86<td>Crash Bandicoot: The Wrath of Cortex</tr>
 <tr><td>CUSTOM<td>SLUS_209.09<td>Crash Bandicoot: Twinsanity</tr>
 <tr><td>CUSTOM<td>SLES_525.68<td>Crash Twinsanity</tr>
+<tr><td>CUSTOM<td>SLUS_202.02<td>Crazy Taxi</tr>
+<tr><td>CUSTOM<td>SLES_502.15<td>Crazy Taxi</tr>
+<tr><td>CUSTOM<td>SLPM_621.02<td>Crazy Taxi</tr>
 <tr><td>CUSTOM<td>SLUS_215.74<td>Dawn of Mana</tr>
 <tr><td>CUSTOM<td>SLPM_655.90<td>Densha de Go! Final</tr>
 <tr><td>CUSTOM<td>SLUS_205.61<td>Disaster Report</tr>
@@ -374,6 +377,10 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_201.51<td>Klonoa 2: Lunatea's Veil</tr>
 <tr><td>CUSTOM<td>SCES_503.54<td>Klonoa 2: Lunatea's Veil</tr>
 <tr><td>CUSTOM<td>SLUS_201.50<td>Knockout Kings 2001</tr>
+<tr><td>CUSTOM<td>SLES_501.28<td>Knockout Kings 2001</tr>
+<tr><td>CUSTOM<td>SLES_501.29<td>Knockout Kings 2001</tr>
+<tr><td>CUSTOM<td>SLES_501.30<td>Knockout Kings 2001</tr>
+<tr><td>CUSTOM<td>SLPS_200.95<td>Knockout Kings 2001</tr>
 <tr><td>CUSTOM<td>SLPM_665.82<td>Kohitsuji Hokaku Keakaku! Sweet Boys Life (Limited Edition)</tr>
 <tr><td>CUSTOM<td>SLUS_210.07<td>Kuon</tr>
 <tr><td>CUSTOM<td>SLPM_551.91<td>L2 Love X Loop</tr>
@@ -611,6 +618,7 @@ setTimeout(function(){
 <tr><td>NET<td>SLES_820.05<td>Summoner</tr>
 <tr><td>NET<td>SCUS_972.64<td>Syphon Filter - The Omega Strain</tr>
 <tr><td>NET<td>SLUS_201.70<td>The Adventures of Cookie & Cream</tr>
+<tr><td>NET<td>SLUS_212.55<td>Trapt</tr>
 <tr><td>NET<td>SLPS_251.13<td>Zettai Zetsumei Toshi</tr>
 <tr><td>NET<td>SLPS_256.06<td>Zettai Zetsumei Toshi 2 - Itetsuita Kioutachi</tr>
 <tr><td>GX<td>SCES_533.58<td>24 - The Game</tr>
@@ -2114,6 +2122,9 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_503.86<td>Crash Bandicoot: The Wrath of Cortex</tr>
 <tr><td>ENC<td>SLUS_209.09<td>Crash Bandicoot: Twinsanity</tr>
 <tr><td>ENC<td>SLES_525.68<td>Crash Twinsanity</tr>
+<tr><td>ENC<td>SLUS_202.02<td>Crazy Taxi</tr>
+<tr><td>ENC<td>SLES_502.15<td>Crazy Taxi</tr>
+<tr><td>ENC<td>SLPM_621.02<td>Crazy Taxi</tr>
 <tr><td>ENC<td>SLPM_621.02<td>Crazy Taxi</tr>
 <tr><td>ENC<td>SLES_536.33<td>Dance - UK XL Lite</tr>
 <tr><td>ENC<td>SLES_536.32<td>Dance - UK XL Party</tr>
@@ -2489,6 +2500,10 @@ setTimeout(function(){
 <tr><td>ENC<td>SLKA_150.06<td>Knight Rider - The Game</tr>
 <tr><td>ENC<td>SLES_510.11<td>Knight Rider - The Game</tr>
 <tr><td>ENC<td>SLUS_201.50<td>Knockout Kings 2001</tr>
+<tr><td>ENC<td>SLES_501.28<td>Knockout Kings 2001</tr>
+<tr><td>ENC<td>SLES_501.29<td>Knockout Kings 2001</tr>
+<tr><td>ENC<td>SLES_501.30<td>Knockout Kings 2001</tr>
+<tr><td>ENC<td>SLPS_200.95<td>Knockout Kings 2001</tr>
 <tr><td>ENC<td>SLPM_665.82<td>Kohitsuji Hokaku Keakaku! Sweet Boys Life (Limited Edition)</tr>
 <tr><td>ENC<td>SLUS_210.07<td>Kuon</tr>
 <tr><td>ENC<td>SLPM_551.91<td>L2 Love X Loop</tr>
@@ -3072,6 +3087,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLKA_251.75<td>Transformers</tr>
 <tr><td>ENC<td>SLES_523.88<td>Transformers Armada - Prelude to Energon [Special Edition]</tr>
 <tr><td>ENC<td>SLES_533.09<td>Transformers Director's Cut</tr>
+<tr><td>ENC<td>SLUS_212.55<td>Trapt</tr>
 <tr><td>ENC<td>SLES_536.17<td>True Crime - New York City</tr>
 <tr><td>ENC<td>SLES_536.18<td>True Crime - New York City</tr>
 <tr><td>ENC<td>SLUS_211.06<td>True Crime - New York City</tr>
@@ -3160,7 +3176,7 @@ var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
 var i, count = tr.length, classics = 0;
-for (i = 1742; i < count; i++) {
+for (i = 1750; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
 }

@@ -18,7 +18,7 @@ static void enable_ps2netemu_cobra(int emu)
 #ifdef SPOOF_CONSOLEID
 	if ((eid0_idps[0] & 0x00000000000000FF) > 0x04) return; // 0x01 = CECH-A*, 0x02 = CECH-B, 0x03 = CECH-C, 0x04 = CECH-E
 #endif
-	int status = get_cobra_ps2netemu_status(); // 0 = ps2emu, 1 = ps2_netemu
+	int status = get_cobra_ps2netemu_status(); // 0 = default ps2 emulator, 1 = ps2_netemu
 
 	if(status < 0 || status == emu) return;
 

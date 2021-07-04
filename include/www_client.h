@@ -1323,7 +1323,7 @@ parse_request:
 				else
 				if(islike(param2, "$ps2emu"))
 				{
-					enable_ps2netemu_cobra(0); // enable ps2_emu on fat consoles only
+					enable_ps2netemu_cobra(0); // enable default ps2 emulator on fat consoles only
 				}
 				else
 				if(islike(param2, "$ps2_netemu"))
