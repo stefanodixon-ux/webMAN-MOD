@@ -32,12 +32,6 @@ static void poll_start_play_time(void)
 			start_event(EVENT_ON_XMB);
 		}
  #endif
-		// check if syscalls were restored
-		if(syscalls_removed != CFW_SYSCALLS_REMOVED(TOC))
-		{
-			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
-			if(!syscalls_removed) disable_signin_dialog();
-		}
 #endif
 		gTick = rTick;
 
@@ -120,6 +114,15 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 	old_fan = 0;
 	while(working)
 	{
+		#ifdef REMOVE_SYSCALLS
+		// check if syscalls were restored
+		if(syscalls_removed != CFW_SYSCALLS_REMOVED(TOC))
+		{
+			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+			if(!syscalls_removed) restore_cfw_syscalls(); //disable_signin_dialog();
+		}
+		#endif
+
 		// dynamic fan control
 		#include "fancontrol2.h"
 
