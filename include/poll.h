@@ -119,7 +119,11 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		if(syscalls_removed != CFW_SYSCALLS_REMOVED(TOC))
 		{
 			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
-			if(!syscalls_removed) restore_cfw_syscalls(); //disable_signin_dialog();
+			#ifdef PS3MAPI
+			if(!syscalls_removed) restore_cfw_syscalls();
+			#else
+			if(!syscalls_removed) disable_signin_dialog();
+			#endif
 		}
 		#endif
 

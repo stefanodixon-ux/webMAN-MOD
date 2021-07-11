@@ -148,7 +148,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 
 	int teximg, dummy = 0;
 	LoadRCOTexture(&teximg, _plugin, tex);
-	return vshcommon_A20E43DB(0, tex, 0, &teximg, &dummy, "", "", 0, message, 0, 0, 0);
+	return NotifyWithTexture(0, tex, 0, &teximg, &dummy, "", "", 0, message, 0, 0, 0);
 }
 //------------
 
