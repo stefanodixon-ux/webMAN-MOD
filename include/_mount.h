@@ -946,6 +946,15 @@ static void set_app_home(const char *game_path)
 {
 	apply_remaps();
 
+	// force remove "/app_home", "/app_home/PS3_GAME", "/app_home/USRDIR"
+	for(u8 retry = 0; retry < 3; retry++)
+	{
+		sys_map_path("/app_home", NULL);
+		sys_map_path(APP_HOME_DIR, NULL);
+		sys_map_path("/app_home/USRDIR", NULL);
+	}
+
+	// map /app_home
 	if(game_path)
 		sys_map_path("/app_home", game_path);
 	else
@@ -959,8 +968,6 @@ static void set_app_home(const char *game_path)
 		sys_map_path(APP_HOME_DIR, PKGLAUNCH_PS3_GAME);
 	else
 		sys_map_path(APP_HOME_DIR, game_path);
-
-	sys_map_path("/app_home/USRDIR", NULL);
 }
 
 static void set_bdvd_as_app_home(void)

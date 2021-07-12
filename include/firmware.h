@@ -996,7 +996,7 @@ static bool disable_map_path(bool toggle_patch) // based on haxxxen's patch post
 {
 	if(open_hook)
 	{
-		u64 open_hook_symbol = open_hook | 0x8000000000000000ULL;
+		const u64 open_hook_symbol = open_hook | 0x8000000000000000ULL;
 
 		if(!map_path_instruction) map_path_instruction = peekq(open_hook_symbol); // backup cobra mappath instruction
 
