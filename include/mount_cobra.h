@@ -245,6 +245,7 @@
 
 							if(is_psp)
 							{
+								unlock_psp_launchers();
 								ret = (cobra_set_psp_umd(_path, (char*)templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 								//goto copy_pspiso_to_hdd0;
 							}
@@ -415,6 +416,7 @@
 					else if(is_iso && islike(netpath, "/PSPISO"))
 					{
 						mount_unk = EMU_PSP;
+						unlock_psp_launchers();
 
 						sprintf(templn, "/dev_bdvd/%s", netpath + 8);
 						sprintf(_path,  "/dev_bdvd/%s", netpath + 8);

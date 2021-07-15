@@ -44,7 +44,8 @@
 			<Q class="type:x-xmb/folder-pixmap" key="webman_uninstall_link" src="#seg_webman_uninstall"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_unload_link" src="#seg_webman_unload"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_wm_vsh_menu" src="#seg_wm_vsh_menu"/>
-
+			<Q class="type:x-xmb/folder-pixmap" key="webman_wm_slaunch" src="#seg_wm_slaunch"/>
+			
 			<Q class="type:x-xmb/folder-pixmap" key="webman_restart_link" src="#seg_webman_restart"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_shutdown_link" src="#seg_webman_shutdown"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_update_link" src="#seg_webman_update"/>
@@ -143,7 +144,6 @@
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>Сетевые папки /net0</></P>
 				<P key="info"><>Монтировать '/net0' как '/dev_bdvd'</></P>
-				<P key="child"><>segment</></P>
 			</T>
 		</A>
 		<I>
@@ -158,7 +158,6 @@
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>Сетевые папки /net1</></P>
 				<P key="info"><>Монтировать '/net1' как '/dev_bdvd'</></P>
-				<P key="child"><>segment</></P>
 			</T>
 		</A>
 		<I>
@@ -173,7 +172,6 @@
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>Сетевые папки /net2</></P>
 				<P key="info"><>Монтировать '/net2' как '/dev_bdvd'</></P>
-				<P key="child"><>segment</></P>
 			</T>
 		</A>
 		<I>
@@ -188,7 +186,6 @@
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>Сетевые папки /net3</></P>
 				<P key="info"><>Монтировать '/net3' как '/dev_bdvd'</></P>
-				<P key="child"><>segment</></P>
 			</T>
 		</A>
 		<I>
@@ -203,7 +200,6 @@
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>Сетевые папки /net4</></P>
 				<P key="info"><>Монтировать '/net4' как '/dev_bdvd'</></P>
-				<P key="child"><>segment</></P>
 			</T>
 		</A>
 		<I>
@@ -455,7 +451,7 @@
 				<P key="info"><>XMB перезагрузится после обновления списка игр</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/refresh_ps3?xmb</></P>
+				<P key="module_action"><>/refresh.ps3?xmb</></P>
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_refresh_xmb" attr="webman_refresh_xmb"/></I>
@@ -676,6 +672,20 @@
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="wm_vsh_menu_load" attr="wm_vsh_menu_load"/></I>
+	</V>
+
+	<!-- Main > webMAN > Load sLaunch Menu -->
+	<V id="seg_wm_slaunch">
+		<A>
+			<T key="wm_slaunch_load">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/slaunch.png</></P>
+				<P key="title"><>sLaunch Menu</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+				<P key="module_action"><>/browser.ps3$slaunch</></P>
+			</T>
+		</A>
+		<I><I class="type:x-xmb/module-action" key="wm_slaunch_load" attr="wm_slaunch_load"/></I>
 	</V>
 
 	<!-- Main > webMAN > Restart PS3 -->
