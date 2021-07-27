@@ -260,6 +260,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SCPS_151.19<td>Bleach: Blade Battlers 2nd <small>(Fix Bankai Mode: L1 + R1)</small></tr>
 <tr><td>CUSTOM<td>SLES_507.71<td>Blood Omen 2 - Legend of Kain</tr>
 <tr><td>CUSTOM<td>SLES_507.72<td>Blood Omen 2 - Legend of Kain</tr>
+<tr><td>CUSTOM<td>SLES_538.31<td>BloodRayne 2</tr>
 <tr><td>CUSTOM<td>SLUS_205.66<td>Buffy the Vampire Slayer - Chaos Bleeds</tr>
 <tr><td>CUSTOM<td>SLES_518.90<td>Buffy the Vampire Slayer - Chaos Bleeds</tr>
 <tr><td>CUSTOM<td>SLUS_204.97<td>Burnout 2 - Point of Impact</tr>
@@ -533,6 +534,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPM_659.19<td>The Rumble Fish</tr>
 <tr><td>CUSTOM<td>SLUS_206.36<td>The Suffering</tr>
 <tr><td>CUSTOM<td>SLUS_211.89<td>The Suffering - Ties That Bind</tr>
+<tr><td>CUSTOM<td>SLUS_200.90<td>TimeSplitters</tr>
+<tr><td>CUSTOM<td>SLES_500.78<td>TimeSplitters</tr>
 <tr><td>CUSTOM<td>SLUS_208.31<td>Tokyo Xtreme Racer 3</tr>
 <tr><td>CUSTOM<td>SLUS_215.55<td>Tomb Raider - Anniversary</tr>
 <tr><td>CUSTOM<td>SLUS_212.03<td>Tomb Raider - Legends</tr>
@@ -628,7 +631,7 @@ setTimeout(function(){
 <tr><td>NET<td>SLUS_202.72<td>Rayman Arena</tr>
 <tr><td>NET<td>SLUS_204.42<td>Red Faction 2</tr>
 <tr><td>NET<td>SLPM_624.91<td>RockMan: Power Battle Fighters</tr>
-<tr><td>NET<td>SLPM_657.30<td>Rockman X8</tr>
+<tr><td>NET<td>SLPM_657.30<td>Rockman X8 / Mega Man X8</tr>
 <tr><td>NET<td>SLUS_204.71<td>Rygar - The Legendary Adventure</tr>
 <tr><td>NET<td>SLPM_624.52<td>Sega Ages 2500 Series Vol.01 - Phantasy Star Generation: 1</tr>
 <tr><td>NET<td>SLPM_625.53<td>Sega Ages 2500 Series Vol.17 - Phantasy Star Generation: 2</tr>
@@ -2098,6 +2101,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_507.72<td>Blood Omen 2 - Legend of Kain</tr>
 <tr><td>ENC<td>SLUS_208.62<td>Bloodrayne 2</tr>
 <tr><td>ENC<td>NPUD_208.62<td>Bloodrayne 2</tr>
+<tr><td>ENC<td>SLES_538.31<td>BloodRayne 2</tr>
 <tr><td>ENC<td>SLUS_204.61<td>BloodRayne</tr>
 <tr><td>ENC<td>NPUD_204.61<td>Bloodrayne</tr>
 <tr><td>ENC<td>SLUS_202.12<td>Bloody Roar 3</tr>
@@ -2858,7 +2862,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_527.61<td>Rocky - Legends</tr>
 <tr><td>ENC<td>SLUS_208.90<td>Rocky - Legends</tr>
 <tr><td>ENC<td>SLPM_624.91<td>RockMan: Power Battle Fighters</tr>
-<tr><td>ENC<td>SLPM_657.30<td>Rockman X8</tr>
+<tr><td>ENC<td>SLPM_657.30<td>Rockman X8 / Mega Man X8</tr>
 <tr><td>ENC<td>SLUS_201.74<td>Rumble Racing</tr>
 <tr><td>ENC<td>SLES_501.20<td>Rumble Racing</tr>
 <tr><td>ENC<td>SLUS_200.37<td>Run Like Hell - Hunt or Be Hunted</tr>
@@ -3122,6 +3126,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPS_200.92<td>Tiger Woods PGA Tour 2001</tr>
 <tr><td>ENC<td>SLUS_207.57<td>Tiger Woods PGA Tour 2004</tr>
 <tr><td>ENC<td>SLUS_210.02<td>Tiger Woods PGA Tour 2005</tr>
+<tr><td>ENC<td>SLUS_200.90<td>TimeSplitters</tr>
+<tr><td>ENC<td>SLES_500.78<td>TimeSplitters</tr>
 <tr><td>ENC<td>SLUS_203.14<td>TimeSplitters 2</tr>
 <tr><td>ENC<td>SLPS_254.14<td>To Heart 2</tr>
 <tr><td>ENC<td>SLUS_208.31<td>Tokyo Xtreme Racer 3</tr>
@@ -3276,8 +3282,8 @@ function doSearch() {
 	var dolike = (input.value.indexOf('*')>=0);
 	if (dolike)
 	{
-		if(input.value.substr(0,1)!='*')filter="^"+filter;
-		if(input.value.substr(input.value.length-1,1)!='*')filter=filter+"$";
+		if(input.value.substr(0,1)=='*')filter=filter+"$";
+		if(input.value.substr(input.value.length-1,1)=='*')filter="^"+filter;
 	}
 	var reg1 = new RegExp(filter, "i");
 	var reg2 = new RegExp(filter2, "i");
