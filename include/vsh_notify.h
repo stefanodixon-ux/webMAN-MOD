@@ -38,6 +38,7 @@ enum rco_icons
 	ICON_VIDEO		 = 32,
 	ICON_GAME		 = 33,
 	ICON_PS2_DISC	 = 43,
+	ICON_PSP_UMD	 = 48,
 	ICON_WAIT		 = 49,
 	ICON_MOUNT		 = 50,
 };

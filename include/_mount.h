@@ -1614,9 +1614,16 @@ exit_mount:
 		strcat(msg, "\" "); strcat(msg, STR_LOADED2);
 		if(!(webman_config->minfo & 2))
 		{
-			if((mount_unk == EMU_PS2_CD) || (mount_unk == EMU_PS2_DVD))
-				vshNotify_WithIcon(ICON_PS2_DISC, msg);
-			else if((mount_unk >= EMU_PS3) && (mount_unk <= EMU_PSP))
+			if(mount_unk == EMU_PSP)
+				vshNotify_WithIcon(ICON_PSP_UMD, "Use PSP Launcher to play the game");
+			else if((mount_unk == EMU_PS2_CD) || (mount_unk == EMU_PS2_DVD))
+			{
+				if(is_BIN_ENC(msg))
+					vshNotify_WithIcon(ICON_PS2_DISC, "Use PS2 Launcher to play the game");
+				else
+					vshNotify_WithIcon(ICON_PS2_DISC, msg);
+			}
+			else if((mount_unk >= EMU_PS3) && (mount_unk < EMU_PSP))
 				vshNotify_WithIcon(40 + mount_unk, msg);
 			else
 				show_msg(msg);
