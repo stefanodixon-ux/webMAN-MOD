@@ -388,7 +388,7 @@
 
 				for(n = 0; n < 3; n++)
 					if(file_exists(netiso_sprx[n])) break;
-
+retry_net:
 				if((n < 3) && (!strstr(_path, "[net]")))
 				{
 					ret = (cobra_load_vsh_plugin(0, (char*)netiso_sprx[n], &netiso_args, sizeof(_netiso_args)) == CELL_OK);
@@ -401,6 +401,18 @@
 #endif
 				if(ret)
 				{
+					if(netiso_args.emu_mode == EMU_BD)
+					{
+						wait_for("/dev_bdvd", 15);
+						if(isDir("/dev_bdvd/PS3_GAME"))
+						{
+							do_umount(false);
+							if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);
+							netiso_args.emu_mode = mount_unk = EMU_PS3;
+							goto retry_net; // mount as PS3
+						}
+					}
+
 					if(netiso_args.emu_mode == EMU_PS3)
 					{
 						wait_for("/dev_bdvd", 15);
