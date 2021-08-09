@@ -270,6 +270,17 @@ It is NOT permitted to distribute modified versions with the same name
 of this software. A similar name or misleading name should NOT be used,
 to avoid confusion about the origin or the version in use.
 
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. The names of the authors may not be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
 For futher information about GPL v3, refer to:
 [https://www.gnu.org/licenses/gpl-3.0.en.html](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
@@ -293,7 +304,7 @@ the software.
 
 
 
-(C) 2010-2021 multiMAN / webMAN by DeanK
+(C) 2010-2021 multiMAN / webMAN / sMAN / sLaunch / prepNTFS by DeanK
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files
