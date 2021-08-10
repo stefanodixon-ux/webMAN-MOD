@@ -44,3 +44,26 @@ Docker Engine enables applications built in containers packages to run anywhere 
 
 Docker container packages for ps3netsrv are available at:
 https://hub.docker.com/search?q=ps3netsrv
+
+## Other ports / forks
+Docker container:
+https://github.com/shawly/docker-ps3netsrv
+
+Xcode (macOS / Linux / FreeBSD 10):
+https://github.com/klahjn/ps3netsrvXCODE
+https://github.com/klahjn/macOSPS3NetServerGUI
+
+Java / Android:
+https://github.com/jhonathanc/ps3netsrv-android
+
+Google Go:
+https://github.com/xakep666/ps3netsrv-go
+
+ps3netsrv modified for encrypted (3k3y/redump) isos:
+http://forum.redump.org/topic/14472
+
+ps3netsrv modified for multiMAN:
+http://deanbg.com/ps3netsrv.zip
+
+Original ps3netsrv by Cobra for Linux / Windows:
+https://github.com/Joonie86/Cobra-7.00/tree/master/446/PC/ps3netsrv
