@@ -268,9 +268,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_204.97<td>Burnout 2 - Point of Impact</tr>
 <tr><td>CUSTOM<td>SLES_510.44<td>Burnout 2 - Point of Impact</tr>
 <tr><td>CUSTOM<td>SLES_529.68<td>Burnout 2 - Point of Impact</tr>
+<tr><td>CUSTOM<td title="slow motion fix, all speedhacks enabled">SLUS_210.50<td>Burnout 3 - Takedown (<a href="https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/CUSTOM/SLUS_210.50.CONFIG.ALT1" title="slow motion fix, no speedhacks enabled">ALT1</A> / <a href="https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/CUSTOM/SLUS_210.50.CONFIG.ALT2" title="slow motion fix, all speedhacks enabled (except motion blur and env. maps)">ALT2</A>)</tr>
 <tr><td>CUSTOM<td>SLES_525.84<td>Burnout 3 - Takedown</tr>
 <tr><td>CUSTOM<td>SLES_525.85<td>Burnout 3 - Takedown</tr>
-<tr><td>CUSTOM<td title="slow motion fix, all speedhacks enabled">SLUS_210.50<td>Burnout 3 - Takedown (<a href="https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/CUSTOM/SLUS_210.50.CONFIG.ALT1" title="slow motion fix, no speedhacks enabled">ALT1</A> / <a href="https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/CUSTOM/SLUS_210.50.CONFIG.ALT2" title="slow motion fix, all speedhacks enabled (except motion blur and env. maps)">ALT2</A>)</tr>
 <tr><td>CUSTOM<td>SLUS_212.42<td>Burnout Revenge</tr>
 <tr><td>CUSTOM<td>SLES_535.06<td>Burnout Revenge</tr>
 <tr><td>CUSTOM<td>SLES_535.07<td>Burnout Revenge</tr>
@@ -285,6 +285,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_202.02<td>Crazy Taxi</tr>
 <tr><td>CUSTOM<td>SLES_502.15<td>Crazy Taxi</tr>
 <tr><td>CUSTOM<td>SLPM_621.02<td>Crazy Taxi</tr>
+<tr><td>CUSTOM<td>SLUS_210.42<td>Darkwatch</tr>
+<tr><td>CUSTOM<td>SLES_535.64<td>Darkwatch</tr>
 <tr><td>CUSTOM<td>SLPM_655.90<td>Densha de Go! Final</tr>
 <tr><td>CUSTOM<td>SLUS_208.55<td>Destruction Derby Arenas</tr>
 <tr><td>CUSTOM<td>SLUS_205.61<td>Disaster Report</tr>
@@ -409,7 +411,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SCPS_150.16<td>Minna no Golf 3</tr>
 <tr><td>CUSTOM<td>SCPS_150.59<td>Minna no Golf 4</tr>
 <tr><td>CUSTOM<td>SLUS_210.87<td>Mortal Kombat - Shaolin Monks</tr>
-<tr><td>CUSTOM<td>SLUS_209.83<td>Musashi Samurai Legend</tr>
+<tr><td>CUSTOM<td>SLUS_209.83<td>Musashi - Samurai Legend</tr>
+<tr><td>CUSTOM<td>SLES_535.21<td>Musashi - Samurai Legend</tr>
 <tr><td>CUSTOM<td>SLPM_660.08<td>Musashiden II - Blademaster</tr>
 <tr><td>CUSTOM<td>SLUS_202.66<td>NASCAR Thunder 2002</tr>
 <tr><td>CUSTOM<td>SLUS_205.35<td>NASCAR Thunder 2003</tr>
@@ -2212,6 +2215,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_525.98<td>Dancing Stage Fusion</tr>
 <tr><td>ENC<td>SCPS_150.04<td>Dark Cloud</tr>
 <tr><td>ENC<td>NPJC_000.02<td>Dark Cloud</tr>
+<tr><td>ENC<td>SLUS_210.42<td>Darkwatch</tr>
+<tr><td>ENC<td>SLES_535.64<td>Darkwatch</tr>
 <tr><td>ENC<td>SLUS_215.74<td>Dawn of Mana</tr>
 <tr><td>ENC<td>SLPM_621.54<td>DDR Max - Dance Dance Revolution - 6th Mix</tr>
 <tr><td>ENC<td>SLPM_652.77<td>DDR Max 2 - Dance Dance Revolution - 7th Mix</tr>
@@ -2704,7 +2709,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_203.99<td>MTX Mototrax</tr>
 <tr><td>ENC<td>SLES_522.89<td>MTX Mototrax</tr>
 <tr><td>ENC<td>SLES_522.90<td>MTX Mototrax</tr>
-<tr><td>ENC<td>SLUS_209.83<td>Musashi Samurai Legend</tr>
+<tr><td>ENC<td>SLUS_209.83<td>Musashi - Samurai Legend</tr>
+<tr><td>ENC<td>SLES_535.21<td>Musashi - Samurai Legend</tr>
 <tr><td>ENC<td>SLPM_660.08<td>Musashiden II - Blademaster</tr>
 <tr><td>ENC<td>SLUS_213.67<td>MVP '06 - NCAA Baseball</tr>
 <tr><td>ENC<td>SLES_520.43<td>MX Unleashed Migrated</tr>
@@ -3305,7 +3311,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1790, count = tr.length, classics = i;
+var i = 1800, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
