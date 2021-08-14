@@ -140,7 +140,7 @@ static bool toggle_cobra(void)
 	if( (file_exists(REBUG_COBRA_PATH "stage2.cex")) /* &&
 		(file_exists(REBUG_COBRA_PATH "stage2.dex")) */)
 	{
-		show_msg("REBUG COBRA is active!\n"
+		show_msg("COBRA is active!\n"
 				 "Deactivating COBRA...");
 
 		save_file(TMP_DIR "/loadoptical", "SCE\0", 4); // Force load PS2 discs on BC consoles with Cobra 8.x
@@ -154,7 +154,7 @@ static bool toggle_cobra(void)
 	else if((file_exists(REBUG_COBRA_PATH "stage2.cex.bak")) /* &&
 			(file_exists(REBUG_COBRA_PATH "stage2.dex.bak")) */)
 	{
-		show_msg("REBUG COBRA is inactive!\n"
+		show_msg("COBRA is inactive!\n"
 				 "Activating COBRA...");
 
 		cellFsRename(REBUG_COBRA_PATH "stage2.cex.bak", REBUG_COBRA_PATH "stage2.cex");

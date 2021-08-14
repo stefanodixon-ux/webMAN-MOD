@@ -119,8 +119,6 @@ static void start_www(u64 conn_s_p)
 			spoof_idps_psid();
 			#endif
 
-			if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT }
-
 			#ifdef COBRA_ONLY
 			lock_psp_launchers();
 
@@ -149,6 +147,8 @@ static void start_www(u64 conn_s_p)
 			}
 			#endif
 			#endif //#ifdef COBRA_ONLY
+
+			if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT } else backup_act_dat();
 
 			if(do_sleep) sys_ppu_thread_sleep(1);
 

@@ -753,10 +753,11 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 
 	s64 size = 0; int abort_connection = 0;
 
-	//
-	int is_directory = 0; u64 mtime, ctime, atime;
-	if(remote_stat(ns, remote_file, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) != CELL_OK || size <= 0) return FAILED;
-	//
+	if(!strchr(remote_file, '*'))
+	{
+		int is_directory = 0; u64 mtime, ctime, atime;
+		if(remote_stat(ns, remote_file, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) != CELL_OK || size <= 0) return FAILED;
+	}
 
 	int ret = FAILED;
 

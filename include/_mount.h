@@ -230,7 +230,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		char target[STD_PATH_LEN], *pos; *target = NULL;
 		if(islike(param, "/copy.ps3")) {plen = COPY_CMD; pos = strstr(param, "&to="); if(pos) {strcpy(target, pos + 4); *pos = NULL;}}
 		bool is_copy = ((plen == COPY_CMD) && (copy_in_progress == false));
-		char *wildcard = strstr(param, "*"); if(wildcard) *wildcard++ = NULL;
+		char *wildcard = NULL;
+
+		if(islike(param + plen, "/net")) ; else {wildcard = strchr(param, '*'); if(wildcard) *wildcard++ = NULL;}
 
 		if(is_copy)
 		{
