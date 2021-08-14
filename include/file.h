@@ -487,6 +487,33 @@ static int sysLv2FsLink(const char *oldpath, const char *newpath)
 	return_to_user_prog(int);
 }
 
+static void backup_act_dat(void)
+{
+	int fd;
+
+	if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
+	{
+		char path1[48], path2[48];
+		CellFsDirent dir; uint64_t read;
+
+		while (cellFsReaddir(fd, &dir, &read) == CELL_FS_SUCCEEDED)
+		{
+			sprintf(path1, "%s/%.8s/exdata/act.bak", HDD0_HOME_DIR, dir.d_name);
+			sprintf(path2, "%s/%.8s/exdata/act.dat", HDD0_HOME_DIR, dir.d_name);
+
+			if(file_exists(path1))
+			{
+				sysLv2FsLink(path1, path2); // restore .bak -> .dat (fail if .dat exists)
+			}
+			else if(file_exists(path2))
+			{
+				sysLv2FsLink(path2, path1); // backup .dat -> .bak (if .bak doesn't exist)
+			}
+		}
+		cellFsClosedir(fd);
+	}
+}
+
 /*
 static int file_concat(const char *file1, char *file2)
 {
