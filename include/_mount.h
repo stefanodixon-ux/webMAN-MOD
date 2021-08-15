@@ -888,6 +888,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				if(islike(target, "/dev_blind")) enable_dev_blind(NO_MSG);
 
+				check_path_tags(target);
+
 				if(isDir(source) && (strlen(target) > 3) && target[strlen(target)-1] != '/') strcat(target, "/");
 
 				// make target dir tree

@@ -254,6 +254,8 @@ static int download_file(const char *param, char *msg)
 
 	if(conv_num)
 	{
+		check_path_tags(pdpath); // replace $USERID$ with current user id
+
 		mkdir_tree(pdpath);
 
 		if(isDir(pdpath) || (cellFsMkdir(pdpath, DMODE) == CELL_FS_SUCCEEDED)) ;
@@ -419,9 +421,11 @@ static void installPKG_all(const char *path, bool delete_after_install)
 
 	if(!install_in_progress && IS_ON_XMB)
 	{
-		if(isDir(path))
+		INSTALL_PKG_PATH = (char*)path;
+		check_path_tags(INSTALL_PKG_PATH);
+
+		if(isDir(INSTALL_PKG_PATH))
 		{
-			INSTALL_PKG_PATH = (char*)path;
 			sys_ppu_thread_t thread_id;
 			sys_ppu_thread_create(&thread_id, installPKG_combo_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_INSTALL_PKG, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_INSTALLPKG);
 		}

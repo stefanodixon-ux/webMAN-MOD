@@ -1628,6 +1628,9 @@ parse_request:
 						get_param("to=", path2, param, MAX_PATH_LEN);
 					}
 
+					check_path_tags(path1);
+					check_path_tags(path2);
+
 					if(param[10] == 0)
 					{
 						sys_map_path(NULL, NULL);
@@ -1872,6 +1875,8 @@ parse_request:
 				// /rmdir.ps3        deletes history files & remove empty ISO folders
 				// /rmdir.ps3<path>  removes empty folder
 
+				check_path_tags(param);
+
 				if(param[10] == '/')
 				{
 					sprintf(param, "%s", param + 10);
@@ -1892,6 +1897,8 @@ parse_request:
 			{
 				// /mkdir.ps3        creates ISO folders in hdd0
 				// /mkdir.ps3<path>  creates a folder & parent folders
+
+				check_path_tags(param);
 
 				if(param[10] == '/')
 				{
@@ -3387,6 +3394,8 @@ retry_response:
 						if(is_reset || islike(param2, "?wmconfig")) {reset_settings(); sprintf(param, "/delete_ps3%s", WMCONFIG);}
 						if(is_reset || islike(param2, "?wmtmp")) {do_umount(true); sprintf(param, "/delete_ps3%s", WMTMP);}
 
+						check_path_tags(param2);
+
 						bool is_dir = isDir(param2);
 
 						if(islike(param2 , "?history"))
@@ -3444,7 +3453,7 @@ retry_response:
 						{
 							if(islike(param2, "/dev_hdd1")) mount_device(param2, NULL, NULL); // auto-mount device
 
-							char *wildcard = strstr(param2, "*");
+							char *wildcard = strrchr(param2, '*');
 							if(wildcard)
 							{
 								wildcard = strrchr(param2, '/'); *wildcard++ = NULL;

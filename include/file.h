@@ -97,8 +97,23 @@ static DIR_ITER *ps3ntfs_opendir(char *path)
 }
 #endif
 
+static void check_path_tags(char *param)
+{
+	if(!param) return;
+
+	char *tag = strstr(param, "$USERID$");
+	if(tag)
+	{
+		char uid[10];
+		sprintf(uid, "%08i", xusers()->GetCurrentUserNumber());
+		memcpy(tag, uid, 8);
+	}
+}
+
 static void filepath_check(char *file)
 {
+	check_path_tags(file);
+
 	if((file[5] == 'u' && islike(file, "/dev_usb"))
 #ifdef USE_NTFS
 	|| (file[5] == 'n' && is_ntfs_path(file))
@@ -123,8 +138,10 @@ static void check_path_alias(char *param)
 {
 	if(islike(param, "/dev_blind")) enable_dev_blind(NULL);
 
-	if(*param && not_exists(param))
+	if(not_exists(param))
 	{
+		check_path_tags(param);
+
 		if(!islike(param, "/dev_") && !islike(param, "/net"))
 		{
 			char path[STD_PATH_LEN];
@@ -155,6 +172,7 @@ static void check_path_alias(char *param)
 				}
 			} // try hdd0, usb0, usb1, etc.
 			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", path);} // try hdd0
+			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", HDD0_HOME_DIR, path);} // try /dev_hdd0/home
 			if(wildcard) {*wildcard = '*'; strcat(param, wildcard);}
 		}
 	}
@@ -1073,7 +1091,6 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if(recursive == RECURSIVE_DELETE) ; else
 	if(!sys_admin || !working) return FAILED;
 
-
 #ifdef USE_NTFS
 	if((fop == SCAN_DELETE) && !wildcard && !isDir(path))
 	{
@@ -1229,6 +1246,14 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if((recursive > 0) && (fop == SCAN_DELETE))
 	{
+		char *pname = strrchr(path, '/');
+		if(pname)
+		{
+			++pname;
+			if(wildcard1 && (*wildcard1!=NULL) && ((!instr(pname, wildcard1)) == wfound1)) return CELL_FS_SUCCEEDED;
+			if(wildcard2 && (*wildcard2!=NULL) && ((!instr(pname, wildcard2)) == wfound2)) return CELL_FS_SUCCEEDED;
+		}
+
 #ifdef USE_NTFS
 		if(is_ntfs)
 			ps3ntfs_unlink(path + 5);
