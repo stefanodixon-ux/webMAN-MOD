@@ -512,12 +512,13 @@ static void backup_act_dat(void)
 	if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
 	{
 		char path1[48], path2[48];
-		CellFsDirent dir; uint64_t read;
+		CellFsDirectoryEntry dir; u32 read_e;
+		char *entry_name = dir.entry_name.d_name;
 
-		while (cellFsReaddir(fd, &dir, &read) == CELL_FS_SUCCEEDED)
+		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{
-			sprintf(path1, "%s/%.8s/exdata/act.bak", HDD0_HOME_DIR, dir.d_name);
-			sprintf(path2, "%s/%.8s/exdata/act.dat", HDD0_HOME_DIR, dir.d_name);
+			sprintf(path1, "%s/%.8s/exdata/act.bak", HDD0_HOME_DIR, entry_name);
+			sprintf(path2, "%s/%.8s/exdata/act.dat", HDD0_HOME_DIR, entry_name);
 
 			if(file_exists(path1))
 			{
