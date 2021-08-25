@@ -1068,7 +1068,9 @@ parse_request:
 				// /xmb.ps3$toggle_normal_mode         toggle normal mode (swap VSH REX/CEX)
 				// /xmb.ps3$toggle_debug_menu          toggle debug menu (DEX/CEX)
 				// /xmb.ps3$toggle_cobra               toggle Cobra (swap stage2)
-				// /xmb.ps3$toggle_ps2emu              toggle ps2emu
+				// /xmb.ps3$toggle_ps2emu              toggle ps2emus between /dev_hdd0/game/RBGTLBOX2/USRDIR/ and /dev_blind/ps2emu/
+				// /xmb.ps3$ps2emu                     enable default ps2 emulator on fat consoles only
+				// /xmb.ps3$ps2_netemu                 enable ps2_netemu on fat consoles only
 				// /xmb.ps3$enable_classic_ps2_mode    creates 'classic_ps2_mode' to enable PS2 classic in PS2 Launcher (old rebug)
 				// /xmb.ps3$disable_classic_ps2_mode   deletes 'classic_ps2_mode' to enable PS2 ISO in PS2 Launcher (old rebug)
 				// /xmb.ps3/<webman_cmd>               execute webMAN command on PS3 browser
