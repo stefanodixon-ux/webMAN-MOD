@@ -35,6 +35,7 @@
 #define PKG_LAUNCHER	1	// scan & mount np games extracted to GAMEI / scan ROMS
 #define PKG_HANDLER		1	// /download.ps3?url=<url>, /download.ps3?to=<path>&url=<url>, /install.ps3<pkg-path> (thanks to bguerville & mysis)
 #define USE_NTFS		1	// add NTFS support
+#define BACKUP_ACT_DAT	1	// backup/restore act.dat on HEN
 
 //// EXTRA FEATURES ////
 //#define XMB_SCREENSHOT	1	// screenshot XMB using L2 + R2 + SELECT + START (thanks to 3141card)
@@ -47,6 +48,7 @@
 //#define CALC_MD5			1	// /md5.ps3/<file>
 //#define LAUNCHPAD			1	// create /dev_hdd0/tmp/wm_lauchpad.xml
 //#define UNLOCK_SAVEDATA	1	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
+
 //// TEST FEATURES ////
 //#define ALLOW_DISABLE_MAP_PATH	1	// Use SELECT+O to temporarily disable sys_map_path()
 //#define SYS_BGM			1	// system background music (may freeze the system when enabled)

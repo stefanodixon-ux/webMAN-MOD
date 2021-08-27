@@ -36,6 +36,7 @@
 #define PKG_LAUNCHER	1	// scan & mount np games extracted to GAMEI / scan ROMS
 #define PKG_HANDLER		1	// /download.ps3?url=<url>, /download.ps3?to=<path>&url=<url>, /install.ps3<pkg-path> (thanks to bguerville & mysis)
 #define USE_NTFS		1	// add NTFS support
+#define BACKUP_ACT_DAT	1	// backup/restore act.dat on HEN
 
 //// EXTRA FEATURES ////
 //#define XMB_SCREENSHOT	1	// screenshot XMB using L2 + R2 + SELECT + START (thanks to 3141card)

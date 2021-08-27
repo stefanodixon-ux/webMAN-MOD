@@ -505,6 +505,7 @@ static int sysLv2FsLink(const char *oldpath, const char *newpath)
 	return_to_user_prog(int);
 }
 
+#ifdef BACKUP_ACT_DAT
 static void backup_act_dat(void)
 {
 	int fd;
@@ -512,17 +513,19 @@ static void backup_act_dat(void)
 	if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
 	{
 		char path1[48], path2[48];
-		CellFsDirectoryEntry dir; u32 read_e;
+		CellFsDirectoryEntry dir; u32 read_e, count = 0;
 		char *entry_name = dir.entry_name.d_name;
 
 		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{
+			if(++count > 2000) break; // fail safe break loop
+
 			sprintf(path1, "%s/%.8s/exdata/act.bak", HDD0_HOME_DIR, entry_name);
 			sprintf(path2, "%s/%.8s/exdata/act.dat", HDD0_HOME_DIR, entry_name);
 
 			if(file_exists(path1))
 			{
-				sysLv2FsLink(path1, path2); // restore .bak -> .dat (fail if .dat exists)
+				if(not_exists(path2)) sysLv2FsLink(path1, path2); // restore .bak -> .dat
 			}
 			else if(file_exists(path2))
 			{
@@ -532,6 +535,7 @@ static void backup_act_dat(void)
 		cellFsClosedir(fd);
 	}
 }
+#endif
 
 /*
 static int file_concat(const char *file1, char *file2)

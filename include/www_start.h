@@ -148,7 +148,10 @@ static void start_www(u64 conn_s_p)
 			#endif
 			#endif //#ifdef COBRA_ONLY
 
-			if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT } else backup_act_dat();
+			if(!payload_ps3hen) { ENABLE_INGAME_SCREENSHOT }
+			#ifdef BACKUP_ACT_DAT
+			else backup_act_dat();
+			#endif
 
 			if(do_sleep) sys_ppu_thread_sleep(1);
 

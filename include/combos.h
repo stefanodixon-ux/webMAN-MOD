@@ -967,11 +967,13 @@
 #ifdef SPOOF_CONSOLEID
 								show_idps(msg);
 #endif
+#ifdef BACKUP_ACT_DAT
 								// backup / restore act.bak -> act.dat
 								if(payload_ps3hen)
 								{
 									backup_act_dat();
 								}
+#endif
 							}
 						}
 

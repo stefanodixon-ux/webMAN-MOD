@@ -1398,11 +1398,13 @@ static void refresh_xml(char *msg)
 	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, start_www, REFRESH_CONTENT, THREAD_PRIO_HIGH, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
 
+	#ifdef BACKUP_ACT_DAT
 	// backup / restore act.bak -> act.dat
 	if(payload_ps3hen)
 	{
 		backup_act_dat();
 	}
+	#endif
 
 	// refresh SND0 settings for new installed games only with combo SELECT+R3+L1+R1 (reload_xmb)
 	pad_data = pad_read(); // check for SELECT+R3+L1+R1 (reload_xmb)
