@@ -279,11 +279,12 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_212.42<td>Burnout Revenge</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_535.06<td>Burnout Revenge</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_535.07<td>Burnout Revenge</tr>
-<tr><td>CUSTOM<td>SLPM_661.08<td>Burnout Revenge</tr>
+<tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLPM_661.08<td>Burnout Revenge</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_215.96<td>Burnout Dominator</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_546.27<td>Burnout Dominator</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_546.81<td>Burnout Dominator</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLPM_667.39<td>Burnout Dominator</tr>
+<tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLAJ_250.94<td>Burnout Dominator</tr>
 <tr><td>CUSTOM<td>SLES_523.73<td>Champions of Norrath - Realms of EverQuest</tr>
 <tr><td>CUSTOM<td>SLPM_654.04<td>Chou-jikuu Yousai Macross (The Super Dimension Fortress Macross)</tr>
 <tr><td>CUSTOM<td>SLPM_621.14<td>Crash Bandicoot 4: Sakuretsu! Majin Power</tr>
@@ -318,6 +319,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_515.88<td>Evil Dead: A Fistful of Boomstick</tr>
 <tr><td>CUSTOM<td>SLUS_205.46<td>Evolution Snowboarding</tr>
 <tr><td>CUSTOM<td>SLES_513.92<td>Evolution Snowboarding</tr>
+<tr><td>CUSTOM<td>SLUS_206.93<td>F1 Career Challenge</tr>
+<tr><td>CUSTOM<td>SLES_515.84<td>F1 Career Challenge</tr>
+<tr><td>CUSTOM<td>SLPS_202.95<td>F1 Career Challenge</tr>
 <tr><td>CUSTOM<td>SLUS_205.39<td>Fallout - Brotherhood of Steel</tr>
 <tr><td>CUSTOM<td>SLES_515.25<td>Fallout - Brotherhood of Steel</tr>
 <tr><td>CUSTOM<td>SLES_515.26<td>Fallout - Brotherhood of Steel</tr>
@@ -2226,12 +2230,12 @@ setTimeout(function(){
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_212.42<td>Burnout Revenge</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_535.06<td>Burnout Revenge</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_535.07<td>Burnout Revenge</tr>
-<tr><td>ENC<td>SLPM_661.08<td>Burnout Revenge</tr>
+<tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLPM_661.08<td>Burnout Revenge</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_215.96<td>Burnout Dominator</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_546.27<td>Burnout Dominator</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_546.81<td>Burnout Dominator</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLPM_667.39<td>Burnout Dominator</tr>
-<tr><td>ENC<td>SLAJ_250.94<td>Burnout Dominator</tr>
+<tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLAJ_250.94<td>Burnout Dominator</tr>
 <tr><td>ENC<td>SLPM_620.98<td>Busin - Wizardry Alternative</tr>
 <tr><td>ENC<td>SCUS_976.02<td>Buzz! Jr. Jungle Party [Game Only]</tr>
 <tr><td>ENC<td>SCES_542.19<td>Buzz! Junior Jungle Party</tr>
@@ -2401,6 +2405,9 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_515.88<td>Evil Dead: A Fistful of Boomstick</tr>
 <tr><td>ENC<td>SLUS_205.46<td>Evolution Snowboarding</tr>
 <tr><td>ENC<td>SLES_513.92<td>Evolution Snowboarding</tr>
+<tr><td>ENC<td>SLUS_206.93<td>F1 Career Challenge</tr>
+<tr><td>ENC<td>SLES_515.84<td>F1 Career Challenge</tr>
+<tr><td>ENC<td>SLPS_202.95<td>F1 Career Challenge</tr>
 <tr><td>ENC<td>SLES_500.46<td>F1 Racing Championship</tr>
 <tr><td>ENC<td>SLES_500.47<td>F1 Racing Championship</tr>
 <tr><td>ENC<td>SLES_535.39<td>Fahrenheit</tr>
@@ -3419,7 +3426,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1864, count = tr.length, classics = i;
+var i = 1882, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
