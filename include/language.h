@@ -413,14 +413,13 @@ static bool language(const char *key_name, char *label, const char *default_str)
 	static size_t p = 0, lang_pos = 0, size = 0;
 	u8 c, i, key_len = strlen(key_name);
 
-	sprintf(label, "%s", default_str);
-
 	u8 do_retry = 1;
 	char buffer[MAX_LINE_LEN];
 
 	if(!lang_roms) close_language();
 
  retry:
+	sprintf(label, "%s", default_str);
 
 	if(fh == 0)
 	{
@@ -448,7 +447,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 		struct CellFsStat buf;
 
-		if(cellFsStat(lang_path, &buf)) return false; size = (size_t)buf.st_size;
+		if(cellFsStat(lang_path, &buf)) return true; size = (size_t)buf.st_size;
 
 		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0)) return false;
 
@@ -484,7 +483,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 					if(c == '[') copy = 1;
 				}
 
-				label[str_len] = NULL;
+				if(str_len) label[str_len] = NULL;
 
 				if(str_len < do_retry) goto do_retry;
 

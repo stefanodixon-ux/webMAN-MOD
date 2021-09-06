@@ -885,7 +885,7 @@ int main()
 
 	// skip update custom language file
 	if(not_exists(LANG_DIR "/LANG_XX.TXT"))
-		file_copy(APP_USRDIR "/LANG_XX.TXT", LANG_DIR "/LANG_XX.TXT");
+		file_copy(APP_USRDIR "/lang/LANG_XX.TXT", LANG_DIR "/LANG_XX.TXT");
 
 	sysLv2FsUnlink(COMBO_DIR "wm_custom_r2_square"); // delete bad file
 
