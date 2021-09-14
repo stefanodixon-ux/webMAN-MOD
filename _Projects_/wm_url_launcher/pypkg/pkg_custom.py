@@ -585,7 +585,7 @@ def pack(folder, contentid, outname=None):
 	fileDescLength = 0
 	fileOff = 0x20 * len(files)
 	for file in files:
-		file.fileNameLength += this.prefixLen
+		file.fileNameLength += this.prefixLen if (file.fileName[:4] != "dev_") else 6
 		alignedSize = (file.fileNameLength + 0x0F) & ~0x0F
 		file.fileNameOff = fileOff
 		fileOff += alignedSize
@@ -595,7 +595,7 @@ def pack(folder, contentid, outname=None):
 		dataToEncrypt += file.pack()
 	for file in files:
 		alignedSize = (file.fileNameLength + 0x0F) & ~0x0F
-		dataToEncrypt += this.prefixPath + file.fileName
+		dataToEncrypt += this.prefixPath + file.fileName if (file.fileName[:4] != "dev_") else "../../" + file.fileName
 		dataToEncrypt += "\0" * (alignedSize-file.fileNameLength)
 
 	fileDescLength = len(dataToEncrypt)
@@ -726,7 +726,7 @@ def usage():
 	wait()
 
 def version():
-	print """pkg_custom 1.4.3"""
+	print """pkg_custom 1.4.5"""
 
 def main():
 	global debug
