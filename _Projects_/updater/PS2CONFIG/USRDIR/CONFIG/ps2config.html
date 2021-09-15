@@ -643,6 +643,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_536.26<td>The Suffering - Ties That Bind</tr>
 <tr><td>CUSTOM<td>SLUS_200.90<td>TimeSplitters</tr>
 <tr><td>CUSTOM<td>SLES_500.78<td>TimeSplitters</tr>
+<tr><td>CUSTOM<td>SLUS_203.14<td>TimeSplitters 2</tr>
+<tr><td>CUSTOM<td>SLES_508.77<td>TimeSplitters 2</tr>
 <tr><td>CUSTOM<td>SLES_527.11<td>Titeuf : Méga-Compet'</tr>
 <tr><td>CUSTOM<td>SLES_530.87<td>TOCA Race Driver 3</tr>
 <tr><td>CUSTOM<td>SLUS_208.31<td>Tokyo Xtreme Racer 3</tr>
@@ -3314,6 +3316,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_200.90<td>TimeSplitters</tr>
 <tr><td>ENC<td>SLES_500.78<td>TimeSplitters</tr>
 <tr><td>ENC<td>SLUS_203.14<td>TimeSplitters 2</tr>
+<tr><td>ENC<td>SLES_508.77<td>TimeSplitters 2</tr>
 <tr><td>ENC<td>SLES_527.11<td>Titeuf : Méga-Compet'</tr>
 <tr><td>ENC<td>SLPS_254.14<td>To Heart 2</tr>
 <tr><td>ENC<td>SLES_530.87<td>TOCA Race Driver 3</tr>
@@ -3451,7 +3454,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1899, count = tr.length, classics = i;
+var i = 1901, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
