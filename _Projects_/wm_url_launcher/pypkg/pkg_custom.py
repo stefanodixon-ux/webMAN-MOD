@@ -585,7 +585,7 @@ def pack(folder, contentid, outname=None):
 	fileDescLength = 0
 	fileOff = 0x20 * len(files)
 	for file in files:
-		file.fileNameLength += this.prefixLen if (file.fileName[:4] != "dev_") else 6
+		file.fileNameLength += this.prefixLen if (file.fileName[:4] != "dev_" or this.contentType == 0x09) else 9
 		alignedSize = (file.fileNameLength + 0x0F) & ~0x0F
 		file.fileNameOff = fileOff
 		fileOff += alignedSize
@@ -595,7 +595,7 @@ def pack(folder, contentid, outname=None):
 		dataToEncrypt += file.pack()
 	for file in files:
 		alignedSize = (file.fileNameLength + 0x0F) & ~0x0F
-		dataToEncrypt += this.prefixPath + file.fileName if (file.fileName[:4] != "dev_") else "../../" + file.fileName
+		dataToEncrypt += this.prefixPath + file.fileName if (file.fileName[:4] != "dev_" or this.contentType == 0x09) else "../../../" + file.fileName
 		dataToEncrypt += "\0" * (alignedSize-file.fileNameLength)
 
 	fileDescLength = len(dataToEncrypt)
