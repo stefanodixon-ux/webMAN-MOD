@@ -245,16 +245,16 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id) //
 			strncpy(title_id, name, TITLEID_LEN);
 	}
 
-	char *pos;
 	if(HAS_TITLE_ID) ;
 
 	else if(islike(name + TITLEID_LEN, "-["))
 		strncpy(title_id, name, TITLEID_LEN); // TITLEID-[NAME]
 	else
 	{
+		char *pos;
 		// search for BLES/UCES/SLES/BCUS/UCUS/SLUS/etc.
 		for(pos = (char*)name; *pos; pos++)
-			if((*pos == '[') && (pos[2] == 'L' || pos[2] == 'C') && ISDIGIT(pos[6]) && ISDIGIT(pos[7]))
+			if((*pos == '[' || *pos == '(') && (pos[2] == 'L' || pos[2] == 'C') && ISDIGIT(pos[6]) && ISDIGIT(pos[7]))
 			{
 				if(pos[1] == 'B' || pos[1] == 'U') // B = PS3, U = PSP
 				{

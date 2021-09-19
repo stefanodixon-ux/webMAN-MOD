@@ -822,11 +822,18 @@ next_xml_entry:
 							{
 								strcpy(folder_name, entry.entry_name.d_name); *folder_name = '/'; get_flag(folder_name, "] ");
 							}
-							else
+							else if(subfolder)
 							{
 								*folder_name = NULL;
-								char *p = strchr(entry.entry_name.d_name, '/'); if(p) {*p = NULL; sprintf(folder_name, "/%s", entry.entry_name.d_name); *p = '/';}
+								char *p = strchr(entry.entry_name.d_name, '/');
+								if(p)
+								{
+									*p = NULL; int l = sprintf(folder_name, "/%s", entry.entry_name.d_name); *p = '/';
+									strcpy(tempstr, templn + l); sprintf(templn, "[%s] %s", folder_name + 1, tempstr);
+								}
 							}
+							else
+								*folder_name = NULL;
 
 							get_local_app_ver(app_ver, title_id, tempstr);
 

@@ -271,11 +271,13 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 {
 	bool is_html = (key <= HTML_KEY);
 
+	if(subfolder) {char *p = strchr(templn, '/'); if(p) {*p = NULL; sprintf(skey, "[%s] %s", templn, p + 1); *p = '/'; strcpy(templn, skey);}}
+
 	u16 tlen = strlen(templn);
 	if(tlen < HTML_KEY_LEN) strcat(templn, "      "); // HTML_KEY_LEN = 6
 
 	u8 c = 0, s = 5;
-	if(templn[4] == ']' && templn[0] == '[') {c = (templn[5]!=' ') ? 5 : 6;} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
+	if(templn[4] == ']' && templn[0] == '[') {c = (templn[5] != ' ') ? 5 : 6;} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
 
 	if(is_html)
 	{
@@ -294,8 +296,8 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	else
 		sprintf(skey, "!%.6s%04i", templn + c, key);
 
-	if(subfolder) {char *s = strchr(templn + 3, '/'); if(s) {skey[4]=s[1],skey[5]=s[2],skey[6]=s[3];}} else
 	if(c == 0 && templn[0] == '[') {char *s = strstr(templn + 3, "] "); if(s) {skey[4]=s[2],skey[5]=s[3],skey[6]=s[4];}}
+	//else if(subfolder) {char *s = strchr(templn + 3, '/'); if(s) {skey[4]=s[1],skey[5]=s[2],skey[6]=s[3];}}
 
 	templn[tlen] = NULL;
 
@@ -573,8 +575,8 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 				char *param = path + 10; // remove /mount_ps3
 				char *icon = slaunch.name + slaunch.icon_pos;
 
-				if(*filter_name >= ' '  &&  !strcasestr(templn, filter_name) &&
-											!strcasestr(param,  filter_name)) continue;
+				if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
+										&& !strcasestr(param,  filter_name)) continue;
 
 				u8 f1 = (slaunch.type == TYPE_PS1) ? id_PSXISO :
 						(slaunch.type == TYPE_PS2) ? id_PS2ISO :
@@ -734,10 +736,9 @@ list_games:
 						if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
 #endif
 
-						if(*filter_name >=' '
-							&& !strcasestr(templn, filter_name)
-							&& !strcasestr(param, filter_name)
-							&& !strcasestr(data[v3_entry].name, filter_name)) {v3_entry++; continue;}
+						if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
+												&& !strcasestr(param,  filter_name)
+												&& !strcasestr(data[v3_entry].name, filter_name)) {v3_entry++; continue;}
 
 						if(urlenc(tempstr, icon)) sprintf(icon, "%s", tempstr);
 
@@ -838,9 +839,9 @@ next_html_entry:
 #endif
 							}
 
-							if(*filter_name >= ' '  &&  !strcasestr(templn, filter_name) &&
-														!strcasestr(param,  filter_name) &&
-														!strcasestr(entry.entry_name.d_name, filter_name)) {if(subfolder) goto next_html_entry; else continue;}
+							if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
+													&& !strcasestr(param,  filter_name)
+													&& !strcasestr(entry.entry_name.d_name, filter_name)) {if(subfolder) goto next_html_entry; else continue;}
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
