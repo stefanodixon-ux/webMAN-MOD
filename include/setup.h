@@ -808,7 +808,7 @@ static void setup_form(char *buffer, char *templn)
 	if(use_imgfont) add_option_item(0x13, "Tags",                       (value == 0x13), buffer);
 					add_option_item(0x02, "ID",                         (value == 0x02), buffer);
 	if(use_imgfont) add_option_item(0x12, "ID + Tags",                  (value == 0x12), buffer);
-					add_option_item(0x22, "ID + Version",               (value == 0x02), buffer);
+					add_option_item(0x22, "ID + Version",               (value == 0x22), buffer);
 	if(use_imgfont) add_option_item(0x32, "ID + Version + Tags",        (value == 0x32), buffer);
 					add_option_item(0x00, "Path",                       (value == 0x00), buffer);
 	if(use_imgfont) add_option_item(0x10, "Path + Tags",                (value == 0x10), buffer);

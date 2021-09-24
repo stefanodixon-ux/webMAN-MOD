@@ -403,8 +403,12 @@ int main()
 	// Show message
 	Init_Graph();
 	cls();
-	DrawString(20, 216+24, "Installing webMAN MOD...");
-	SetFontAutoCenter(0);
+	if(full)
+		DrawString(20, 216+24, "Installing webMAN MOD FULL...");
+	else if(lite)
+		DrawString(20, 216+24, "Installing webMAN MOD Lite...");
+	else
+		DrawString(20, 216+24, "Installing webMAN MOD...");
 	tiny3d_Flip();
 	sleep(2);
 
