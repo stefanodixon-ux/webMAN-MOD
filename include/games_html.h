@@ -271,7 +271,18 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 {
 	bool is_html = (key <= HTML_KEY);
 
-	if(subfolder) {char *p = strchr(templn, '/'); if(p) {*p = NULL; sprintf(skey, "[%s] %s", templn, p + 1); *p = '/'; strcpy(templn, skey);}}
+	{
+		char *p = strchr(templn, '/');
+		if(p)
+		{
+			*p = NULL;
+			if(islike(templn, p + 1))
+				strcpy(skey, p + 1);
+			else
+				sprintf(skey, "[%s] %s", templn, p + 1);
+			strcpy(templn, skey);
+		}
+	}
 
 	u16 tlen = strlen(templn);
 	if(tlen < HTML_KEY_LEN) strcat(templn, "      "); // HTML_KEY_LEN = 6

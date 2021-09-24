@@ -1,6 +1,5 @@
 #define LAUNCHPAD_MODE			2
-#define LAUNCHPAD_COVER_SVR		"http://xmbmods.co/wmlp/covers"
-//#define LAUNCHPAD_COVER_SVR	"http://ps3extra.free.fr/covers"
+#define LAUNCHPAD_COVER_SVR		"http://devil303.com/wmlp/covers"
 
 #ifdef LAUNCHPAD
 

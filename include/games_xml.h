@@ -829,7 +829,11 @@ next_xml_entry:
 								if(p)
 								{
 									*p = NULL; int l = sprintf(folder_name, "/%s", entry.entry_name.d_name); *p = '/';
-									strcpy(tempstr, templn + l); sprintf(templn, "[%s] %s", folder_name + 1, tempstr);
+									strcpy(tempstr, templn + l);
+									if(islike(tempstr, folder_name + 1))
+										strcpy(templn, folder_name + 1);
+									else
+										sprintf(templn, "[%s] %s", folder_name + 1, tempstr);
 								}
 							}
 							else

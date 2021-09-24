@@ -53,10 +53,11 @@ static const char *cpath[6] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ,
 
 #ifndef ENGLISH_ONLY
 static bool use_custom_icon_path = false, use_icon_region = false;
-static bool is_xmbmods_server = false;
+static bool is_devil303_server = false;
 #endif
 
 static bool covers_exist[8];
+static bool covers_retro_exist[3];
 static bool wm_icons_exists = false;
 
 static bool HAS(char *icon)
@@ -69,7 +70,12 @@ static void check_cover_folders(char *buffer)
 #ifndef ENGLISH_ONLY
 													covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
 #endif
-		for(u8 p = 0; p < 6; p++)
+		u8 p;
+		for(p = 0; p < 3; p++)
+		{
+			sprintf(buffer, "%s/covers_retro/psx", cpath[p]); covers_retro_exist[p] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
+		}
+		for(p = 0; p < 6; p++)
 		{
 			sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
 		}
@@ -85,7 +91,7 @@ static void check_cover_folders(char *buffer)
 		netctl_main_9A528B81(ip_size, ip);
 		if(*ip == NULL) use_custom_icon_path = false;
 
-		is_xmbmods_server = islike(COVERS_PATH, LAUNCHPAD_COVER_SVR);
+		is_devil303_server = islike(COVERS_PATH, LAUNCHPAD_COVER_SVR);
 	}
 #endif
 
@@ -114,6 +120,7 @@ static bool get_image_file(char *icon, int flen)
 	for(u8 e = 0; e < 4; e++)
 	{
 		strcpy(icon + flen, ext[ex[e]]);
+
 		if(file_exists(icon)) {swap_ex(e); return true;}
 	}
 	return false;
@@ -175,15 +182,18 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 #endif
 
 		// Search retro covers in MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
-		for(u8 p = 0; p < 3; p++)
+		if(*title_id == 'S')
 		{
-			if(covers_exist[p + 1] && *title_id == 'S')
+			for(u8 p = 0; p < 3; p++)
 			{
-				flen = sprintf(icon, "%s/covers_retro/psx/%.4s_%.3s.%.2s_COV", cpath[p],
-								title_id,
-								title_id + 4, title_id + 7);
+				if(covers_retro_exist[p])
+				{
+					flen = sprintf(icon, "%s/covers_retro/psx/%.4s_%.3s.%.2s_COV", cpath[p],
+									title_id,
+									title_id + 4, title_id + 7);
 
-				if(get_image_file(icon, flen)) return true;
+					if(get_image_file(icon, flen)) return true;
+				}
 			}
 		}
 
@@ -212,7 +222,7 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 #else
 		if(use_custom_icon_path && (webman_config->nocov == ONLINE_COVERS) && (COVERS_PATH[0] == 'h'))
 		{
-			if(is_xmbmods_server && (*title_id != 'B' && *title_id != 'N')) {*icon = NULL; return false;}
+			if(is_devil303_server && (*title_id != 'B' && *title_id != 'N')) {*icon = NULL; return false;}
 
 			if(use_icon_region) sprintf(icon, COVERS_PATH,  (title_id[2] == 'U') ? "US" :
 															(title_id[2] == 'J') ? "JA" : "EN", title_id);
@@ -343,8 +353,8 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 				else
 					sprintf(titleid, "%s", title_id);
 
-				sprintf(icon, "%s/%s.JPG", param, titleid); if(file_exists(icon)) return;
-				sprintf(icon, "%s/%s.PNG", param, titleid); if(file_exists(icon)) return;
+				flen = sprintf(icon, "%s/%s", param, titleid);
+				if(get_image_file(icon, flen)) return;
 
 				*icon = NULL;
 			}
