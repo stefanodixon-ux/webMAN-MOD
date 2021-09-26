@@ -67,7 +67,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Game listing using localized title in PARAM.SFO
 
 #### Content organization & information display
-- Title ID can be displayed on XMB menu (next to the title or as "info" text)
+- Title ID can be displayed on XMB menu (next to the title or as "info" text) or press R2+O to show the info of the mounted game
 - Covers are shown using the Title ID found in the file name of the ISO or folder name (JB game).
 - Option for display original file name or title name from PARAM.SFO
 - Option for display covers as discs, ICON0.PNG or covers from multiMAN, IRISMAN, ManaGunZ repository or in the same folder of the ISO
@@ -89,7 +89,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - It can mount PS2 Classics games on PS2 Classic Launcher (.BIN.ENC)
 - It can mount PSX games with CD sector sizes: 2352, 2048, 2336, 2448, 2328, 2340, 2368
 - Automatic CONFIG creation for PS2ISOs and PS2 Classic using config database from ManaGunZ or the database of CONFIG created by the installer
-- Automatic patching of black listed PS2 demos (SCED***** & SLED*****)
+- Automatic patching of black listed PS2 demos (SCED***** & SLED*****, PS2 SOCOM games)
 - Scanning & launch of package files extracted to GAMEI folder on USB FAT32 & NET host. Folders' name can be title_id or content_id
 - Support for launch SELF applications via PKG/ROM Launcher or through the XMB icon: ★ app_home/PS3_GAME
 - Integrated external gameDATA allows installation of packages & game data on external USB drives
@@ -195,14 +195,16 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Video REC plugin : Standalone plugin that records video from games. When used, webMAN MOD is unloaded to free memory.
 
 ## Addons
-- [ps3netsrv](https://downgit.github.io/#/home?url=https://github.com/aldostools/webMAN-MOD/tree/master/_Projects_/ps3netsrv) : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
+- [Covers Pack for PS3 games](https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS0000000000.pkg)
+- [Covers Pack for PSX/PS2 games](https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS00000RETRO.pkg)
+
 - [prepISO](https://store.brewology.com/get/homebrew.php?id=310&fid=2188) : tool that scans content stored in exFAT/NTFS/ext2/3/4 devices and prepare the settings files needed by RAWSECISO plugin
+- [ps3netsrv](https://downgit.github.io/#/home?url=https://github.com/aldostools/webMAN-MOD/tree/master/_Projects_/ps3netsrv) : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
 - [PKG/ROM Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2183) : allows the execution of PS3 applications and ROMS via RetroArch. Requires that the debug icon "★ app_home/PS3_GAME" be present on XMB
 - [PS2CONFIG](https://store.brewology.com/get/homebrew.php?id=310&fid=2178) : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games
 - [WM Themes](https://store.brewology.com/ahomebrew.php?brewid=310) : Set of packages that customize the look of the XMB icons used by webMAN MOD
 - [Reload XMB](https://store.brewology.com/get/homebrew.php?id=310&fid=2184) : PS3 application that forces the reload of XMB icons
 - [Boot MAMBA](https://github.com/aldostools/webMAN-MOD/releases) : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87/4.88 with Cobra disabled
-- [MOVIAN.ISO](https://github.com/aldostools/webMAN-MOD/releases) : Custom ISO to launch MOVIAN
 
 - [PS2 Classics Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2187) : PS3 application required to launch PS2 Classics games in .BIN.ENC format
 - [PSP Remasters Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2186) : PS3 application required to launch PSP Remaster games in ISO format
@@ -211,6 +213,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - [RetroArch](https://store.brewology.com/ahomebrew.php?brewid=152) : Required to launch the emulators that run the classic games in ROM format
 - [MOVIAN](https://store.brewology.com/ahomebrew.php?brewid=196) : Required to play audio and videos in non-nantive formats like MKV
 - [multiMAN](https://store.brewology.com/ahomebrew.php?brewid=24) : Optional. Use for dump ISO, download covers, advanced file management
+- [IRISMAN](https://store.brewology.com/ahomebrew.php?brewid=250) : Optional. Use for dump ISO, download covers, advanced file management
 
 - webPAD : [http://pad.aldostools.org](http://pad.aldostools.org) - Online virtual game pad
 
