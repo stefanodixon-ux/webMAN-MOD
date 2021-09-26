@@ -754,6 +754,9 @@ int main()
 	if(not_exists(XMBMANPLS_DIR "/PARAM.SFO"))
 		file_copy(APP_USRDIR "/xmbm/PARAM.SFO", XMBMANPLS_DIR "/PARAM.SFO");
 
+	if((sysLv2FsStat(XMBMANPLS_DIR "/ICON0.PNG", &stat) == SUCCESS) && (stat.st_size == 2138))
+		file_copy(APP_USRDIR "/xmbm/ICON0.PNG", XMBMANPLS_DIR "/ICON0.PNG");
+
 	if(not_exists(XMBMANPLS_DIR "/ICON0.PNG"))
 		file_copy(APP_USRDIR "/xmbm/ICON0.PNG", XMBMANPLS_DIR "/ICON0.PNG");
 

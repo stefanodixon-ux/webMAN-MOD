@@ -328,9 +328,8 @@ def unpack(filename):
 	assert header.type == (0x00000001), 'Unsupported Type'
 	if header.itemCount > 0:
 		context = listToString(keyToContext(header.QADigest))
-		dataEnc = data[header.dataOff:header.dataOff + 0x200 * header.itemCount]
-		decData = crypt(context, dataEnc, 0x200 * header.itemCount)
-
+		dataEnc = data[header.dataOff:header.dataOff + (0x200 * header.itemCount)]
+		decData = crypt(context, dataEnc, len(dataEnc))
 		directory = nullterm(header.contentID)
 		try:
 			os.makedirs(directory)
@@ -357,7 +356,7 @@ def unpack(filename):
 			fp.close()
 		else:
 			pkgData = fp.read(fileSize)
-			fileData = crypt(context, pkgData, fileSize)
+			fileData = crypt(context, pkgData, len(pkgData))
 			fp.close()
 
 		totalSize = 0
@@ -726,7 +725,7 @@ def usage():
 	wait()
 
 def version():
-	print """pkg_custom 1.4.5"""
+	print """pkg_custom 1.4.6"""
 
 def main():
 	global debug
