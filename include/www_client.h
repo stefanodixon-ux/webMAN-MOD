@@ -735,12 +735,15 @@ parse_request:
 					strcpy(header, param2); // backup original request
 
 					// check /play.ps3<path>
-					if(not_exists(param2))
+					if(*param2 == '/')
 					{
-						find_slaunch_game(param2, 10); // search in slaunch.bin
-						urldec(param2, header);
+						if(not_exists(param2))
+						{
+							find_slaunch_game(param2, 10); // search in slaunch.bin
+							urldec(param2, header);
+						}
+						check_path_alias(param2);
 					}
-					check_path_alias(param2);
 
 					if(file_exists(param2))
 					{
@@ -2364,7 +2367,7 @@ parse_request:
 				//      http://localhost/syscall.ps3?838|/dev_hdd1|0|1
 
 				char *p, *params = param + 13;
-				u64 sp[10], ret = 0; u8 n;
+				u64 sp[9], ret = 0; u8 n;
 				u16 sc = (u16)val(params);
 
 				u8 is_plain = islike(param, "/syscall_ps3");
