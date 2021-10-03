@@ -1893,7 +1893,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						}
 					}
 					else if(_IS(cmd, "LOAD") || _IS(cmd, "UNLOAD"))	// MODULE UNLOAD <pid> <prx-id>
-					{												// MODULE LOAD <pid> <prx-id> <module>
+					{												// MODULE LOAD <pid> <prx_path>
 						if(split)
 						{
 							split = ssplit(param2, param1, PS3MAPI_MAX_LEN, param2, PS3MAPI_MAX_LEN);
