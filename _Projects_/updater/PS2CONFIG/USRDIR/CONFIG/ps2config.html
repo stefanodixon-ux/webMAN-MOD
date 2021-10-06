@@ -334,6 +334,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_206.93<td>F1 Career Challenge</tr>
 <tr><td>CUSTOM<td>SLES_515.84<td>F1 Career Challenge</tr>
 <tr><td>CUSTOM<td>SLPS_202.95<td>F1 Career Challenge</tr>
+<tr><td>CUSTOM<td>SLUS_201.03<td>F1 Championship Season 2000</tr>
+<tr><td>CUSTOM<td>SLES_500.17<td>F1 Championship Season 2000</tr>
+<tr><td>CUSTOM<td>SLPS_200.44<td>F1 Championship Season 2000</tr>
 <tr><td>CUSTOM<td>SLUS_205.39<td>Fallout - Brotherhood of Steel</tr>
 <tr><td>CUSTOM<td>SLES_515.25<td>Fallout - Brotherhood of Steel</tr>
 <tr><td>CUSTOM<td>SLES_515.26<td>Fallout - Brotherhood of Steel</tr>
@@ -352,9 +355,6 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enable pressure sensitivity">SLES_520.65<td>Flipnic</tr>
 <tr><td>CUSTOM<td title="Enable pressure sensitivity">SCPS_150.50<td>Flipnic</tr>
 <tr><td>CUSTOM<td>SLUS_203.43<td>Forever Kingdom</tr>
-<tr><td>CUSTOM<td>SCUS_971.50<td>Formula One 2001</tr>
-<tr><td>CUSTOM<td>SCES_500.04<td>Formula One 2001</tr>
-<tr><td>CUSTOM<td>SCPS_150.19<td>Formula One 2001</tr>
 <tr><td>CUSTOM<td>SCES_510.04<td>Formula One 2002</tr>
 <tr><td>CUSTOM<td>SCPS_150.32<td>Formula One 2002</tr>
 <tr><td>CUSTOM<td>SCES_515.92<td>Formula One 2003</tr>
@@ -2467,6 +2467,9 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_206.93<td>F1 Career Challenge</tr>
 <tr><td>ENC<td>SLES_515.84<td>F1 Career Challenge</tr>
 <tr><td>ENC<td>SLPS_202.95<td>F1 Career Challenge</tr>
+<tr><td>ENC<td>SLUS_201.03<td>F1 Championship Season 2000</tr>
+<tr><td>ENC<td>SLES_500.17<td>F1 Championship Season 2000</tr>
+<tr><td>ENC<td>SLPS_200.44<td>F1 Championship Season 2000</tr>
 <tr><td>ENC<td>SLES_500.46<td>F1 Racing Championship</tr>
 <tr><td>ENC<td>SLES_500.47<td>F1 Racing Championship</tr>
 <tr><td>ENC<td>SLES_535.39<td>Fahrenheit</tr>
@@ -2535,9 +2538,6 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_208.04<td>Forgotten Realms - Demon Stone</tr>
 <tr><td>ENC<td>SLES_526.69<td>Forgotten Realms - Demon Stone</tr>
 <tr><td>ENC<td>SLKA_252.52<td>Forgotten Realms - Demon Stone</tr>
-<tr><td>ENC<td>SCUS_971.50<td>Formula One 2001</tr>
-<tr><td>ENC<td>SCES_500.04<td>Formula One 2001</tr>
-<tr><td>ENC<td>SCPS_150.19<td>Formula One 2001</tr>
 <tr><td>ENC<td>SCES_510.04<td>Formula One 2002</tr>
 <tr><td>ENC<td>SCPS_150.32<td>Formula One 2002</tr>
 <tr><td>ENC<td>SCES_515.92<td>Formula One 2003</tr>
@@ -3509,7 +3509,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1927, count = tr.length, classics = i;
+var i = 1931, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
