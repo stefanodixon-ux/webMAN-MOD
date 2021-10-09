@@ -286,6 +286,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_546.81<td>Burnout Dominator</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLPM_667.39<td>Burnout Dominator</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLAJ_250.94<td>Burnout Dominator</tr>
+<tr><td>CUSTOM<td>SLUS_205.65<td>Champions of Norrath - Realms of EverQuest</tr>
+<tr><td>CUSTOM<td>SLES_523.25<td>Champions of Norrath - Realms of EverQuest</tr>
 <tr><td>CUSTOM<td>SLES_523.73<td>Champions of Norrath - Realms of EverQuest</tr>
 <tr><td>CUSTOM<td>SLPM_654.04<td>Chou-jikuu Yousai Macross (The Super Dimension Fortress Macross)</tr>
 <tr><td>CUSTOM<td>SLPM_621.14<td>Crash Bandicoot 4: Sakuretsu! Majin Power</tr>
@@ -355,11 +357,16 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enable pressure sensitivity">SLES_520.65<td>Flipnic</tr>
 <tr><td>CUSTOM<td title="Enable pressure sensitivity">SCPS_150.50<td>Flipnic</tr>
 <tr><td>CUSTOM<td>SLUS_203.43<td>Forever Kingdom</tr>
+<tr><td>CUSTOM<td>SCES_500.04<td>Formula One 2001</tr>
+<tr><td>CUSTOM<td>SCUS_971.50<td>Formula One 2001</tr>
+<tr><td>CUSTOM<td>SCPS_150.19<td>Formula One 2001</tr>
 <tr><td>CUSTOM<td>SCES_510.04<td>Formula One 2002</tr>
 <tr><td>CUSTOM<td>SCPS_150.32<td>Formula One 2002</tr>
 <tr><td>CUSTOM<td>SCES_515.92<td>Formula One 2003</tr>
 <tr><td>CUSTOM<td>SCES_520.42<td>Formula One 04</tr>
 <tr><td>CUSTOM<td>SCPS_150.83<td>Formula One 04</tr>
+<tr><td>CUSTOM<td>SCES_530.33<td>Formula One 05</tr>
+<tr><td>CUSTOM<td>SCPS_150.98<td>Formula One 05</tr>
 <tr><td>CUSTOM<td>SCES_539.50<td>Formula One 06</tr>
 <tr><td>CUSTOM<td>SCPS_151.17<td>Formula One 06</tr>
 <tr><td>CUSTOM<td>SLUS_202.84<td>Freaky Flyers</tr>
@@ -2308,8 +2315,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_530.39<td>Champions - Return to Arms</tr>
 <tr><td>ENC<td>SLUS_209.73<td>Champions - Return to Arms</tr>
 <tr><td>ENC<td>SLUS_205.65<td>Champions of Norrath - Realms of EverQuest</tr>
-<tr><td>ENC<td>SLES_523.73<td>Champions of Norrath - Realms of EverQuest</tr>
 <tr><td>ENC<td>SLES_523.25<td>Champions of Norrath - Realms of EverQuest</tr>
+<tr><td>ENC<td>SLES_523.73<td>Champions of Norrath - Realms of EverQuest</tr>
 <tr><td>ENC<td>SLPM_654.04<td>Chou-jikuu Yousai Macross (The Super Dimension Fortress Macross)</tr>
 <tr><td>ENC<td>SLES_533.86<td>Charlie and the Chocolate Factory</tr>
 <tr><td>ENC<td>SLUS_206.33<td>Clock Tower 3</tr>
@@ -2538,11 +2545,16 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_208.04<td>Forgotten Realms - Demon Stone</tr>
 <tr><td>ENC<td>SLES_526.69<td>Forgotten Realms - Demon Stone</tr>
 <tr><td>ENC<td>SLKA_252.52<td>Forgotten Realms - Demon Stone</tr>
+<tr><td>ENC<td>SCES_500.04<td>Formula One 2001</tr>
+<tr><td>ENC<td>SCUS_971.50<td>Formula One 2001</tr>
+<tr><td>ENC<td>SCPS_150.19<td>Formula One 2001</tr>
 <tr><td>ENC<td>SCES_510.04<td>Formula One 2002</tr>
 <tr><td>ENC<td>SCPS_150.32<td>Formula One 2002</tr>
 <tr><td>ENC<td>SCES_515.92<td>Formula One 2003</tr>
 <tr><td>ENC<td>SCES_520.42<td>Formula One 04</tr>
 <tr><td>ENC<td>SCPS_150.83<td>Formula One 04</tr>
+<tr><td>ENC<td>SCES_530.33<td>Formula One 05</tr>
+<tr><td>ENC<td>SCPS_150.98<td>Formula One 05</tr>
 <tr><td>ENC<td>SCES_539.50<td>Formula One 06</tr>
 <tr><td>ENC<td>SCPS_151.17<td>Formula One 06</tr>
 <tr><td>ENC<td>SLUS_202.84<td>Freaky Flyers</tr>
@@ -3509,7 +3521,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1931, count = tr.length, classics = i;
+var i = 1938, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
