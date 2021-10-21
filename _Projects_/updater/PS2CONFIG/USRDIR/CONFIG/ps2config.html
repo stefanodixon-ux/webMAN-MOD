@@ -232,6 +232,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPM_650.61<td>Adventure of Tokyo Disney</tr>
 <tr><td>CUSTOM<td>SLUS_203.27<td>Agressive Inline</tr>
 <tr><td>CUSTOM<td>SLES_504.80<td>Agressive Inline</tr>
+<tr><td>CUSTOM<td>SCES_508.87<td>Alpine Racer 3</tr>
 <tr><td>CUSTOM<td>SLPS_201.81<td>Alpine Racer 3</tr>
 <tr><td>CUSTOM<td>SLUS_206.85<td>Ape Escape 2 / Saru! Get You! 2 / サルゲッチュ2</tr>
 <tr><td>CUSTOM<td>SCES_508.85<td>Ape Escape 2 / Saru! Get You! 2 / サルゲッチュ2</tr>
@@ -570,6 +571,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPM_665.65<td>REC - DokiDoki Seiyuu Paradise</tr>
 <tr><td>CUSTOM<td>SLUS_205.00<td>Red Dead Revolver</tr>
 <tr><td>CUSTOM<td>SLES_513.45<td>Run Like Hell</tr>
+<tr><td>CUSTOM<td>SLPM_661.68<td>Ryu ga Gotoku</tr>
 <tr><td>CUSTOM<td>SLPM_664.00<td>Samurai 7</tr>
 <tr><td>CUSTOM<td>SLUS_211.11<td>Scarface: The World is Yours</tr>
 <tr><td>CUSTOM<td>SLES_541.82<td>Scarface: The World is Yours</tr>
@@ -729,6 +731,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPM_659.75<td>WRC - World Rally Championship 4 / WRC 4: The Official Game of the FIA World Rally Championship</tr>
 <tr><td>CUSTOM<td>SLUS_207.15<td>WWII Paratroopers</tr>
 <tr><td>CUSTOM<td>SLUS_213.48<td>Yakuza</tr>
+<tr><td>CUSTOM<td>SLES_541.71<td>Yakuza</tr>
 <tr><td>CUSTOM<td>SLPM_662.96<td>Yamiyo ni Sasayaku - Tantei Sagara Kyouichirou</tr>
 <tr><td>CUSTOM<td>SLUS_202.78<td>Yanya Caballista - City Skater</tr>
 <tr><td>CUSTOM<td>SLPM_620.51<td>Yanya Caballista - featuring Gawoo</tr>
@@ -2194,6 +2197,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_525.42<td>All Music Dance!</tr>
 <tr><td>ENC<td>SLUS_205.69<td>All-Star Baseball 2004</tr>
 <tr><td>ENC<td>SLES_516.02<td>All-Star Baseball 2004</tr>
+<tr><td>ENC<td>SCES_508.87<td>Alpine Racer 3</tr>
 <tr><td>ENC<td>SLPS_201.81<td>Alpine Racer 3</tr>
 <tr><td>ENC<td>SLES_523.66<td>America's 10 Most Wanted</tr>
 <tr><td>ENC<td>SLES_523.67<td>America's 10 Most Wanted</tr>
@@ -3120,6 +3124,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_204.71<td>Rygar - The Legendary Adventure</tr>
 <tr><td>ENC<td>NPUD_204.71<td>Rygar - The Legendary Adventure</tr>
 <tr><td>ENC<td>SLES_514.45<td>Rygar - The Legendary Adventure</tr>
+<tr><td>ENC<td>SLPM_661.68<td>Ryu ga Gotoku</tr>
 <tr><td>ENC<td>SLUS_203.78<td>Salt Lake 2002</tr>
 <tr><td>ENC<td>SLPS_250.89<td>Salt Lake 2002</tr>
 <tr><td>ENC<td>SLPS_201.78<td>Samurai</tr>
@@ -3529,6 +3534,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_204.69<td>Xenosaga - Episode I: Der Wille zur Macht</tr>
 <tr><td>ENC<td>SLPS_290.02<td>Xenosaga - Episode I: Chikara e no Ishi</tr>
 <tr><td>ENC<td>SLUS_213.48<td>Yakuza</tr>
+<tr><td>ENC<td>SLES_541.71<td>Yakuza</tr>
 <tr><td>ENC<td>SLPM_662.96<td>Yamiyo ni Sasayaku - Tantei Sagara Kyouichirou</tr>
 <tr><td>ENC<td>SLUS_202.78<td>Yanya Caballista - City Skater</tr>
 <tr><td>ENC<td>SLPM_620.51<td>Yanya Caballista - featuring Gawoo</tr>
@@ -3545,7 +3551,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1951, count = tr.length, classics = i;
+var i = 1954, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
