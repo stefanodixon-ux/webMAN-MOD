@@ -144,6 +144,8 @@ static void check_path_alias(char *param)
 
 		if(!islike(param, "/dev_") && !islike(param, "/net"))
 		{
+			if(strstr(param, ".ps3")) return;
+
 			char path[STD_PATH_LEN];
 			int len = snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
 			char *wildcard = strchr(path, '*'); if(wildcard) *wildcard = 0;

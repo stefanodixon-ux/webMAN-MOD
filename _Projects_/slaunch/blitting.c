@@ -82,7 +82,7 @@ static void set_font_default(void)
 ***********************************************************************/
 static void font_init(void)
 {
-	uint32_t user_id = 0, val = 0;
+	uint32_t user_id = 0; int val = 0;
 	CellFontRendererConfig rd_cfg;
 	CellFont *opened_font = NULL;
 
