@@ -135,9 +135,50 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 		sprintf(title_id, "%.9s", game_id); // SLxS00000
 }
 
+#ifdef COBRA_ONLY
+ #ifndef LITE_EDITION
+static bool copy_ps2config_iso(char *entry_name, char *_path)
+{
+	char *tempID = to_upper(entry_name);
+	if (
+		(tempID[1] == 'L' || tempID[1] == 'C') &&
+		(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') &&
+		(tempID[3] == 'S' || tempID[3] == 'M' || tempID[3] == 'J' || tempID[3] == 'A') &&
+		(tempID[4] == '_' && tempID[8] == '.') &&
+		ISDIGIT(tempID[5]) &&
+		ISDIGIT(tempID[6]) &&
+		ISDIGIT(tempID[7]) &&
+		ISDIGIT(tempID[9])
+	   )
+	{
+		char temp[STD_PATH_LEN];
+		sprintf(temp, "%s/%s.CONFIG", PS2CONFIG_PATH, tempID);
+		if(file_exists(temp))
+			_file_copy(temp, _path);
+		else
+		{
+			const char *config_path[4] = {"CUSTOM", "NET", "GX", "SOFT"};
+			for(u8 i = 0; i < 4; i++)
+			{
+				sprintf(temp, "%s/CONFIG/%s/%s.CONFIG", PS2CONFIG_PATH, config_path[i], tempID);
+				if(file_exists(temp)) {_file_copy(temp, _path); return true;}
+				sprintf(temp, "%s/sys/CONFIG/%s/%s.CONFIG", MANAGUNZ, config_path[i], tempID);
+				if(file_exists(temp)) {_file_copy(temp, _path); return true;}
+			}
+		}
+		return true;
+	}
+	return false;
+}
+ #endif
+#endif
+
 static void copy_ps2config(char *config, const char *_path)
 {
+	char config_path[STD_PATH_LEN];
 	size_t len = sprintf(config, "%s.CONFIG", _path); // <name>.BIN.ENC.CONFIG
+	strcpy(config_path, config);
+
 	if(not_exists(config) && len > 15) sprintf(config + len - 15, ".CONFIG"); // remove .BIN.ENC
 	if(not_exists(config))
 	{
@@ -155,6 +196,8 @@ static void copy_ps2config(char *config, const char *_path)
 
 	cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
 	_file_copy(config, (char*)PS2_CLASSIC_ISO_CONFIG);
+
+	if(not_exists(config_path)) _file_copy(config, config_path);
 }
 
 static void copy_ps2savedata(char *vme, const char *_path)

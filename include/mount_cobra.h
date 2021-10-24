@@ -629,50 +629,33 @@ retry_net:
 							sys_ppu_thread_usleep(2500);
 							cobra_send_fake_disc_insert_event();
 
-							wait_for("/dev_bdvd", 2);
-
-							int fd;
-							if(cellFsOpendir("/dev_bdvd", &fd) == CELL_FS_SUCCEEDED)
+							char *id = strstr(iso_list[0], " ["); if(!id) id = strstr(iso_list[0], " (");
+							if(id)
 							{
-								CellFsDirectoryEntry dir; u32 read_e;
-								char *entry_name = dir.entry_name.d_name;
+								char title_id[12], game_id[12];
+								get_ps_titleid_from_path(title_id, templn);
+								sprintf(game_id, "%.4s_%.3s.%.2s", title_id, title_id + 4, title_id + 7);
+								copy_ps2config_iso(game_id, _path);
+							}
+							else
+							{
+								wait_for("/dev_bdvd", 5);
 
-								while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
+								int fd;
+								if(cellFsOpendir("/dev_bdvd", &fd) == CELL_FS_SUCCEEDED)
 								{
-									if( ((entry_name[0] | 0x20) == 's') && (dir.entry_name.d_namlen == 11) )
+									CellFsDirectoryEntry dir; u32 read_e;
+									char *entry_name = dir.entry_name.d_name;
+
+									while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 									{
-										char *tempID = to_upper(entry_name);
-										if (
-											(tempID[1] == 'L' || tempID[1] == 'C') &&
-											(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') &&
-											(tempID[3] == 'S' || tempID[3] == 'M' || tempID[3] == 'J' || tempID[3] == 'A') &&
-											(tempID[4] == '_' && tempID[8] == '.') &&
-											ISDIGIT(tempID[5]) &&
-											ISDIGIT(tempID[6]) &&
-											ISDIGIT(tempID[7]) &&
-											ISDIGIT(tempID[9])
-										   )
+										if( ((entry_name[0] | 0x20) == 's') && (dir.entry_name.d_namlen == 11) )
 										{
-											char temp[STD_PATH_LEN];
-											sprintf(temp, "%s/%s.CONFIG", PS2CONFIG_PATH, tempID);
-											if(file_exists(temp))
-												_file_copy(temp, _path);
-											else
-											{
-												const char *config_path[4] = {"CUSTOM", "NET", "GX", "SOFT"};
-												for(u8 i = 0; i < 4; i++)
-												{
-													sprintf(temp, "%s/CONFIG/%s/%s.CONFIG", PS2CONFIG_PATH, config_path[i], tempID);
-													if(file_exists(temp)) {_file_copy(temp, _path); break;}
-													sprintf(temp, "%s/sys/CONFIG/%s/%s.CONFIG", MANAGUNZ, config_path[i], tempID);
-													if(file_exists(temp)) {_file_copy(temp, _path); break;}
-												}
-											}
-											break;
+											if(copy_ps2config_iso(entry_name, _path)) break;
 										}
 									}
+									cellFsClosedir(fd);
 								}
-								cellFsClosedir(fd);
 							}
 
 							if(file_exists(_path)) {do_umount(false); wait_path("/dev_bdvd", 5, false);} else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
