@@ -197,7 +197,7 @@ static void copy_ps2config(char *config, const char *_path)
 	cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
 	_file_copy(config, (char*)PS2_CLASSIC_ISO_CONFIG);
 
-	if(not_exists(config_path)) _file_copy(config, config_path);
+	if(!webman_config->ps2config && not_exists(config_path)) _file_copy(config, config_path);
 }
 
 static void copy_ps2savedata(char *vme, const char *_path)
