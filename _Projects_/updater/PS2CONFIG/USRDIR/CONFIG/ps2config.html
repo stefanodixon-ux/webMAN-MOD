@@ -314,8 +314,12 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_210.15<td>DreamWorks Madagascar</tr>
 <tr><td>CUSTOM<td>SLES_532.25<td>DreamWorks Madagascar</tr>
 <tr><td>CUSTOM<td>SLUS_217.93<td>DT Carnage</tr>
+<tr><td>CUSTOM<td>SLUS_200.79<td>Dynasty Warriors 2</tr>
+<tr><td>CUSTOM<td>SLES_500.57<td>Dynasty Warriors 2</tr>
 <tr><td>CUSTOM<td>SLUS_202.77<td>Dynasty Warriors 3</tr>
+<tr><td>CUSTOM<td>SLES_506.41<td>Dynasty Warriors 3</tr>
 <tr><td>CUSTOM<td>SLUS_206.17<td>Dynasty Warriors 3 - Xtreme Legends</tr>
+<tr><td>CUSTOM<td>SLES_514.41<td>Dynasty Warriors 3 - Xtreme Legends</tr>
 <tr><td>CUSTOM<td title="Fixes subtitles being faded under background">SLUS_217.79<td>Eternal Poison</tr>
 <tr><td>CUSTOM<td>SLUS_200.15<td>Eternal Ring <small>Fix instant death glitch</small></tr>
 <tr><td>CUSTOM<td>SLUS_200.16<td>Evergrace</tr>
@@ -595,6 +599,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_209.74<td>Shin Megami Tensei - Digital Devil Saga</tr>
 <tr><td>CUSTOM<td>SLUS_217.82<td>Shin Megami Tensei - Persona 4</tr>
 <tr><td>CUSTOM<td>SLPM_669.78<td>Shin Megami Tensei - Persona 4</tr>
+<tr><td>CUSTOM<td>SLPM_620.05<td>Shin Sangoku Musou</tr>
+<tr><td>CUSTOM<td>SLPM_650.53<td>Shin Sangoku Musou 2</tr>
+<tr><td>CUSTOM<td>SLPM_651.70<td>Shin Sangoku Musou 2 - Mushouden</tr>
 <tr><td>CUSTOM<td>SLUS_217.31<td>Silent Hill - Origins</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls required for melee attack differentiation">SLUS_202.28<td>Silent Hill 2</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls required for melee attack differentiation">SLES_503.82<td>Silent Hill 2</tr>
@@ -2463,8 +2470,12 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_204.63<td>Dropship - United Peace Force</tr>
 <tr><td>ENC<td>SLUS_217.93<td>DT Carnage</tr>
 <tr><td>ENC<td>SLES_528.84<td>Duel Masters</tr>
-<tr><td>ENC<td>SLUS_206.17<td>Dynasty Warriors 3 - Xtreme Legends</tr>
+<tr><td>ENC<td>SLUS_200.79<td>Dynasty Warriors 2</tr>
+<tr><td>ENC<td>SLES_500.57<td>Dynasty Warriors 2</tr>
 <tr><td>ENC<td>SLUS_202.77<td>Dynasty Warriors 3</tr>
+<tr><td>ENC<td>SLES_506.41<td>Dynasty Warriors 3</tr>
+<tr><td>ENC<td>SLUS_206.17<td>Dynasty Warriors 3 - Xtreme Legends</tr>
+<tr><td>ENC<td>SLES_514.41<td>Dynasty Warriors 3 - Xtreme Legends</tr>
 <tr><td>ENC<td>SLES_503.56<td>ESPN International Winter Sports</tr>
 <tr><td>ENC<td title="Fixes subtitles being faded under background">SLUS_217.79<td>Eternal Poison</tr>
 <tr><td>ENC<td>SLUS_200.15<td>Eternal Ring <small>Fix instant death glitch</small></tr>
@@ -3185,6 +3196,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPM_742.33<td>Shin Onimusha - Dawn of Dreams (Disc 2)</tr>
 <tr><td>ENC<td>SLPM_662.75<td>Shin Onimusha - Dawn of Dreams [Disc1of2]</tr>
 <tr><td>ENC<td>SLPM_742.32<td>Shin Onimusha - Dawn of Dreams [PlayStation 2 The Best]</tr>
+<tr><td>ENC<td>SLPM_620.05<td>Shin Sangoku Musou</tr>
+<tr><td>ENC<td>SLPM_650.53<td>Shin Sangoku Musou 2</tr>
 <tr><td>ENC<td>SLPM_651.70<td>Shin Sangoku Musou 2 - Mushouden</tr>
 <tr><td>ENC<td>SLPM_653.40<td>Shinseiki Evangelion - Ayanami Ikusai Keikaku with Asuka Hokan Keikaku</tr>
 <tr><td>ENC<td>SLUS_217.31<td>Silent Hill - Origins</tr>
@@ -3552,7 +3565,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1954, count = tr.length, classics = i;
+var i = 1962, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
@@ -3677,9 +3690,16 @@ function kd(e)
 		e.preventDefault();
 	}
 }
+
+var lastCol = -1, sortOrder = 1;
+
 function sortTable(colID) {
 	if(count <= 1) return;
+
+	if(colID != lastCol) {lastCol = colID, sortOrder = 1;} else sortOrder^=1;
+
 	if(count > 100) $("sorting").style.display="block";
+
 	setTimeout(function(){
 		var r, i, x, y, len, b = 0;
 		var rows = tbody.rows;
@@ -3689,17 +3709,30 @@ function sortTable(colID) {
 		for (r = b; r < len; r++) {
 			rows[r].lc = rows[r].children[colID].innerHTML.toLowerCase();
 		}
-		for (r = b; r < len; r++) {
-			if(rows[r].style.display=='none') continue;
-			x = rows[r].lc;
-			for (i = r + 1; i < len - 1; i++) {
-				y = rows[i].lc;
-				if (x > y) {
-					tbody.insertBefore(rows[i], rows[r]);
-					x = y;
+		if(sortOrder)
+			for (r = b; r < len - 1; r++) {
+				if(rows[r].style.display=='none') continue;
+				x = rows[r].lc;
+				for (i = r + 1; i < len; i++) {
+					y = rows[i].lc;
+					if (x > y) {
+						tbody.insertBefore(rows[i], rows[r]);
+						x = y;
+					}
 				}
 			}
-		}
+		else
+			for (r = b; r < len - 1; r++) {
+				if(rows[r].style.display=='none') continue;
+				x = rows[r].lc;
+				for (i = r + 1; i < len; i++) {
+					y = rows[i].lc;
+					if (x < y) {
+						tbody.insertBefore(rows[i], rows[r]);
+						x = y;
+					}
+				}
+			}
 		$("sorting").style.display="none";
 	}, 0);
 }
