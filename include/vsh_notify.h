@@ -183,5 +183,8 @@ static void show_status(const char *label, const char *status)
 {
 	char msg[200];
 	snprintf(msg, 199, "%s %s", label, status);
-	vshtask_notify(msg);
+	if(IS(label, STR_ERROR))
+		vshNotify_WithIcon(ICON_ERROR, msg);
+	else
+		vshtask_notify(msg);
 }

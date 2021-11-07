@@ -599,6 +599,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_205.00<td>Red Dead Revolver</tr>
 <tr><td>CUSTOM<td>SLES_513.45<td>Run Like Hell</tr>
 <tr><td>CUSTOM<td>SLPM_661.68<td>Ryu ga Gotoku</tr>
+<tr><td>CUSTOM<td>SLPS_201.78<td>Samurai</tr>
 <tr><td>CUSTOM<td>SLPM_664.00<td>Samurai 7</tr>
 <tr><td>CUSTOM<td>SLUS_211.11<td>Scarface: The World is Yours</tr>
 <tr><td>CUSTOM<td>SLES_541.82<td>Scarface: The World is Yours</tr>
@@ -752,6 +753,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPS_250.71<td>Visual Mix: Ayumi Hamasaki Dome Tour 2001 (Disc 1)</tr>
 <tr><td>CUSTOM<td>SLPS_250.72<td>Visual Mix: Ayumi Hamasaki Dome Tour 2001 (Disc 2)</tr>
 <tr><td>CUSTOM<td>SLUS_204.18<td>Wakeboarding Unleashed (Partial fix)</tr>
+<tr><td>CUSTOM<td>SLUS_204.07<td>Way of the Samurai</tr>
+<tr><td>CUSTOM<td>SLES_509.21<td>Way of the Samurai</tr>
 <tr><td>CUSTOM<td>SLES_519.58<td>Whiplash</tr>
 <tr><td>CUSTOM<td>SLPM_654.84<td>WISP: Word Image Sound Play</tr>
 <tr><td>CUSTOM<td>SLES_545.47<td>World Championship Poker featuring Howard Lederer: All In</tr>
@@ -3547,6 +3550,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPS_250.71<td>Visual Mix: Ayumi Hamasaki Dome Tour 2001 (Disc 1)</tr>
 <tr><td>ENC<td>SLPS_250.72<td>Visual Mix: Ayumi Hamasaki Dome Tour 2001 (Disc 2)</tr>
 <tr><td>ENC<td>SLUS_204.18<td>Wakeboarding Unleashed (Partial fix)</tr>
+<tr><td>ENC<td>SLUS_204.07<td>Way of the Samurai</tr>
+<tr><td>ENC<td>SLES_509.21<td>Way of the Samurai</tr>
 <tr><td>ENC<td>SLES_519.58<td>Whiplash</tr>
 <tr><td>ENC<td>SLES_511.26<td>Whirl Tour</tr>
 <tr><td>ENC<td>SLUS_204.89<td>Whirl Tour</tr>
@@ -3607,7 +3612,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1986, count = tr.length, classics = i;
+var i = 1989, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
@@ -3745,14 +3750,14 @@ function sortTable(colID) {
 	setTimeout(function(){
 		var r, i, x, y, len, b = 0;
 		var rows = tbody.rows;
-		len = rows.length: 1;
+		len = rows.length - 1;
 		if(PS2Classics) b = classics; else len = classics;
 		{while(len > b && rows[len-1].style.display=='none') --len; len++;}
 		for (r = b; r < len; r++) {
 			rows[r].lc = rows[r].children[colID].innerHTML.toLowerCase();
 		}
 		if(sortOrder)
-			for (r = b; r < len: 1; r++) {
+			for (r = b; r < len - 1; r++) {
 				if(rows[r].style.display=='none') continue;
 				x = rows[r].lc;
 				for (i = r + 1; i < len; i++) {
@@ -3764,7 +3769,7 @@ function sortTable(colID) {
 				}
 			}
 		else
-			for (r = b; r < len: 1; r++) {
+			for (r = b; r < len - 1; r++) {
 				if(rows[r].style.display=='none') continue;
 				x = rows[r].lc;
 				for (i = r + 1; i < len; i++) {

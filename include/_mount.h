@@ -1576,12 +1576,22 @@ static void mount_thread(u64 action)
 	// ----------------------------------------
 	// show start mounting message (game path)
 	// ----------------------------------------
+	cellFsUnlink(WMNOSCAN); // remove wm_noscan if a PS2ISO has been mounted
 
 	if(action == EXPLORE_CLOSE_ALL) {action = MOUNT_NORMAL; explore_close_all(_path);}
 
-	if(action && !(webman_config->minfo & 1)) vshNotify_WithIcon(ICON_MOUNT, _path);
+	// check that path exists
+	if(islike(_path, "/dev_") && not_exists(_path))
+	{
+		if(action) show_status(STR_ERROR, _path);
+		do_umount(false); ret = false;
+#ifdef PS3MAPI
+		patch_gameboot(0); // None
+#endif
+		goto finish;
+	}
 
-	cellFsUnlink(WMNOSCAN); // remove wm_noscan if a PS2ISO has been mounted
+	if(action && !(webman_config->minfo & 1)) vshNotify_WithIcon(ICON_MOUNT, _path);
 
 	///////////////////////
 	// MOUNT ISO OR PATH //
