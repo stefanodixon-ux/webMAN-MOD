@@ -13,7 +13,7 @@ in an easy and intuitive way. webMAN MOD is the result of the hard work of sever
 and artists that collaborated with development, knowledge, resources, feedback & ideas.
 
 ## Web Commands & General Documentation
-[https://www.psx-place.com/threads/webman-mod-web-commands.1508/](https://www.psx-place.com/threads/webman-mod-web-commands.1508/)
+[https://github.com/aldostools/webMAN-MOD/wiki](https://github.com/aldostools/webMAN-MOD/wiki)
 
 ## Current functionality
 ### General
