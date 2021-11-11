@@ -485,7 +485,6 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_522.82<td>Mafia</tr>
 <tr><td>CUSTOM<td>SLUS_217.35<td>Mana Khemia: Alchemists of Al-Revis</tr>
 <tr><td>CUSTOM<td>SLUS_218.90<td>Mana Khemia 2: Fall of Alchemy</tr>
-<tr><td>CUSTOM<td>SLUS_202.30<td>Max Payne</tr>
 <tr><td>CUSTOM<td>SCPM_851.01<td>McDonald's Original Happy Disc</tr>
 <tr><td>CUSTOM<td>SLUS_211.99<td>Medal of Honor: European Assault</tr>
 <tr><td>CUSTOM<td>SLES_533.33<td>Medal of Honor: European Assault</tr>
@@ -599,7 +598,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_205.00<td>Red Dead Revolver</tr>
 <tr><td>CUSTOM<td>SLES_513.45<td>Run Like Hell</tr>
 <tr><td>CUSTOM<td>SLPM_661.68<td>Ryu ga Gotoku</tr>
-<tr><td>CUSTOM<td>SLPS_201.78<td>Samurai</tr>
+<tr><td>CUSTOM<td title='Greatly reduces "head banging" during dialogue scenes. It still appears occasionally, but rarely'>SLPS_201.78<td>Samurai</tr>
 <tr><td>CUSTOM<td>SLPM_664.00<td>Samurai 7</tr>
 <tr><td>CUSTOM<td>SLUS_211.11<td>Scarface: The World is Yours</tr>
 <tr><td>CUSTOM<td>SLES_541.82<td>Scarface: The World is Yours</tr>
@@ -753,8 +752,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPS_250.71<td>Visual Mix: Ayumi Hamasaki Dome Tour 2001 (Disc 1)</tr>
 <tr><td>CUSTOM<td>SLPS_250.72<td>Visual Mix: Ayumi Hamasaki Dome Tour 2001 (Disc 2)</tr>
 <tr><td>CUSTOM<td>SLUS_204.18<td>Wakeboarding Unleashed (Partial fix)</tr>
-<tr><td>CUSTOM<td>SLUS_204.07<td>Way of the Samurai</tr>
-<tr><td>CUSTOM<td>SLES_509.21<td>Way of the Samurai</tr>
+<tr><td>CUSTOM<td title='Greatly reduces "head banging" during dialogue scenes. It still appears occasionally, but rarely'>SLUS_204.07<td>Way of the Samurai</tr>
+<tr><td>CUSTOM<td title='Greatly reduces "head banging" during dialogue scenes. It still appears occasionally, but rarely'>SLES_509.21<td>Way of the Samurai</tr>
 <tr><td>CUSTOM<td>SLES_519.58<td>Whiplash</tr>
 <tr><td>CUSTOM<td>SLPM_654.84<td>WISP: Word Image Sound Play</tr>
 <tr><td>CUSTOM<td>SLES_545.47<td>World Championship Poker featuring Howard Lederer: All In</tr>
@@ -3612,7 +3611,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1989, count = tr.length, classics = i;
+var i = 1988, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
