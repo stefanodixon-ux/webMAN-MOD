@@ -832,6 +832,7 @@ setTimeout(function(){
 <tr><td>NET<td>SLUS_204.42<td>Red Faction 2</tr>
 <tr><td>NET<td>SLPM_624.91<td>RockMan: Power Battle Fighters</tr>
 <tr><td>NET<td>SLPM_657.30<td>Rockman X8 / Mega Man X8</tr>
+<tr><td>NET<td>SCPS_170.13<td>Rogue Galaxy: Director's Cut</tr>
 <tr><td>NET<td>SLUS_204.71<td>Rygar: The Legendary Adventure</tr>
 <tr><td>NET<td>SLPM_624.52<td>Sega Ages 2500 Series Vol.01: Phantasy Star Generation: 1</tr>
 <tr><td>NET<td>SLPM_625.53<td>Sega Ages 2500 Series Vol.17: Phantasy Star Generation: 2</tr>
@@ -859,6 +860,8 @@ setTimeout(function(){
 <tr><td>NET<td>SLUS_212.55<td>Trapt</tr>
 <tr><td>NET<td>SCUS_971.01<td>Twisted Metal: Black</tr>
 <tr><td>NET<td>SCES_503.60<td>Twisted Metal: Black</tr>
+<tr><td>NET<td>SCPS_150.69<td>Uo: 7-tsu no Mizu to Densetsu no Nushi</tr>
+<tr><td>NET<td>SCPS_151.18<td>Wild Arms: The Fifth Vanguard</tr>
 <tr><td>NET<td>SLPS_251.13<td>Zettai Zetsumei Toshi</tr>
 <tr><td>NET<td>SLPS_256.06<td>Zettai Zetsumei Toshi 2: Itetsuita Kioutachi</tr>
 <tr><td>GX<td>SLUS_212.68<td>24: The Game</tr>
@@ -3171,6 +3174,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_208.90<td>Rocky: Legends</tr>
 <tr><td>ENC<td>SLPM_624.91<td>RockMan: Power Battle Fighters</tr>
 <tr><td>ENC<td>SLPM_657.30<td>Rockman X8 / Mega Man X8</tr>
+<tr><td>ENC<td>SCPS_170.13<td>Rogue Galaxy: Director's Cut</tr>
 <tr><td>ENC<td>SLUS_201.74<td>Rumble Racing</tr>
 <tr><td>ENC<td>SLES_501.20<td>Rumble Racing</tr>
 <tr><td>ENC<td>SLUS_200.37<td>Run Like Hell: Hunt or Be Hunted</tr>
@@ -3532,6 +3536,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SCUS_976.21<td>Twisted Metal: Head-On [Extra Twisted Edition]</tr>
 <tr><td>ENC<td>SLUS_205.71<td>Ty: The Tasmanian Tiger</tr>
 <tr><td>ENC<td>SLES_512.20<td>Ty: The Tazmanian Tiger</tr>
+<tr><td>ENC<td>SCPS_150.69<td>Uo: 7-tsu no Mizu to Densetsu no Nushi</tr>
 <tr><td>ENC<td>SLUS_213.90<td>Urban Chaos: Riot Response</tr>
 <tr><td>ENC<td>SLUS_212.09<td>Urban Reign</tr>
 <tr><td>ENC<td>SLUS_214.52<td>Valkyrie Profile 2: Silmeria</tr>
@@ -3556,6 +3561,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_519.58<td>Whiplash</tr>
 <tr><td>ENC<td>SLES_511.26<td>Whirl Tour</tr>
 <tr><td>ENC<td>SLUS_204.89<td>Whirl Tour</tr>
+<tr><td>ENC<td>SCPS_151.18<td>Wild Arms: The Fifth Vanguard</tr>
 <tr><td>ENC<td>SLUS_210.84<td>Winnie the Pooh's Rumbly Tumbly Adventure</tr>
 <tr><td>ENC<td>SLUS_204.62<td>Wipeout Fusion</tr>
 <tr><td>ENC<td>SCES_500.05<td>Wipeout Fusion</tr>
@@ -3613,7 +3619,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1989, count = tr.length, classics = i;
+var i = 1992, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
