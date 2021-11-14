@@ -111,6 +111,8 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 #ifdef VIDEO_REC
 				buffer += concat(buffer, " [<a href=\"/videorec.ps3\">REC</a>]");
 #endif
+				buffer += concat(buffer, " [<a href=\"/xmb.ps3$reload\">Reload</a>]");
+				buffer += concat(buffer, " [<a href=\"/xmb.ps3$exit\">Exit</a>]");
 			}
 
 			char path[MAX_PATH_LEN], version[8] = "01.00", *app_ver = version;

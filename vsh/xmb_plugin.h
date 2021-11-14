@@ -140,3 +140,7 @@ typedef struct
 } xmb_plugin_mod0;
 
 xmb_plugin_mod0 * mod0_interface;
+
+//#define XMM0	0x584D4D30
+//#define XMB2	0x584D4232
+//#define MOD0	0x4D4F4430

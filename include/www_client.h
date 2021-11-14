@@ -1059,6 +1059,9 @@ parse_request:
 			if(islike(param, "/browser.ps3") || islike(param, "/xmb.ps3"))
 			{
 				// /browser.ps3?<url>                  open url on PS3 browser
+				// /xmb.ps3$exit                       exit to xmb
+				// /xmb.ps3$exit_to_update             exit to system update
+				// /xmb.ps3$reloadgame                 reload ps3 game
 				// /xmb.ps3$rsx_pause                  pause rsx processor
 				// /xmb.ps3$rsx_continue               continue rsx processor
 				// /xmb.ps3$block_servers              block url of PSN servers in lv2
@@ -1098,6 +1101,32 @@ parse_request:
 				if(islike(param2, "$home"))
 				{
 					goto_xmb_home(param2[5] != 0);
+				}
+				else if(islike(param2, "$exit"))
+				{
+					int is_ingame = View_Find("game_plugin");
+
+					if(is_ingame)
+					{
+						game_interface = (game_plugin_interface *)plugin_GetInterface(is_ingame, 1);
+						if(strchr(param2, 'u')) // $exit_to_update
+							game_interface->ExitToUpdate();
+						else
+							game_interface->ExitGame(val(param2 + 5)); // $exit3 = remote play, $exit4 = focus remote play
+
+						sprintf(param, "/cpursx.ps3");
+						goto html_response;
+					}
+				}
+				else if(islike(param2, "$reloadgame"))
+				{
+					int is_ingame = View_Find("game_plugin");
+
+					if(is_ingame)
+					{
+						game_interface = (game_plugin_interface *)plugin_GetInterface(is_ingame, 1);
+						game_interface->ReloadGame();
+					}
 				}
 				else
 				#ifdef COBRA_ONLY

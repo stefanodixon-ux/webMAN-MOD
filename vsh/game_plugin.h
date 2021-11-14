@@ -8,10 +8,10 @@ typedef struct game_plugin_interface_t
 	int32_t (*DoUnk0)(void);                                       // 0 Parameter: - set Widget "page_game_main" and activate
 	int32_t (*DoUnk1)(void *);                                     // 1 Parameter: uint8_t [0x5B8]
 	int32_t (*DoUnk2)(void *);                                     // 1 Parameter: uint8_t [0x230]
-	int32_t (*DoUnk3)(int);                                        // 1 Parameter: int - 3 = "CB" Category
+	int32_t (*ExitGame)(int);                                      // 1 Parameter: int - (0=Exit to XMB, 3=Exit to Remote Play, 4=Focus Remote Play)
 	int32_t (*DoUnk4)(int, void *);                                // 2 Parameter: int (used for func 3), uint8_t msg?dialog_struct[0x1A0]
-	int32_t (*DoUnk5)(void);                                       // 0 Parameter:
-	int32_t (*DoUnk6)(void);                                       // 0 Parameter:
+	int32_t (*ExitToUpdate)(void);                                 // 0 Parameter: GameExit to system update
+	int32_t (*ReloadGame)(void);                                   // 0 Parameter:
 	int32_t (*DoUnk7)(void);                                       // 0 Parameter: - set Widget "page_game_main", pageactivate and paf_55944323 /paf_FA17FC05.
 	int32_t (*gameInfo)(void *);                                   // 1 Parameter: out:uint8_t [0x114] - (+4 = TitleID, +0x14 = Title, +0x94 = Title)
 	int32_t (*DoUnk9)(void *);                                     // 1 Parameter: out:char* [0x80]- returns Title
@@ -54,8 +54,8 @@ typedef struct game_plugin_interface_t
 	int32_t (*EndGameData)(void);                                  // EndGameData, 0 Parameter:
 	int32_t (*getGameDataStat)(char *, char *, void *);            // getGameDataStat, 3 Parameter: char * DirName, char * CategoryType, uint8_t[0x1450]
 	int32_t (*updateGameData)(char *, char *, void *, void *);     // updateGameData, 4 Parameter: char * DirName, uint32_t CategoryType, void * callback, uint8_t[0x1450] (SysParam)
-	int32_t (*DoUnk49)(int, int, int, void *, char *);             // showDialog, 5 Parameter: int errcode, int, int, void * callback, char * tex?
-	int32_t (*DoUnk50)(void);                                      // showDialog, 3 Parameter: char * ErrorMsg, void * callback, char * tex?
+	int32_t (*showErrorMsg)(int err, int, int, void *, char *tex); // showDialog, 5 Parameter: int errcode, int, int, void * callback, char * tex?
+	int32_t (*showDialog)(char *Msg, void *callback, char *tex);   // showDialog, 3 Parameter: char * ErrorMsg, void * callback, char * tex?
 	int32_t (*DoUnk51)(void);                                      // 0 Parameter: FindWidget("page_game_main") - returns Widget View
 	int32_t (*cacheInit)(void *, void *);                          // cacheInit, 2 Parameter: void * callback, uint8_t SysCacheParam[0x444] {char cacheId[0x20], char getCachePath[0x41F], void * reserved} - SysCacheMount
 	int32_t (*cacheClear)(void);                                   // cacheClear, 0 Parameter: returns GameDataStat - SysCacheClear

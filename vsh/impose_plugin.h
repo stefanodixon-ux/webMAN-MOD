@@ -19,25 +19,7 @@ typedef struct
 	int (*DoUnk15)(void);          //: 1 Parameter: uint (1) - Creates "impose_exit_game" Widget etc.
 	int (*DoUnk16)(void);          //: Set, 1 Parameter: uint vibrationEnable flag
 	int (*DoUnk17)(int);           //: Set impose psbutton notification not ingameXMB, 1 Parameter: uint - (0 = BeginInGameXMB ,1 =  _notification_psbutton)
-	int (*DoUnk18)(void);
+	int (*DoUnk18)(void);          //: 0 Parameter
 } impose_plugin_interface;
 
 impose_plugin_interface * impose_interface;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
