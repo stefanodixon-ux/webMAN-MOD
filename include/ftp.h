@@ -1029,8 +1029,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						if(_IS(cmd, "HELP"))
 						{
 							ssend(conn_s_ftp, "214-CMDs:\r\n"
-#ifndef LITE_EDITION
 											  " SITE FLASH\r\n"
+											  " SITE CHMOD 777 <file>\r\n"
+#ifndef LITE_EDITION
  #ifdef USE_NTFS
 											  " SITE NTFS\r\n"
  #endif
@@ -1047,7 +1048,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											  " SITE UMOUNT\r\n"
 											  " SITE COPY <file>\r\n"
 											  " SITE PASTE <file>\r\n"
-											  " SITE CHMOD 777 <file>\r\n"
 #endif
 											  " SITE SHUTDOWN\r\n"
 											  " SITE RESTART\r\n"
@@ -1106,6 +1106,24 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								disable_dev_blind();
 							else
 								enable_dev_blind(NO_MSG);
+						}
+						else
+						if(_IS(cmd, "CHMOD"))
+						{
+							strcpy(param, filename);
+							split = ssplit(param, cmd, 10, filename, STD_PATH_LEN - 1);
+
+							int mode = oct(cmd);
+
+							if(mode)
+								strcpy(param, filename);
+							else
+								mode = MODE;
+
+							findPath(filename, param, cwd);
+							cellFsChmod(filename, mode);
+
+							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 						}
 #ifndef LITE_EDITION
  #ifdef PKG_HANDLER
@@ -1187,24 +1205,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							}
 						}
  #endif //#ifdef FIX_GAME
-						else
-						if(_IS(cmd, "CHMOD"))
-						{
-							strcpy(param, filename);
-							split = ssplit(param, cmd, 10, filename, STD_PATH_LEN - 1);
-
-							int mode = oct(cmd);
-
-							if(mode)
-								strcpy(param, filename);
-							else
-								mode = MODE;
-
-							findPath(filename, param, cwd);
-							cellFsChmod(filename, mode);
-
-							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
-						}
  #ifdef COPY_PS3
 						else
 						if(_IS(cmd, "COPY"))
