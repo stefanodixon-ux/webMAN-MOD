@@ -2188,7 +2188,7 @@ parse_request:
 
 				if(do_chmod)
 				{
-					char *pos = strstr(path, "&mode="); if(pos) {*pos = NULL; new_mode = (u16)val(pos + 6);}
+					char *pos = strstr(path, "&mode="); if(pos) {*pos = NULL; new_mode = oct(pos + 6);}
 				}
 
 				check_md5 = !get_flag(path, "?fast");

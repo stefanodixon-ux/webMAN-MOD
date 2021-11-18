@@ -1190,16 +1190,20 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						else
 						if(_IS(cmd, "CHMOD"))
 						{
+							strcpy(param, filename);
 							split = ssplit(param, cmd, 10, filename, STD_PATH_LEN - 1);
 
-							strcpy(param, filename); findPath(filename, param, cwd);
+							int mode = oct(cmd);
+
+							if(mode)
+								strcpy(param, filename);
+							else
+								mode = MODE;
+
+							findPath(filename, param, cwd);
+							cellFsChmod(filename, mode);
 
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
-							int attributes = val(cmd);
-							if(attributes == 0)
-								cellFsChmod(filename, MODE);
-							else
-								cellFsChmod(filename, attributes);
 						}
  #ifdef COPY_PS3
 						else

@@ -567,6 +567,18 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 
 static u64 convertH(const char *val); // peek_poke.h
 
+static int oct(const char *c)
+{
+	int value = 0;
+	if(c)
+		while(ISDIGIT(*c))
+		{
+			value <<= 3;
+			value += (*c - '0'); c++;
+		}
+	return value;
+}
+
 static s64 val(const char *c)
 {
 	if(islike(c, "0x"))
