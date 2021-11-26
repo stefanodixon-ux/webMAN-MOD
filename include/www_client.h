@@ -1289,7 +1289,7 @@ parse_request:
 
 					if(size >= 0x80)
 					{
-						char *pos2 = strstr(param2, ","); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
+						char *pos2 = strchr(param2, ','); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
 						if(size == 0x81)
 							xusers()->GetRegistryString(xusers()->GetCurrentUserNumber(), id, header, size);
 						else
@@ -1409,7 +1409,7 @@ parse_request:
    #ifdef XMB_SCREENSHOT
 					if(islike(param2, "$screenshot"))
 					{
-						char *filename = param2 + 11; if(strstr(filename, "/")) filename = strstr(filename, "/");
+						char *filename = param2 + 11; if(strchr(filename, '/')) filename = strchr(filename, '/');
 						bool fast = get_flag(param2, "?fast");
 						bool show = get_flag(param2, "?show");
 
@@ -2090,7 +2090,7 @@ parse_request:
 					// /trunc.ps3<path>
 					// /trunc.ps3<path-pattern>
 
-					char *wildcard = strstr(filename, "*");
+					char *wildcard = strchr(filename, '*');
 					if(wildcard)
 					{
 						wildcard = strrchr(filename, '/'); *wildcard++ = NULL;
@@ -2237,7 +2237,7 @@ parse_request:
 
 				size_t cmd_len = islike(param, "/rename.ps3") ? RENAME_CMD : SWAP_CMD;
 
-				char *source = param + cmd_len, *dest = strstr(source, "|");
+				char *source = param + cmd_len, *dest = strchr(source, '|');
 				if(dest) {*dest++ = NULL;} else {dest = strstr(source, "&to="); if(dest) {*dest = NULL, dest+=4;}}
 
 				if(dest && (*dest != '/') && is_ext(source, ".bak")) {size_t flen = strlen(source); *dest = *param + flen; strncpy(dest, source, flen - 4);}
@@ -2251,7 +2251,7 @@ parse_request:
 				{
 					filepath_check(dest);
 #ifdef COPY_PS3
-					char *wildcard = strstr(source, "*");
+					char *wildcard = strchr(source, '*');
 					if(wildcard)
 					{
 						wildcard = strrchr(source, '/'); *wildcard++ = NULL;
@@ -2403,7 +2403,7 @@ parse_request:
 
 				for(n = 0; n <= 8; n++)
 				{
-					sp[n] = 0, p = strstr(params, "|"); if(!p) break;
+					sp[n] = 0, p = strchr(params, '|'); if(!p) break;
 					params = p + 1, p[0] = NULL;
 					sp[n] = (u64)val(params); if(!sp[n] && (*params != '0')) sp[n] = (u64)(u32)(params);
 				}
@@ -2559,9 +2559,9 @@ parse_request:
 
 				bool is_restart = IS(param, "/restart.ps3");
 
-				char mode = 'h', *param2 = strstr(param, "?");
+				char mode = 'h', *param2 = strchr(param, '?');
  #ifndef LITE_EDITION
-				if(param2) {mode = param2[1] | 0x20; if(strstr(param, "$")) {webman_config->default_restart = mode; save_settings();}} else if(is_restart) mode = webman_config->default_restart;
+				if(param2) {mode = param2[1] | 0x20; if(strchr(param, '$')) {webman_config->default_restart = mode; save_settings();}} else if(is_restart) mode = webman_config->default_restart;
  #else
 				if(param2)  mode = param2[1] | 0x20; else if(is_restart) mode = webman_config->default_restart;
  #endif
@@ -2711,7 +2711,7 @@ parse_request:
 					{sprintf(param, "/index.ps3%s", param2); mobile_mode = false;}
 				else if(strstr(param, "?g="))
 					sprintf(param, MOBILE_HTML);
-				else if(strstr(param, "?"))
+				else if(strchr(param, '?'))
 					sprintf(param, "/index.ps3%s", param2);
 				else if(not_exists(GAMELIST_JS))
 					sprintf(param, "/index.ps3?mobile");
@@ -2883,7 +2883,7 @@ retry_response:
 						#endif
 					}
 
-					char *wildcard = strstr(param, "*");
+					char *wildcard = strchr(param, '*');
 					if(wildcard)
 					{
 						wildcard = strrchr(param, '/'); *wildcard++ = NULL;
@@ -3184,7 +3184,7 @@ retry_response:
 						// /setup.ps3?          reset webman settings
 						// /setup.ps3?<params>  save settings
 
-						if(strstr(param, "&") == NULL)
+						if(strchr(param, '&') == NULL)
 						{
 							reset_settings();
 						}

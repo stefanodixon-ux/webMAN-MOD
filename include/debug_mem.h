@@ -177,7 +177,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	if(is_file) {get_flag(param + 10, "&"); goto view_file;}
 	address = convertH(param + 10);
 
-	v = strstr(param + 10, "=");
+	v = strchr(param + 10, '=');
 	if(v)
 	{
 		flen = strlen(v + 1);
@@ -206,7 +206,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		else
 			{upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;}
 	}
-	else if(strstr(param, "#"))
+	else if(strchr(param, '#'))
 		upper_memory = 0x8FFFFFFFFFFFFFF8ULL; // use # to peek/poke any memory address
 	else
 		upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8; // safe memory adddress

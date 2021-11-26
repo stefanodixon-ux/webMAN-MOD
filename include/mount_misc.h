@@ -13,7 +13,7 @@
 		if(pos && !islike(_path, "/net"))
 		{
 			int tid_offset = 7; // folder is title_id
-			char *slash = strstr(pos + tid_offset, "/"); if(slash) *slash = 0;
+			char *slash = strchr(pos + tid_offset, '/'); if(slash) *slash = 0;
 
 			if(strstr(pos + tid_offset, "_00-") == pos + 23) tid_offset += 7; // folder is content_id
 

@@ -85,7 +85,7 @@ static void wait_for_xml_download(char *filename, char *param)
 	char *xml = strstr(filename, ".xm!");
 	if(xml)
 	{
-		xml = strstr(filename, "~");
+		xml = strchr(filename, '~');
 
 		struct CellFsStat s; u64 size = 475000; if(xml) size = val(xml + 1); else xml = strstr(filename, ".xm!");
 /*

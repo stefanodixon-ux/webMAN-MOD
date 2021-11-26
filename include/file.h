@@ -1124,7 +1124,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 		if(*wildcard1 == '^') {wildcard1++, instr = &strcasestr;}						// *^TEXT = case insensitive search
 		if( wfound1 && (*wildcard1 == '~')) {wildcard1++, wfound1 = false;}				// <-- accept prefixes: ~^ or ^~
 
-		wildcard2 = strstr((char*)wildcard1, "*"); if(wildcard2) *wildcard2++ = NULL;	// *TEXT1*TEXT2 = text1 and text2
+		wildcard2 = strchr(wildcard1, '*'); if(wildcard2) *wildcard2++ = NULL;	// *TEXT1*TEXT2 = text1 and text2
 		if(wildcard2 && (*wildcard2 == '~')) {wildcard2++, wfound2 = false;}
 	}
 

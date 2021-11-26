@@ -201,7 +201,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	if(*templn) buffer += concat(buffer, templn);
 
-	if(strstr(param, "?"))
+	if(strchr(param, '?'))
 	{
 		char *pos = strstr(param, "fan=");  // 0 = SYSCON, 1 = DYNAMIC, 2 = FAN_AUTO2
 		if(pos)

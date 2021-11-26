@@ -687,7 +687,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						else
 							sprintf(target, "/dev_hdd0");
 
-						char *p = strstr(source + 9, "/");
+						char *p = strchr(source + 9, '/');
 						if(p) strcat(target, p);
 					}
 				}

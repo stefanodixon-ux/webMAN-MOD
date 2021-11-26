@@ -349,7 +349,7 @@
 						scsi_tracks[t].track_start_addr = tracks[t].lba;
 					}
 				}
-				else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && (strstr(netpath + 5, "/") != NULL))
+				else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && (strchr(netpath + 5, '/') != NULL))
 				{
 					mount_unk = netiso_args.emu_mode = EMU_PS3;
 					if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);

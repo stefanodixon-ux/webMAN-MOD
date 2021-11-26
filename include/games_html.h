@@ -559,7 +559,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 #ifdef NET_SUPPORT
 			if(!b0 && strstr(param, "net" ))  {filter0 = NET, b0 = 3;}
 #endif
-			if(strstr(param, "?") != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && strstr(param, "?html") == NULL && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
+			if(strchr(param, '?') != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && strstr(param, "?html") == NULL && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
 		}
 
 		int ns = NONE; u8 uprofile = profile; enum icon_type default_icon;
