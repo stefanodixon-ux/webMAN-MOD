@@ -293,6 +293,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Fixed flickering and diminish the slowdown in the Blackdelve Lava Fields">SLES_523.25<td>Champions of Norrath: Realms of EverQuest</tr>
 <tr><td>CUSTOM<td title="Fixed flickering and diminish the slowdown in the Blackdelve Lava Fields">SLES_523.73<td>Champions of Norrath: Realms of EverQuest</tr>
 <tr><td>CUSTOM<td>SLPM_654.04<td>Chou-jikuu Yousai Macross (The Super Dimension Fortress Macross)</tr>
+<tr><td>CUSTOM<td>SLUS_207.15<td>Combat Elite: WWII Paratroopers</tr>
 <tr><td>CUSTOM<td>SLPM_664.92<td>Commandos: Strike Force</tr>
 <tr><td>CUSTOM<td>SLPM_621.14<td>Crash Bandicoot 4: Sakuretsu! Majin Power</tr>
 <tr><td>CUSTOM<td>SLPM_658.01<td>Crash Bandicoot 5</tr>
@@ -2381,6 +2382,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPM_654.04<td>Chou-jikuu Yousai Macross (The Super Dimension Fortress Macross)</tr>
 <tr><td>ENC<td>SLES_533.86<td>Charlie and the Chocolate Factory</tr>
 <tr><td>ENC<td>SLUS_206.33<td>Clock Tower 3</tr>
+<tr><td>ENC<td>SLUS_207.15<td>Combat Elite: WWII Paratroopers</tr>
 <tr><td>ENC<td>SLUS_211.03<td>Commandos: Strike Force</tr>
 <tr><td>ENC<td>SLES_527.68<td>Commandos: Strike Force</tr>
 <tr><td>ENC<td>SLPM_664.92<td>Commandos: Strike Force</tr>
@@ -3631,7 +3633,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 1998, count = tr.length, classics = i;
+var i = 1999, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
@@ -3645,13 +3647,14 @@ function doSearch() {
 	// Declare variables
 	var td, txtValue, cols, cat = category;
 	PS2Classics = (cat == "ENC");
-	var filter = input.value.replace(/\s/g, '.+').replace(/\*/g, '.+').replace(/seco/g, '2eco');
-	var filter2 = input.value.replace(".", "").replace(/\s/g, '.+').replace(/[-_]/g, '').replace(/\*/g, '.+');
+	txtValue = input.value.replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+	var filter = txtValue.replace(/seco/g, '2eco').replace(/\s/g, '.+').replace(/\*/g, '.+');
+	var filter2 = txtValue.replace(".", "").replace(/[-_]/g, '').replace(/\s/g, '.+').replace(/\*/g, '.+');
 	var dolike = (input.value.indexOf('*')>=0);
 	if (dolike)
 	{
-		if(input.value.substr(0,1)=='*')filter=filter+"$";
-		if(input.value.substr(input.value.length-1,1)=='*')filter="^"+filter;
+		if(input.value.substr(0,1)==='*')filter=filter+"$";
+		if(input.value.substr(input.value.length-1,1)==='*')filter="^"+filter;
 	}
 	var reg1 = new RegExp(filter, "i");
 	var reg2 = new RegExp(filter2, "i");

@@ -931,12 +931,20 @@
 								char *sfo = (char*)"/dev_bdvd/PS3_GAME/PARAM.SFO";
 								if(!file_exists(sfo)) sfo = (char*)"/app_home/PARAM.SFO";
 
-								if(file_exists(sfo))
+								if(file_exists(sfo) || IS_INGAME)
 								{
 									char title[128], title_id[12], version[8], version2[8];
 
-									strcpy(title, sfo);
-									getTitleID(title, title_id, GET_TITLE_AND_ID);
+									if(get_game_info())
+									{
+										strcpy(title, _game_Title);
+										strcpy(title_id, _game_TitleID);
+									}
+									else
+									{
+										strcpy(title, sfo);
+										getTitleID(title, title_id, GET_TITLE_AND_ID);
+									}
 
 									int len = sprintf(msg, "ID: %s", title_id);
 
