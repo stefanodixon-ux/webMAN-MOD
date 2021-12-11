@@ -458,7 +458,7 @@ retry_net:
 						mount_unk = EMU_PS3;
 
 						wait_for("/dev_bdvd", 15);
-						sys_map_path(APP_HOME_DIR, "/dev_bdvd");
+						set_app_home("/dev_bdvd"); // sys_map_path(APP_HOME_DIR, "/dev_bdvd");
 
 						sys_ppu_thread_sleep(1);
 						launch_app_home_icon(webman_config->autoplay);
