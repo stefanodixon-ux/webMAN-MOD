@@ -144,13 +144,6 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			copy_net_file(templn, enc_dir_name, ns, COPY_WHOLE_FILE);
 		}
 
-		if(*app_ver && *title_id)
-		{
-			char app_ver2[8], *param_sfo = tempstr; *app_ver2 = NULL;
-			sprintf(param_sfo, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
-			getTitleID(param_sfo, app_ver2, GET_VERSION); if(*app_ver2) strcpy(app_ver, app_ver2);
-		}
-
 		if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
 
 		get_title_and_id_from_sfo(templn, title_id, data[v3_entry].name, icon, tempstr, 0);
