@@ -221,7 +221,7 @@ static int dir_read (char *dpath)
 			else
 				plen = snprintf (wm_path, 255, "%s", ff[f]);
 
-			wm_path[plen - 4] = 0;
+			if(!g_mmcm) wm_path[plen - 4] = 0;
 
 			num_tracks = nt[f];
 

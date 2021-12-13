@@ -96,6 +96,7 @@ static uint32_t num_tracks;
 
 static uint8_t g_profile;
 static uint8_t g_mode;
+static uint8_t g_mmcm;
 
 static rawseciso_args *p_args;
 static int cd_sector_size, cd_sector_size_param;
@@ -143,6 +144,13 @@ int main(int argc, const char* argv[])
 	snprintf(path, sizeof(path), "/dev_hdd0/tmp/wmtmp");
 	mkdir(path, S_IRWXO | S_IRWXU | S_IRWXG | S_IFDIR);
 	sysFsChmod(path, S_IFDIR | 0777);
+
+	g_mmcm = 0;
+
+	if(argc > 0 && argv)
+	{
+		g_mmcm = (!strncmp(argv[0], "/dev_hdd0/game/", 15));
+	}
 
 //--- hold CROSS to keep previous cached files
 	unsigned button = 0;
@@ -303,7 +311,7 @@ int main(int argc, const char* argv[])
 								if( is_iso )
 								{
 									size_t path_len;
-									filename[flen - ext_len] = '\0';
+									if(!g_mmcm) filename[flen - ext_len] = '\0';
 									path_len = snprintf(path, sizeof(path), "%s:/%s%s%s/%s", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), direntry);
 
 									//--- PS3ISO: fix game, cache SFO, ICON0 and PIC1 (if mmCM is installed)
