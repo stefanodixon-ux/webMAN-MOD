@@ -753,8 +753,6 @@ next_xml_entry:
 						// skip duplicated game in /dev_hdd0
 						if(is_dupe(f0, f1, entry.entry_name.d_name, templn)) continue;
 
-						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
-
 						if(IS_JB_FOLDER)
 						{
 #ifdef MOUNT_GAMEI
@@ -787,6 +785,8 @@ next_xml_entry:
 								check_ps3_game(templn);
 							}
 						}
+
+						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
 						{

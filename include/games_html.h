@@ -808,8 +808,6 @@ next_html_entry:
 
 						if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
-						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
-
 						if(IS_JB_FOLDER)
 						{
 #ifdef MOUNT_GAMEI
@@ -825,6 +823,8 @@ next_html_entry:
 								check_ps3_game(templn);
 							}
 						}
+
+						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
 						{

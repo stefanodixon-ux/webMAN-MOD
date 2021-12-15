@@ -1076,7 +1076,7 @@ static void do_umount(bool clean)
 		if(*map_title_id)
 		{
 			char gamei_mapping[32];
-			sprintf(gamei_mapping, "%s/%s", HDD0_GAME_DIR, map_title_id);
+			sprintf(gamei_mapping, "%s/%s", "/dev_hdd0/game", map_title_id);
 			sys_map_path(gamei_mapping, NULL);
 			sys_map_path(PKGLAUNCH_DIR, NULL);
 			*map_title_id = NULL;

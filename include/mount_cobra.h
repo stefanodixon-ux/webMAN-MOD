@@ -460,6 +460,12 @@ retry_net:
 						wait_for("/dev_bdvd", 15);
 						set_app_home("/dev_bdvd"); // sys_map_path(APP_HOME_DIR, "/dev_bdvd");
 
+						sprintf(templn, "%s/PARAM.SFO", "/dev_bdvd");
+						getTitleID(templn, map_title_id, GET_TITLE_ID_ONLY);
+
+						sprintf(templn, "%s/%s", "/dev_hdd0/game", map_title_id);
+						sys_map_path(templn, "/dev_bdvd");
+
 						sys_ppu_thread_sleep(1);
 						launch_app_home_icon(webman_config->autoplay);
 
