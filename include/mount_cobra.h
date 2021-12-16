@@ -401,7 +401,7 @@ retry_net:
 #endif
 				if(ret)
 				{
-					if(netiso_args.emu_mode == EMU_BD)
+					if((netiso_args.emu_mode == EMU_BD) || (netiso_args.emu_mode == EMU_DVD))
 					{
 						wait_for("/dev_bdvd", 15);
 						if(isDir("/dev_bdvd/PS3_GAME"))
@@ -627,11 +627,11 @@ retry_net:
 
 						#ifndef LITE_EDITION
 						// Auto-copy CONFIG from ManaGunZ
-						sprintf(templn, "%s", _path);
-						sprintf(_path, "%s.CONFIG", iso_list[0]);
-						if(!webman_config->ps2config && not_exists(_path))
+						char templn[STD_PATH_LEN];
+						sprintf(templn, "%s.CONFIG", iso_list[0]);
+						if(!webman_config->ps2config && not_exists(templn))
 						{
-							mount_ps_disc_image(templn, cobra_iso_list, iso_parts, EMU_PS2_DVD);
+							mount_ps_disc_image(_path, cobra_iso_list, iso_parts, EMU_PS2_DVD);
 							sys_ppu_thread_usleep(2500);
 							cobra_send_fake_disc_insert_event();
 
@@ -639,9 +639,9 @@ retry_net:
 							if(id)
 							{
 								char title_id[12], game_id[12];
-								get_ps_titleid_from_path(title_id, templn);
+								get_ps_titleid_from_path(title_id, _path);
 								sprintf(game_id, "%.4s_%.3s.%.2s", title_id, title_id + 4, title_id + 7);
-								copy_ps2config_iso(game_id, _path);
+								copy_ps2config_iso(game_id, templn);
 							}
 							else
 							{
@@ -657,20 +657,20 @@ retry_net:
 									{
 										if( ((entry_name[0] | 0x20) == 's') && (dir.entry_name.d_namlen == 11) )
 										{
-											if(copy_ps2config_iso(entry_name, _path)) break;
+											if(copy_ps2config_iso(entry_name, templn)) break;
 										}
 									}
 									cellFsClosedir(fd);
 								}
 							}
 
-							if(file_exists(_path)) {do_umount(false); wait_path("/dev_bdvd", 5, false);} else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
+							if(file_exists(templn)) {do_umount(false); wait_path("/dev_bdvd", 5, false);} else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
 						}
 						#endif
 
 						// mount PS2 ISO
 						if(mount_unk == EMU_PS2_DVD)
-							mount_ps_disc_image(templn, cobra_iso_list, iso_parts, EMU_PS2_DVD);
+							mount_ps_disc_image(_path, cobra_iso_list, iso_parts, EMU_PS2_DVD);
 
 						// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 						save_file(WMNOSCAN, NULL, SAVE_ALL);

@@ -12,18 +12,24 @@
 		char *pos = strstr(_path, "/GAMEI/");
 		if(pos && !islike(_path, "/net"))
 		{
-			int tid_offset = 7; // folder is title_id
-			char *slash = strchr(pos + tid_offset, '/'); if(slash) *slash = 0;
-
-			if(strstr(pos + tid_offset, "_00-") == pos + 23) tid_offset += 7; // folder is content_id
+			pos += 7; // folder is title_id
+			char *slash = strchr(pos, '/'); if(slash) *slash = 0;
 
 			do_umount(false);
 
 			sys_map_path(APP_HOME_DIR, _path);
 			if(isDir(PKGLAUNCH_DIR)) sys_map_path(PKGLAUNCH_DIR, _path);
 
-			get_value(map_title_id, pos + tid_offset, TITLE_ID_LEN);
-			sprintf(_path, "%s/%s", "/dev_hdd0/game", map_title_id);
+			strcat(_path, "/PARAM.SFO");
+			if(file_exists(_path))
+				getTitleID(_path, map_title_id, GET_TITLE_ID_ONLY);
+			else
+			{
+				if(strstr(pos, "_00-") == pos + 16) pos += 7; // folder is content_id (skip EP0000-)
+				get_value(map_title_id, pos, TITLE_ID_LEN);
+			}
+
+			sprintf(_path, "%s%s", HDD0_GAME_DIR, map_title_id);
 			sys_map_path(_path, _path0);
 
 			ret = is_app_dir("/dev_hdd0/game", map_title_id);

@@ -10,6 +10,7 @@
 // [net]     Use internal netiso to mount the ISO (netiso)
 // [PS2]     PS2 extracted folders in /PS2DISC (needs PS2_DISC compilation flag)
 // [netemu]  Mount ps2/psx game with netemu
+// [psn]     Map /dev_hdd0/game/[GAME_ID] to /dev_bdvd/PS3_GAME (if the folder does not exist)
 
 // hold CROSS = force Auto-Play
 // hold CIRCLE = cancel Auto-Play
@@ -1076,7 +1077,7 @@ static void do_umount(bool clean)
 		if(*map_title_id)
 		{
 			char gamei_mapping[32];
-			sprintf(gamei_mapping, "%s/%s", "/dev_hdd0/game", map_title_id);
+			sprintf(gamei_mapping, "%s%s", HDD0_GAME_DIR, map_title_id);
 			sys_map_path(gamei_mapping, NULL);
 			sys_map_path(PKGLAUNCH_DIR, NULL);
 			*map_title_id = NULL;
@@ -1662,32 +1663,50 @@ exit_mount:
 		if(!isDir("/dev_bdvd")) ret = false;
 	}
 
-#ifdef FIX_GAME
 	// -------------------------------------------------------
 	// re-check PARAM.SFO to notify if game needs to be fixed
 	// -------------------------------------------------------
 
-	if(ret && (c_firmware < LATEST_CFW))
+	if(ret)
 	{
 		char filename[64];
 		sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
-		getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
+		if(file_exists(filename))
+		{
+			getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 
-		// check for PARAM.SFO in hdd0/game folder
-		sprintf(filename, "%s%s%s", HDD0_GAME_DIR, title_id, "/PARAM.SFO");
+			// check for PARAM.SFO in hdd0/game folder
+			sprintf(filename, "%s%s%s", HDD0_GAME_DIR, title_id, "/PARAM.SFO");
 
-		if(not_exists(filename))
-			sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
-
-		getTitleID(filename, title_id, SHOW_WARNING);
-	}
+			if(not_exists(filename))
+			{
+#ifdef COBRA_ONLY
+				if(strcasestr(_path0, "[PSN]"))
+				{
+					// Map /dev_hdd0/game/[GAME_ID] to /dev_bdvd/PS3_GAME (if the folder does not exist)
+					if(strcasestr(_path0, ".iso") || strstr(_path0, ".ntfs[PS3ISO]"))
+					{
+						strcpy(map_title_id, title_id);
+						sprintf(filename, "%s%s", HDD0_GAME_DIR, map_title_id);
+						sys_map_path(filename, "/dev_bdvd/PS3_GAME");
+					}
+				}
 #endif
+				sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
+			}
+
+#ifdef FIX_GAME
+			if(c_firmware < LATEST_CFW)
+				getTitleID(filename, title_id, SHOW_WARNING);
+#endif
+		}
+	}
 
 	// -----------------------------------
 	// show error if bdvd was not mounted
 	// -----------------------------------
 
-	if(!ret && !isDir("/dev_bdvd")) {show_status(STR_ERROR, _path);}
+	if(!ret && !isDir("/dev_bdvd")) show_status(STR_ERROR, _path);
 
 	// -------------------------------------------------------------------------------------
 	// remove syscalls hodling R2 (or prevent remove syscall if path contains [online] tag)
@@ -1743,6 +1762,13 @@ mounting_done:
 				if(!(islike(_path0, HDD0_GAME_DIR) || islike(_path0, _HDD0_GAME_DIR)))
 				{
 					set_app_home(_path0);
+
+					sprintf(_path, "%s/PARAM.SFO", "/dev_bdvd");
+					getTitleID(_path, map_title_id, GET_TITLE_ID_ONLY);
+
+					sprintf(_path, "%s%s", HDD0_GAME_DIR, map_title_id);
+					sys_map_path(_path, _path0);
+
 					sys_ppu_thread_sleep(1);
 					launch_app_home_icon(webman_config->autoplay | force_ap);
 				}

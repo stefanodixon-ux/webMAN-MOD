@@ -141,12 +141,12 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	else
 		flen = sprintf(name, "%s", filename + pos);
 
+	if(is_BIN_ENC(name)) {flen -= 8; name[flen] = NULL;}
+
 	if((flen > 2) && name[flen - 2] == '.' ) {flen -= 2; name[flen] = NULL;} // remove file extension (split iso)
 	if((flen > 4) && name[flen - 4] == '.' ) {flen -= 4; name[flen] = NULL;} // remove file extension
-	else
 	if((flen > 3) && name[flen - 3] == '.' ) {flen -= 3; name[flen] = NULL;} // remove file extension for roms (.gb .gg .vb)
-	else
-	if(strstr(filename + pos, ".ntfs["))
+	else if(strstr(filename + pos, ".ntfs["))
 	{
 		while(name[flen] != '.') flen--; name[flen] = NULL; pos = flen - 4;
 		if((pos > 0) && name[pos] == '.' && (strcasestr(ISO_EXTENSIONS, &name[pos]))) {flen = pos; name[flen] = NULL;} else
