@@ -92,7 +92,6 @@
 #include "cobra/storage.h"
 #include "vsh/game_plugin.h"
 #include "vsh/netctl_main.h"
-#include "vsh/xregistry.h"
 #include "vsh/vsh.h"
 #include "vsh/vshnet.h"
 #include "vsh/vshmain.h"
@@ -355,6 +354,7 @@ int wait_for(const char *path, u8 timeout);
 //static int (*plugin_GetInterface)(int,int) = NULL;
 
 #include "include/string.h"
+#include "include/xregistry.h"
 #include "include/wm_config.h"
 #include "include/html.h"
 #include "include/peek_poke.h"
@@ -451,6 +451,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/fix_game.h"
 #include "include/ftp.h"
 #include "include/ps3mapi.h"
+#include "include/ps3mapi_server.h"
 #include "include/stealth.h"
 #include "include/process.h"
 #include "include/video_rec.h"

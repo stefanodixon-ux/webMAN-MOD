@@ -695,7 +695,7 @@ static void replace_char(char *text, char c, char r)
 	char *pos = strchr(text, c);
 	while (pos)
 	{
-		*pos = r; pos = strchr(text, c);
+		*pos = r; pos = strchr(pos, c);
 	}
 }
 */

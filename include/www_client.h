@@ -1223,46 +1223,10 @@ parse_request:
    #ifndef LITE_EDITION
 				if(islike(param2, "$xregistry("))
 				{
-					int value, len, size = 0; param2 += 11;
+					int value, len, size; param2 += 11;
 					int id = val(param2);
 
-					if(id >= 0x28 && id < 0x3D)
-						size = 1;
-
-					switch (id)
-					{
-						case 0x09: // "/setting/np/titleId"
-						case 0x19: // "/setting/np/tppsProxyServer"
-						case 0x1B: // "/setting/np/tppsProxyUserName"
-						case 0x1C: // "/setting/np/tppsProxyPassword"
-						case 0x20: // "/setting/system/hddSerial"
-						case 0x26: // "/setting/system/updateServerUrl"
-						case 0x2D: // "/setting/system/debugDirName"
-						case 0x3D: // "/setting/system/bootMode"
-						case 0x63: // "/setting/libad/adServerURL"
-						case 0x64: // "/setting/libad/adCatalogVersion"
-						case 0x6C: // "/setting/net/adhocSsidPrefix"
-						case 0x7C: // "/setting/wboard/baseUri"
-									size = 0x80;
-									break;
-						case 0x5E:
-						case 0x6E:
-						case 0x78:
-						case 0x79:
-						case 0x82:
-						case 0x83:
-						case 0xC8:
-						case 0xD2:
-						case 0xD3:
-						case 0xDC:
-						case 0xDD:
-									size = 0x81;
-									break;
-						case 0x6F:
-						case 0x96:
-									size = 1;
-									break;
-					}
+					size = get_xreg_entry_size(id);
 
 					char *pos = strstr(param2, ")="); // save
 					if(pos)
@@ -1270,7 +1234,7 @@ parse_request:
 						if(size >= 0x80)
 						{
 							pos += 2, len = strlen(pos);
-							if(size == 0x81)
+							if(size > 0x80)
 								xusers()->SetRegistryString(xusers()->GetCurrentUserNumber(), id, pos, len);
 							else
 								xregistry()->saveRegistryStringValue(id, pos, len);
@@ -1290,7 +1254,7 @@ parse_request:
 					if(size >= 0x80)
 					{
 						char *pos2 = strchr(param2, ','); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
-						if(size == 0x81)
+						if(size > 0x80)
 							xusers()->GetRegistryString(xusers()->GetCurrentUserNumber(), id, header, size);
 						else
 							xregistry()->loadRegistryStringValue(id, header, size);
@@ -3440,47 +3404,7 @@ retry_response:
 						}
 						else if(islike(param2 , "?uninstall"))
 						{
-							if(file_size("/dev_hdd0/boot_plugins.txt")             < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
-							if(file_size("/dev_hdd0/boot_plugins_nocobra.txt")     < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
-							if(file_size("/dev_hdd0/boot_plugins_nocobra_dex.txt") < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
-
-							// delete files
-							sprintf(param, "plugins/");
-							for(u8 d = 0; d < 2; d++)
-							{
-								unlink_file("/dev_hdd0", param, "webftp_server.sprx");
-								unlink_file("/dev_hdd0", param, "webftp_server_ps3mapi.sprx");
-								unlink_file("/dev_hdd0", param, "webftp_server_noncobra.sprx");
-								unlink_file("/dev_hdd0", param, "wm_vsh_menu.sprx");
-								unlink_file("/dev_hdd0", param, "slaunch.sprx");
-								unlink_file("/dev_hdd0", param, "raw_iso.sprx");
-								*param = NULL;
-							}
-
-							unlink_file(TMP_DIR, "wm_vsh_menu", ".cfg");
-
-							cellFsUnlink(WMCONFIG);
-							cellFsUnlink(WMNOSCAN);
-							cellFsUnlink(WM_COMBO_PATH);
-							cellFsUnlink(WMREQUEST_FILE);
-							cellFsUnlink(WMNET_DISABLED);
-							cellFsUnlink(WMONLINE_GAMES);
-							cellFsUnlink(WMOFFLINE_GAMES);
-							cellFsUnlink("/dev_hdd0/boot_init.txt");
-							cellFsUnlink("/dev_hdd0/autoexec.bat");
-
-							// delete folders & subfolders
-							del(WMTMP, RECURSIVE_DELETE);
-							del(WM_RES_PATH, RECURSIVE_DELETE);
-							del(WM_LANG_PATH, RECURSIVE_DELETE);
-							del(WM_ICONS_PATH, RECURSIVE_DELETE);
-							del(WM_COMBO_PATH, RECURSIVE_DELETE);
-							del(HTML_BASE_PATH, RECURSIVE_DELETE);
-							del(VSH_MENU_IMAGES, RECURSIVE_DELETE);
-
-							restore_fan(SYSCON_MODE);
-
-							sprintf(param, "%s%s", "/delete.ps3", "?uninstall");
+							uninstall(param);
 							goto reboot;
 						}
 						else

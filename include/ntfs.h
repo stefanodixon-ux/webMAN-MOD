@@ -38,9 +38,6 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#define u32 u32
-#define s64 s64
-
 #ifndef ATTRIBUTE_ALIGN
 # define ATTRIBUTE_ALIGN(v)				__attribute__((aligned(v)))
 #endif
@@ -50,7 +47,7 @@ extern "C" {
 
 // *** sys/stat.h *** //
 #define	S_ISVTX 0001000
-#define S_ISGID 0002000
+#define	S_ISGID 0002000
 #define	S_ISUID	0004000
 #define	S_IFIFO	0010000
 #define	S_IFCHR	0020000
@@ -213,18 +210,18 @@ int ps3ntfs_open(const char *path, int flags, int mode);
 int ps3ntfs_close(int fd);
 int ps3ntfs_write(int fd, const char *ptr, size_t len);
 int ps3ntfs_read(int fd, char *ptr, size_t len);
-off_t ps3ntfs_seek(int fd, off_t pos, int dir);
+//off_t ps3ntfs_seek(int fd, off_t pos, int dir);
 s64 ps3ntfs_seek64(int fd, s64 pos, int dir);
 int ps3ntfs_fstat(int fd, struct stat *st);
 int ps3ntfs_stat(const char *file, struct stat *st);
-int ps3ntfs_link(const char *existing, const char  *newLink);
+//int ps3ntfs_link(const char *existing, const char  *newLink);
 int ps3ntfs_unlink(const char *name);
 
 int ps3ntfs_chdir(const char *name);
 int ps3ntfs_rename(const char *oldName, const char *newName);
 int ps3ntfs_mkdir(const char *path, int mode);
 int ps3ntfs_file_to_sectors(const char *path, u32 *sec_out, u32 *size_out, int max, int phys);
-int ps3ntfs_get_fd_from_FILE(FILE *fp);
+//int ps3ntfs_get_fd_from_FILE(FILE *fp);
 
 typedef struct {
     int device;
@@ -232,20 +229,20 @@ typedef struct {
 } DIR_ITER;
 
 DIR_ITER*  ps3ntfs_diropen(const char *path);
-int ps3ntfs_dirreset(DIR_ITER *dirState);
+//int ps3ntfs_dirreset(DIR_ITER *dirState);
 int ps3ntfs_dirnext(DIR_ITER *dirState, char *filename, struct stat *filestat);
 int ps3ntfs_dirclose(DIR_ITER *dirState);
 
 // map file functions to libc open, fopen, ...
-void NTFS_init_system_io(void);
-void NTFS_deinit_system_io(void);
+//void NTFS_init_system_io(void);
+//void NTFS_deinit_system_io(void);
 
 
 #ifndef _SYS_STATVFS_H
 #define _SYS_STATVFS_H
 
-#define ST_RDONLY 0x0001
-#define ST_NOSUID 0x0002
+//#define ST_RDONLY 0x0001
+//#define ST_NOSUID 0x0002
 
 typedef u32 fsblkcnt_t;
 typedef u32 fsfilcnt_t;
@@ -267,21 +264,21 @@ struct statvfs {
 #endif
 
 int ps3ntfs_statvfs(const char *path, struct statvfs *buf);
-int ps3ntfs_ftruncate(int fd, off_t len);
-int ps3ntfs_fsync(int fd);
-int ps3ntfs_errno(void);
+//int ps3ntfs_ftruncate(int fd, off_t len);
+//int ps3ntfs_fsync(int fd);
+//int ps3ntfs_errno(void);
 
-bool PS3_NTFS_IsInserted(int fd); // fd from  0 to 7 (usb000... usb007)
-bool PS3_NTFS_Shutdown(int fd);   // fd from  0 to 7 (usb000... usb007)
+//bool PS3_NTFS_IsInserted(int fd); // fd from  0 to 7 (usb000... usb007)
+//bool PS3_NTFS_Shutdown(int fd);   // fd from  0 to 7 (usb000... usb007)
 
-extern const DISC_INTERFACE __io_ntfs_usb000;
-extern const DISC_INTERFACE __io_ntfs_usb001;
-extern const DISC_INTERFACE __io_ntfs_usb002;
-extern const DISC_INTERFACE __io_ntfs_usb003;
-extern const DISC_INTERFACE __io_ntfs_usb004;
-extern const DISC_INTERFACE __io_ntfs_usb005;
-extern const DISC_INTERFACE __io_ntfs_usb006;
-extern const DISC_INTERFACE __io_ntfs_usb007;
+//extern const DISC_INTERFACE __io_ntfs_usb000;
+//extern const DISC_INTERFACE __io_ntfs_usb001;
+//extern const DISC_INTERFACE __io_ntfs_usb002;
+//extern const DISC_INTERFACE __io_ntfs_usb003;
+//extern const DISC_INTERFACE __io_ntfs_usb004;
+//extern const DISC_INTERFACE __io_ntfs_usb005;
+//extern const DISC_INTERFACE __io_ntfs_usb006;
+//extern const DISC_INTERFACE __io_ntfs_usb007;
 
 
 #ifdef __cplusplus

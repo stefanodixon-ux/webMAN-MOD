@@ -1374,6 +1374,51 @@ static void unlink_file(const char *drive, const char *path, const char *file)
 	sprintf(filename, "%s/%s%s", drive, path, file); cellFsUnlink(filename);
 }
 
+static void uninstall(char *param)
+{
+	if(file_size("/dev_hdd0/boot_plugins.txt")             < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
+	if(file_size("/dev_hdd0/boot_plugins_nocobra.txt")     < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
+	if(file_size("/dev_hdd0/boot_plugins_nocobra_dex.txt") < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");
+
+	// delete files
+	sprintf(param, "plugins/");
+	for(u8 d = 0; d < 2; d++)
+	{
+		unlink_file("/dev_hdd0", param, "webftp_server.sprx");
+		unlink_file("/dev_hdd0", param, "webftp_server_ps3mapi.sprx");
+		unlink_file("/dev_hdd0", param, "webftp_server_noncobra.sprx");
+		unlink_file("/dev_hdd0", param, "wm_vsh_menu.sprx");
+		unlink_file("/dev_hdd0", param, "slaunch.sprx");
+		unlink_file("/dev_hdd0", param, "raw_iso.sprx");
+		*param = NULL;
+	}
+
+	unlink_file(TMP_DIR, "wm_vsh_menu", ".cfg");
+
+	cellFsUnlink(WMCONFIG);
+	cellFsUnlink(WMNOSCAN);
+	cellFsUnlink(WM_COMBO_PATH);
+	cellFsUnlink(WMREQUEST_FILE);
+	cellFsUnlink(WMNET_DISABLED);
+	cellFsUnlink(WMONLINE_GAMES);
+	cellFsUnlink(WMOFFLINE_GAMES);
+	cellFsUnlink("/dev_hdd0/boot_init.txt");
+	cellFsUnlink("/dev_hdd0/autoexec.bat");
+
+	// delete folders & subfolders
+	del(WMTMP, RECURSIVE_DELETE);
+	del(WM_RES_PATH, RECURSIVE_DELETE);
+	del(WM_LANG_PATH, RECURSIVE_DELETE);
+	del(WM_ICONS_PATH, RECURSIVE_DELETE);
+	del(WM_COMBO_PATH, RECURSIVE_DELETE);
+	del(HTML_BASE_PATH, RECURSIVE_DELETE);
+	del(VSH_MENU_IMAGES, RECURSIVE_DELETE);
+
+	restore_fan(SYSCON_MODE);
+
+	sprintf(param, "%s%s", "/delete.ps3", "?uninstall");
+}
+
 static void delete_history(bool delete_folders)
 {
 	int fd; char path[64];

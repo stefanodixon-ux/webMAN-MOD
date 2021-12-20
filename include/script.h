@@ -51,7 +51,7 @@ static void parse_script(const char *script_file)
 		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0;
 		u8 exec_mode = true, enable_db = true, do_else = true;
 		size_t buffer_size = read_file(script_file, buffer, max_size, 0); buffer[buffer_size] = 0;
-		char log_file[STD_PATH_LEN] = SC_LOG_FILE;
+		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE);
 
 		script_running = true;
 
@@ -65,11 +65,11 @@ static void parse_script(const char *script_file)
 			if(*buffer == 0) break;
 
 			// process line
-			pos = strstr(line, "\n");
+			pos = strchr(line, '\n');
 			if(pos)
 			{
 				if(pos) *pos = NULL; //EOL
-				cr = strstr(line, "\r"); if(cr) *cr = NULL;
+				cr = strchr(line, '\r'); if(cr) *cr = NULL;
 
 				if(exec_mode)
 				{
@@ -114,7 +114,7 @@ static void parse_script(const char *script_file)
 					#endif
 					if(_islike(line, "popup "))    {line += 6; show_msg(line);} else
 					if(_islike(line, "log "))      {line += 4; save_file(log_file, line, APPEND_TEXT);} else
-					if(_islike(line, "logfile /")) {path += 8; snprintf(log_file, STD_PATH_LEN, "%s", path);} else
+					if(_islike(line, "logfile /")) {path += 8; strcpy(log_file, path);} else
 	#ifdef UNLOCK_SAVEDATA
 					if(_islike(line, "unlock /"))  {path += 7; scan(path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);} else
 	#endif
@@ -162,24 +162,32 @@ static void parse_script(const char *script_file)
 
 static void script_thread(u64 event_id)
 {
-	if(event_id == 1)
-		parse_script("/dev_hdd0/boot_init.txt");
-	else if(event_id == 2)
-		parse_script("/dev_hdd0/autoexec.bat");
-	else if(file_exists("/dev_hdd0/onxmb.bat"))
+	switch (event_id)
 	{
-		wait_for_xmb();
-		sys_ppu_thread_sleep(3);
-		parse_script("/dev_hdd0/onxmb.bat");
+		case 1: parse_script("/dev_hdd0/boot_init.txt"); break;
+		case 2: parse_script("/dev_hdd0/autoexec.bat"); break;
+		case 3:
+		{
+			wait_for_xmb();
+			sys_ppu_thread_sleep(3);
+			parse_script("/dev_hdd0/onxmb.bat");
+		}
 	}
 
 	sys_ppu_thread_exit(0);
 }
 
-static void start_event(u8 id)
+static void start_event(u8 event_id)
 {
+	switch (event_id)
+	{
+		case 1: if(not_exists("/dev_hdd0/boot_init.txt")) return; break; // EVENT_BOOT_INIT
+		case 2: if(not_exists("/dev_hdd0/autoexec.bat")) return; break;  // EVENT_AUTOEXEC
+		case 3: if(not_exists("/dev_hdd0/onxmb.bat")) return; break;     // EVENT_ON_XMB
+	}
+
 	sys_ppu_thread_t t_id;
-	sys_ppu_thread_create(&t_id, script_thread, id, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
+	sys_ppu_thread_create(&t_id, script_thread, event_id, THREAD_PRIO, THREAD_STACK_SIZE_SCRIPT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
 }
 
 #undef line

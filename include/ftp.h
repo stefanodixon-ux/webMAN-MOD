@@ -1121,6 +1121,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								mode = MODE;
 
 							findPath(filename, param, cwd);
+
+							if(isDir(filename))
+								mode |= CELL_FS_S_IFDIR;
+
 							cellFsChmod(filename, mode);
 
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
