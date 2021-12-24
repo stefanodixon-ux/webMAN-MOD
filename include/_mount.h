@@ -23,7 +23,7 @@
 static int8_t check_multipsx = NONE;
 
 static u8 force_ap = 0;
-static u8 mount_app_home = false; // force mount JB folder in /app_home (false = use webman_config->app_home)
+static u8 mount_app_home = false; // force mount JB folder in /app_home [false = use webman_config->app_home]
 
 #ifdef MOUNT_GAMEI
 static char map_title_id[TITLEID_LEN];
