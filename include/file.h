@@ -1189,6 +1189,7 @@ static void unlink_file(const char *drive, const char *path, const char *file)
 	sprintf(filename, "%s/%s%s", drive, path, file); cellFsUnlink(filename);
 }
 
+#ifndef LITE_EDITION
 static void uninstall(char *param)
 {
 	if(file_size("/dev_hdd0/boot_plugins.txt")             < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
@@ -1233,6 +1234,7 @@ static void uninstall(char *param)
 
 	sprintf(param, "%s%s", "/delete.ps3", "?uninstall");
 }
+#endif
 
 static void delete_history(bool delete_folders)
 {

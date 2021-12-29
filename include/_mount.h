@@ -972,7 +972,17 @@ static void set_app_home(const char *game_path)
 	else if(IS(game_path, PKGLAUNCH_DIR))
 		sys_map_path(APP_HOME_DIR, PKGLAUNCH_PS3_GAME);
 	else
+	{
 		sys_map_path(APP_HOME_DIR, game_path);
+
+		// USRDIR as /app_home if game path has USRDIR/EBOOT.BIN
+		if(game_path && is_app_dir(game_path, "."))
+		{
+			char new_path[strlen(game_path) + 8];
+			sprintf(new_path, "%s/USRDIR", game_path);
+			sys_map_path("/app_home", new_path);
+		}
+	}
 }
 
 static void set_bdvd_as_app_home(void)

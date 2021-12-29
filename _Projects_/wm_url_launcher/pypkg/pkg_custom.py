@@ -449,6 +449,12 @@ def getFiles(files, folder, original_len):
 			file.padding 	= 0
 			files.append(file)
 
+def file_exists(folder, wildcard):
+	for file_item in glob.glob( os.path.join(folder, wildcard) ):
+		if os.path.isfile(file_item):
+			return True
+	return False
+
 def pack(folder, contentid, outname=None):
 
 	folder = os.path.normpath(folder) + "/"
@@ -512,6 +518,16 @@ def pack(folder, contentid, outname=None):
 		this.prefixLen = 0
 		this.contentType = 0x0C # vsh module
 		this.category = "(VSH MODULE)"
+	elif contentid.find("AVATAR") >= 0 or file_exists(folder, 'PSNA_*.edat'):
+		this.prefixPath = "" # do not use ../../ on standard packages
+		this.prefixLen = 0
+		this.contentType = 0x0D # avatar
+		this.category = "(AVATAR)"
+	elif contentid.find("KEY") >= 0 or file_exists(folder, '*.edat'):
+		this.prefixPath = "" # do not use ../../ on standard packages
+		this.prefixLen = 0
+		this.contentType = 0x0B # License
+		this.category = "(LICENSE)"
 
 	qadigest = hashlib.sha1()
 

@@ -75,6 +75,7 @@ static u32 get_xreg_value(const char *key, u32 new_value, char *str_value, bool 
 }
 #endif
 
+#ifndef LITE_EDITION
 static int get_xreg_entry_size(int id)
 {
 	if(id >= 0x28 && id < 0x3D)
@@ -113,3 +114,4 @@ static int get_xreg_entry_size(int id)
 	}
 	return 0;
 }
+#endif
