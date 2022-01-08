@@ -507,11 +507,7 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 		concat(buffer, templn); concat(buffer, "</a>");
 
 		is_vsh = (strstr(templn, "_main_vsh.self") != NULL);
-/*
-		char url[32]; sprintf(url, "/syscall.ps3?19|%i", pid);
-		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Kill", HTML_ONCLICK, url);
-		concat(buffer, templn);
-*/
+
 		if(pid > LV2)
 		{
 			sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Pause", HTML_ONCLICK, "/xmb.ps3$rsx_pause");
