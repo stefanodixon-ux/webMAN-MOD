@@ -373,6 +373,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_519.63<td>FIFA 2004</tr>
 <tr><td>CUSTOM<td>SLES_519.64<td>FIFA 2004</tr>
 <tr><td>CUSTOM<td>SLPM_667.50<td>Final Fantasy XII International: Zodiac Job System</tr>
+<tr><td>CUSTOM<td>SLUS_210.72<td>Finny the Fish & the Seven Waters</tr>
 <tr><td>CUSTOM<td>SLUS_212.51<td>FlatOut 2</tr>
 <tr><td>CUSTOM<td>SLES_540.02<td>FlatOut 2</tr>
 <tr><td>CUSTOM<td>SLES_540.03<td>FlatOut 2</tr>
@@ -611,6 +612,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPM_661.43<td>Rebirth Moon</tr>
 <tr><td>CUSTOM<td>SLPM_665.65<td>REC: DokiDoki Seiyuu Paradise</tr>
 <tr><td>CUSTOM<td>SLUS_205.00<td>Red Dead Revolver</tr>
+<tr><td>CUSTOM<td>SCUS_974.90<td>Rogue Galaxy</tr>
+<tr><td>CUSTOM<td>SCES_545.52<td>Rogue Galaxy</tr>
 <tr><td>CUSTOM<td>SLES_513.45<td>Run Like Hell</tr>
 <tr><td>CUSTOM<td>SLPM_661.68<td>Ryu ga Gotoku</tr>
 <tr><td>CUSTOM<td title='Greatly reduces "head banging" during dialogue scenes. It still appears occasionally, but rarely'>SLPS_201.78<td>Samurai</tr>
@@ -778,6 +781,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title='Greatly reduces "head banging" during dialogue scenes. It still appears occasionally, but rarely'>SLES_509.21<td>Way of the Samurai</tr>
 <tr><td>CUSTOM<td>SLUS_206.84<td>Whiplash</tr>
 <tr><td>CUSTOM<td>SLES_519.58<td>Whiplash</tr>
+<tr><td>CUSTOM<td>SLUS_216.15<td>Wild Arms V</tr>
+<tr><td>CUSTOM<td>SLES_549.72<td>Wild Arms V</tr>
 <tr><td>CUSTOM<td>SLPM_654.84<td>WISP: Word Image Sound Play</tr>
 <tr><td>CUSTOM<td>SLES_545.47<td>World Championship Poker featuring Howard Lederer: All In</tr>
 <tr><td>CUSTOM<td>SLPS_201.95<td>World Fantasista</tr>
@@ -2622,6 +2627,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_543.57<td>Final Fantasy XII</tr>
 <tr><td>ENC<td>SLES_543.58<td>Final Fantasy XII</tr>
 <tr><td>ENC<td>SLPM_667.50<td>Final Fantasy XII International: Zodiac Job System</tr>
+<tr><td>ENC<td>SLUS_210.72<td>Finny the Fish & the Seven Waters</tr>
 <tr><td>ENC<td>SLUS_217.02<td>Fire Pro Wrestling: Returns</tr>
 <tr><td>ENC<td>SLUS_209.01<td>FlatOut</tr>
 <tr><td>ENC<td>SLES_527.53<td>FlatOut</tr>
@@ -3211,6 +3217,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_208.90<td>Rocky: Legends</tr>
 <tr><td>ENC<td>SLPM_624.91<td>RockMan: Power Battle Fighters</tr>
 <tr><td>ENC<td>SLPM_657.30<td>Rockman X8 / Mega Man X8</tr>
+<tr><td>ENC<td>SCUS_974.90<td>Rogue Galaxy</tr>
+<tr><td>ENC<td>SCES_545.52<td>Rogue Galaxy</tr>
 <tr><td>ENC<td>SCPS_170.13<td>Rogue Galaxy: Director's Cut</tr>
 <tr><td>ENC<td>SLUS_201.74<td>Rumble Racing</tr>
 <tr><td>ENC<td>SLES_501.20<td>Rumble Racing</tr>
@@ -3606,6 +3614,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_511.26<td>Whirl Tour</tr>
 <tr><td>ENC<td>SLUS_204.89<td>Whirl Tour</tr>
 <tr><td>ENC<td>SCPS_151.18<td>Wild Arms: The Fifth Vanguard</tr>
+<tr><td>ENC<td>SLUS_216.15<td>Wild Arms V</tr>
+<tr><td>ENC<td>SLES_549.72<td>Wild Arms V</tr>
 <tr><td>ENC<td>SLUS_210.84<td>Winnie the Pooh's Rumbly Tumbly Adventure</tr>
 <tr><td>ENC<td>SLUS_204.62<td>Wipeout Fusion</tr>
 <tr><td>ENC<td>SCES_500.05<td>Wipeout Fusion</tr>
@@ -3663,7 +3673,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2014, count = tr.length, classics = i;
+var i = 2019, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
