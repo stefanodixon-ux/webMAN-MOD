@@ -593,6 +593,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls required for line thickness while drawing">SLES_544.39<td>Okami</tr>
 <tr><td>CUSTOM<td>SLUS_200.11<td>Orphen: Scion of Sorcery <small>(This config just skips the FMVs that freeze the game. Sound bugs still exist)</small></tr>
 <tr><td>CUSTOM<td>SCES_504.08<td>PaRappa the Rapper 2</tr>
+<tr><td>CUSTOM<td>SLUS_211.95<td>Phantasy Star Universe</tr>
+<tr><td>CUSTOM<td>SLUS_216.31<td>Phantasy Star Universe: Ambition of the Illuminus</tr>
 <tr><td>CUSTOM<td>SCPS_150.05<td>Phase Paradox</tr>
 <tr><td>CUSTOM<td>SCPS_110.14<td>Piposaru 2001</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls">SLUS_200.03<td>Portal Runner</tr>
@@ -3150,6 +3152,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_556.38<td>PES 2011: Pro Evolution Soccer</tr>
 <tr><td>ENC<td>NPJD_000.28<td>Phantasy Star Complete Collection</tr>
 <tr><td>ENC<td>SLUS_211.94<td>Phantasy Star Universe</tr>
+<tr><td>ENC<td>SLUS_211.95<td>Phantasy Star Universe</tr>
 <tr><td>ENC<td>SLES_543.08<td>Phantasy Star Universe</tr>
 <tr><td>ENC<td>SLPM_660.31<td>Phantasy Star Universe</tr>
 <tr><td>ENC<td>SLUS_216.31<td>Phantasy Star Universe: Ambition of the Illuminus</tr>
@@ -3681,7 +3684,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2024, count = tr.length, classics = i;
+var i = 2026, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
