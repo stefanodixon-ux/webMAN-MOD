@@ -51,6 +51,7 @@
  #ifndef LITE_EDITION
   #define NET_SUPPORT
   #define USE_INTERNAL_NET_PLUGIN
+  #define DEBUG_XREGISTRY
  #else
   #undef VISUALIZERS
   #undef NET_SUPPORT
@@ -354,9 +355,9 @@ int wait_for(const char *path, u8 timeout);
 //static int (*plugin_GetInterface)(int,int) = NULL;
 
 #include "include/string.h"
-#include "include/xregistry.h"
 #include "include/wm_config.h"
 #include "include/html.h"
+#include "include/xregistry.h"
 #include "include/peek_poke.h"
 #include "include/hdd_unlock_space.h"
 #include "include/idps.h"

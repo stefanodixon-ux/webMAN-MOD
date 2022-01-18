@@ -1,6 +1,7 @@
 #include "../vsh/xregistry.h"
 
 #ifdef DEBUG_XREGISTRY
+
 static u32 get_xreg_value(const char *key, u32 new_value, char *str_value, bool read_only)
 {
 	int reg = NONE;
@@ -25,8 +26,7 @@ static u32 get_xreg_value(const char *key, u32 new_value, char *str_value, bool 
 		entry_offset += 2;
 
 		//relative entry offset
-		cellFsLseek(reg, entry_offset, 0, &r);
-		cellFsRead(reg, &off_string, 2, &r);
+		cellFsReadWithOffset(reg, entry_offset, &off_string, 2, &r);
 		entry_offset += 4;
 
 		//data lenght
