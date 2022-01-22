@@ -477,7 +477,7 @@ int main(int argc, const char* argv[])
 			else
 			if(strcasestr(path, "/ROMS/FCEUMM/"))   sprintf(path, "%s/fceumm%s",   RETROARCH, sufix[i]);		else
 			if(strcasestr(path, "/ROMS/NESTOPIA/")) sprintf(path, "%s/nestopia%s", RETROARCH, sufix[i]);		else
-			if(strcasestr(path, "/ROMS/QNES/"))	 sprintf(path, "%s/quicknes%s", RETROARCH, sufix[i]);		else
+			if(strcasestr(path, "/ROMS/QNES/"))		sprintf(path, "%s/quicknes%s", RETROARCH, sufix[i]);		else
 			if(strcasestr(path, "/ROMS/QUICKNES/")) sprintf(path, "%s/quicknes%s", RETROARCH, sufix[i]);		else
 
 			if(strcasestr(path, "/ROMS/GEN"))
@@ -486,9 +486,10 @@ int main(int argc, const char* argv[])
 				if(not_exists(path)) sprintf(path, "%s/picodrive%s",	   RETROARCH, sufix[i]);
 			}
 			else
-			if(strcasestr(path, "/ROMS/PICO"))	  sprintf(path, "%s/picodrive%s",	   RETROARCH, sufix[i]); else
-			if(strcasestr(path, "/ROMS/MEGAD"))	 sprintf(path, "%s/genesis_plus_gx%s", RETROARCH, sufix[i]); else
-			if(strcasestr(path, "/ROMS/GG"))		sprintf(path, "%s/gearsystem%s",	  RETROARCH, sufix[i]); else
+			if(strcasestr(path, "/ROMS/MEGAD"))	 sprintf(path, "%s/genesis_plus_gx%s",	RETROARCH, sufix[i]); else
+			if(strcasestr(path, "/ROMS/SEGACD")) sprintf(path, "%s/genesis_plus_gx%s",	RETROARCH, sufix[i]); else
+			if(strcasestr(path, "/ROMS/PICO"))	 sprintf(path, "%s/picodrive%s",		RETROARCH, sufix[i]); else
+			if(strcasestr(path, "/ROMS/GG"))	 sprintf(path, "%s/gearsystem%s",		RETROARCH, sufix[i]); else
 
 			if(strcasestr(path, "/ROMS/GBA/"))
 			{

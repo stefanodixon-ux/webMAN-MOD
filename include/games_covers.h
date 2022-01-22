@@ -139,7 +139,17 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	if(cache)
 		flen = sprintf(name, "%s/%s", WMTMP, filename + pos);
 	else
+	{
+		// remove prepend [PSPISO] or [PS2ISO]
+		if((filename[pos] == '[') && (filename[pos + 7] == ']'))
+		{
+			char *prefix = (char*)filename + pos + 1;
+			if(islike(prefix, paths[id_PSPISO])) pos += 9;
+			if(islike(prefix, paths[id_PS2ISO])) pos += 9;
+		}
+
 		flen = sprintf(name, "%s", filename + pos);
+	}
 
 	if(is_BIN_ENC(name)) {flen -= 8; name[flen] = NULL;}
 
