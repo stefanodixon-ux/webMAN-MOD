@@ -84,8 +84,12 @@ static int mountCount;
 #include "file.h"
 #include "firmware.h"
 #include "fix_game.h"
-#include "net.h"
 #include "fake_iso.h"
+
+//#define MULTIMAN
+#ifndef MULTIMAN
+#include "net.h"
+#endif
 
 //----------------
 
@@ -192,8 +196,10 @@ int main(int argc, const char* argv[])
 
 	cobra_lib_init();
 
+	#ifndef MULTIMAN
 	int refresh_xml = connect_to_webman();
 	if(refresh_xml >= 0) ssend(refresh_xml, "GET /mount.ps3/unmount HTTP/1.0\r\n");
+	#endif
 
 	scan_exfat();
 
@@ -504,8 +510,10 @@ exit:
 	for (u8 u = 0; u < mountCount; u++) ntfsUnmount(mounts[u].name, 1);
 
 	//--- Force refresh xml (webMAN)
+	#ifndef MULTIMAN
 	refresh_xml = connect_to_webman();
 	if(refresh_xml >= 0) ssend(refresh_xml, "GET /refresh.ps3 HTTP/1.0\r\n");
+	#endif
 
 	//--- Launch RELOAD.SELF
 	char *self_path = path; memset(self_path, 0, MAX_PATH_LEN);
