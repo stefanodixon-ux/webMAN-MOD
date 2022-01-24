@@ -86,7 +86,7 @@ static void apply_remaps(void)
 	sys_map_path2(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);
  #endif
 
-	if(payload_ps3hen)
+	//if(payload_ps3hen)
 	{
 		sys_map_path(FB_XML, (char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");
 	//	sys_map_path(HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");
@@ -108,10 +108,10 @@ static void make_fb_xml(void)
 
 		char *fb_xml = (char *)FB_XML;
 		#ifdef COBRA_ONLY
-		if(payload_ps3hen)
+		//if(payload_ps3hen)
 		{
 			fb_xml = (char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml";
-			sys_map_path((char *)FB_XML, (char *)fb_xml);
+			sys_map_path(FB_XML, fb_xml);
 		}
 		#endif
 
@@ -157,7 +157,7 @@ static void make_fb_xml(void)
 
 		sys_memory_free(sysmem);
 
-		if(payload_ps3hen && IS_ON_XMB)
+		//if(payload_ps3hen && IS_ON_XMB)
 		{
 			if(get_explore_interface())
 			{
