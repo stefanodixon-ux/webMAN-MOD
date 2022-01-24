@@ -88,7 +88,7 @@ static void apply_remaps(void)
 
 	//if(payload_ps3hen)
 	{
-		sys_map_path(FB_XML, (char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml");
+		sys_map_path(FB_XML, (char *)FB_HEN_XML);
 	//	sys_map_path(HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");
 	}
 
@@ -104,13 +104,13 @@ static void make_fb_xml(void)
 	sys_addr_t sysmem = NULL;
 	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 	{
-		cellFsUnlink(FB_XML);
+		cellFsUnlink(_FB_XML);
 
 		char *fb_xml = (char *)FB_XML;
 		#ifdef COBRA_ONLY
 		//if(payload_ps3hen)
 		{
-			fb_xml = (char *)"/dev_hdd0/xmlhost/game_plugin/fb-hen.xml";
+			fb_xml = (char *)FB_HEN_XML;
 			sys_map_path(FB_XML, fb_xml);
 		}
 		#endif
@@ -348,8 +348,10 @@ static bool scan_mygames_xml(u64 conn_s_p)
 			}
 		}
 
+		make_fb_xml();
+
 		// start a new thread for refresh xml content at start up
-		if(!webman_config->refr || not_exists(MY_GAMES_XML) || not_exists(FB_XML))
+		if(!webman_config->refr || not_exists(MY_GAMES_XML))
 		{
 			sys_ppu_thread_t t_id;
 			sys_ppu_thread_create(&t_id, start_www, REFRESH_CONTENT, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
@@ -1261,9 +1263,9 @@ save_xml:
 
 		if(webman_config->root)
 		{
-			sprintf(templn, "/%s", FB_XML); // force copy file instead of link (using //dev_hdd0)
+			sprintf(templn, "/%s", FB_HEN_XML); // force copy file instead of link (using //dev_hdd0)
 			_file_copy(xml_file, templn);
-			write_file(FB_XML, CELL_FS_O_WRONLY, "fb\"     ", 66, 8, false); // replace seg_mygames with seg_fb
+			write_file(FB_HEN_XML, CELL_FS_O_WRONLY, "fb\"     ", 66, 8, false); // replace seg_mygames with seg_fb
 
 			if(get_explore_interface())
 			{

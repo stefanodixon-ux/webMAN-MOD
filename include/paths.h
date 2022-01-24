@@ -101,7 +101,10 @@
 
 #define HEN_HFW_SETTINGS		"/dev_hdd0/hen/hfw_settings.xml"
 
+#define _FB_XML					HTML_BASE_PATH "//fb.xml"
 #define FB_XML					HTML_BASE_PATH "/fb.xml"
+#define FB_HEN_XML				HTML_BASE_PATH "/fb-hen.xml"
+
 #ifdef COBRA_ONLY
 #define MY_GAMES_XML			HTML_BASE_PATH "/mygames.xml"
 #else
