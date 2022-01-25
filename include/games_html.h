@@ -2,8 +2,6 @@
 #define SUFIX2(a)	((a==1)?" (1)":(a==2)?" (2)":(a==3)?" (3)":(a==4)?" (4)":"")
 #define SUFIX3(a)	((a==1)?" (1).ntfs[":(a==2)?" (2).ntfs[":(a==3)?" (3).ntfs[":(a==4)?" (4).ntfs[":"")
 
-#define ROMS_EXTENSIONS ".BIN.ISO.CUE.CCD.CHD.ZIP.7Z.GBA.NES.GB.GBC.DMG.MD.SMD.GEN.SMS.GG.SG.IOS.FLAC.NGP.NGC.PCE.SGX.VB.VBOY.WS.WSC.FDS.EXE.WAD.IWAD.SMC.FIG.SFC.GD3.GD7.DX2.BSX.SWC.A26.PAK.LUA.ADF.DMS.FDI.IPF.UAE.A78.MGW.LNX.VEC.J64.JAG.PRG.XFD.XEX.UNF.UNIF.MDX.BMS.68K.SGD.M3U.COM.BAT.CMD.AGB.ST.MIN"
-
 // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
 enum paths_ids
@@ -95,11 +93,14 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		int flen = strlen(data[v3_entry].name); if(flen < 4) return FAILED;
 
 		char *ext = data[v3_entry].name + flen - 4; if(ext[1] == '.') ++ext;
+		#ifdef MOUNT_ROMS
 		if(IS_ROMS_FOLDER)
 		{
 			if(!strcasestr(ROMS_EXTENSIONS, ext)) return FAILED;
 		}
-		else if(IS_PSPISO && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
+		else
+		#endif
+		if(IS_PSPISO && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
 		else
 			if(!strcasestr(ISO_EXTENSIONS + 10, ext)) return FAILED;
 	}

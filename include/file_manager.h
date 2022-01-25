@@ -312,12 +312,14 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	}
 #endif
 
-#ifdef PKG_HANDLER
+#ifdef MOUNT_ROMS
 	else if( ((strstr(templn, "/ROMS/") != NULL) || (strcasestr(ROMS_EXTENSIONS, ext) != NULL)) )
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, show_img ? " pic" : " rom");
 	}
+#endif
+#ifdef PKG_HANDLER
 	else if( ((strcasestr(templn, ".SELF") != NULL) || (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL)))
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);

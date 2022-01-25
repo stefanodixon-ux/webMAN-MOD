@@ -327,6 +327,8 @@ static bool script_running = false;
 static char fw_version[8] = "4.xx";
 static char local_ip[16] = "127.0.0.1";
 
+static char *ROMS_EXTENSIONS = NULL;
+
 static void show_msg(const char *text);
 static void show_status(const char *label, const char *status);
 static void sys_get_cobra_version(void);
@@ -505,6 +507,16 @@ static void wwwd_thread(u64 arg)
 	if(webman_config->blind) enable_dev_blind(NO_MSG);
 
 	set_buffer_sizes(webman_config->foot);
+
+	#ifdef MOUNT_ROMS
+	size_t fsize = file_size(WMROMS_EXTENSIONS);
+	if((fsize > 0) && (fsize <= 1024))
+	{
+		ROMS_EXTENSIONS = malloc(fsize);
+		read_file(WMROMS_EXTENSIONS, ROMS_EXTENSIONS, fsize, 0);
+	}
+	if(!ROMS_EXTENSIONS) ROMS_EXTENSIONS = (char *)".BIN.ISO.CUE.CCD.CHD.ZIP.7Z.GBA.NES.GB.GBC.MD.SMD.GEN.SMS.GG.SG.IOS.FLAC.NGP.NGC.PCE.VB.VBOY.WS.WSC.FDS.EXE.WAD.IWAD.SMC.FIG.SFC.SWC.A26.PAK.LUA.PRG.M3U.COM.BAT";
+	#endif
 
 #ifdef COPY_PS3
 	memset(cp_path, 0, sizeof(cp_path));
@@ -741,6 +753,10 @@ int wwwd_stop(void)
 	if (ret == 0) sys_ppu_thread_join(t_id, &exit_code);
 
 	sys_ppu_thread_usleep(500000);
+
+	#ifdef MOUNT_ROMS
+	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
+	#endif
 
 	unload_prx_module();
 

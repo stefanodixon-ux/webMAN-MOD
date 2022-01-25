@@ -225,7 +225,15 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 			if(roms_index >= 21 && roms_index <= 22) add_tag(tags, 0x9590); else // VICE
 			if(roms_index >= 37 && roms_index <= 39) add_tag(tags, 0x95A4); else // PCE
 			if(roms_index >= 32 && roms_index <= 33) add_tag(tags, 0x959E); else // MSX
-			if(roms_index == 75)                     add_tag(tags, 0x9682);      // WSWAM
+			if(roms_index == 75)                     add_tag(tags, 0x9682); else // WSWAM
+			if(roms_index == 76)                     add_tag(tags, 0x95BE); else // SEGACD
+//			if(roms_index == 77)                     add_tag(tags, 0x95BC); else // COLECO
+			if(roms_index == 78)                     add_tag(tags, 0x959E); else // MSX
+			if(roms_index == 79)                     add_tag(tags, 0x959F); else // MSX2
+//			if(roms_index == 80)                     add_tag(tags, 0x95BC); else // SG1000
+			if(roms_index == 81)                     add_tag(tags, 0x95BF); else // MASTER
+			if(roms_index == 82)                     add_tag(tags, 0x95A4); else // PCECD
+													 add_tag(tags, 0x95BC);      // ROM
 		}
 		#endif
 
@@ -455,8 +463,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	check_cover_folders(templn);
 
 	#ifdef MOUNT_ROMS
-	#define ROM_PATHS	77
-	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME078", "MAME2000", "MAME2003", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "BOMBER", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "QUAKE2", "JAVAME", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "DS", "GBA", "VBA", "MGBA", "VBOY", "PALM", "POKEMINI", "GENESIS", "GEN", "MEGAD", "MEGADRIVE", "PICO", "GG", "GEARBOY", "ZX81", "FUSE", "SCUMMVM", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "UZEM", "VECX", "WSWAM", "SEGACD" };
+	#define ROM_PATHS	84
+	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME078", "MAME2000", "MAME2003", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "BOMBER", "NXENGINE", "AMIGA", "VICE", "DOSBOX", "GW", "DOOM", "QUAKE", "QUAKE2", "JAVAME", "LUA", "O2EM", "INTV", "BMSX", "FMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "DS", "GBA", "VBA", "MGBA", "VBOY", "PALM", "POKEMINI", "GENESIS", "GEN", "MEGAD", "MEGADRIVE", "PICO", "GG", "GEARBOY", "ZX81", "FUSE", "SCUMMVM", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "UZEM", "VECX", "WSWAM", "SEGACD", "COLECO", "MSX", "MSX2", "SG1000", "MASTER", "PCECD", "CANNONBALL" };
 	u16 roms_count[ROM_PATHS]; u32 count_roms = 0;
 	#endif
 	u8 roms_index = 0;

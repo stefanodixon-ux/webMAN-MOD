@@ -632,6 +632,8 @@ int main()
 		file_copy(APP_USRDIR "/res/wm_online_ids.txt", RES_DIR "/wm_online_ids.txt");
 	if(not_exists(RES_DIR "/wm_ignore.txt"))
 		file_copy(APP_USRDIR "/res/wm_ignore.txt",     RES_DIR "/wm_ignore.txt");
+	if(not_exists(RES_DIR "/roms_extensions.txt"))
+		file_copy(APP_USRDIR "/res/roms_extensions.txt", RES_DIR "/roms_extensions.txt");
 
 	file_copy(APP_USRDIR "/res/npsignin_plugin.rco",     RES_DIR "/npsignin_plugin.rco");
 

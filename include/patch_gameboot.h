@@ -147,7 +147,7 @@ static void patch_gameboot_by_type(const char *path)
 				patch_gameboot(9); // nes
 			else if(strstr(path, "GBA") || strstr(path, "VBA") || strstr(path, "DS"))  // GBA, MGBA, VBA, DS
 				patch_gameboot(10); // gba
-			else if(strstr(path, "GEN") || strstr(path, "MEGAD") || strstr(path, "PICO") || strstr(path, "GG") || strstr(path, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
+			else if(strstr(path, "GEN") || strstr(path, "MEGAD") || strstr(path, "MASTER") || strstr(path, "SEGACD") || strstr(path, "SG1000") || strstr(path, "PICO") || strstr(path, "GG") || strstr(path, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
 				patch_gameboot(11); // gen
 			else if(strstr(path, "NEO") || strstr(path, "NGP")) // NEOCD, FBNEO, NEO, NEOGEO, NGP
 				patch_gameboot(12); // neo
@@ -166,7 +166,7 @@ static void patch_gameboot_by_type(const char *path)
 			else if(strstr(path, "DOOM") || strstr(path, "QUAKE"))  // DOOM, QUAKE, QUAKE2
 				patch_gameboot(19); // ids
 			else
-				patch_gameboot(7); // rom: 2048, BMSX, BOMBER, CAP32, DOSBOX, FMSX, FUSE, GW, INTV, JAVAME, LUA, NXENGINE, O2EM, PALM, POKEMINI, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, WSWAM, ZX81
+				patch_gameboot(7); // rom: 2048, BMSX, BOMBER, CANNONBALL, CAP32, COLECO, DOSBOX, FMSX, FUSE, GW, INTV, JAVAME, LUA, MSX, MSX2, NXENGINE, O2EM, PALM, POKEMINI, SCUMMVM, SGX, TGBDUAL, THEODORE, UZEM, VECX, WSWAM, ZX81
 		}
 		else
 			patch_gameboot(0); // None

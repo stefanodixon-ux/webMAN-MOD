@@ -54,6 +54,7 @@
 #define WMOFFLINE_GAMES		WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
 
 #define WMIGNORE_FILES		WM_RES_PATH "/wm_ignore.txt"	// webMAN config file to ignore files during content scanning
+#define WMROMS_EXTENSIONS	WM_RES_PATH "/roms_extensions.txt"
 
 #define FILE_LIST_TXT		WMTMP "/filelist.txt"
 #define FILE_LIST_HTM		WMTMP "/filelist.htm"
