@@ -451,6 +451,8 @@ int main(int argc, const char* argv[])
 		{
 			RETROARCH = (char*)retro[i];
 
+			if(not_exists(RETROARCH)) continue;
+
 			if(strcasestr(path, "/ROMS/SNES/"))
 			{
 									 sprintf(path, "%s/snes9x2010%s",	  RETROARCH, sufix[i]);
@@ -461,7 +463,7 @@ int main(int argc, const char* argv[])
 				if(not_exists(path)) sprintf(path, "%s/mednafen_snes%s",   RETROARCH, sufix[i]);
 			}
 			else
-			if(strcasestr(path, "/ROMS/SNES9X/"))	  sprintf(path, "%s/snes9x%s",		  RETROARCH, sufix[i]); else
+			if(strcasestr(path, "/ROMS/SNES9X/"))	   sprintf(path, "%s/snes9x%s",		  RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/SNES9X2005/"))  sprintf(path, "%s/snes9x2005%s",	  RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/SNES9X2005P"))  sprintf(path, "%s/snes9x2005_plus%s", RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/SNES9X2010/"))  sprintf(path, "%s/snes9x2010%s",	  RETROARCH, sufix[i]); else
