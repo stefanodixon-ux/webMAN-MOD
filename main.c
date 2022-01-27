@@ -509,7 +509,7 @@ static void wwwd_thread(u64 arg)
 	set_buffer_sizes(webman_config->foot);
 
 	#ifdef MOUNT_ROMS
-	size_t fsize = file_size(WMROMS_EXTENSIONS);
+	size_t fsize = file_ssize(WMROMS_EXTENSIONS);
 	if((fsize > 0) && (fsize <= 1024))
 	{
 		ROMS_EXTENSIONS = malloc(fsize);

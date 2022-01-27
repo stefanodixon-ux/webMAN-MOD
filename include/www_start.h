@@ -12,9 +12,6 @@ static void start_www(u64 conn_s_p)
 
 		if(conn_s_p == START_DAEMON)
 		{
-			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
-				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
-
 			#ifndef ENGLISH_ONLY
 			update_language();
 			#endif
@@ -162,6 +159,10 @@ static void start_www(u64 conn_s_p)
 			randomize_vsh_resources(true, templn);
 			#endif
 			#endif
+
+			wait_for_xmb();
+			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
+				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
 			start_event(EVENT_ON_XMB);
 
