@@ -423,7 +423,7 @@ static void setup_form(char *buffer, char *templn)
 	char STR_USBPOLL[88];//		= "Disable USB polling";
 	char STR_FTPSVC[64];//		= "Disable FTP service";
 	char STR_FIXGAME[56];//		= "Disable auto-fix game";
-//	char STR_COMBOS[88];//		= "Disable all PAD shortcuts";
+	char STR_COMBOS[88];//		= "Disable all PAD shortcuts";
 	char STR_MMCOVERS[72];//	= "Disable multiMAN covers";
 	char STR_ACCESS[88];//		= "Disable remote access to FTP/WWW services";
 	char STR_NOSETUP[120];//	= "Disable webMAN Setup entry in \"webMAN Games\"";
@@ -479,7 +479,7 @@ static void setup_form(char *buffer, char *templn)
 	language("STR_USBPOLL",   STR_USBPOLL,   "Disable USB polling");
 	language("STR_FTPSVC",    STR_FTPSVC,    "Disable FTP service");
 	language("STR_FIXGAME",   STR_FIXGAME,   "Disable auto-fix game");
-//	language("STR_COMBOS",    STR_COMBOS,    "Disable all PAD shortcuts");
+	language("STR_COMBOS",    STR_COMBOS,    "Disable all PAD shortcuts");
 	language("STR_MMCOVERS",  STR_MMCOVERS,  "Disable multiMAN covers");
 	language("STR_ACCESS",    STR_ACCESS,    "Disable remote access to FTP/WWW services");
 	language("STR_NOSETUP",   STR_NOSETUP,   "Disable " WM_APPNAME " Setup entry in \"" WM_APPNAME " Games\"");
@@ -1040,7 +1040,9 @@ static void setup_form(char *buffer, char *templn)
 	buffer += strlen(buffer);
 
 	//combos
-	sprintf(templn, "</div>" HTML_BLU_SEPARATOR "<b><a class=\"tg\" href=\"javascript:tgl(cmb);\"> %s </a></b><br><div id=\"cmb\"><table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", STR_COMBOS2); concat(buffer, templn);
+	sprintf(templn, "</div>" HTML_BLU_SEPARATOR "<b><a class=\"tg\" href=\"javascript:tgl(cmb);\"> %s </a></b><br><div id=\"cmb\">"
+					"<button onclick=\"var cb=document.getElementById('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
+					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", STR_COMBOS2, STR_COMBOS); concat(buffer, templn);
 
 #ifdef COBRA_ONLY
 	add_checkbox("vs", "VSH MENU",      " : <b>SELECT</b><br>"       , !(webman_config->combo2 & C_VSHMENU), buffer);

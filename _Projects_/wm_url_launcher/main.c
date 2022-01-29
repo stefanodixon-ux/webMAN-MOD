@@ -596,7 +596,9 @@ int main(int argc, const char* argv[])
 			}
 			else
 			if(strcasestr(path, "/ROMS/AMIGA/"))	sprintf(path, "%s/puae%s",		RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/CD32/"))		sprintf(path, "%s/puae%s",		RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/VICE/"))		sprintf(path, "%s/vice_x64%s",	RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/X64/"))		sprintf(path, "%s/vice_x64%s",  RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/X64SC/"))	sprintf(path, "%s/vice_x64sc%s",  RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/X128/"))		sprintf(path, "%s/vice_x128%s",   RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/XPET/"))		sprintf(path, "%s/vice_xpet%s",   RETROARCH, sufix[i]);	else
@@ -605,6 +607,7 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/XCBM5"))		sprintf(path, "%s/vice_xcbm5x0%s",RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/XPLUS4/"))	sprintf(path, "%s/vice_xplus4%s", RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/XSCPU64/"))	sprintf(path, "%s/vice_xscpu64%s", RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/XCMB25X0/"))	sprintf(path, "%s/vice_xcbm5x0%s", RETROARCH, sufix[i]);	else
 
 			if(strcasestr(path, "/ROMS/FMSX/"))		sprintf(path, "%s/fmsx%s",		RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/BMSX/"))		sprintf(path, "%s/bluemsx%s",	 RETROARCH, sufix[i]);	else
