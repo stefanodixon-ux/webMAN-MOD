@@ -538,8 +538,8 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/NEOCD/"))   sprintf(path, "%s/neocd%s",	   RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/NEO"))
 			{
-									 sprintf(path, "%s/fbneo%s",		RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/fbneo_light%s",	RETROARCH, sufix[i]);
+									 sprintf(path, "%s/fbneo_light%s",	RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/fbneo%s",		RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/neocd%s",		RETROARCH, sufix[i]);
 			}
 			else
