@@ -712,6 +712,10 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls required for Dragon Flute song + disabled smoothing">SLPM_652.09<td>Star Ocean 3: Till the End of Time [Limited Edition]</tr>
 <tr><td>CUSTOM<td>SLUS_212.40<td>Star Wars: Battlefront II</tr>
 <tr><td>CUSTOM<td>SLUS_205.10<td>Star Wars: Clone Wars</tr>
+<tr><td>CUSTOM<td>SLES_508.26<td>Star Wars: Clone Wars</tr>
+<tr><td>CUSTOM<td>SLES_508.27<td>Star Wars: Clone Wars</tr>
+<tr><td>CUSTOM<td>SLES_508.28<td>Star Wars: Clone Wars</tr>
+<tr><td>CUSTOM<td>SLES_508.30<td>Star Wars: Clone Wars</tr>
 <tr><td>CUSTOM<td>SLES_503.71<td>Star Wars: Jedi Starfighter</tr>
 <tr><td>CUSTOM<td>SLES_546.58<td>Star Wars: The Force Unleashed</tr>
 <tr><td>CUSTOM<td>SLUS_213.44<td>Steambot Chronicles (<a href="https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/CUSTOM/SLUS_213.44.CONFIG.ALT" title="Cause massive slow down, but pass when player escort Basil to meet Dandelion. The config can be removed later">ALT</A>)</tr>
@@ -781,6 +785,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_218.81<td>Transformers: Revenge of The Fallen</tr>
 <tr><td>CUSTOM<td>SLUS_212.55<td>Trapt</tr>
 <tr><td>CUSTOM<td>SLES_538.24<td>Trapt</tr>
+<tr><td>CUSTOM<td>SLPS_200.62<td>Truck Kyousokyoku: Ai to Kanashimi no Rodeo</tr>
 <tr><td>CUSTOM<td>SLUS_213.90<td>Urban Chaos: Riot Response</tr>
 <tr><td>CUSTOM<td>SLUS_212.09<td>Urban Reign</tr>
 <tr><td>CUSTOM<td>SLUS_214.52<td>Valkyrie Profile 2: Silmeria</tr>
@@ -3434,6 +3439,10 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_535.03<td>Star Wars: Battlefront II</tr>
 <tr><td>ENC<td>SLPM_661.90<td>Star Wars: Battlefront II</tr>
 <tr><td>ENC<td>SLUS_205.10<td>Star Wars: Clone Wars</tr>
+<tr><td>ENC<td>SLES_508.26<td>Star Wars: Clone Wars</tr>
+<tr><td>ENC<td>SLES_508.27<td>Star Wars: Clone Wars</tr>
+<tr><td>ENC<td>SLES_508.28<td>Star Wars: Clone Wars</tr>
+<tr><td>ENC<td>SLES_508.30<td>Star Wars: Clone Wars</tr>
 <tr><td>ENC<td>SLES_503.71<td>Star Wars: Jedi Starfighter</tr>
 <tr><td>ENC<td>SLES_546.58<td>Star Wars: The Force Unleashed</tr>
 <tr><td>ENC<td>SLPM_664.85<td>State of Emergency: Revenge</tr>
@@ -3612,6 +3621,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_218.81<td>Transformers: Revenge of The Fallen</tr>
 <tr><td>ENC<td>SLUS_212.55<td>Trapt</tr>
 <tr><td>ENC<td>SLES_538.24<td>Trapt</tr>
+<tr><td>ENC<td>SLPS_200.62<td>Truck Kyousokyoku: Ai to Kanashimi no Rodeo</tr>
 <tr><td>ENC<td>SLUS_211.06<td>True Crime: New York City</tr>
 <tr><td>ENC<td>SLES_536.16<td>True Crime: New York City</tr>
 <tr><td>ENC<td>SLES_536.17<td>True Crime: New York City</tr>
@@ -3707,7 +3717,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2039, count = tr.length, classics = i;
+var i = 2044, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
