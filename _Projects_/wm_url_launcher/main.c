@@ -605,6 +605,7 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/VICE/"))		sprintf(path, "%s/vice_x64%s",	RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/X64/"))		sprintf(path, "%s/vice_x64%s",  RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/X64SC/"))	sprintf(path, "%s/vice_x64sc%s",  RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/X64DTV/"))	sprintf(path, "%s/vice_x64dtv%s", RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/X128/"))		sprintf(path, "%s/vice_x128%s",   RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/XPET/"))		sprintf(path, "%s/vice_xpet%s",   RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/XVIC/"))		sprintf(path, "%s/vice_xvic%s",   RETROARCH, sufix[i]);	else
