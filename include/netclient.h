@@ -187,6 +187,20 @@ static int remote_stat(int s, const char *path, int *is_directory, s64 *file_siz
 	return CELL_OK;
 }
 
+static int remote_file_exists(int ns, const char *remote_file)
+{
+	s64 size = 0; int abort_connection = 0;
+	int is_directory = 0; u64 mtime, ctime, atime;
+
+	if(remote_stat(ns, remote_file, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) != CELL_OK)
+		return FAILED;
+
+	if(is_directory || (size > 0))
+		return CELL_OK;
+
+	return FAILED;
+}
+
 #ifdef USE_INTERNAL_NET_PLUGIN
 static int read_remote_file_critical(u64 offset, void *buf, u32 size)
 {
@@ -747,21 +761,24 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 {
 	copy_aborted = false;
 
-	if(ns < 0) return FAILED;
+	if((ns < 0) || (maxbytes <= 0)) return FAILED;
 
 	if(file_exists(local_file)) return CELL_OK; // local file already exists
 
-	s64 size = 0; int abort_connection = 0;
-
-	if(!strchr(remote_file, '*'))
+	// check invalid characters
+	for(u16 c = 0; remote_file[c]; c++)
 	{
-		int is_directory = 0; u64 mtime, ctime, atime;
-		if(remote_stat(ns, remote_file, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) != CELL_OK || size <= 0) return FAILED;
+		if(strchr("\"<|>:*?", remote_file[c])) return FAILED;
 	}
 
-	int ret = FAILED;
+	// check remote file exists
+	if(remote_file_exists(ns, remote_file)) return FAILED;
 
-	size = open_remote_file(ns, remote_file, &abort_connection);
+	// copy remote file
+	int ret = FAILED;
+	int abort_connection = 0;
+
+	s64 size = open_remote_file(ns, remote_file, &abort_connection);
 
 	u64 file_size = size;
 
@@ -775,7 +792,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 
 			if(cellFsOpen(local_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
 			{
-				if(maxbytes > 0UL && file_size > maxbytes) file_size = maxbytes;
+				if(file_size > maxbytes) file_size = maxbytes;
 
 				if(chunk_size > file_size) chunk_size = (u32)file_size;
 
@@ -803,5 +820,22 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 	//open_remote_file(ns, "/CLOSEFILE", &abort_connection); // <- cause of bug: only 1 remote file is copied during refresh xml
 
 	return ret;
+}
+
+static bool remote_is_dir(const char *remote_path)
+{
+	int ns = connect_to_remote_server(remote_path[4]);
+	if(ns >= 0)
+	{
+		s64 size = 0; int abort_connection = 0;
+		int is_directory = 0; u64 mtime, ctime, atime;
+
+		if(remote_stat(ns, remote_path + 5, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) != CELL_OK)
+			return false;
+
+		if(is_directory)
+			return true;
+	}
+	return false;
 }
 #endif //#ifdef NET_SUPPORT

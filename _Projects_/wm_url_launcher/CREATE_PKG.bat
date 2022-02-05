@@ -27,4 +27,7 @@ set PKG_NAME=./%CONTENTID%.pkg
 python.exe %PKG% --contentid %CONTENTID% %PKG_DIR% %PKG_NAME%
 
 ren UP0001-PKGLAUNCH_00-0000000000000000.pkg ROMS_PKG_Launcher.pkg
+
+xcopy .\pkg ..\updater\pkgfiles\USRDIR\xmb\PKGLAUNCH /Y/E/S
+xcopy .\pkg ..\updater\update\dev_hdd0\game\PKGLAUNCH /Y/E/S
 pause

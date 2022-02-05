@@ -207,12 +207,11 @@ static bool isDir(const char* path)
 		return ((ps3ntfs_stat(tmp + 5, &bufn) >= 0) && (bufn.st_mode & S_IFDIR));
 	}
 #endif
-
 	struct CellFsStat s;
 	if(cellFsStat(path, &s) == CELL_FS_SUCCEEDED)
 		return ((s.st_mode & CELL_FS_S_IFDIR) != 0);
 	else
-		return 0;
+		return false;
 }
 
 #ifdef COBRA_ONLY
@@ -253,12 +252,25 @@ static u64 file_size(const char *path)
 
 static bool file_exists(const char *path)
 {
+#ifdef NET_SUPPORT
+	if(islike(path, "/net"))
+	{
+		bool ret = false;
+		int ns = connect_to_remote_server(path[4] & 0x0F);
+		if(ns >= 0)
+		{
+			ret = (remote_file_exists(ns, path + 5) != FAILED);
+			sclose(&ns);
+		}
+		return ret;
+	}
+#endif
 	return (file_ssize(path) >= 0);
 }
 
 static bool not_exists(const char *path)
 {
-	return (file_ssize(path) <= FAILED);
+	return !file_exists(path);
 }
 
 static char *get_ext(const char *path)
@@ -1213,7 +1225,6 @@ static void uninstall(char *param)
 
 	cellFsUnlink(WMCONFIG);
 	cellFsUnlink(WMNOSCAN);
-	cellFsUnlink(WM_COMBO_PATH);
 	cellFsUnlink(WMREQUEST_FILE);
 	cellFsUnlink(WMNET_DISABLED);
 	cellFsUnlink(WMONLINE_GAMES);

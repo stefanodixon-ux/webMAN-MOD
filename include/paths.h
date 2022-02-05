@@ -40,6 +40,7 @@
 
 #define WMCONFIG			TMP_DIR "/wm_config.bin"		// webMAN config file
 #define WMTMP				TMP_DIR "/wmtmp"				// webMAN work/temp folder
+#define WMTMP_COVERS		TMP_DIR "/wmtmp/covers"			// webMAN covers folder
 #define WM_RES_PATH			TMP_DIR "/wm_res"				// webMAN resources
 #define WM_LANG_PATH		TMP_DIR "/wm_lang"				// webMAN language folder
 #define WM_ICONS_PATH		TMP_DIR "/wm_icons"				// webMAN icons folder

@@ -545,19 +545,21 @@ int main(int argc, const char* argv[])
 			else
 			if(strcasestr(path, "/ROMS/MAME/"))
 			{
-									 sprintf(path, "%s/mame078%s",  RETROARCH, sufix[i]);
+									 sprintf(path, "%s/mame2003%s", RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/mame2000%s", RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/mame2003%s", RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/mame2003_plus%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/mame2003_midway%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/mame078%s", RETROARCH, sufix[i]);
 			}
 			else
-			if(strcasestr(path, "/ROMS/MAME078/"))  sprintf(path, "%s/mame078%s",	   RETROARCH, sufix[i]);   else
-			if(strcasestr(path, "/ROMS/MAME2000/")) sprintf(path, "%s/mame2000%s",	  RETROARCH, sufix[i]);   else
-			if(strcasestr(path, "/ROMS/MAME2003/")) sprintf(path, "%s/mame2003%s",	  RETROARCH, sufix[i]);   else
-			if(strcasestr(path, "/ROMS/MAMEPLUS/")) sprintf(path, "%s/mame2003_plus%s", RETROARCH, sufix[i]);   else
+			if(strcasestr(path, "/ROMS/MAME078/"))  sprintf(path, "%s/mame078%s",		RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MAME2000/")) sprintf(path, "%s/mame2000%s",		RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MAME2003/")) sprintf(path, "%s/mame2003%s",		RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MAMEPLUS/")) sprintf(path, "%s/mame2003_plus%s", RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MIDWAY/"))   sprintf(path, "%s/mame2003_midway%s", RETROARCH, sufix[i]); else
 
-			if(strcasestr(path, "/ROMS/QUAKE/"))  sprintf(path, "%s/tyrquake%s",   RETROARCH, sufix[i]);		else
-			if(strcasestr(path, "/ROMS/QUAKE2/")) sprintf(path, "%s/vitaquake2%s", RETROARCH, sufix[i]);		else
+			if(strcasestr(path, "/ROMS/QUAKE/"))  sprintf(path, "%s/tyrquake%s",   RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/QUAKE2/")) sprintf(path, "%s/vitaquake2%s", RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/DOOM/"))   sprintf(path, "%s/prboom%s",	 RETROARCH, sufix[i]);		else
 
 			if(strcasestr(path, "/ROMS/PCE/"))

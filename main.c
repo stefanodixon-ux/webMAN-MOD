@@ -279,7 +279,8 @@ enum get_name_options
 {
 	NO_EXT    = 0,
 	GET_WMTMP = 1,
-	NO_PATH   = 2,
+	WM_COVERS = 2,
+	NO_PATH   = 3,
 };
 
 enum is_binary_options

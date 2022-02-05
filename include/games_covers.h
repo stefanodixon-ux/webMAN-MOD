@@ -56,7 +56,7 @@ static bool use_custom_icon_path = false, use_icon_region = false;
 static bool is_devil303_server = false;
 #endif
 
-static bool covers_exist[8];
+static bool covers_exist[9];
 static bool covers_retro_exist[3];
 static bool wm_icons_exists = false;
 
@@ -79,7 +79,8 @@ static void check_cover_folders(char *buffer)
 		{
 			sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
 		}
-													covers_exist[6] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
+													covers_exist[6] = isDir(WMTMP_COVERS);
+													covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
 
 #ifndef ENGLISH_ONLY
 	if(!covers_exist[0]) {use_custom_icon_path = strstr(COVERS_PATH, "%s"); use_icon_region = strstr(COVERS_PATH, "%s/%s");} else {use_icon_region = use_custom_icon_path = false;}
@@ -134,9 +135,11 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 
 	int flen, pos = 0;
 	if(cache) {pos = strlen(filename); while(pos > 0 && filename[pos - 1] != '/') pos--;}
-	if(cache == 2) cache = 0;
+	if(cache == NO_PATH) cache = 0;
 
-	if(cache)
+	if(cache == WM_COVERS)
+		flen = sprintf(name, "%s/%s", WMTMP_COVERS, filename + pos);
+	else if(cache)
 		flen = sprintf(name, "%s/%s", WMTMP, filename + pos);
 	else
 	{
@@ -215,8 +218,15 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 				if(get_image_file(icon, flen)) return true;
 			}
 
-		// Search covers in WMTMP
+		// Search covers in WMTMP_COVERS
 		if(covers_exist[6])
+		{
+			flen = sprintf(icon, "%s/%s", WMTMP_COVERS, title_id);
+			if(get_image_file(icon, flen)) return true;
+		}
+
+		// Search covers in WMTMP
+		if(covers_exist[8])
 		{
 			flen = sprintf(icon, "%s/%s", WMTMP, title_id);
 			if(get_image_file(icon, flen)) return true;
@@ -381,9 +391,15 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 			// continue searching for covers
 			if(SHOW_COVERS) return;
 
-			// get covers/icons from /dev_hdd0/tmp/wmtmp
-			flen = get_name(icon, entry_name, GET_WMTMP);
+			// Search covers in WMTMP_COVERS
+			if(covers_exist[6])
+			{
+				flen = get_name(icon, entry_name, WM_COVERS);
+				if(get_image_file(icon, flen)) return;
+			}
 
+			// Search covers in WMTMP
+			flen = get_name(icon, entry_name, GET_WMTMP);
 			if(get_image_file(icon, flen)) return;
 
 			*icon = NULL;

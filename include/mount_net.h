@@ -8,16 +8,16 @@ if(netid >= '0' && netid <= '4')
 {
 	netiso_svrid = (netid & 0x0F);
 	memset((void*)&netiso_args, 0, sizeof(_netiso_args));
-/*
-	if(is_netsrv_enabled(netiso_svrid) == false)
+
+	if(_path[5] == NULL) strcat(_path, "/.");
+
+	char *netpath = _path + 5, *pkg_slash = NULL;
+
+	if(file_exists(_path) == false)
 	{
 		ret = false;
 		goto exit_mount;
 	}
-*/
-	if(_path[5] == NULL) strcat(_path, "/.");
-
-	char *netpath = _path + 5, *pkg_slash = NULL;
 
 	size_t len = sprintf(netiso_args.path, "%s", netpath);
 
@@ -28,6 +28,17 @@ if(netid >= '0' && netid <= '4')
 	{
 		if(strlen(ext) == 4 || islike(ext, ".0"))
 			is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
+
+		if(!is_iso && (remote_is_dir(_path) == false))
+		{
+			ret = false;
+			goto exit_mount;
+		}
+	}
+	else if(remote_is_dir(_path) == false)
+	{
+		ret = false;
+		goto exit_mount;
 	}
 
 	mount_unk = netiso_args.emu_mode = EMU_BD;
@@ -40,7 +51,7 @@ if(netid >= '0' && netid <= '4')
 	{
 		sprintf(netiso_args.path, "/***DVD***%s", "/PSPISO");
 	}
-	else if(islike(netpath, "/PSX") && is_iso)
+	else if(strstr(netpath, "/PSX") && is_iso)
 	{
 		TrackDef tracks[MAX_TRACKS];
 		unsigned int num_tracks = 1;
@@ -48,6 +59,7 @@ if(netid >= '0' && netid <= '4')
 		int ns = connect_to_remote_server(netiso_svrid);
 		if(ns >= 0)
 		{
+			// load cuesheet
 			cellFsUnlink(TEMP_NET_PSXCUE);
 			const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
 			for(u8 e = 0; e < 4; e++)
