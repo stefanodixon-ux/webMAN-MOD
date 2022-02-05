@@ -161,7 +161,7 @@ static void start_www(u64 conn_s_p)
 			#endif
 
 			wait_for_xmb();
-			if(file_exists("/dev_hdd0/ps3-updatelist.txt") || !payload_ps3hen)
+			if(file_exists("/dev_hdd0/ps3-updatelist.txt"))
 				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
 			start_event(EVENT_ON_XMB);
