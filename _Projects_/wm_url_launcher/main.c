@@ -484,12 +484,19 @@ int main(int argc, const char* argv[])
 
 			if(strcasestr(path, "/ROMS/GEN"))
 			{
-									 sprintf(path, "%s/genesis_plus_gx%s", RETROARCH, sufix[i]);
+									 sprintf(path, "%s/genesis_plus_gx_wide%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/genesis_plus_gx%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/picodrive%s",	   RETROARCH, sufix[i]);
+			}
+			else
+			if(strcasestr(path, "/ROMS/MEGAD"))
+			{
+									 sprintf(path, "%s/genesis_plus_gx_wide%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/genesis_plus_gx%s", RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/picodrive%s",	   RETROARCH, sufix[i]);
 			}
 			else
 			if(strcasestr(path, "/ROMS/MASTER")) sprintf(path, "%s/genesis_plus_gx%s",	RETROARCH, sufix[i]); else
-			if(strcasestr(path, "/ROMS/MEGAD"))	 sprintf(path, "%s/genesis_plus_gx%s",	RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/SEGACD")) sprintf(path, "%s/genesis_plus_gx%s",	RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/PICO"))	 sprintf(path, "%s/picodrive%s",		RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/GG"))	 sprintf(path, "%s/gearsystem%s",		RETROARCH, sufix[i]); else
@@ -576,8 +583,8 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/WSWAM/"))sprintf(path, "%s/mednafen_wswan%s",	  RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/SGX/"))
 			{
-									 sprintf(path, "%s/mednafen_pce%s", RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/mednafen_supergrafx%s",	  RETROARCH, sufix[i]);
+									 sprintf(path, "%s/mednafen_supergrafx%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/mednafen_pce%s", RETROARCH, sufix[i]);
 			}
 			else
 			if(strcasestr(path, "/ROMS/ATARI2600/"))
@@ -691,6 +698,7 @@ int main(int argc, const char* argv[])
 					if(strcasestr(".MD|.MDX|.SMD|.GEN|.SMS|.GG|.SG|.BIN|.32X|.68K", extension))
 					{
 											 sprintf(path, "%s/genesis_plus_gx%s", RETROARCH, sufix[i]);
+						if(not_exists(path)) sprintf(path, "%s/genesis_plus_gx_wide%s", RETROARCH, sufix[i]);
 						if(not_exists(path)) sprintf(path, "%s/picodrive%s",	   RETROARCH, sufix[i]);
 					}
 					else
