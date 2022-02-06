@@ -498,7 +498,6 @@ int main(int argc, const char* argv[])
 			else
 			if(strcasestr(path, "/ROMS/MASTER")) sprintf(path, "%s/genesis_plus_gx%s",	RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/SEGACD")) sprintf(path, "%s/genesis_plus_gx%s",	RETROARCH, sufix[i]); else
-			if(strcasestr(path, "/ROMS/PICO"))	 sprintf(path, "%s/picodrive%s",		RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/GG"))	 sprintf(path, "%s/gearsystem%s",		RETROARCH, sufix[i]); else
 
 			if(strcasestr(path, "/ROMS/GBA/"))
@@ -523,8 +522,6 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/GEARBOY/"))  sprintf(path, "%s/gearboy%s",  RETROARCH, sufix[i]);	  else
 			if(strcasestr(path, "/ROMS/GAMBATTE/")) sprintf(path, "%s/gambatte%s", RETROARCH, sufix[i]);	  else
 			if(strcasestr(path, "/ROMS/TGBDUAL/"))  sprintf(path, "%s/tgbdual%s",  RETROARCH, sufix[i]);	  else
-			if(strcasestr(path, "/ROMS/DESMUME"))   sprintf(path, "%s/desmume2015%s",  RETROARCH, sufix[i]);  else
-			if(strcasestr(path, "/ROMS/DS/"))       sprintf(path, "%s/desmume2015%s",  RETROARCH, sufix[i]);  else
 
 			if(strcasestr(path, "/ROMS/ATARI/"))
 			{
@@ -566,7 +563,6 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/MIDWAY/"))   sprintf(path, "%s/mame2003_midway%s", RETROARCH, sufix[i]); else
 
 			if(strcasestr(path, "/ROMS/QUAKE/"))  sprintf(path, "%s/tyrquake%s",   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/QUAKE2/")) sprintf(path, "%s/vitaquake2%s", RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/DOOM/"))   sprintf(path, "%s/prboom%s",	 RETROARCH, sufix[i]);		else
 
 			if(strcasestr(path, "/ROMS/PCE/"))
@@ -590,7 +586,7 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/ATARI2600/"))
 			{
 									 sprintf(path, "%s/stella2014%s", RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/stella%s",	 RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/stella%s",	  RETROARCH, sufix[i]);
 			}
 			else
 			if(strcasestr(path, "/ROMS/ATARI5200/"))sprintf(path, "%s/atari800%s",		RETROARCH, sufix[i]);  else
@@ -598,15 +594,16 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/HATARI/"))	sprintf(path, "%s/hatari%s",		RETROARCH, sufix[i]);  else
 			if(strcasestr(path, "/ROMS/LYNX/"))		sprintf(path, "%s/mednafen_lynx%s",	RETROARCH, sufix[i]);  else
 			if(strcasestr(path, "/ROMS/JAGUAR"))	sprintf(path, "%s/virtualjaguar%s", RETROARCH, sufix[i]);  else
-			if(strcasestr(path, "/ROMS/STELLA"))
-			{
-									 sprintf(path, "%s/stella%s",	  RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/stella2014%s", RETROARCH, sufix[i]);
-			}
 			if(strcasestr(path, "/ROMS/STELLA2014"))
 			{
 									 sprintf(path, "%s/stella2014%s", RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/stella%s",	  RETROARCH, sufix[i]);
+			}
+			else
+			if(strcasestr(path, "/ROMS/STELLA"))
+			{
+									 sprintf(path, "%s/stella%s",	  RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/stella2014%s", RETROARCH, sufix[i]);
 			}
 			else
 			if(strcasestr(path, "/ROMS/AMIGA/"))	sprintf(path, "%s/puae%s",		RETROARCH, sufix[i]);	else
@@ -625,13 +622,13 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/XCBM25X0/"))	sprintf(path, "%s/vice_xcbm5x0%s", RETROARCH, sufix[i]);	else
 
 			if(strcasestr(path, "/ROMS/FMSX/"))		sprintf(path, "%s/fmsx%s",		RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/BMSX/"))		sprintf(path, "%s/bluemsx%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/MSX/"))		sprintf(path, "%s/bluemsx%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/MSX2/"))		sprintf(path, "%s/bluemsx%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/SG1000/"))	sprintf(path, "%s/bluemsx%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/COLECO/"))	sprintf(path, "%s/bluemsx%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/BMSX/"))		sprintf(path, "%s/bluemsx%s",	RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MSX/"))		sprintf(path, "%s/bluemsx%s",	RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MSX2/"))		sprintf(path, "%s/bluemsx%s",	RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/SG1000/"))	sprintf(path, "%s/bluemsx%s",	RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/COLECO/"))	sprintf(path, "%s/bluemsx%s",	RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/BLUEMSX/"))	sprintf(path, "%s/bluemsx%s",	RETROARCH, sufix[i]);	else
 
-			if(strcasestr(path, "/ROMS/LUA/"))		sprintf(path, "%s/lutro%s",		RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/ZX81/"))		sprintf(path, "%s/81%s",		RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/FUSE/"))		sprintf(path, "%s/fuse%s",		RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/GW/"))		sprintf(path, "%s/gw%s",		RETROARCH, sufix[i]);	else
@@ -641,35 +638,43 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/DOSBOX/"))
 			{
 									 sprintf(path, "%s/dosbox_svn%s", RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/dosbox%s",	 RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/dosbox%s",	  RETROARCH, sufix[i]);
 			}
 			else
-			if(strcasestr(path, "/ROMS/SCUMMVM/"))	sprintf(path, "%s/scummvm%s",	RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/VECX/"))	   sprintf(path, "%s/vecx%s",	   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/INTV/"))	   sprintf(path, "%s/freeintv%s",   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/2048/"))	   sprintf(path, "%s/2048%s",	   RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/DOS")) sprintf(path, "%s/dosbox%s",	 RETROARCH, sufix[i]); else
+
+			if(strcasestr(path, "/ROMS/2048/"))		sprintf(path, "%s/2048%s",		 RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/CANNONBALL/")) sprintf(path, "%s/cannonball%s", RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/POKEMINI/"))   sprintf(path, "%s/pokemini%s",   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/THEODORE/"))   sprintf(path, "%s/theodore%s",   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/BK/"))		 sprintf(path, "%s/bk%s",		 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/BLUEMSX/"))	sprintf(path, "%s/bluemsx%s",	RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/CAP32/"))	  sprintf(path, "%s/cap32%s",	  RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/ECWOLF/"))	 sprintf(path, "%s/ecwolf%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/FREECHAF/"))   sprintf(path, "%s/freechaf%s",   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/GME/"))		sprintf(path, "%s/gme%s",		RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/BOMBER"))	  sprintf(path, "%s/mrboom%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/MRBOOM/"))	 sprintf(path, "%s/mrboom%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/MU/"))		 sprintf(path, "%s/mu%s",		 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/PALM/"))	   sprintf(path, "%s/mu%s",		 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/NEKOP2/"))	 sprintf(path, "%s/nekop2%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/NP2KAI/"))	 sprintf(path, "%s/np2kai%s",	 RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/QUASI88/"))	sprintf(path, "%s/quasi88%s",	RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/CAP32/"))	sprintf(path, "%s/cap32%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/DESMUME"))   sprintf(path, "%s/desmume2015%s",  RETROARCH, sufix[i]);  else
+			if(strcasestr(path, "/ROMS/DS/"))       sprintf(path, "%s/desmume2015%s",  RETROARCH, sufix[i]);  else
+			if(strcasestr(path, "/ROMS/GME/"))		sprintf(path, "%s/gme%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/JAVAME"))	sprintf(path, "%s/squirreljme%s",RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/JME"))		sprintf(path, "%s/squirreljme%s",RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/INTV/"))		sprintf(path, "%s/freeintv%s",   RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MU/"))		sprintf(path, "%s/mu%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/PALM/"))		sprintf(path, "%s/mu%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/POKEMINI/")) sprintf(path, "%s/pokemini%s",	 RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/SQUIRREL"))	sprintf(path, "%s/squirreljme%s",RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/JAVAME"))	  sprintf(path, "%s/squirreljme%s",RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/JME"))		 sprintf(path, "%s/squirreljme%s",RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/TEST/"))	   sprintf(path, "%s/test%s",	   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/UZEM/"))	   sprintf(path, "%s/uzem%s",	   RETROARCH, sufix[i]);	else
-			if(strcasestr(path, "/ROMS/X1/"))		 sprintf(path, "%s/x1%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/THEODORE/")) sprintf(path, "%s/theodore%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/VECX/"))		sprintf(path, "%s/vecx%s",		 RETROARCH, sufix[i]);	else
+
+			// Cores formerly included in RetroArch but not supported on PS3
+			if(strcasestr(path, "/ROMS/BK/"))		sprintf(path, "%s/bk%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/BOMBER"))	sprintf(path, "%s/mrboom%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/MRBOOM/"))	sprintf(path, "%s/mrboom%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/ECWOLF/"))	sprintf(path, "%s/ecwolf%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/FREECHAF/"))	sprintf(path, "%s/freechaf%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/LUA/"))		sprintf(path, "%s/lutro%s",		RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/NEKOP2/"))	sprintf(path, "%s/nekop2%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/NP2KAI/"))	sprintf(path, "%s/np2kai%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/PICO"))		sprintf(path, "%s/picodrive%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/QUAKE2/"))	sprintf(path, "%s/vitaquake2%s", RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/QUASI88/"))	sprintf(path, "%s/quasi88%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/SCUMMVM/"))	sprintf(path, "%s/scummvm%s",	 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/TEST/"))		sprintf(path, "%s/test%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/UZEM/"))		sprintf(path, "%s/uzem%s",		 RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/X1/"))		sprintf(path, "%s/x1%s",		 RETROARCH, sufix[i]);	else
 			{
 				char extension[8]; int plen = strlen(path);
 				if(plen > 4)
@@ -697,8 +702,8 @@ int main(int argc, const char* argv[])
 					else
 					if(strcasestr(".MD|.MDX|.SMD|.GEN|.SMS|.GG|.SG|.BIN|.32X|.68K", extension))
 					{
-											 sprintf(path, "%s/genesis_plus_gx%s", RETROARCH, sufix[i]);
-						if(not_exists(path)) sprintf(path, "%s/genesis_plus_gx_wide%s", RETROARCH, sufix[i]);
+											 sprintf(path, "%s/genesis_plus_gx_wide%s", RETROARCH, sufix[i]);
+						if(not_exists(path)) sprintf(path, "%s/genesis_plus_gx%s", RETROARCH, sufix[i]);
 						if(not_exists(path)) sprintf(path, "%s/picodrive%s",	   RETROARCH, sufix[i]);
 					}
 					else
