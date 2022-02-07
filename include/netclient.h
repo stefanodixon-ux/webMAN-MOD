@@ -78,10 +78,8 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 
 	netiso_open_cmd cmd;
 	netiso_open_result res;
-	int len, emu_mode = *abort_connection;
 
-	len = strlen(path);
-
+	int len = strlen(path);
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.opcode = BE16(NETISO_CMD_OPEN_FILE);
 	cmd.fp_len = BE16(len);
@@ -110,6 +108,8 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 		return FAILED;
 	}
 
+	int emu_mode = *abort_connection;
+
 	// detect CD sector size
 	if((emu_mode == EMU_PSX) && (res.file_size >= _64KB_) && (res.file_size <= 0x35000000UL))
 	{
@@ -128,7 +128,7 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 				CD_SECTOR_SIZE_2352 = detect_cd_sector_size(chunk);
 			}
 
-			sys_memory_free((sys_addr_t)sysmem);
+			sys_memory_free(sysmem);
 		}
 	}
 
@@ -148,9 +148,8 @@ static int remote_stat(int s, const char *path, int *is_directory, s64 *file_siz
 
 	netiso_stat_cmd cmd;
 	netiso_stat_result res;
-	int len;
 
-	len = strlen(path);
+	int len = strlen(path);
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_STAT_FILE);
 	cmd.fp_len = (len);
@@ -192,7 +191,7 @@ static int remote_file_exists(int ns, const char *remote_file)
 	s64 size = 0; int abort_connection = 0;
 	int is_directory = 0; u64 mtime, ctime, atime;
 
-	if(remote_stat(ns, remote_file, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) != CELL_OK)
+	if(remote_stat(ns, remote_file, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) == FAILED)
 		return FAILED;
 
 	if(is_directory || (size > 0))
@@ -648,6 +647,22 @@ static int connect_to_remote_server(u8 server_id)
 	return ns;
 }
 
+static bool remote_is_dir(int ns, const char *path)
+{
+	if(*path && (ns >= 0))
+	{
+		s64 size = 0; int abort_connection = 0;
+		int is_directory = 0; u64 mtime, ctime, atime;
+
+		if(remote_stat(ns, path, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) == FAILED)
+			return false;
+
+		if(is_directory)
+			return true;
+	}
+	return false;
+}
+
 static int open_remote_dir(int s, const char *path, int *abort_connection)
 {
 	*abort_connection = 1;
@@ -660,11 +675,12 @@ static int open_remote_dir(int s, const char *path, int *abort_connection)
 		return FAILED;
 	}
 
+	if(remote_is_dir(s, path) == false) return FAILED;
+
 	netiso_open_dir_cmd cmd;
 	netiso_open_dir_result res;
-	int len;
 
-	len = strlen(path);
+	int len = strlen(path);
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_OPEN_DIR);
 	cmd.dp_len = (len);
@@ -772,7 +788,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 	}
 
 	// check remote file exists
-	if(remote_file_exists(ns, remote_file)) return FAILED;
+	if(remote_file_exists(ns, remote_file) == false) return FAILED;
 
 	// copy remote file
 	int ret = FAILED;
@@ -820,22 +836,5 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 	//open_remote_file(ns, "/CLOSEFILE", &abort_connection); // <- cause of bug: only 1 remote file is copied during refresh xml
 
 	return ret;
-}
-
-static bool remote_is_dir(const char *remote_path)
-{
-	int ns = connect_to_remote_server(remote_path[4]);
-	if(ns >= 0)
-	{
-		s64 size = 0; int abort_connection = 0;
-		int is_directory = 0; u64 mtime, ctime, atime;
-
-		if(remote_stat(ns, remote_path + 5, &is_directory, &size, &mtime, &ctime, &atime, &abort_connection) != CELL_OK)
-			return false;
-
-		if(is_directory)
-			return true;
-	}
-	return false;
 }
 #endif //#ifdef NET_SUPPORT

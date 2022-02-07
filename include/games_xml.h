@@ -887,7 +887,7 @@ next_xml_entry:
 				if(!is_net) cellFsClosedir(fd);
 
 #ifdef NET_SUPPORT
-				if(data2) {sys_memory_free((sys_addr_t)data2); data2 = NULL;}
+				if(data2) {sys_memory_free(data2); data2 = NULL;}
 #endif
 			}
 //

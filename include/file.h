@@ -207,6 +207,7 @@ static bool isDir(const char* path)
 		return ((ps3ntfs_stat(tmp + 5, &bufn) >= 0) && (bufn.st_mode & S_IFDIR));
 	}
 #endif
+
 	struct CellFsStat s;
 	if(cellFsStat(path, &s) == CELL_FS_SUCCEEDED)
 		return ((s.st_mode & CELL_FS_S_IFDIR) != 0);
@@ -252,19 +253,6 @@ static u64 file_size(const char *path)
 
 static bool file_exists(const char *path)
 {
-#ifdef NET_SUPPORT
-	if(islike(path, "/net"))
-	{
-		bool ret = false;
-		int ns = connect_to_remote_server(path[4] & 0x0F);
-		if(ns >= 0)
-		{
-			ret = (remote_file_exists(ns, path + 5) != FAILED);
-			sclose(&ns);
-		}
-		return ret;
-	}
-#endif
 	return (file_ssize(path) >= 0);
 }
 

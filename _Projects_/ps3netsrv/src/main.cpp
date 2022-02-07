@@ -370,8 +370,8 @@ static int64_t calculate_directory_size(char *path)
 
 	//DPRINTF("Calculate %s\n", path);
 
-	//file_stat_t st;
-	//if(stat_file(path, &st) < 0) return FAILED;
+	file_stat_t st;
+	if(stat_file(path, &st) < 0) return FAILED;
 
 	d = opendir(path);
 	if(!d)
@@ -1045,7 +1045,11 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 	client->dirpath = NULL;
 
 	normalize_path(dirpath, true);
-	client->dir = opendir(dirpath);
+
+	file_stat_t st;
+	if(stat_file(dirpath, &st) >= 0)
+		client->dir = opendir(dirpath);
+
 	if(!client->dir)
 	{
 		//printf("open dir error on \"%s\"\n", dirpath);
@@ -1248,20 +1252,41 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 {
 	(void) cmd;
 	int64_t items = 0;
+	int max_items = MAX_ENTRIES;
+
+	char *path = NULL;
+	netiso_read_dir_result_data *dir_entries = NULL;
 
 	netiso_read_dir_result result;
 	memset(&result, 0, sizeof(result));
 
-	netiso_read_dir_result_data *dir_entries = (netiso_read_dir_result_data *) malloc(sizeof(netiso_read_dir_result_data) * MAX_ENTRIES);
-	memset(dir_entries, 0, sizeof(netiso_read_dir_result_data) * MAX_ENTRIES);
-
-	char *path = (char*)malloc(MAX_PATH_LEN + root_len + strlen(client->dirpath + root_len) + MAX_FILE_LEN + 2);
-
-	if ((!client->dir) || (!client->dirpath) || (!dir_entries) || (!path))
+	if ((!client->dir) || (!client->dirpath))
 	{
 		result.dir_size = (0);
 		goto send_result_read_dir_cmd;
 	}
+
+	for (; max_items >= 0x10; max_items -= 0x10)
+	{
+		dir_entries = (netiso_read_dir_result_data *) malloc(sizeof(netiso_read_dir_result_data) * max_items);
+		if (dir_entries) break;
+	}
+
+	if (!dir_entries)
+	{
+		result.dir_size = (0);
+		goto send_result_read_dir_cmd;
+	}
+
+	path = (char*)malloc(MAX_PATH_LEN + root_len + strlen(client->dirpath + root_len) + MAX_FILE_LEN + 2);
+
+	if (!path)
+	{
+		result.dir_size = (0);
+		goto send_result_read_dir_cmd;
+	}
+
+	memset(dir_entries, 0, sizeof(netiso_read_dir_result_data) * max_items);
 
 	file_stat_t st;
 	struct dirent *entry;
@@ -1279,7 +1304,6 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 		#else
 		d_name_len = strlen(entry->d_name);
 		#endif
-
 
 		if(IS_RANGE(d_name_len, 1, MAX_FILE_LEN))
 		{
@@ -1312,7 +1336,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 			dir_entries[items].mtime = BE64(st.mtime);
 
 			items++;
-			if(items >= MAX_ENTRIES) break;
+			if(items >= max_items) break;
 		}
 	}
 
@@ -1410,7 +1434,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 							dir_entries[items].mtime = BE64(st.mtime);
 
 							items++;
-							if(items >= MAX_ENTRIES) break;
+							if(items >= max_items) break;
 						}
 					}
 
@@ -1437,7 +1461,7 @@ send_result_read_dir_cmd:
 
 	if(items > 0)
 	{
-		if(send(client->s, (const char*)dir_entries, (sizeof(netiso_read_dir_result_data)*items), 0) != (int)(sizeof(netiso_read_dir_result_data)*items))
+		if(send(client->s, (const char*)dir_entries, (sizeof(netiso_read_dir_result_data) * items), 0) != (int)(sizeof(netiso_read_dir_result_data) * items))
 		{
 			if(dir_entries) free(dir_entries);
 			return FAILED;
@@ -1667,7 +1691,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20200708");
+	printf("ps3netsrv build 20220206");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");

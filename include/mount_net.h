@@ -13,10 +13,17 @@ if(netid >= '0' && netid <= '4')
 
 	char *netpath = _path + 5, *pkg_slash = NULL;
 
-	if(file_exists(_path) == false)
+	int ns = connect_to_remote_server(netid);
+	if(ns >= 0)
 	{
-		ret = false;
-		goto exit_mount;
+		bool notfound = (remote_file_exists(ns, netpath) == FAILED);
+		sclose(&ns);
+
+		if(notfound)
+		{
+			ret = false;
+			goto exit_mount;
+		}
 	}
 
 	size_t len = sprintf(netiso_args.path, "%s", netpath);
@@ -29,16 +36,23 @@ if(netid >= '0' && netid <= '4')
 		if(strlen(ext) == 4 || islike(ext, ".0"))
 			is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
 
-		if(!is_iso && (remote_is_dir(_path) == false))
-		{
-			ret = false;
-			goto exit_mount;
-		}
+		if(!is_iso) ext = NULL;
 	}
-	else if(remote_is_dir(_path) == false)
+
+	if(!ext)
 	{
-		ret = false;
-		goto exit_mount;
+		int ns = connect_to_remote_server(netid);
+		if(ns >= 0)
+		{
+			bool is_dir = remote_is_dir(ns, netpath);
+			sclose(&ns);
+
+			if(!is_dir)
+			{
+				ret = false;
+				goto exit_mount;
+			}
+		}
 	}
 
 	mount_unk = netiso_args.emu_mode = EMU_BD;

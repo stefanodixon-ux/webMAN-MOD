@@ -328,7 +328,9 @@ static bool script_running = false;
 static char fw_version[8] = "4.xx";
 static char local_ip[16] = "127.0.0.1";
 
+#ifdef MOUNT_ROMS
 static char *ROMS_EXTENSIONS = NULL;
+#endif
 
 static void show_msg(const char *text);
 static void show_status(const char *label, const char *status);

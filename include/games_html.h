@@ -116,6 +116,10 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	sprintf(templn, "%s%s/%s", drives[0], param, data[v3_entry].name);
 	if(file_exists(templn)) return FAILED;
 
+	// check file exists
+	sprintf(templn, "%s/%s", param, data[v3_entry].name);
+	if(remote_file_exists(ns, templn) == false) return FAILED;
+
 	// get name
 	if(IS_PS3_TYPE) //PS3 games only (0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI")
 	{
@@ -565,7 +569,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 
 #ifdef SLAUNCH_FILE
 		int fdsl = 0;
-		if(!b0 && cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+		if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
 			_slaunch slaunch; u64 read_e;
 
@@ -909,7 +913,7 @@ next_html_entry:
 				if(!is_net) cellFsClosedir(fd);
 
 #ifdef NET_SUPPORT
-				if(data2) {sys_memory_free((sys_addr_t)data2); data2 = NULL;}
+				if(data2) {sys_memory_free(data2); data2 = NULL;}
 #endif
 
 //
