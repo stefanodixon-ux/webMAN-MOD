@@ -116,10 +116,6 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	sprintf(templn, "%s%s/%s", drives[0], param, data[v3_entry].name);
 	if(file_exists(templn)) return FAILED;
 
-	// check file exists
-	sprintf(templn, "%s/%s", param, data[v3_entry].name);
-	if(remote_file_exists(ns, templn) == false) return FAILED;
-
 	// get name
 	if(IS_PS3_TYPE) //PS3 games only (0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI")
 	{
