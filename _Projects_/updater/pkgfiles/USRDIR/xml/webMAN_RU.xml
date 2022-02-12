@@ -76,24 +76,41 @@
 
 	<V id="seg_webman_redirect_usb_items">
 		<A>
-			<T key="remap_usb0">
+			<T key="inc">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</></P>
+				<P key="module_name"><>webrender_plugin</></P>
+			</T>
+			<T key="remap_home" include="inc">
+				<P key="title"><>Монтировать home на USB000</></P>
+				<P key="info"><>Монтировать 'dev_hdd0/home' в 'dev_usb000/home'</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/home&to=/dev_usb000/home</></P>
+			</T>
+			<T key="remap_usb0" include="inc">
 				<P key="title"><>Монтировать USB на HDD</></P>
 				<P key="info"><>Монтировать 'dev_usb0' в 'dev_hdd0/packages'</></P>
-				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/remap.ps3/dev_usb000&to=/dev_hdd0/packages</></P>
 			</T>
-			<T key="unmap_usb0">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</></P>
+			<T key="remap_bdvd" include="inc">
+				<P key="title"><>Монтировать USB на BDVD</></P>
+				<P key="info"><>Монтировать 'dev_usb0' в 'dev_bdvd'</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_usb000&to=/dev_bdvd</></P>
+			</T>
+			<T key="unmap_usb0" include="inc">
 				<P key="title"><>Отменить монтирование USB</></P>
 				<P key="info"><>Восстановить прямой доступ к 'dev_usb0'</></P>
-				<P key="module_name"><>webrender_plugin</></P>
-				<P key="module_action"><>http://0/unmap.ps3/dev_usb000</></P>
+				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
+			</T>
+			<T key="unmap_all" include="inc">
+				<P key="title"><>Unmap PS3</></P>
+				<P key="module_action"><>http://0/unmap.ps3</></P>
 			</T>
 		</A>
 		<I>
+			<I class="type:x-xmb/module-action" key="remap_home" attr="remap_home"/>
 			<I class="type:x-xmb/module-action" key="remap_usb0" attr="remap_usb0"/>
+			<I class="type:x-xmb/module-action" key="remap_bdvd" attr="remap_bdvd"/>
 			<I class="type:x-xmb/module-action" key="unmap_usb0" attr="unmap_usb0"/>
+			<I class="type:x-xmb/module-action" key="unmap_all"  attr="unmap_all"/>
 		</I>
 	</V>
 
@@ -744,6 +761,19 @@
 	<V id="seg_webman_update_sublink">
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_update_sublink" src="#seg_webman_update_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="seg_install_addons" src="#seg_install_addons"/>
+		</I>
+	</V>
+
+	<V id="seg_install_addons">
+		<A>
+			<T key="install_addons">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/pkgmanager.png</></P>
+				<P key="title"><>Addons</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/xmlpackagefolder" key="install_addons" attr="install_addons" src="host://localhost/q?path=/dev_hdd0/tmp/wm_res&suffix=.pkg&subclass=x-host/package"/>
 		</I>
 	</V>
 
