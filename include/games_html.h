@@ -282,7 +282,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	if(tlen < HTML_KEY_LEN) strcat(templn, "      "); // HTML_KEY_LEN = 6
 
 	u8 c = 0, s = 5;
-	if(templn[4] == ']' && templn[0] == '[') {c = (templn[5] != ' ') ? 5 : 6;} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
+	if(templn[4] == ']' && templn[0] == '[') {c = (templn[5] != ' ') ? 5 : 6; strcat(templn, "      ");} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
 
 	if(is_html)
 	{

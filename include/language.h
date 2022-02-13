@@ -323,7 +323,7 @@ static u32 get_system_language(u8 *lang)
 }
 
 #define CHUNK_SIZE 512
-#define GET_NEXT_BYTE  {if(p >= CHUNK_SIZE)  {cellFsRead(fd, buffer, CHUNK_SIZE, &bytes_read); p = 0;} c = buffer[p++], lang_pos++;}
+#define GET_NEXT_BYTE  {if(p >= CHUNK_SIZE)  {cellFsReadWithOffset(fd, lang_pos, buffer, CHUNK_SIZE, &bytes_read); p = 0;} c = buffer[p++], lang_pos++;}
 
 static u8 lang_roms = 0;
 
