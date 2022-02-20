@@ -306,6 +306,7 @@ static void draw_selection(uint16_t game_idx)
 		get_temperature(cpu_rsx, &temp_c);
 		temp_f = (uint32_t)(1.8f * (float)temp_c + 32.f);
 		sprintf(s_temp, "%s :  %i C  /  %i F", cpu_rsx ? "RSX" : "CPU", temp_c, temp_f);
+		ctx.fg_color = WHITE_TEXT;
 		print_text(ctx.menu, CANVAS_W, CANVAS_W - ((disp_h==720) ? 450 : 300), 64, s_temp);
 	}
 
@@ -1005,7 +1006,7 @@ static void slaunch_thread(uint64_t arg)
 					if(tick<0x80 || tick>0xF0){delta=-delta; tick&=0xff;}
 
 					// update temperature
-					if(++frame > 300) {frame = 0, cpu_rsx ^= 1; draw_selection(cur_game);}
+					if(++frame > 100) {frame = 0, cpu_rsx ^= 1; draw_selection(cur_game);}
 				}
 			}
 		}

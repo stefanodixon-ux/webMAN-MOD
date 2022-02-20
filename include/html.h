@@ -23,6 +23,8 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 #define HTML_BUTTON_FMT2		"%s%s\" %s'%s%s';\">"
 #define HTML_BUTTON				" <input type=\"button\" value=\""
 #define HTML_ONCLICK			"onclick=\"location.href="
+#define HTML_ONCLICK2			"onclick=\"var req=new XMLHttpRequest();req.open('GET',"
+#define HTML_SEND_CMD			"',true);req.send();return'"
 #define HTML_INPUT(n, v, m, s)	"<input name=\"" n "\" type=\"text\" value=\"" v "\" maxlength=\"" m "\" size=\"" s "\">"
 #define HTML_PASSW(n, v, m, s)	"<input name=\"" n "\" type=\"password\" value=\"" v "\" maxlength=\"" m "\" size=\"" s "\">"
 #define HTML_NUMBER(n, v, min, max)	"<input name=\"" n "\" type=\"number\" value=\"" v "\" min=\"" min "\" max=\"" max "\" style=\"width:45px;\">"
