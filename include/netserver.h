@@ -671,25 +671,26 @@ static void netsvrd_thread(__attribute__((unused)) u64 arg)
 	net_working = 1;
 
 relisten:
-	if(working && net_working) list_s = slisten(webman_config->netsrvp, NET_BACKLOG);
-	else goto end;
+	if(!working) goto end;
+
+	if(net_working) list_s = slisten(webman_config->netsrvp, NET_BACKLOG);
 
 	if(list_s < 0)
 	{
 		sys_ppu_thread_sleep(1);
-		if(working) goto relisten;
-		else goto end;
+		goto relisten;
 	}
 
 	active_socket[3] = list_s;
 
 	//if(list_s >= 0)
 	{
-		while(working)
+		while(net_working)
 		{
 			sys_ppu_thread_usleep(1668);
-			int conn_s_net;
 			if(!working || !net_working) break;
+
+			int conn_s_net;
 
 			if((conn_s_net = accept(list_s, NULL, NULL)) >= 0)
 			{
@@ -698,24 +699,24 @@ relisten:
 				for(u8 i = 0; i < MAX_CLIENTS; i++) if(!clients[i].s) {index = i; break;}
 				if(index < 0) {sclose(&conn_s_net); continue;}
 
+				if(!working || !net_working) {sclose(&conn_s_net); break;}
+
 				// initizalize client
 				init_client(index);
 				clients[index].s = conn_s_net;
 
 				// handle client
 				sys_ppu_thread_t t_id;
-				if(working) sys_ppu_thread_create(&t_id, handleclient_net, (u64)index, THREAD_PRIO_NET, THREAD_STACK_SIZE_NET_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVRD);
-				else {sclose(&conn_s_net); break;}
+				sys_ppu_thread_create(&t_id, handleclient_net, (u64)index, THREAD_PRIO_NET, THREAD_STACK_SIZE_NET_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVRD);
 			}
-			else
-			if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
+			else if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
 			{
 				sclose(&list_s);
-				if(working) goto relisten;
-				else break;
+				goto relisten;
 			}
 		}
 	}
+
 end:
 	sclose(&list_s);
 	sys_ppu_thread_exit(0);

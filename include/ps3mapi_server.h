@@ -716,38 +716,37 @@ static void ps3mapi_thread(__attribute__((unused)) u64 arg)
 		ps3mapi_working = 1;
 
 	relisten:
-		if(working) list_s = slisten(PS3MAPIPORT, PS3MAPI_BACKLOG);
-		else goto end;
+		if(!working) goto end;
+
+		list_s = slisten(PS3MAPIPORT, PS3MAPI_BACKLOG);
 
 		if(list_s < 0)
 		{
 			sys_ppu_thread_sleep(1);
-			if(working) goto relisten;
-			else goto end;
+			goto relisten;
 		}
 
 		active_socket[2] = list_s;
 
 		//if(list_s >= 0)
 		{
-			while(working && ps3mapi_working)
+			while(ps3mapi_working)
 			{
 				sys_ppu_thread_usleep(100000);
-				int conn_s_ps3mapi;
 				if (!working || !ps3mapi_working) goto end;
 
+				int conn_s_ps3mapi;
 				if(sys_admin && ((conn_s_ps3mapi = accept(list_s, NULL, NULL)) >= 0))
 				{
+					if(!working) {sclose(&conn_s_ps3mapi); break;}
+
 					sys_ppu_thread_t t_id;
-					if(working) sys_ppu_thread_create(&t_id, handleclient_ps3mapi, (u64)conn_s_ps3mapi, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_CLI, SYS_PPU_THREAD_CREATE_NORMAL, THREAD02_NAME_PS3MAPI);
-					else {sclose(&conn_s_ps3mapi); break;}
+					sys_ppu_thread_create(&t_id, handleclient_ps3mapi, (u64)conn_s_ps3mapi, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_CLI, SYS_PPU_THREAD_CREATE_NORMAL, THREAD02_NAME_PS3MAPI);
 				}
-				else
-				if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
+				else if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
 				{
 					sclose(&list_s);
-					if(working) goto relisten;
-					else break;
+					goto relisten;
 				}
 			}
 		}

@@ -1379,39 +1379,39 @@ static void ftpd_thread(__attribute__((unused)) u64 arg)
 	ftp_working = 1;
 
 relisten:
-	if(working && ftp_working) list_s = slisten(webman_config->ftp_port, FTP_BACKLOG);
-	else goto end;
+	if(!working) goto end;
+
+	if(ftp_working) list_s = slisten(webman_config->ftp_port, FTP_BACKLOG);
 
 	if(list_s < 0)
 	{
 		sys_ppu_thread_sleep(1);
-		if(working) goto relisten;
-		else goto end;
+		goto relisten;
 	}
 
 	active_socket[0] = list_s;
 
 	//if(list_s >= 0)
 	{
-		while(working)
+		while(ftp_working)
 		{
 			sys_ppu_thread_usleep(ftp_active ? 5000 : 50000);
 			if(!working || !ftp_working) break;
+
 			if(ftp_active > MAX_FTP_THREADS) continue;
 
 			int conn_s_ftp;
 			if(sys_admin && ((conn_s_ftp = accept(list_s, NULL, NULL)) >= 0))
 			{
+				if(!working) {sclose(&conn_s_ftp); break;}
+
 				sys_ppu_thread_t t_id;
-				if(working) sys_ppu_thread_create(&t_id, handleclient_ftp, (u64)conn_s_ftp, THREAD_PRIO_FTP, THREAD_STACK_SIZE_FTP_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_FTPD);
-				else {sclose(&conn_s_ftp); break;}
+				sys_ppu_thread_create(&t_id, handleclient_ftp, (u64)conn_s_ftp, THREAD_PRIO_FTP, THREAD_STACK_SIZE_FTP_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_FTPD);
 			}
-			else
-			if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
+			else if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
 			{
 				sclose(&list_s);
-				if(working) goto relisten;
-				else break;
+				goto relisten;
 			}
 		}
 	}

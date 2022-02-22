@@ -601,14 +601,14 @@ relisten:
 	ssend(debug_s, "Listening on port 80...");
 #endif
 
-	if(working) list_s = slisten(WWWPORT, WWW_BACKLOG);
-	else goto end;
+	if(!working) goto end;
+
+	list_s = slisten(WWWPORT, WWW_BACKLOG);
 
 	if(list_s < 0)
 	{
 		sys_ppu_thread_sleep(1);
-		if(working) goto relisten;
-		else goto end;
+		goto relisten;
 	}
 
 	active_socket[1] = list_s;
@@ -623,38 +623,46 @@ relisten:
 
 		while(working)
 		{
-			timeout = 0;
-			while((loading_html > MAX_WWW_THREADS) && working)
+			// wait for free thread
+			for(timeout = 0; loading_html > MAX_WWW_THREADS; timeout++)
 			{
-				sys_ppu_thread_usleep(40000);
-				if(++timeout > 250) {loading_html = 0; sclose(&list_s); goto relisten;} // continue after 10 seconds
+				if(!working) goto end;
+				if(timeout > 200)
+				{
+					// respawn http after wait for 10 seconds
+					sys_net_abort_socket(list_s, SYS_NET_ABORT_STRICT_CHECK);
+					sys_ppu_thread_sleep(1);
+					sclose(&list_s);
+
+					loading_html = 0;
+					goto relisten;
+				}
+				sys_ppu_thread_usleep(50000);
 			}
 
 			if(!working) goto end;
 
 			if((conn_s = accept(list_s, NULL, NULL)) >= 0)
 			{
-				loading_html++;
+				if(!working) {sclose(&conn_s); break;}
 
 				#ifdef USE_DEBUG
 				ssend(debug_s, "*** Incoming connection... ");
 				#endif
 
-				sys_ppu_thread_t t_id;
+				loading_html++;
 
-				if(working) sys_ppu_thread_create(&t_id, handleclient_www, (u64)conn_s, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
-				else {sclose(&conn_s); break;}
+				sys_ppu_thread_t t_id;
+				sys_ppu_thread_create(&t_id, handleclient_www, (u64)conn_s, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
 			}
-			else
-			if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
+			else if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
 			{
 				sclose(&list_s);
-				if(working) goto relisten;
-				else break;
+				goto relisten;
 			}
 		}
-
 	}
+
 end:
 	sclose(&list_s);
 	sys_ppu_thread_exit(0);

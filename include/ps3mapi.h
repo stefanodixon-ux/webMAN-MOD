@@ -510,8 +510,14 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 
 		if(pid > LV2)
 		{
-			sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Exit", HTML_ONCLICK, "/xmb.ps3$exit");
-			concat(buffer, templn);
+			if(IS_INGAME)
+			{
+				sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Exit", HTML_ONCLICK, "/xmb.ps3$exit");
+				concat(buffer, templn);
+
+				sprintf(templn, HTML_BUTTON_FMT2, HTML_BUTTON, "Reload", HTML_ONCLICK2, "/xmb.ps3$reloadgame", HTML_SEND_CMD);
+				concat(buffer, templn);
+			}
 
 			sprintf(templn, HTML_BUTTON_FMT2, HTML_BUTTON, "Pause", HTML_ONCLICK2, "/xmb.ps3$rsx_pause", HTML_SEND_CMD);
 			concat(buffer, templn);
