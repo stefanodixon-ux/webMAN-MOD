@@ -158,6 +158,8 @@ Buffer load_jpg(const char *file_path, void* buf_addr)
 	tmp.x=tmp.y=
 	jpg_w=jpg_h=0;
 
+	if(!file_path || *file_path != '/') return tmp;
+
 	// create jpg decoder
 	if(create_decoder(&dec_ctx)==CELL_OK)
 	{

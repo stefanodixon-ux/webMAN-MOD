@@ -356,7 +356,7 @@ void dump_bg(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 	uint64_t *bg = (uint64_t*)ctx.canvas;
 
 	for(i = 0; i < h; i++, y++)
-		for(m = i * CANVAS_WW, k = 0, kk = x; k < CANVAS_WW; k++, kk = k*2+x)
+		for(m = i * CANVAS_WW, k = 0, kk = x; k < CANVAS_WW; k++, kk = (k*2)+x)
 			bg[k + m] = *(uint64_t*)(OFFSET(kk, y));
 }
 
@@ -397,10 +397,13 @@ void init_graphic()
 ***********************************************************************/
 int32_t load_img_bitmap(int32_t idx, char *path, const char *default_img)
 {
+	if(!path || *path != '/') return -1;
 
 	if(idx > IMG_MAX) return -1;
 	uint32_t *buf=ctx.canvas;
 	if(idx) buf=ctx.imgs;
+
+	if(!buf) return -1;
 
 	bool use_default = (*default_img == '/');
 
@@ -534,7 +537,7 @@ void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 		vec_uint4 *canvas = (vec_uint4*)ctx.img[idx].addr;
 
 		for (i = 0; i < ctx.img[idx].h; i++, y++) {
-			for (m = i * _width, k = 0, kk = x; k < _width; k++, kk = k*4+x) {
+			for (m = i * _width, k = 0, kk = x; k < _width; k++, kk = (k*4)+x) {
 				*(vec_uint4*)(OFFSET(kk, y)) = canvas[k + m];
 			}
 		}
@@ -619,7 +622,7 @@ void set_textbox(uint64_t color, uint32_t x, uint32_t y, uint32_t width, uint32_
 {
 	uint32_t i, k, kk, _width = width/2;
 	for(i = 0; i < height; i++, y++)
-		for(k = 0, kk = (x&0xffe); k < _width; k++, kk = k*2+(x&0xffe))
+		for(k = 0, kk = (x&0xffe); k < _width; k++, kk = (k*2)+(x&0xffe))
 			*(uint64_t*)(OFFSET(kk, y)) = color;
 }
 
@@ -677,7 +680,7 @@ int32_t print_text(uint32_t *texture, uint32_t text_width, uint32_t x, uint32_t 
 	uint32_t t_x = x, t_y = y;									   // temp x/y
 	uint32_t o_x = x, o_y = y + bitmap->horizontal_layout.baseLineY; // origin x/y
 	Glyph *glyph;												   // char glyph
-	uint8_t *utf8 = (uint8_t*)str;
+	uint8_t *utf8 = (uint8_t*)str; if(!str) return x;
 	uint32_t pixel, color = (disp_w==1920 ? 0 : 0xff333333);
 
 	memset(&glyph, 0, sizeof(Glyph));
@@ -759,7 +762,7 @@ int32_t draw_png(int32_t idx, int32_t c_x, int32_t c_y, int32_t p_x, int32_t p_y
 
 	const uint32_t CANVAS_WW = CANVAS_W - c_x, CANVAS_HH = CANVAS_H - c_y;
 
-	if(ww >= CANVAS_WW) hh = CANVAS_WW;
+	if(ww >= CANVAS_WW) ww = CANVAS_WW;
 	if(hh >= CANVAS_HH) hh = CANVAS_HH;
 
 	uint32_t offset = p_x + p_y * ctx.img[idx].w;
@@ -814,7 +817,7 @@ void draw_line(int32_t x, int32_t y, int32_t x2, int32_t y2)
 		l = abs(h);
 		s = abs(w);
 
-	if(h < 0) dy2 = -1; else if(h > 0) dy2 = 1;
+		if(h < 0) dy2 = -1; else if(h > 0) dy2 = 1;
 
 		dx2 = 0;
 	}

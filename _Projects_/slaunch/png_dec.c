@@ -151,6 +151,8 @@ Buffer load_png(const char *file_path, void* buf_addr)
 	tmp.x=tmp.y=
 	png_w=png_h=0;
 
+	if(!file_path || *file_path != '/') return tmp;
+
 	// create png decoder
 	if(create_decoder(&dec_ctx)==CELL_OK)
 	{

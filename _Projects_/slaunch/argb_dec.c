@@ -44,6 +44,8 @@ Buffer load_argb(const char *file_path, void* buf_addr)
 	tmp.w = tmp.h = 0;
 	tmp.x = tmp.y = 0;
 
+	if(!file_path || *file_path != '/') return tmp;
+
 	fp = fopen(file_path, "rb");
 	fread(&argb_h, sizeof(uint8_t), sizeof(argb_h_t), fp); // 128 bytes
 
