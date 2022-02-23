@@ -23,7 +23,7 @@ SYS_MODULE_STOP(slaunch_stop);
 #define STR_UNLOAD		"Unload webMAN"
 #define STR_QUIT		"Quit"
 
-#define APP_VERSION		"1.12"
+#define APP_VERSION		"1.15"
 
 typedef struct {
 	uint8_t  gmode;
@@ -127,6 +127,7 @@ uint32_t disp_h=0;
 uint32_t gpp=10;
 
 uint8_t web_page=0;
+uint8_t read_pad=1;
 
 static uint8_t key_repeat=0, can_skip=0;
 
@@ -218,13 +219,29 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 	if(disp_h<720) gpp=10;
 
+	draw_selection(game_idx);
+
 	// draw game icons (5x2) or (10x4)
 	j=(game_idx/gpp)*gpp;
 	for(i=j;((slot<gpp)&&(i<games));i++)
 	{
-		slot++;
+		// abort drawing if page is changed with L1 or R1 while processing
+		{
+			MyPadGetData(0, &pdata);
 
-		if(load_img_bitmap(slot, slaunch[i].name + slaunch[i].icon_pos, wm_icons[slaunch[i].type])<0) break;
+			if(pdata.len > 0)
+			{
+				curpad = (pdata.button[2] | (pdata.button[3] << 8)); oldpad = read_pad = 0;
+
+				if(++init_delay > 4)
+				{
+					if((curpad & PAD_L1) && (i > gpp)) break;
+					if((curpad & PAD_R1) && (i < games - (games % gpp))) break;
+				}
+			}
+		}
+
+		if(load_img_bitmap(++slot, slaunch[i].name + slaunch[i].icon_pos, wm_icons[slaunch[i].type])<0) break;
 
 		if(gpp==10)
 		{
@@ -247,7 +264,6 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 		if(key_repeat) break;
 	}
-	draw_selection(game_idx);
 }
 
 static void draw_selection(uint16_t game_idx)
@@ -320,7 +336,6 @@ static void draw_side_menu_option(uint8_t option)
 	memset((uint8_t *)ctx.side, 0x40, SM_M);
 	ctx.fg_color=BRIGHT_TEXT;
 	set_font(28.f, 24.f, 1.f, 0); print_text(ctx.side, (CANVAS_W-SM_X), SM_TO, SM_Y, "sLaunch MOD " APP_VERSION);
-
 	ctx.fg_color=(option==1 ? WHITE_TEXT : GRAY_TEXT);
 	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=1)*32, SM_Y+4*24, STR_UNMOUNT);
 	ctx.fg_color=(option==2 ? WHITE_TEXT : GRAY_TEXT);
@@ -362,8 +377,7 @@ static uint8_t draw_side_menu(void)
 		{
 			if(curpad==oldpad)	// key-repeat
 			{
-				init_delay++;
-				if(init_delay<=40) continue;
+				if(++init_delay<=40) continue;
 				else { sys_timer_usleep(40000); key_repeat=1; }
 			}
 			else
@@ -520,7 +534,7 @@ reload:
 					if(slaunch[n].type == gmode) slaunch[ngames++] = slaunch[n];
 				}
 
-				if(ngames == 0) {gmode++; if(gmode >= TYPE_MAX) gmode = TYPE_ALL; goto reload;}
+				if(ngames == 0) {if(++gmode >= TYPE_MAX) gmode = TYPE_ALL; goto reload;}
 			}
 
 			if(dmode)		// filter games by device
@@ -540,7 +554,7 @@ reload:
 						slaunch[ngames++] = slaunch[n];
 				}
 
-				if(ngames == 0) {dmode++; if(dmode > DEVS_MAX) dmode = TYPE_ALL; goto reload;}
+				if(ngames == 0) {if(++dmode > DEVS_MAX) dmode = TYPE_ALL; goto reload;}
 			}
 
 			games = ngames; ngames = 0;
@@ -870,14 +884,13 @@ static void slaunch_thread(uint64_t arg)
 		{
 			while(slaunch_running && running)
 			{
-				pad_read();
+				if(read_pad) pad_read(); read_pad = 1; // curpad is set in draw_page() when read_pad = 0
 
 				if(curpad)
 				{
 					if(curpad == oldpad)				// key-repeat
 					{
-						init_delay++;
-						if(init_delay <= 20) continue;
+						if(++init_delay <= 20) continue;
 						sys_timer_usleep(40000);
 					}
 					else
@@ -952,8 +965,8 @@ static void slaunch_thread(uint64_t arg)
 					else if(curpad & PAD_R3 && games)	{gpp^=34; draw_page(cur_game, 0); init_delay=0;}
 
 					else if(curpad & PAD_L3)	{return_to_xmb(); send_wm_request("/refresh_ps3"); break;}
-					else if((curpad & PAD_SQUARE) && !fav_mode && !(curpad & PAD_L2)) {gmode++; if(gmode>=TYPE_MAX) gmode=TYPE_ALL; dmode=TYPE_ALL; reload_data(curpad); continue;}
-					else if((curpad & PAD_SQUARE) && !fav_mode &&  (curpad & PAD_L2)) {dmode++; if(dmode> DEVS_MAX) dmode=TYPE_ALL; reload_data(curpad); continue;}
+					else if((curpad & PAD_SQUARE) && !fav_mode && !(curpad & PAD_L2)) {if(++gmode>=TYPE_MAX) gmode=TYPE_ALL; dmode=TYPE_ALL; reload_data(curpad); continue;}
+					else if((curpad & PAD_SQUARE) && !fav_mode &&  (curpad & PAD_L2)) {if(++dmode> DEVS_MAX) dmode=TYPE_ALL; reload_data(curpad); continue;}
 					else if((curpad == PAD_START) && games)	// favorite game XMB
 					{
 						if(fav_mode) remove_game(); else add_game();

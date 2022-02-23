@@ -421,18 +421,25 @@ retry:
 	else
 		ctx.img[idx] = load_jpg(path, buf);
 
-	if(use_default)
-		if(!ctx.img[idx].w || !ctx.img[idx].h)
+	if(!ctx.img[idx].w || !ctx.img[idx].h)
+	{
+		if(use_default)
 		{
 			strcpy(path, default_img); use_default = false;
 			goto retry;
 		}
 
-	if(!ctx.img[idx].w || !ctx.img[idx].h)
-	{
-		ctx.img[idx].w=260;
-		ctx.img[idx].h=300;
-		memset(buf, 0x80808080, 260 * 300 * 4);
+		if(gpp == 10)
+		{
+			ctx.img[idx].w=260;
+			ctx.img[idx].h=300;
+		}
+		else // if(gpp == 40)
+		{
+			ctx.img[idx].w=120;
+			ctx.img[idx].h=160;
+		}
+		memset(buf, 0x80, ctx.img[idx].w * ctx.img[idx].h * 4);
 	}
 
 	if(disp_h<720) return 0;
@@ -464,13 +471,21 @@ retry:
 	if(gpp==40 && idx && (ctx.img[idx].w>168 || ctx.img[idx].h>168))
 	{
 		//downscale x2
-		uint32_t tw, ww;
+		uint32_t tw, ww, mm = 2;
 downscale:
-		tw = ctx.img[idx].w / 2;
+		tw = ctx.img[idx].w / mm;
 
-		for(uint32_t y=0, yy = ww = 0; y<ctx.img[idx].h; y+=2, yy = y/2 * tw, ww = y * ctx.img[idx].w)
-			for(uint32_t x=0; x<ctx.img[idx].w; x+=2)
-				buf[x/2 + yy]=buf[x + ww];
+		if(tw>168)
+		{
+			mm *= 2;
+			ctx.img[idx].w>>=1;
+			ctx.img[idx].h>>=1;
+			goto downscale;
+		}
+
+		for(uint32_t y=0, yy = ww = 0; y<ctx.img[idx].h; y+=mm, yy = y/mm * tw, ww = y * ctx.img[idx].w)
+			for(uint32_t x=0; x<ctx.img[idx].w; x+=mm)
+				buf[x/mm + yy]=buf[x + ww];
 
 		ctx.img[idx].w>>=1;
 		ctx.img[idx].h>>=1;

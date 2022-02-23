@@ -25,7 +25,7 @@
 
 #define ISHD(a)         (a == 1920)
 
-#define SM_X			1504			// side menu X offset
+#define SM_X			1440			// side menu X offset
 #define SM_Y			90				// side menu Y offset for text
 #define SM_M			((CANVAS_W-SM_X) * CANVAS_H * 4)
 #define SM_TO			88				// side menu text offset
