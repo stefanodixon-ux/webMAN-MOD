@@ -983,7 +983,7 @@ static void draw_background_and_title(void)
 																(view == FILE_MANAGER && !last_game_view) ? curdir + curdir_offset :
 																(view == PLUGINS_MANAGER) ? "Plugins Manager"		:
 																						    "VSH Menu for webMAN") );
-	set_font(14.f, 14.f, 1.f, 1); print_text(650, 8, "v1.20");
+	set_font(14.f, 14.f, 1.f, 1); print_text(650, 8, "v1.21");
 }
 
 static void draw_menu_options(void)

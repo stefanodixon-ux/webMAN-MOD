@@ -54,6 +54,9 @@ Features:
 
 Changelog:
 ---------
+v1.21	Added menu navigation using Left/Right sticks
+	Improved game pad reading
+
 v0.9:
 	Added options to open /setup.ps3 and File Manager (req. webMAN MOD 1.43.10 or later)
 	Increased pad response when is menu on
