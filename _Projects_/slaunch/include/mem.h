@@ -9,6 +9,7 @@ int32_t create_heap(int32_t size);
 void destroy_heap(void);
 void *mem_alloc(uint32_t size);
 int32_t mem_free(uint32_t size);
+void *memset32(void *m, uint32_t c, size_t n);
 void reset_heap(void);
 
 #endif // __MEM_H__

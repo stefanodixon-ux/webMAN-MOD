@@ -23,7 +23,7 @@ SYS_MODULE_STOP(slaunch_stop);
 #define STR_UNLOAD		"Unload webMAN"
 #define STR_QUIT		"Quit"
 
-#define APP_VERSION		"1.15"
+#define APP_VERSION		"1.15a"
 
 typedef struct {
 	uint8_t  gmode;
@@ -226,8 +226,9 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 	for(i=j;((slot<gpp)&&(i<games));i++)
 	{
 		// abort drawing if page is changed with L1 or R1 while processing
+		if(i & 1)
 		{
-			MyPadGetData(0, &pdata);
+			MyPadGetData(0, &pdata); // poll only pad 0
 
 			if(pdata.len > 0)
 			{
@@ -333,7 +334,8 @@ static void draw_selection(uint16_t game_idx)
 
 static void draw_side_menu_option(uint8_t option)
 {
-	memset((uint8_t *)ctx.side, 0x40, SM_M);
+	//memset((uint8_t *)ctx.side, 0x40, SM_M);
+	memset32((uint32_t *)ctx.side, 0x40404040, SM_M/4);
 	ctx.fg_color=BRIGHT_TEXT;
 	set_font(28.f, 24.f, 1.f, 0); print_text(ctx.side, (CANVAS_W-SM_X), SM_TO, SM_Y, "sLaunch MOD " APP_VERSION);
 	ctx.fg_color=(option==1 ? WHITE_TEXT : GRAY_TEXT);
@@ -505,7 +507,7 @@ static void load_data(void)
 	if(fav_mode && (size == 0)) {sprintf(filename, WMTMP "/" SLIST ".bin"); size = file_len(filename); fav_mode = TYPE_ALL;} else
 	if(fav_mode) cur_game = fav_game; else cur_game = cur_game_;
 
-	games=size/sizeof(_slaunch);
+	games = size / sizeof(_slaunch);
 
 	if(games >= MAX_GAMES) games = MAX_GAMES-1;
 	if(cur_game >= games) cur_game = 0;
@@ -962,7 +964,7 @@ static void slaunch_thread(uint64_t arg)
 						else if(curpad & PAD_R3)	{return_to_xmb(); send_wm_request("/popup.ps3"); break;}
 						continue;
 					}
-					else if(curpad & PAD_R3 && games)	{gpp^=34; draw_page(cur_game, 0); init_delay=0;}
+					else if(curpad & PAD_R3 && games)	{gpp^=34; draw_page(cur_game, 0); sys_timer_usleep(10000); init_delay=0;}
 
 					else if(curpad & PAD_L3)	{return_to_xmb(); send_wm_request("/refresh_ps3"); break;}
 					else if((curpad & PAD_SQUARE) && !fav_mode && !(curpad & PAD_L2)) {if(++gmode>=TYPE_MAX) gmode=TYPE_ALL; dmode=TYPE_ALL; reload_data(curpad); continue;}
@@ -1019,7 +1021,7 @@ static void slaunch_thread(uint64_t arg)
 					if(tick<0x80 || tick>0xF0){delta=-delta; tick&=0xff;}
 
 					// update temperature
-					if(++frame > 100) {frame = 0, cpu_rsx ^= 1; draw_selection(cur_game);}
+					if(++frame > 400) {frame = 0, cpu_rsx ^= 1; draw_selection(cur_game);}
 				}
 			}
 		}

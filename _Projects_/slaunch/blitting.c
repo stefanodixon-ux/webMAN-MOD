@@ -143,9 +143,9 @@ static void font_init(void)
 ***********************************************************************/
 void font_finalize(void)
 {
-  FontUnbindRenderer(&ctx.font);
-  FontDestroyRenderer(&ctx.renderer);
-  FontCloseFont(&ctx.font);
+	FontUnbindRenderer(&ctx.font);
+	FontDestroyRenderer(&ctx.renderer);
+	FontCloseFont(&ctx.font);
 }
 
 /***********************************************************************
@@ -409,7 +409,10 @@ int32_t load_img_bitmap(int32_t idx, char *path, const char *default_img)
 
 	if(not_exists(path))
 	{
-		strcpy(path, default_img); use_default = false;
+		if(not_exists(default_img)) goto blank_image;
+
+		strcpy(path, default_img);
+		use_default = false;
 	}
 
 retry:
@@ -429,6 +432,8 @@ retry:
 			goto retry;
 		}
 
+blank_image:
+
 		if(gpp == 10)
 		{
 			ctx.img[idx].w=260;
@@ -439,7 +444,8 @@ retry:
 			ctx.img[idx].w=120;
 			ctx.img[idx].h=160;
 		}
-		memset(buf, 0x80, ctx.img[idx].w * ctx.img[idx].h * 4);
+		//memset(buf, 0x80, ctx.img[idx].w * ctx.img[idx].h * 4);
+		memset32(buf, 0x80808080, ctx.img[idx].w * ctx.img[idx].h);
 	}
 
 	if(disp_h<720) return 0;

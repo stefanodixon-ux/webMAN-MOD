@@ -40,11 +40,13 @@ static int32_t get_vsh_toc(void)
 	while(pm_start < 0x700000UL)
 	{
 		v0 = *(uint32_t*)(pm_start+0x00);
-		v1 = *(uint32_t*)(pm_start+0x04);
-		v2 = *(uint32_t*)(pm_start+0x0C);
 
-		if((v0 == 0x10200UL/* .init_proc() */) && (v1 == v2))
-			break;
+		if(v0 == 0x10200UL/* .init_proc() */)
+		{
+			v1 = *(uint32_t*)(pm_start+0x04);
+			v2 = *(uint32_t*)(pm_start+0x0C);
+			if (v1 == v2) break;
+		}
 
 		pm_start+=4;
 	}
@@ -55,12 +57,15 @@ static int32_t get_vsh_toc(void)
 /***********************************************************************
 * get vsh io_pad_object
 ***********************************************************************/
+static int32_t io_pad_object_address = 0;
 static int32_t get_vsh_pad_obj(void)
 {
+	if(io_pad_object_address) return io_pad_object_address;
 	uint32_t (*base)(uint32_t) = (void*)sys_io_3733EA3C;        // get pointer to cellPadGetData()
 	int16_t idx = *(uint32_t*)(*(uint32_t*)base) & 0x0000FFFF;  // get got_entry idx from first instruction,
 	int32_t got_entry = (idx + get_vsh_toc());                  // get got_entry of io_pad_object
-	return (int32_t)(*(int32_t*)got_entry);                     // return io_pad_object address
+	io_pad_object_address = (int32_t)(*(int32_t*)got_entry);    // cache io_pad_object address
+	return io_pad_object_address;                               // return io_pad_object address
 }
 
 /***********************************************************************
@@ -108,8 +113,8 @@ void VSHPadGetData(CellPadData *data)
 ***********************************************************************/
 static void start_stop_vsh_pad(uint8_t flag)
 {
-  uint32_t lib_init_flag = get_vsh_pad_obj();
-  *(uint8_t*)lib_init_flag = flag;
+	uint32_t lib_init_flag = get_vsh_pad_obj();
+	*(uint8_t*)lib_init_flag = flag;
 }
 
 /***********************************************************************
@@ -121,9 +126,9 @@ static void start_stop_vsh_pad(uint8_t flag)
 ***********************************************************************/
 static void MyPadGetData(int32_t port_no, CellPadData *data)
 {
-  uint32_t port = *(uint32_t*)(*(uint32_t*)(get_vsh_pad_obj() + 4) + 0x104 + port_no * 0xE8);
+	uint32_t port = *(uint32_t*)(*(uint32_t*)(get_vsh_pad_obj() + 4) + 0x104 + port_no * 0xE8);
 
-  // sys_hid_manager_read()
+	// sys_hid_manager_read()
 	system_call_4(0x1F6, (uint64_t)port, /*0x02*//*0x82*/0xFF, (uint64_t)(uint32_t)data+4, 0x80);
 
 	data->len = (int32_t)p1;
@@ -147,6 +152,30 @@ static void pad_read(void)
 	// check only pad all ports
 	for(int32_t port=0; port<8; port++)
 		{MyPadGetData(port, &pdata); curpad = (pdata.button[2] | (pdata.button[3] << 8)); if(curpad && (pdata.len > 0)) break;}  // use MyPadGetData() during VSH menu
+
+	/* Analog left stick management */
+	if (pdata.button[6] < 0x10)
+		curpad |= PAD_LEFT;
+	else if (pdata.button[6] > 0xe0)
+		curpad |= PAD_RIGHT;
+
+	if (pdata.button[7] < 0x10)
+		curpad |= PAD_UP;
+	else if (pdata.button[7] > 0xe0)
+		curpad |= PAD_DOWN;
+
+	/* Analog right stick management */
+	if (pdata.button[4] < 0x10)
+		curpad |= PAD_LEFT;
+	else if (pdata.button[4] > 0xe0)
+		curpad |= PAD_RIGHT;
+
+	if (pdata.button[5] < 0x10)
+		curpad |= PAD_UP;
+	else if (pdata.button[5] > 0xe0)
+		curpad |= PAD_DOWN;
+
+	sys_timer_usleep(10000);
 }
 
 static void release_cross(void)
