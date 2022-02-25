@@ -55,3 +55,15 @@ int32_t mem_free(uint32_t size)
 	if(prx_heap>=size) prx_heap -= size; else return (-1);
 	return(0);
 }
+
+/***********************************************************************
+*
+***********************************************************************/
+void memcpy32(void *dst, const void *src, size_t n)
+{
+	uint32_t *d = (uint32_t *)dst;
+	uint32_t *s = (uint32_t *)src;
+
+	while (n--)
+		*d++ = *s++;
+}

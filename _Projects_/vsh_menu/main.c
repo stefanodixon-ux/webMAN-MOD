@@ -267,7 +267,7 @@ static void vsh_menu_thread(uint64_t arg);
 
 char *strcasestr(const char *s1, const char *s2);
 
-static void start_VSH_Menu(void)
+static void load_bg(void)
 {
 	struct CellFsStat s;
 	char bg_image[48], sufix[8];
@@ -283,7 +283,11 @@ static void start_VSH_Menu(void)
 		if(cellFsStat(bg_image, &s) == CELL_FS_SUCCEEDED) break; else sprintf(bg_image, "/dev_hdd0/plugins/littlebalup_vsh_menu%s.png", sufix);
 		if(cellFsStat(bg_image, &s) == CELL_FS_SUCCEEDED) break; else config->bgindex = 0;
 	}
+	load_png_bitmap(0, bg_image);
+}
 
+static void start_VSH_Menu(void)
+{
 	rsx_fifo_pause(1);
 
 	int32_t ret, mem_size;
@@ -300,7 +304,7 @@ static void start_VSH_Menu(void)
 	// set_font(17, 17, 1, 1);  // set font(char w/h = 20 pxl, line-weight = 1 pxl, distance between chars = 1 pxl)
 
 	// load png image
-	load_png_bitmap(0, bg_image);
+	load_bg();
 
 	get_payload_type();
 
@@ -1607,9 +1611,8 @@ static void vsh_menu_thread(uint64_t arg)
 			if(curpad & PAD_SQUARE)
 			{
 				// switch them file
-				stop_VSH_Menu();
 				config->bgindex++;
-				start_VSH_Menu();
+				load_bg();
 
 				// save config
 				int fd = 0;

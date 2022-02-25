@@ -5,6 +5,8 @@
 #include "include/misc.h"
 #include "include/mem.h"
 
+#define FAILED -1
+
 //#include <cell/rtc.h>
 extern uint32_t disp_w, disp_h;
 extern uint32_t gpp;
@@ -46,10 +48,10 @@ static int32_t get_font_object(void)
 			return 0;
 		}
 
-		pm_start+=4;
+		pm_start += 4;
 	}
 
-	return -1;
+	return FAILED;
 }
 
 /***********************************************************************
@@ -87,11 +89,11 @@ static void font_init(void)
 	CellFontRendererConfig rd_cfg;
 	CellFont *opened_font = NULL;
 
-	get_font_object();
+	if(get_font_object() == FAILED) return;
 
 	// get id of current logged in user for the xRegistry query we do next
 	user_id = xsetting_CC56EB2D()->GetCurrentUserNumber();
-	if(user_id > 255) user_id=1;
+	if(user_id > 255) user_id = 1;
 
 	// get current font style for the current logged in user
 	xsetting_CC56EB2D()->GetRegistryValue(user_id, 0x5C, &val);
@@ -397,13 +399,13 @@ void init_graphic()
 ***********************************************************************/
 int32_t load_img_bitmap(int32_t idx, char *path, const char *default_img)
 {
-	if(!path || *path != '/') return -1;
+	if(!path || *path != '/') return FAILED;
 
-	if(idx > IMG_MAX) return -1;
+	if(idx > IMG_MAX) return FAILED;
 	uint32_t *buf=ctx.canvas;
 	if(idx) buf=ctx.imgs;
 
-	if(!buf) return -1;
+	if(!buf) return FAILED;
 
 	bool use_default = (*default_img == '/');
 
@@ -783,8 +785,8 @@ int32_t draw_png(int32_t idx, int32_t c_x, int32_t c_y, int32_t p_x, int32_t p_y
 
 	const uint32_t CANVAS_WW = CANVAS_W - c_x, CANVAS_HH = CANVAS_H - c_y;
 
-	if(ww >= CANVAS_WW) ww = CANVAS_WW;
-	if(hh >= CANVAS_HH) hh = CANVAS_HH;
+	if(ww > CANVAS_WW) ww = CANVAS_WW;
+	if(hh > CANVAS_HH) hh = CANVAS_HH;
 
 	uint32_t offset = p_x + p_y * ctx.img[idx].w;
 
@@ -845,13 +847,13 @@ void draw_line(int32_t x, int32_t y, int32_t x2, int32_t y2)
 
 	int32_t num = l >> 1;
 
-  for(i = 0; i <= l; i++)
-  {
-	draw_pixel(x, y);
-	num+=s;
-
-	if(!(num < l))
+	for(i = 0; i <= l; i++)
 	{
+		draw_pixel(x, y);
+		num+=s;
+
+		if(!(num < l))
+		{
 			num-=l;
 			x+=dx1;
 			y+=dy1;

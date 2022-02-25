@@ -157,7 +157,7 @@ static void pad_read(void)
 	else if (pdata.button[5] > 0xe0)
 		curpad |= PAD_DOWN;
 
-	sys_timer_usleep(10000);
+	sys_timer_usleep(20000);
 }
 
 static void release_cross(void)
