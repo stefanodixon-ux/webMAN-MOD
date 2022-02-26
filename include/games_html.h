@@ -265,6 +265,9 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 {
 	bool is_html = (key <= HTML_KEY);
 
+	if(templn[1] == '/')
+		strcpy(templn, templn + 2); // skip single letter folder
+	else
 	{
 		char *p = strchr(templn, '/');
 		if(p)

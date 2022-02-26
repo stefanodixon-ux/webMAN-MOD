@@ -854,7 +854,9 @@ next_xml_entry:
 								{
 									*p = NULL; int l = sprintf(folder_name, "/%s", entry.entry_name.d_name); *p = '/';
 									strcpy(tempstr, templn + l);
-									if(islike(tempstr, folder_name + 1))
+									if(l == 2)
+										get_name(templn, entry.entry_name.d_name + 2, 0);
+									else if(islike(tempstr, folder_name + 1))
 										strcpy(templn, folder_name + 1);
 									else
 										sprintf(templn, "[%s] %s", folder_name + 1, tempstr);

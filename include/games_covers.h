@@ -674,6 +674,7 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 	else
 	{
 		get_name(title, entry_name, NO_EXT);
+
 		if(f1 >= id_BDISO && f1 <= id_ISO)
 		{
 			// info level: 0=Path, 1=Path + ID, 2=ID, 3=None
