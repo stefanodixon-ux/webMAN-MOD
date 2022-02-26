@@ -347,6 +347,10 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param);
 static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param);
 static char *get_filename(const char *path);
 
+#ifndef LITE_EDITION
+static void parse_script(const char *script_file);
+#endif
+
 #ifdef PS3MAPI
 static void patch_gameboot(u8 boot_type);
 #endif

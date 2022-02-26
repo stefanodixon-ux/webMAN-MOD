@@ -762,6 +762,15 @@ parse_request:
 						}
 						else
 						#endif
+						#ifdef WM_CUSTOM_COMBO
+						if(islike(param2, WM_CUSTOM_COMBO))
+						{
+							parse_script(param2);
+							memcpy(param, "/edit.ps3", 9);
+							is_popup = 1;
+						}
+						else
+						#endif
 						{
 							strcpy(header, param2);
 							sprintf(param, "/mount.ps3%s", header);
@@ -3039,7 +3048,12 @@ retry_response:
 						char *p = get_filename(filename);
 						if(p)
 						{
-							if(is_ext(p, ".bat")) {sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
+							if(is_ext(p, ".bat")
+							#ifdef WM_CUSTOM_COMBO
+							|| islike(filename, WM_CUSTOM_COMBO)
+							#endif
+							)
+								{sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
 							strcpy(txt, p); *p = NULL; sprintf(tempstr," &nbsp; " HTML_URL HTML_URL2 "</form>", filename, filename, filename, txt, txt); _concat(&sbuffer, tempstr);
 						}
 					}

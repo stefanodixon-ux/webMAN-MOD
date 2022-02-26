@@ -544,6 +544,8 @@ int main()
 	file_copy(APP_USRDIR "/html/sman.js",        XMLHOST_DIR "/sman.js");
 	file_copy(APP_USRDIR "/html/help.html",      XMLHOST_DIR "/help.html");
 	file_copy(APP_USRDIR "/html/xmb.html",       XMLHOST_DIR "/xmb.html");
+	file_copy(APP_USRDIR "/html/combos.html",    XMLHOST_DIR "/combos.html");
+	file_copy(APP_USRDIR "/html/combolist.js",   XMLHOST_DIR "/combolist.js");
 
 	// copy javascripts
 	file_copy(APP_USRDIR "/html/jquery.min.js",    XMLHOST_DIR "/jquery.min.js");  // jQuery v3.1.1

@@ -1368,7 +1368,7 @@ static void handle_file_request(const char *wm_url)
 
 static bool do_custom_combo(const char *filename)
 {
- #if defined(WM_CUSTOM_COMBO)
+ #ifdef WM_CUSTOM_COMBO
 	char combo_file[128];
 
 	if(*filename == '/')
@@ -1381,9 +1381,8 @@ static bool do_custom_combo(const char *filename)
 
 	if(file_exists(combo_file))
 	{
-		char *url = html_base_path;
-		read_file(combo_file, url, HTML_RECV_LAST, 0);
-		handle_file_request(url); *html_base_path = NULL;
+		parse_script(combo_file);
+		sys_ppu_thread_sleep(2);
 		return true;
 	}
 	return false;
