@@ -96,7 +96,7 @@ typedef struct
 
 /* new for PSX with multiple disc support (derivated from Estwald's PSX payload):
 
-in 0x80000000000000D0, u64 (8 bytes) countaining ISOs sector size (for alls)
+in 0x80000000000000D0, u64 (8 bytes) containing ISOs sector size (for alls)
 
 tracks index is from lv2peek(0x8000000000000050)
 
@@ -110,7 +110,7 @@ max 8 disc, 4*u32 (16 bytes) containing
 table info: (from 0x80000000007E0000)
 u8 datas
 
-0, 1 -> countain an u16 with size - 2 of track info block
+0, 1 -> u16 with size - 2 of track info block
 2 -> to 1
 3 -> to 1
 // first track
@@ -118,7 +118,7 @@ u8 datas
 5 -> mode 0x14 for data, 0x10 for audio
 6 -> track number (from 1)
 7 -> 0
-8, 9, 10, 11 -> countain an u32 with the LBA
+8, 9, 10, 11 -> u32 with the LBA
 
 ....
 ....
@@ -181,7 +181,7 @@ ScsiTrackDescriptor tracks[MAX_TRACKS];
 uint32_t emu_mode, num_tracks;
 sys_event_port_t result_port;
 
-
+// mode_file: 0 = ISO raw sectors, 1 = ISO file(s), 2 (>1) = fake ISO (ISO raw sector[0] + file sectors)
 static int mode_file = 0, cd_sector_size_param = 0;
 
 #define CD_SECTOR_SIZE_2048			2048
@@ -644,7 +644,7 @@ static int process_read_psx_cmd(uint8_t *buf, uint64_t offset, uint64_t size, ui
 
 	remaining = size;
 
-	if(!psx_isos_desc[psx_indx * 2 + 0])
+	if(!psx_isos_desc[psx_indx * 2])
 	{
 		if(discfd == NONE)
 		{
@@ -688,7 +688,7 @@ static int process_read_psx_cmd(uint8_t *buf, uint64_t offset, uint64_t size, ui
 				}
 			}
 
-			if(!psx_isos_desc[psx_indx * 2 + 0])
+			if(!psx_isos_desc[psx_indx * 2])
 			{
 				ret = cellFsReadWithOffset(discfd, pos, buf + rel, readsize, &p);
 				if(ret)
@@ -883,8 +883,8 @@ static void get_psx_track_datas(void)
 
 	discsize = ((uint64_t) psx_isos_desc[psx_indx * 2 + 1]) * (uint64_t)CD_SECTOR_SIZE_2352;
 
-	num_sections = (psx_isos_desc[psx_indx * 2 + 0] >> 16) & 0xffff;
-	sections = &psx_isos_desc[16] + (psx_isos_desc[psx_indx * 2 + 0] & 0xffff);
+	num_sections = (psx_isos_desc[psx_indx * 2] >> 16) & 0xffff;
+	sections = &psx_isos_desc[16] + (psx_isos_desc[psx_indx * 2] & 0xffff);
 	sections_size = sections + num_sections;
 }
 
@@ -1083,7 +1083,7 @@ static void rawseciso_thread(uint64_t arg)
 
 		discsize = 0;
 
-		for(uint32_t i = 1 * (mode_file > 1); i < num_sections; i++)
+		for(uint32_t i = (mode_file > 1); i < num_sections; i++)
 		{
 			discsize += sections_size[i];
 		}
