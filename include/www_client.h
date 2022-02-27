@@ -715,7 +715,7 @@ parse_request:
 					char *param2 = param + 9; if(*param2 == '?') param2++;
 
 					#ifdef COBRA_ONLY
-					if((*param2 == NULL) && is_app_dir("/app_home", "PS3_GAME") && !is_app_dir("/dev_bdvd", "PS3_GAME")) goto launch_app;
+					if((*param2 == NULL) && is_app_dir("/app_home", "PS3_GAME") && !is_app_dir("/dev_bdvd", "PS3_GAME") && not_exists("/dev_bdvd/SYSTEM.CNF")) goto launch_app;
 					#endif
 
 					if(islike(param2, "snd_"))

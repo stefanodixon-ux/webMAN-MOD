@@ -311,3 +311,22 @@ static u16 Hex2Bin(const char *src, char *out)
 	return (target - out);
 }
 #endif
+
+#if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT)
+static void my_memcpy(void *dst, void *src, int size)
+{
+	if(size & 7)
+	{
+		u8 *s = src;
+		u8 *d = dst;
+		for(int i = 0; i < size; i++) d[i] = s[i];
+	}
+	else
+	{
+		size >>= 3;
+		u64 *s = src;
+		u64 *d = dst;
+		for(int i = 0; i < size; i++) d[i] = s[i];
+	}
+}
+#endif

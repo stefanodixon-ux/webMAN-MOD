@@ -96,11 +96,9 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 {
 	if(IS_INGAME)
 	{
-		get_game_info();
-
-		if(strlen(_game_TitleID) == 9)
+		if(!is_cpursx && sys_admin)
 		{
-			if(!is_cpursx && sys_admin)
+			if(GetCurrentRunningMode() == 1)
 			{
 #ifdef GET_KLICENSEE
 				buffer += concat(buffer, " [<a href=\"/klic.ps3\">KLIC</a>]");
@@ -112,9 +110,14 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 				buffer += concat(buffer, " [<a href=\"/videorec.ps3\">REC</a>]");
 #endif
 				buffer += concat(buffer, " [<a href=\"/xmb.ps3$reloadgame\">Reload</a>]");
-				buffer += concat(buffer, " [<a href=\"/xmb.ps3$exit\">Exit</a>]");
 			}
+			buffer += concat(buffer, " [<a href=\"/xmb.ps3$exit\">Exit</a>]");
+		}
 
+		get_game_info();
+
+		if(strlen(_game_TitleID) == 9)
+		{
 			char path[MAX_PATH_LEN], version[8] = "01.00", *app_ver = version;
 
 			sprintf(templn, "<hr><span style=\"position:relative;top:-20px;\"><H2><a href=\"%s/%s/%s-ver.xml\" target=\"_blank\">%s</a>", "https://a0.ww.np.dl.playstation.net/tpl/np", _game_TitleID, _game_TitleID, _game_TitleID); buffer += concat(buffer, templn);

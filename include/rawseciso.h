@@ -130,7 +130,13 @@ static u8 rawseciso_loaded = 0;
 
 static volatile u8 do_run = 0;
 
+// mode_file: 0 = ISO raw sectors, 1 = ISO file(s), 2 (>1) = fake ISO (ISO raw sector[0] + file sectors)
 static int mode_file = 0, cd_sector_size_param = 0;
+
+#define IS_RAW_MODE		(mode_file == 0)
+#define IS_FILEMODE		(mode_file == 1)
+#define IS_FAKE_ISO		(mode_file  > 1)
+#define NOT_FILEMODE	(mode_file != 1)
 
 static u64 sec_size = 512ULL;
 
@@ -165,7 +171,7 @@ static void get_next_read(u64 discoffset, u64 bufsize, u64 *offset, u64 *readsiz
 
 	for(u32 i = 0; i < num_sections; i++)
 	{
-		if(i == 0 && mode_file > 1)
+		if(i == 0 && IS_FAKE_ISO)
 			sz = (((u64)sections_size[i]) * CD_SECTOR_SIZE_2048);
 		else
 			sz = (((u64)sections_size[i]) * sec_size);
@@ -216,7 +222,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 
 		get_next_read(offset, remaining, &pos, &readsize, &idx, sec_size);
 
-		if(idx == NONE || sections[idx] == 3)
+		if((idx == NONE) || (sections[idx] == 0xFFFFFFFF))
 		{
 			memset(buf, 0, readsize);
 			buf += readsize;
@@ -227,8 +233,6 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 
 		if(pos % sec_size)
 		{
-			u64 csize;
-
 			sector = sections[idx] + (pos / sec_size);
 			for(retry = 0; retry < 16; retry++)
 			{
@@ -263,7 +267,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 
 								handle = SYS_DEVICE_HANDLE_NONE; sys_ppu_thread_usleep(500000);
 							}
-							else sys_ppu_thread_usleep(7000000);
+							else sys_ppu_thread_usleep(3000000);
 						}
 						retry = -1; continue;
 					}
@@ -279,11 +283,11 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 				else break;
 			}
 
-			csize = sec_size - (pos % sec_size);
+			u64 csize = sec_size - (pos % sec_size);
 
 			if(csize > readsize) csize = readsize;
 
-			memcpy(buf, last_sect_buf + (pos % sec_size), csize);
+			my_memcpy(buf, last_sect_buf + (pos % sec_size), csize);
 			buf += csize;
 			offset += csize;
 			pos += csize;
@@ -341,9 +345,8 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 					else break;
 				}
 
-				u64 s;
+				u64 s = n * sec_size;
 
-				s = n * sec_size;
 				buf += s;
 				offset += s;
 				pos += s;
@@ -402,7 +405,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 					else break;
 				}
 
-				memcpy(buf, last_sect_buf, readsize);
+				my_memcpy(buf, last_sect_buf, readsize);
 				buf += readsize;
 				offset += readsize;
 				remaining -= readsize;
@@ -421,7 +424,7 @@ static int process_read_file_cmd_iso(u8 *buf, u64 offset, u64 size)
 
 	char *path_name = (char *) sections;
 
-	if(mode_file > 1)
+	if(IS_FAKE_ISO)
 	{
 		last_index = NONE;
 		path_name-= 0x200;
@@ -439,7 +442,7 @@ static int process_read_file_cmd_iso(u8 *buf, u64 offset, u64 size)
 		get_next_read(offset, remaining, &pos, &readsize, &idx, CD_SECTOR_SIZE_2048);
 
 #ifdef RAWISO_PSX_MULTI
-		if(idx == NONE || path_name[0x200 * idx] == 0)
+		if((idx == NONE) || (path_name[0x200 * idx] == 0))
 		{
 #endif
 			memset(buf, 0, readsize);
@@ -463,7 +466,7 @@ static int process_read_file_cmd_iso(u8 *buf, u64 offset, u64 size)
 
 					discfd = NONE;
 
-					sys_ppu_thread_usleep(5000000);
+					sys_ppu_thread_usleep(3000000);
 				}
 
 				last_index = idx;
@@ -520,7 +523,7 @@ static int process_read_psx_cmd_iso(u8 *buf, u64 offset, u64 size, u32 ssector)
 
 	remaining = size;
 
-	if(!psx_isos_desc[psx_indx * 2 + 0])
+	if(!psx_isos_desc[psx_indx * 2])
 	{
 		if(discfd == NONE)
 		{
@@ -530,7 +533,7 @@ static int process_read_psx_cmd_iso(u8 *buf, u64 offset, u64 size, u32 ssector)
 				if(ret == CELL_OK) break;
 
 				discfd = NONE;
-				sys_ppu_thread_usleep(5000000);
+				sys_ppu_thread_usleep(3000000);
 			}
 		}
 	}
@@ -565,7 +568,7 @@ static int process_read_psx_cmd_iso(u8 *buf, u64 offset, u64 size, u32 ssector)
 			}
 		}
 
-		if(!psx_isos_desc[psx_indx * 2 + 0])
+		if(!psx_isos_desc[psx_indx * 2])
 		{
 			ret = cellFsReadWithOffset(discfd, pos, buf + rel, readsize, &p);
 			if(ret != CELL_OK)
@@ -596,11 +599,6 @@ static int process_read_psx_cmd_iso(u8 *buf, u64 offset, u64 size, u32 ssector)
 }
 #endif
 
-static inline void my_memcpy(u8 *dst, u8 *src, int size)
-{
-	for(int i = 0; i < size; i++) dst[i] = src[i];
-}
-
 static u32 cached_cd_sector = 0x80000000;
 
 static int process_read_cd_2048_cmd_iso(u8 *buf, u32 start_sector, u32 sector_count)
@@ -618,7 +616,7 @@ static int process_read_cd_2048_cmd_iso(u8 *buf, u32 start_sector, u32 sector_co
 
 		for(i = 0; i < fit; i++)
 		{
-			my_memcpy(out, in+24, CD_SECTOR_SIZE_2048);
+			my_memcpy(out, in + 24, CD_SECTOR_SIZE_2048);
 			in += CD_SECTOR_SIZE_2352;
 			out += CD_SECTOR_SIZE_2048;
 			start_sector++;
@@ -637,8 +635,6 @@ static int process_read_cd_2048_cmd_iso(u8 *buf, u32 start_sector, u32 sector_co
 
 static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 {
-	u8 cache = 0;
-
 	if(remaining <= CD_CACHE_SIZE)
 	{
 		int dif = (int)cached_cd_sector - sector;
@@ -667,7 +663,7 @@ static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 
 			if(copy_ptr)
 			{
-				memcpy(buf+(copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
+				my_memcpy(buf + (copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
 
 				if(remaining == copy_size)
 				{
@@ -684,11 +680,8 @@ static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 				}
 			}
 		}
-
-		cache = 1;
 	}
-
-	if(!cache)
+	else
 	{
 		return process_read_iso_cmd_iso(buf, sector * CD_SECTOR_SIZE_2352, remaining * CD_SECTOR_SIZE_2352);
 	}
@@ -710,21 +703,26 @@ static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 	if(process_read_iso_cmd_iso(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352))
 		return FAILED;
 
-	memcpy(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
+	my_memcpy(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
 	cached_cd_sector = sector;
 
 	return CELL_OK;
 }
 
 #ifdef RAWISO_PSX_MULTI
+static void my_memcpy64(u64 *dst, u64 src, int size)
+{
+	for(int i = 0, n = 0; i < size; i += 8, n++) dst[n] = lv2peek(src + i);
+}
+
 static void get_psx_track_data(void)
 {
 	u32 track_data[4];
 	u8 buff[CD_SECTOR_SIZE_2048];
 	u64 lv2_addr = 0x8000000000000050ULL;
-	lv2_addr+= 16ULL * psx_indx;
+	lv2_addr += psx_indx * 0x10;
 
-	my_memcpy((u8)(u32) track_data, lv2_addr, 16ULL);
+	my_memcpy64((u64*)(u32)track_data, lv2_addr, 0x10);
 
 	int k = 4;
 	num_tracks = 0;
@@ -735,12 +733,11 @@ static void get_psx_track_data(void)
 		tracks[num_tracks].track_number = 1;
 		tracks[num_tracks].track_start_addr = 0;
 		num_tracks++;
-
 	}
 	else
 	{
 		lv2_addr = 0x8000000000000000ULL + (u64) track_data[2];
-		my_memcpy((u8)(u32) buff, lv2_addr, track_data[3]);
+		my_memcpy64((u64*)buff, lv2_addr, track_data[3]);
 
 		while(k < (int) track_data[3])
 		{
@@ -757,8 +754,8 @@ static void get_psx_track_data(void)
 
 	discsize = ((u64) psx_isos_desc[psx_indx * 2 + 1]) * (u64)CD_SECTOR_SIZE_2352;
 
-	num_sections = (psx_isos_desc[psx_indx * 2 + 0] >> 16) & 0xFFFF;
-	sections = &psx_isos_desc[16] + (psx_isos_desc[psx_indx * 2 + 0] & 0xFFFF);
+	num_sections = (psx_isos_desc[psx_indx * 2] >> 16) & 0xFFFF;
+	sections = &psx_isos_desc[16] + (psx_isos_desc[psx_indx * 2] & 0xFFFF);
 	sections_size = sections + num_sections;
 }
 
@@ -959,11 +956,11 @@ static void rawseciso_thread(u64 arg)
 
 		mode_file = (args->emu_mode & 3072) >> 10;
 
-		if(mode_file == 0)
+		if(IS_RAW_MODE)
 			sections_size = sections + num_sections;
-		else if(mode_file == 1)
+		else if(IS_FILEMODE)
 			sections_size = sections + num_sections * 0x200/4;
-		else
+		else // if(IS_FAKE_ISO)
 		{
 			sections += 0x200/4;
 			sections_size = sections + num_sections;
@@ -971,13 +968,13 @@ static void rawseciso_thread(u64 arg)
 
 		discsize = 0;
 
-		for(u32 i = 1 * (mode_file > 1); i < num_sections; i++)
+		for(u32 i = (IS_FAKE_ISO); i < num_sections; i++)
 		{
 			discsize += sections_size[i];
 		}
 	}
 
-	if(mode_file != 1)
+	if(NOT_FILEMODE)
 	{
 		sec_size = 512ULL;
 		if(args->device)
@@ -998,7 +995,7 @@ static void rawseciso_thread(u64 arg)
 	else
 		sec_size = CD_SECTOR_SIZE_2048;
 
-	if(mode_file != 1)
+	if(NOT_FILEMODE)
 	{
 		usb_device = args->device;
 
@@ -1038,7 +1035,7 @@ static void rawseciso_thread(u64 arg)
 		num_tracks &= 0xFF; if(num_tracks > sizeof(tracks)) num_tracks = sizeof(tracks);
 
 		if(num_tracks)
-			memcpy((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));
+			my_memcpy((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));
 		else
 		{
 			tracks[num_tracks].adr_control = 0x14;
@@ -1075,7 +1072,8 @@ static void rawseciso_thread(u64 arg)
 	else
 	{
 		num_tracks = 0;
-		discsize = discsize * sec_size + ((mode_file > 1) ? (u64) (CD_SECTOR_SIZE_2048 * sections[0] ) : 0ULL) ;
+		discsize *= sec_size;
+		if(IS_FAKE_ISO) discsize += (u64) (CD_SECTOR_SIZE_2048 * sections[0]);
 		is_cd2352 = 0;
 	}
 
@@ -1173,21 +1171,19 @@ static void rawseciso_thread(u64 arg)
 				if(is_cd2352)
 				{
 #ifdef RAWISO_PSX_MULTI
-					if(is_cd2352 == 1)
-						ret = process_read_cd_2048_cmd_iso(buf, offset / CD_SECTOR_SIZE_2048, size / CD_SECTOR_SIZE_2048);
-					else
+					if(is_cd2352 == 2)
 						ret = process_read_psx_cmd_iso(buf, offset / CD_SECTOR_SIZE_2048, size / CD_SECTOR_SIZE_2048, CD_SECTOR_SIZE_2048);
-#else
-						ret = process_read_cd_2048_cmd_iso(buf, offset / CD_SECTOR_SIZE_2048, size / CD_SECTOR_SIZE_2048);
+					else
 #endif
+						ret = process_read_cd_2048_cmd_iso(buf, offset / CD_SECTOR_SIZE_2048, size / CD_SECTOR_SIZE_2048);
 				}
 				else
 				{
-					if(mode_file == 0)
+					if(IS_RAW_MODE)
 						ret = process_read_iso_cmd_iso(buf, offset, size);
-					else if(mode_file == 1)
+					else if(IS_FILEMODE)
 						ret = process_read_file_cmd_iso(buf, offset, size);
-					else
+					else // if(IS_FAKE_ISO)
 					{
 						if(offset < (((u64)sections_size[0]) * CD_SECTOR_SIZE_2048))
 						{
@@ -1219,13 +1215,11 @@ static void rawseciso_thread(u64 arg)
 			case CMD_READ_CD_ISO_2352:
 			{
 #ifdef RAWISO_PSX_MULTI
-				if(is_cd2352 == 1)
-					ret = process_read_cd_2352_cmd_iso(buf, offset / CD_SECTOR_SIZE_2352, size / CD_SECTOR_SIZE_2352);
-				else
+				if(is_cd2352 == 2)
 					ret = process_read_psx_cmd_iso(buf, offset / CD_SECTOR_SIZE_2352, size / CD_SECTOR_SIZE_2352, CD_SECTOR_SIZE_2352);
-#else
-					ret = process_read_cd_2352_cmd_iso(buf, offset / CD_SECTOR_SIZE_2352, size / CD_SECTOR_SIZE_2352);
+				else
 #endif
+					ret = process_read_cd_2352_cmd_iso(buf, offset / CD_SECTOR_SIZE_2352, size / CD_SECTOR_SIZE_2352);
 			}
 			break;
 		}

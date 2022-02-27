@@ -140,7 +140,22 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	if(cache == WM_COVERS)
 		flen = sprintf(name, "%s/%s", WMTMP_COVERS, filename + pos);
 	else if(cache)
-		flen = sprintf(name, "%s/%s", WMTMP, filename + pos);
+	{
+		#ifdef USE_NTFS
+		if(is_ntfs_path(filename) && (pos > 21))
+		{
+			// convert /dev_ntfs0:/PS3ISO/folder/filename.iso
+			//      to /dev_hdd0/tmp/wmtmp/[folder] filename.iso
+			int p1 = strchr(filename + 12, '/') - filename + 1;
+			int p2 = strchr(filename + p1, '/') - filename;
+			sprintf(name, "%s/[%s", WMTMP, filename + p1);
+			flen = (p2 - p1) + 21;
+			flen += sprintf(name + flen, "] %s", filename + pos);
+		}
+		else
+		#endif
+			flen = sprintf(name, "%s/%s", WMTMP, filename + pos);
+	}
 	else
 	{
 		// remove prepend [PSPISO] or [PS2ISO]
