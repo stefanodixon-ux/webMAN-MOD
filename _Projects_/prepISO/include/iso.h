@@ -262,7 +262,7 @@ static int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
 	sectors = malloc(size1 + SECTOR_SIZE);
 	if(!sectors) return -3;
 
-	memset(sectors, 0, size1 + SECTOR_SIZE);
+	_memset(sectors, size1 + SECTOR_SIZE);
 
 	#ifdef USE_64BITS_LSEEK
 	if(ps3ntfs_seek64(fd, ((s64) lba0) * SECTOR_SIZELL, SEEK_SET) != ((s64) lba0) * SECTOR_SIZELL) goto err;
@@ -295,8 +295,8 @@ static int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
 		u32 parent_name = isonum_721(&sectors[p]);
 		p += 2;
 
-		memset(wstring, 0, 512 * 2);
-		memcpy(wstring, &sectors[p], snamelen);
+		_memset(wstring, 512 * 2);
+		_memcpy(wstring, &sectors[p], snamelen);
 
 		UTF16_to_UTF8(wstring, (u8 *) temp_string);
 
@@ -320,7 +320,7 @@ static int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
 
 	if(lba_folder == 0xffffffff) goto err;
 
-	memset(sectors, 0, _4KB_);
+	_memset(sectors, _4KB_);
 
 	#ifdef USE_64BITS_LSEEK
 	if(ps3ntfs_seek64(fd, ((s64) lba_folder) * SECTOR_SIZELL, SEEK_SET) != ((s64) lba_folder) * SECTOR_SIZELL) goto err;
@@ -371,8 +371,8 @@ static int get_iso_file_pos(FILE *fp, unsigned char *path, u32 *flba, u64 *size)
 
 		if((int) idr->length[0] == 0) break;
 
-		memset(wstring, 0, 512 * 2);
-		memcpy(wstring, (char *) idr->name, idr->name_len[0]);
+		_memset(wstring, 512 * 2);
+		_memcpy(wstring, (char *) idr->name, idr->name_len[0]);
 
 		UTF16_to_UTF8(wstring, (u8 *) temp_string);
 

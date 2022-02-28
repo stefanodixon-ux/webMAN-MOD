@@ -14,6 +14,7 @@
 #define FW485	0x323031392F30382FULL // 2019/08/
 #define FW486	0x323032302F30312FULL // 2020/01/
 #define FW487	0x323032302F30372FULL // 2020/07/
+#define FW488	0x323032312F30342FULL // 2021/04/
 
 static float c_firmware = 0.0f;
 static u8 dex_mode = 0;

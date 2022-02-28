@@ -96,7 +96,7 @@ static void UTF8_to_UTF16(u8 *stb, u16 *stw)
 
 static void *create_directory_record(struct iso_directory_record *idr, char *name, u16 name_len, u64 size, u8 flags, u32 last_lba)
 {
-	memcpy(idr->name, name, name_len);
+	_memcpy(idr->name, name, name_len);
 
 	idr->name_len[0] = name_len;
 	idr->length[0] = (name_len + sizeof(struct iso_directory_record) + 1) & ~1;
@@ -145,8 +145,8 @@ static u8 *create_fake_file_iso_mem(char *filename, u64 size)
 
 	for(len_string = 0; len_string < 0x200; len_string++) if(string[len_string] == 0) break; // get string length
 
-	memset(mem, 0, build_iso_size);
-	memcpy(mem + 0x8000, build_iso_data, sizeof(build_iso_data));
+	_memset(mem, build_iso_size);
+	_memcpy(mem + 0x8000, build_iso_data, sizeof(build_iso_data));
 
 	struct iso_primary_descriptor *ipd = (struct iso_primary_descriptor *) &mem[0x8000];
 	struct iso_primary_descriptor *ipd2 = (struct iso_primary_descriptor *) &mem[0x8800];
@@ -227,7 +227,7 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 
 		int r = FAILED;
 
-		memset(plugin_args, 0, PLUGIN_ARGS_SIZE);
+		_memset(plugin_args, PLUGIN_ARGS_SIZE);
 
 		uint32_t *sections      = (uint32_t *)(plugin_args + sizeof(rawseciso_args));
 		uint32_t *sections_size = (uint32_t *)(plugin_args + sizeof(rawseciso_args) + (MAX_SECTIONS * sizeof(uint32_t)));
@@ -260,7 +260,7 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 			p_args->num_tracks = 0;
 
 			//memcpy(plugin_args + sizeof(rawseciso_args), sections, parts * sizeof(uint32_t) + 0x200);
-			memcpy(plugin_args + sizeof(rawseciso_args) + ((parts * sizeof(uint32_t)) + 0x200), sections_size, parts * sizeof(uint32_t));
+			_memcpy(plugin_args + sizeof(rawseciso_args) + ((parts * sizeof(uint32_t)) + 0x200), sections_size, parts * sizeof(uint32_t));
 
 			// save sectors file
 			iso_path[iso_path_len] = 0; strcat(iso_path, file_ext);

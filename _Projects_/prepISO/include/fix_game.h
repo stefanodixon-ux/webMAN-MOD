@@ -31,7 +31,7 @@ static void get_titleid(char *filename, char *titleID)
 
 	READ_SFO_HEADER();
 
-	memset(titleID, 0, 16);
+	_memset(titleID, 16);
 
 	FOR_EACH_SFO_FIELD()
 	{
@@ -118,7 +118,7 @@ static bool fix_param_sfo(unsigned char *mem, char *titleID)
 
 uint64_t getlba(char *s1, u16 n1, const char *s2, u16 n2, u16 start)
 {
-	u16 c=0; u32 lba = 0;
+	u16 c = 0; u32 lba = 0;
 
 	for(u16 n = start + 0x1F; n < n1 - n2; n++)
 	{

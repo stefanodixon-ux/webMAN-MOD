@@ -4,13 +4,13 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 	if (parts > 0)
 	{
 		uint32_t emu_mode = EMU_PS3;
-		if(m == PS3ISO) emu_mode = EMU_PS3;
-		if(m == BDISO ) emu_mode = EMU_BD;
-		if(m == DVDISO) emu_mode = EMU_DVD;
+//		if(m == PS3ISO) emu_mode = EMU_PS3; else
+		if(m == BDISO ) emu_mode = EMU_BD;  else
+		if(m == DVDISO) emu_mode = EMU_DVD; else
 		if(m == PSXISO) emu_mode = EMU_PSX;
 
 		//--- build .ntfs[ file
-		p_args = (rawseciso_args *)plugin_args; memset(p_args, 0, PLUGIN_ARGS_SIZE);
+		p_args = (rawseciso_args *)plugin_args; _memset(p_args, PLUGIN_ARGS_SIZE);
 		p_args->device = device_id;
 		p_args->emu_mode = emu_mode;
 		p_args->num_sections = parts;
@@ -18,11 +18,11 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 		uint32_t array_len = parts * sizeof(uint32_t);
 
 		#ifdef MULTIMAN
-		memcpy(plugin_args + sizeof(rawseciso_args), sections, parts*sizeof(u32));
-		memcpy(plugin_args + sizeof(rawseciso_args) + (parts*sizeof(u32)), sections_size, parts*sizeof(u32));
+		_memcpy(plugin_args + sizeof(rawseciso_args), sections, parts*sizeof(u32));
+		_memcpy(plugin_args + sizeof(rawseciso_args) + (parts*sizeof(u32)), sections_size, parts*sizeof(u32));
 		#else
-		memcpy(plugin_args + sizeof(rawseciso_args), sections, array_len);
-		memcpy(plugin_args + sizeof(rawseciso_args) + array_len, sections_size, array_len);
+		_memcpy(plugin_args + sizeof(rawseciso_args), sections, array_len);
+		_memcpy(plugin_args + sizeof(rawseciso_args) + array_len, sections_size, array_len);
 		#endif
 
 		if(emu_mode == EMU_PSX)
@@ -31,7 +31,7 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 
 			int max = MAX_SECTIONS - ((num_tracks * sizeof(ScsiTrackDescriptor)) / 8);
 
-			if (parts == max) return;
+			if (parts >= max) return;
 
 			p_args->num_tracks = num_tracks | cd_sector_size_param;
 
@@ -60,7 +60,7 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 		FILE *flistW;
 		snprintf(path, sizeof(path), "/dev_hdd0/tmp/wmtmp/%s%s.ntfs[%s]", filename, SUFIX2(profile), c_path[m]);
 		flistW = fopen(path, "wb");
-		if(flistW!=NULL)
+		if(flistW)
 		{
 			#ifdef MULTIMAN
 			fwrite(plugin_args, (sizeof(rawseciso_args) + (2 * parts * sizeof(u32))) + (num_tracks * sizeof(ScsiTrackDescriptor)), 1, flistW);

@@ -80,6 +80,7 @@ static int mountCount;
 #include "ff.h"
 #include "fflib.h"
 
+#include "mem.h"
 #include "iso.h"
 #include "file.h"
 #include "firmware.h"
@@ -516,7 +517,7 @@ exit:
 	#endif
 
 	//--- Launch RELOAD.SELF
-	char *self_path = path; memset(self_path, 0, MAX_PATH_LEN);
+	char *self_path = path; _memset(self_path, MAX_PATH_LEN);
 	if(argc > 0 && argv)
 	{
 		if(!strncmp(argv[0], "/dev_hdd0/game/", 15))
