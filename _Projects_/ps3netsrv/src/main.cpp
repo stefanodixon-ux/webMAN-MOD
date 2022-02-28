@@ -136,9 +136,9 @@ static int recv_all(int s, void *buf, int size)
 }
 #endif
 
-static char *normalize_path(char *path, int8_t del_last_slash)
+static int normalize_path(char *path, int8_t del_last_slash)
 {
-	if(!path) return path;
+	if(!path) return 0;
 
 	char *p = path;
 
@@ -148,10 +148,27 @@ static char *normalize_path(char *path, int8_t del_last_slash)
 		p++;
 	}
 
-	if((p > path) && (*(p - 1) == '\r')) *(--p) = 0; // remove last CR if found
+	while(p > path)
+	{
+		if(*(p - 1) == '\r')
+			*(--p) = 0; // remove last CR if found
+		else
+			break;
+	}
 
-	if(del_last_slash) {if(p > path) {--p; if(*p == '/') *p = 0;}}
-	return path;
+	if(del_last_slash)
+		while(p > path)
+		{
+			if(*(p - 1) == '/')
+				*(--p) = 0; // remove last slash
+			else
+				break;
+		}
+
+	if(p > path)
+		return (p - path);
+
+	return 0;
 }
 
 static int initialize_client(client_t *client)
@@ -218,11 +235,9 @@ static void finalize_client(client_t *client)
 
 static char *translate_path(char *path, int *viso)
 {
-	char *p;
-
 	if(!path) return NULL;
 
-	normalize_path(path, false);
+	size_t path_len = normalize_path(path, false);
 
 	if(path[0] != '/')
 	{
@@ -233,20 +248,17 @@ static char *translate_path(char *path, int *viso)
 	}
 
 	// check unsecure path
-	p = strstr(path, "/..");
-	if(!p) p = strstr(path, "\\.."); // not needed if path is normalized
-	if( p)
+	char *p = strstr(path, "/..");
+	if(p)
 	{
 		p += 3;
-		if ((*p == 0) || (*p == '/') || (*p == '\\'))
+		if ((*p == 0) || (*p == '/'))
 		{
 			DPRINTF("The path \"%s\" is unsecure!\n", path);
 			if(path) free(path);
 			return NULL;
 		}
 	}
-
-	size_t path_len = strlen(path);
 
 	p = (char *)malloc(MAX_PATH_LEN + root_len + path_len + 1);
 	if(!p)
@@ -290,7 +302,6 @@ static char *translate_path(char *path, int *viso)
 	if(stat_file(p, &st) < 0)
 	{
 		// get path only (without file name)
-		//char *dir_name = p;
 		char lnk_file[MAX_LINK_LEN];
 		char *sep = NULL;
 		size_t p_len = root_len + path_len;
@@ -359,13 +370,14 @@ static char *translate_path(char *path, int *viso)
 
 	if(path) free(path);
 
-	return normalize_path(p, false);
+	normalize_path(p, false);
+
+	return p;
 }
 
 static int64_t calculate_directory_size(char *path)
 {
 	int64_t result = 0;
-	DIR *d;
 	struct dirent *entry;
 
 	//DPRINTF("Calculate %s\n", path);
@@ -373,7 +385,7 @@ static int64_t calculate_directory_size(char *path)
 	file_stat_t st;
 	if(stat_file(path, &st) < 0) return FAILED;
 
-	d = opendir(path);
+	DIR *d = opendir(path);
 	if(!d)
 		return FAILED;
 
@@ -434,21 +446,21 @@ static int64_t calculate_directory_size(char *path)
 
 static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 {
-	file_stat_t st;
 	netiso_open_result result;
+
 	char *filepath = NULL;
-	uint16_t fp_len;
-	uint16_t rlen;
 	int ret = FAILED, viso = VISO_NONE;
+	uint16_t rlen;
+	uint16_t fp_len;
+
+	result.file_size = NONE;
+	result.mtime = BE64(0);
 
 	if(!client->buf)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
 		goto send_result; // return FAILED;
 	}
-
-	result.file_size = NONE;
-	result.mtime = BE64(0);
 
 	fp_len = BE16(cmd->fp_len);
 	if(fp_len == 0)
@@ -518,6 +530,7 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 	}
 	else
 	{
+		file_stat_t st;
 		if(client->ro_file->fstat(&st) < 0)
 		{
 			printf("fstat error on \"%s\" (viso=%d)\n", filepath + rlen, viso);
@@ -557,13 +570,13 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 
 			ret = SUCCEEDED;
 		}
-	}
 
-#ifdef WIN32
-	DPRINTF("File size: %I64x\n", st.file_size);
-#else
-	DPRINTF("File size: %llx\n", (long long unsigned int)st.file_size);
-#endif
+		#ifdef WIN32
+			DPRINTF("File size: %I64x\n", st.file_size);
+		#else
+			DPRINTF("File size: %llx\n", (long long unsigned int)st.file_size);
+		#endif
+	}
 
 send_result:
 
@@ -580,14 +593,11 @@ send_result:
 
 static int process_read_file_critical(client_t *client, netiso_read_file_critical_cmd *cmd)
 {
-	uint64_t offset;
-	uint32_t remaining;
-
-	offset = BE64(cmd->offset);
-	remaining = BE32(cmd->num_bytes);
-
 	if ((!client->ro_file) || (!client->buf))
 		return FAILED;
+
+	uint64_t offset = BE64(cmd->offset);
+	uint32_t remaining = BE32(cmd->num_bytes);
 
 #ifdef WIN32
 	DPRINTF("Read %I64x %x\n", (long long unsigned int)offset, remaining);
@@ -633,17 +643,13 @@ static int process_read_file_critical(client_t *client, netiso_read_file_critica
 
 static int process_read_cd_2048_critical_cmd(client_t *client, netiso_read_cd_2048_critical_cmd *cmd)
 {
-	uint64_t offset;
-	uint32_t sector_count;
-	uint8_t *buf;
-
-	offset = BE32(cmd->start_sector)*(client->CD_SECTOR_SIZE);
-	sector_count = BE32(cmd->sector_count);
-
-	DPRINTF("Read CD 2048 (%i) %x %x\n", client->CD_SECTOR_SIZE, BE32(cmd->start_sector), sector_count);
-
 	if ((!client->ro_file) || (!client->buf))
 		return FAILED;
+
+	uint64_t offset = BE32(cmd->start_sector)*(client->CD_SECTOR_SIZE);
+	uint32_t sector_count = BE32(cmd->sector_count);
+
+	DPRINTF("Read CD 2048 (%i) %x %x\n", client->CD_SECTOR_SIZE, BE32(cmd->start_sector), sector_count);
 
 	if((sector_count * 2048) > BUFFER_SIZE)
 	{
@@ -652,7 +658,7 @@ static int process_read_cd_2048_critical_cmd(client_t *client, netiso_read_cd_20
 		return FAILED;
 	}
 
-	buf = client->buf;
+	uint8_t *buf = client->buf;
 	for (uint32_t i = 0; i < sector_count; i++)
 	{
 		client->ro_file->seek(offset + 24, SEEK_SET);
@@ -678,13 +684,11 @@ static int process_read_cd_2048_critical_cmd(client_t *client, netiso_read_cd_20
 
 static int process_read_file_cmd(client_t *client, netiso_read_file_cmd *cmd)
 {
-	uint64_t offset;
-	uint32_t read_size;
 	int32_t bytes_read;
 	netiso_read_file_result result;
 
-	offset = BE64(cmd->offset);
-	read_size = BE32(cmd->num_bytes);
+	uint32_t read_size = BE32(cmd->num_bytes);
+	uint64_t offset = BE64(cmd->offset);
 
 	if ((!client->ro_file) || (!client->buf))
 	{
@@ -732,13 +736,10 @@ send_result_read_file:
 static int process_create_cmd(client_t *client, netiso_create_cmd *cmd)
 {
 	netiso_create_result result;
-	char *filepath;
-	uint16_t fp_len;
-	int ret;
 
-	fp_len = BE16(cmd->fp_len);
+	uint16_t fp_len = BE16(cmd->fp_len);
 
-	filepath = (char *)malloc(MAX_PATH_LEN + fp_len + 1);
+	char *filepath = (char *)malloc(MAX_PATH_LEN + fp_len + 1);
 	if(!filepath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
@@ -746,7 +747,7 @@ static int process_create_cmd(client_t *client, netiso_create_cmd *cmd)
 	}
 
 	filepath[fp_len] = 0;
-	ret = recv_all(client->s, (void *)filepath, fp_len);
+	int ret = recv_all(client->s, (void *)filepath, fp_len);
 	if(ret != fp_len)
 	{
 		DPRINTF("recv failed, getting filename for create: %d %d\n", ret, get_network_error());
@@ -796,11 +797,10 @@ static int process_create_cmd(client_t *client, netiso_create_cmd *cmd)
 
 static int process_write_file_cmd(client_t *client, netiso_write_file_cmd *cmd)
 {
-	uint32_t write_size;
-	int32_t bytes_written;
 	netiso_write_file_result result;
+	int32_t bytes_written;
 
-	write_size = BE32(cmd->num_bytes);
+	uint32_t write_size = BE32(cmd->num_bytes);
 
 	if ((!client->wo_file) || (!client->buf))
 	{
@@ -848,13 +848,10 @@ send_result_write_file:
 static int process_delete_file_cmd(client_t *client, netiso_delete_file_cmd *cmd)
 {
 	netiso_delete_file_result result;
-	char *filepath;
-	uint16_t fp_len;
-	int ret;
 
-	fp_len = BE16(cmd->fp_len);
+	uint16_t fp_len = BE16(cmd->fp_len);
 
-	filepath = (char *)malloc(MAX_PATH_LEN + fp_len + 1);
+	char *filepath = (char *)malloc(MAX_PATH_LEN + fp_len + 1);
 	if(!filepath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
@@ -862,7 +859,7 @@ static int process_delete_file_cmd(client_t *client, netiso_delete_file_cmd *cmd
 	}
 
 	filepath[fp_len] = 0;
-	ret = recv_all(client->s, (void *)filepath, fp_len);
+	int ret = recv_all(client->s, (void *)filepath, fp_len);
 	if(ret != fp_len)
 	{
 		DPRINTF("recv failed, getting filename for delete file: %d %d\n", ret, get_network_error());
@@ -898,13 +895,10 @@ static int process_delete_file_cmd(client_t *client, netiso_delete_file_cmd *cmd
 static int process_mkdir_cmd(client_t *client, netiso_mkdir_cmd *cmd)
 {
 	netiso_mkdir_result result;
-	char *dirpath;
-	uint16_t dp_len;
-	int ret;
 
-	dp_len = BE16(cmd->dp_len);
+	uint16_t dp_len = BE16(cmd->dp_len);
 
-	dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
+	char *dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
 	if(!dirpath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
@@ -912,7 +906,7 @@ static int process_mkdir_cmd(client_t *client, netiso_mkdir_cmd *cmd)
 	}
 
 	dirpath[dp_len] = 0;
-	ret = recv_all(client->s, (void *)dirpath, dp_len);
+	int ret = recv_all(client->s, (void *)dirpath, dp_len);
 	if(ret != dp_len)
 	{
 		DPRINTF("recv failed, getting dirname for mkdir: %d %d\n", ret, get_network_error());
@@ -952,13 +946,10 @@ static int process_mkdir_cmd(client_t *client, netiso_mkdir_cmd *cmd)
 static int process_rmdir_cmd(client_t *client, netiso_rmdir_cmd *cmd)
 {
 	netiso_rmdir_result result;
-	char *dirpath;
-	uint16_t dp_len;
-	int ret;
 
-	dp_len = BE16(cmd->dp_len);
+	uint16_t dp_len = BE16(cmd->dp_len);
 
-	dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
+	char *dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
 	if(!dirpath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
@@ -966,7 +957,7 @@ static int process_rmdir_cmd(client_t *client, netiso_rmdir_cmd *cmd)
 	}
 
 	dirpath[dp_len] = 0;
-	ret = recv_all(client->s, (void *)dirpath, dp_len);
+	int ret = recv_all(client->s, (void *)dirpath, dp_len);
 	if(ret != dp_len)
 	{
 		DPRINTF("recv failed, getting dirname for rmdir: %d %d\n", ret, get_network_error());
@@ -1002,13 +993,10 @@ static int process_rmdir_cmd(client_t *client, netiso_rmdir_cmd *cmd)
 static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 {
 	netiso_open_dir_result result;
-	char *dirpath;
-	uint16_t dp_len;
-	int ret;
 
-	dp_len = BE16(cmd->dp_len);
+	uint16_t dp_len = BE16(cmd->dp_len);
 
-	dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
+	char *dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
 	if(!dirpath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
@@ -1016,7 +1004,7 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 	}
 
 	dirpath[dp_len] = 0;
-	ret = recv_all(client->s, (void *)dirpath, dp_len);
+	int ret = recv_all(client->s, (void *)dirpath, dp_len);
 	if(ret != dp_len)
 	{
 		DPRINTF("recv failed, getting dirname for open dir: %d %d\n", ret, get_network_error());
@@ -1085,9 +1073,11 @@ static int process_read_dir_entry_cmd(client_t *client, netiso_read_dir_entry_cm
 {
 	(void) cmd;
 	char *path = NULL;
+
 	file_stat_t st;
 	struct dirent *entry = NULL;
 	size_t d_name_len = 0;
+
 	netiso_read_dir_entry_result result_v1;
 	netiso_read_dir_entry_result_v2 result_v2;
 
@@ -1114,6 +1104,7 @@ static int process_read_dir_entry_cmd(client_t *client, netiso_read_dir_entry_cm
 		goto send_result_read_dir;
 	}
 
+	// ignore parent dir & files larger than MAX_FILE_LEN
 	while ((entry = readdir(client->dir)))
 	{
 		if(IS_PARENT_DIR(entry->d_name)) continue;
@@ -1131,6 +1122,7 @@ static int process_read_dir_entry_cmd(client_t *client, netiso_read_dir_entry_cm
 	{
 		closedir(client->dir);
 		if(client->dirpath) free(client->dirpath);
+
 		client->dir = NULL;
 		client->dirpath = NULL;
 
@@ -1159,6 +1151,7 @@ static int process_read_dir_entry_cmd(client_t *client, netiso_read_dir_entry_cm
 	{
 		closedir(client->dir);
 		if(client->dirpath) free(client->dirpath);
+
 		client->dir = NULL;
 		client->dirpath = NULL;
 
@@ -1251,6 +1244,7 @@ send_result_read_dir:
 static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd)
 {
 	(void) cmd;
+
 	int64_t items = 0;
 	int max_items = MAX_ENTRIES;
 
@@ -1475,13 +1469,10 @@ send_result_read_dir_cmd:
 static int process_stat_cmd(client_t *client, netiso_stat_cmd *cmd)
 {
 	netiso_stat_result result;
-	char *filepath;
-	uint16_t fp_len;
-	int ret;
 
-	fp_len = BE16(cmd->fp_len);
+	uint16_t fp_len = BE16(cmd->fp_len);
 
-	filepath = (char *)malloc(MAX_PATH_LEN + fp_len + 1);
+	char *filepath = (char *)malloc(MAX_PATH_LEN + fp_len + 1);
 	if(!filepath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
@@ -1489,7 +1480,7 @@ static int process_stat_cmd(client_t *client, netiso_stat_cmd *cmd)
 	}
 
 	filepath[fp_len] = 0;
-	ret = recv_all(client->s, (char *)filepath, fp_len);
+	int ret = recv_all(client->s, (char *)filepath, fp_len);
 	if(ret != fp_len)
 	{
 		DPRINTF("recv failed, getting filename for stat: %d %d\n", ret, get_network_error());
@@ -1544,13 +1535,10 @@ static int process_stat_cmd(client_t *client, netiso_stat_cmd *cmd)
 static int process_get_dir_size_cmd(client_t *client, netiso_get_dir_size_cmd *cmd)
 {
 	netiso_get_dir_size_result result;
-	char *dirpath;
-	uint16_t dp_len;
-	int ret;
 
-	dp_len = BE16(cmd->dp_len);
+	uint16_t dp_len = BE16(cmd->dp_len);
 
-	dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
+	char *dirpath = (char *)malloc(MAX_PATH_LEN + dp_len + 1);
 	if(!dirpath)
 	{
 		DPRINTF("CRITICAL: memory allocation error\n");
@@ -1558,7 +1546,7 @@ static int process_get_dir_size_cmd(client_t *client, netiso_get_dir_size_cmd *c
 	}
 
 	dirpath[dp_len] = 0;
-	ret = recv_all(client->s, (char *)dirpath, dp_len);
+	int ret = recv_all(client->s, (char *)dirpath, dp_len);
 	if(ret != dp_len)
 	{
 		DPRINTF("recv failed, getting dirname for get_dir_size: %d %d\n", ret, get_network_error());
@@ -1595,9 +1583,8 @@ void *client_thread(void *arg)
 	for(;;)
 	{
 		netiso_cmd cmd;
-		int ret;
+		int ret = recv_all(client->s, (void *)&cmd, sizeof(cmd));
 
-		ret = recv_all(client->s, (void *)&cmd, sizeof(cmd));
 		if(ret != sizeof(cmd))
 		{
 			break;
@@ -1683,15 +1670,15 @@ void *client_thread(void *arg)
 int main(int argc, char *argv[])
 {
 	int s;
+	uint16_t port = NETISO_PORT;
 	uint32_t whitelist_start = 0;
 	uint32_t whitelist_end   = 0;
-	uint16_t port = NETISO_PORT;
 
 	get_normal_color();
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20220206");
+	printf("ps3netsrv build 20220227");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");
@@ -1790,9 +1777,8 @@ int main(int argc, char *argv[])
 	}
 
 	// Show shared directory
-	normalize_path(root_directory, true);
+	root_len = normalize_path(root_directory, true);
 	printf("Path: %s\n\n", root_directory);
-	root_len = strlen(root_directory);
 
 	// Check for root directory
 	if(strcmp(root_directory, "/") == 0)
@@ -2002,7 +1988,7 @@ int main(int argc, char *argv[])
 		else
 		{
 			// Check whitelist range
-			if(whitelist_start != 0)
+			if(whitelist_start)
 			{
 				uint32_t ip = BE32(addr.sin_addr.s_addr);
 

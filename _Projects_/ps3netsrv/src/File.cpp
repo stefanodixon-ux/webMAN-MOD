@@ -339,7 +339,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 				// Zero out the 0xF70 - 0x1070 overlap.
 				unsigned char *bufb = reinterpret_cast<unsigned char *>(buf);
 				unsigned char *buf_overlap_start = read_position < 0xF70LL ? bufb + 0xF70LL - read_position : bufb;
-				memset(buf_overlap_start, 0x00, read_position + ret < 0x1070LL ? ret - (buf_overlap_start - bufb) : 0x100 - (buf_overlap_start - bufb));
+				_memset(buf_overlap_start, read_position + ret < 0x1070LL ? ret - (buf_overlap_start - bufb) : 0x100 - (buf_overlap_start - bufb));
 			}
 
 			// If it's a dec image then return, else go on to the decryption logic.

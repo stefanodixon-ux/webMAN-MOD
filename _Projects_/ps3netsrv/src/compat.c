@@ -410,3 +410,18 @@ int stat_file(const char *path, file_stat_t *fs)
 }
 
 #endif
+
+void _memset(void *m, size_t n)
+{
+	if(n & 7)
+	{
+		char *s = (char *) m;
+		while (n--) *s++ = 0;
+	}
+	else
+	{
+		n >>= 3;
+		uint64_t *s = (uint64_t *) m;
+		while (n--) *s++ = 0;
+	}
+}
