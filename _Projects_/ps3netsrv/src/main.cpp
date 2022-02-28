@@ -320,8 +320,7 @@ static char *translate_path(char *path, int *viso)
 
 		if(sep)
 		{
-			file_t fd;
-			fd = open_file(lnk_file, O_RDONLY);
+			file_t fd = open_file(lnk_file, O_RDONLY);
 			if (FD_OK(fd))
 			{
 				// read INI
@@ -1678,7 +1677,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20220227");
+	printf("ps3netsrv build 20220228");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");

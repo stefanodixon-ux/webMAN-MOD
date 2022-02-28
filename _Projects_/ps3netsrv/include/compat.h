@@ -90,6 +90,7 @@ int64_t seek_file(file_t fd, int64_t offset, int whence);
 int fstat_file(file_t fd, file_stat_t *fs);
 int stat_file(const char *path, file_stat_t *fs);
 void _memset(void *m, size_t n);
+void _memcpy(void *dst, void *src, size_t n);
 
 #ifdef __cplusplus
 }
