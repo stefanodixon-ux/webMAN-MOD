@@ -55,8 +55,8 @@ It project is compiled with cc/gcc toolchain version 4.6.2 on Windows.
 
 ## Credits
 
-DeanK - Original sLaunch GUI concept and coding.
-aldostools - Modification, additional features and optimizations.
-3141card - Video rendering functions and memory handling.
-DarjanKrijan - ARGB support and testing
-Mysis - VSH exports
+- DeanK - Original sLaunch GUI concept and coding.
+- aldostools - Modification, additional features and optimizations.
+- 3141card - Video rendering functions and memory handling.
+- DarjanKrijan - ARGB support and testing
+- Mysis - VSH exports
