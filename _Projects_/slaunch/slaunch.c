@@ -224,8 +224,10 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 	// draw game icons (5x2) or (10x4)
 	j=(game_idx/gpp)*gpp;
 	p=(games-1) - ((games-1) % gpp);
-	for(i=j;((slot<gpp)&&(i<games));i++)
+	for(i=j;slot<gpp;i++)
 	{
+		if(i>=games) break;
+
 		// abort drawing if page is changed with L1 or R1 while processing
 		if(i & 1)
 		{
