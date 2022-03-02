@@ -23,7 +23,7 @@ SYS_MODULE_STOP(slaunch_stop);
 #define STR_UNLOAD		"Unload webMAN"
 #define STR_QUIT		"Quit"
 
-#define APP_VERSION		"1.15a"
+#define APP_VERSION		"1.16"
 
 typedef struct {
 	uint8_t  gmode;
@@ -223,7 +223,7 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 	// draw game icons (5x2) or (10x4)
 	j=(game_idx/gpp)*gpp;
-	p=((games-1)/gpp)*gpp; // games - (games % gpp)
+	p=(games-1) - ((games-1) % gpp);
 	for(i=j;((slot<gpp)&&(i<games));i++)
 	{
 		// abort drawing if page is changed with L1 or R1 while processing

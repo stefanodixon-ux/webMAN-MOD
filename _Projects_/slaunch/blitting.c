@@ -21,6 +21,13 @@ static uint32_t vsh_fonts[16] = {};				 // addresses of the 16 system font slots
 
 int32_t LINE_HEIGHT = 0;
 
+static uint32_t (*fn_offset)(uint32_t x, uint32_t y) = NULL;
+
+static uint32_t offset_1080(uint32_t x, uint32_t y) {return OFFSET_1080(x, y);}
+static uint32_t offset_720p(uint32_t x, uint32_t y) {return OFFSET_720p(x, y);}
+static uint32_t offset_576p(uint32_t x, uint32_t y) {return OFFSET_576p(x, y);}
+static uint32_t offset_480p(uint32_t x, uint32_t y) {return OFFSET_480p(x, y);}
+
 /***********************************************************************
 * get font object
 ***********************************************************************/
@@ -383,12 +390,16 @@ void init_graphic()
 	// get current display values
 	BASE_offset = (*(uint32_t*)0x60201104) + BASE;	  // start offset of current framebuffer
 
+	if(disp_h == 1080)	fn_offset = offset_1080; else
+	if(disp_h == 720)	fn_offset = offset_720p; else
+	if(disp_h == 576)	fn_offset = offset_576p; else
+						fn_offset = offset_480p;
+
 	flip_frame();
 
 	//getDisplayPitch(&pitch, &unk1);	   // framebuffer pitch size
 	//h = getDisplayHeight();			   // display height
 	//w = getDisplayWidth();				// display width
-
 }
 
 /***********************************************************************

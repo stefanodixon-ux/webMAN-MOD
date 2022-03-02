@@ -48,16 +48,12 @@
 ** ** ** 1280 0x1400 (5120)
 *  *  *   720 0x0C00 (3072)
 */
-#define OFFSET_1080p(x, y) ( (uint32_t) ( BASE_offset + (	( ((x)<<2) + (y) * 8192) ) ) )
-#define OFFSET_720p(x, y)  ( (uint32_t) ( BASE_offset + (	(( ((((x)* 2)/3)<<2) + (((y)* 2)/ 3) * 5120) ) & 0xfffffff8) ) )
-#define OFFSET_576p(x, y)  ( (uint32_t) ( BASE_offset + (	(( ((((x)* 3)/8)<<2) + (((y)* 8)/15) * 3072) ) & 0xfffffff8) ) )
-#define OFFSET_480p(x, y)  ( (uint32_t) ( BASE_offset + (	(( ((((x)* 3)/8)<<2) + (((y)* 4)/ 9) * 3072) ) & 0xfffffff8) ) )
+#define OFFSET_1080(x, y)  ( ((x)<<2) + ((y)<<13) )
+#define OFFSET_720p(x, y)  ( (( ((((x)<<1) /3)<<2) + (((y)<<1)/ 3) * 5120) ) & 0xfffffff8)
+#define OFFSET_480p(x, y)  ( (( ((((x)* 3)>>3)<<2) + (((y)<<2)/ 9) * 3072) ) & 0xfffffff8)
+#define OFFSET_576p(x, y)  ( (( ((((x)* 3)>>3)<<2) + (((y)<<3)/15) * 3072) ) & 0xfffffff8)
 
-//#define OFFSET(x, y) OFFSET_1080p(x, y)
-//#define OFFSET(x, y) OFFSET_720p(x, y)
-//#define OFFSET(x, y) OFFSET_576p(x, y)
-//#define OFFSET(x, y) OFFSET_480p(x, y)
-#define OFFSET(x, y) ( (uint32_t) ( BASE_offset + (disp_h==1080?((	( ((x)<<2) + (y) * 8192) )):(disp_h==720?((	(( ((((x)* 2)/3)<<2) + (((y)* 2)/ 3) * 5120) ) & 0xfffffff8)):(disp_h==576?((	(( ((((x)* 3)/8)<<2) + (((y)* 8)/15) * 3072) ) & 0xfffffff8)):((	(( ((((x)* 3)/8)<<2) + (((y)* 4)/ 9) * 3072) ) & 0xfffffff8))))) ) )
+#define OFFSET(x, y) ((uint32_t)( BASE_offset + fn_offset(x,y)))
 
 extern int32_t LINE_HEIGHT;
 
