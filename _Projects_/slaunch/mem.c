@@ -76,14 +76,12 @@ int32_t mem_free(uint32_t size)
 	return 0;
 }
 
-void *memset32(void *m, uint32_t c, size_t n)
+void memset32(void *m, uint32_t c, size_t n)
 {
 	uint32_t *s = (uint32_t *) m;
 
 	while (n--)
 		*s++ = c;
-
-	return m;
 }
 
 void reset_heap(void)

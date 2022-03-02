@@ -186,20 +186,20 @@ static int fake_insert_event(u64 disctype)
 	return sys_storage_ext_fake_storage_event(3, param, BDVD_DRIVE);
 }
 
-static void my_memcpy(void *dst, void *src, int size)
+static void memcpy64(void *dst, void *src, int n)
 {
-	if(size & 7)
+	uint8_t p = n & 7;
+
+	n >>= 3;
+	uint64_t *d = (uint64_t *) dst;
+	uint64_t *s = (uint64_t *) src;
+	while (n--) *d++ = *s++;
+
+	if(p)
 	{
-		u8 *s = src;
-		u8 *d = dst;
-		for(int i = 0; i < size; i++) d[i] = s[i];
-	}
-	else
-	{
-		size >>= 3;
-		u64 *s = src;
-		u64 *d = dst;
-		for(int i = 0; i < size; i++) d[i] = s[i];
+		char *m = (char *) d;
+		char *c = (char *) s;
+		while (p--) *m++ = *c++;
 	}
 }
 
@@ -389,7 +389,7 @@ static int process_read_cd_2352_cmd(u8 *buf, u32 sector, u32 remaining)
 
 			if(copy_ptr)
 			{
-				my_memcpy(buf + (copy_offset * cd_sec_size), copy_ptr, copy_size * cd_sec_size);
+				memcpy64(buf + (copy_offset * cd_sec_size), copy_ptr, copy_size * cd_sec_size);
 
 				if(remaining == copy_size)
 				{
@@ -432,7 +432,7 @@ static int process_read_cd_2352_cmd(u8 *buf, u32 sector, u32 remaining)
 	if(process_read_iso_cmd(cd_cache, sector * cd_sec_size, CD_CACHE_SIZE * cd_sec_size) != CELL_OK)
 		return FAILED;
 
-	my_memcpy(buf, cd_cache, remaining * cd_sec_size);
+	memcpy64(buf, cd_cache, remaining * cd_sec_size);
 	cached_cd_sector = sector;
 	return 0;
 }

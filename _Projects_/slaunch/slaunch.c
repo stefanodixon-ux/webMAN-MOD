@@ -202,8 +202,8 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 	const int left_margin=56;
 
 	uint8_t slot = 0;
-	uint16_t i, j;
-	int px=left_margin, py=90;	// top-left
+	uint16_t i, j, p;
+	int px=left_margin, py;	// top-left
 
 	// draw background and menu strip
 	flip_frame();
@@ -223,6 +223,7 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 	// draw game icons (5x2) or (10x4)
 	j=(game_idx/gpp)*gpp;
+	p=((games-1)/gpp)*gpp; // games - (games % gpp)
 	for(i=j;((slot<gpp)&&(i<games));i++)
 	{
 		// abort drawing if page is changed with L1 or R1 while processing
@@ -237,7 +238,7 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 				if(++init_delay > 4)
 				{
 					if((curpad & PAD_L1) && (i > gpp)) break;
-					if((curpad & PAD_R1) && (i < games - (games % gpp))) break;
+					if((curpad & PAD_R1) && (i < p)) break;
 				}
 			}
 		}
@@ -246,8 +247,8 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 		if(gpp==10)
 		{
-			py=((i-j)/5)*400+90+(300-ctx.img[slot].h)/2;
-			ctx.img[slot].x=((px+(320-ctx.img[slot].w)/2)/2)*2;
+			py=((i-j)/5)*400+90+((300-ctx.img[slot].h)>>1);
+			ctx.img[slot].x=((px+((320-ctx.img[slot].w)>>1))>>1)<<1;
 			ctx.img[slot].y=py;
 			set_backdrop(slot, 0);
 			set_texture(slot, ctx.img[slot].x, ctx.img[slot].y);
@@ -255,8 +256,8 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 		}
 		else
 		{
-			py=((i-j)/10)*200+90+(150-ctx.img[slot].h)/2;
-			ctx.img[slot].x=((px+(160-ctx.img[slot].w)/2)/2)*2;
+			py=((i-j)/10)*200+90+((150-ctx.img[slot].h)>>1);
+			ctx.img[slot].x=((px+((160-ctx.img[slot].w)>>1))>>1)<<1;
 			ctx.img[slot].y=py;
 			set_backdrop(slot, 0);
 			set_texture(slot, ctx.img[slot].x, ctx.img[slot].y);

@@ -1,4 +1,6 @@
-static void _memset(void *m, size_t n)
+#include "mem.h"
+
+void _memset(void *m, size_t n)
 {
 	uint8_t p = n & 7;
 
@@ -13,7 +15,7 @@ static void _memset(void *m, size_t n)
 	}
 }
 
-static void _memcpy(void *dst, void *src, size_t n)
+void _memcpy(void *dst, void *src, size_t n)
 {
 	uint8_t p = n & 7;
 

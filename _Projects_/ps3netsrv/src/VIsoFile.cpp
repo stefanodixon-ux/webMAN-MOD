@@ -442,6 +442,8 @@ static int select_files(const struct dirent2 *entry)
 	return true;
 }
 
+// VIsoFile class: AbstractFile
+
 VIsoFile::VIsoFile(bool ps3Mode)
 {
 	this->ps3Mode = ps3Mode;
@@ -474,6 +476,8 @@ VIsoFile::~VIsoFile()
 	close();
 	reset();
 }
+
+// private
 
 void VIsoFile::reset(void)
 {
@@ -1513,6 +1517,8 @@ bool VIsoFile::generate(const char *inDir, const char *volumeName, const char *g
 	write(volumeName, gameCode);
 	return true;
 }
+
+// public
 
 int VIsoFile::open(const char *path, int flags)
 {

@@ -304,7 +304,7 @@ static int process_read_cd_2352_cmd(u8 *buf, u32 sector, u32 remaining)
 
 			if(copy_ptr)
 			{
-				my_memcpy(buf + (copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
+				memcpy64(buf + (copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
 
 				if(remaining == copy_size)
 				{
@@ -347,7 +347,7 @@ static int process_read_cd_2352_cmd(u8 *buf, u32 sector, u32 remaining)
 	if(process_read_iso_cmd(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352) != 0)
 		return FAILED;
 
-	my_memcpy(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
+	memcpy64(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
 	cached_cd_sector = sector;
 
 	return CELL_OK;

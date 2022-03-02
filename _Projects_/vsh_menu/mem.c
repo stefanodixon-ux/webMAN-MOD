@@ -61,9 +61,7 @@ int32_t mem_free(uint32_t size)
 ***********************************************************************/
 void memcpy32(void *dst, const void *src, size_t n)
 {
-	uint32_t *d = (uint32_t *)dst;
-	uint32_t *s = (uint32_t *)src;
-
-	while (n--)
-		*d++ = *s++;
+	uint32_t *d = (uint32_t *) dst;
+	uint32_t *s = (uint32_t *) src;
+	while (n--) *d++ = *s++;
 }

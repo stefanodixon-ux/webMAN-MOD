@@ -287,7 +287,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 
 			if(csize > readsize) csize = readsize;
 
-			my_memcpy(buf, last_sect_buf + (pos % sec_size), csize);
+			memcpy64(buf, last_sect_buf + (pos % sec_size), csize);
 			buf += csize;
 			offset += csize;
 			pos += csize;
@@ -405,7 +405,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 					else break;
 				}
 
-				my_memcpy(buf, last_sect_buf, readsize);
+				memcpy64(buf, last_sect_buf, readsize);
 				buf += readsize;
 				offset += readsize;
 				remaining -= readsize;
@@ -616,7 +616,7 @@ static int process_read_cd_2048_cmd_iso(u8 *buf, u32 start_sector, u32 sector_co
 
 		for(i = 0; i < fit; i++)
 		{
-			my_memcpy(out, in + 24, CD_SECTOR_SIZE_2048);
+			memcpy64(out, in + 24, CD_SECTOR_SIZE_2048);
 			in += CD_SECTOR_SIZE_2352;
 			out += CD_SECTOR_SIZE_2048;
 			start_sector++;
@@ -663,7 +663,7 @@ static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 
 			if(copy_ptr)
 			{
-				my_memcpy(buf + (copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
+				memcpy64(buf + (copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
 
 				if(remaining == copy_size)
 				{
@@ -703,7 +703,7 @@ static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 	if(process_read_iso_cmd_iso(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352))
 		return FAILED;
 
-	my_memcpy(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
+	memcpy64(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
 	cached_cd_sector = sector;
 
 	return CELL_OK;
@@ -1035,7 +1035,7 @@ static void rawseciso_thread(u64 arg)
 		num_tracks &= 0xFF; if(num_tracks > sizeof(tracks)) num_tracks = sizeof(tracks);
 
 		if(num_tracks)
-			my_memcpy((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));
+			memcpy64((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));
 		else
 		{
 			tracks[num_tracks].adr_control = 0x14;

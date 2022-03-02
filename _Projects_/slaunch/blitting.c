@@ -340,7 +340,7 @@ void dim_bg(float ds, float de)
 
 	for(i = 0; i < CANVAS_H/2+1 ; i++)
 	{
-		for(m = (CANVAS_H-i-1), k = kk = 0; k < CANVAS_WW; k++, kk = k*2)
+		for(m = (CANVAS_H-i-1), k = kk = 0; k < CANVAS_WW; k++, kk+=2)
 		{
 			*(uint64_t*)(OFFSET(kk, i)) = 0;
 			*(uint64_t*)(OFFSET(kk, m)) = 0;
@@ -358,7 +358,7 @@ void dump_bg(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 	uint64_t *bg = (uint64_t*)ctx.canvas;
 
 	for(i = 0; i < h; i++, y++)
-		for(m = i * CANVAS_WW, k = 0, kk = x; k < CANVAS_WW; k++, kk = (k*2)+x)
+		for(m = i * CANVAS_WW, k = 0, kk = x; k < CANVAS_WW; k++, kk+=2)
 			bg[k + m] = *(uint64_t*)(OFFSET(kk, y));
 }
 
@@ -461,8 +461,8 @@ blank_image:
 		for(int32_t y=ctx.img[idx].h-1; y>=0; y--)
 		{
 			ww = y * ctx.img[idx].w;
-			y1 = y * 2 * tw, y2 = (y * 2 + 1) * tw;
-			for(x = x2 = 0; x < ctx.img[idx].w; x++, x2 = x*2)
+			y1 = y * 2 * tw, y2 = y1 + tw;
+			for(x = x2 = 0; x < ctx.img[idx].w; x++, x2 += 2)
 			{
 				pixel = buf[x + ww];
 				buf[x2   + y1]=pixel;
@@ -538,7 +538,7 @@ void flip_frame(void)
 	uint32_t i, k, kk, m, CANVAS_WW = CANVAS_W/2;
 
 	for(i = 0; i < CANVAS_H; i++)
-		for(m = i * CANVAS_WW, k = kk = 0; k < CANVAS_WW; k++, kk = k*2)
+		for(m = i * CANVAS_WW, k = kk = 0; k < CANVAS_WW; k++, kk+=2)
 			*(uint64_t*)(OFFSET(kk, i)) =
 				 canvas[k + m];
 }
@@ -548,7 +548,7 @@ void set_texture_direct(uint32_t *texture, uint32_t x, uint32_t y, uint32_t widt
 	uint32_t i, k, kk, m, _width = width/2;
 	uint64_t *canvas = (uint64_t*)texture;
 	for(i = 0; i < height; i++, y++)
-		for(m = i * _width, k = 0, kk = x; k < _width; k++, kk = k*2+x)
+		for(m = i * _width, k = 0, kk = x; k < _width; k++, kk+=2)
 			*(uint64_t*)(OFFSET(kk, y)) =
 				 canvas[k + m];
 }
@@ -560,7 +560,7 @@ void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 		vec_uint4 *canvas = (vec_uint4*)ctx.img[idx].addr;
 
 		for (i = 0; i < ctx.img[idx].h; i++, y++) {
-			for (m = i * _width, k = 0, kk = x; k < _width; k++, kk = (k*4)+x) {
+			for (m = i * _width, k = 0, kk = x; k < _width; k++, kk+=4) {
 				*(vec_uint4*)(OFFSET(kk, y)) = canvas[k + m];
 			}
 		}
@@ -569,12 +569,12 @@ void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 		uint64_t *canvas = (uint64_t*)ctx.img[idx].addr;
 		if(!ctx.img[idx].b)	// jpeg - no transparency
 			for(i = 0; i < ctx.img[idx].h; i++, y++)
-				for(m = i * _width, k = 0, kk = x; k < _width; k++, kk = k*2+x)
+				for(m = i * _width, k = 0, kk = x; k < _width; k++, kk+=2)
 					*(uint64_t*)(OFFSET(kk, y)) =
 						 canvas[k + m];
 		else				// png - blend with 18% gray background
 			for(i = 0; i < ctx.img[idx].h; i++, y++)
-				for(m = i * _width, k = 0, kk = x; k < _width; k++, kk = k*2+x)
+				for(m = i * _width, k = 0, kk = x; k < _width; k++, kk+=2)
 				{
 					*(uint64_t*)(OFFSET(kk, y)) =
 						 ((uint64_t)(mix_color(0x80303030, (canvas[k + m])>>32))<<32)
@@ -590,12 +590,13 @@ void set_backdrop(uint8_t idx, uint8_t restore)
 	uint64_t new_pixel = 0;
 	uint64_t new_pixel_R0, new_pixel_G0, new_pixel_B0, new_pixel_R1, new_pixel_G1, new_pixel_B1;
 	uint32_t ww = (ctx.img[idx].x+ctx.img[idx].w)/2;
+	uint32_t hh = (ctx.img[idx].y+ctx.img[idx].h);
 
 	float dim=0.70f;
-	for(i = (ctx.img[idx].y+16); i < (ctx.img[idx].y+ctx.img[idx].h+16) ; i++)
-		for(m = i * CANVAS_WW, k = ww; k < ww + 8; k++)
+	for(i = (ctx.img[idx].y+16); i < (hh+16) ; i++)
+		for(m = i * CANVAS_WW, k = ww, kk=ww<<1; k < ww + 8; k++, kk+=2)
 		{
-			new_pixel = canvas[k + m]; kk = k*2;
+			new_pixel = canvas[k + m];
 			new_pixel_B0 = (uint8_t)((float)((new_pixel)	 & 0xff)*dim);
 			new_pixel_G0 = (uint8_t)((float)((new_pixel>> 8) & 0xff)*dim);
 			new_pixel_R0 = (uint8_t)((float)((new_pixel>>16) & 0xff)*dim);
@@ -606,10 +607,10 @@ void set_backdrop(uint8_t idx, uint8_t restore)
 			*(uint64_t*)(OFFSET(kk, i)) = new_pixel;
 		}
 
-	for(i = (ctx.img[idx].y+ctx.img[idx].h); i < (ctx.img[idx].y+ctx.img[idx].h+16) ; i++)
-		for(m = i * CANVAS_WW, k = (ctx.img[idx].x+16)/2; k < ww; k++)
+	for(i = hh; i < (hh+16) ; i++)
+		for(m = i * CANVAS_WW, k = (ctx.img[idx].x+16)/2, kk = k*2; k < ww; k++, kk+=2)
 		{
-			new_pixel = canvas[k + m]; kk = k*2;
+			new_pixel = canvas[k + m];
 			new_pixel_B0 = (uint8_t)((float)((new_pixel)	 & 0xff)*dim);
 			new_pixel_G0 = (uint8_t)((float)((new_pixel>> 8) & 0xff)*dim);
 			new_pixel_R0 = (uint8_t)((float)((new_pixel>>16) & 0xff)*dim);
@@ -622,21 +623,21 @@ void set_backdrop(uint8_t idx, uint8_t restore)
 
 	if(restore)
 	{
-		for(i = (ctx.img[idx].y-16); i < (ctx.img[idx].y+ctx.img[idx].h+32) ; i++)
-			for(m = i * CANVAS_WW, k = (ctx.img[idx].x-16)/2; k < (ctx.img[idx].x)/2; k++)
-				*(uint64_t*)(OFFSET(k*2, i)) = canvas[k + m];
+		for(i = (ctx.img[idx].y-16); i < (hh+32) ; i++)
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x-16), k = kk>>1; k < (ctx.img[idx].x)/2; k++, kk+=2)
+				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 
 		for(i = (ctx.img[idx].y-16); i < (ctx.img[idx].y) ; i++)
-			for(m = i * CANVAS_WW, k = (ctx.img[idx].x)/2; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++)
-				*(uint64_t*)(OFFSET(k*2, i)) = canvas[k + m];
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x), k = kk>>1; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++, kk+=2)
+				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 
 		for(i = (ctx.img[idx].y); i < (ctx.img[idx].y+16) ; i++)
-			for(m = i * CANVAS_WW, k = (ctx.img[idx].x+ctx.img[idx].w)/2; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++)
-				*(uint64_t*)(OFFSET(k*2, i)) = canvas[k + m];
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x+ctx.img[idx].w), k = kk>>1; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++, kk+=2)
+				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 
-		for(i = (ctx.img[idx].y+ctx.img[idx].h); i < (ctx.img[idx].y+ctx.img[idx].h+16) ; i++)
-			for(m = i * CANVAS_WW, k = (ctx.img[idx].x)/2; k < (ctx.img[idx].x+16)/2; k++)
-				*(uint64_t*)(OFFSET(k*2, i)) = canvas[k + m];
+		for(i = hh; i < (hh+16) ; i++)
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x), k = kk>>1; k < (ctx.img[idx].x+16)/2; k++, kk+=2)
+				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 	}
 }
 
@@ -645,7 +646,7 @@ void set_textbox(uint64_t color, uint32_t x, uint32_t y, uint32_t width, uint32_
 {
 	uint32_t i, k, kk, _width = width/2;
 	for(i = 0; i < height; i++, y++)
-		for(k = 0, kk = (x&0xffe); k < _width; k++, kk = (k*2)+(x&0xffe))
+		for(k = 0, kk = (x&0xffe); k < _width; k++, kk+=2)
 			*(uint64_t*)(OFFSET(kk, y)) = color;
 }
 

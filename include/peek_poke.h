@@ -313,20 +313,20 @@ static u16 Hex2Bin(const char *src, char *out)
 #endif
 
 #if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT)
-static void my_memcpy(void *dst, void *src, int size)
+static void memcpy64(void *dst, void *src, int n)
 {
-	if(size & 7)
+	uint8_t p = n & 7;
+
+	n >>= 3;
+	uint64_t *d = (uint64_t *) dst;
+	uint64_t *s = (uint64_t *) src;
+	while (n--) *d++ = *s++;
+
+	if(p)
 	{
-		u8 *s = src;
-		u8 *d = dst;
-		for(int i = 0; i < size; i++) d[i] = s[i];
-	}
-	else
-	{
-		size >>= 3;
-		u64 *s = src;
-		u64 *d = dst;
-		for(int i = 0; i < size; i++) d[i] = s[i];
+		char *m = (char *) d;
+		char *c = (char *) s;
+		while (p--) *m++ = *c++;
 	}
 }
 #endif

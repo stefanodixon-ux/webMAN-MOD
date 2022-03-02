@@ -293,20 +293,20 @@ static u32 detect_cd_sector_size(char *buffer)
 	return 2352;
 }
 
-static void my_memcpy(void *dst, void *src, int size)
+static void memcpy64(void *dst, void *src, int n)
 {
-	if(size & 7)
+	uint8_t p = n & 7;
+
+	n >>= 3;
+	uint64_t *d = (uint64_t *) dst;
+	uint64_t *s = (uint64_t *) src;
+	while (n--) *d++ = *s++;
+
+	if(p)
 	{
-		u8 *s = src;
-		u8 *d = dst;
-		for(int i = 0; i < size; i++) d[i] = s[i];
-	}
-	else
-	{
-		size >>= 3;
-		u64 *s = src;
-		u64 *d = dst;
-		for(int i = 0; i < size; i++) d[i] = s[i];
+		char *m = (char *) d;
+		char *c = (char *) s;
+		while (p--) *m++ = *c++;
 	}
 }
 
@@ -437,7 +437,7 @@ static int process_read_iso_cmd(u8 *buf, u64 offset, u64 size)
 
 			if(csize > readsize) csize = readsize;
 
-			my_memcpy(buf, last_sect_buf + (pos % sec_size), csize);
+			memcpy64(buf, last_sect_buf + (pos % sec_size), csize);
 			buf += csize;
 			offset += csize;
 			pos += csize;
@@ -553,7 +553,7 @@ static int process_read_iso_cmd(u8 *buf, u64 offset, u64 size)
 					else break;
 				}
 
-				my_memcpy(buf, last_sect_buf, readsize);
+				memcpy64(buf, last_sect_buf, readsize);
 				buf += readsize;
 				offset += readsize;
 				remaining -= readsize;
@@ -739,7 +739,7 @@ static int process_read_psx_cmd(u8 *buf, u64 offset, u64 size, u32 ssector)
 	return OK;
 }
 
-static inline void my_memcpy64(u64 *dst, u64 src, int size)
+static inline void lv2_memcpy64(u64 *dst, u64 src, int size)
 {
 	for(int n = 0, bytes = 0; bytes < size; bytes += 8, n++) dst[n] = lv2peek(src + bytes);
 }
@@ -761,7 +761,7 @@ static int process_read_cd_2048_cmd(u8 *buf, u32 start_sector, u32 sector_count)
 
 		for(i = 0; i < fit; i++)
 		{
-			my_memcpy(out, in + 24, CD_SECTOR_SIZE_2048);
+			memcpy64(out, in + 24, CD_SECTOR_SIZE_2048);
 			in += CD_SECTOR_SIZE_2352;
 			out += CD_SECTOR_SIZE_2048;
 			start_sector++;
@@ -808,7 +808,7 @@ static int process_read_cd_2352_cmd(u8 *buf, u32 sector, u32 remaining)
 
 			if(copy_ptr)
 			{
-				my_memcpy(buf + (copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
+				memcpy64(buf + (copy_offset * CD_SECTOR_SIZE_2352), copy_ptr, copy_size * CD_SECTOR_SIZE_2352);
 
 				if(remaining == copy_size)
 				{
@@ -848,7 +848,7 @@ static int process_read_cd_2352_cmd(u8 *buf, u32 sector, u32 remaining)
 	if(process_read_iso_cmd(cd_cache, sector * CD_SECTOR_SIZE_2352, CD_CACHE_SIZE * CD_SECTOR_SIZE_2352) /* != CELL_OK*/)
 		return FAILED;
 
-	my_memcpy(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
+	memcpy64(buf, cd_cache, remaining * CD_SECTOR_SIZE_2352);
 	cached_cd_sector = sector;
 	return OK;
 }
@@ -860,7 +860,7 @@ static void get_psx_track_data(void)
 	u64 lv2_addr = 0x8000000000000050ULL;
 	lv2_addr += psx_indx * 0x10;
 
-	my_memcpy64((u64*)(u32)track_data, lv2_addr, 0x10);
+	lv2_memcpy64((u64*)(u32)track_data, lv2_addr, 0x10);
 
 	int k = 4;
 	num_tracks = 0;
@@ -875,7 +875,7 @@ static void get_psx_track_data(void)
 	else
 	{
 		lv2_addr = 0x8000000000000000ULL | (u64) track_data[2];
-		my_memcpy64((u64*)buff, lv2_addr, track_data[3]);
+		lv2_memcpy64((u64*)buff, lv2_addr, track_data[3]);
 
 		while(k < (int) track_data[3])
 		{
@@ -1157,7 +1157,7 @@ static void rawseciso_thread(u64 arg)
 		num_tracks &= 0xff; if(num_tracks > MAX_TRACKS) num_tracks = MAX_TRACKS;
 
 		if(num_tracks)
-			my_memcpy((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));
+			memcpy64((void *) tracks, (void *) ((ScsiTrackDescriptor *)(sections_size + num_sections)), num_tracks * sizeof(ScsiTrackDescriptor));
 		else
 		{
 			tracks[num_tracks].adr_control = 0x14;
@@ -1413,7 +1413,7 @@ int rawseciso_start(u64 arg)
 
 		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 		{
-			my_memcpy((void *)sysmem, argp, _64KB_);
+			memcpy64((void *)sysmem, argp, _64KB_);
 			sys_ppu_thread_create(&thread_id, rawseciso_thread, (u64)sysmem, -0x1d8, _8KB_, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME);
 		}
 	}

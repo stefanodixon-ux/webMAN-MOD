@@ -303,8 +303,8 @@ static char *translate_path(char *path, int *viso)
 	{
 		// get path only (without file name)
 		char lnk_file[MAX_LINK_LEN];
-		char *sep = NULL;
 		size_t p_len = root_len + path_len;
+		char *filename = NULL;
 
 		for(size_t i = p_len; i >= root_len; i--)
 		{
@@ -314,21 +314,20 @@ static char *translate_path(char *path, int *viso)
 				sprintf(lnk_file, "%s.INI", p); // e.g. /BDISO.INI
 				if (i < p_len) p[i] = '/';
 
-				if(stat_file(lnk_file, &st) >= 0) {sep = p + i; break;}
+				if(stat_file(lnk_file, &st) >= 0) {filename = p + i; break;}
 			}
 		}
 
-		if(sep)
+		if(filename)
 		{
 			file_t fd = open_file(lnk_file, O_RDONLY);
 			if (FD_OK(fd))
 			{
 				// read INI
-				memset(lnk_file, 0, MAX_LINK_LEN);
+				_memset(lnk_file, MAX_LINK_LEN);
 				read_file(fd, lnk_file, MAX_LINK_LEN);
 				close_file(fd);
 
-				char *filename = sep;
 				int flen = strlen(filename);
 
 				// check all paths in INI
@@ -409,7 +408,6 @@ static int64_t calculate_directory_size(char *path)
 			//DPRINTF("name: %s\n", entry->d_name);
 			sprintf(newpath + path_len, "%s", entry->d_name);
 
-			file_stat_t st;
 			if(stat_file(newpath, &st) < 0)
 			{
 				DPRINTF("calculate_directory_size: stat failed on %s\n", newpath);
@@ -1279,7 +1277,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 		goto send_result_read_dir_cmd;
 	}
 
-	memset(dir_entries, 0, sizeof(netiso_read_dir_result_data) * max_items);
+	_memset(dir_entries, sizeof(netiso_read_dir_result_data) * max_items);
 
 	file_stat_t st;
 	struct dirent *entry;
@@ -1336,11 +1334,11 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	if(client->dir) {closedir(client->dir); client->dir = NULL;}
 
 #ifdef MERGE_DIRS
-	unsigned int slen;
+	char *p;
+	size_t slen;
 	char *ini_file;
 
 	// get INI file for directory
-	char *p;
 	p = client->dirpath;
 	slen = dirpath_len - 1; //strlen(p);
 	ini_file = path;
@@ -1362,7 +1360,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	{
 		// read INI
 		char lnk_file[MAX_LINK_LEN];
-		memset(lnk_file, 0, MAX_LINK_LEN);
+		_memset(lnk_file, MAX_LINK_LEN);
 		read_file(fd, lnk_file, MAX_LINK_LEN);
 		close_file(fd);
 
@@ -1595,12 +1593,12 @@ void *client_thread(void *arg)
 				ret = process_read_file_critical(client, (netiso_read_file_critical_cmd *)&cmd);
 			break;
 
-			case NETISO_CMD_READ_CD_2048_CRITICAL:
-				ret = process_read_cd_2048_critical_cmd(client, (netiso_read_cd_2048_critical_cmd *)&cmd);
-			break;
-
 			case NETISO_CMD_READ_FILE:
 				ret = process_read_file_cmd(client, (netiso_read_file_cmd *)&cmd);
+			break;
+
+			case NETISO_CMD_READ_CD_2048_CRITICAL:
+				ret = process_read_cd_2048_critical_cmd(client, (netiso_read_cd_2048_critical_cmd *)&cmd);
 			break;
 
 			case NETISO_CMD_WRITE_FILE:
@@ -1677,7 +1675,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20220228");
+	printf("ps3netsrv build 20220301");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");
