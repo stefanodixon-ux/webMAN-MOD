@@ -991,14 +991,18 @@ static void slaunch_thread(uint64_t arg)
 
 					else if(curpad & PAD_CROSS && games)	// execute action & return to XMB
 					{
-						char path[512];
+						bool ps1_ps2 = (slaunch[cur_game].type <= TYPE_PS2);
 
+						char path[512];
 						snprintf(path, 512, "%s", slaunch[cur_game].name + slaunch[cur_game].path_pos);
-						send_wm_request(path);
+
+						if(!ps1_ps2) send_wm_request(path);
 
 						play_rco_sound("snd_system_ok");
 
 						blink_option(RED, DARK_RED, 75000);
+
+						if(!ps1_ps2) send_wm_request(path);
 
 						return_to_xmb();
 						break;

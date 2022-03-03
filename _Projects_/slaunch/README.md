@@ -12,6 +12,8 @@ L1 / R1    = Prev / Next page
 TRIANGLE   = Side menu
 CROSS      = Load the game title
 CIRCLE     = Exit to XMB
+SQUARE     = Filter content by game type (ALL / PSX / PS2 / PS3 / PSP / VIDEO / ROMS)
+SQUARE+L2  = Filter content by device type (ALL / dev_hdd0 / NTFS / USB / NET)
 L3         = Toggle between 2x5 / 4x10 items per page
 
 SELECT     = Toggle between Favorite / Normal list

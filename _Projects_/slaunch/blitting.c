@@ -529,16 +529,18 @@ static uint32_t mix_color(uint32_t bg, uint32_t fg)
 
   if(a == 0) return bg;
 
-  uint32_t rb = (((fg & 0x00FF00FF) * a) + ((bg & 0x00FF00FF) * (255 - a))) & 0xFF00FF00;
-  uint32_t g  = (((fg & 0x0000FF00) * a) + ((bg & 0x0000FF00) * (255 - a))) & 0x00FF0000;
-  fg = a + ((bg >>24) * (255 - a) / 255);
+  uint32_t aa = (255 - a);
+
+  uint32_t rb = (((fg & 0x00FF00FF) * a) + ((bg & 0x00FF00FF) * aa)) & 0xFF00FF00;
+  uint32_t g  = (((fg & 0x0000FF00) * a) + ((bg & 0x0000FF00) * aa)) & 0x00FF0000;
+  fg = a + ((bg >>24) * aa >>8);
 
   return (fg <<24) | ((rb | g) >>8);
 }
 
 static inline uint64_t mix_color64(uint64_t bg, uint64_t fg)
 {
-  return (uint64_t)(mix_color(bg>>32, fg>>32))<<32 | mix_color(bg, fg);
+  return ((uint64_t)(mix_color(bg, fg>>32))<<32 | mix_color(bg, fg));
 }
 
 /*
@@ -597,6 +599,15 @@ void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 	}
 }
 
+#define DIM_PIXEL(p)	new_pixel = canvas[p]; \
+						new_pixel_B0 = (uint8_t)((float)((new_pixel)	 & 0xff)*dim); \
+						new_pixel_G0 = (uint8_t)((float)((new_pixel>> 8) & 0xff)*dim); \
+						new_pixel_R0 = (uint8_t)((float)((new_pixel>>16) & 0xff)*dim); \
+						new_pixel_B1 = (uint8_t)((float)((new_pixel>>32) & 0xff)*dim); \
+						new_pixel_G1 = (uint8_t)((float)((new_pixel>>40) & 0xff)*dim); \
+						new_pixel_R1 = (uint8_t)((float)((new_pixel>>48) & 0xff)*dim); \
+						new_pixel = new_pixel_R1<<48 | new_pixel_G1<<40 | new_pixel_B1<<32 | new_pixel_R0<<16 | new_pixel_G0<< 8 | new_pixel_B0;
+
 void set_backdrop(uint8_t idx, uint8_t restore)
 {
 	uint32_t i, k, kk, m, CANVAS_WW = CANVAS_W/2;
@@ -610,28 +621,14 @@ void set_backdrop(uint8_t idx, uint8_t restore)
 	for(i = (ctx.img[idx].y+16); i < (hh+16) ; i++)
 		for(m = i * CANVAS_WW, k = ww, kk=ww<<1; k < ww + 8; k++, kk+=2)
 		{
-			new_pixel = canvas[k + m];
-			new_pixel_B0 = (uint8_t)((float)((new_pixel)	 & 0xff)*dim);
-			new_pixel_G0 = (uint8_t)((float)((new_pixel>> 8) & 0xff)*dim);
-			new_pixel_R0 = (uint8_t)((float)((new_pixel>>16) & 0xff)*dim);
-			new_pixel_B1 = (uint8_t)((float)((new_pixel>>32) & 0xff)*dim);
-			new_pixel_G1 = (uint8_t)((float)((new_pixel>>40) & 0xff)*dim);
-			new_pixel_R1 = (uint8_t)((float)((new_pixel>>48) & 0xff)*dim);
-			new_pixel = new_pixel_R1<<48 | new_pixel_G1<<40 | new_pixel_B1<<32 | new_pixel_R0<<16 | new_pixel_G0<< 8 | new_pixel_B0;
+			DIM_PIXEL(k + m);
 			*(uint64_t*)(OFFSET(kk, i)) = new_pixel;
 		}
 
 	for(i = hh; i < (hh+16) ; i++)
 		for(m = i * CANVAS_WW, kk = (ctx.img[idx].x+16), k = kk>>1; k < ww; k++, kk+=2)
 		{
-			new_pixel = canvas[k + m];
-			new_pixel_B0 = (uint8_t)((float)((new_pixel)	 & 0xff)*dim);
-			new_pixel_G0 = (uint8_t)((float)((new_pixel>> 8) & 0xff)*dim);
-			new_pixel_R0 = (uint8_t)((float)((new_pixel>>16) & 0xff)*dim);
-			new_pixel_B1 = (uint8_t)((float)((new_pixel>>32) & 0xff)*dim);
-			new_pixel_G1 = (uint8_t)((float)((new_pixel>>40) & 0xff)*dim);
-			new_pixel_R1 = (uint8_t)((float)((new_pixel>>48) & 0xff)*dim);
-			new_pixel = new_pixel_R1<<48 | new_pixel_G1<<40 | new_pixel_B1<<32 | new_pixel_R0<<16 | new_pixel_G0<< 8 | new_pixel_B0;
+			DIM_PIXEL(k + m);
 			*(uint64_t*)(OFFSET(kk, i)) = new_pixel;
 		}
 

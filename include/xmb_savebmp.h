@@ -21,7 +21,7 @@ static s32 rsx_fifo_pause(u8 pause)
 #define BASE          0xC0000000UL     // local memory base ea
 
 // get pixel offset into framebuffer by x coordinates
-#define OFFSET(x) (u32)(offset + (4 * x))
+#define OFFSET(x) (u32)(offset + (x<<2))
 
 #define _ES32(v)((u32)(((((u32)v) & 0xFF000000) >> 24) | \
 		               ((((u32)v) & 0x00FF0000) >> 8 ) | \
@@ -89,7 +89,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	// initialize graphic
 	init_graphic();
 
-	u16 i, k, idx, ww = w;
+	u16 c, i, k, idx, ww = w;
 	u16 rr = small ? 2 : 1, r2 = 2 * rr; w /= rr, h /= rr; // resize bmp image if small flag is true
 
 	u16 margin_w = small ? 80 : 0, margin_h = small ? 30 : 0;
@@ -102,7 +102,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	// alloc buffers
 	u64 *line_frame = (u64*)sysmem;
 	u8 *tmp_buf = (u8*)sysmem;
-	u8 *bmp_buf = tmp_buf + line_frame_size; // start offset: 8 KB
+	u8 *bmp_buf = tmp_buf + (4 * line_frame_size); // start offset: 30 KB
 
 	#define bmp_header			tmp_buf
 	#define bmp_header_size		0x36
@@ -132,15 +132,15 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	cellFsWrite(fd, (void *)bmp_header, bmp_header_size, NULL);
 
 	// dump...
-	u32 _ww;
-	for(i = h * rr; i > margin_h; i-=rr)
+	u32 _ww; idx = 0;
+	for(c = 0, i = h * rr; i > margin_h; i-=rr, c++)
 	{
 		tmp = (i * pitch) + (rr * margin_w), _ww = tmp + ww - (rr * margin_w);
-		for(idx = 0; tmp < _ww; tmp+=r2, idx++)
-			line_frame[idx] = *(u64*)(OFFSET(tmp));
+		for(k = 0; tmp < _ww; tmp+=r2, k++)
+			line_frame[k] = *(u64*)(OFFSET(tmp));
 
 		// convert line from ABGR to RGB
-		for(idx = k = 0; k < line_frame_size; k+=4, idx+=3)
+		for(k = 0; k < line_frame_size; k+=4, idx+=3)
 		{
 			bmp_buf[idx]   = tmp_buf[k + 3];  // R
 			bmp_buf[idx+1] = tmp_buf[k + 2];  // G
@@ -148,7 +148,11 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 		}
 
 		// write bmp data
-		cellFsWrite(fd, (void *)bmp_buf, idx, NULL);
+		if(c >= 3)
+		{
+			cellFsWrite(fd, bmp_buf, idx, NULL);
+			c = idx = 0;
+		}
 	}
 
 	// continue rsx rendering

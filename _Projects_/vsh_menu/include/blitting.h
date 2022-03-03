@@ -26,9 +26,7 @@
 #define CENTER_TEXT  -1
 
 // get pixel offset into framebuffer by x/y coordinates
-#define OFFSET(x, y) (uint32_t)((((uint32_t)offset) + ((((int16_t)x) + \
-                     (((int16_t)y) * (((uint32_t)pitch) / \
-                     ((int32_t)4)))) * ((int32_t)4))) + (BASE))
+#define OFFSET(x, y) (uint32_t)((offset + ((x + ((y * pitch)))<<2)))
 
 extern int32_t LINE_HEIGHT;
 
