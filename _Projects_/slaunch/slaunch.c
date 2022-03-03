@@ -1002,7 +1002,7 @@ static void slaunch_thread(uint64_t arg)
 
 						blink_option(RED, DARK_RED, 75000);
 
-						if(!ps1_ps2) send_wm_request(path);
+						if(ps1_ps2) send_wm_request(path);
 
 						return_to_xmb();
 						break;
