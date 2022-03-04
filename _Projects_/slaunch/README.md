@@ -5,6 +5,8 @@ It's based on the new GUI for sMAN released by DeanK.
 
 ## Usage
 
+Press `L2`+`R2` or `START` button for 3 seconds from XMB to open/close the game menu.
+
 - L/R Sticks = Navigate
 - PAD Arrows = Navigate
 - `L1` / `R1`    = Prev / Next page
@@ -23,7 +25,6 @@ It's based on the new GUI for sMAN released by DeanK.
 
 ## Features
 
-- Menu access from XMB pressing `L2`+`R2` or `START` for a few seconds
 - On screen temperature display (CPU/RSX)
 - Fast menu navigation in grid format (5x2 or 10x4)
 - Side menu
@@ -39,6 +40,9 @@ It's based on the new GUI for sMAN released by DeanK.
 
 # How it works
 
+The plugins is stored in `/dev_hdd0/tmp/wm_res/slaunch.sprx`.
+It is loaded dynamically by webMAN MOD and unloaded from memory exits to XMB.
+
 The file `/dev_hdd0/tmp/wmtmp/slist.bin` containing the list of games
 is built by webMAN MOD when the XML content list is scanned.
 
@@ -51,6 +55,8 @@ developed to 3141card for VSH menu and extended by DeanK to display on full scre
 
 When a game is selected, the menu sends a web command to webMAN MOD to mount the game.
 The rest of the game loading process is perfomed by webMAN MOD and Cobra payload.
+
+The last used settings are stored in /dev_hdd0/tmp/wmtmp/slaunch.cfg
 
 ## Compilation Notes
 
