@@ -1,7 +1,7 @@
 # ROMS / PKG Launcher
 
 This application is a complementary tool for webMAN MOD used as intermediary to execute
-retail SELF applications, decompress archives or start ROMS with a RetroArch emulator .
+retail SELF applications, decompress archives or start ROMS with a RetroArch emulator.
 
 The tool serves also as template to create an ISO or PSN package that executes web commands.
 
