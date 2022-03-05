@@ -142,12 +142,12 @@ static void detect_firmware(void)
 #endif  // #ifndef LAST_FIRMWARE_ONLY
 
 #ifdef DEX_SUPPORT
-		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW488) ? 4.88f :
+		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW484) ? 4.84f :
+ #ifndef LAST_FIRMWARE_ONLY
+																					(peek(0x31F028) == FW488) ? 4.88f :
 																					(peek(0x31F028) == FW487) ? 4.87f :
 																					(peek(0x31F028) == FW486) ? 4.86f :
 																					(peek(0x31F028) == FW485) ? 4.85f :
-																					(peek(0x31F028) == FW484) ? 4.84f :
- #ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x31F028) == FW482) ? 4.82f :
 																					(peek(0x31F028) == FW481) ? 4.81f :
  #endif
@@ -178,12 +178,12 @@ static void detect_firmware(void)
 	  //if(peek(0x32B270) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_450H; c_firmware = 4.50f; dex_mode = 1;}	else
 		if(peek(0x32EDC8) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_460H; c_firmware = 4.60f; dex_mode = 1;}	else
  #endif // #ifndef LAST_FIRMWARE_ONLY
-		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW488) ? 4.88f :
+		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW484) ? 4.84f :
+ #ifndef LAST_FIRMWARE_ONLY
+																					(peek(0x344B70) == FW488) ? 4.88f :
 																					(peek(0x344B70) == FW487) ? 4.87f :
 																					(peek(0x344B70) == FW486) ? 4.86f :
 																					(peek(0x344B70) == FW485) ? 4.85f :
-																					(peek(0x344B70) == FW484) ? 4.84f :
- #ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x344B70) == FW483) ? 4.83f :
 																					(peek(0x344B70) == FH482) ? 4.82f :
 																					(peek(0x344B70) == FW481) ? 4.81f :
