@@ -29,6 +29,7 @@ Press `L2`+`R2` or `START` button for 3 seconds from XMB to open/close the game 
 - On screen temperature display (CPU/RSX)
 - Fast menu navigation in grid format (5x2 or 10x4)
 - Side menu
+  - **Favorites** - Toggle between Favorite / Normal list
   - **Unmount** - Unload mounted game (ISO / folder)
   - **Refresh** - Scan for content / instanst list without reload XMB
   - **gameDATA** - Redirects */dev_hdd0/game* to USB device
