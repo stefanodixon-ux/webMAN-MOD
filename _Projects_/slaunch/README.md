@@ -17,6 +17,7 @@ Press `L2`+`R2` or `START` button for 3 seconds from XMB to open/close the game 
 - `TRIANGLE`   = Side menu
 - `SQUARE`     = Filter content by game type (ALL / PSX / PS2 / PS3 / PSP / VIDEO / ROMS)
 - `SQUARE`+`L2`  = Filter content by device type (ALL / dev_hdd0 / NTFS / USB / NET)
+- `SQUARE`+`R2`  = Default content list (ALL)
 - `L3`         = Toggle between 5x2 / 10x4 items per page
 <br>
 

@@ -169,7 +169,7 @@ static void render_glyph(int32_t idx, uint32_t code)
 	CellFontGlyphMetrics   metrics;
 	CellFontImageTransInfo transinfo;
 	int32_t i, k, x, y, w, h;
-	int32_t ibw, k1 = 0, k2 = 0;
+	int32_t ibw, k1, k2;
 
 
 	// setup render settings
@@ -199,9 +199,9 @@ static void render_glyph(int32_t idx, uint32_t code)
 	bitmap->glyph[idx].h = transinfo.imageHeight;	 // height of char image
 
 	// copy glyph bitmap into cache
-	for(k = 0; k < bitmap->glyph[idx].h; k++, k1 = k*bitmap->glyph[idx].w, k2 = k * ibw)
-		for(i = 0; i < bitmap->glyph[idx].w; i++)
-			bitmap->glyph[idx].image[k1 + i] =
+	for(k1 = k = 0; k < bitmap->glyph[idx].h; k++)
+		for(k2 = k * ibw, i = 0; i < bitmap->glyph[idx].w; i++)
+			bitmap->glyph[idx].image[k1++] =
 			transinfo.Image[k2 + i];
 
 	bitmap->glyph[idx].metrics = metrics;
@@ -527,9 +527,9 @@ static uint32_t mix_color(uint32_t bg, uint32_t fg)
 {
   uint32_t a = fg >>24;
 
-  if(a == 0) return bg;
+  if(a == 0) return bg; // fg is transparent
 
-  uint32_t aa = (255 - a);
+  uint32_t aa = a ^ 0xFF;
 
   uint32_t rb = (((fg & 0x00FF00FF) * a) + ((bg & 0x00FF00FF) * aa)) & 0xFF00FF00;
   uint32_t g  = (((fg & 0x0000FF00) * a) + ((bg & 0x0000FF00) * aa)) & 0x00FF0000;
@@ -601,12 +601,12 @@ void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 
 #define DIM_PIXEL(p)	new_pixel = canvas[p]; \
 						pixel = (uint8_t*)&new_pixel; \
-						pixel[1] = (pixel[1]>>1)+(pixel[1]>>2); \
-						pixel[2] = (pixel[2]>>1)+(pixel[2]>>2); \
-						pixel[3] = (pixel[3]>>1)+(pixel[3]>>2); \
-						pixel[5] = (pixel[5]>>1)+(pixel[5]>>2); \
-						pixel[6] = (pixel[6]>>1)+(pixel[6]>>2); \
-						pixel[7] = (pixel[7]>>1)+(pixel[7]>>2); \
+						pixel[1] -= (pixel[1]>>2); \
+						pixel[2] -= (pixel[2]>>2); \
+						pixel[3] -= (pixel[3]>>2); \
+						pixel[5] -= (pixel[5]>>2); \
+						pixel[6] -= (pixel[6]>>2); \
+						pixel[7] -= (pixel[7]>>2); \
 						new_pixel = *((uint64_t*)pixel);
 
 void set_backdrop(uint8_t idx, uint8_t restore)
