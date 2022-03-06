@@ -251,9 +251,9 @@ static void detect_firmware(void)
 		}
 	}
 
-	if(!SYSCALL_TABLE) {c_firmware = 0.00f; return;}
-
 	sprintf(fw_version, "%i.%02i", (int)c_firmware, ((u32)(c_firmware * 1000.0f) % 1000) / 10);
+
+	if(!SYSCALL_TABLE) {c_firmware = 0.00f; return;}
 
 #ifndef COBRA_ONLY
 	if(IS_CEX)
