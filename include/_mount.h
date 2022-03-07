@@ -789,14 +789,17 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				if(!mounted)
 				{
+					if(!c_firmware || syscalls_removed)
+						mlen += sprintf(tempstr + mlen, "%s", STR_CFWSYSALRD);
+					else
 #ifndef ENGLISH_ONLY
-					if(webman_config->lang == 0)
+					if(webman_config->lang == 0 || webman_config->lang == LANG_CUSTOM)
 #endif
 					{
 						if(is_mounting)
 							mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
 						else if(IS_INGAME)
-							mlen += sprintf(tempstr + mlen, " To quit the game click.");
+							mlen += sprintf(tempstr + mlen, " Click to quit the game.");
 #ifdef COBRA_ONLY
 						else if(!cobra_version)
 							mlen += sprintf(tempstr + mlen, " Cobra payload not available.");

@@ -1590,6 +1590,8 @@ parse_request:
 				// /unmap.ps3<path>                   unmap path
 				// /unmap.ps3?src=<path>              use syscall35
 
+				if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
+
 				char *path1 = header, *path2 = header + MAX_PATH_LEN, *url = header + 2 * MAX_PATH_LEN, *title = header + 2 * MAX_PATH_LEN;
 
 				memset(header, 0, sizeof(header));
@@ -1674,6 +1676,8 @@ parse_request:
 			}
 			else if(islike(param, "/app_home.ps3"))
 			{
+				if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
+
 				char *path = param + 13; if(*path == '?') ++path;
 				check_path_alias(path);
 				set_app_home(path);
@@ -1685,6 +1689,9 @@ parse_request:
 			else if(islike(param, "/gameboot.ps3"))
 			{
 				// /gameboot.ps3?<id>      set gameboot <0-19>
+
+				if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
+
 				patch_gameboot(val(param + 14)); *header = NULL;
 				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 			}
@@ -1703,6 +1710,8 @@ parse_request:
 				// /wallpaper.ps3?prev      select prev id
 				// /wallpaper.ps3?<id>      set id 1-254 (.png)
 				// /wallpaper.ps3?disable   use dev_flash (id=255)
+
+				if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
 
 				u8 id;
 				u8 res_id = (param[1] == 'w') ? 0: // 0 = wallpaper
@@ -2082,6 +2091,8 @@ parse_request:
 					// /dozip.ps3<path>
 					// /dozip.ps3<path>&to=<dest-path>
 					// /unzip.ps3<zip-file>&to=<dest-path>
+
+					if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
 
 					if(IS_ON_XMB)
 					{
@@ -3209,6 +3220,8 @@ retry_response:
 						// /unloadprx.ps3?slot=<slot>
 						// /unloadprx.ps3?id=<id>
 
+						if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
+
 						unsigned int slot = 7; bool prx_found;
 
 						#ifdef PKG_HANDLER
@@ -3330,6 +3343,10 @@ retry_response:
 						// /extgd.ps3?enable   enable external GAME DATA
 						// /extgd.ps3?0        disable external GAME DATA
 						// /extgd.ps3?disable  disable external GAME DATA
+
+						#ifdef COBRA_ONLY
+						if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
+						#endif
 
 						if( param[10] == 0)   extgd ^= 1; else	//toggle
 						if( param[11] != 0 && param[11] != 's') //status
@@ -3790,7 +3807,13 @@ send_response:
 
 		break;
 	}
+	goto exit_handleclient_www;
   }
+
+#ifdef COBRA_ONLY
+exit_nocobra_error:
+	if(!mc) keep_alive = http_response(conn_s, header, param, CODE_FORBIDDEN, " Cobra payload not available.");
+#endif
 
 exit_handleclient_www:
 

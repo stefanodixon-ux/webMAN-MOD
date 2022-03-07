@@ -183,11 +183,11 @@ small {font-size:12px; color:#aaa}
 <a id="releases" href="https://github.com/aldostools/webMAN-MOD/releases" title="Download webMAN MOD"><font size="3"> PS2 on PS3</font></a></br>
 <div id="compat"><a href="https://www.psdevwiki.com/ps3/PS2_Classics_Emulator_Compatibility_List" target="_blank">PS2 Classics Emulator Compatibility List</a> &bull; <a href="https://www.psx-place.com/resources/ps2-classics-gui.638/"> PS2 Classic GUI</a> &bull; <a href="https://store.brewology.com/ahomebrew.php?brewid=290">PS2 Classic Launcher</a></div>
 </h1>
-<input type="text" id="txtSrchDB" onkeyup="doSearch();" placeholder="Search for names..">
-<span id="clear" onclick="input.value='';doSearch();">X</span>
-<button id="btn1" onclick="category='ALL';$('category').value=category;doSearch();input.select();">CFW</button>
-<button id="btn2" onclick="category='ENC';$('category').value=category;doSearch();input.select();">HEN</button>
-<select accesskey="c" tabindex="-1" id="category" onchange="category=this.value;doSearch();input.select();" ondblclick="this.value=category='ALL';doSearch();">
+<input type="text" id="txtSrchDB" onkeyup="doSearch(input.value);" placeholder="Search for names or game id..">
+<span id="clear" onclick="input.value='';doSearch(input.value);">X</span>
+<button id="btn1" onclick="category='ALL';$('category').value=category;doSearch(input.value);input.select();">CFW</button>
+<button id="btn2" onclick="category='ENC';$('category').value=category;doSearch(input.value);input.select();">HEN</button>
+<select accesskey="c" tabindex="-1" id="category" onchange="category=this.value;doSearch(input.value);input.select();" ondblclick="this.value=category='ALL';doSearch(input.value);">
 <option value="ALL"   >CUSTOM + NET + GX + SOFT</option>
 <option value="CUSTOM">CUSTOM</option>
 <option value="NET"   >NET</option>
@@ -3924,22 +3924,24 @@ var category = urlParams.get('cat');
 if (category == null) 
 	category = "ALL";
 $("category").value = category.toUpperCase();
-doSearch();
-function doSearch() {
+doSearch(input.value);
+function doSearch(value) {
 	// Declare variables
-	var td, txtValue, cols, cat = category;
+	var td, txtValue, cols, cat = category, reg1, reg2;
 	PS2Classics = (cat == "ENC");
-	txtValue = input.value.replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+	txtValue = value.trim().replace(/\(/g,'\\(').replace(/\)/g,'\\)');
 	var filter = txtValue.replace(/seco/g, '2eco').replace(/\s/g, '.+').replace(/\*/g, '.+');
 	var filter2 = txtValue.replace(".", "").replace(/[-_]/g, '').replace(/\s/g, '.+').replace(/\*/g, '.+');
-	var dolike = (input.value.indexOf('*')>=0);
+	var dolike = (value.indexOf('*')>=0);
 	if (dolike)
 	{
-		if(input.value.substr(0,1)==='*')filter=filter+"$";
-		if(input.value.substr(input.value.length-1,1)==='*')filter="^"+filter;
+		if(value.substr(0,1)==='*')filter=filter+"$";
+		if(value.substr(value.length-1,1)==='*')filter="^"+filter;
 	}
-	var reg1 = new RegExp(filter, "i");
-	var reg2 = new RegExp(filter2, "i");
+
+	try{reg1 = new RegExp(filter, "i");}catch{filter=filter.replace(/\[/g,'').replace(/\]/g,'');reg1 = new RegExp(filter, "i");}
+	try{reg2 = new RegExp(filter2, "i");}catch{filter2=filter2.replace(/\[/g,'').replace(/\]/g,'');reg2 = new RegExp(filter2, "i");}
+
 	// Loop through all table rows, and hide those who don't match the search query
 	for (count = i = 0; i < tr.length; i++) {
 		if(PS2Classics == (i < classics))
@@ -3981,6 +3983,19 @@ function doSearch() {
 	cols = table.getElementsByTagName("th");
 	if(count == 1) cols[2].innerText="Title"; else cols[2].innerHTML="<font color=#FFF>" + count.toLocaleString() + " Titles"
 	input.focus();
+	if(count == 0) {
+		// Try to search by game id
+		pos = value.toUpperCase().indexOf('(S');
+		if(pos<0) pos = value.toUpperCase().indexOf('[S');
+		if(pos>0) {
+			value = value.substr(pos+1,11);
+			pos = value.indexOf(')');
+			if(pos<0) pos = value.indexOf(' ');
+			if(pos<0) pos = value.indexOf(']');
+			if(pos>0) value = value.substr(0,pos);
+			doSearch(value);
+		}
+	}
 }
 function dlCONFIG(elem)
 {
@@ -4005,7 +4020,7 @@ input.addEventListener('paste', (e) => {
 	e.preventDefault();
 	const text = (e.originalEvent || e).clipboardData.getData('text/plain');
 	window.document.execCommand('insertText', false, text);
-	doSearch();
+	doSearch(input.value);
 });
 window.addEventListener('keydown',kd,false);
 function kd(e)
@@ -4019,7 +4034,7 @@ function kd(e)
 	if(kc==113) { // F2
 		category = (category == 'ENC') ? 'ALL' : 'ENC';
 		$("category").value = category;
-		doSearch();
+		doSearch(input.value);
 	}
 	if(kc==115) { // F4
 		$("category").focus();
