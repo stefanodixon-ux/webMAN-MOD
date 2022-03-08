@@ -761,6 +761,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls required for melee attack differentiation">SLES_511.56<td>Silent Hill 2 Director's Cut</tr>
 <tr><td>CUSTOM<td>SLUS_206.22<td>Silent Hill 3</tr>
 <tr><td>CUSTOM<td>SLES_514.34<td>Silent Hill 3</tr>
+<tr><td>CUSTOM<td>SLPM_652.57<td>Silent Hill 3</tr>
 <tr><td>CUSTOM<td>SLES_551.47<td>Silent Hill Origins</tr>
 <tr><td>CUSTOM<td>SLUS_202.43<td>Silent Scope 2: Dark Silhouette</tr>
 <tr><td>CUSTOM<td>SCUS_971.34<td>SOCOM: U.S. Navy SEALs</tr>
@@ -782,9 +783,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_206.43<td>Soul Calibur II</tr>
 <tr><td>CUSTOM<td>SLES_517.99<td>Soul Calibur II</tr>
 <tr><td>CUSTOM<td>SLPS_252.30<td>Soul Calibur II / ソウルキャリバーⅡ</tr>
-<tr><td>CUSTOM<td>SLUS_212.16<td>Soul Calibur III <small>(FMVs in 480i mode still bugged. Few FMV may stutter)</small></tr>
-<tr><td>CUSTOM<td>SCES_533.12<td>Soul Calibur III <small>(FMVs in 480i mode still bugged. Few FMV may stutter)</small></tr>
-<tr><td>CUSTOM<td>SLPS_255.77<td>Soul Calibur III / ソウルキャリバーⅢ <small>(FMVs in 480i mode still bugged. Few FMV may stutter)</small></tr>
+<tr><td>CUSTOM<td>SLUS_212.16<td>Soul Calibur III</tr>
+<tr><td>CUSTOM<td>SCES_533.12<td>Soul Calibur III</tr>
+<tr><td>CUSTOM<td>SLPS_255.77<td>Soul Calibur III / ソウルキャリバーⅢ</tr>
 <tr><td>CUSTOM<td>SLUS_201.65<td>Soul Reaver 2: Legacy of Kain</tr>
 <tr><td>CUSTOM<td>SLES_501.96<td>Soul Reaver 2: Legacy of Kain</tr>
 <tr><td>CUSTOM<td>SRPM_702.01<td>Space Venus starring Morning Musume / スペースヴィーナス　ｓｔａｒｒｉｎｇ　モーニング娘。</tr>
@@ -3530,6 +3531,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_511.56<td>Silent Hill 2 Director's Cut</tr>
 <tr><td>ENC<td>SLUS_206.22<td>Silent Hill 3</tr>
 <tr><td>ENC<td>SLES_514.34<td>Silent Hill 3</tr>
+<tr><td>ENC<td>SLPM_652.57<td>Silent Hill 3</tr>
 <tr><td>ENC<td>SLUS_208.73<td>Silent Hill 4: The Room</tr>
 <tr><td>ENC<td>SLES_524.45<td>Silent Hill 4: The Room</tr>
 <tr><td>ENC<td>SLES_551.47<td>Silent Hill Origins</tr>
@@ -3574,9 +3576,9 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_206.43<td>Soul Calibur II</tr>
 <tr><td>ENC<td>SLES_517.99<td>Soul Calibur II</tr>
 <tr><td>ENC<td>SLPS_252.30<td>Soul Calibur II</tr>
-<tr><td>ENC<td>SLUS_212.16<td>Soul Calibur III <small>(FMVs in 480p mode are bugged)</small></tr>
-<tr><td>ENC<td>SCES_533.12<td>Soul Calibur III <small>(FMVs in 480p mode are bugged)</small></tr>
-<tr><td>ENC<td>SLPS_255.77<td>Soul Calibur III <small>(FMVs in 480p mode are bugged)</small></tr>
+<tr><td>ENC<td>SLUS_212.16<td>Soul Calibur III</tr>
+<tr><td>ENC<td>SCES_533.12<td>Soul Calibur III</tr>
+<tr><td>ENC<td>SLPS_255.77<td>Soul Calibur III</tr>
 <tr><td>ENC<td>SLUS_201.65<td>Soul Reaver 2: Legacy of Kain</tr>
 <tr><td>ENC<td>SLES_501.96<td>Soul Reaver 2: Legacy of Kain</tr>
 <tr><td>ENC<td>SRPM_702.01<td>Space Venus starring Morning Musume</tr>
@@ -3913,7 +3915,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2157, count = tr.length, classics = i;
+var i = 2158, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
