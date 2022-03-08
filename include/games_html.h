@@ -122,7 +122,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		if(data[v3_entry].is_directory)
 			sprintf(templn, WMTMP "/%s.SFO", data[v3_entry].name);
 		else
-			{get_name(templn, data[v3_entry].name, GET_WMTMP); strcat(templn, ".SFO\0");}
+			{get_name(templn, data[v3_entry].name, GET_WMTMP); strcat(templn, ".SFO");}
 
 		if(not_exists(templn))
 		{

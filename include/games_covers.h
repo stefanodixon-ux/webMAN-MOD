@@ -176,9 +176,15 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	if((flen > 3) && name[flen - 3] == '.' ) {flen -= 3; name[flen] = NULL;} // remove file extension for roms (.gb .gg .vb)
 	else if(strstr(filename + pos, ".ntfs["))
 	{
-		while(name[flen] != '.') flen--; name[flen] = NULL; pos = flen - 4;
-		if((pos > 0) && name[pos] == '.' && (strcasestr(ISO_EXTENSIONS, &name[pos]))) {flen = pos; name[flen] = NULL;} else
-		if(is_BIN_ENC(name)) {flen -= 8; name[flen] = NULL;}
+		while(name[flen] != '.') flen--; name[flen] = NULL;
+		if(cache != GET_WMTMP)
+		{
+			pos = flen - 4;
+			if((pos > 0) && name[pos] == '.' && (strcasestr(ISO_EXTENSIONS, &name[pos])))
+				{flen = pos; name[flen] = NULL;}
+			else
+				if(is_BIN_ENC(name)) {flen -= 8; name[flen] = NULL;}
+		}
 	}
 
 	if(cache) return (size_t) flen;
@@ -663,11 +669,14 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 
 	if(IS_PS3ISO)
 	{
-		get_name(param_sfo, entry_name, GET_WMTMP); strcat(param_sfo, ".SFO\0"); // WMTMP
-		if((!IS_NTFS) && not_exists(param_sfo))
+		flen = get_name(param_sfo, entry_name, GET_WMTMP); strcat(param_sfo + flen, ".SFO"); // WMTMP
+		if(not_exists(param_sfo))
 		{
 			get_name(tempstr, entry_name, NO_EXT);
-			sprintf(param_sfo, "%s/%s.SFO", param, tempstr); // /PS3ISO
+			if(IS_NTFS || IS_NET)
+				sprintf(param_sfo, "%s/%s.SFO", WMTMP, tempstr); // /PS3ISO
+			else
+				sprintf(param_sfo, "%s/%s.SFO", param, tempstr); // /PS3ISO
 		}
 
 		if(get_title_and_id_from_sfo(title, title_id, entry_name, icon, tempstr, f0) != CELL_FS_SUCCEEDED || !HAS_TITLE_ID)

@@ -136,6 +136,12 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 			scsi_tracks[t].track_start_addr = tracks[t].lba;
 		}
 
+		if(extlen == 4)
+		{
+			snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
+			if(file_exists(tmp_path)) extlen = 0; // create file with .iso extension
+		}
+
 		int slen = strlen(filename) - extlen;
 		filename[slen] = NULL;
 
