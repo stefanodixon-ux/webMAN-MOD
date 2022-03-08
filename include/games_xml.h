@@ -212,41 +212,41 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 //			if(roms_index == 1)                      add_tag(tags, 0x95BC); else // CAP32
 			if(roms_index >=  2 && roms_index <=  6) add_tag(tags, 0x97BE); else // MAME
 			if(roms_index >=  7 && roms_index <=  9) add_tag(tags, 0x97BD); else // FBA
-			if(roms_index >= 10 && roms_index <= 18) add_tag(tags, 0x97BA); else // ATARI
-//			if(roms_index == 19)                     add_tag(tags, 0x95BC); else // CANNONBALL
-//			if(roms_index == 20)                     add_tag(tags, 0x95BC); else // NXENGINE
-//			if(roms_index == 21)                     add_tag(tags, 0x95BC); else // COLECO
-			if(roms_index >= 22 && roms_index <= 34) add_tag(tags, 0x9590); else // AMIGA / VICE
-//			if(roms_index == 35)                     add_tag(tags, 0x95BC); else // DOSBOX
-//			if(roms_index == 36)                     add_tag(tags, 0x95BC); else // GME
-//			if(roms_index == 37)                     add_tag(tags, 0x95BC); else // GW
-			if(roms_index == 38)                     add_tag(tags, 0x9882); else // DOOM
-			if(roms_index == 39)                     add_tag(tags, 0x9883); else // QUAKE
-//			if(roms_index == 40)                     add_tag(tags, 0x95BC); else // JAVAME
-//			if(roms_index == 41)                     add_tag(tags, 0x95BC); else // O2EM
-//			if(roms_index == 42)                     add_tag(tags, 0x95BC); else // INTV
-			if(roms_index >= 43 && roms_index <= 46) add_tag(tags, 0x959E); else // MSX
-			if(roms_index >= 47 && roms_index <= 49) add_tag(tags, 0x95A0); else // NEO
-			if(roms_index >= 50 && roms_index <= 53) add_tag(tags, 0x95A4); else // PCE
-			if(roms_index == 54)                     add_tag(tags, 0x95A3); else // NGP
-			if(roms_index >= 55 && roms_index <= 58) add_tag(tags, 0x95A1); else // NES
-			if(roms_index == 60)                     add_tag(tags, 0x9593); else // GBC
-			if(roms_index >= 59 && roms_index <= 62) add_tag(tags, 0x9591); else // GB
-			if(roms_index >= 63 && roms_index <= 65) add_tag(tags, 0x9592); else // GBA
-//			if(roms_index == 66)                     add_tag(tags, 0x95BC); else // VBOY
-//			if(roms_index == 67)                     add_tag(tags, 0x95BC); else // PALM
-//			if(roms_index == 68)                     add_tag(tags, 0x95BC); else // POKEMINI
-			if(roms_index == 75)                     add_tag(tags, 0x95BE); else // SEGACD
-			if(roms_index >= 69 && roms_index <= 73) add_tag(tags, 0x9594); else // GEN
-			if(roms_index >= 74 && roms_index <= 75) add_tag(tags, 0x959D); else // GG
-			if(roms_index == 76)                     add_tag(tags, 0x95BF); else // MASTER
+			if(roms_index >= 10 && roms_index <= 19) add_tag(tags, 0x97BA); else // ATARI
+//			if(roms_index == 20)                     add_tag(tags, 0x95BC); else // CANNONBALL
+//			if(roms_index == 21)                     add_tag(tags, 0x95BC); else // NXENGINE
+//			if(roms_index == 22)                     add_tag(tags, 0x95BC); else // COLECO
+			if(roms_index >= 23 && roms_index <= 35) add_tag(tags, 0x9590); else // AMIGA / VICE
+//			if(roms_index == 36)                     add_tag(tags, 0x95BC); else // DOSBOX
+//			if(roms_index == 37)                     add_tag(tags, 0x95BC); else // GME
+//			if(roms_index == 38)                     add_tag(tags, 0x95BC); else // GW
+			if(roms_index == 39)                     add_tag(tags, 0x9882); else // DOOM
+			if(roms_index == 40)                     add_tag(tags, 0x9883); else // QUAKE
+//			if(roms_index == 41)                     add_tag(tags, 0x95BC); else // JAVAME
+//			if(roms_index == 42)                     add_tag(tags, 0x95BC); else // O2EM
+//			if(roms_index == 43)                     add_tag(tags, 0x95BC); else // INTV
+			if(roms_index >= 44 && roms_index <= 47) add_tag(tags, 0x959E); else // MSX
+			if(roms_index >= 48 && roms_index <= 50) add_tag(tags, 0x95A0); else // NEO
+			if(roms_index >= 51 && roms_index <= 54) add_tag(tags, 0x95A4); else // PCE
+			if(roms_index == 55)                     add_tag(tags, 0x95A3); else // NGP
+			if(roms_index >= 56 && roms_index <= 59) add_tag(tags, 0x95A1); else // NES
+			if(roms_index == 61)                     add_tag(tags, 0x9593); else // GBC
+			if(roms_index >= 60 && roms_index <= 63) add_tag(tags, 0x9591); else // GB
+			if(roms_index >= 64 && roms_index <= 66) add_tag(tags, 0x9592); else // GBA
+//			if(roms_index == 67)                     add_tag(tags, 0x95BC); else // VBOY
+//			if(roms_index == 68)                     add_tag(tags, 0x95BC); else // PALM
+//			if(roms_index == 69)                     add_tag(tags, 0x95BC); else // POKEMINI
+			if(roms_index == 76)                     add_tag(tags, 0x95BE); else // SEGACD
+			if(roms_index >= 70 && roms_index <= 74) add_tag(tags, 0x9594); else // GEN
+			if(roms_index >= 75 && roms_index <= 76) add_tag(tags, 0x959D); else // GG
 			if(roms_index == 77)                     add_tag(tags, 0x95BF); else // MASTER
-//			if(roms_index == 78)                     add_tag(tags, 0x95BC); else // SG1000
-//			if(roms_index >= 78 && roms_index <= 80) add_tag(tags, 0x95BC); else // Sinclair
-			if(roms_index >= 81 && roms_index <= 86) add_tag(tags, 0x9680); else // SNES
-//			if(roms_index == 87)                     add_tag(tags, 0x95BC); else // THEODORE
-//			if(roms_index == 88)                     add_tag(tags, 0x95BC); else // VECX
-			if(roms_index == 89)                     add_tag(tags, 0x9682); else // WSWAM
+			if(roms_index == 78)                     add_tag(tags, 0x95BF); else // MASTER
+//			if(roms_index == 79)                     add_tag(tags, 0x95BC); else // SG1000
+//			if(roms_index >= 80 && roms_index <= 81) add_tag(tags, 0x95BC); else // Sinclair
+			if(roms_index >= 82 && roms_index <= 87) add_tag(tags, 0x9680); else // SNES
+//			if(roms_index == 88)                     add_tag(tags, 0x95BC); else // THEODORE
+//			if(roms_index == 89)                     add_tag(tags, 0x95BC); else // VECX
+			if(roms_index == 90)                     add_tag(tags, 0x9682); else // WSWAM
 													 add_tag(tags, 0x95BC);      // ROM
 		}
 		#endif
@@ -477,8 +477,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	check_cover_folders(templn);
 
 	#ifdef MOUNT_ROMS
-	#define ROM_PATHS	90
-	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME2000", "MAME2003", "MIDWAY", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "CANNONBALL", "NXENGINE", "COLECO", "AMIGA", "CD32", "VICE", "X64", "X64SC", "X64DTV", "XSCPU64", "X128", "XCBM2", "XCMB25X0", "XPET", "XPLUS4", "XVIC", "DOSBOX", "GME", "GW", "DOOM", "QUAKE", "JAVAME", "O2EM", "INTV", "BMSX", "MSX", "FMSX", "MSX2", "NEOCD", "NEO", "NEOGEO", "PCE", "PCECD", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBA", "MGBA", "VBOY", "PALM", "POKEMINI", "GENESIS", "GEN", "SEGACD", "MEGAD", "MEGADRIVE", "GG", "GEARBOY", "MASTER", "PICO", "SG1000", "FUSE", "ZX81", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM" };
+	#define ROM_PATHS	91
+	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME2000", "MAME2003", "MIDWAY", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI800", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "CANNONBALL", "NXENGINE", "COLECO", "AMIGA", "CD32", "VICE", "X64", "X64SC", "X64DTV", "XSCPU64", "X128", "XCBM2", "XCMB25X0", "XPET", "XPLUS4", "XVIC", "DOSBOX", "GME", "GW", "DOOM", "QUAKE", "JAVAME", "O2EM", "INTV", "BMSX", "MSX", "FMSX", "MSX2", "NEOCD", "NEO", "NEOGEO", "PCE", "PCECD", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBA", "MGBA", "VBOY", "PALM", "POKEMINI", "GENESIS", "GEN", "SEGACD", "MEGAD", "MEGADRIVE", "GG", "GEARBOY", "MASTER", "PICO", "SG1000", "FUSE", "ZX81", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM" };
 	u16 roms_count[ROM_PATHS]; u32 count_roms = 0;
 	#endif
 	u8 roms_index = 0;
