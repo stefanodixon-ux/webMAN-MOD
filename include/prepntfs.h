@@ -1,7 +1,7 @@
 #ifdef USE_NTFS
 #define MAX_SECTIONS	(int)((_64KB_-sizeof(rawseciso_args))/8)
 
-//static char paths [13][12] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
+//static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
 
 enum ntfs_folders
 {
@@ -136,14 +136,11 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 			scsi_tracks[t].track_start_addr = tracks[t].lba;
 		}
 
-		if(extlen == 4)
-		{
-			snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
-			if(file_exists(tmp_path)) extlen = 0; // create file with .iso extension
-		}
-
 		int slen = strlen(filename) - extlen;
 		filename[slen] = NULL;
+
+		snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
+		if(not_exists(tmp_path)) {filename[slen] = '.', slen += extlen;} // create file with .iso extension
 
 		if(ntfs_subdir && (strncmp(ntfs_subdir, filename, slen) != 0))
 		{
@@ -204,7 +201,7 @@ static void scan_path_ntfs(const char *path, bool chk_dirs)
 	} t_line_entries;
 
 	pdir = ps3ntfs_diropen(path);
-	if(pdir != NULL)
+	if(pdir)
 	{
 		sys_addr_t sysmem = NULL;
 		if(chk_dirs) sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
@@ -255,7 +252,6 @@ static int prepNTFS(u8 clear)
 {
 	if(prepntfs_working || skip_prepntfs) {skip_prepntfs = false; return 0;}
 	prepntfs_working = true;
-
 
 	const char *prefix[2] = {"/", "/PS3/"};
 
