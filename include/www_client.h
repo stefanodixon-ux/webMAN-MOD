@@ -600,7 +600,11 @@ parse_request:
 
 			bool is_setup = islike(param, "/setup.ps3?");
 
-			if(!is_setup) { mc = strstr(param, ";/"); if(mc) {*mc = NULL; strcpy(header, param);} }
+			if(!is_setup)
+			{
+				if(!mc && (strstr(param, ";/") != NULL)) strcpy(html_base_path, param); // backup multi-command param
+				mc = strstr(html_base_path, ";/"); if(mc) {*mc = NULL; strcpy(header, html_base_path);}
+			}
 
 			bool allow_retry_response = true; u8 mobile_mode = false;
 
@@ -790,6 +794,7 @@ parse_request:
 					char col[16], seg[80]; *col = *seg = NULL;
 #ifdef COBRA_ONLY
 					#ifndef LITE_EDITION
+					strcpy(header, param2); param2 = (char*)header;
 					if(_islike(param2, "movian") || IS(param2, "HTSS00003"))
 													 {sprintf(param2, "col=tv&seg=HTSS00003"); mount_unk = APP_GAME;} else
 					if(_islike(param2, "remoteplay")){sprintf(param2, "col=network&seg=seg_premo");} else
@@ -798,18 +803,19 @@ parse_request:
 					if(_islike(param2, "rebug"))     {sprintf(param2, "RBGTLBOX2");}
 					#endif
 
-					sprintf(header, "%s%s", HDD0_GAME_DIR, param2);
+					char path[32];
+					snprintf(path, 32, "%s%s", HDD0_GAME_DIR, param2);
 
 					if(*map_title_id && (*param2 == NULL))
 					{
 						patch_gameboot(0);
 						launch_app_home_icon(true);
 					}
-					else if((*param2 != NULL) && isDir(header))
+					else if((*param2 != NULL) && isDir(path))
 					{
 						patch_gameboot(3); // PS3
 
-						set_app_home(header);
+						set_app_home(path);
 						sys_ppu_thread_sleep(1);
 
 						mount_unk = APP_GAME;
@@ -2887,7 +2893,7 @@ retry_response:
 														 CODE_BAD_REQUEST;
 
 					http_response(conn_s, header, param, code, is_busy ? "503 Server is Busy" :
-										 (code == CODE_NOT_IMPLEMENTED)? "501 Not implemented" :
+										 (code == CODE_NOT_IMPLEMENTED)? param : //"501 Not implemented" :
 										 (code == CODE_PATH_NOT_FOUND) ? "404 Path not found" :
 																		 "400 Bad Request");
 
@@ -3326,8 +3332,8 @@ retry_response:
 
 						use_open_path = true;
 						add_breadcrumb_trail(buffer, video_path);
-						sprintf(html_base_path, ":<p>Video recording: <a href=\"%s\">%s</a></p>", param, recording ? STR_ENABLED : STR_DISABLED);
-						_concat(&sbuffer, html_base_path);
+						sprintf(header, ":<p>Video recording: <a href=\"%s\">%s</a></p>", param, recording ? STR_ENABLED : STR_DISABLED);
+						_concat(&sbuffer, header);
 
 						if(!recording && recOpt) {sprintf(param, "<a class=\"f\" href=\"%s\">%s</a><br>", (char*)&recOpt[0x6], (char*)&recOpt[0x6]); _concat(&sbuffer, param);}
 					}
