@@ -1193,7 +1193,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	wait_for("/dev_bdvd", 15);
 
 	char *ext = destpath + strlen(destpath);
-	strcat(ext, ".SFO\0");
+	strcpy(ext, ".SFO");
 	dont_copy_same_size = false;
 
 	// cache PARAM.SFO

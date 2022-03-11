@@ -76,7 +76,7 @@ mounted_ntfs:
 
 		if(IS(ntfs_ext, ".ntfs[PS3ISO]"))
 		{
-			get_name(templn, _path, NO_EXT);
+			get_name(templn, _path, GET_WMTMP);
 			cache_icon0_and_param_sfo(templn);
 			set_bdvd_as_app_home(); // mount (NTFS) PS3ISO in /app_home
 #ifdef FIX_GAME
