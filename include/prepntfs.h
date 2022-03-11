@@ -140,7 +140,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		filename[slen] = NULL;
 
 		snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
-		if(not_exists(tmp_path)) {filename[slen] = '.', slen += extlen;} // create file with .iso extension
+		if(not_exists(tmp_path)) {filename[slen] = '.', slen += extlen, extlen = 0;} // create file with .iso extension
 
 		if(ntfs_subdir && (strncmp(ntfs_subdir, filename, slen) != 0))
 		{
