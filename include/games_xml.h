@@ -66,12 +66,12 @@ static void sys_map_path2(const char *path1, const char *path2)
 static void map_patched_modules(void)
 {
 	// redirect to patched game_ext_plugin.sprx required for gameboot animation & sounds
-	if(file_exists("/dev_hdd0/tmp/gameboot/game_ext_plugin.sprx"))
-		sys_map_path("/dev_flash/vsh/module/game_ext_plugin.sprx", "/dev_hdd0/tmp/gameboot/game_ext_plugin.sprx");
+	if(file_exists(NEW_GAME_EXT_PATH))
+		sys_map_path(ORG_GAME_EXT_PATH, NEW_GAME_EXT_PATH);
 
 	// redirect to patched libaudio.sprx
-	if(file_exists("/dev_hdd0/tmp/libaudio.sprx"))
-		sys_map_path("/dev_flash/sys/external/libaudio.sprx", "/dev_hdd0/tmp/libaudio.sprx");
+	if(file_exists(NEW_LIBAUDIO_PATH))
+		sys_map_path(ORG_LIBAUDIO_PATH, NEW_LIBAUDIO_PATH);
 
 	#ifndef LITE_EDITION
 	use_imgfont = (file_ssize(IMAGEFONT_PATH) > 900000);
@@ -442,8 +442,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 #endif
 	char *sysmem_xml = (char*)sysmem + (BUFFER_SIZE) - 4300;
 
-	cellFsMkdir("/dev_hdd0/xmlhost", DMODE);
-	cellFsMkdir("/dev_hdd0/xmlhost/game_plugin", DMODE);
+	cellFsMkdir(XML_HOST_PATH, DMODE);
+	cellFsMkdir(HTML_BASE_PATH, DMODE);
 
 	const u16 max_xmb_items = ((u16)(BUFFER_SIZE_ALL / AVG_ITEM_SIZE));
 

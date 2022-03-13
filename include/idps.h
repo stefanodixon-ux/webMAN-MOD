@@ -221,6 +221,8 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 	else
 		strcpy(header, filename); // show custom filename
 
+	if(i < 0) i = 0;
+
 	if(is_idps)
 	{
 		if(is_default) sprintf(header, "%s/idps.hex", drives[i]);

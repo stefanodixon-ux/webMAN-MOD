@@ -9,8 +9,15 @@
 #define REBUG_TOOLBOX		"/dev_hdd0//game/RBGTLBOX2/USRDIR/"
 #define COLDBOOT_PATH		"/dev_blind/vsh/resource/coldboot.raf"
 #define IMAGEFONT_PATH		"/dev_flash/vsh/resource/imagefont.bin"
+
 #define ORG_LIBFS_PATH		"/dev_flash/sys/external/libfs.sprx"
 #define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
+
+#define ORG_GAME_EXT_PATH	"/dev_flash/vsh/module/game_ext_plugin.sprx"
+#define NEW_GAME_EXT_PATH	"/dev_hdd0/tmp/gameboot/game_ext_plugin.sprx"
+
+#define ORG_LIBAUDIO_PATH	"/dev_flash/sys/external/libaudio.sprx"
+#define NEW_LIBAUDIO_PATH	"/dev_hdd0/tmp/libaudio.sprx"
 
 #define NPSIGNIN_PLUGIN_RCO		"/dev_flash/vsh/resource/npsignin_plugin.rco"
 #define NPSIGNIN_PLUGIN_OFF		"/dev_hdd0/tmp/wm_res/npsignin_plugin.rco"
@@ -99,6 +106,7 @@
 
 //////////////////////////////
 
+#define XML_HOST_PATH			"/dev_hdd0/xmlhost"
 #define HTML_BASE_PATH			"/dev_hdd0/xmlhost/game_plugin"
 
 #define HEN_HFW_SETTINGS		"/dev_hdd0/hen/hfw_settings.xml"
