@@ -56,10 +56,14 @@ static u32 get_xreg_value(const char *key, u32 new_value, char *str_value, bool 
 			}
 			else
 			{
-				if(len_data == 4)
-					cellFsWriteWithOffset(reg, entry_offset, &new_value, 4, &r);
-				else
-					cellFsWriteWithOffset(reg, entry_offset, str_value, strlen(str_value), &r);
+				cellFsClose(reg);
+				if(cellFsOpen("/dev_flash2/etc/xRegistry.sys", CELL_FS_O_WRONLY, &reg, NULL, 0) == CELL_FS_SUCCEEDED)
+				{
+					if(len_data == 4)
+						cellFsWriteWithOffset(reg, entry_offset, &new_value, 4, &r);
+					else
+						cellFsWriteWithOffset(reg, entry_offset, str_value, strlen(str_value), &r);
+				}
 			}
 			break;
 		}
