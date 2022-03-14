@@ -312,7 +312,8 @@ static void start_xmb_player(const char* column)
 		exec_xmb_command("close_all_list");
 		sys_ppu_thread_sleep(1);
 		exec_xmb_command2("focus_category %s", column);
-		exec_xmb_command2("focus_segment_index %s", "-1");
+		sys_ppu_thread_sleep(1);
+		exec_xmb_command("scroll_list 9999");
 		if(wait_for_abort(2)) return;
 		parse_pad_command("triangle", 0);
 		if(wait_for_abort(2)) return;

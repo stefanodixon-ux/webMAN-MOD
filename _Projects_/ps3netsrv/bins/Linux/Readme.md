@@ -1,5 +1,3 @@
-Linux binary build webMAN-MOD 1.47.27 and ps3netsrv 20200529
+# ps3netsrv for Linux
 
-Here is a RELEASE build of ps3netsrv source code (1.47.27) for Linux X86_64.
-
-It's been statically compiled so it does not require any other specific libraries to be installed to run properly. 
+Here is a RELEASE build of the latest ps3netsrv source code (build 20220301) for ubuntu 20.04.4 LTS:

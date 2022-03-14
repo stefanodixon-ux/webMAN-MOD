@@ -466,7 +466,7 @@ VIsoFile::VIsoFile(bool ps3Mode)
 	padAreaStart = 0;
 	padAreaSize = 0;
 
-	fd = NULL;
+	fd = 0;
 	lastPath = NULL;
 }
 
@@ -564,7 +564,7 @@ void VIsoFile::fd_reset(void)
 {
 	close_file(fd);
 
-	fd = NULL;
+	fd = 0;
 	lastPath = NULL;
 }
 

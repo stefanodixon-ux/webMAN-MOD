@@ -39,6 +39,13 @@ To build ps3netsrv using the bundled POLARSSL library instead of mbed TLS and wi
 
 On Linux this will statically link ps3netsrv.
 
+```
+sudo apt-get update
+sudo apt-get install make
+sudo apt-get install g++
+./Make.sh
+```
+
 ## Docker Container
 Docker Engine enables applications built in containers packages to run anywhere consistently on any infrastructure.
 
