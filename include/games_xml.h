@@ -698,18 +698,27 @@ scan_roms:
 					if(!data2) goto continue_reading_folder_xml; //continue;
 					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-NET));
 				}
+				else
 #endif
-				if(!is_net && isDir(param) == false) goto continue_reading_folder_xml; //continue;
-				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED)
+
+				if(isDir(param) == false)
 				{
 					if(f1 != id_ROMS) goto continue_reading_folder_xml; //continue;
 
 					strcpy(tempstr, roms_path[roms_index]);
-					for(char *c = tempstr; *c; c++) {if(*c >= 'A' && *c <= 'Z') *c ^= 0x20;}
+					for(char *c = tempstr; *c; c++) {if(*c >= 'A' && *c <= 'Z') *c ^= 0x20;} // check folder in lower case (e.g. /ROMS/snes)
 
 					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), tempstr);
-					if(cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_xml; //continue;
+					if(isDir(param) == false)
+					{
+						*tempstr ^= 0x20; // capitalize first letter of folder name (e.g. /ROMS/Snes)
+
+						sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), tempstr);
+						if(isDir(param) == false) goto continue_reading_folder_xml; //continue;
+					}
 				}
+
+				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_xml; //continue;
 
 				plen = strlen(param);
 
