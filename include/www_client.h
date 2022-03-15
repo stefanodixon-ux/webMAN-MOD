@@ -362,7 +362,8 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 
 	prev_dest = last_dest = NULL; // init fast concat
 
-	char cmd[16], header[HTML_RECV_SIZE], *mc = NULL;
+	char cmd[16], header[HTML_RECV_SIZE];
+	char *mc = NULL, *mc_param = NULL;
 
 	char param[HTML_RECV_SIZE];
 	char *file_query = param + HTML_RECV_LAST; *file_query = NULL;
@@ -547,7 +548,11 @@ parse_request:
 			}
 #endif // #ifndef LITE_EDITION
 		}
-		else sprintf(header, "GET %s", mc + 1);
+		else
+		{
+			if(mc_param) strcpy(param, mc_param); // restore original multi-command param
+			sprintf(header, "GET %s", mc + 1);
+		}
 
 		mc = NULL;
 
@@ -602,8 +607,12 @@ parse_request:
 
 			if(!is_setup)
 			{
-				if(!mc && (strstr(param, ";/") != NULL)) strcpy(html_base_path, param); // backup multi-command param
-				mc = strstr(html_base_path, ";/"); if(mc) {*mc = NULL; strcpy(header, html_base_path);}
+				if(!mc && (strstr(param, ";/") != NULL))
+				{
+					mc_param = malloc(strlen(param) + 1);
+					if(mc_param) strcpy(mc_param, param); // backup original multi-command param
+				}
+				mc = strstr(param, ";/"); if(mc) {*mc = NULL; strcpy(header, param);}
 			}
 
 			bool allow_retry_response = true; u8 mobile_mode = false;
@@ -3829,6 +3838,8 @@ exit_handleclient_www:
 		{auto_play(param, --ap_param); ap_param = 0;} // ap_param: 1=from /mount.ps3, 2=from /play.ps3
 
 	if(mc || (use_keep_alive && keep_alive && loading_html && (++max_cc < MAX_WWW_CC))) goto parse_request;
+
+	if(mc_param) free(mc_param);
 
 	#ifdef USE_DEBUG
 	ssend(debug_s, "Request served.\r\n");
