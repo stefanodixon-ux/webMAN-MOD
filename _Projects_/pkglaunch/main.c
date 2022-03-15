@@ -663,6 +663,7 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/GME/"))		sprintf(path, "%s/gme%s",		 RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/JAVAME"))	sprintf(path, "%s/squirreljme%s",RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/JME"))		sprintf(path, "%s/squirreljme%s",RETROARCH, sufix[i]);	else
+			if(strcasestr(path, "/ROMS/JUMP"))		sprintf(path, "%s/jumpnbump%s",  RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/INTV/"))		sprintf(path, "%s/freeintv%s",   RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/MU/"))		sprintf(path, "%s/mu%s",		 RETROARCH, sufix[i]);	else
 			if(strcasestr(path, "/ROMS/PALM/"))		sprintf(path, "%s/mu%s",		 RETROARCH, sufix[i]);	else
