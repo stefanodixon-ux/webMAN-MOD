@@ -81,7 +81,6 @@ static void add_title_id(char *templn, char *title_id)
 	}
 }
 
-#ifdef COBRA_ONLY
 #ifdef NET_SUPPORT
 //static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0);
 static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *templn, char *tempstr, char *enc_dir_name, char *icon, char *title_id, char *app_ver, u8 f1, u8 is_html)
@@ -198,7 +197,6 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	return CELL_OK;
 }
 #endif // #ifdef NET_SUPPORT
-#endif // #ifdef COBRA_ONLY
 
 static void add_query_html(char *buffer, const char *param)
 {
@@ -222,19 +220,19 @@ static int check_drive(u8 f0)
 	if(!webman_config->dev_ms && (f0 == 14)) return FAILED;
 	if(!webman_config->dev_cf && (f0 == 15)) return FAILED;
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	if( (IS_NTFS) && (!webman_config->ntfs) && (!webman_config->usb0 && !webman_config->usb1 && !webman_config->usb2 &&
 												!webman_config->usb3 && !webman_config->usb6 && !webman_config->usb7)) return FAILED;
-#else
+	#else
 	if(IS_NTFS) return FAILED; // is_ntfs (nonCobra)
-#endif
+	#endif
 
 	// is_net
-#ifdef NET_SUPPORT
+	#ifdef NET_SUPPORT
 	if(((f0 >= NET) && (f0 < NTFS)) && !is_netsrv_enabled(f0 - NET)) return FAILED; //net
-#else
+	#else
 	if(IS_NET) return FAILED; // is_net (LITE_EDITION)
-#endif
+	#endif
 
 	return CELL_OK;
 }
@@ -247,9 +245,9 @@ static int check_content_type(u8 f1)
 	if( (webman_config->cmask & PS2) && IS_PS2ISO  ) return FAILED;
 	if( (webman_config->cmask & PS1) && IS_PSXISO  ) return FAILED;
 	if( (webman_config->cmask & PSP) && IS_PSPISO  ) return FAILED;
-#ifdef MOUNT_ROMS
+	#ifdef MOUNT_ROMS
 	if((!webman_config->roms)        && IS_ROMS_FOLDER) return FAILED;
-#endif
+	#endif
 	return CELL_OK;
 }
 
@@ -289,7 +287,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 
 	if(is_html)
 	{
-#ifdef LAUNCHPAD
+	#ifdef LAUNCHPAD
 		if(webman_config->launchpad_grp || (key ==  HTML_KEY))
 			snprintf(skey, HTML_KEY_LEN + 1, "%s", templn);
 		else
@@ -297,9 +295,9 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 			char group = IS_BDISO ? id_VIDEO : get_default_icon_by_type(f1);
 			snprintf(skey, HTML_KEY_LEN + 1, "%c%s", group, templn);
 		}
-#else
+	#else
 		snprintf(skey, HTML_KEY_LEN + 1, "%s", templn);
-#endif
+	#endif
 	}
 	else
 		sprintf(skey, "!%.6s%04i", templn + c, key);
@@ -390,7 +388,7 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 
 static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *param)
 {
-#ifdef NET_SUPPORT
+	#ifdef NET_SUPPORT
 	if(is_net)
 	{
 		char ll[4]; if(li) sprintf(ll, "/%c", '@'+li); else *ll = NULL;
@@ -399,7 +397,7 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 		if(li == LANG_CUSTOM) sprintf(param, "/%s%s", paths[f1], AUTOPLAY_TAG);
 	}
 	else
-#endif
+	#endif
 	{
 		if(IS_NTFS) //ntfs
 			sprintf(param, WMTMP);
@@ -421,14 +419,14 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 
 	u8 mobile_mode = mode, launchpad_mode = (mode == LAUNCHPAD_MODE);
 
-#ifdef LAUNCHPAD
+	#ifdef LAUNCHPAD
 	if(launchpad_mode) cellFsUnlink(LAUNCHPAD_FILE_XML); else
-#endif
+	#endif
 	if((!mobile_mode) && strstr(param, "/index.ps3"))
 	{
 		char *pbuffer = buffer + buf_len + concat(buffer, "<font style=\"font-size:13px\">");
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 		if(!(webman_config->cmask & PS3)) { add_query_html(pbuffer, "ps3");
 											add_query_html(pbuffer, "games");
 											add_query_html(pbuffer, "PS3ISO");
@@ -440,25 +438,25 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		if(!(webman_config->cmask & BLU))   add_query_html(pbuffer, "BDISO" );
 		if(!(webman_config->cmask & DVD))   add_query_html(pbuffer, "DVDISO");
 
- #ifdef MOUNT_GAMEI
+		#ifdef MOUNT_GAMEI
 		if(webman_config->gamei) {add_query_html(pbuffer, "GAMEI");}
- #endif
- #ifdef MOUNT_ROMS
+		#endif
+		#ifdef MOUNT_ROMS
 		if(webman_config->roms)  {add_query_html(pbuffer, "ROMS");}
- #endif
- #ifdef NET_SUPPORT
+		#endif
+		#ifdef NET_SUPPORT
 		if(webman_config->netd[0] || webman_config->netd[1] || webman_config->netd[2] || webman_config->netd[3] || webman_config->netd[4]) add_query_html(pbuffer, "net");
- #endif
+		#endif
 		add_query_html(pbuffer, "hdd");
 		add_query_html(pbuffer, "usb");
 		add_query_html(pbuffer, "ntfs");
-#else
+	#else
 		if(!(webman_config->cmask & PS3)) add_query_html(pbuffer, "games");
 		if(!(webman_config->cmask & PS2)) add_query_html(pbuffer, "PS2ISO");
 
 		add_query_html(pbuffer, "hdd");
 		add_query_html(pbuffer, "usb");
-#endif //#ifdef COBRA_ONLY
+	#endif //#ifdef COBRA_ONLY
 
 		strcat(pbuffer, "<script>function rz(z){document.cookie=z + '; expires=Tue, 19 Jan 2038 03:14:07 UTC';document.getElementById('mg').style.zoom=z/100;}</script>"
 						"&nbsp;<input id=\"sz\" type=\"range\" value=\"100\" min=\"20\" max=\"200\" style=\"width:80px;position:relative;top:7px;\" ondblclick=\"this.value=100;rz(100);\" onchange=\"rz(this.value);\">");
@@ -518,34 +516,35 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		check_cover_folders(templn);
 
 		char onerror_prefix[24]=" onerror=\"this.src='", onerror_suffix[8]="';\"";  // wm_icons[default_icon]
-#ifndef ENGLISH_ONLY
+		#ifndef ENGLISH_ONLY
 		if(!use_custom_icon_path) *onerror_prefix = *onerror_suffix = NULL;
-#endif
+		#endif
 		char icon[STD_PATH_LEN], subpath[STD_PATH_LEN], enc_dir_name[STD_PATH_LEN*3];
 
 		// filter html content
 		char filter_name[STD_PATH_LEN]; *filter_name = NULL;
 		u8 filter0, filter1, b0, b1; filter0 = filter1 = b0 = b1 = 0;
 		u8 div_size = mobile_mode ? 0 : GAME_DIV_SIZE;
-#ifdef COBRA_ONLY
+
+		#ifdef COBRA_ONLY
 		u8 clear_ntfs = 0;
-#endif
+		#endif
 
-#if defined(MOUNT_GAMEI) || defined(MOUNT_ROMS)
+		#if defined(MOUNT_GAMEI) || defined(MOUNT_ROMS)
 		f1_len = (webman_config->roms ? id_ROMS : webman_config->gamei ? id_GAMEI : id_VIDEO) + 1;
-#endif
+		#endif
 
-#ifdef LAUNCHPAD
+		#ifdef LAUNCHPAD
 		if(launchpad_mode)
 		{
 			max_entries = LAUNCHPAD_MAX_ITEMS, tlen = 0;
 		}
 		else
-#endif
+		#endif
 		{
-#ifdef COBRA_ONLY
+		#ifdef COBRA_ONLY
 			if(strstr(param, "ntfs")) {filter0 = NTFS, b0 = 1; clear_ntfs = (strstr(param, "ntfs(0)") != NULL);} else
-#endif
+		#endif
 			for(u8 f0 = 0; f0 < MAX_DRIVES; f0++) if(strstr(param, drives[f0])) {filter0 = f0, b0 = 1; break;}
 			for(u8 f1 = 0; f1 < f1_len; f1++) if(strstr(param, paths [f1])) {filter1 = f1, b1 = 1; break;}
 			if(!b0 && strstr(param, "hdd" ))  {filter0 = 0, b0 = 1;}
@@ -553,20 +552,20 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			if(!b1 && strstr(param, "games")) {filter1 = 0, b1 = 2;}
 			if(!b1 && strstr(param, "?ps3"))  {filter1 = 0, b1 = 3;}
 			if(!b1 && strstr(param, "npdrm")) {filter1 = 0, b1 = id_NPDRM;}
-#ifdef NET_SUPPORT
+		#ifdef NET_SUPPORT
 			if(!b0 && strstr(param, "net" ))  {filter0 = NET, b0 = 3;}
-#endif
+		#endif
 			if(strchr(param, '?') != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && strstr(param, "?html") == NULL && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
 		}
 
 		int ns = NONE; u8 uprofile = profile; enum icon_type default_icon;
 
-#ifdef NET_SUPPORT
+		#ifdef NET_SUPPORT
 		int abort_connection = 0;
 		if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection) < 0) do_umount(false);
-#endif
+		#endif
 
-#ifdef SLAUNCH_FILE
+		#ifdef SLAUNCH_FILE
 		int fdsl = 0;
 		if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
@@ -578,8 +577,8 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			{
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
-				char *path = slaunch.name + slaunch.path_pos;
 				char *templn = slaunch.name;
+				char *path = slaunch.name + slaunch.path_pos;
 				char *param = path + 10; // remove /mount_ps3
 				char *icon = slaunch.name + slaunch.icon_pos;
 
@@ -607,7 +606,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 
 				set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, 0, f1); // sort key
 
- #ifdef LAUNCHPAD
+				#ifdef LAUNCHPAD
 				if(launchpad_mode)
 				{
 					flen = sprintf(tempstr, "http://%s%s", local_ip, path);
@@ -616,7 +615,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 					flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, slaunch.id, icon, false);
 				}
 				else
- #endif
+				#endif
 				if(mobile_mode)
 				{
 					if(strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
@@ -629,7 +628,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 				}
 				else
 				{
-					slen = strlen(templn);
+					slen = slaunch.path_pos - 1;
 					do
 					{
 						flen = sprintf(tempstr + HTML_KEY_LEN, "%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s\">%s",
@@ -649,7 +648,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			filter0 = MAX_DRIVES;
 		}
 		else if(!b0 && !b1 && !filter_name[0]) fdsl = create_slaunch_file();
-#endif
+		#endif // #ifdef SLAUNCH_FILE
 
 #ifdef USE_NTFS
 list_games:
@@ -663,16 +662,16 @@ list_games:
 
 			if(!(is_net || IS_NTFS) && (isDir(drives[f0]) == false)) continue;
 //
-#ifdef NET_SUPPORT
+			#ifdef NET_SUPPORT
 			if((ns >= 0) && (ns!=g_socket)) sclose(&ns);
-#endif
+			#endif
 			ns = NONE; uprofile = profile;
 			for(u8 f1 = filter1; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 			{
-#ifndef COBRA_ONLY
-				if(IS_ISO_FOLDER && !(IS_PS2ISO)) continue; // 0="GAMES", 1="GAMEZ", 5="PS2ISO", 10="video"
-#endif
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
+				#ifndef COBRA_ONLY
+				if(IS_ISO_FOLDER && !(IS_PS2ISO)) continue; // 0="GAMES", 1="GAMEZ", 5="PS2ISO", 10="video"
+				#endif
 
 				//if(IS_PS2ISO && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
 				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
@@ -690,10 +689,10 @@ list_games:
 				else
 					if(check_content_type(f1)) continue;
 
-#ifdef NET_SUPPORT
+				#ifdef NET_SUPPORT
 				if(is_net && (netiso_svrid == (f0-NET)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
 				if(is_net && (ns<0)) ns = connect_to_remote_server(f0-NET);
-#endif
+				#endif
 				if(is_net && (ns<0)) break;
 //
 				bool ls; u8 li, subfolder; li=subfolder=0; ls=false; // single letter folder
@@ -703,15 +702,17 @@ list_games:
 		read_folder_html:
 //
 				set_scan_path(li, f0, f1, is_net, uprofile, param);
-#ifdef NET_SUPPORT
+
+				#ifdef NET_SUPPORT
 				if(is_net && open_remote_dir(ns, param, &abort_connection) < 0) goto continue_reading_folder_html; //continue;
-#endif
+				#endif
+
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, slen;
 				char title_id[12], app_ver[8]; *app_ver = NULL;
 				u8 is_iso = 0;
 
-#ifdef NET_SUPPORT
+				#ifdef NET_SUPPORT
 				sys_addr_t data2 = NULL;
 				int v3_entries, v3_entry; v3_entries = v3_entry = 0;
 				netiso_read_dir_result_data *data = NULL; char neth[8];
@@ -721,28 +722,29 @@ list_games:
 					if(!data2) goto continue_reading_folder_html; //continue;
 					data = (netiso_read_dir_result_data*)data2; sprintf(neth, "/net%i", (f0-NET));
 				}
-#endif
+				#endif
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_html; //continue;
 
 				default_icon =  get_default_icon_by_type(f1);
 
 				while((!is_net && (!cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) && read_e > 0))
-#ifdef NET_SUPPORT
+					#ifdef NET_SUPPORT
 					|| (is_net && (v3_entry < v3_entries))
-#endif
+					#endif
 					)
 				{
 					if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
-#ifdef NET_SUPPORT
+
+					#ifdef NET_SUPPORT
 					if(is_net)
 					{
 						if((ls == false) && (li == 0) && (f1 > 1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 1) == FAILED) {v3_entry++; continue;}
 
-#ifdef SLAUNCH_FILE
+						#ifdef SLAUNCH_FILE
 						if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
-#endif
+						#endif
 
 						if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
 												&& !strcasestr(param,  filter_name)
@@ -752,7 +754,7 @@ list_games:
 
 						set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, 0, f1); // sort key
 
- #ifdef LAUNCHPAD
+						#ifdef LAUNCHPAD
 						if(launchpad_mode)
 						{
 							flen = sprintf(tempstr, "http://%s/mount_ps3%s%s/%s", local_ip, neth, param, enc_dir_name);
@@ -761,7 +763,7 @@ list_games:
 							flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, title_id, icon, false);
 						}
 						else
- #endif
+						#endif
 						if(mobile_mode)
 						{
 							if(strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore: cause syntax error in javascript: gamelist.js
@@ -785,14 +787,14 @@ list_games:
 						tlen += (flen + div_size);
 					}
 					else
-#endif // #ifdef NET_SUPPORT
+					#endif // #ifdef NET_SUPPORT
 					{
 						if(entry.entry_name.d_name[0] == '.') continue;
 
 						// skip duplicated game in /dev_hdd0
 						if(is_dupe(f0, f1, entry.entry_name.d_name, templn)) continue;
 
-//////////////////////////////
+						//////////////////////////////
 						subfolder = 0;
 						if(IS_ISO_FOLDER || IS_VIDEO_FOLDER)
 						{
@@ -808,20 +810,20 @@ next_html_entry:
 								strcpy(entry.entry_name.d_name, templn);
 							}
 						}
-//////////////////////////////
+						//////////////////////////////
 
 						if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
 						if(IS_JB_FOLDER)
 						{
-#ifdef MOUNT_GAMEI
+							#ifdef MOUNT_GAMEI
 							if(IS_GAMEI_FOLDER)
 							{
 								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
 								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
 							else
-#endif
+							#endif
 							{
 								sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
 								check_ps3_game(templn);
@@ -840,11 +842,11 @@ next_html_entry:
 							}
 							else
 							{
-#ifndef COBRA_ONLY
-								get_name(templn, entry.entry_name.d_name, NO_EXT);
-#else
+							#ifdef COBRA_ONLY
 								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) continue;
-#endif
+							#else
+								get_name(templn, entry.entry_name.d_name, NO_EXT);
+							#endif
 							}
 
 							if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
@@ -853,9 +855,9 @@ next_html_entry:
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
-#ifdef SLAUNCH_FILE
+							#ifdef SLAUNCH_FILE
 							if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
-#endif
+							#endif
 							add_title_id(templn, title_id);
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
@@ -865,7 +867,7 @@ next_html_entry:
 
 							set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, subfolder, f1); // sort key
 
- #ifdef LAUNCHPAD
+							#ifdef LAUNCHPAD
 							if(launchpad_mode)
 							{
 								flen = sprintf(tempstr, "http://%s/mount_ps3%s/%s", local_ip, param, enc_dir_name);
@@ -874,7 +876,7 @@ next_html_entry:
 								flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, title_id, icon, false);
 							}
 							else
- #endif
+							#endif
 							if(mobile_mode)
 							{
 								if(strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
@@ -903,17 +905,17 @@ next_html_entry:
 							sprintf(line_entry[idx].path, "%s", tempstr); idx++;
 							tlen += (flen + div_size);
 						}
-//////////////////////////////
+						//////////////////////////////
 						if(subfolder) goto next_html_entry;
-//////////////////////////////
+						//////////////////////////////
 					}
 				}
 
 				if(!is_net) cellFsClosedir(fd);
 
-#ifdef NET_SUPPORT
+				#ifdef NET_SUPPORT
 				if(data2) {sys_memory_free(data2); data2 = NULL;}
-#endif
+				#endif
 
 //
 	continue_reading_folder_html:
@@ -928,14 +930,14 @@ next_html_entry:
 //
 			}
 
-#ifdef NET_SUPPORT
+			#ifdef NET_SUPPORT
 			if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
-#endif
+			#endif
 		}
 
-#ifdef SLAUNCH_FILE
+		#ifdef SLAUNCH_FILE
 		close_slaunch_file(fdsl);
-#endif
+		#endif
 
 		if(idx)
 		{   // sort html game items
@@ -950,17 +952,17 @@ next_html_entry:
 						line_entry[m] = swap;
 					}
 		}
-#ifdef USE_NTFS
+		#ifdef USE_NTFS
 		else if(retry && (filter0 == NTFS)) {prepNTFS(clear_ntfs); --retry; goto list_games;}
-#endif
+		#endif
 
-#ifndef LITE_EDITION
+		#ifndef LITE_EDITION
 		bool sortable = false;
-#endif
+		#endif
 
 		t_string sout; _set(&sout, buffer, buf_len);
 
-#ifdef LAUNCHPAD
+		#ifdef LAUNCHPAD
 		if(launchpad_mode)
 		{
 			del("/dev_hdd0/tmp/explore/nsx/", RECURSIVE_DELETE); // Clear LaunchPad Cache
@@ -968,7 +970,7 @@ next_html_entry:
 			add_launchpad_extras(tempstr, templn);
 		}
 		else
-#endif
+		#endif
 		if(mobile_mode)
 			_concat(&sout, "slides = [");
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
@@ -984,7 +986,7 @@ next_html_entry:
 							// separator
 							"<HR><span style=\"white-space:normal;\">", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
 
-#ifndef LITE_EDITION
+			#ifndef LITE_EDITION
 			sortable = file_exists(JQUERY_LIB_JS) && file_exists(JQUERY_UI_LIB_JS);
 			if(sortable)
 			{	// add external jquery libraries
@@ -993,24 +995,24 @@ next_html_entry:
 								"<script>$(function(){$(\"#mg\").sortable();});</script>",
 								JQUERY_LIB_JS, JQUERY_UI_LIB_JS); _concat(&sout, templn);
 			}
-#endif
+			#endif
 		}
 
 		if(!mobile_mode)
 		{
-#ifndef EMBED_JS
+			#ifndef EMBED_JS
 			if(file_exists(GAMES_SCRIPT_JS))
 			{
 				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, templn);
 			}
-#endif
+			#endif
 			_concat(&sout, "<div id=\"mg\">"
 							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;document.getElementById('mg').style.zoom=z/100;</script>");
 		}
 
 		tlen = buf_len;
 
-#ifdef LAUNCHPAD
+		#ifdef LAUNCHPAD
 		if(launchpad_mode)
 		{
 			int fd, size;
@@ -1031,7 +1033,7 @@ next_html_entry:
 			return true;
 		}
 		else
-#endif
+		#endif
 		if(mobile_mode)
 			for(u16 m = 0; m < idx; m++)
 			{
@@ -1047,9 +1049,9 @@ next_html_entry:
 			}
 		}
 
-#ifndef LITE_EDITION
+		#ifndef LITE_EDITION
 		if(sortable) _concat(&sout, "</div>");
-#endif
+		#endif
 		if(auto_mount && idx == 1)
 		{
 			char  *p = strstr(line_entry[0].path + HTML_KEY_LEN, "?random=");

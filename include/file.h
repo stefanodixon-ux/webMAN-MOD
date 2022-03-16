@@ -497,8 +497,11 @@ static int sysLv2FsLink(const char *oldpath, const char *newpath)
 #ifdef BACKUP_ACT_DAT
 static void backup_act_dat(void)
 {
+	if(!payload_ps3hen) return;
+
 	int fd;
 
+	// backup / restore act.bak -> act.dat
 	if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
 	{
 		char path1[48], path2[48];
@@ -524,6 +527,8 @@ static void backup_act_dat(void)
 		cellFsClosedir(fd);
 	}
 }
+#else
+#define backup_act_dat()
 #endif
 
 /*

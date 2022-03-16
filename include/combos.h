@@ -972,16 +972,13 @@
 									show_msg(msg);
 									sys_ppu_thread_sleep(5);
 								}
-#ifdef SPOOF_CONSOLEID
+
+								#ifdef SPOOF_CONSOLEID
 								show_idps(msg);
-#endif
-#ifdef BACKUP_ACT_DAT
+								#endif
+
 								// backup / restore act.bak -> act.dat
-								if(payload_ps3hen)
-								{
-									backup_act_dat();
-								}
-#endif
+								backup_act_dat();
 							}
 						}
 
