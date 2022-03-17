@@ -704,12 +704,16 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	#if defined(MOUNT_ROMS)
 	bool c_roms = webman_config->roms;
-	char *RETROARCH_DIR = NULL;
+	const char *RETROARCH_DIR = NULL;
+	const char *cores_roms = NULL;
 	if(c_roms)
 	{
-		RETROARCH_DIR = file_exists(RETROARCH_DIR0) ? (char*)RETROARCH_DIR0 :
-						file_exists(RETROARCH_DIR1) ? (char*)RETROARCH_DIR1 :
-													  (char*)RETROARCH_DIR2;
+		RETROARCH_DIR = isDir(RETROARCH_DIR0) ? (const char*)RETROARCH_DIR0 :
+						isDir(RETROARCH_DIR1) ? (const char*)RETROARCH_DIR1 :
+												(const char*)RETROARCH_DIR2;
+
+		cores_roms = isDir(RETROARCH_DIR0) ? (const char *)"roms/" :
+											 (const char *)"cores/roms/";
 
 		webman_config->roms = c_roms = isDir(PKGLAUNCH_DIR) && isDir(RETROARCH_DIR);
 	}
@@ -903,7 +907,7 @@ scan_roms:
 				if(is_net)
 					sprintf(param, "/ROMS%s/%s", SUFIX(uprofile), roms_path[roms_index]);
 				else if(IS_NTFS)
-					sprintf(param, "%s/USRDIR/cores/roms/%s", RETROARCH_DIR, roms_path[roms_index]);
+					sprintf(param, "%s/USRDIR/%s%s", RETROARCH_DIR, cores_roms, roms_path[roms_index]);
 				else
 					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);
 			}
