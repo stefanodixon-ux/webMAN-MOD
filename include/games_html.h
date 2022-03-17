@@ -341,16 +341,15 @@ static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *templn)
 {
 	if(!f0) return false;
 
+	sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
+
 	if(IS_NTFS)
 	{
-		sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
 		char *ext = strstr(templn, ".ntfs["); if(!ext) return true;
 		sprintf(ext, ".iso"); if(file_exists(templn)) return true;
 		sprintf(ext, ".ISO"); if(file_exists(templn)) return true;
 		sprintf(ext, ".bin"); if(file_exists(templn)) return true; *ext = NULL;
 	}
-	else
-		sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
 
 	return file_exists(templn);
 }

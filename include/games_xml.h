@@ -428,6 +428,7 @@ static char *ps2launcher_table(char *buffer, char *table_xml)
 	return table_xml;
 }
 
+#ifdef COBRA_ONLY
 static char *psplauncher_table(char *buffer, char *table_xml)
 {
 	#ifndef ENGLISH_ONLY
@@ -452,6 +453,7 @@ static char *videos_table(char *table_xml)
 						wm_icons[gDVD], STR_VIDLG, STR_NOITEM_PAIR);
 	return table_xml;
 }
+#endif
 
 static char *custom_table(char *buffer, char *table_xml)
 {
@@ -930,6 +932,7 @@ scan_roms:
 				}
 				else
 				#endif
+				#ifdef MOUNT_ROMS
 				if(isDir(param) == false)
 				{
 					if(f1 != id_ROMS) goto continue_reading_folder_xml; //continue;
@@ -946,6 +949,7 @@ scan_roms:
 						if(isDir(param) == false) goto continue_reading_folder_xml; //continue;
 					}
 				}
+				#endif
 
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_xml; //continue;
 

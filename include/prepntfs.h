@@ -152,6 +152,26 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 
 		save_file(tmp_path, (char*)plugin_args, (sizeof(rawseciso_args) + (2 * array_len) + (num_tracks * sizeof(ScsiTrackDescriptor)))); ntfs_count++;
 
+		if(ntfs_m == mPS3)
+		{
+			snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
+			if(not_exists(tmp_path))
+			{
+				// extract PARAM.SFO from ISO
+				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
+				{
+					char *buffer = (char*)sysmem_p;
+					read_file(path, buffer, _4KB_, 0x10800);
+					u16 start = 0x40; u64 lba = getlba(buffer, _4KB_, "PARAM.SFO;1", 11, &start);
+					if(lba)
+					{
+						read_file(path, buffer, _4KB_, lba * 0x800ULL);
+						save_file(tmp_path, buffer, _4KB_);
+					}
+				}
+			}
+		}
+
 		if(!get_image_file(path, plen - extlen)) return; // not found image in NTFS
 
 		plen = sprintf(tmp_path, "%s/%s", WMTMP, filename);
@@ -162,7 +182,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 
 /*
 		for_sfo:
-		if(m == mPS3) // mount PS3ISO
+		if(ntfs_m == mPS3) // mount PS3ISO
 		{
 			strcpy(path + plen - 3, "SFO");
 			if(not_exists(path))

@@ -33,6 +33,16 @@ static bool is_ntfs_path(const char *path)
 	return islike(path, DEV_NTFS);
 }
 
+static bool is_ntfs_path2(const char *path)
+{
+	return islike(path, DEV_NTFS) || islike(path, "ntfs");
+}
+
+static const char *ntfs_path(const char *path)
+{
+	return is_ntfs_path(path) ? path + 5 : path;
+}
+
 static void unmount_all_ntfs_volumes(void)
 {
 	if(mounts && (mountCount > 0))
@@ -74,13 +84,16 @@ static void check_ntfs_volumes(void)
 		}
 }
 
-static DIR_ITER *ps3ntfs_opendir(char *path)
+static DIR_ITER *ps3ntfs_opendir(const char *full_path)
 {
 	if(mountCount <= 0) mount_all_ntfs_volumes();
 
-	path[10] = ':';
-	if(path[11] != '/') {path[11] = '/', path[12] = 0;}
-	return ps3ntfs_diropen(path + 5);  // /dev_ntfs1v -> ntfs1:
+	char *path = (char *)ntfs_path(full_path);
+
+	path[5] = ':';
+	if(path[6] != '/') {path[6] = '/', path[7] = 0;}
+
+	return ps3ntfs_diropen(path);  // /dev_ntfs1v -> ntfs1:
 }
 #endif
 
@@ -171,10 +184,10 @@ static void check_path_alias(char *param)
 static u64 get_free_space(const char *dev_name)
 {
 #ifdef USE_NTFS
-	if(is_ntfs_path(dev_name))
+	if(is_ntfs_path2(dev_name))
 	{
 		char tmp[8];
-		strncpy(tmp, dev_name + 5, 8); tmp[5] = ':', tmp[7] = 0;
+		strncpy(tmp, ntfs_path(dev_name), 8); tmp[5] = ':', tmp[7] = 0;
 
 		struct statvfs vbuf;
 		ps3ntfs_statvfs(tmp, &vbuf);
@@ -196,15 +209,15 @@ static u64 get_free_space(const char *dev_name)
 */
 }
 
-static bool isDir(const char* path)
+static bool isDir(const char *path)
 {
 #ifdef USE_NTFS
-	if(is_ntfs_path(path))
+	if(is_ntfs_path2(path))
 	{
 		char tmp[STD_PATH_LEN];
-		strcpy(tmp, path); tmp[10] = ':';
+		strcpy(tmp, ntfs_path(path)); tmp[5] = ':';
 		struct stat bufn;
-		return ((ps3ntfs_stat(tmp + 5, &bufn) >= 0) && (bufn.st_mode & S_IFDIR));
+		return ((ps3ntfs_stat(tmp, &bufn) >= 0) && (bufn.st_mode & S_IFDIR));
 	}
 #endif
 
@@ -227,12 +240,12 @@ static bool is_app_dir(const char *path, const char *app_name)
 static s64 file_ssize(const char *path)
 {
 #ifdef USE_NTFS
-	if(is_ntfs_path(path))
+	if(is_ntfs_path2(path))
 	{
 		char tmp[STD_PATH_LEN];
-		strcpy(tmp, path); tmp[10] = ':';
+		strcpy(tmp, ntfs_path(path)); tmp[5] = ':';
 		struct stat bufn;
-		if(ps3ntfs_stat(tmp + 5, &bufn) < 0) return FAILED;
+		if(ps3ntfs_stat(tmp, &bufn) < 0) return FAILED;
 		return bufn.st_size;
 	}
 #endif
@@ -328,11 +341,12 @@ static void mkdir_tree(char *path)
 {
 	size_t path_len = strlen(path);
 #ifdef USE_NTFS
-	if(is_ntfs_path(path))
+	if(is_ntfs_path2(path))
 	{
-		path[10] = ':';
-		for(u16 p = 12; p < path_len; p++)
-			if(path[p] == '/') {path[p] = NULL; ps3ntfs_mkdir(path + 5, DMODE); path[p] = '/';}
+		char *npath = (char*)ntfs_path(path);
+		npath[5] = ':';
+		for(u16 p = 7; p < path_len; p++)
+			if(path[p] == '/') {path[p] = NULL; ps3ntfs_mkdir(ntfs_path(path), DMODE); path[p] = '/';}
 	}
 	else
 #endif
@@ -379,9 +393,9 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 	if(offset < 0) offset = 0; else memset(data, 0, size);
 
 #ifdef USE_NTFS
-	if(is_ntfs_path(file))
+	if(is_ntfs_path2(file))
 	{
-		fd = ps3ntfs_open(file + 5, O_RDONLY, 0);
+		fd = ps3ntfs_open(ntfs_path(file), O_RDONLY, 0);
 		if(fd >= 0)
 		{
 			ps3ntfs_seek64(fd, offset, SEEK_SET);
@@ -411,13 +425,13 @@ static int write_file(const char *file, int flags, const char *data, u64 offset,
 	int fd = 0;
 
 #ifdef USE_NTFS
-	if(is_ntfs_path(file))
+	if(is_ntfs_path2(file))
 	{
 		int nflags = O_CREAT | O_WRONLY;
 		if(flags & CELL_FS_O_APPEND) nflags |= O_APPEND;
 		if(flags & CELL_FS_O_TRUNC)  nflags |= O_TRUNC;
 
-		fd = ps3ntfs_open(file + 5, nflags, MODE);
+		fd = ps3ntfs_open(ntfs_path(file), nflags, MODE);
 		if(fd >= 0)
 		{
 			if(offset) ps3ntfs_seek64(fd, offset, SEEK_SET);
@@ -619,7 +633,7 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 	if(is_ntfs1)
 	{
 		struct stat bufn;
-		if(ps3ntfs_stat(file1 + 5, &bufn) >= 0) buf.st_size = bufn.st_size; else return FAILED;
+		if(ps3ntfs_stat(ntfs_path(file1), &bufn) >= 0) buf.st_size = bufn.st_size; else return FAILED;
 	}
 	else
 #endif
@@ -687,7 +701,7 @@ int64_t file_copy(char *file1, char *file2, u64 maxbytes)
 #ifdef USE_NTFS
 	if(is_ntfs1)
 	{
-		fd1 = ps3ntfs_open(file1 + 5, O_RDONLY, 0);
+		fd1 = ps3ntfs_open(ntfs_path(file1), O_RDONLY, 0);
 		if(fd1 < 0) is_ntfs1 = false;
 	}
 	else
@@ -739,7 +753,7 @@ next_part:
 			is_ntfs2 = is_ntfs_path(file2);
 			if(is_ntfs2)
 			{
-				fd2 = ps3ntfs_open(file2 + 5, O_CREAT | O_WRONLY | O_TRUNC, MODE);
+				fd2 = ps3ntfs_open(ntfs_path(file2), O_CREAT | O_WRONLY | O_TRUNC, MODE);
 				if(fd2 < 0) is_ntfs2 = false;
 			}
 #endif
@@ -807,7 +821,7 @@ next_part:
 				if(copy_aborted)
 				{
 #ifdef USE_NTFS
-					if(is_ntfs2) ps3ntfs_unlink(file2 + 5);
+					if(is_ntfs2) ps3ntfs_unlink(ntfs_path(file2));
 					else
 #endif
 					cellFsUnlink(file2); //remove incomplete file
@@ -862,9 +876,9 @@ static int folder_copy(const char *path1, char *path2)
 	struct stat bufn;
 	DIR_ITER *pdir = NULL;
 
-	if(is_ntfs_path(path1))
+	if(is_ntfs_path2(path1))
 	{
-		pdir = ps3ntfs_opendir((char*)path1);
+		pdir = ps3ntfs_opendir(ntfs_path(path1));
 		if(pdir) is_ntfs = true;
 	}
 	else
@@ -881,8 +895,8 @@ static int folder_copy(const char *path1, char *path2)
 			{allow_sc36 = false; sysLv2FsBdDecrypt();} // decrypt dev_bdvd files
 
 #ifdef USE_NTFS
-		if(is_ntfs_path(path2))
-			ps3ntfs_mkdir(path2 + 5, DMODE);
+		if(is_ntfs_path2(path2))
+			ps3ntfs_mkdir(ntfs_path(path2), DMODE);
 		else
 #endif
 			cellFsMkdir(path2, DMODE);
@@ -1033,9 +1047,9 @@ static u64 folder_size(const char *path)
 	struct stat bufn;
 	DIR_ITER *pdir = NULL;
 
-	if(is_ntfs_path(path))
+	if(is_ntfs_path2(path))
 	{
-		pdir = ps3ntfs_opendir((char*)path);
+		pdir = ps3ntfs_opendir(ntfs_path(path));
 		if(pdir) is_ntfs = true;
 	}
 #endif
@@ -1105,8 +1119,8 @@ static int del(const char *path, u8 recursive)
 #ifdef USE_NTFS
 	if(!isDir(path))
 	{
-		if(is_ntfs_path(path))
-			return ps3ntfs_unlink(path + 5);
+		if(is_ntfs_path2(path))
+			return ps3ntfs_unlink(ntfs_path(path));
 		else
 			return cellFsUnlink(path);
 	}
@@ -1124,9 +1138,9 @@ static int del(const char *path, u8 recursive)
 	struct stat bufn;
 	DIR_ITER *pdir;
 
-	if(is_ntfs_path(path))
+	if(is_ntfs_path2(path))
 	{
-		pdir = ps3ntfs_opendir((char*)path);
+		pdir = ps3ntfs_opendir(ntfs_path(path));
 		if(pdir) is_ntfs = true;
 	}
 #endif
@@ -1158,7 +1172,7 @@ static int del(const char *path, u8 recursive)
 				{if(recursive) del(entry, recursive);}
 #ifdef USE_NTFS
 			else if(is_ntfs)
-				ps3ntfs_unlink(entry + 5);
+				ps3ntfs_unlink(ntfs_path(entry));
 #endif
 			else
 				cellFsUnlink(entry);
@@ -1178,7 +1192,7 @@ static int del(const char *path, u8 recursive)
 	if(recursive)
 	{
 #ifdef USE_NTFS
-		if(is_ntfs) ps3ntfs_unlink(path + 5);
+		if(is_ntfs) ps3ntfs_unlink(ntfs_path(path));
 		else
 #endif
 		cellFsRmdir(path);

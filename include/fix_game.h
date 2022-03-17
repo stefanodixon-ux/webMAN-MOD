@@ -19,6 +19,25 @@ enum FIX_GAME_MODES
 
 #include "param_sfo.h"
 
+#ifdef COBRA_ONLY
+ #if defined(USE_NTFS) || defined(FIX_GAME)
+static u64 getlba(const char *s1, u16 n1, const char *s2, u16 n2, u16 *start)
+{
+	for(u16 n = *start + 0x1F; n < (n1 - n2); n++)
+	{
+		if(memcmp(&s1[n], s2, n2) == 0)
+		{
+			while(n > 0x1D && s1[n--] != 0x01); n-=0x1C, fixed_count++;
+			u32 lba = (s1[n] & 0xFF) + ((s1[n+1] & 0xFF) << 8) + ((s1[n+2] & 0xFF) << 16) + ((s1[n+3] & 0xFF) << 24);
+			*start = n + 0x1C + n2;
+			return lba;
+		}
+	}
+	return 0;
+}
+ #endif
+#endif
+
 #ifdef FIX_GAME
 static bool fix_sfo_attribute(unsigned char *mem, u16 sfo_size)
 {
@@ -111,21 +130,6 @@ static void fix_game_folder(char *path)
 }
 
 #ifdef COBRA_ONLY
-static u64 getlba(const char *s1, u16 n1, const char *s2, u16 n2, u16 *start)
-{
-	for(u16 n = *start + 0x1F; n < (n1 - n2); n++)
-	{
-		if(memcmp(&s1[n], s2, n2) == 0)
-		{
-			while(n > 0x1D && s1[n--] != 0x01); n-=0x1C, fixed_count++;
-			u32 lba = (s1[n] & 0xFF) + ((s1[n+1] & 0xFF) << 8) + ((s1[n+2] & 0xFF) << 16) + ((s1[n+3] & 0xFF) << 24);
-			*start = n + 0x1C + n2;
-			return lba;
-		}
-	}
-	return 0;
-}
-
 static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 {
 	struct CellFsStat buf;
