@@ -9,7 +9,7 @@ if(netid >= '0' && netid <= '4')
 	netiso_svrid = (netid & 0x0F);
 	memset((void*)&netiso_args, 0, sizeof(_netiso_args));
 
-	if(_path[5] == NULL) strcat(_path, "/.");
+	if(_path[5] == '\0') strcat(_path, "/.");
 
 	char *netpath = _path + 5, *pkg_slash = NULL;
 
@@ -136,7 +136,7 @@ if(netid >= '0' && netid <= '4')
 		//mount_unk = netiso_args.emu_mode = EMU_BD;
 		if(is_ext(netpath, ".pkg"))
 		{
-			pkg_slash = get_filename(netpath); if(pkg_slash) *pkg_slash = NULL;
+			pkg_slash = remove_filename(netpath);
 		}
 		if(is_iso) ;
 		else

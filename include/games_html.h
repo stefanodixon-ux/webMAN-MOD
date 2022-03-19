@@ -305,7 +305,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	if(c == 0 && templn[0] == '[') {char *s = strstr(templn + 3, "] "); if(s) {skey[4]=s[2],skey[5]=s[3],skey[6]=s[4];}}
 	//else if(subfolder) {char *s = strchr(templn + 3, '/'); if(s) {skey[4]=s[1],skey[5]=s[2],skey[6]=s[3];}}
 
-	templn[tlen] = NULL;
+	templn[tlen] = '\0';
 
 	char *p = NULL, *nm = templn + 5;
 	if(f1 > id_PS3ISO)
@@ -501,7 +501,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		u8 is_net = 0;
 
 		u16 idx = 0;
-		u32 tlen = buf_len; buffer[tlen] = NULL;
+		u32 tlen = buf_len; buffer[tlen] = '\0';
 		char *sysmem_html = buffer + (webman_config->sman ? _12KB_ : _8KB_);
 
 		typedef struct
@@ -634,7 +634,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 										param, idx, icon, onerror_prefix, ((*onerror_prefix != NULL) && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, templn);
 
 						slen -= 4; if(slen < 32) break;
-						templn[slen] = NULL;
+						templn[slen] = '\0';
 					}
 					while(flen > MAX_LINE_LEN);
 				}
@@ -737,7 +737,7 @@ list_games:
 					#ifdef NET_SUPPORT
 					if(is_net)
 					{
-						if((ls == false) && (li == 0) && (f1 > 1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
+						if((ls == false) && (li == 0) && (f1 > 1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0')) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 1) == FAILED) {v3_entry++; continue;}
 
@@ -860,7 +860,7 @@ next_html_entry:
 							add_title_id(templn, title_id);
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
-							templn[80] = NULL; // truncate title name
+							templn[80] = '\0'; // truncate title name
 
 							if(urlenc(tempstr, icon)) sprintf(icon, "%s", tempstr);
 
@@ -895,7 +895,7 @@ next_html_entry:
 													param, "", enc_dir_name, idx, icon, onerror_prefix, ((*onerror_prefix != NULL) && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, "", enc_dir_name, templn);
 
 									slen -= 4; if(slen < 32) break;
-									templn[slen] = NULL;
+									templn[slen] = '\0';
 								}
 								while(flen > MAX_LINE_LEN);
 							}

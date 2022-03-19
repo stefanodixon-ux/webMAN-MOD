@@ -6,7 +6,7 @@ static int parse_lba(const char *templn, int ret_value)
 	char *time = strrchr(templn, ' '); if(!time) return ret_value;
 	char tcode[10]; // mm:ss:ff
 
-	int tcode_len = snprintf(tcode, 8, "%s", time + 1); tcode[8] = NULL;
+	int tcode_len = snprintf(tcode, 8, "%s", time + 1); tcode[8] = '\0';
 	if((tcode_len != 8) || tcode[2]!=':' || tcode[5]!=':') return ret_value;
 
 	unsigned int tmin, tsec, tfrm;
@@ -38,7 +38,7 @@ static int get_line(char *templn, const char *cue_buf, const int buf_size, const
 			eol = true;
 	}
 
-	templn[l] = NULL;
+	templn[l] = '\0';
 
 	if(l) return lp;
 

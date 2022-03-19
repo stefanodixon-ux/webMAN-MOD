@@ -213,7 +213,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 		rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
 		{
-			buffer[rlen] = NULL;
+			buffer[rlen] = '\0';
 
 			char *p = strstr(buffer, "\r\n");
 			if(p) *p = NULL; else break;
@@ -737,7 +737,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 						if(!split || !isDir(d_path)) strcpy(d_path, cwd);
 
-						mode_t mode = NULL; char dirtype[2]; dirtype[1] = NULL;
+						mode_t mode = NULL; char dirtype[2]; dirtype[1] = '\0';
 
 						u16 d_path_len = sprintf(filename, "%s/", d_path);
 						bool is_root = (d_path_len < 6); if(is_root) d_path_len = sprintf(filename, "/");
@@ -776,7 +776,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 								if(*wcard && strcasestr(entry_name, wcard) == NULL) continue;
 
-								if((entry_name[0]=='$' && d_path[12] == 0) || (*wcard && strcasestr(entry_name, wcard) == NULL)) continue;
+								if((entry_name[0] == '$' && d_path[12] == '\0') || (*wcard && strcasestr(entry_name, wcard) == NULL)) continue;
 #ifdef USE_NTFS
 								// use host_root to expand all /dev_ntfs entries in root
 								bool is_host = is_root && ((mountCount > 0) && IS(entry_name, "host_root") && mounts);

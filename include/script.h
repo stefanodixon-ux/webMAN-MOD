@@ -39,6 +39,15 @@
 #define path	buffer	/* "line", "path" and "buffer" are synonyms */
 #define IS_WEB_COMMAND(line)	(islike(line, "/mount") || (strstr(line, ".ps3") != NULL) || (strstr(line, "_ps3") != NULL))
 
+#if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
+static void handle_file_request(const char *wm_url)
+{
+	if(wm_url || file_exists(WMREQUEST_FILE))
+	{
+		do_web_command(WM_FILE_REQUEST, wm_url);
+	}
+}
+
 static void parse_script(const char *script_file)
 {
 	if(script_running) return;
@@ -200,3 +209,26 @@ static void start_event(u8 event_id)
 #else
 #define start_event(a)
 #endif // #ifdef COPY_PS3
+
+static bool do_custom_combo(const char *filename)
+{
+ #ifdef WM_CUSTOM_COMBO
+	char combo_file[128];
+
+	if(*filename == '/')
+		snprintf(combo_file, 127, "%s", filename);
+	else
+		snprintf(combo_file, 127, "%s%s", WM_CUSTOM_COMBO, filename); // use default path
+ #else
+	const char *combo_file = filename;
+ #endif
+
+	if(file_exists(combo_file))
+	{
+		parse_script(combo_file);
+		sys_ppu_thread_sleep(2);
+		return true;
+	}
+	return false;
+}
+#endif

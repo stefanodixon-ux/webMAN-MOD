@@ -259,7 +259,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		if(isHEX(value))
 			flen = Hex2Bin(value, templn);
 		else
-			memcpy(templn, value, flen);
+			memcpy64(templn, value, flen);
 
 		if(lv1)
 			poke_chunk_lv1(address, flen, (u8 *)templn);
@@ -381,4 +381,3 @@ view_file:
 }
 
 #endif
-

@@ -297,7 +297,7 @@ static bool isHEX(const char *value)
 static u16 Hex2Bin(const char *src, char *out)
 {
 	char *target = out;
-	char value[3]; value[2] = NULL;
+	char value[3]; value[2] = '\0';
 	if(islike(src, "0x")) src += 2;
 	while(*src && src[1])
 	{

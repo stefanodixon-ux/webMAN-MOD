@@ -1,8 +1,5 @@
 #ifdef PS2_DISC
 
-static void do_umount_ps2disc(bool mount);
-static bool mount_ps2disc(char *path);
-
 static void do_umount_ps2disc(bool mount)
 {
 	system_call_3(SC_FS_UMOUNT, (u64)(char*)"/dev_ps2disc", 0, 1);

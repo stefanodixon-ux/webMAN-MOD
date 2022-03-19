@@ -72,7 +72,7 @@ static u64 get_pkg_size_and_install_time(const char *pkgfile)
 			struct CellFsStat s;
 			if(cellFsStat(install_path, &s) == CELL_FS_SUCCEEDED) pkg_install_time = s.st_mtime; // prevents pkg deletion if user cancels install
 
-			install_path[24] = NULL;
+			install_path[24] = '\0';
 		}
 		cellFsClose(fd);
 	}

@@ -109,7 +109,7 @@ mounted_ntfs:
 				}
 				cellFsClosedir(fd);
 
-				if(entry.d_name[0] == NULL) goto exit_mount;
+				if(entry.d_name[0] == '\0') goto exit_mount;
 
 				if(is_psp)
 				{

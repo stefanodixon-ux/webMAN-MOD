@@ -137,7 +137,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		}
 
 		int slen = strlen(filename) - extlen;
-		filename[slen] = NULL;
+		filename[slen] = '\0';
 
 		snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
 		if(not_exists(tmp_path)) {filename[slen] = '.', slen += extlen, extlen = 0;} // create file with .iso extension
@@ -278,7 +278,7 @@ static int prepNTFS(u8 clear)
 	cellFsMkdir(TMP_DIR, DMODE);
 	cellFsMkdir(WMTMP, DMODE);
 	cellFsChmod(WMTMP, DMODE);
-	cellFsUnlink((char*)WMTMP "/games.html");
+	cellFsUnlink(WMTMP "/games.html");
 	int fd = NONE;
 	char path[STD_PATH_LEN];
 
