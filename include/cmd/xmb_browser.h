@@ -40,6 +40,7 @@
 
 		char *param2 = param + (islike(param, "/xmb.ps3") ? 8 : 12);
 		char *url = param2 + 1;
+		check_path_tags(param2);
 
 		if(islike(param2, "$home"))
 		{

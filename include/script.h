@@ -206,10 +206,6 @@ static void start_event(u8 event_id)
 #undef path
 #undef IS_WEB_COMMAND
 
-#else
-#define start_event(a)
-#endif // #ifdef COPY_PS3
-
 static bool do_custom_combo(const char *filename)
 {
  #ifdef WM_CUSTOM_COMBO
@@ -232,3 +228,6 @@ static bool do_custom_combo(const char *filename)
 	return false;
 }
 #endif
+#else
+#define start_event(a)
+#endif // #ifdef COPY_PS3

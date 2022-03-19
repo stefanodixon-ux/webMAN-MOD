@@ -7,7 +7,7 @@
 
 		char *p, *params = param + 13;
 		u64 sp[9], ret = 0; u8 n;
-		u16 sc = (u16)val(params);
+		u16 sc = (u16)val(params); check_path_tags(params);
 
 		u8 is_plain = islike(param, "/syscall_ps3");
 

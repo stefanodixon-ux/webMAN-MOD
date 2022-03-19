@@ -254,7 +254,7 @@ static int download_file(const char *param, char *msg)
 
 	if(conv_num)
 	{
-		check_path_tags(pdpath); // replace $USERID$ with current user id
+		filepath_check(pdpath); // replace $USERID$ with current user id & remove invalid chars
 
 		mkdir_tree(pdpath);
 

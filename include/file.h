@@ -83,12 +83,13 @@ static char *get_filename(const char *path)
 	return strrchr(path, '/'); // return with slash
 }
 
+#ifndef LITE_EDITION
 static char *remove_filename(const char *path)
 {
 	char *p = strrchr(path, '/'); if(p) *p = NULL; else p = (char*)path;
 	return p;
 }
-
+#endif
 #ifdef COBRA_ONLY
 static bool change_ext(char *filename, int num_ext, const char *file_ext[])
 {

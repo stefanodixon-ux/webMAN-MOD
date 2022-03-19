@@ -32,7 +32,7 @@
 		}
 	}
 #endif
-	else if(mount_ps3)
+	if(mount_ps3)
 	{
 		// /mount_ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}][&to=/app_home]
 		struct timeval tv;

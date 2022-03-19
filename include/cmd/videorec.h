@@ -8,6 +8,8 @@
 
 		char *video_path = param[13] ? param + 13 : (char*)"/dev_hdd0/VIDEO";
 
+		filepath_check(video_path);
+
 		if(IS_INGAME)
 			toggle_video_rec(video_path);
 
