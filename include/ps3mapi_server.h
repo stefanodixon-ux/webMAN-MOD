@@ -620,7 +620,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					for(; n <= 8; n++)
 					{
 						sp[n] = 0, p = strchr(params, '|'); if(!p) break;
-						params = p + 1, p[0] = '\0';
+						params = p + 1, *p = NULL;;
 						sp[n] = (u64)val(params); if(!sp[n] && (*params != '0')) sp[n] = (u64)(u32)(params);
 					}
 

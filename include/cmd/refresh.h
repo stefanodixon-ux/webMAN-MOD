@@ -36,7 +36,7 @@
 	 #ifndef ENGLISH_ONLY
 		sprintf(templn, "<br>");
 
-		char *STR_XMLRF = templn + 4;
+		char *STR_XMLRF = (char *)templn + 4;
 
 		sprintf(STR_XMLRF, "Game list refreshed (<a href=\"%s\">mygames.xml</a>).%s", MY_GAMES_XML, "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
 

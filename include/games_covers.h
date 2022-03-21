@@ -193,7 +193,12 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	if(name[4] == '_' && name[8] == '.' && (*name == 'B' || *name == 'N' || *name == 'S' || *name == 'U') && ISDIGIT(name[9]) && ISDIGIT(name[10])) {flen = sprintf(name, "%s", &name[12]);}// SLES_000.00-Name
 	if(name[9] == '-' && name[10]== '[') {flen = sprintf(name, "%s", name + 11) - 1; name[flen] = '\0';} // BLES00000-[Name]
 	if(name[10]== '-' && name[11]== '[') {flen = sprintf(name, "%s", name + 12) - 1; name[flen] = '\0';} // BLES-00000-[Name]
-	if(!webman_config->tid) {char *p = strstr(name, " ["); if(p && (p[2] == 'B' || p[2] == 'N' || p[2] == 'S' || p[2] == 'U') && ISDIGIT(p[7])) *p = NULL; flen = strlen(name);}        // Name [BLES-00000]
+	if(!webman_config->tid) // Name [BLES-00000]
+	{
+		char *p = strstr(name, " [");
+		if(p && (p[2] == 'B' || p[2] == 'N' || p[2] == 'S' || p[2] == 'U') && ISDIGIT(p[7])) *p = NULL;
+		flen = strlen(name);
+	}
 
 	return (size_t) flen;
 }

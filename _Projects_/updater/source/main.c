@@ -640,15 +640,13 @@ int main()
 	file_copy(APP_USRDIR "/res/npsignin_plugin.rco",     RES_DIR "/npsignin_plugin.rco");
 
 	// webMAN ADD-ONS
-	file_copy(APP_USRDIR "/addons/boot_mamba.pkg", RES_DIR "/boot_mamba.pkg");
-	file_copy(APP_USRDIR "/addons/prepNTFS.pkg", RES_DIR "/prepNTFS.pkg");
-//	file_copy(APP_USRDIR "/addons/PS2_CONFIG.pkg", RES_DIR "/PS2_CONFIG.pkg");
-	file_copy(APP_USRDIR "/addons/PSP_Minis_Launcher.pkg", RES_DIR "/PSP_Minis_Launcher.pkg");
-	file_copy(APP_USRDIR "/addons/PSP_Remasters_Launcher.pkg"	, RES_DIR "/PSP_Remasters_Launcher.pkg");
+	file_copy(APP_USRDIR "/addons/prepISO.pkg",    RES_DIR "/prepISO.pkg");
 	file_copy(APP_USRDIR "/addons/RELOAD_XMB.ISO", RES_DIR "/RELOAD_XMB.ISO");
-//	file_copy(APP_USRDIR "/addons/Reload_XMB.pkg", RES_DIR "/Reload_XMB.pkg");
-//	file_copy(APP_USRDIR "/addons/ROMS_PKG_Launcher.pkg", RES_DIR "/ROMS_PKG_Launcher.pkg");
-	file_copy(APP_USRDIR "/addons/wm_theme_standard.pkg", RES_DIR "/wm_theme_standard.pkg");
+	file_copy(APP_USRDIR "/addons/boot_mamba.pkg",    RES_DIR "/boot_mamba.pkg");
+	file_copy(APP_USRDIR "/addons/boot_fake_ofw.pkg", RES_DIR "/boot_fake_ofw.pkg");
+	file_copy(APP_USRDIR "/addons/PSP_Minis_Launcher.pkg",     RES_DIR "/PSP_Minis_Launcher.pkg");
+	file_copy(APP_USRDIR "/addons/PSP_Remasters_Launcher.pkg", RES_DIR "/PSP_Remasters_Launcher.pkg");
+	file_copy(APP_USRDIR "/addons/wm_theme_standard.pkg",         RES_DIR "/wm_theme_standard.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_metalification.pkg"	, RES_DIR "/wm_theme_metalification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_flowerification.pkg"	, RES_DIR "/wm_theme_flowerification.pkg");

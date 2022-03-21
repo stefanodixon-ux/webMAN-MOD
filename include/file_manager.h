@@ -930,7 +930,9 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				bool show_icon = false;
 				if(is_net && jb_games)
 				{
-					char *p = strchr(param + 12, '/'); if(p) *p = NULL; sprintf(templn, "%s/PS3_GAME/ICON0.PNG", param); show_icon = true;
+					char *p = strchr(param + 12, '/'); if(p) *p = NULL;
+					sprintf(templn, "%s/PS3_GAME/ICON0.PNG", param);
+					show_icon = true;
 				}
 
 				if(!show_icon)
@@ -940,7 +942,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					if(!show_icon)
 					{
 						char *p = strchr(param + 18, '/'); if(p) *p = NULL;
-						sprintf(templn, "%s/PS3_GAME/ICON0.PNG", param); show_icon = file_exists(templn);       // dev_bdvd or jb folder
+						sprintf(templn, "%s/PS3_GAME/ICON0.PNG", param); show_icon = file_exists(templn); // dev_bdvd or jb folder
 						if(!show_icon) sprintf(templn, "%s/ICON0.PNG", param); show_icon = file_exists(templn); // game dir
 					}
 				}
