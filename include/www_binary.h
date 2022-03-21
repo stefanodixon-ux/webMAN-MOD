@@ -11,8 +11,10 @@
 
 		size_t buffer_size = 0; if(sysmem) sys_memory_free(sysmem); sysmem = NULL;
 
-		for(u8 n = MAX_PAGES; n > 0; n--)
-			if(c_len >= ((n-1) * _64KB_) && sys_memory_allocate(n * _64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK) {buffer_size = n * _64KB_; sys_ppu_thread_usleep(5000); break;}
+		u8 npages = c_len ? (u8)MIN(MAX_PAGES, 1 + ((c_len - 1) / _64KB_)) : 1;
+
+		for(u8 n = npages; n > 0; n--)
+			if(sys_memory_allocate(n * _64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK) {buffer_size = n * _64KB_; sys_ppu_thread_usleep(5000); break;}
 
 		//if(!sysmem && sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)!=0)
 		if(buffer_size < _64KB_)
@@ -29,7 +31,7 @@
 		#ifdef USE_NTFS
 		if(is_ntfs)
 		{
-			fd = ps3ntfs_open(param + 5, O_RDONLY, 0);
+			fd = ps3ntfs_open(ntfs_path(param), O_RDONLY, 0);
 			if(fd <= 0) is_ntfs = false;
 		}
 		#endif
@@ -46,7 +48,7 @@
 			while(working)
 			{
 				#ifdef USE_NTFS
-				if(is_ntfs) read_e = ps3ntfs_read(fd, (void *)buffer, BUFFER_SIZE_FTP);
+				if(is_ntfs) read_e = ps3ntfs_read(fd, (void *)buffer, buffer_size);
 				#endif
 				if(is_ntfs || cellFsRead(fd, (void *)buffer, buffer_size, &read_e) == CELL_FS_SUCCEEDED)
 				{

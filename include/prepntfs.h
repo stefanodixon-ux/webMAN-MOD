@@ -29,19 +29,19 @@ static sys_addr_t sysmem_p = NULL;
 
 static void create_ntfs_file(char *path, char *filename, size_t plen)
 {
-	int parts;
-	size_t extlen = 4;
+	int parts = ps3ntfs_file_to_sectors(path, sectionsP, sections_sizeP, MAX_SECTIONS, 1);
+
+	if(parts <= 0) return;
 
 	unsigned int num_tracks;
 	int emu_mode = EMU_PS3;
 	TrackDef tracks[MAX_TRACKS];
 	ScsiTrackDescriptor *scsi_tracks;
 
+	size_t extlen = 4;
 	char tmp_path[MAX_PATH_LEN];
 
 	rawseciso_args *p_args;
-
-	parts = ps3ntfs_file_to_sectors(path, sectionsP, sections_sizeP, MAX_SECTIONS, 1);
 
 	// get multi-part file sectors
 	if(is_iso_0(filename))
@@ -112,7 +112,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 
 		uint32_t array_len = parts * sizeof(uint32_t);
 
-		memcpy(plugin_args + sizeof(rawseciso_args) + array_len, sections_sizeP, array_len);
+		memcpy64(plugin_args + sizeof(rawseciso_args) + array_len, sections_sizeP, array_len);
 
 		int max = MAX_SECTIONS - ((num_tracks * sizeof(ScsiTrackDescriptor)) / 8);
 
@@ -137,7 +137,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		}
 
 		int slen = strlen(filename) - extlen;
-		filename[slen] = NULL;
+		filename[slen] = '\0';
 
 		snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
 		if(not_exists(tmp_path)) {filename[slen] = '.', slen += extlen, extlen = 0;} // create file with .iso extension
@@ -220,7 +220,7 @@ static void scan_path_ntfs(const char *path, bool chk_dirs)
 		char path[STD_PATH_LEN];
 	} t_line_entries;
 
-	pdir = ps3ntfs_diropen(path);
+	pdir = ps3ntfs_opendir(path);
 	if(pdir)
 	{
 		sys_addr_t sysmem = NULL;
@@ -278,41 +278,55 @@ static int prepNTFS(u8 clear)
 	cellFsMkdir(TMP_DIR, DMODE);
 	cellFsMkdir(WMTMP, DMODE);
 	cellFsChmod(WMTMP, DMODE);
-	cellFsUnlink((char*)WMTMP "/games.html");
+	cellFsUnlink(WMTMP "/games.html");
 	int fd = NONE;
 	char path[STD_PATH_LEN];
+	bool retry;
 
-	check_ntfs_volumes();
-
-	if(cellFsOpendir(WMTMP, &fd) == CELL_FS_SUCCEEDED)
+	// remove ntfs files from WMTMP
+	do
 	{
-		u16 dlen = sprintf(path, "%s/", WMTMP);
-		char *ext, *path_file = path + dlen;
-
-		CellFsDirectoryEntry dir; u32 read_f;
-		char *entry_name = dir.entry_name.d_name;
-
-		while(!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_f) && read_f)
+		retry = false;
+		if(cellFsOpendir(WMTMP, &fd) == CELL_FS_SUCCEEDED)
 		{
-			ext = strstr(entry_name, ".ntfs[");
-			if(ext && (clear || (mountCount <= 0) || (!IS(ext, ".ntfs[BDFILE]") && !IS(ext, ".ntfs[PS2ISO]") && !IS(ext, ".ntfs[PSPISO]")))) {sprintf(path_file, "%s", entry_name); cellFsUnlink(path);}
-		}
-		cellFsClosedir(fd);
-	}
+			u16 dlen = sprintf(path, "%s/", WMTMP);
+			char *ext, *ntfs_file = path + dlen;
 
+			CellFsDirectoryEntry dir; u32 read_f;
+			char *entry_name = dir.entry_name.d_name;
+
+			while(!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_f) && read_f)
+			{
+				ext = strstr(entry_name, ".ntfs[");
+				if(ext && (clear || (mountCount <= 0) ||
+				  (!IS(ext, ".ntfs[BDFILE]") && !IS(ext, ".ntfs[PS2ISO]") && !IS(ext, ".ntfs[PSPISO]")))
+				)
+				{
+					sprintf(ntfs_file, "%s", entry_name);
+					cellFsUnlink(path); retry = true;
+				}
+			}
+			cellFsClosedir(fd);
+		}
+	}
+	while (retry);
+
+	// allocate memory
 	sys_addr_t addr = NULL;
 
+	if(mountCount <= 0) mount_all_ntfs_volumes(); //check_ntfs_volumes();
+
 	if(mountCount <= 0) {mountCount = NTFS_UNMOUNTED; goto exit_prepntfs;}
-	{
-		sys_memory_container_t vsh_mc = get_vsh_memory_container();
-		if(vsh_mc) sys_memory_allocate_from_container(_64KB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &addr);
-		if(!addr && sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) != CELL_OK) goto exit_prepntfs;
-	}
+
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) != CELL_OK) goto exit_prepntfs;
+
+	if(!addr) goto exit_prepntfs;
 
 	plugin_args    = (u8 *)(addr);
 	sectionsP      = (u32*)(addr + sizeof(rawseciso_args));
 	sections_sizeP = (u32*)(addr + sizeof(rawseciso_args) + _32KB_);
 
+	// scan
 	ntfs_count = 0;
 
 	for(u8 i = 0; i < mountCount; i++)
@@ -338,8 +352,12 @@ static int prepNTFS(u8 clear)
 	}
 
 exit_prepntfs:
-	if(sysmem_p) sys_memory_free(sysmem_p);
-	if(addr) sys_memory_free(addr);
+	if(sysmem_p) sys_memory_free(sysmem_p); sysmem_p = NULL;
+	if(addr) sys_memory_free(addr); addr = NULL;
+
+	plugin_args = NULL;
+	sectionsP = NULL;
+	sections_sizeP = NULL;
 
 	prepntfs_working = false;
 	return ntfs_count;

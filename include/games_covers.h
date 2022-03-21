@@ -169,21 +169,21 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 		flen = sprintf(name, "%s", filename + pos);
 	}
 
-	if(is_BIN_ENC(name)) {flen -= 8; name[flen] = NULL;}
+	if(is_BIN_ENC(name)) {flen -= 8; name[flen] = '\0';}
 
-	if((flen > 2) && name[flen - 2] == '.' ) {flen -= 2; name[flen] = NULL;} // remove file extension (split iso)
-	if((flen > 4) && name[flen - 4] == '.' ) {flen -= 4; name[flen] = NULL;} // remove file extension
-	if((flen > 3) && name[flen - 3] == '.' ) {flen -= 3; name[flen] = NULL;} // remove file extension for roms (.gb .gg .vb)
+	if((flen > 2) && name[flen - 2] == '.' ) {flen -= 2; name[flen] = '\0';} // remove file extension (split iso)
+	if((flen > 4) && name[flen - 4] == '.' ) {flen -= 4; name[flen] = '\0';} // remove file extension
+	if((flen > 3) && name[flen - 3] == '.' ) {flen -= 3; name[flen] = '\0';} // remove file extension for roms (.gb .gg .vb)
 	else if(strstr(filename + pos, ".ntfs["))
 	{
-		while(name[flen] != '.') flen--; name[flen] = NULL;
+		while(name[flen] != '.') flen--; name[flen] = '\0';
 		if(cache != GET_WMTMP)
 		{
 			pos = flen - 4;
 			if((pos > 0) && name[pos] == '.' && (strcasestr(ISO_EXTENSIONS, &name[pos])))
-				{flen = pos; name[flen] = NULL;}
+				{flen = pos; name[flen] = '\0';}
 			else
-				if(is_BIN_ENC(name)) {flen -= 8; name[flen] = NULL;}
+				if(is_BIN_ENC(name)) {flen -= 8; name[flen] = '\0';}
 		}
 	}
 
@@ -191,8 +191,8 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 
 	// remove title id from file name
 	if(name[4] == '_' && name[8] == '.' && (*name == 'B' || *name == 'N' || *name == 'S' || *name == 'U') && ISDIGIT(name[9]) && ISDIGIT(name[10])) {flen = sprintf(name, "%s", &name[12]);}// SLES_000.00-Name
-	if(name[9] == '-' && name[10]== '[') {flen = sprintf(name, "%s", name + 11) - 1; name[flen] = NULL;} // BLES00000-[Name]
-	if(name[10]== '-' && name[11]== '[') {flen = sprintf(name, "%s", name + 12) - 1; name[flen] = NULL;} // BLES-00000-[Name]
+	if(name[9] == '-' && name[10]== '[') {flen = sprintf(name, "%s", name + 11) - 1; name[flen] = '\0';} // BLES00000-[Name]
+	if(name[10]== '-' && name[11]== '[') {flen = sprintf(name, "%s", name + 12) - 1; name[flen] = '\0';} // BLES-00000-[Name]
 	if(!webman_config->tid) {char *p = strstr(name, " ["); if(p && (p[2] == 'B' || p[2] == 'N' || p[2] == 'S' || p[2] == 'U') && ISDIGIT(p[7])) *p = NULL; flen = strlen(name);}        // Name [BLES-00000]
 
 	return (size_t) flen;
@@ -333,7 +333,7 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id) //
 		}
 	}
 
-	if(title_id[4] == '-') strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = NULL;
+	if(title_id[4] == '-') strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = '\0';
 
 	// get cover using titleID obtained from file name
 	if(get_cover_by_titleid(icon, title_id)) return true;
@@ -392,7 +392,7 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 				if(pos)
 					{*pos = NULL; sprintf(titleid, "%s/%s", entry_name, title_id); *pos = '/';}
 				else
-					sprintf(titleid, "%s", title_id);
+					strcpy(titleid, title_id);
 
 				flen = sprintf(icon, "%s/%s", param, titleid);
 				if(get_image_file(icon, flen)) return;
@@ -453,13 +453,16 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 		flen = get_name(icon, file, GET_WMTMP); //wmtmp
 	}
 
-	char *p = isdir ? NULL : strstr(icon + MAX(flen - 13, 0), ".ntfs[");
-	if(p) {flen -= strlen(p), *p = NULL;}
+	if(!isdir && (flen > 13))
+	{
+		char *p = strstr(icon + flen - 13, ".ntfs[");
+		if(p) {flen -= strlen(p), *p = NULL;}
+	}
 
-	if((flen > 2) && icon[flen - 2] == '.' ) {flen -= 2, icon[flen] = NULL;} // remove file extension (split iso)
-	if((flen > 4) && icon[flen - 4] == '.' ) {flen -= 4, icon[flen] = NULL;} // remove file extension
+	if((flen > 2) && icon[flen - 2] == '.' ) {flen -= 2, icon[flen] = '\0';} // remove file extension (split iso)
+	if((flen > 4) && icon[flen - 4] == '.' ) {flen -= 4, icon[flen] = '\0';} // remove file extension
 	else
-	if((flen > 3) && icon[flen - 3] == '.' ) {flen -= 3, icon[flen] = NULL;} // remove file extension
+	if((flen > 3) && icon[flen - 3] == '.' ) {flen -= 3, icon[flen] = '\0';} // remove file extension
 
 	//file name + ext
 	if(get_image_file(icon, flen)) return;
@@ -490,10 +493,10 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 
 			for(u8 e = 0; e < 4; e++)
 			{
-				sprintf(icon + icon_len, "%s", ext[e]);
+				strcpy(icon + icon_len, ext[e]);
 				if(file_exists(icon)) return;
 
-				sprintf(remote_file + tlen, "%s", ext[e]);
+				strcpy(remote_file + tlen, ext[e]);
 
 				//Copy remote icon locally
 				copy_net_file(icon, remote_file, ns, COPY_WHOLE_FILE);
@@ -579,7 +582,7 @@ no_icon0:
 		if(file_exists(icon))
 		{
 			if(get_image_file(icon, flen)) return default_icon;
-			flen -= 4; icon[flen] = NULL;
+			flen -= 4; icon[flen] = '\0';
 			if(get_image_file(icon, flen)) return default_icon;
 			sprintf(icon, "/dev_bdvd/%s.ICON0.PNG", file);
 			if(file_exists(icon)) return default_icon;
@@ -688,7 +691,7 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 
 				if(read_file(iso_file, title_id, 11, 0x810) == 11)
 				{
-					strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = NULL;
+					strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = '\0';
 				}
 			}
 

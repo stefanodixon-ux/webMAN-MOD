@@ -97,7 +97,7 @@ static int32_t getTrackInfo(void)
 
 	cellSearchGetContentInfoByContentId(&contents_id, infoBuffer, &content_type);
 	CellSearchMusicInfo *musicInfo = (CellSearchMusicInfo *)infoBuffer;
-	sprintf(currentTrack, "%s", musicInfo->title);
+	strcpy(currentTrack, musicInfo->title);
 
 	free(infoBuffer);
 

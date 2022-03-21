@@ -60,7 +60,7 @@
 		)
 		{
 			// patch title name in PARAM.SFO of PKGLAUNCH
-			copy_rom_media((char*)"/PKG Launcher"); is_busy = false;
+			copy_rom_media("/PKG Launcher"); is_busy = false;
 
 			ret = file_exists(_path);
 			cobra_map_game(PKGLAUNCH_DIR, PKGLAUNCH_ID, true);
@@ -124,7 +124,7 @@
 				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
 				sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
 
-				_file_copy((char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
+				_file_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
 				cellFsUnlink(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce");
 			}
 			else
@@ -142,7 +142,7 @@
 					sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
 				}
 
-				_file_copy((char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
+				_file_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
 				cellFsUnlink(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak");
 			}
 

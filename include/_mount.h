@@ -181,9 +181,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// unmount current game
 	// ---------------------
 	char *uparam = param + 7;
-	char *param2 = param + MOUNT_CMD;
+	char *params = param + MOUNT_CMD;
 
-	if(islike(param, "/mount") && (islike(uparam, "ps3/unmount") || islike(param2, "/dev_bdvd") || islike(param2, "/app_home")))
+	if(islike(param, "/mount") && (islike(uparam, "ps3/unmount") || islike(params, "/dev_bdvd") || islike(params, "/app_home")))
 	{
 		if(mount_ps3 || forced_mount || IS_ON_XMB)
 		{
@@ -424,7 +424,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				if(cp_mode)
 				{
-					sprintf(target, "%s", cp_path);
+					strcpy(target, cp_path);
 				}
 				else
 				if(*target) {if(!isDir(source) && isDir(target)) strcat(target, filename);} // &to=<destination>
@@ -436,7 +436,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					{
 						struct CellFsStat buf;
 						if(cellFsStat(source, &buf) != CELL_FS_SUCCEEDED)
-							sprintf(target, "%s", STR_ERROR);
+							strcpy(target, STR_ERROR);
 						else
 						{
 							u64 size = buf.st_size;
@@ -444,7 +444,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							enable_dev_blind(source);
 
 							// for cobra req: /dev_flash/sys/stage2.bin & /dev_flash/sys/lv2_self
-							sprintf(target, SYS_COBRA_PATH "stage2.bin");
+							strcpy(target, SYS_COBRA_PATH "stage2.bin");
 							if(isDir("/dev_flash/rebug/cobra"))
 							{
 								if(IS(ext4, ".dex"))
@@ -455,7 +455,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 							if(not_exists(target))
 							{
-								sprintf(tempstr, "%s", source);
+								strcpy(tempstr, source);
 								strcpy(get_filename(tempstr), "/stage2.bin");
 								if(file_exists(tempstr)) _file_copy(tempstr, target);
 							}
@@ -672,21 +672,21 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 									if((c < 0x20) || (c > 0x7F)) continue;
 									if(!strchr("\\\"/<|>:*?", title[i])) title[n++] = title[i];
 								}
-								title[n] = 0;
+								title[n] = '\0';
 
 								if(*title_id && (title_id[8] >= '0'))
 								{
-									if(strstr(title, " ["))
-										sprintf(target + 16, "%s", title);
-									else if(*title)
-										sprintf(target + 16, "%s [%s]", title, title_id);
+									if(*title == '\0')
+										strcpy(target + 16, title_id);
+									else if(strstr(title, " ["))
+										strcpy(target + 16, title);
 									else
-										sprintf(target + 16, "%s", title_id);
+										sprintf(target + 16, "%s [%s]", title, title_id);
 								}
 							}
 						}
 						else
-							sprintf(target, "/dev_hdd0");
+							strcpy(target, "/dev_hdd0");
 
 						char *p = strchr(source + 9, '/');
 						if(p) strcat(target, p);
@@ -807,12 +807,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					}
 #ifndef LITE_EDITION
  #ifdef COBRA_ONLY
-					if(islike(param2, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
+					if(islike(params, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
  #endif
 #endif
 					if(!forced_mount && IS_INGAME)
 					{
-						sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", param2, param2);
+						sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", params, params);
 					}
 				}
 #ifndef ENGLISH_ONLY
@@ -830,14 +830,14 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			{
 				int fd2; u16 pcount = 0; u32 tlen = strlen(buffer) + 8; u8 is_iso = 0;
 
-				sprintf(target, "%s", source);
+				strcpy(target, source);
 				if(strstr(target, "Sing"))
 				{
 					char *pos = strstr(target, "/PS3ISO");
 					if(pos)
-						{sprintf(pos, "/PS2DISC"); is_iso = 1;}
+						{strcpy(pos, "/PS2DISC"); is_iso = 1;}
 					else if(strstr(target, ".ntfs[PS3ISO]"))
-						{sprintf(target, "/dev_hdd0/PS2DISC"); is_iso = 1;}
+						{strcpy(target, "/dev_hdd0/PS2DISC"); is_iso = 1;}
 				}
 
 				// -----------------------------
@@ -1066,7 +1066,7 @@ static void do_umount(bool clean)
 
 		cobra_unload_vsh_plugin(0); // unload external rawseciso / netiso plugins
 
-		cellFsChmod((char*)"/dev_bdvd/PS3_GAME/SND0.AT3", MODE); // restore SND0 permissions of game mounted (JB folder)
+		cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", MODE); // restore SND0 permissions of game mounted (JB folder)
 
 		apply_remaps();
 
@@ -1201,8 +1201,8 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
-			if(file_copy((char*)"/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
-			if(file_copy((char*)"/dev_bdvd/PS3_GM01/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GM01/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}
@@ -1213,8 +1213,8 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
-			if(file_copy((char*)"/dev_bdvd/PS3_GAME/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
-			if(file_copy((char*)"/dev_bdvd/PS3_GM01/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GM01/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}
@@ -1246,7 +1246,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 	{
 		const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
 		change_ext(_path, 4, cue_ext);
-		if(not_exists(_path)) sprintf(_path, "%s", cobra_iso_list[0]);
+		if(not_exists(_path)) strcpy(_path, cobra_iso_list[0]);
 	}
 
 	mount_iso |= file_exists(cobra_iso_list[0]); ret = mount_iso; mount_unk = emu_type;
@@ -1568,7 +1568,7 @@ static void mount_thread(u64 action)
 	// remove /PS3_GAME
 	// -----------------
 
-	sprintf(_path, "%s", _path0);
+	strcpy(_path, _path0);
 
 	if(*_path == '/')
 	{

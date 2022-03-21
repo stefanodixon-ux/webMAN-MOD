@@ -72,7 +72,7 @@ static u64 get_pkg_size_and_install_time(const char *pkgfile)
 			struct CellFsStat s;
 			if(cellFsStat(install_path, &s) == CELL_FS_SUCCEEDED) pkg_install_time = s.st_mtime; // prevents pkg deletion if user cancels install
 
-			install_path[24] = NULL;
+			install_path[24] = '\0';
 		}
 		cellFsClose(fd);
 	}
@@ -395,7 +395,7 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 		{
 			if(is_ext(dir.d_name, ".pkg"))
 			{
-				sprintf(path_file, "%s", dir.d_name);
+				strcpy(path_file, dir.d_name);
 
 				char msg[MAX_PATH_LEN];
 				ret = installPKG(pkgfile, msg); if(!(webman_config->minfo & 1)) show_msg(msg);

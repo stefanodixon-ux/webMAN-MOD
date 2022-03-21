@@ -22,23 +22,25 @@ static void set_file_type(const char *path, const char *filename, char *ftype)
 {
 	*ftype = NULL; if(!wm_icons_exists) return;
 
-	if(strstr(path, "/PSX") || strstr(filename, ".ntfs[PSX"))
+	char *ext = strstr(filename, ".ntfs["); if(!ext) ext = ftype;
+
+	if(strstr(path, "/PSX") || strstr(ext, ".ntfs[PSX"))
 		sprintf(ftype, " psx");
 #ifdef MOUNT_ROMS
 	else if(strstr(path, "/ROMS/"))
 		sprintf(ftype, " rom");
 #endif
-	else if(is_BIN_ENC(filename) || strstr(path, "/PS2") || strstr(filename, ".ntfs[PS2"))
+	else if(is_BIN_ENC(filename) || strstr(path, "/PS2") || strstr(ext, ".ntfs[PS2"))
 		sprintf(ftype, " ps2");
-	else if(strstr(path, "/PSP") || strstr(filename, ".ntfs[PSP"))
+	else if(strstr(path, "/PSP") || strstr(ext, ".ntfs[PSP"))
 		sprintf(ftype, " psp");
-	else if(strstr(path, "/DVD") || strstr(filename, ".ntfs[DVD"))
+	else if(strstr(path, "/DVD") || strstr(ext, ".ntfs[DVD"))
 		sprintf(ftype, " dvd");
 	else
 		sprintf(ftype, " ps3");
 }
 
-static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, char *ename, char *templn, char *name, char *fsize, CellRtcDateTime rDate, unsigned long long sz, char *sf, u8 is_net, u8 show_icon0, u8 is_ps3_http, u8 skip_cmd, u8 sort_by, char *action)
+static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, char *ename, char *templn, char *name, char *fsize, CellRtcDateTime rDate, unsigned long long sz, char *sf, u8 is_net, u8 show_icon0, u8 is_ps3_http, u8 skip_cmd, u8 sort_by, char *action, bool is_ntfs)
 {
 	bool is_root = (plen < 4);
 	if(is_root) sz = 0, is_dir = true; // force folders in root -> fix: host_root, app_home
@@ -55,10 +57,10 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	if(!is_dir)
 	{
-		if(sz < 10240)	{sprintf(sf, "%s", STR_BYTE);} else
-		if(sz < _2MB_)	{sprintf(sf, "%s", STR_KILOBYTE); sz >>= 10;} else
-		if(sz < _48GB_) {sprintf(sf, "%s", STR_MEGABYTE); sz >>= 20;} else
-						{sprintf(sf, "%s", STR_GIGABYTE); sz >>= 30;}
+		if(sz < 10240)	{strcpy(sf, STR_BYTE);} else
+		if(sz < _2MB_)	{strcpy(sf, STR_KILOBYTE); sz >>= 10;} else
+		if(sz < _48GB_) {strcpy(sf, STR_MEGABYTE); sz >>= 20;} else
+						{strcpy(sf, STR_GIGABYTE); sz >>= 30;}
 	}
 
 	// encode file name for html
@@ -115,7 +117,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	// encode url for html //
 	/////////////////////////
 
-	if(urlenc(tempstr, templn)) {tempstr[_MAX_LINE_LEN] = NULL; sprintf(templn, "%s", tempstr);}
+	if(urlenc(tempstr, templn)) {tempstr[_MAX_LINE_LEN] = '\0'; sprintf(templn, "%s", tempstr);}
 
 	// is image?
 	u8 show_img = (!is_dir && (_IS(ext, ".png") || _IS(ext, ".jpg") || _IS(ext, ".bmp")));
@@ -185,7 +187,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				u64 freeSize = 0, devSize = 0;
 
 #ifdef USE_NTFS
-				if(is_ntfs_path(templn))
+				if(is_ntfs)
 				{
 					struct statvfs vbuf;
 					ps3ntfs_statvfs(templn + 5, &vbuf);
@@ -213,7 +215,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				else if(IS(templn, "/dev_blind"))
 					sprintf(tempstr, "%s%s", "/dev_blind", "?0");
 #ifdef USE_NTFS
-				else if(is_ntfs_path(templn))
+				else if(is_ntfs)
 					sprintf(tempstr, "/refresh.ps3?prepntfs");
 #endif
 				else
@@ -239,7 +241,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		}
 #ifdef COPY_PS3
  #ifdef USE_NTFS
-		else if(is_ntfs_path(templn) || (!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) )))
+		else if(is_ntfs || (!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) )))
  #else
 		else if(!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) ))
  #endif
@@ -293,7 +295,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 #ifdef COBRA_ONLY
  #ifdef USE_NTFS
-	else if(is_ntfs_path(templn))
+	else if(is_ntfs)
 	{
 		if(strcasestr(ISO_EXTENSIONS, ext))
 			snprintf(fsize, maxlen, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
@@ -458,7 +460,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 
 	char swap[MAX_PATH_LEN], templn[MAX_PATH_LEN], url[MAX_PATH_LEN], *slash, *buffer = pbuffer;
 
-	sprintf(templn, "%s", param);
+	strcpy(templn, param);
 
 	// add links to path
 	prev_dest = last_dest = NULL; // init fast concat
@@ -469,7 +471,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 		tlen+=(slash - templn) + 1; //strlen(templn) + 1;
 
 		strcpy(swap, param);
-		swap[tlen] = NULL;
+		swap[tlen] = '\0';
 
 		buffer += concat(buffer, "<a class=\"f\" href=\"");
 		urlenc(url, swap);
@@ -560,16 +562,18 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 #ifdef USE_NTFS
 	struct stat bufn;
 	DIR_ITER *pdir = NULL;
+	char *npath = NULL;
 
 	is_ntfs = is_ntfs_path(param);
 	if((is_root && root_check) | is_ntfs) check_ntfs_volumes();
 
 	if(is_ntfs)
 	{
-		pdir = ps3ntfs_opendir(param); // /dev_ntfs1v -> ntfs1:
+		npath = (char*)ntfs_path(param); // /dev_ntfs1v -> ntfs1:/
+		pdir = ps3ntfs_opendir(npath);
 		if(!pdir) is_ntfs = false;
 		cellRtcSetTime_t(&rDate, 0);
-		if(!param[12]) param[11] = 0;
+		if(!npath[7]) npath[6] = 0;
 	}
 #endif
 
@@ -664,8 +668,8 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				strcat(param, "/");
 				if(open_remote_dir(ns, param + 5, &abort_connection) >= 0)
 				{
-					strcpy(templn, param); while(templn[plen] == '/') templn[plen--] = NULL; plen++;
-					char *p = get_filename(templn); if(p) *p = NULL; if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = NULL;}
+					strcpy(templn, param); while(templn[plen] == '/') templn[plen--] = '\0'; plen++;
+					remove_filename(templn); if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = '\0';}
 
 					urlenc(swap, templn);
 					flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
@@ -699,7 +703,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 							{
 								flen = sprintf(templn, "%s%s", param, dir_items[n].name);
 							}
-							if(templn[flen - 1] == '/') templn[flen--] = NULL;
+							if(templn[flen - 1] == '/') templn[flen--] = '\0';
 
 							cellRtcSetTime_t(&rDate, dir_items[n].mtime);
 
@@ -707,7 +711,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 							is_dir = dir_items[n].is_directory; if(is_dir) dirs++;
 
-							flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, dir_items[n].name, fsize, rDate, sz, sf, true, show_icon0, is_ps3_http, skip_cmd, sort_by, action);
+							flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, dir_items[n].name, fsize, rDate, sz, sf, true, show_icon0, is_ps3_http, skip_cmd, sort_by, action, is_ntfs);
 
 							if((flen == 0) || (flen >= _MAX_LINE_LEN)) continue; //ignore lines too long
 							memcpy(line_entry[idx].path, tempstr, FILE_MGR_KEY_LEN + flen + 1); idx++;
@@ -720,7 +724,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				}
 				else //may be a file
 				{
-					if(param[plen] == '/') param[plen] = NULL;
+					if(param[plen] == '/') param[plen] = '\0';
 
 					int is_directory = 0;
 					s64 file_size;
@@ -768,7 +772,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			char *entry_name = (is_root | is_bdvd) ? entry_s.d_name : entry.entry_name.d_name;
 
 #ifdef USE_NTFS
-			if(is_ntfs && !param[11])
+			if(is_ntfs && !npath[6])
 			{
 				flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
 													  "d\" href=\"%s\">..</a></td>"
@@ -784,7 +788,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				if(is_ntfs)
 				{
 					if(ps3ntfs_dirnext(pdir, entry_name, &bufn)) break;
-					if(entry_name[0] == '$' && param[12] == 0) continue;
+					if(entry_name[0] == '$' && npath[6] == 0) continue;
 
 					entry.attribute.st_mode = bufn.st_mode, entry.attribute.st_size = bufn.st_size, entry.attribute.st_mtime = bufn.st_mtime;
 				}
@@ -819,7 +823,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					{
 						flen = sprintf(templn, "%s/%s", param, entry_name);
 					}
-					if(templn[flen - 1] == '/') templn[flen--] = NULL;
+					if(templn[flen - 1] == '/') templn[flen--] = '\0';
 
 					if(is_root | is_bdvd)
 					{
@@ -836,7 +840,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 					is_dir = (entry.attribute.st_mode & S_IFDIR); if(is_dir) dirs++;
 
-					flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, entry_name, fsize, rDate, sz, sf, false, show_icon0, is_ps3_http, skip_cmd, sort_by, action);
+					flen = add_list_entry(param, plen, tempstr, is_dir, ename, templn, entry_name, fsize, rDate, sz, sf, false, show_icon0, is_ps3_http, skip_cmd, sort_by, action, is_ntfs);
 
 					if((flen == 0) || (flen >= _MAX_LINE_LEN)) continue; //ignore lines too long
 					memcpy(line_entry[idx].path, tempstr, FILE_MGR_KEY_LEN + flen + 1); idx++;

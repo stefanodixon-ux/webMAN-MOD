@@ -836,6 +836,8 @@ scan_roms:
 
 	for(u8 f0 = 0; f0 < MAX_DRIVES; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
 	{
+		if(!refreshing_xml) break;
+
 		if(check_drive(f0)) continue;
 
 		is_net = IS_NET;
@@ -863,6 +865,8 @@ scan_roms:
 		ns = NONE; uprofile = profile;
 		for(u8 f1 = 0; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 		{
+			if(!refreshing_xml) break;
+
 			if(scanning_roms)
 			{
 				f1 = id_ROMS;
@@ -901,6 +905,7 @@ scan_roms:
 			subfolder = 0; uprofile = profile;
 		read_folder_xml:
 		//
+			if(!refreshing_xml) break;
 			#ifdef MOUNT_ROMS
 			if(scanning_roms)
 			{
@@ -975,7 +980,7 @@ scan_roms:
 					{
 						if(ignore && ignore_files && (strstr(ignore_files, data[v3_entry].name) != NULL)) continue;
 
-						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
+						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0')) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 0) == FAILED) {v3_entry++; continue;}
 
@@ -1442,7 +1447,7 @@ save_xml:
 	}
 
 	#ifdef MOUNT_ROMS
-	if(scanning_roms || (c_roms && XMB_GROUPS))
+	if(refreshing_xml && (scanning_roms || (c_roms && XMB_GROUPS)))
 	{
 		if(scanning_roms)
 		{
@@ -1471,7 +1476,7 @@ save_xml:
 	#ifdef LAUNCHPAD
 	bool launchpad_xml = !(webman_config->launchpad_xml) && file_exists(LAUNCHPAD_FILE_XML);
 
-	if(launchpad_xml)
+	if(refreshing_xml && launchpad_xml)
 	{
 		*sysmem_buf = *param = *tempstr = *templn = NULL;
 		game_listing(sysmem_buf, templn, param, tempstr, LAUNCHPAD_MODE, false);
@@ -1507,6 +1512,7 @@ static void update_xml_thread(u64 conn_s_p)
 static void refresh_xml(char *msg)
 {
 	if(refreshing_xml) return;
+
 	refreshing_xml = 1;
 
 #ifdef USE_NTFS

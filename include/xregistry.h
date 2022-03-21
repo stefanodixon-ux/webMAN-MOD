@@ -2,10 +2,10 @@
 
 #ifdef DEBUG_XREGISTRY
 
-static u32 get_xreg_value(const char *key, u32 new_value, char *str_value, bool read_only)
+static u32 get_xreg_value(const char *key, int new_value, char *str_value, bool read_only)
 {
 	int reg = NONE;
-	u32 reg_value = new_value;
+	int reg_value = new_value;
 	u16 off_string, len_data, len_string;
 	u64 r;
 	char string[256];

@@ -12,6 +12,9 @@ enum scan_operations
 	SCAN_TRUNCATE  = 9
 };
 
+static void mkdir_tree(char *path);
+static void rename_file(char *source, char *dest);
+
 static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, char *dest)
 {
 	// fop: 0 = scan to file, 1 = del, 2 = copy, 3 = force copy, 4 = move, 5 = rename/move in same fs, 6 = copy bak
@@ -23,7 +26,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if((fop == SCAN_DELETE) && !wildcard && !isDir(path))
 	{
 		if(is_ntfs_path(path))
-			return ps3ntfs_unlink(path + 5);
+			return ps3ntfs_unlink(ntfs_path(path));
 		else
 			return cellFsUnlink(path);
 	}
@@ -33,14 +36,11 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if((fop == SCAN_DELETE || fop == SCAN_TRUNCATE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
-	size_t wildcard_len = (wildcard) ? strlen(wildcard) : 0;
-	char *wildcard1 = NULL, *wildcard2 = NULL, wcard[wildcard_len + 1];
+	char *wildcard1 = NULL, *wildcard2 = NULL;
 	char *(*instr)(const char *, const char *) = &strstr; bool wfound1 = true, wfound2 = true;
-	if(wildcard_len)
+	if(wildcard)
 	{
-		sprintf(wcard, "%s", wildcard);
-
-		wildcard1 = wcard;
+		wildcard1 = (char*)wildcard;
 		if(*wildcard1 == '~') {wildcard1++, wfound1 = false;}					// *~TEXT = exclude files
 		if(*wildcard1 == '^') {wildcard1++, instr = &strcasestr;}				// *^TEXT = case insensitive search
 		if( wfound1 && (*wildcard1 == '~')) {wildcard1++, wfound1 = false;}		// <-- accept prefixes: ~^ or ^~
@@ -59,7 +59,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if(is_ntfs_path(path))
 	{
-		pdir = ps3ntfs_opendir((char*)path);
+		pdir = ps3ntfs_opendir(ntfs_path(path));
 		if(pdir) is_ntfs = true;
 	}
 #endif
@@ -100,7 +100,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			if(cellFsGetDirectoryEntries(fd, &entry_d, sizeof(entry_d), &read_f) || !read_f) break;
 
 			if(copy_aborted) break;
-			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
+			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == '\0')) continue;
 
 			if(p_slash) sprintf(pentry, "%s", entry_name); else sprintf(pentry, "/%s", entry_name);
 
@@ -144,14 +144,15 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 					file_copy(entry, dest_entry, COPY_WHOLE_FILE); // copy ntfs & cellFS
 
 				if((fop == SCAN_COPYBK) && file_exists(dest_entry))
-					{sprintf(dest_entry, "%s.bak", entry); cellFsRename(entry, dest_entry);}
+					{sprintf(dest_entry, "%s.bak", entry); rename_file(entry, dest_entry);}
 			}
 #ifdef USE_NTFS
 			else if(is_ntfs)
 			{
-				if(fop == SCAN_DELETE) {ps3ntfs_unlink(entry + 5);} else
-				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) ps3ntfs_unlink(entry + 5);} else
-				if(fop == SCAN_RENAME) {ps3ntfs_rename(entry + 5, dest_entry);}
+				char *ntfs_entry = (char*)ntfs_path(entry);
+				if(fop == SCAN_DELETE) {ps3ntfs_unlink(ntfs_entry);} else
+				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) ps3ntfs_unlink(ntfs_entry);} else
+				if(fop == SCAN_RENAME) {ps3ntfs_rename(ntfs_entry, dest_entry);}
 			}
 #endif
 			else
@@ -185,7 +186,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 #ifdef USE_NTFS
 		if(is_ntfs)
-			ps3ntfs_unlink(path + 5);
+			ps3ntfs_unlink(ntfs_path(path));
 		else
 #endif
 			cellFsRmdir(path);

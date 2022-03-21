@@ -198,7 +198,7 @@ static void urldec(char *url, char *original)
 				}
 			}
 		}
-		url[pos] = NULL;
+		url[pos] = '\0';
 	}
 }
 
@@ -448,123 +448,123 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 									webman_config->bind ? "" : // disallow CORS if bind (remote access to FTP/WWW services) is disabled
 									"Access-Control-Allow-Origin: *\r\n"); // default: allow CORS (Cross-Origin Resource Sharing)
 
-	char *header = buffer + slen;
-
-	int flen = strlen(param);
+	t_string header; _set(&header, buffer, slen);
 
 	// get mime type
 	if(is_binary == BINARY_FILE)
 	{
+		int flen = strlen(param);
+
 		const char *ext = (char*)param + MAX(flen - 4, 0), *ext5 = (char*)param + MAX(flen - 5, 0);
 
 		if(_IS(ext, ".png"))
-			strcat(header, "image/png");
+			_concat(&header, "image/png");
 		else
 		if(_IS(ext, ".jpg") || _IS(ext5, ".jpeg") || IS(ext, ".STH"))
-			strcat(header, "image/jpeg");
+			_concat(&header, "image/jpeg");
 		else
 		if(_IS(ext, ".htm") || _IS(ext5, ".html") || _IS(ext5, ".shtm"))
-			{strcat(header, "text/html"); set_base_path = true;}
+			{_concat(&header, "text/html"); set_base_path = true;}
 		else
 		if(_IS(ext + 1, ".js"))
-			strcat(header, "text/javascript");
+			_concat(&header, "text/javascript");
 		else
 		if(_IS(ext, ".css"))
-			strcat(header, "text/css");
+			_concat(&header, "text/css");
 		else
 		if(_IS(ext, ".txt") || _IS(ext, ".log") || _IS(ext, ".ini") || _IS(ext, ".cfg") || IS(ext, ".HIP") || IS(ext, ".HIS") || IS(ext, ".HIP") || IS(ext, ".CNF"))
-			strcat(header, "text/plain");
+			_concat(&header, "text/plain");
 		else
 		if(_IS(ext, ".svg"))
-			strcat(header, "image/svg+xml");
+			_concat(&header, "image/svg+xml");
 #ifndef LITE_EDITION
 		else
 		if(_IS(ext, ".gif"))
-			strcat(header, "image/gif");
+			_concat(&header, "image/gif");
 		else
 		if(_IS(ext, ".bmp"))
-			strcat(header, "image/bmp");
+			_concat(&header, "image/bmp");
 		else
 		if(_IS(ext, ".tif"))
-			strcat(header, "image/tiff");
+			_concat(&header, "image/tiff");
 		else
 		if(_IS(ext, ".avi"))
-			strcat(header, "video/x-msvideo");
+			_concat(&header, "video/x-msvideo");
 		else
 		if(_IS(ext, ".mp4") || IS(ext, ".MTH"))
-			strcat(header, "video/mp4");
+			_concat(&header, "video/mp4");
 		else
 		if(_IS(ext, ".mkv"))
-			strcat(header, "video/x-matroska");
+			_concat(&header, "video/x-matroska");
 		else
 		if(_IS(ext, ".mpg") || _IS(ext, ".mp2") || strcasestr(ext5, ".mpe"))
-			strcat(header, "video/mpeg");
+			_concat(&header, "video/mpeg");
 		else
 		if(_IS(ext, ".vob"))
-			strcat(header, "video/vob");
+			_concat(&header, "video/vob");
 		else
 		if(_IS(ext, ".wmv"))
-			strcat(header, "video/x-ms-wmv");
+			_concat(&header, "video/x-ms-wmv");
 		else
 		if(_IS(ext, ".flv"))
-			strcat(header, "video/x-flv");
+			_concat(&header, "video/x-flv");
 		else
 		if(_IS(ext, ".mov"))
-			strcat(header, "video/quicktime");
+			_concat(&header, "video/quicktime");
 		else
 		if(_IS(ext5, ".webm"))
-			strcat(header, "video/webm");
+			_concat(&header, "video/webm");
 		else
 		if(_IS(ext, ".mp3"))
-			strcat(header, "audio/mpeg");
+			_concat(&header, "audio/mpeg");
 		else
 		if(_IS(ext, ".wav"))
-			strcat(header, "audio/x-wav");
+			_concat(&header, "audio/x-wav");
 		else
 		if(_IS(ext, ".wma"))
-			strcat(header, "audio/x-ms-wma");
+			_concat(&header, "audio/x-ms-wma");
 		else
 		if(_IS(ext, ".mid") || _IS(ext, ".kar"))
-			strcat(header, "audio/midi");
+			_concat(&header, "audio/midi");
 		else
 		if(_IS(ext, ".mod"))
-			strcat(header, "audio/mod");
+			_concat(&header, "audio/mod");
 		else
 		if(_IS(ext, ".zip"))
-			strcat(header, "application/zip");
+			_concat(&header, "application/zip");
 		else
 		if(_IS(ext, ".pdf"))
-			strcat(header, "application/pdf");
+			_concat(&header, "application/pdf");
 		else
 		if(_IS(ext, ".doc"))
-			strcat(header, "application/msword");
+			_concat(&header, "application/msword");
 		else
 		if(_IS(ext5, ".docx"))
-			strcat(header, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+			_concat(&header, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 		else
 		if(_IS(ext, ".xls"))
-			strcat(header, "application/vnd.ms-excel");
+			_concat(&header, "application/vnd.ms-excel");
 		else
 		if(_IS(ext5, ".xlsx"))
-			strcat(header, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			_concat(&header, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		else
 		if(_IS(ext, ".ppt") || _IS(ext, ".pps"))
-			strcat(header, "application/vnd.ms-powerpoint");
+			_concat(&header, "application/vnd.ms-powerpoint");
 		else
 		if(_IS(ext, ".swf"))
-			strcat(header, "application/x-shockwave-flash");
+			_concat(&header, "application/x-shockwave-flash");
 #endif
 		else
-			strcat(header, "application/octet-stream");
+			_concat(&header, "application/octet-stream");
 	}
 	else
-		{strcat(header, "text/html"); set_base_path = true;}
+		{_concat(&header, "text/html"); set_base_path = true;}
 
-	if(set_base_path && param[0] == '/' && (param[1] == 'n' || param[1] == 'd' || param[1] == 'a')) {strcpy(html_base_path, param); if((param[1] != 'n') && !isDir(param)) flen = get_filename(html_base_path) - html_base_path; html_base_path[flen] = NULL; }
+	if(set_base_path && (is_binary != WEB_COMMAND) && param[0] == '/') {strcpy(html_base_path, param); if(!isDir(param)) remove_filename(html_base_path);}
 
-	strcat(header, "\r\n");
+	_concat(&header, "\r\n");
 
-	return slen + strlen(header);
+	return header.size;
 }
 
 static u64 convertH(const char *val); // peek_poke.h
@@ -626,7 +626,7 @@ static u16 get_value(char *value, const char *url, u16 max_size)
 		if(url[n] == '&' || url[n] == 0) break;
 		value[n] = url[n];
 	}
-	value[n] = NULL;
+	value[n] = '\0';
 	return n;
 }
 
@@ -646,6 +646,7 @@ static u16 get_param(const char *name, char *value, const char *url, u16 max_siz
 		}
 	}
 
+	*value = '\0';
 	return 0;
 }
 

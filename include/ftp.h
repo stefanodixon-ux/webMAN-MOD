@@ -196,7 +196,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	struct timeval tv;
 	tv.tv_usec = 0;
-	tv.tv_sec = 20;
+	tv.tv_sec = ftp_active ? 20 : 60; // first connection timeout 60 secs
 
 	if(webman_config->ftp_timeout)
 	{
@@ -213,7 +213,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 		rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
 		{
-			buffer[rlen] = NULL;
+			buffer[rlen] = '\0';
 
 			char *p = strstr(buffer, "\r\n");
 			if(p) *p = NULL; else break;
@@ -257,7 +257,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #ifdef USE_NTFS
 								if(is_ntfs_path(filename))
 								{
-									fd = ps3ntfs_open(filename + 5, O_RDONLY, 0);
+									fd = ps3ntfs_open(ntfs_path(filename), O_RDONLY, 0);
 
 									if(fd > 0)
 									{
@@ -361,7 +361,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								#ifdef USE_NTFS
 								if(is_ntfs_path(filename))
 								{
-									fd = ps3ntfs_open(filename + 5, O_CREAT | O_WRONLY | ((rest | is_append) ? O_APPEND : O_TRUNC), MODE);
+									fd = ps3ntfs_open(ntfs_path(filename), O_CREAT | O_WRONLY | ((rest | is_append) ? O_APPEND : O_TRUNC), MODE);
 
 									if(fd > 0)
 									{
@@ -386,7 +386,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										}
 
 										ps3ntfs_close(fd); ftp_ntfs_transfer_in_progress--;
-										if(!working || (err != CELL_FS_OK)) ps3ntfs_unlink(filename + 5);
+										if(!working || (err != CELL_FS_OK)) ps3ntfs_unlink(ntfs_path(filename));
 									}
 								}
 								else
@@ -494,8 +494,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						#ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
-							filename[10] = ':';
-							if(ps3ntfs_stat(filename + 5, &bufn) >= 0) {is_ntfs = true; buf.st_size = bufn.st_size;}
+							if(ps3ntfs_stat(ntfs_path(filename), &bufn) >= 0) {is_ntfs = true; buf.st_size = bufn.st_size;}
 						}
 						#endif
 						if(is_ntfs || cellFsStat(filename, &buf) == CELL_FS_SUCCEEDED)
@@ -523,8 +522,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
-							filename[10] = ':';
-							if(ps3ntfs_unlink(filename + 5) >= 0) is_ntfs = true;
+							if(ps3ntfs_unlink(ntfs_path(filename)) >= 0) is_ntfs = true;
 						}
 #endif
 						if(is_ntfs || cellFsUnlink(filename) == CELL_FS_SUCCEEDED)
@@ -573,8 +571,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #ifdef USE_NTFS
 						if(is_ntfs_path(source) && is_ntfs_path(filename))
 						{
-							source[10] = filename[10] = ':';
-							if(ps3ntfs_rename(source + 5, filename + 5) >= 0) is_ntfs = true;
+							if(ps3ntfs_rename(ntfs_path(source), ntfs_path(filename)) >= 0) is_ntfs = true;
 						}
 #endif
 						if(is_ntfs || (cellFsRename(source, filename) == CELL_FS_SUCCEEDED))
@@ -601,8 +598,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
-							filename[10] = ':';
-							if(ps3ntfs_stat(filename + 5, &bufn) >= 0) {is_ntfs = true; buf.st_mtime = bufn.st_mtime;}
+							if(ps3ntfs_stat(ntfs_path(filename), &bufn) >= 0) {is_ntfs = true; buf.st_mtime = bufn.st_mtime;}
 						}
 #endif
 						if(is_ntfs || cellFsStat(filename, &buf) == CELL_FS_SUCCEEDED)
@@ -737,7 +733,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 						if(!split || !isDir(d_path)) strcpy(d_path, cwd);
 
-						mode_t mode = NULL; char dirtype[2]; dirtype[1] = NULL;
+						mode_t mode = NULL; char dirtype[2]; dirtype[1] = '\0';
 
 						u16 d_path_len = sprintf(filename, "%s/", d_path);
 						bool is_root = (d_path_len < 6); if(is_root) d_path_len = sprintf(filename, "/");
@@ -751,7 +747,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						if(is_ntfs_path(d_path))
 						{
 							cellRtcSetTime_t(&rDate, 0);
-							pdir = ps3ntfs_opendir(d_path); // /dev_ntfs1v -> ntfs1:
+							pdir = ps3ntfs_opendir(ntfs_path(d_path)); // /dev_ntfs1v -> ntfs1:
 							if(pdir) is_ntfs = true;
 						}
 #endif
@@ -776,7 +772,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 								if(*wcard && strcasestr(entry_name, wcard) == NULL) continue;
 
-								if((entry_name[0]=='$' && d_path[12] == 0) || (*wcard && strcasestr(entry_name, wcard) == NULL)) continue;
+								if((entry_name[0] == '$' && d_path[12] == '\0') || (*wcard && strcasestr(entry_name, wcard) == NULL)) continue;
 #ifdef USE_NTFS
 								// use host_root to expand all /dev_ntfs entries in root
 								bool is_host = is_root && ((mountCount > 0) && IS(entry_name, "host_root") && mounts);
@@ -794,7 +790,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									{
 										if(is_root && IS(entry_name, "host_root")) continue;
 
-										sprintf(path_file, "%s", entry_name);
+										strcpy(path_file, entry_name);
 
 										if(is_root)
 										{
@@ -891,17 +887,16 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						findPath(tempcwd, param, cwd);
 					}
 					else
-						sprintf(tempcwd, "%s", cwd);
+						strcpy(tempcwd, cwd);
 #ifdef USE_NTFS
 					if(is_ntfs_path(tempcwd))
 					{
-						tempcwd[10] = ':';
-						if(strlen(tempcwd) < 13 || (ps3ntfs_stat(tempcwd + 5, &bufn) >= 0 && (bufn.st_mode & S_IFDIR))) is_ntfs = true;
+						if(strlen(tempcwd) < 13 || (ps3ntfs_stat(ntfs_path(tempcwd), &bufn) >= 0 && (bufn.st_mode & S_IFDIR))) is_ntfs = true;
 					}
 #endif
 					if(is_ntfs || isDir(tempcwd))
 					{
-						sprintf(cwd, "%s", tempcwd);
+						strcpy(cwd, tempcwd);
 						ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 
 						dataactive = 1;
@@ -947,8 +942,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
-							filename[10] = ':';
-							if(ps3ntfs_mkdir(filename + 5, DMODE) >= CELL_OK) is_ntfs = true;
+							if(ps3ntfs_mkdir(ntfs_path(filename), DMODE) >= CELL_OK) is_ntfs = true;
 						}
 #endif
 						if(is_ntfs || cellFsMkdir(filename, DMODE) == CELL_FS_SUCCEEDED)

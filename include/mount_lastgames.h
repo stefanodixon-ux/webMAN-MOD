@@ -29,7 +29,7 @@
 			if(*lastgames.game[lastgames.last].path != '/') lastgames.last = 0;
 			if(*lastgames.game[lastgames.last].path != '/' || strlen(lastgames.game[lastgames.last].path) < 7) goto exit_mount;
 
-			sprintf(_path, "%s", lastgames.game[lastgames.last].path);
+			strcpy(_path, lastgames.game[lastgames.last].path);
 
 			multiCD = (is_multi_cd(_path) != NULL);
 

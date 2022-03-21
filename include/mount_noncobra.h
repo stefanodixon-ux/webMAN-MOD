@@ -110,7 +110,7 @@ install_mm_payload:
 
 	#endif //#ifdef EXT_GDATA
 
-	sprintf(path, "%s", _path);
+	strcpy(path, _path);
 
 	if(!isDir(path)) *_path = *path = NULL;
 

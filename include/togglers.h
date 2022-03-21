@@ -217,15 +217,15 @@ static void toggle_ps2emu(void)
 
 		// ---- Backup PS2Emus to Rebug Toolbox folder ----
 		if(not_exists(REBUG_TOOLBOX "ps2_netemu.self.cobra"))
-			 _file_copy((char*)PS2_EMU_PATH  "ps2_netemu.self",
+			 _file_copy(PS2_EMU_PATH  "ps2_netemu.self",
 						(char*)REBUG_TOOLBOX "ps2_netemu.self.cobra");
 
 		if(not_exists(REBUG_TOOLBOX "ps2_gxemu.self.cobra"))
-			 _file_copy((char*)PS2_EMU_PATH  "ps2_gxemu.self",
+			 _file_copy(PS2_EMU_PATH  "ps2_gxemu.self",
 						(char*)REBUG_TOOLBOX "ps2_gxemu.self.cobra");
 
 		if(not_exists(REBUG_TOOLBOX "ps2_emu.self.cobra"))
-			 _file_copy((char*)PS2_EMU_PATH  "ps2_emu.self",
+			 _file_copy(PS2_EMU_PATH  "ps2_emu.self",
 						(char*)REBUG_TOOLBOX "ps2_emu.self.cobra");
 
 		// ---- Swap ps2_netemu.self ----

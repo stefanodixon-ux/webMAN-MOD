@@ -122,8 +122,8 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	int flen = 0, hilite;
 	char *v;
 
-	char sfind[0x60]; memset(sfind, 0, sizeof(sfind));
-	u8 data[HEXVIEW_SIZE]; struct CellFsStat s;
+	char sfind[0x60];
+	u8 data[HEXVIEW_SIZE];
 	bool is_file = islike(param, "/hexview.ps3/");
 	if(is_file)
 	{
@@ -217,7 +217,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	else
 	if(islike(param, "/find.lv"))
 	{
-		char sfind[33], tfind[33];
+		char tfind[33];
 		if(isHEX(v + 1))
 			flen = Hex2Bin(v + 1, sfind);
 		else
@@ -225,7 +225,8 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 
 		u64 (*peek_mem)(u64) = lv1 ? peek_lv1 : peekq;
 
-		for(addr = address; addr < upper_memory; addr += step)
+		u64 _upper_memory = (upper_memory - flen + 8) & 0x8FFFFFFFFFFFFFF0ULL;
+		for(addr = address; addr < _upper_memory; addr += step)
 		{
 			value = peek_mem(addr); memcpy(tfind, (char*)&value, 8);
 			if(flen >  8) {value = peek_mem(addr +  8); memcpy(tfind +  8, (char*)&value, 8);}
@@ -259,7 +260,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		if(isHEX(value))
 			flen = Hex2Bin(value, templn);
 		else
-			memcpy(templn, value, flen);
+			memcpy64(templn, value, flen);
 
 		if(lv1)
 			poke_chunk_lv1(address, flen, (u8 *)templn);
@@ -276,7 +277,7 @@ view_file:
 
 	if(is_file)
 	{
-		param += 12; check_path_alias(param); cellFsStat(param, &s);
+		param += 12; check_path_alias(param);
 		read_file(param, (void*)data, 0x200, address);
 		add_breadcrumb_trail(buffer, param);
 
@@ -286,7 +287,8 @@ view_file:
 		buffer += concat(buffer, "]");
 
 		// file navigation
-		u64 max = s.st_size < HEXVIEW_SIZE ? 0 : s.st_size - HEXVIEW_SIZE;
+		size_t size = file_size(param);
+		u64 max = size < HEXVIEW_SIZE ? 0 : size - HEXVIEW_SIZE;
 		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=0x%llx\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
 		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=0x%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=0x%llx\">&gt;&gt;</a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
 		buffer += concat(buffer, templn);
@@ -381,4 +383,3 @@ view_file:
 }
 
 #endif
-

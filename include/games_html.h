@@ -305,7 +305,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 	if(c == 0 && templn[0] == '[') {char *s = strstr(templn + 3, "] "); if(s) {skey[4]=s[2],skey[5]=s[3],skey[6]=s[4];}}
 	//else if(subfolder) {char *s = strchr(templn + 3, '/'); if(s) {skey[4]=s[1],skey[5]=s[2],skey[6]=s[3];}}
 
-	templn[tlen] = NULL;
+	templn[tlen] = '\0';
 
 	char *p = NULL, *nm = templn + 5;
 	if(f1 > id_PS3ISO)
@@ -501,7 +501,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		u8 is_net = 0;
 
 		u16 idx = 0;
-		u32 tlen = buf_len; buffer[tlen] = NULL;
+		u32 tlen = buf_len; buffer[tlen] = '\0';
 		char *sysmem_html = buffer + (webman_config->sman ? _12KB_ : _8KB_);
 
 		typedef struct
@@ -554,7 +554,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		#ifdef NET_SUPPORT
 			if(!b0 && strstr(param, "net" ))  {filter0 = NET, b0 = 3;}
 		#endif
-			if(strchr(param, '?') != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && strstr(param, "?html") == NULL && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
+			if(strchr(param, '?') != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && (strstr(param, "?html") == NULL) && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
 		}
 
 		int ns = NONE; u8 uprofile = profile; enum icon_type default_icon;
@@ -596,6 +596,11 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 					if(strstr(param, "/GAME")) f1 = id_GAMES;
 				}
 
+				#ifdef COBRA_ONLY
+				if(filter0 == NTFS) {if(!islike(param, WMTMP)) continue;}
+				if(filter0 == NET)  {if(!islike(param, "/net")) continue;}
+				#endif
+				if(filter0 == 1) {if(!islike(param, "/dev_usb")) continue;}
 				if(b1) {if(b1 == id_NPDRM) {if(!islike(param, HDD0_GAME_DIR)) continue;} if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1!=f1) continue;}
 				else
 					if(check_content_type(f1)) continue;
@@ -610,7 +615,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 				{
 					flen = sprintf(tempstr, "http://%s%s", local_ip, path);
 					if(flen >= MAX_LINE_LEN) continue; //ignore lines too long
-					sprintf(line_entry[idx].path, "%s", tempstr);
+					strcpy(line_entry[idx].path, tempstr);
 					flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, slaunch.id, icon, false);
 				}
 				else
@@ -634,13 +639,13 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 										param, idx, icon, onerror_prefix, ((*onerror_prefix != NULL) && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, templn);
 
 						slen -= 4; if(slen < 32) break;
-						templn[slen] = NULL;
+						templn[slen] = '\0';
 					}
 					while(flen > MAX_LINE_LEN);
 				}
 
 				if(flen > MAX_LINE_LEN) continue; //ignore lines too long
-				sprintf(line_entry[idx].path, "%s", tempstr); idx++;
+				strcpy(line_entry[idx].path, tempstr); idx++;
 				tlen += (flen + div_size);
 			}
 			cellFsClose(fd);
@@ -655,6 +660,8 @@ list_games:
 
 		for(u8 f0 = filter0; f0 < MAX_DRIVES; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
 		{
+			if(!loading_games) break;
+
 			if(check_drive(f0)) continue;
 
 			is_net = IS_NET;
@@ -667,6 +674,8 @@ list_games:
 			ns = NONE; uprofile = profile;
 			for(u8 f1 = filter1; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 			{
+				if(!loading_games) break;
+
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 				#ifndef COBRA_ONLY
 				if(IS_ISO_FOLDER && !(IS_PS2ISO)) continue; // 0="GAMES", 1="GAMEZ", 5="PS2ISO", 10="video"
@@ -700,6 +709,7 @@ list_games:
 				subfolder = 0; uprofile = profile;
 		read_folder_html:
 //
+				if(!loading_games) break;
 				set_scan_path(li, f0, f1, is_net, uprofile, param);
 
 				#ifdef NET_SUPPORT
@@ -737,7 +747,7 @@ list_games:
 					#ifdef NET_SUPPORT
 					if(is_net)
 					{
-						if((ls == false) && (li == 0) && (f1 > 1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == NULL)) ls = true; // single letter folder was found
+						if((ls == false) && (li == 0) && (f1 > 1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0')) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 1) == FAILED) {v3_entry++; continue;}
 
@@ -758,7 +768,7 @@ list_games:
 						{
 							flen = sprintf(tempstr, "http://%s/mount_ps3%s%s/%s", local_ip, neth, param, enc_dir_name);
 							if(flen >= MAX_LINE_LEN) continue; //ignore lines too long
-							sprintf(line_entry[idx].path, "%s", tempstr);
+							strcpy(line_entry[idx].path, tempstr);
 							flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, title_id, icon, false);
 						}
 						else
@@ -782,7 +792,7 @@ list_games:
 
 						v3_entry++;
 						if((flen + HTML_KEY_LEN) > MAX_LINE_LEN) continue; //ignore lines too long
-						sprintf(line_entry[idx].path, "%s", tempstr); idx++;
+						strcpy(line_entry[idx].path, tempstr); idx++;
 						tlen += (flen + div_size);
 					}
 					else
@@ -860,7 +870,7 @@ next_html_entry:
 							add_title_id(templn, title_id);
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
-							templn[80] = NULL; // truncate title name
+							templn[80] = '\0'; // truncate title name
 
 							if(urlenc(tempstr, icon)) sprintf(icon, "%s", tempstr);
 
@@ -871,7 +881,7 @@ next_html_entry:
 							{
 								flen = sprintf(tempstr, "http://%s/mount_ps3%s/%s", local_ip, param, enc_dir_name);
 								if(flen >= MAX_LINE_LEN) continue; //ignore lines too long
-								sprintf(line_entry[idx].path, "%s", tempstr);
+								strcpy(line_entry[idx].path, tempstr);
 								flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, title_id, icon, false);
 							}
 							else
@@ -895,13 +905,13 @@ next_html_entry:
 													param, "", enc_dir_name, idx, icon, onerror_prefix, ((*onerror_prefix != NULL) && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, "", enc_dir_name, templn);
 
 									slen -= 4; if(slen < 32) break;
-									templn[slen] = NULL;
+									templn[slen] = '\0';
 								}
 								while(flen > MAX_LINE_LEN);
 							}
 
 							if(flen > MAX_LINE_LEN) continue; //ignore lines too long
-							sprintf(line_entry[idx].path, "%s", tempstr); idx++;
+							strcpy(line_entry[idx].path, tempstr); idx++;
 							tlen += (flen + div_size);
 						}
 						//////////////////////////////

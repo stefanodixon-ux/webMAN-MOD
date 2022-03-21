@@ -397,9 +397,9 @@ static void setup_parse_settings(char *param)
 #endif
 
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
-	char command[256]; size_t cmdlen = 0; memset(command, 0, sizeof(command));
+	char command[256];
 
-	cmdlen = get_param("ccbo=", command, param, 255);
+	size_t cmdlen = get_param("ccbo=", command, param, 255);
 
  #ifdef WM_CUSTOM_COMBO
 	if(save_file(WM_CUSTOM_COMBO "r2_square", command, cmdlen) != CELL_FS_SUCCEEDED)
@@ -1351,7 +1351,7 @@ static void read_settings(void)
 	//webman_config->netsrvp  = NETPORT;
 	//webman_config->ftp_port = FTPPORT;
 
-	//for(u8 id = 0; id < 5; id++) webman_config->netp[id] = NETPORT; // webman_config->netd[id] = 0; webman_config->neth[id][0] = NULL;
+	//for(u8 id = 0; id < 5; id++) webman_config->netp[id] = NETPORT; // webman_config->netd[id] = 0; webman_config->neth[id][0] = '\0';
 
 	//webman_config->foot  = 0;       //Standard (896KB)
 	webman_config->nospoof = 1;       //don't spoof fw version

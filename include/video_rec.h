@@ -103,10 +103,10 @@ static void set_setting_to_change(char *msg, const char *text)
 
 static void show_rec_format(const char *msg)
 {
-	char text[200]; u32 flags;
+	char text[200];
 	sprintf(text, "%s\nVideo: ", msg);
 
-	flags = (rec_video_format & 0xF000); // video format
+	u32 flags = (rec_video_format & 0xF000); // video format
 	if(flags == 0x0000) strcat(text, "MPEG4 ");  else
 	if(flags == 0x1000) strcat(text, "AVC MP "); else
 	if(flags == 0x2000) strcat(text, "AVC BL "); else
@@ -133,10 +133,12 @@ static void show_rec_format(const char *msg)
 	if(flags == 0x90) strcat(text, "25000K");
 	//if(flags == 0xA0) strcat(text, "30000K");
 
-	flags = (rec_audio_format & 0xF000); // audio format
-	if(flags == 0x0000) strcat(text, "\nAudio: AAC ");  else
-	if(flags == 0x1000) strcat(text, "\nAudio: ULAW "); else
-	if(flags == 0x2000) strcat(text, "\nAudio: PCM ");
+	strcat(text, "\nAudio: ");  // audio format
+
+	flags = (rec_audio_format & 0xF000);
+	if(flags == 0x0000) strcat(text, "AAC ");  else
+	if(flags == 0x1000) strcat(text, "ULAW "); else
+	if(flags == 0x2000) strcat(text, "PCM ");
 
 	flags = (rec_audio_format & 0xF); // audio bitrate
 	if(flags == 0x0) strcat(text, "96K");  else
@@ -243,11 +245,11 @@ static bool rec_start(const char *param)
 
 	if(vidfile == param)
 	{
-		sprintf((char*)&recOpt[0x6], "%s", vidfile);
+		strcpy((char*)&recOpt[0x6], vidfile);
 	}
 	else
 	{
-		cellFsMkdir((char*)"/dev_hdd0/VIDEO", 0777);
+		cellFsMkdir("/dev_hdd0/VIDEO", 0777);
 
 		CellRtcDateTime t;
 		cellRtcGetCurrentClockLocalTime(&t);

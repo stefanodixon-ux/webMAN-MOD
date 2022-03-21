@@ -98,16 +98,16 @@ mount_again:
 			}
 			#ifdef MOUNT_PNG
 			if(is_PNG)
-				templn[path_len - 6] = NULL; // remove .0.PNG
+				templn[path_len - 6] = '\0'; // remove .0.PNG
 			else
 			#endif
-				templn[path_len - 2] = NULL; // remove .0
+				templn[path_len - 2] = '\0'; // remove .0
 		}
 
 		char *cobra_iso_list[iso_parts], iso_list[iso_parts][path_len + 2];
 
 		change_cue2iso(_path);
-		sprintf(iso_list[0], "%s", _path);
+		strcpy(iso_list[0], _path);
 		cobra_iso_list[0] = (char*)iso_list[0];
 
 		for(u8 n = 1; n < iso_parts; n++)
@@ -221,7 +221,7 @@ mount_again:
 								&& not_exists("/dev_flash/pspemu/psp_emulator.self.original"))
 								{
 									enable_dev_blind(NULL);
-									_file_copy((char*)(WM_RES_PATH "/psp_emulator.self"), (char*)"/dev_blind/pspemu/psp_emulator.self.dec_edat");
+									_file_copy(WM_RES_PATH "/psp_emulator.self", (char*)"/dev_blind/pspemu/psp_emulator.self.dec_edat");
 								}
 							}
 

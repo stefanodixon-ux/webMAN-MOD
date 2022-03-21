@@ -26,9 +26,9 @@ static _client clients[MAX_CLIENTS];
 static void init_client(u8 index)
 {
 	if(clients[index].fd) cellFsClose(clients[index].fd);
-	for(u8 i = 0; i < MAX_ISO_PARTS; i++) {if(clients[index].fp[i]) cellFsClose(clients[index].fp[i]); clients[index].fp[i] = NULL;}
+	for(u8 i = 0; i < MAX_ISO_PARTS; i++) {if(clients[index].fp[i]) cellFsClose(clients[index].fp[i]); clients[index].fp[i] = 0;}
 
-	clients[index].fd = NULL;
+	clients[index].fd = 0;
 	clients[index].is_multipart = 0;
 	clients[index].part = 0;
 	clients[index].part_size = 0;
@@ -45,7 +45,7 @@ static void translate_path(char *path, u16 fp_len)
 		return;
 	}
 
-	char tmppath[fp_len+1]; sprintf(tmppath, "%s", path);
+	char tmppath[fp_len + 1]; strcpy(tmppath, path);
 
 	for(u8 i = 0; i < 16; i++)
 	{
@@ -435,7 +435,7 @@ static int process_open_dir_cmd(u8 index, netiso_open_dir_cmd *cmd)
 		return FAILED;
 	}
 
-	sprintf(clients[index].dirpath, "%s", dirpath);
+	strcpy(clients[index].dirpath, dirpath);
 
 	/// translate path ///
 
@@ -602,7 +602,7 @@ static void handleclient_net(u64 arg)
 	sys_net_get_sockinfo(clients[index].s, &conn_info, 1);
 
 	char ip_address[16];
-	sprintf(ip_address, "%s", inet_ntoa(conn_info.remote_adr));
+	strcpy(ip_address, inet_ntoa(conn_info.remote_adr));
 
 	if(bind_check && webman_config->bind && ((conn_info.local_adr.s_addr!=conn_info.remote_adr.s_addr)  && strncmp(ip_address, webman_config->allow_ip, strlen(webman_config->allow_ip))!=0))
 	{

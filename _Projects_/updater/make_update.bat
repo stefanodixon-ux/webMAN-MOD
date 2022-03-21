@@ -1,6 +1,6 @@
 @ECHO OFF
-title make_package_custom
-if not exist custom md custom
+title Building webMAN_MOD_latest.pkg
+if not exist update md update
 
 :: ----------------------------------------------
 :: Simple script to build a PKG (by CaptainCPS-X)

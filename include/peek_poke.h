@@ -229,8 +229,8 @@ static void add_to_map(const char *path1, const char *path2)
 			if(IS(file_to_map[n].src, path1)) return;
 		}
 
-		sprintf(file_to_map[max_mapped].src, "%s", path1);
-		sprintf(file_to_map[max_mapped].dst, "%s", path2);
+		strcpy(file_to_map[max_mapped].src, path1);
+		strcpy(file_to_map[max_mapped].dst, path2);
 		max_mapped++;
 	}
 }
@@ -297,7 +297,7 @@ static bool isHEX(const char *value)
 static u16 Hex2Bin(const char *src, char *out)
 {
 	char *target = out;
-	char value[3]; value[2] = NULL;
+	char value[3]; value[2] = '\0';
 	if(islike(src, "0x")) src += 2;
 	while(*src && src[1])
 	{
@@ -312,7 +312,7 @@ static u16 Hex2Bin(const char *src, char *out)
 }
 #endif
 
-#if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT)
+#if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT) || defined(USE_NTFS) || defined(DEBUG_MEM)
 static void memcpy64(void *dst, void *src, int n)
 {
 	uint8_t p = n & 7;

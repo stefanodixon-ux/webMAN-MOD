@@ -24,7 +24,7 @@ static char *_concat(t_string *dest, const char *src)
 
 	while (*str) {str++, dest->size++;} // find last byte
 
-	while ((*str++ = *src++)) dest->size++; *str = 0; // append src
+	while ((*str++ = *src++)) dest->size++; // append src
 
 	return dest->str;
 }

@@ -39,6 +39,15 @@
 #define path	buffer	/* "line", "path" and "buffer" are synonyms */
 #define IS_WEB_COMMAND(line)	(islike(line, "/mount") || (strstr(line, ".ps3") != NULL) || (strstr(line, "_ps3") != NULL))
 
+#if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
+static void handle_file_request(const char *wm_url)
+{
+	if(wm_url || file_exists(WMREQUEST_FILE))
+	{
+		do_web_command(WM_FILE_REQUEST, wm_url);
+	}
+}
+
 static void parse_script(const char *script_file)
 {
 	if(script_running) return;
@@ -90,11 +99,11 @@ static void parse_script(const char *script_file)
 	#else
 					if(*line == '/') {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
 	#endif
-					if(_islike(line, "ren /"))  {path += 4; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_RENAME, dest);} else cellFsRename(path, dest);} else
+					if(_islike(line, "ren /"))  {path += 4; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_RENAME, dest);} else rename_file(path, dest);} else
 					if(_islike(line, "copy /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_COPY, dest);}  else if(isDir(path))  folder_copy(path, dest); else  file_copy(path, dest, COPY_WHOLE_FILE);} else
 					if(_islike(line, "fcopy /")){path += 6; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_FCOPY, dest);} else if(isDir(path)) _folder_copy(path, dest); else _file_copy(path, dest);} else
-					if(_islike(line, "swap /")) {path += 5; sprintf(cp_path, "%s", path); char *slash = get_filename(cp_path); sprintf(slash, "/~swap"); cellFsRename(path, cp_path); cellFsRename(dest, path); cellFsRename(cp_path, dest);} else
-					if(_islike(line, "move /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_MOVE, dest);} else cellFsRename(path, dest);} else
+					if(_islike(line, "swap /")) {path += 5; strcpy(cp_path, path); char *slash = get_filename(cp_path); sprintf(slash, "/~swap"); rename_file(path, cp_path); rename_file(dest, path); rename_file(cp_path, dest);} else
+					if(_islike(line, "move /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_MOVE, dest);} else rename_file(path, dest);} else
 					if(_islike(line, "list /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);} else
 					if(_islike(line, "cpbk /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}
 				}
@@ -197,6 +206,28 @@ static void start_event(u8 event_id)
 #undef path
 #undef IS_WEB_COMMAND
 
+static bool do_custom_combo(const char *filename)
+{
+ #ifdef WM_CUSTOM_COMBO
+	char combo_file[128];
+
+	if(*filename == '/')
+		snprintf(combo_file, 127, "%s", filename);
+	else
+		snprintf(combo_file, 127, "%s%s", WM_CUSTOM_COMBO, filename); // use default path
+ #else
+	const char *combo_file = filename;
+ #endif
+
+	if(file_exists(combo_file))
+	{
+		parse_script(combo_file);
+		sys_ppu_thread_sleep(2);
+		return true;
+	}
+	return false;
+}
+#endif
 #else
 #define start_event(a)
 #endif // #ifdef COPY_PS3

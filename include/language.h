@@ -344,7 +344,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 	if(!lang_roms) close_language();
 
  retry:
-	sprintf(label, "%s", default_str);
+	strcpy(label, default_str);
 
 	if(fh == 0)
 	{
@@ -408,7 +408,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 					if(c == '[') copy = 1;
 				}
 
-				if(str_len) label[str_len] = NULL;
+				if(str_len) label[str_len] = '\0';
 
 				if(str_len < do_retry) goto do_retry;
 

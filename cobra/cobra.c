@@ -1533,9 +1533,9 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	unsigned int real_disctype, effective_disctype, iso_disctype;
 
 	char title_id[11];
-	read_file(path, title_id, 10, 0x8373); title_id[10] = 0;
+	read_file(path, title_id, 10, 0x8373); title_id[10] = '\0';
 
-	//memcpy(title_id, sector + 0x373, 10); title_id[10] = 0;
+	//memcpy(title_id, sector + 0x373, 10); title_id[10] = '\0';
 
 	uint8_t is_dir = 1;
 	uint8_t do_mount = 0;

@@ -62,8 +62,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 		memset(buffer, 0, sizeof(buffer));
 		if(working && (recv(conn_s_ps3mapi, buffer, PS3MAPI_RECV_SIZE, 0) > 0))
 		{
-			char *p = strstr(buffer, "\r\n");
-			if(p) *p = NULL; else break;
+			if(!get_flag(buffer, "\r\n")) break;
 
 			#ifdef WM_REQUEST
 			if((*buffer == '/') || islike(buffer, "GET"))
@@ -543,11 +542,11 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						if(_IS(cmd, "GET")) // REGISTRY GET <regkey>
 						{
 							memset(param1, 0, PS3MAPI_MAX_LEN);
-							u32 value = get_xreg_value(param2, 0, param1, true);
+							int value = get_xreg_value(param2, 0, param1, true);
 							if(*param1)
 								sprintf(buffer, "200 %s\r\n", param1);
 							else
-								sprintf(buffer, "200 %u\r\n", value);
+								sprintf(buffer, "200 %i\r\n", value);
 							ssend(conn_s_ps3mapi, buffer);
 						}
 						else if(_IS(cmd, "SET")) // REGISTRY SET <regkey> <value>
@@ -555,7 +554,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 							split = ssplit(param2, param1, PS3MAPI_MAX_LEN, buffer, PS3MAPI_MAX_LEN);
 							if(split)
 							{
-								u32 value = val(buffer);
+								int value = val(buffer);
 								get_xreg_value(param1, value, buffer, false);
 								ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 							}
@@ -621,7 +620,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					for(; n <= 8; n++)
 					{
 						sp[n] = 0, p = strchr(params, '|'); if(!p) break;
-						params = p + 1, p[0] = NULL;
+						params = p + 1, p[0] = '\0';
 						sp[n] = (u64)val(params); if(!sp[n] && (*params != '0')) sp[n] = (u64)(u32)(params);
 					}
 
