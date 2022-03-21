@@ -12,8 +12,6 @@ enum scan_operations
 	SCAN_TRUNCATE  = 9
 };
 
-static void mkdir_tree(char *path);
-
 static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, char *dest)
 {
 	// fop: 0 = scan to file, 1 = del, 2 = copy, 3 = force copy, 4 = move, 5 = rename/move in same fs, 6 = copy bak
@@ -102,7 +100,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			if(cellFsGetDirectoryEntries(fd, &entry_d, sizeof(entry_d), &read_f) || !read_f) break;
 
 			if(copy_aborted) break;
-			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == '\0')) continue;
+			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == NULL)) continue;
 
 			if(p_slash) sprintf(pentry, "%s", entry_name); else sprintf(pentry, "/%s", entry_name);
 

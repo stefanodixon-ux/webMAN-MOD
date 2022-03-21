@@ -69,7 +69,6 @@
  #undef NET_SUPPORT
  #undef USE_INTERNAL_NET_PLUGIN
  #undef USE_INTERNAL_NTFS_PLUGIN
- #undef LOAD_PRX
 #endif
 
 #ifdef LAST_FIRMWARE_ONLY
@@ -343,7 +342,7 @@ static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_si
 static bool not_exists(const char* path);
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
-static void _file_copy(const char *file1, char *file2);
+static void _file_copy(char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, const char *param);
 static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param);
 static char *get_filename(const char *path);
@@ -458,7 +457,6 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/gamedata.h"
 
-#include "include/script.h"
 #include "include/debug_mem.h"
 #include "include/fix_game.h"
 #include "include/ftp.h"
@@ -480,6 +478,7 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/patch_gameboot.h"
 #include "include/patch_ps2demo.h"
+#include "include/script.h"
 #include "include/_mount.h"
 #include "include/file_manager.h"
 

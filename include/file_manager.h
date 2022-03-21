@@ -115,7 +115,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	// encode url for html //
 	/////////////////////////
 
-	if(urlenc(tempstr, templn)) {tempstr[_MAX_LINE_LEN] = '\0'; sprintf(templn, "%s", tempstr);}
+	if(urlenc(tempstr, templn)) {tempstr[_MAX_LINE_LEN] = NULL; sprintf(templn, "%s", tempstr);}
 
 	// is image?
 	u8 show_img = (!is_dir && (_IS(ext, ".png") || _IS(ext, ".jpg") || _IS(ext, ".bmp")));
@@ -469,7 +469,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 		tlen+=(slash - templn) + 1; //strlen(templn) + 1;
 
 		strcpy(swap, param);
-		swap[tlen] = '\0';
+		swap[tlen] = NULL;
 
 		buffer += concat(buffer, "<a class=\"f\" href=\"");
 		urlenc(url, swap);
@@ -664,8 +664,8 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				strcat(param, "/");
 				if(open_remote_dir(ns, param + 5, &abort_connection) >= 0)
 				{
-					strcpy(templn, param); while(templn[plen] == '/') templn[plen--] = '\0'; plen++;
-					remove_filename(templn); if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = '\0';}
+					strcpy(templn, param); while(templn[plen] == '/') templn[plen--] = NULL; plen++;
+					char *p = get_filename(templn); if(p) *p = NULL; if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = NULL;}
 
 					urlenc(swap, templn);
 					flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
@@ -699,7 +699,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 							{
 								flen = sprintf(templn, "%s%s", param, dir_items[n].name);
 							}
-							if(templn[flen - 1] == '/') templn[flen--] = '\0';
+							if(templn[flen - 1] == '/') templn[flen--] = NULL;
 
 							cellRtcSetTime_t(&rDate, dir_items[n].mtime);
 
@@ -720,7 +720,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				}
 				else //may be a file
 				{
-					if(param[plen] == '/') param[plen] = '\0';
+					if(param[plen] == '/') param[plen] = NULL;
 
 					int is_directory = 0;
 					s64 file_size;
@@ -819,7 +819,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					{
 						flen = sprintf(templn, "%s/%s", param, entry_name);
 					}
-					if(templn[flen - 1] == '/') templn[flen--] = '\0';
+					if(templn[flen - 1] == '/') templn[flen--] = NULL;
 
 					if(is_root | is_bdvd)
 					{

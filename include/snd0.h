@@ -4,22 +4,19 @@ static u8 prev_nosnd0 = 0;
 static void snd0_thread(__attribute__((unused)) u64 arg)
 {
 	int fd;
-	if(cellFsOpendir("/dev_hdd0/game", &fd) == CELL_FS_SUCCEEDED)
+	if(cellFsOpendir((char*)"/dev_hdd0/game", &fd) == CELL_FS_SUCCEEDED)
 	{
 		prev_nosnd0 = webman_config->nosnd0;
 
-		CellFsDirectoryEntry entry; size_t read_e; char path[64];
+		CellFsDirectoryEntry entry; size_t read_e; char snd0_file[64];
 		int mode = webman_config->nosnd0 ? NOSND : MODE; // toggle file access permissions
-
-		u8 path_len = sprintf(path, HDD0_GAME_DIR);
-		char *snd0_file = path + path_len;
 
 		while(working)
 		{
 			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
 			if(entry.entry_name.d_namlen != TITLE_ID_LEN) continue;
-			sprintf(snd0_file, "%s/SND0.AT3",  entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
-			sprintf(snd0_file, "%s/ICON1.PAM", entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
+			sprintf(snd0_file, "%s%s/SND0.AT3",  HDD0_GAME_DIR, entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
+			sprintf(snd0_file, "%s%s/ICON1.PAM", HDD0_GAME_DIR, entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
 		}
 		cellFsClosedir(fd);
 	}

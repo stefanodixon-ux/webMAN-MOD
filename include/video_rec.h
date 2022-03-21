@@ -247,7 +247,7 @@ static bool rec_start(const char *param)
 	}
 	else
 	{
-		cellFsMkdir("/dev_hdd0/VIDEO", 0777);
+		cellFsMkdir((char*)"/dev_hdd0/VIDEO", 0777);
 
 		CellRtcDateTime t;
 		cellRtcGetCurrentClockLocalTime(&t);

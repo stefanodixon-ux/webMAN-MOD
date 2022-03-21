@@ -123,7 +123,7 @@ static void fix_game_folder(char *path)
 			}
 		}
 
-		path[plen] = '\0';
+		path[plen] = NULL;
 		cellFsClosedir(fd);
 		if(plevel) plevel--;
 	}
@@ -264,7 +264,7 @@ exit_fix:
 	}
 	else
 	{
-		get_name(update_path, get_filename(iso_file) + 1, GET_WMTMP); strcat(update_path, ".SFO");
+		get_name(update_path, get_filename(iso_file) + 1, GET_WMTMP); strcat(update_path, ".SFO\0");
 		getTitleID(update_path, title_id, GET_TITLE_ID_ONLY);
 	}
 
@@ -301,8 +301,8 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 			if(!get_flag(game_path, "/PS3_GAME")) get_flag(game_path, "/USRDIR");
 
 			if(islike(game_path, "/net") || strstr(game_path, ".ntfs["))
-				{get_name(filename, get_filename(game_path) + 1, GET_WMTMP); strcat(filename, ".SFO");}
-			elsel
+				{get_name(filename, get_filename(game_path) + 1, GET_WMTMP); strcat(filename, ".SFO\0");}
+			else
 				sprintf(filename, "%s/PARAM.SFO", game_path);
 
 			if(not_exists(filename)) sprintf(filename, "%s/PS3_GAME/PARAM.SFO", game_path);
@@ -321,7 +321,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 					save_file(filename, paramsfo, bytes_read);
 				}
 
-				tmp_path[10] = '\0';
+				tmp_path[10] = NULL;
 
 				// get titleid & fix game folder if version is higher than cfw
 				if((fix_param_sfo(mem, title_id, FIX_SFO, (u16)bytes_read) || fix_type == FIX_GAME_FORCED) && fix_type != FIX_GAME_DISABLED && !islike(tmp_path, "/net") && !islike(tmp_path, "/dev_bdvd") && !strstr(game_path, ".ntfs["))

@@ -26,9 +26,9 @@ static _client clients[MAX_CLIENTS];
 static void init_client(u8 index)
 {
 	if(clients[index].fd) cellFsClose(clients[index].fd);
-	for(u8 i = 0; i < MAX_ISO_PARTS; i++) {if(clients[index].fp[i]) cellFsClose(clients[index].fp[i]); clients[index].fp[i] = 0;}
+	for(u8 i = 0; i < MAX_ISO_PARTS; i++) {if(clients[index].fp[i]) cellFsClose(clients[index].fp[i]); clients[index].fp[i] = NULL;}
 
-	clients[index].fd = 0;
+	clients[index].fd = NULL;
 	clients[index].is_multipart = 0;
 	clients[index].part = 0;
 	clients[index].part_size = 0;

@@ -198,7 +198,7 @@ static void urldec(char *url, char *original)
 				}
 			}
 		}
-		url[pos] = '\0';
+		url[pos] = NULL;
 	}
 }
 
@@ -560,7 +560,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 	else
 		{strcat(header, "text/html"); set_base_path = true;}
 
-	if(set_base_path && param[0] == '/' && (param[1] == 'n' || param[1] == 'd' || param[1] == 'a')) {strcpy(html_base_path, param); if((param[1] != 'n') && !isDir(param)) flen = get_filename(html_base_path) - html_base_path; html_base_path[flen] = '\0'; }
+	if(set_base_path && param[0] == '/' && (param[1] == 'n' || param[1] == 'd' || param[1] == 'a')) {strcpy(html_base_path, param); if((param[1] != 'n') && !isDir(param)) flen = get_filename(html_base_path) - html_base_path; html_base_path[flen] = NULL; }
 
 	strcat(header, "\r\n");
 
@@ -626,7 +626,7 @@ static u16 get_value(char *value, const char *url, u16 max_size)
 		if(url[n] == '&' || url[n] == 0) break;
 		value[n] = url[n];
 	}
-	value[n] = '\0';
+	value[n] = NULL;
 	return n;
 }
 

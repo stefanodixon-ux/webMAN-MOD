@@ -87,7 +87,7 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 
 	if(!_path) {*title_id = NULL; return;}
 
-	char *path = get_filename(_path);
+	char *path = (char*)_path; if(*_path == '/') get_filename(_path);
 	char *game_id = strstr(_path, " [S"); // title id enclosed in square brackets
 
 	if(game_id)
