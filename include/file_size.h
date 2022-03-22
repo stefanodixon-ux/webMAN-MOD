@@ -1,5 +1,13 @@
 #define SC_FS_LINK						(810)
 
+static void free_size(const char *dev_name, char *out)
+{
+	const char *str_free = (char *)STR_MBFREE;
+	int dev_free = (int)(get_free_space(dev_name)>>20), dm = (dev_free % KB) / 100;
+	if(dev_free > 1024) {dev_free /= KB, str_free = (char *)STR_GBFREE;}
+	sprintf(out, " %'d.%i %s", dev_free, dm, str_free);
+}
+
 static s64 file_ssize(const char *path)
 {
 #ifdef USE_NTFS

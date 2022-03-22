@@ -185,14 +185,9 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 #else
 			{
 				u64 freeSize = 0, devSize = 0;
-
 #ifdef USE_NTFS
 				if(is_ntfs)
-				{
-					struct statvfs vbuf;
-					ps3ntfs_statvfs(templn + 5, &vbuf);
-					freeSize = (u64)vbuf.f_bfree * (u64)vbuf.f_bsize, devSize = (u64)vbuf.f_blocks * (u64)vbuf.f_bsize;
-				}
+					get_ntfs_disk_space(templn + 5, &freeSize, &devSize);
 				else
 #endif
 				{system_call_3(SC_FS_DISK_FREE, (u64)(u32)(templn), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
@@ -813,7 +808,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 				for (u8 u = 0; u < ntmp; u++)
 				{
-					if(u) {sprintf(entry_name, "dev_%s", mounts[u-1].name);}
+					if(u) {sprintf(entry_name, "dev_%s", mounts[u-1].name); is_ntfs = true;}
 #endif
 					if(is_root)
 					{
@@ -849,6 +844,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					if(!working) break;
 #ifdef USE_NTFS
 				}
+				if(is_root) is_ntfs = false;
 #endif
 			}
 
@@ -1037,12 +1033,9 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 			_concat(&sout, templn);
 
-			if(param[1] != 'n')
+			if(param[1] != 'n') // not /net
 			{
-				char *str_free = (char *)STR_MBFREE;
-				int dev_free = (int)(get_free_space(param)>>20), dm = (dev_free % KB) / 100;
-				if(dev_free > 1024) {dev_free /= KB, str_free = (char *)STR_GBFREE;}
-				sprintf(templn, " %'d.%i %s", dev_free, dm, str_free);
+				free_size(param, templn);
 				_concat(&sout, templn);
 			}
 

@@ -456,13 +456,12 @@
 								}
 								else
 								{
-									char *str_free = (char *)STR_MBFREE;
+									char hdd_free[40];
+									free_size(drives[0], hdd_free);
 									int mem_free = (int)(meminfo.avail>>10);
-									int hdd_free = (int)(get_free_space(drives[0])>>20), dm = (hdd_free % KB) / 100;
-									if(hdd_free > 1024) {hdd_free /= KB, str_free = (char *)STR_GBFREE;}
-									sprintf(msg + len,  "%s: %i.%i %s\n"
+									sprintf(msg + len,  "%s: %s\n"
 														"%s: %i %s\n",
-														STR_STORAGE, hdd_free, dm, str_free,
+														STR_STORAGE, hdd_free,
 														STR_MEMORY,  mem_free, STR_KBFREE);
 								}
 

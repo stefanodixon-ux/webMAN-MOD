@@ -18,8 +18,8 @@ static void enable_dev_blind(const char *msg);
 static sys_addr_t g_sysmem = NULL;
 
 #include "file_ntfs.h"
-#include "file_size.h"
 #include "file_devs.h"
+#include "file_size.h"
 #include "file_copy.h"
 #include "file_delete.h"
 

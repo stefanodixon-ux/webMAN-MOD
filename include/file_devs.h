@@ -50,22 +50,30 @@ static void disable_dev_blind(void)
 	system_call_3(SC_FS_UMOUNT, (u64)(char*)"/dev_blind", 0, 1);
 }
 
+#ifdef USE_NTFS
+static void get_ntfs_disk_space(const char *dev_name, u64 *freeSize, u64 *devSize)
+{
+	struct statvfs vbuf;
+	ps3ntfs_statvfs(dev_name, &vbuf);
+	*freeSize = ((u64)vbuf.f_bfree * (u64)vbuf.f_bsize);
+	*devSize  = (u64)vbuf.f_blocks * (u64)vbuf.f_bsize;
+}
+#endif
+
 static u64 get_free_space(const char *dev_name)
 {
+	u64 freeSize = 0, devSize = 0;
+
 #ifdef USE_NTFS
 	if(is_ntfs_path(dev_name))
 	{
-		char tmp[8];
-		strncpy(tmp, ntfs_path(dev_name), 8); tmp[7] = 0; // ntfs0:/
-
-		struct statvfs vbuf;
-		ps3ntfs_statvfs(tmp, &vbuf);
-		return ((u64)vbuf.f_bfree * (u64)vbuf.f_bsize);
+		char ntfs[8];
+		strncpy(ntfs, ntfs_path(dev_name), 8); ntfs[7] = 0; // ntfs0:/
+		get_ntfs_disk_space(ntfs, &freeSize, &devSize);
+		return freeSize;
 	}
 #endif
 	if(!islike(dev_name, "/dev_")) return 0;
-
-	u64 freeSize = 0, devSize = 0;
 
 	{system_call_3(SC_FS_DISK_FREE, (u64)(u32)(dev_name), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
 	return freeSize;
