@@ -110,7 +110,7 @@
 
 			if(*map_title_id && (*params == NULL))
 			{
-				patch_gameboot(0);
+				patch_gameboot(0); // None
 				launch_app_home_icon(true);
 			}
 			else if((*params != NULL) && isDir(path))

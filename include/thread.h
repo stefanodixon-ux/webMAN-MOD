@@ -65,10 +65,8 @@
 
 #define SYS_PPU_THREAD_CREATE_NORMAL	0x000
 
-#ifdef COBRA_ONLY
- #ifdef PS3NET_SERVER
- static sys_ppu_thread_t thread_id_netsvr = SYS_PPU_THREAD_NONE;
- #endif
+#ifdef PS3NET_SERVER
+static sys_ppu_thread_t thread_id_netsvr = SYS_PPU_THREAD_NONE;
 #endif
 static sys_ppu_thread_t thread_id_wwwd = SYS_PPU_THREAD_NONE;
 static sys_ppu_thread_t thread_id_ftpd = SYS_PPU_THREAD_NONE;

@@ -1599,9 +1599,7 @@ static void mount_thread(u64 action)
 	{
 		if(action) show_status(STR_ERROR, _path);
 		do_umount(false); ret = false;
-#ifdef PS3MAPI
 		patch_gameboot(0); // None
-#endif
 		goto finish;
 	}
 

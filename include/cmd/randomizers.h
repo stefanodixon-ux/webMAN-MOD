@@ -1,4 +1,5 @@
 #ifdef VISUALIZERS
+	#ifdef PATCH_GAMEBOOT
 	else if(islike(param, "/gameboot.ps3"))
 	{
 		// /gameboot.ps3?<id>      set gameboot <0-19>
@@ -10,6 +11,7 @@
 		if(!mc) keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 		goto exit_handleclient_www;
 	}
+	#endif
 	else if(islike(param, "/wallpaper.ps3") ||
 			islike(param, "/earth.ps3")     ||
 			islike(param, "/canyon.ps3")    ||

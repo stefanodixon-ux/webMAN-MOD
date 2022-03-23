@@ -1,6 +1,6 @@
 #define ENABLE_INGAME_SCREENSHOT	((int*)getNIDfunc("vshmain",0x981D7E9F,0))[0] -= 0x2C;
 
-#ifndef LITE_EDITION
+#ifdef PS3_BROWSER
 static int (*vshmain_is_ss_enabled)(void) = NULL;
 static int (*set_SSHT_)(int) = NULL;
 

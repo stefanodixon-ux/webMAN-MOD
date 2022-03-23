@@ -5,7 +5,7 @@
 char *ntfs_ext = strstr(_path, ".ntfs[");
 if(ntfs_ext)
 {
-	set_mount_type(_path);
+	set_mount_type(ntfs_ext);
 
 #ifdef USE_INTERNAL_NTFS_PLUGIN
 	// ------------------------------------------------------------------------------------------------------------

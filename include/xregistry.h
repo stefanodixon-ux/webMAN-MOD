@@ -79,7 +79,7 @@ static u32 get_xreg_value(const char *key, int new_value, char *str_value, bool 
 }
 #endif
 
-#ifndef LITE_EDITION
+#ifdef PS3_BROWSER
 static int get_xreg_entry_size(int id)
 {
 	if(id >= 0x28 && id < 0x3D)

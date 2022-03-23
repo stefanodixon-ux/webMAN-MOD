@@ -1,4 +1,4 @@
-#ifdef PS3MAPI
+#ifdef PATCH_GAMEBOOT
 
 #define MIN_RCO_SIZE			300000
 #define BASE_PATCH_ADDRESS		0x800000UL
@@ -172,7 +172,4 @@ static void patch_gameboot_by_type(const char *path)
 			patch_gameboot(0); // None
 	}
 }
-#else
-#define set_mount_type(a)
-#define patch_gameboot_by_type(a)
-#endif //#ifdef PS3MAPI
+#endif //#ifdef PATCH_GAMEBOOT

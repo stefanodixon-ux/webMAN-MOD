@@ -344,9 +344,7 @@ static void reload_xmb(void)
 		}
 		if(mount_unk)
 		{
-			#ifdef PS3MAPI
-			patch_gameboot(0); // non
-			#endif
+			patch_gameboot(0); // None
 			launch_disc(true);
 			mount_unk = EMU_OFF;
 		}
