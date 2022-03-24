@@ -1208,8 +1208,10 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 			if(pos)
 			{
 				unsigned int prx_id = get_valuen32(pos, "unload_slot=");
-				//{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); }
-				stop_unload(prx_id); // <- unload system modules
+				if(get_valuen32(param, "sys="))
+					stop_unload(prx_id); // <- unload system modules
+				else
+					{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); }
 			}
 			else
 			{
@@ -1296,10 +1298,11 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 						  HTML_FORM_METHOD_FMT("/gameplugin")
 						  "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
 						  "<input name=\"unload_slot\" type=\"hidden\" value=\"%i\">"
+						  "<input name=\"sys\" type=\"hidden\" value=\"%u\">"
 						  "<input type=\"submit\" value=\" Unload \" title=\"id=%i\">"
 						  "</form>"
 						 "</td>"
-						"</tr>", HTML_FORM_METHOD, pid, mod_list[slot], mod_list[slot]);
+						"</tr>", HTML_FORM_METHOD, islike(tmp_filename, "/dev_flash"),  pid, mod_list[slot], mod_list[slot]);
 			}
 			else
 			{

@@ -215,6 +215,11 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 								"</script>",                 STR_MYGAMES);  _concat(&sbuffer, templn);
 			}
 			#endif
+
+			#ifdef LITE_EDITION
+			_concat(&sbuffer, "<script>document.getElementsByClassName('b_ps3mapi')[0].style.display='none';</script>");
+			#endif
+
 			if(webman_config->homeb && islike(webman_config->home_url, "http"))
 			{
 				sprintf(templn, "<script>hurl=\"%s\";</script>", webman_config->home_url);  _concat(&sbuffer, templn);
@@ -815,6 +820,9 @@ retry_response:
 					#include "www_page.h"
 				}
 
+#ifdef LITE_EDITION
+continue_rendering:
+#endif
 				#include "cmd/edit_chat_popup.h"
 
 				////////////////////////////////////
@@ -831,11 +839,9 @@ retry_response:
 				else // process web command
 				{
 					{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
- #ifndef LITE_EDITION
+					#ifndef LITE_EDITION
 					if(!strstr(param, "$nobypass")) { PS3MAPI_REENABLE_SYSCALL8 }
- #else
- continue_rendering:
- #endif
+					#endif
 					is_busy = true;
 
 					#include "cmd/refresh.h"
