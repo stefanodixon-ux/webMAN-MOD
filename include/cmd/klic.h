@@ -33,32 +33,31 @@
 			while((klic_polling == KL_AUTO) && IS_ON_XMB && working) sys_ppu_thread_usleep(500000);
 		}
 
-		char kl[0x120], prev[0x200], buffer[0x200]; memset(kl, 0, sizeof(kl));
+		#define KLICENSEE_PART1		((u64 *)(npklic_struct_offset))
+		#define KLICENSEE_PART2		((u64 *)(npklic_struct_offset + 8))
+		#define KLIC_PATH			(npklic_struct_offset + 0x10)
+		#define KLIC_CONTENT_ID		(npklic_struct_offset - 0xA4)
+
+		char kl[18], prev[0x200], buffer[0x200]; *kl = 0;
 
 		if(IS_INGAME)
 		{
-			#define KLICENSEE_SIZE          0x10
-			#define KLICENSEE_OFFSET        (npklic_struct_offset)
-			#define KLIC_PATH_OFFSET        (npklic_struct_offset+0x10)
-			#define KLIC_CONTENT_ID_OFFSET  (npklic_struct_offset-0xA4)
+			sprintf(kl, "%016llX%016llX", *KLICENSEE_PART1, *KLICENSEE_PART2);
 
-			hex_dump(kl, KLICENSEE_OFFSET, KLICENSEE_SIZE);
-			get_game_info(); sprintf(buffer, "%s %s</H2>"
-											 "%s%s<br>"
-											 "%s%s<br>"
-											 "%s%s<p>",
+			get_game_info(); snprintf(buffer, 0x200, "%s %s</H2>"
+											 "KLicensee: %s<br>"
+											 "Content ID: %s<br>"
+												 "File: %s<p>",
 											 _game_TitleID, _game_Title,
-											 "KLicensee: ",  hex_dump(kl, KLICENSEE_OFFSET, KLICENSEE_SIZE),
-											 "Content ID: ", (char*)(KLIC_CONTENT_ID_OFFSET),
-											 "File: ",       (char*)(KLIC_PATH_OFFSET));
+											 kl, (char*)KLIC_CONTENT_ID, (char*)KLIC_PATH);
 		}
 		else
 			{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; vshNotify_WithIcon(ICON_EXCLAMATION, "KLIC: Not in-game!");}
 
 
-		strcpy(prev, ((klic_polling_status) ? (klic_polling ? "Auto-Log: Running" : "Auto-Log: Stopped") :
-											 ((klic_polling == KL_GET)  ? "Added to Log" :
-											  (klic_polling == KL_AUTO) ? "Auto-Log: Started" : "Enable Auto-Log")));
+		strcpy(prev, (klic_polling_status) ? (klic_polling ? "Auto-Log: Running" : "Auto-Log: Stopped") :
+											 (klic_polling == KL_GET)  ? "Added to Log" :
+											 (klic_polling == KL_AUTO) ? "Auto-Log: Started" : "Enable Auto-Log");
 
 		sprintf(header, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE,
 					(klic_polling_status > 0 && klic_polling > 0) ? "klic.ps3?off"  :
@@ -68,15 +67,15 @@
 
 		if(*kl && (klic_polling != KL_OFF))
 		{
-			get_game_info(); sprintf(header, "%s [%s]", _game_Title, _game_TitleID);
+			get_game_info();
 
-			sprintf(buffer, "%s\n\n%s", header, (char*)(KLIC_PATH_OFFSET));
+			snprintf(buffer, 0x200, "%s [%s]\n\n%s", _game_Title, _game_TitleID, (char*)KLIC_PATH);
 			show_msg(buffer);
 
 			if(klic_polling == KL_GET)
 			{
-				sprintf(buffer, "%s%s\n"
-								"%s%s", "KLicensee: ", kl, "Content ID: ", (char*)(KLIC_CONTENT_ID_OFFSET));
+				sprintf(buffer, "KLicensee: %s\n"
+								"Content ID: %s", kl, (char*)KLIC_CONTENT_ID);
 				show_msg(buffer);
 			}
 
@@ -84,8 +83,9 @@
 			{
 				while((klic_polling != KL_OFF) && IS_INGAME && working)
 				{
-					hex_dump(kl, (int)KLICENSEE_OFFSET, KLICENSEE_SIZE);
-					sprintf(buffer, "%s %s %s %s", kl, (char*)(KLIC_CONTENT_ID_OFFSET), header, (char*)(KLIC_PATH_OFFSET));
+					get_game_info();
+
+					snprintf(buffer, 0x200, "%016llX%016llX %s %s [%s] %s", *KLICENSEE_PART1, *KLICENSEE_PART2, (char*)KLIC_CONTENT_ID, _game_Title, _game_TitleID, (char*)KLIC_PATH);
 
 					if(klic_polling == KL_AUTO && IS(buffer, prev)) {sys_ppu_thread_usleep(10000); continue;}
 

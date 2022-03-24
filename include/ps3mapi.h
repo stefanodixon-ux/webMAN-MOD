@@ -681,6 +681,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			if(get_param("dump=", addr_tmp, param, 16))
 			{
 				u32 size = convertH(addr_tmp);
+				if(size <= 256) size *= _1MB_;
 				if(size >= _64KB_) ps3mapi_dump_process(dump_file, pid, address, size);
 			}
 

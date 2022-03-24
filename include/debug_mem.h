@@ -1,16 +1,3 @@
-#ifdef GET_KLICENSEE
-
-static char *hex_dump(char *buffer, int offset, int size)
-{
-	for (int k = 0; k < size ; k++)
-	{
-		sprintf(&buffer[2 * k],"%02X", (unsigned int)(((unsigned char*)offset)[k]));
-	}
-	return buffer;
-}
-
-#endif
-
 #define LV1		1
 #define LV2		2
 #define FLASH	3
@@ -151,7 +138,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 	{
 		if(islike(param + 10, "lv1")) {size = 16;} else
 		if(islike(param + 10, "lv2")) {pid = LV2;} else
-		if(islike(param + 10, "fla"))  {pid = FLASH, size = 16;} else
+		if(islike(param + 10, "fla")) {pid = FLASH, size = 16;} else
 		if(param[10] == 'v' /*vsh */) {start = 0x910000;}  else
 		if(param[10] == 'r' /*rsx */) {start = 0x0000028080000000ULL; size=256;}  else
 		if(param[10] == 'm' /*mem */) {size = IS_DEH ? 512 : 256;} else
