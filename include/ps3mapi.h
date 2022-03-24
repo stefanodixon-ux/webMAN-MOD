@@ -491,6 +491,13 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 			if(!payload_ps3hen)
 				add_option_item(LV1, "LV1 Memory", false, buffer);
 				add_option_item(LV2, "LV2 Memory", false, buffer);
+			if(src == 1)
+			{
+				add_option_item(FLASH, "Flash", false, buffer);
+				add_option_item(HDD0,  drives[0], false, buffer);
+				add_option_item(USB0, drives[1], false, buffer);
+				add_option_item(USB1, drives[2], false, buffer);
+			}
 		}
 		concat(buffer, "</select> ");
 	}
@@ -499,16 +506,23 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 		sprintf(templn, "<a href=\"%s?proc=%i\">", (src == 3) ? "/getmem.ps3mapi" : "/gameplugin.ps3mapi", pid); concat(buffer, templn);
 
 		if(pid == LV1)
-			sprintf(templn, "LV1 Memory");
+			strcpy(templn, "LV1 Memory");
 		else if(pid == LV2)
-			sprintf(templn, "LV2 Memory");
+			strcpy(templn, "LV2 Memory");
+		else if(pid == FLASH)
+			strcpy(templn, "Flash");
+		else if(pid == HDD0)
+			strcpy(templn, drives[0]);
+		else if(pid >= USB0 && pid < PID)
+			strcpy(templn, drives[pid - USB0 + 1]);
 		else
 			ps3mapi_get_process_name_by_id(pid, templn, MAX_LINE_LEN);
+
 		concat(buffer, templn); concat(buffer, "</a>");
 
 		is_vsh = (strstr(templn, "_main_vsh.self") != NULL);
 
-		if(pid > LV2)
+		if(pid >= PID)
 		{
 			if(IS_INGAME)
 			{
@@ -537,24 +551,6 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 	return is_vsh;
 }
 
-static int ps3mapi_get_memory(u32 pid, u32 address, char *mem, u32 size)
-{
-	if(pid == LV1)
-	{
-		peek_chunk_lv1((address | 0x8000000000000000ULL), size, (u8*)mem);
-	}
-	else if(pid == LV2)
-	{
-		peek_chunk_lv2((address | 0x8000000000000000ULL), size, (u8*)mem);
-	}
-	else
-	{
-		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)mem, size);
-		return (int)p1;
-	}
-	return 0;
-}
-
 static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const char *sfind, u8 len, const char *mask, u32 fallback)
 {
 	int retval = NONE;
@@ -576,27 +572,6 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 		}
 	}
 	return found_offset;
-}
-
-static void ps3mapi_dump_process(u32 pid, u32 address, u32 size)
-{
-	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
-	{
-		int fd;
-		char *mem_buf = (char*)sysmem;
-
-		if(cellFsOpen("/dev_hdd0/mem_dump.bin", CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
-		{
-			for(u32 addr = 0; addr < size; addr += _64KB_)
-			{
-				ps3mapi_get_memory(pid, (address + addr), mem_buf, _64KB_);
-				cellFsWrite(fd, mem_buf, _64KB_, NULL);
-			}
-			cellFsClose(fd);
-		}
-		sys_memory_free(sysmem);
-	}
 }
 
 static int ps3mapi_patch_process(u32 pid, u32 address, const char *new_value, int size)
@@ -624,16 +599,20 @@ static int ps3mapi_patch_process(u32 pid, u32 address, const char *new_value, in
 
 static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 {
-	bool is_ps3mapi_home = (*param == ' ');
-	bool not_found = false;
-
-	u32 pid = 0;
-	u32 address = 0x10000;
+	u32 pid = get_valuen32(param, "proc=");
+	u32 address = 0;
 	int length = BINDATA_SIZE;
 	found_offset = 0;
 	int hilite = 0;
 
+	bool is_read_only = (pid >= FLASH) && (pid < PID);
+	bool is_ps3mapi_home = (*param == ' ');
+	bool not_found = false;
+
 	char *find = (char*)"";
+	const char *dump_file = (char*)"/dev_hdd0/mem_dump.bin";
+	const char *dump_size = (char*)"&dump=400000";
+
 	if(strstr(param, ".ps3mapi?"))
 	{
 		char addr_tmp[0x60];
@@ -646,8 +625,9 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			length = RANGE(length, 1, BINDATA_SIZE);
 		}
 
-		if(!pid) pid = get_valuen32(param, "proc=");
 		if(!pid) pid = get_current_pid();
+
+		if(pid >= PID) address = MAX(address, 0x10000);
 
 		if(get_param("find=", addr_tmp, param, 0x60))
 		{
@@ -687,6 +667,13 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 				hilite = len;
 		}
 
+		if(pid == FLASH)
+		{
+			if(!address)
+				dump_size = (char*)"&dump=1000000";
+			dump_file = (char*)"/dev_hdd0/dump_flash.bin";
+		}
+
 		if(!not_found) // ignore dump / patch_process if find returned not found
 		{
 			int offset = (int)get_valuen64(param, "&offset="); address += offset;
@@ -694,7 +681,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			if(get_param("dump=", addr_tmp, param, 16))
 			{
 				u32 size = convertH(addr_tmp);
-				if(size >= _64KB_) ps3mapi_dump_process(pid, address, size);
+				if(size >= _64KB_) ps3mapi_dump_process(dump_file, pid, address, size);
 			}
 
 			if(strstr(param, "&val="))
@@ -744,9 +731,9 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&lt;Back</a>", pid, address - 0x2000, pid, address - BINDATA_SIZE); buffer += concat(buffer, templn);
 		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&gt;&gt;</a>", pid, address + BINDATA_SIZE, pid, address + 0x2000); buffer += concat(buffer, templn);
 
-		if(file_exists("/dev_hdd0/mem_dump.bin")) {add_breadcrumb_trail2(buffer, " [", "/dev_hdd0/mem_dump.bin"); concat(buffer, " ]");}
+		if(file_exists(dump_file)) {add_breadcrumb_trail2(buffer, " [", dump_file); concat(buffer, " ]");}
 
-		if(!strstr(param, "dump=")) sprintf(templn, " [<a href=\"%s%s\">%s</a>]", param, "&dump=400000", "Dump Process");
+		if(!strstr(param, "dump=")) sprintf(templn, " [<a href=\"%s%s\">%s</a>]", param, dump_size, "Dump Process");
 		concat(buffer, templn);
 
 		char *pos = strstr(param, "&addr="); if(pos) *pos = 0;
@@ -760,7 +747,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		{
 			// show hex dump
 			u8 byte = 0, p = 0;
-			u16 num_bytes = MIN(0x200, ((u16)((length+15)/0x10)*0x10));
+			u16 num_bytes = MIN(0x200, ((u16)((length + 15) / 0x10) * 0x10));
 			for(u16 i = 0, n = 0; i < num_bytes; i++)
 			{
 				if(!p)
@@ -809,7 +796,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 					buffer += concat(buffer, "<br>");
 				}
 
-				p++; if(p>=0x10) p=0;
+				p++; if(p >= 0x10) p=0;
 			}
 			//
 
@@ -838,10 +825,12 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 	concat(buffer, "<br>");
 
 #ifdef DEBUG_MEM
-	concat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
+	concat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?flash\">Flash</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
 	sprintf(templn, " [<a href=\"/dump.ps3?%x\">LV1 Dump 0x%x</a>] [<a href=\"/peek.lv1?%x\">LV1 Peek</a>] [<a href=\"/peek.lv2?%x\">LV2 Peek</a>]", address, address, address, address); concat(buffer, templn);
 #endif
 	concat(buffer, "<p>");
+
+	if(is_read_only) return;
 
 	if(!is_ps3mapi_home && islike(param, "/getmem.ps3mapi")) ps3mapi_setmem(buffer, templn, param);
 }

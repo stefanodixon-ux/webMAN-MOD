@@ -258,12 +258,12 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	save_file(HTML_BASE_PATH "/ROMS.xml", myxml.str, myxml.size);
 
 	// patch mygames.xml
-	read_file(MY_GAMES_XML, myxml.str, KB, 512);
+	read_file(MY_GAMES_XML, myxml.str, KB, 300);
 	char *pos = strstr(myxml.str, "         ROM");
 	if(pos)
 	{
 		sprintf(templn, "%'8i", t_count); memcpy(myxml.str, templn, 8);
-		write_file(MY_GAMES_XML, O_WRONLY, myxml.str, 512, KB, false);
+		write_file(MY_GAMES_XML, CELL_FS_O_WRONLY, myxml.str, 300, KB, false);
 	}
 }
 #endif

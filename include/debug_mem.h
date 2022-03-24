@@ -11,10 +11,15 @@ static char *hex_dump(char *buffer, int offset, int size)
 
 #endif
 
-#ifdef DEBUG_MEM
-
 #define LV1		1
 #define LV2		2
+#define FLASH	3
+#define HDD0	7
+#define USB0	10
+#define USB1	11
+#define PID		14
+
+#ifdef DEBUG_MEM
 
 #define LV1_UPPER_MEMORY	0x8000000010000000ULL
 #define LV2_UPPER_MEMORY	0x8000000000800000ULL
@@ -33,66 +38,120 @@ static void poke_chunk_lv2(u64 start, int size, u8 *buffer)
 		pokeq(start + offset, *((u64*)(buffer + offset)));
 }
 
-static void peek_chunk_lv1(u64 start, u64 size, u8 *buffer) // read from lv1
+static void peek_chunk_lv1(u64 start, u64 size, u64 *buffer) // read from lv1
 {
-	for(u64 t, i = 0; i < size; i += 8)
+	for(u64 offset = 0; offset < size; offset += 8)
 	{
-		t = peek_lv1(start + i); memcpy(buffer + i, &t, 8);
+		*(buffer++) = peek_lv1(start + offset);
 	}
 }
 
-static void peek_chunk_lv2(u64 start, u64 size, u8 *buffer) // read from lv1
+static void peek_chunk_lv2(u64 start, u64 size, u64 *buffer) // read from lv1
 {
-	for(u64 t, i = 0; i < size; i += 8)
+	for(u64 offset = 0; offset < size; offset += 8)
 	{
-		t = peekq(start + i); memcpy(buffer + i, &t, 8);
+		*(buffer++) = peekq(start + offset);
 	}
 }
 
-static void dump_mem(char *file, u64 start, u32 dump_size)
+static int peek_chunk_device(u64 device, u64 start_sector, u32 size, u64 *buffer) // read from lv1
 {
-	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
-
-	int fd;
-	u32 mem_size = _128KB_, addr;
-	sys_addr_t sys_mem = NULL;
-
-	if(start < 0x0000028080000000ULL) start |= 0x8000000000000000ULL;
-
-	vshNotify_WithIcon(ICON_WAIT, "Dumping memory...");
-
-	if(sys_memory_allocate(mem_size, SYS_MEMORY_PAGE_SIZE_64K, &sys_mem) == CELL_OK)
+	u32 read;
+	sys_device_handle_t dev_id;
+	if(sys_storage_open(device, 0, &dev_id, 0) == CELL_OK)
 	{
-		u8 *mem_buf = (u8*)sys_mem;
+		start_sector /= 0x200, size /= 0x200; // convert bytes to sector
+		sys_storage_read(dev_id, 0, start_sector, size, buffer, &read, 0);
+		sys_storage_close(dev_id);
+		return CELL_OK;
+	}
+	else
+	{
+		memset((u8*)buffer, 0, size);
+		return FAILED;
+	}
+}
 
-		if(cellFsOpen(file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+static void peek_chunk_flash(u64 start_sector, u32 size, u64 *buffer) // read from lv1
+{
+	if (peek_chunk_device(FLASH_DEVICE_NOR,  start_sector, size, buffer) == FAILED)
+		peek_chunk_device(FLASH_DEVICE_NAND, start_sector, size, buffer);
+}
+
+static int ps3mapi_get_memory(u32 pid, u32 address, char *mem, u32 size)
+{
+	if(pid == LV1)
+	{
+		peek_chunk_lv1((address | 0x8000000000000000ULL), size, (u64*)mem);
+	}
+	else if(pid == LV2)
+	{
+		peek_chunk_lv2((address | 0x8000000000000000ULL), size, (u64*)mem);
+	}
+	else if(pid == FLASH)
+	{
+		peek_chunk_flash(address, MAX(size, 0x200), (u64*)mem);
+	}
+	else if(pid < PID)
+	{
+		u64 device = (pid >= 10) ?  (0x103000000000000ULL | pid): // USB
+									(0x101000000000000ULL | pid); // HDD
+		peek_chunk_device(device, address, MAX(size, 0x200), (u64*)mem);
+	}
+	#ifdef PS3MAPI
+	else
+	{
+		#define PS3MAPI_OPCODE_GET_PROC_MEM				0x0031
+
+		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)mem, size);
+		return (int)p1;
+	}
+	#endif
+	return 0;
+}
+
+static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u32 size)
+{
+	sys_addr_t sysmem = NULL;
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	{
+		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
+
+		int fd;
+		char *mem_buf = (char*)sysmem;
+
+		vshNotify_WithIcon(ICON_WAIT, "Dumping...");
+
+		if(cellFsOpen(dump_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
-			for(addr = 0; addr < dump_size; addr += mem_size)
+			for(u32 addr = 0; addr < size; addr += _64KB_)
 			{
-				peek_chunk_lv1(start + addr, mem_size, mem_buf);
-				cellFsWrite(fd, mem_buf, mem_size, NULL);
+				ps3mapi_get_memory(pid, (address + addr), mem_buf, _64KB_);
+				cellFsWrite(fd, mem_buf, _64KB_, NULL);
 			}
 			cellFsClose(fd);
 		}
-		sys_memory_free(sys_mem);
-		show_msg("Memory dump completed!");
+		sys_memory_free(sysmem);
+
+		show_msg("Dump completed!");
+
+		play_rco_sound("snd_trophy");
+
+		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
-
-	play_rco_sound("snd_trophy");
-
-	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 }
 
 static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 {
-	char dump_file[MAX_PATH_LEN]; u64 start=0; u32 size=8;
-	strcat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
+	char dump_file[MAX_PATH_LEN]; u64 start = 0; u32 size = 8, pid = LV1;
+	strcat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?flash\">Flash</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
 	strcat(buffer, "<hr>");
 
 	if(param[9] == '?' && param[10] >= '0')
 	{
 		if(islike(param + 10, "lv1")) {size = 16;} else
-		if(islike(param + 10, "lv2")) {start = LV2_OFFSET_ON_LV1;} else
+		if(islike(param + 10, "lv2")) {pid = LV2;} else
+		if(islike(param + 10, "fla"))  {pid = FLASH, size = 16;} else
 		if(param[10] == 'v' /*vsh */) {start = 0x910000;}  else
 		if(param[10] == 'r' /*rsx */) {start = 0x0000028080000000ULL; size=256;}  else
 		if(param[10] == 'm' /*mem */) {size = IS_DEH ? 512 : 256;} else
@@ -106,7 +165,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 		if(pos) size = convertH(pos + 6);
 
 		sprintf(dump_file, "/dev_hdd0/dump_%s.bin", param + 10);
-		dump_mem(dump_file, start, (size * _1MB_));
+		ps3mapi_dump_process(dump_file, pid, start, (size * _1MB_));
 		add_breadcrumb_trail2(buffer, "<p>Dumped:", dump_file);
 		sprintf(templn, " [" HTML_URL2 "]", "/delete.ps3", dump_file, STR_DELETE); strcat(buffer, templn);
 	}
@@ -251,9 +310,9 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		char *value = v + 1;
 
 		if(lv1)
-			peek_chunk_lv1(address, 0x400, (u8 *)templn);
+			peek_chunk_lv1(address, 0x400, (u64 *)templn);
 		else
-			peek_chunk_lv2(address, 0x400, (u8 *)templn);
+			peek_chunk_lv2(address, 0x400, (u64 *)templn);
 
 		flen = strlen(value); flen = MIN(flen, 0x400);
 
