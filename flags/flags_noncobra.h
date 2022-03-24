@@ -28,7 +28,7 @@
 #define VIRTUAL_PAD		// virtual pad (thanks to OsiriX)
 #define WM_REQUEST		// accept commands via local file /dev_hdd0/tmp/wm_request
 #define GET_KLICENSEE	// /klic.ps3
-#define PS3_BROWSER		// /browser.ps3 / open browser combos
+#define PS3_BROWSER		// /xmb.ps3 / /browser.ps3 / open browser combos
 //#define EMBED_JS		// use embedded javascript instead of external js files
 #define AUTO_POWER_OFF	// Disable temporarily the auto power off setting in xRegistry during ftp session, /install.ps3 & /download.ps3 (idea by 444nonymous)
 //#define OFFLINE_INGAME	// allow set auto-disable network in-game (idea by 444nonymous)
@@ -37,6 +37,7 @@
 #define PKG_HANDLER		// /download.ps3?url=<url>, /download.ps3?to=<path>&url=<url>, /install.ps3<pkg-path> (thanks to bguerville & mysis)
 //#define USE_NTFS		// add NTFS support
 #define BACKUP_ACT_DAT	// backup/restore act.dat on HEN
+//#define PATCH_GAMEBOOT	// Patch gameboot to show custom animation per game type
 
 //// EXTRA FEATURES ////
 //#define XMB_SCREENSHOT	// screenshot XMB using L2 + R2 + SELECT + START (thanks to 3141card)
@@ -53,7 +54,6 @@
 //#define PHOTO_GUI			// PhotoGUI: mount games through Photo column
 //#define MOUNT_PNG			// support fake PNG as ISO
 //#define VISUALIZERS		// Rotate visualizers (earth, lines, canyon, coldboot_*.ac3)
-//#define PATCH_GAMEBOOT	// Patch gameboot to show custom animation per game type
 
 //// TEST FEATURES ////
 //#define ALLOW_DISABLE_MAP_PATH	// Use SELECT+O to temporarily disable sys_map_path()

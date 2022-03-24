@@ -1,4 +1,5 @@
 #define ENGLISH_ONLY	// uncomment for english only version
+//#define USE_INTERNAL_NTFS_PLUGIN	// comment out to use internal rawseciso & netiso clients when raw_iso.sprx & netiso.sprx are unavailable
 #define WM_PROXY_SPRX	"idle_plugin"		// plugin used as xmb proxy to mount games (idle_plugin, xai_plugin, wboard_plugin, bdp_disccheck_plugin)
 
 //// EDITIONS ////
@@ -27,7 +28,7 @@
 #define VIRTUAL_PAD		// virtual pad (thanks to OsiriX)
 #define WM_REQUEST		// accept commands via local file /dev_hdd0/tmp/wm_request
 #define GET_KLICENSEE	// /klic.ps3
-#define PS3_BROWSER		// /browser.ps3 / open browser combos
+#define PS3_BROWSER		/xmb.ps3 / /browser.ps3 / open browser combos
 #define EMBED_JS		// use embedded javascript instead of external js files
 #define AUTO_POWER_OFF	// Disable temporarily the auto power off setting in xRegistry during ftp session, /install.ps3 & /download.ps3 (idea by 444nonymous)
 #define OFFLINE_INGAME	// allow set auto-disable network in-game (idea by 444nonymous)
@@ -36,6 +37,7 @@
 #define PKG_HANDLER		// /download.ps3?url=<url>, /download.ps3?to=<path>&url=<url>, /install.ps3<pkg-path> (thanks to bguerville & mysis)
 #define USE_NTFS		// add NTFS support
 #define BACKUP_ACT_DAT	// backup/restore act.dat on HEN
+#define PATCH_GAMEBOOT	// Patch gameboot to show custom animation per game type
 
 //// EXTRA FEATURES ////
 //#define XMB_SCREENSHOT	// screenshot XMB using L2 + R2 + SELECT + START (thanks to 3141card)
@@ -47,7 +49,11 @@
 //#define NOSINGSTAR		// remove SingStar icon from XMB  (thanks to bguerville)
 //#define CALC_MD5			// /md5.ps3/<file>
 //#define LAUNCHPAD			// create /dev_hdd0/tmp/wm_lauchpad.xml
-//#define UNLOCK_SAVEDATA	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.
+//#define NOBD_PATCH		// /nobd.ps3
+//#define PLAY_MUSIC		// experimental support for Play Music on startup
+//#define PHOTO_GUI		// PhotoGUI: mount games through Photo column
+//#define MOUNT_PNG		// support fake PNG as ISO
+//#define VISUALIZERS		// Rotate visualizers (earth, lines, canyon, coldboot_*.ac3)
 
 //// TEST FEATURES ////
 //#define ALLOW_DISABLE_MAP_PATH	// Use SELECT+O to temporarily disable sys_map_path()
@@ -57,3 +63,4 @@
 //#define AUTO_EJECT_DISC	// eject disc holding SELECT on mount
 //#define RAWISO_PSX_MULTI	// support for multi PSX from Iris Manager (it's incomplete - only rawseciso.h code is complete) (thanks to Estwald)
 //#define SECURE_FILE_ID	// hook savedata plugin to capture secure file id (this feature is currently broken)
+//#define UNLOCK_SAVEDATA	// patch PARAM.SFO on upload/download/copy operations to remove ACCOUNT_ID, PSID and COPY PROTECTION flag. UserID is updated to current user.

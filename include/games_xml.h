@@ -209,6 +209,8 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	close_language(); lang_roms = 1;
 	#endif
 
+	u32 t_count = 0;
+
 	// ---- Add roms categories
 	for(u8 i = 0; i < count; i++)
 	{
@@ -247,12 +249,22 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 		{
 			sprintf(templn, QUERY_XMB("%s", "xmb://localhost%s/ROMS_%s.xml#seg_wm_rom_%s"), roms_path[i], roms_path[i], HTML_BASE_PATH, roms_path[i], roms_path[i]);
 			_concat(&myxml, templn);
+			t_count += roms_count[i];
 		}
 	}
 
 	_concat(&myxml, XML_END_OF_FILE);
 
 	save_file(HTML_BASE_PATH "/ROMS.xml", myxml.str, myxml.size);
+
+	// patch mygames.xml
+	read_file(MY_GAMES_XML, myxml.str, KB, 512);
+	char *pos = strstr(myxml.str, "         ROM");
+	if(pos)
+	{
+		sprintf(templn, "%'8i", t_count); memcpy(myxml.str, templn, 8);
+		write_file(MY_GAMES_XML, O_WRONLY, myxml.str, 512, KB, false);
+	}
 }
 #endif
 
@@ -510,7 +522,7 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml, u16 *i
 										sprintf(templn, "<T key=\"wm_rom\">"
 												XML_PAIR("icon%s", "%s")
 												XML_PAIR("title","ROMS")
-												XML_PAIR("info","%s") "%s",
+												XML_PAIR("info","         %s") "%s",
 												covers_exist[7] ? "" : "_rsc",
 												covers_exist[7] ? WM_ICONS_PATH "/icon_wm_album_emu.png" : "item_tex_ps3util",
 												buffer, STR_NOITEM_PAIR); _concat(myxml, templn);
