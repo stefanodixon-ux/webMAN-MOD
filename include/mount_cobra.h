@@ -134,14 +134,14 @@ mount_again:
 
 			if(strstr(_path, "/PS3ISO") || (mount_unk == EMU_PS3))
 			{
-#ifdef FIX_GAME
+				#ifdef FIX_GAME
 				if(webman_config->fixgame != FIX_GAME_DISABLED)
 				{
 					fix_in_progress=true; fix_aborted = false;
 					fix_iso(_path, 0x100000UL, true);
 					fix_in_progress=false;
 				}
-#endif //#ifdef FIX_GAME
+				#endif //#ifdef FIX_GAME
 
 				mount_unk = EMU_PS3;
 
@@ -383,13 +383,13 @@ copy_ps2iso_to_hdd0:
 
 	else
 	{
-	#ifdef EXTRA_FEAT
+		#ifdef EXTRA_FEAT
 		// hold SELECT to eject disc
 		pad_data = pad_read();
 		int special_mode = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] & CELL_PAD_CTRL_SELECT));
 
 		if(special_mode) eject_insert(1, 0);
-	#endif
+		#endif
 
 		// -- fix game & get TitleID from PARAM.SFO
 	#ifdef FIX_GAME
