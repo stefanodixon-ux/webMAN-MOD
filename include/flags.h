@@ -14,14 +14,11 @@
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
   #define NET_SUPPORT
-  #define USE_INTERNAL_NET_PLUGIN
   #define DEBUG_XREGISTRY
  #else
   #undef VISUALIZERS
   #undef NET_SUPPORT
-  #undef USE_INTERNAL_NET_PLUGIN
  #endif
- #define USE_INTERNAL_NTFS_PLUGIN
 #else
  #undef WM_PROXY_SPRX
  #undef PS3MAPI
@@ -32,8 +29,6 @@
  #undef PHOTO_GUI
  #undef VISUALIZERS
  #undef NET_SUPPORT
- #undef USE_INTERNAL_NET_PLUGIN
- #undef USE_INTERNAL_NTFS_PLUGIN
  #undef LOAD_PRX
 #endif
 

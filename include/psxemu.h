@@ -2,6 +2,7 @@
 
 #define PLAYSTATION      "PLAYSTATION "
 
+#ifndef LITE_EDITION
 static u32 detect_cd_sector_size(char *buffer)
 {
 	u16 sec_size[7] = {2352, 2048, 2336, 2448, 2328, 2340, 2368};
@@ -24,6 +25,7 @@ static u32 default_cd_sector_size(size_t discsize)
 
 	return 2352;
 }
+#endif
 
 static void select_ps1emu(const char *path)
 {

@@ -117,7 +117,7 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "md /"))      {path += 3; mkdir_tree(path);} else
 					if(_islike(line, "wait xmb"))  {wait_for_xmb();} else
 					if(_islike(line, "wait /"))    {path += 5; wait_for(path, 5);} else
-					if(_islike(line, "wait "))     {line += 5; wait_path("/dev_hdd0", (u8)val(line), false);} else
+					if(_islike(line, "wait "))     {line += 5; sys_ppu_thread_sleep((u8)val(line));} else
 					if(_islike(line, "lwait /"))   {path += 6; wait_for(path, 10);} else
 					#ifdef PS3MAPI
 					if(_islike(line, "beep"))      {play_sound_id((u8)(line[4]));} else
@@ -149,12 +149,9 @@ static void parse_script(const char *script_file)
 						if(_islike(line, "not exist /")) {path += 10; ret = not_exists(path);}
 						else
 						{
-							pad_data = pad_read(); // check for hold L1 or R1 in script
-							if(pad_data.len > 0)
-							{
-								if(_islike(line, "L1")) {ret = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1);}
-								if(_islike(line, "R1")) {ret = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1);}
-							}
+							// check for hold L1 or R1 in script
+							if(_islike(line, "L1")) ret = is_pressed(CELL_PAD_CTRL_L1);
+							if(_islike(line, "R1")) ret = is_pressed(CELL_PAD_CTRL_R1);
 						}
 
 						if(ifmode == ABORT_IF) {if(ret) break;} else if(!ret) exec_mode = false;

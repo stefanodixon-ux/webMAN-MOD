@@ -140,7 +140,7 @@
 		else
 		#endif
 		#ifdef DEBUG_XREGISTRY
-		if(islike(params, "$xregistry(/"))
+		if(sys_admin && islike(params, "$xregistry(/"))
 		{
 			params += 11; char *pos = strchr(params, ')');
 			if(pos)
@@ -165,7 +165,7 @@
 		else
 		#endif
 		#ifndef LITE_EDITION
-		if(islike(params, "$xregistry("))
+		if(sys_admin && islike(params, "$xregistry("))
 		{
 			int value, len, size; params += 11;
 			int id = val(params);
@@ -263,14 +263,9 @@
 			toggle_ps2emu();
 		}
 		else
-		if(islike(params, "$ps2emu"))
+		if(islike(params, "$ps2"))
 		{
-			enable_ps2netemu_cobra(0); // enable default ps2 emulator on fat consoles only
-		}
-		else
-		if(islike(params, "$ps2_netemu"))
-		{
-			enable_ps2netemu_cobra(1); // enable ps2_netemu on fat consoles only
+			enable_ps2netemu_cobra(strstr(params, "net") != NULL); // enable ps2_netemu on fat consoles only
 		}
 		else
 		if(strstr(params, "le_classic_ps2_mode"))
@@ -317,20 +312,21 @@
 			#ifdef XMB_SCREENSHOT
 			if(islike(params, "$screenshot"))
 			{
-				char *filename = params + 11; if(strchr(filename, '/')) filename = strchr(filename, '/');
 				bool fast = get_flag(params, "?fast");
 				bool show = get_flag(params, "?show");
 
-				if(show && (*filename != '/'))
-					sprintf(header, "%s/screenshot.bmp", WMTMP);
-				else
-					strcpy(header, filename);
+				strcpy(header, params + 11);
+				char *bmpfile = strchr(header, '/'); if(!bmpfile) bmpfile = header;
 
-				saveBMP(header, false, fast);
+				if(show && (*bmpfile != '/'))
+					sprintf(bmpfile, "%s/screenshot.bmp", WMTMP);
+
+				saveBMP(bmpfile, false, fast);
+
 				if(show)
 				{
-					strcpy(param, header); is_binary = true;
-					goto retry_response;
+					strcpy(param, bmpfile); is_binary = true;
+					goto html_listing;
 				}
 				*url = 0; add_breadcrumb_trail2(url, NULL, header);
 			}

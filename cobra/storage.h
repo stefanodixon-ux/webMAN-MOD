@@ -110,12 +110,6 @@ typedef struct
 
 #ifdef COBRA_ONLY
 
-static int sys_storage_ext_get_disc_type(unsigned int *real_disctype, unsigned int *effective_disctype, unsigned int *fake_disctype)
-{
-	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_DISC_TYPE, (uint64_t)(uint32_t)real_disctype, (uint64_t)(uint32_t)effective_disctype, (uint64_t)(uint32_t)fake_disctype);
-	return (int)p1;
-}
-
 /* static int sys_storage_ext_read_ps3_disc(void *buf, uint64_t start_sector, uint32_t count)
 {
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_READ_PS3_DISC, (uint64_t)(uint32_t)buf, start_sector, count);
@@ -133,6 +127,20 @@ static int sys_storage_ext_fake_storage_event(uint64_t event, uint64_t param, ui
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_EMU_STATE, (uint64_t)(uint32_t)state);
 	return (int)p1;
 } */
+
+#ifdef _COBRA_C
+static int sys_storage_ext_get_disc_type(unsigned int *real_disctype, unsigned int *effective_disctype, unsigned int *fake_disctype)
+{
+	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_DISC_TYPE, (uint64_t)(uint32_t)real_disctype, (uint64_t)(uint32_t)effective_disctype, (uint64_t)(uint32_t)fake_disctype);
+	return (int)p1;
+}
+
+static int sys_storage_ext_umount_discfile(void)
+{
+	system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UMOUNT_DISCFILE);
+	return (int)p1;
+}
+#endif //#ifdef _COBRA_C
 
 /* static int sys_storage_ext_mount_ps3_discfile(unsigned int filescount, char *files[])
 {
@@ -163,12 +171,6 @@ static int sys_storage_ext_fake_storage_event(uint64_t event, uint64_t param, ui
 	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_PS2_DISCFILE, filescount, (uint64_t)(uint32_t)files, trackscount, (uint64_t)(uint32_t)tracks);
 	return (int)p1;
 } */
-
-static int sys_storage_ext_umount_discfile(void)
-{
-	system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UMOUNT_DISCFILE);
-	return (int)p1;
-}
 
 /* static int sys_storage_ext_mount_encrypted_image(char *image, char *mount_point, char *filesystem, uint64_t nonce)
 {

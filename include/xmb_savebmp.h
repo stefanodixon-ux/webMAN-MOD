@@ -155,6 +155,8 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 		}
 	}
 
+	cellFsWrite(fd, bmp_buf, idx, NULL);
+
 	// continue rsx rendering
 	rsx_fifo_pause(0);
 

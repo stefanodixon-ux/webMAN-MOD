@@ -353,8 +353,8 @@ static void reload_xmb(void)
 #else
 static void reload_xmb(void)
 {
-	pad_data = pad_read(); // hold L2 to cancel reload xmb
-	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
+	// hold L2 to cancel reload xmb
+	if(is_pressed(CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
 
 	if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
 	{

@@ -8,6 +8,6 @@
 		// /dev_blind?disable  unmounts /dev_blind
 
 		is_binary = FOLDER_LISTING;
-		if(file_exists(param)) goto retry_response;
+		if(file_exists(param)) goto html_listing;
 		goto html_response;
 	}

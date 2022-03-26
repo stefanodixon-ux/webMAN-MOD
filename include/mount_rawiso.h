@@ -66,9 +66,9 @@ if(ntfs_ext)
 
 		sys_memory_free(addr);
 	}
-#endif //#ifdef USE_INTERNAL_NTFS_PLUGIN
 
 mounted_ntfs:
+#endif //#ifdef USE_INTERNAL_NTFS_PLUGIN
 
 	if(ret)
 	{

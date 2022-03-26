@@ -1,4 +1,4 @@
-	if(islike(param, "/unlockhdd.ps3"))
+	if(sys_admin && islike(param, "/unlockhdd.ps3"))
 	{
 		// /unlockhdd.ps3
 		// /unlockhdd.ps3?enable

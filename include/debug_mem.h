@@ -48,7 +48,7 @@ static int peek_chunk_device(u64 device, u64 start_sector, u32 size, u64 *buffer
 	if(sys_storage_open(device, 0, &dev_id, 0) == CELL_OK)
 	{
 		start_sector /= 0x200, size /= 0x200; // convert bytes to sector
-		sys_storage_read(dev_id, 0, start_sector, size, buffer, &read, 0);
+		sys_storage_read(dev_id, 0, start_sector, MAX(size, 1), buffer, &read, 0);
 		sys_storage_close(dev_id);
 		return CELL_OK;
 	}
@@ -77,13 +77,13 @@ static int ps3mapi_get_memory(u32 pid, u32 address, char *mem, u32 size)
 	}
 	else if(pid == FLASH)
 	{
-		peek_chunk_flash(address, MAX(size, 0x200), (u64*)mem);
+		peek_chunk_flash(address, size, (u64*)mem);
 	}
 	else if(pid < PID)
 	{
 		u64 device = (pid >= 10) ?  (0x103000000000000ULL | pid): // USB
 									(0x101000000000000ULL | pid); // HDD
-		peek_chunk_device(device, address, MAX(size, 0x200), (u64*)mem);
+		peek_chunk_device(device, address, size, (u64*)mem);
 	}
 	#ifdef PS3MAPI
 	else

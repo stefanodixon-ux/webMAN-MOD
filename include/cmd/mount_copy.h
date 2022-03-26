@@ -1,37 +1,3 @@
-#ifndef LITE_EDITION
-	if(islike(param, "/mount.ps3?"))
-	{
-		// /mount.ps3?<query>  search game & mount if only 1 match is found
-
-		if(islike(param, "/mount.ps3?http"))
-		{
-			char *url  = param + 11;
-			do_umount(false);  open_browser(url, 0);
-			keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, url);
-			goto exit_handleclient_www;
-		}
-		else
-			{memcpy(header, "/index.ps3", 10); memcpy(param, "/index.ps3", 10); auto_mount = true;}
-	}
-#endif
-#ifdef USE_NTFS
-	// /mount.ps3/dev_ntfs* => convert ntfs path to cached path
-	if(islike(param, "/mount") && is_ntfs_path(param + 10))
-	{
-		char *filename = param + 10;
-		strcpy(header, filename);
-		int flen = get_name(filename, header, GET_WMTMP);
-
-		for(int i = 2; i < 9; i++) // "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO"
-			if(strstr(header, paths[i])) {sprintf(filename + flen, ".ntfs[%s]", paths[i]); break;}
-
-		if(not_exists(filename))
-		{
-			check_ntfs_volumes();
-			prepNTFS(0);
-		}
-	}
-#endif
 	if(mount_ps3)
 	{
 		// /mount_ps3/<path>[?random=<x>[&emu={ps1_netemu.self/ps1_netemu.self}][offline={0/1}][&to=/app_home]
@@ -61,8 +27,8 @@
 		u8 ap = 1; // use webman_config->autoplay
 		if((webman_config->autoplay == 0) && !(webman_config->combo2 & PLAY_DISC))
 		{
-			pad_data = pad_read(); // check if holding CROSS to force auto-play
-			if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_CROSS)) force_ap = ap = 2; // force auto_play
+			// check if holding CROSS to force auto-play
+			if(is_pressed(CELL_PAD_CTRL_CROSS)) force_ap = ap = 2; // force auto_play
 		}
 
 		if(game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount)) ap_param = ap;
@@ -90,12 +56,14 @@
 		// /copy.ps3/<path>[&to=<destination>]
 		// /copy.ps3/<path>[&to=<destination>]?restart.ps3
 
+		char *params = param + 10;
+
 		keep_alive = 0;
 
 		#ifdef COBRA_ONLY
 		if(islike(param, "/mount.ps3"))
 		{
-			mount_app_home = get_flag(param, "&to=/app_home");
+			mount_app_home = get_flag(params, "&to=/app_home");
 		}
 		#endif
 
@@ -113,9 +81,9 @@
 		}
 		else if(islike(param, "/copy.ps3")) ;
 
-		else if(!islike(param + 10, "/net") && !islike(param + 10, WMTMP))
+		else if(!islike(params, "/net") && !islike(params, WMTMP))
 		{
-			char *params = param + 10; strcpy(templn, params);
+			strcpy(templn, params);
 			if(not_exists(params))
 			{
 				find_slaunch_game(params, 10); // search in slaunch.bin

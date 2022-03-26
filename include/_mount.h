@@ -81,12 +81,11 @@ static void auto_play(char *param, u8 force_autoplay)
 
 	if(IS_ON_XMB)
 	{
-		pad_data = pad_read(); // check if holding L2 to cancel auto-play
-		bool atag = (strcasestr(param, AUTOPLAY_TAG) != NULL) || (autoplay);
+		// check if holding L2 to cancel auto-play
  #ifdef REMOVE_SYSCALLS
-		bool l2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2));
+		bool l2 = is_pressed(CELL_PAD_CTRL_L2);
  #else
-		bool l2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)));
+		bool l2 = is_pressed(CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2);
  #endif
 
 		if(autoplay && wait_for_abort(webman_config->boots)) return;
@@ -141,7 +140,8 @@ static void auto_play(char *param, u8 force_autoplay)
 		else
  #endif
 		{
-			//if((atag && !l2) || (!atag && l2)) {sys_ppu_thread_sleep(1); launch_disc();} // L2 + X
+			bool atag = (strcasestr(param, AUTOPLAY_TAG) != NULL) || (autoplay);
+
 			if(!(webman_config->combo2 & PLAY_DISC) || atag) {sys_ppu_thread_sleep(1); launch_disc((atag && !l2) || (!atag && l2));}		// L2 + X
 
 			autoplay = false;
@@ -1404,10 +1404,8 @@ static void mount_autoboot(void)
 
 	bool do_mount = false;
 
-	pad_data = pad_read(); // check if holding L2+R2 to prevent auto-mount on startup
-
 	// prevent auto-mount on startup if L2+R2 is pressed
-	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2))) { if(!webman_config->nobeep) BEEP2; return;}
+	if(is_pressed(CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) { if(!webman_config->nobeep) BEEP2; return;}
 
 	if(from_reboot && *path && (strstr(path, "/PS2") != NULL)) return; //avoid re-launch PS2 returning to XMB
 
@@ -1726,9 +1724,9 @@ exit_mount:
 #ifdef REMOVE_SYSCALLS
 	else if(mount_unk == EMU_PS3)
 	{
-		pad_data = pad_read(); // check if holding R2 to disable syscalls on PS3
+		// check if holding R2 to disable syscalls on PS3
+		bool r2 = is_pressed(CELL_PAD_CTRL_R2);
 		bool otag = (strcasestr(_path, ONLINE_TAG) != NULL);
-		bool r2 = (pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2));
 		if((!r2 && otag) || (r2 && !otag)) disable_cfw_syscalls(webman_config->keep_ccapi);
 	}
 #endif

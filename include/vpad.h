@@ -215,19 +215,22 @@ static CellPadData pad_read(void)
 	return pad_data;
 }
 
+static bool is_pressed(u32 buttons)
+{
+	pad_data = pad_read();
+
+	return(pad_data.len > 0 && ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & buttons) == buttons));
+}
 
 #ifdef COBRA_ONLY
 static u8 pad_select_netemu(const char *path, u8 value)
 {
 	if(strstr(path, "[netemu]")) value = 1;
 
-	pad_data = pad_read(); // hold L2 = emu, R2 = netemu, R1 = toggle emu / netemu
-	if(pad_data.len > 0)
-	{
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2) return 0; // emu
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) return 1; // net_emu
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1) value^=1; // toggle
-	}
+	// hold L2 = emu, R2 = netemu, R1 = toggle emu / netemu
+	if(is_pressed(CELL_PAD_CTRL_R2)) return 1; // net_emu
+	if(is_pressed(CELL_PAD_CTRL_L2)) return 0; // emu
+	if(is_pressed(CELL_PAD_CTRL_R1)) value^=1; // toggle
 
 	return value;
 }

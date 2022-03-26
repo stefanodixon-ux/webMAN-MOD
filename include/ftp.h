@@ -37,7 +37,9 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 {
 	if(*path == '/')
 	{
-		strcpy(absPath_s, path);
+		u16 len = sprintf(absPath_s, "%s", path);
+
+		if(absPath_s[len - 1] != '/') strcat(absPath_s + len, "/");
 
 		if(islike(path, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); filepath_check(absPath_s); return 1;}
 		if(islike(path, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
@@ -46,10 +48,12 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 	{
 		u16 len = sprintf(absPath_s, "%s", cwd);
 
-		if(cwd[len - 1] != '/') strcat(absPath_s + len, "/");
-
 		strcat(absPath_s + len, path);
 	}
+
+	#ifdef USE_NTFS
+	if(is_ntfs_path(absPath_s)) check_ntfs_volumes();
+	#endif
 
 	if(scan)
 		if(not_exists(absPath_s))
@@ -857,12 +861,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							}
 							else
 							{
-								int mb_free, dm;
-								char *slash = strchr(d_path + 1, '/'), *str_free = (char *)STR_MBFREE;
-								if(slash) *slash = '\0';
-								mb_free = (get_free_space(d_path)>>20), dm = (mb_free % KB) / 100;
-								if(mb_free > 1024) {mb_free /= KB, str_free = (char *)STR_GBFREE;}
-								sprintf(buffer, "226 [%s] [ %i.%i %s %s]\r\n", d_path, mb_free, dm, str_free, cpursx);
+								free_size(d_path, param);
+								sprintf(buffer, "226 [%s] [%s %s]\r\n", d_path, param, cpursx);
 								ssend(conn_s_ftp, buffer);
 							}
 						}
@@ -888,13 +888,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					}
 					else
 						strcpy(tempcwd, cwd);
-#ifdef USE_NTFS
-					if(is_ntfs_path(tempcwd))
-					{
-						if(strlen(tempcwd) < 13 || (ps3ntfs_stat(ntfs_path(tempcwd), &bufn) >= 0 && (bufn.st_mode & S_IFDIR))) is_ntfs = true;
-					}
-#endif
-					if(is_ntfs || isDir(tempcwd))
+
+					if(isDir(tempcwd))
 					{
 						strcpy(cwd, tempcwd);
 						ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.

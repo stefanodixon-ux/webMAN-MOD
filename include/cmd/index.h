@@ -25,7 +25,8 @@
 			goto exit_handleclient_www;
 		}
 
-		if(auto_mount && islike(buffer, "/mount.ps3")) {auto_mount = false; sprintf(param, "%s", buffer); goto redirect_url;}
+		// mount query found only 1 entry
+		if(auto_mount && islike(buffer, "/mount.ps3")) {auto_mount = false; strcpy(param, buffer); goto redirect_url;}
 
 		if(is_ps3_http)
 		{

@@ -556,7 +556,7 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 	int retval = NONE;
 	found_offset = fallback;
 
-	char mem[0x100]; int m = sizeof(mem) - len; u8 gap = len + 0x10 - (len % 0x10);
+	char mem[0x200]; int m = sizeof(mem) - len; u8 gap = len + 0x10 - (len % 0x10);
 	for(; address < stop; address += sizeof(mem) - gap)
 	{
 		retval = ps3mapi_get_memory(pid, address, mem, sizeof(mem));
@@ -643,6 +643,8 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			}
 			else if(strstr(param, "&exact"))
 				memset(mask, 0, len);
+
+			if(address == 0) address = 4;
 
 			u32 addr = address;
 			u32 stop = 0; char *pos = strstr(param, "&stop=");

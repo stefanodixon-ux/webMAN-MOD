@@ -658,107 +658,44 @@ parse_request:
 			#include "cmd/quit.h"
 
  #ifndef LITE_EDITION
-
 			#include "cmd/abort.h"
+			#include "cmd/wait.h"
 			#include "cmd/edit.h"
 			#include "cmd/chat.h"
 			#include "cmd/xmb_browser.h"
-			#include "cmd/remap_unmap.h"
-			#include "cmd/rename_swap_move.h"
-			#include "cmd/write_trunc_unzip.h"
-			#include "cmd/cpy_cut_paste.h"
-			#include "cmd/mkdir_rmdir.h"
-			#include "cmd/randomizers.h" // /gameboot.ps3, /wallpaper.ps3, etc.
-			#include "cmd/stat_chmod.h"
-			#include "cmd/md5.h"
-			#include "cmd/minver.h"
-			#include "cmd/recovery.h"
-			#include "cmd/rebuild.h"
-			#include "cmd/netstatus.h"
-			#include "cmd/syscall.h"
-			#include "cmd/consoleid.h"
-			#include "cmd/secureid.h"
-			#include "cmd/klic.h"
-			#include "cmd/fixgame.h"
-			#include "cmd/unlockhdd.h"
-			#include "cmd/unlocksave.h"
-			#include "cmd/wait.h"
-
+			#include "cmd/mount_search.h"
+			if(sys_admin)
+			{
+				#include "cmd/remap_unmap.h"
+				#include "cmd/rename_swap_move.h"
+				#include "cmd/write_trunc_unzip.h"
+				#include "cmd/cpy_cut_paste.h"
+				#include "cmd/mkdir_rmdir.h"
+				#include "cmd/randomizers.h" // /gameboot.ps3, /wallpaper.ps3, etc.
+				#include "cmd/stat_chmod.h"
+				#include "cmd/md5.h"
+				#include "cmd/minver.h"
+				#include "cmd/recovery.h"
+				#include "cmd/rebuild.h"
+				#include "cmd/netstatus.h"
+				#include "cmd/syscall.h"
+				#include "cmd/consoleid.h"
+				#include "cmd/secureid.h"
+				#include "cmd/klic.h"
+				#include "cmd/fixgame.h"
+				#include "cmd/unlockhdd.h"
+				#include "cmd/unlocksave.h"
+			}
 			#ifdef COPY_PS3
 			if(islike(param, "/copy")) {if(!copy_in_progress) dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same files
 			else
 			#endif // #ifdef COPY_PS3
  #endif // #ifndef LITE_EDITION
 
-retry_response:
-			if(!is_busy && (islike(param, "/index.ps3?") || islike(param, "/refresh.ps3"))) ; else
-
-			if(!is_busy && sys_admin && (islike(param, "/mount.ps3?http")
- #ifdef DEBUG_MEM
-							|| islike(param, "/peek.lv2?")
-							|| islike(param, "/poke.lv2?")
-							|| islike(param, "/find.lv2?")
-							|| islike(param, "/peek.lv1?")
-							|| islike(param, "/poke.lv1?")
-							|| islike(param, "/find.lv1?")
-							|| islike(param, "/dump.ps3")
-							|| islike(param, "/hexview.ps3/")
- #endif
-
- #ifndef LITE_EDITION
-							|| islike(param, "/delete.ps3")
-							|| islike(param, "/delete_ps3")
- #endif
-
- #ifdef PS3MAPI
-							|| islike(param, "/home.ps3mapi")
-							|| islike(param, "/getmem.ps3mapi") || islike(param, "/patch.ps3")
-							|| islike(param, "/setmem.ps3mapi")
-							|| islike(param, "/led.ps3mapi")
-							|| islike(param, "/buzzer.ps3mapi") || islike(param, "/beep.ps3")
-							|| islike(param, "/notify.ps3mapi")
-							|| islike(param, "/syscall.ps3mapi")
-							|| islike(param, "/syscall8.ps3mapi")
-							|| islike(param, "/setidps.ps3mapi")
-							|| islike(param, "/vshplugin.ps3mapi")
-							|| islike(param, "/gameplugin.ps3mapi")
- #endif
-
- #ifdef COPY_PS3
-							|| islike(param, "/copy.ps3/")
- #endif
-			)) keep_alive = 0;
-
-			else if(islike(param, "/cpursx.ps3")
-				||  islike(param, "/sman.ps3")
-				||  islike(param, "/mount_ps3/")
-				||  islike(param, "/mount.ps3/")
- #ifdef PS2_DISC
-				||  islike(param, "/mount.ps2/")
-				||  islike(param, "/mount_ps2/")
- #endif
- #ifdef VIDEO_REC
-				||  islike(param, "/videorec.ps3")
- #endif
- #ifdef EXT_GDATA
-				||  islike(param, "/extgd.ps3")
- #endif
- #ifdef NOBD_PATCH
-				|| islike(param, "/nobd.ps3")
- #endif
- #ifdef SYS_BGM
-				||  islike(param, "/sysbgm.ps3")
- #endif
- #ifdef LOAD_PRX
-				||  islike(param, "/loadprx.ps3")
-				||  islike(param, "/unloadprx.ps3")
- #endif
-				||  islike(param, "/eject.ps3")
-				||  islike(param, "/insert.ps3")) keep_alive = 0;
-			else if(islike(param, "/index.ps3")) ;
-			else
+			#include "www_isadmin.h" // check is admin / is_busy
 			{
-				#include "www_listing.h" // sort / search / error
+ html_listing:
+				#include "www_listing.h" // sort / search / error / check if is binary
 			}
 
  html_response:

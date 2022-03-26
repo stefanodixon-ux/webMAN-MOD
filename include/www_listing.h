@@ -1,6 +1,6 @@
-	struct CellFsStat buf; bool is_net = false;
-
 	if(islike(param, "/dev_hdd1")) mount_device("/dev_hdd1", NULL, NULL); // auto-mount /dev_hdd1
+
+	struct CellFsStat buf; bool is_net = false;
 
 	#ifdef USE_NTFS
 	is_ntfs = is_ntfs_path(param);
@@ -101,7 +101,7 @@
 
 		strcpy(param, FILE_LIST);
 		is_busy = false, allow_retry_response = false;
-		goto retry_response;
+		goto html_listing;
 	}
 	#endif
 	else

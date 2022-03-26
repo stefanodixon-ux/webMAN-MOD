@@ -542,7 +542,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 		if( param[11] ) {sprintf(templn, HTML_REDIRECT_TO_URL, "/", HTML_REDIRECT_WAIT); _concat(&sout, templn);}
 
-		sprintf(templn, "/dev_blind: %s", isDir("/dev_blind") ? STR_ENABLED : STR_DISABLED); _concat(&sout, templn); return true; //goto send_response;
+		sprintf(templn, "/dev_blind: %s", isDir("/dev_blind") ? STR_ENABLED : STR_DISABLED); _concat(&sout, templn); return true;
 	}
 
 	absPath(templn, param, "/"); // auto mount /dev_blind & /dev_hdd1

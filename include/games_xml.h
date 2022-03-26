@@ -627,6 +627,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	{
 		if(webman_config->root) ;
 
+		// skip scan if rebooting or if scan on startup is disabled
 		else if(webman_config->refr || from_reboot)
 		{
 			cellFsUnlink(WMNOSCAN);
@@ -639,6 +640,9 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		}
 
 		make_fb_xml();
+
+		// skip scan on startup if L2+R2 is pressed,
+		if(is_pressed(CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) return true;
 
 		// start a new thread for refresh xml content at start up
 		if(!webman_config->refr || not_exists(MY_GAMES_XML))
@@ -1546,8 +1550,9 @@ static void refresh_xml(char *msg)
 	backup_act_dat();
 
 	// refresh SND0 settings for new installed games only with combo SELECT+R3+L1+R1 (reload_xmb)
-	pad_data = pad_read(); // check for SELECT+R3+L1+R1 (reload_xmb)
-	if(pad_data.len > 0 && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1)))
+
+	// check for SELECT+R3+L1+R1 (reload_xmb)
+	if(is_pressed(CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1))
 	{
 		mute_snd0(true);
 	}
