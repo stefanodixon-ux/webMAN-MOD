@@ -13,6 +13,7 @@ if(netid >= '0' && netid <= '4')
 
 	char *netpath = _path + 5, *pkg_slash = NULL;
 
+	// check remote file exists
 	int ns = connect_to_remote_server(netid);
 	if(ns >= 0)
 	{
@@ -31,6 +32,10 @@ if(netid >= '0' && netid <= '4')
 	bool is_iso = false;
 	char *ext = strrchr(netpath, '.');
 
+	// allow mount any file type on ROMS
+	if(islike(netpath, "/ROMS/")) is_iso = false; else
+
+	// check mount ISOs
 	if(ext)
 	{
 		if(strlen(ext) == 4 || islike(ext, ".0"))
@@ -39,6 +44,7 @@ if(netid >= '0' && netid <= '4')
 		if(!is_iso) ext = NULL;
 	}
 
+	// check mount folders
 	if(!ext)
 	{
 		int ns = connect_to_remote_server(netid);
@@ -216,6 +222,7 @@ retry_net:
 			sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", isDir( RETROARCH_DIR0 ) ? RETROARCH_DIR0 "/USRDIR/cores" :
 															isDir( RETROARCH_DIR1 ) ? RETROARCH_DIR1 "/USRDIR/cores" :
 																					  RETROARCH_DIR2 "/USRDIR/cores" );
+			launch_app_home_icon(webman_config->autoplay);
 		}
 
 		else if(islike(netpath, "/GAMEI/"))

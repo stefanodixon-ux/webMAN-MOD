@@ -561,7 +561,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 
 		#ifdef NET_SUPPORT
 		int abort_connection = 0;
-		if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection) < 0) do_umount(false);
+		if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection, false) < 0) do_umount(false);
 		#endif
 
 		#ifdef SLAUNCH_FILE
@@ -713,7 +713,7 @@ list_games:
 				set_scan_path(li, f0, f1, is_net, uprofile, param);
 
 				#ifdef NET_SUPPORT
-				if(is_net && open_remote_dir(ns, param, &abort_connection) < 0) goto continue_reading_folder_html; //continue;
+				if(is_net && open_remote_dir(ns, param, &abort_connection, true) < 0) goto continue_reading_folder_html; //continue;
 				#endif
 
 				CellFsDirectoryEntry entry; u32 read_e;

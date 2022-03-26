@@ -663,7 +663,7 @@ static bool remote_is_dir(int ns, const char *path)
 	return false;
 }
 
-static int open_remote_dir(int s, const char *path, int *abort_connection)
+static int open_remote_dir(int s, const char *path, int *abort_connection, bool subdirs)
 {
 	*abort_connection = 1;
 
@@ -680,6 +680,10 @@ static int open_remote_dir(int s, const char *path, int *abort_connection)
 	netiso_open_dir_cmd cmd;
 	netiso_open_dir_result res;
 
+	char *_path = (char *)path;
+
+	if(subdirs) strcat(_path, "//");
+
 	int len = strlen(path);
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_OPEN_DIR);
@@ -691,11 +695,13 @@ static int open_remote_dir(int s, const char *path, int *abort_connection)
 		return FAILED;
 	}
 
-	if(send(s, path, len, 0) != len)
+	if(send(s, _path, len, 0) != len)
 	{
 		//DPRINTF("send failed (open_remote_dir) (errno=%d)!\n", get_network_error());
 		return FAILED;
 	}
+
+	if(subdirs) _path[len - 2] = '\0';
 
 	if(recv(s, &res, sizeof(res), MSG_WAITALL) != sizeof(res))
 	{

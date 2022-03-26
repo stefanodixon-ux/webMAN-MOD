@@ -58,6 +58,7 @@ typedef struct _client_t
 	struct in_addr ip_addr;
 	thread_t thread;
 	uint16_t CD_SECTOR_SIZE;
+	bool subdirs;
 } client_t;
 
 static client_t clients[MAX_CLIENTS];
@@ -188,6 +189,8 @@ static int initialize_client(client_t *client)
 	client->dirpath = NULL;
 	client->connected = 1;
 	client->CD_SECTOR_SIZE = 2352;
+	client->subdirs = false;
+
 	return SUCCEEDED;
 }
 
@@ -229,6 +232,7 @@ static void finalize_client(client_t *client)
 	client->dirpath = NULL;
 	client->connected = 0;
 	client->CD_SECTOR_SIZE = 2352;
+	client->subdirs = false;
 
 	memset(client, 0, sizeof(client_t));
 }
@@ -1009,6 +1013,8 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 		return FAILED;
 	}
 
+	client->subdirs = strstr(dirpath, "//");
+
 	dirpath = translate_path(dirpath, NULL);
 	if(!dirpath)
 	{
@@ -1244,6 +1250,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 
 	int64_t items = 0;
 	int max_items = MAX_ENTRIES;
+	size_t path_len = 0;
 
 	char *path = NULL;
 	netiso_read_dir_result_data *dir_entries = NULL;
@@ -1269,7 +1276,9 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 		goto send_result_read_dir_cmd;
 	}
 
-	path = (char*)malloc(MAX_PATH_LEN + root_len + strlen(client->dirpath + root_len) + MAX_FILE_LEN + 2);
+	path_len = MAX_PATH_LEN + root_len + strlen(client->dirpath + root_len) + MAX_FILE_LEN + 2;
+
+	path = (char*)malloc(path_len);
 
 	if (!path)
 	{
@@ -1283,7 +1292,7 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	struct dirent *entry;
 
 	size_t d_name_len, dirpath_len;
-	dirpath_len = sprintf(path, "%s/", client->dirpath);
+	dirpath_len = sprintf(path, "%s", client->dirpath);
 
 	// list dir
 	while ((entry = readdir(client->dir)))
@@ -1316,6 +1325,59 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 			{
 				dir_entries[items].file_size = (0);
 				dir_entries[items].is_directory = 1;
+
+				// include subdirectory files (one level)
+				if(client->subdirs)
+				{
+					DIR *dir2 = opendir(path);
+					strcat(path, "/");
+					size_t dir2path_len = dirpath_len + d_name_len + 1;
+
+					if(dir2)
+					{
+						while ((entry = readdir(dir2)))
+						{
+							if(IS_PARENT_DIR(entry->d_name)) continue;
+
+							#ifdef WIN32
+							d_name_len = entry->d_namlen;
+							#else
+							d_name_len = strlen(entry->d_name);
+							#endif
+
+							if(dir2path_len + d_name_len >= path_len) continue;
+
+							sprintf(path + dir2path_len, "%s", entry->d_name);
+
+							if(stat_file(path, &st) < 0)
+							{
+								st.file_size = 0;
+								st.mode = S_IFDIR;
+								st.mtime = 0;
+								st.atime = 0;
+								st.ctime = 0;
+							}
+
+							path[dir2path_len] = '\0';
+
+							if((st.mode & S_IFDIR) == S_IFDIR) continue;
+
+							if(!st.mtime) {st.mtime = st.ctime;
+							if(!st.mtime)  st.mtime = st.atime;}
+
+							sprintf(dir_entries[items].name, "%s%s", path + dirpath_len, entry->d_name);
+
+							dir_entries[items].mtime = BE64(st.mtime);
+							dir_entries[items].file_size =  BE64(st.file_size);
+							dir_entries[items].is_directory = 0;
+
+							items++;
+							if(items >= max_items) break;
+						}
+						closedir(dir2); dir2 = NULL;
+					}
+					continue;
+				}
 			}
 			else
 			{
@@ -1675,7 +1737,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20220301");
+	printf("ps3netsrv build 20220326");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");

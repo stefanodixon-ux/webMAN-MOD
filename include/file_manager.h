@@ -661,7 +661,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			if(ns >= 0)
 			{
 				strcat(param, "/");
-				if(open_remote_dir(ns, param + 5, &abort_connection) >= 0)
+				if(open_remote_dir(ns, param + 5, &abort_connection, false) >= 0)
 				{
 					strcpy(templn, param); while(templn[plen] == '/') templn[plen--] = '\0'; plen++;
 					remove_filename(templn); if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = '\0';}

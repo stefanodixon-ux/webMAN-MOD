@@ -847,7 +847,7 @@ scan_roms:
 
 	#ifdef NET_SUPPORT
 	int abort_connection = 0;
-	if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection) < 0) do_umount(false);
+	if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection, false) < 0) do_umount(false);
 	#endif
 
 	for(u8 f0 = 0; f0 < MAX_DRIVES; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
@@ -937,7 +937,7 @@ scan_roms:
 			set_scan_path(li, f0, f1, is_net, uprofile, param);
 
 			#ifdef NET_SUPPORT
-			if(is_net && open_remote_dir(ns, param, &abort_connection) < 0) goto continue_reading_folder_xml; //continue;
+			if(is_net && open_remote_dir(ns, param, &abort_connection, true) < 0) goto continue_reading_folder_xml; //continue;
 			#endif
 			{
 				CellFsDirectoryEntry entry; u32 read_e;
