@@ -58,7 +58,7 @@ typedef struct _client_t
 	struct in_addr ip_addr;
 	thread_t thread;
 	uint16_t CD_SECTOR_SIZE;
-	bool subdirs;
+	int subdirs;
 } client_t;
 
 static client_t clients[MAX_CLIENTS];
@@ -189,7 +189,7 @@ static int initialize_client(client_t *client)
 	client->dirpath = NULL;
 	client->connected = 1;
 	client->CD_SECTOR_SIZE = 2352;
-	client->subdirs = false;
+	client->subdirs = 0;
 
 	return SUCCEEDED;
 }
@@ -232,7 +232,7 @@ static void finalize_client(client_t *client)
 	client->dirpath = NULL;
 	client->connected = 0;
 	client->CD_SECTOR_SIZE = 2352;
-	client->subdirs = false;
+	client->subdirs = 0;
 
 	memset(client, 0, sizeof(client_t));
 }
@@ -1013,7 +1013,7 @@ static int process_open_dir_cmd(client_t *client, netiso_open_dir_cmd *cmd)
 		return FAILED;
 	}
 
-	client->subdirs = strstr(dirpath, "//");
+	client->subdirs = strstr(dirpath, "//") ? 1 : 0;
 
 	dirpath = translate_path(dirpath, NULL);
 	if(!dirpath)
@@ -1244,11 +1244,85 @@ send_result_read_dir:
 	return SUCCEEDED;
 }
 
+static void process_read_dir(netiso_read_dir_result_data *dir_entries, char *path, size_t dirpath_len, size_t path_len, int max_items, int *nitems, int subdirs)
+{
+	int items = *nitems;
+
+	file_stat_t st;
+	struct dirent *entry;
+	size_t d_name_len;
+
+	DIR *dir2 = opendir(path);
+	strcat(path, "/");
+	size_t dir2path_len = strlen(path);
+
+	if(dir2)
+	{
+		while ((entry = readdir(dir2)))
+		{
+			if(IS_PARENT_DIR(entry->d_name)) continue;
+
+			#ifdef WIN32
+			d_name_len = entry->d_namlen;
+			#else
+			d_name_len = strlen(entry->d_name);
+			#endif
+
+			if(dir2path_len + d_name_len >= path_len) continue;
+
+			sprintf(path + dir2path_len, "%s", entry->d_name);
+
+			if(stat_file(path, &st) < 0)
+			{
+				st.file_size = 0;
+				st.mode = S_IFDIR;
+				st.mtime = 0;
+				st.atime = 0;
+				st.ctime = 0;
+			}
+
+			path[dir2path_len] = '\0';
+
+			if((st.mode & S_IFDIR) == S_IFDIR)
+			{
+				if(subdirs)
+				{
+					if(subdirs < 2) process_read_dir(dir_entries, path, dirpath_len, path_len, max_items, &items, 2);
+					continue;
+				}
+
+				dir_entries[items].file_size = (0);
+				dir_entries[items].is_directory = 1;
+			}
+			else
+			{
+				dir_entries[items].file_size =  BE64(st.file_size);
+				dir_entries[items].is_directory = 0;
+			}
+
+			if(!st.mtime) {st.mtime = st.ctime;
+			if(!st.mtime)  st.mtime = st.atime;}
+
+			dir_entries[items].mtime = BE64(st.mtime);
+
+			if(subdirs)
+				sprintf(dir_entries[items].name, "%s%s", path + dirpath_len, entry->d_name);
+			else
+				sprintf(dir_entries[items].name, "%s", entry->d_name);
+
+			items++;
+			if(items >= max_items) break;
+		}
+		closedir(dir2); dir2 = NULL;
+	}
+	*nitems = items;
+}
+
 static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd)
 {
 	(void) cmd;
 
-	int64_t items = 0;
+	int items = 0;
 	int max_items = MAX_ENTRIES;
 	size_t path_len = 0;
 
@@ -1289,109 +1363,12 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 	_memset(dir_entries, sizeof(netiso_read_dir_result_data) * max_items);
 
 	file_stat_t st;
-	struct dirent *entry;
 
-	size_t d_name_len, dirpath_len;
+	size_t dirpath_len;
 	dirpath_len = sprintf(path, "%s", client->dirpath);
 
 	// list dir
-	while ((entry = readdir(client->dir)))
-	{
-		if(IS_PARENT_DIR(entry->d_name)) continue;
-
-		#ifdef WIN32
-		d_name_len = entry->d_namlen;
-		#else
-		d_name_len = strlen(entry->d_name);
-		#endif
-
-		if(IS_RANGE(d_name_len, 1, MAX_FILE_LEN))
-		{
-			sprintf(path + dirpath_len, "%s", entry->d_name);
-
-			if(stat_file(path, &st) < 0)
-			{
-				st.file_size = 0;
-				st.mode = S_IFDIR;
-				st.mtime = 0;
-				st.atime = 0;
-				st.ctime = 0;
-			}
-
-			if(!st.mtime) {st.mtime = st.ctime;
-			if(!st.mtime)  st.mtime = st.atime;}
-
-			if((st.mode & S_IFDIR) == S_IFDIR)
-			{
-				dir_entries[items].file_size = (0);
-				dir_entries[items].is_directory = 1;
-
-				// include subdirectory files (one level)
-				if(client->subdirs)
-				{
-					DIR *dir2 = opendir(path);
-					strcat(path, "/");
-					size_t dir2path_len = dirpath_len + d_name_len + 1;
-
-					if(dir2)
-					{
-						while ((entry = readdir(dir2)))
-						{
-							if(IS_PARENT_DIR(entry->d_name)) continue;
-
-							#ifdef WIN32
-							d_name_len = entry->d_namlen;
-							#else
-							d_name_len = strlen(entry->d_name);
-							#endif
-
-							if(dir2path_len + d_name_len >= path_len) continue;
-
-							sprintf(path + dir2path_len, "%s", entry->d_name);
-
-							if(stat_file(path, &st) < 0)
-							{
-								st.file_size = 0;
-								st.mode = S_IFDIR;
-								st.mtime = 0;
-								st.atime = 0;
-								st.ctime = 0;
-							}
-
-							path[dir2path_len] = '\0';
-
-							if((st.mode & S_IFDIR) == S_IFDIR) continue;
-
-							if(!st.mtime) {st.mtime = st.ctime;
-							if(!st.mtime)  st.mtime = st.atime;}
-
-							sprintf(dir_entries[items].name, "%s%s", path + dirpath_len, entry->d_name);
-
-							dir_entries[items].mtime = BE64(st.mtime);
-							dir_entries[items].file_size =  BE64(st.file_size);
-							dir_entries[items].is_directory = 0;
-
-							items++;
-							if(items >= max_items) break;
-						}
-						closedir(dir2); dir2 = NULL;
-					}
-					continue;
-				}
-			}
-			else
-			{
-				dir_entries[items].file_size =  BE64(st.file_size);
-				dir_entries[items].is_directory = 0;
-			}
-
-			sprintf(dir_entries[items].name, "%s", entry->d_name);
-			dir_entries[items].mtime = BE64(st.mtime);
-
-			items++;
-			if(items >= max_items) break;
-		}
-	}
+	process_read_dir(dir_entries, path, dirpath_len, path_len, max_items, &items, client->subdirs);
 
 	if(client->dir) {closedir(client->dir); client->dir = NULL;}
 
@@ -1438,61 +1415,10 @@ static int process_read_dir_cmd(client_t *client, netiso_read_dir_entry_cmd *cmd
 			// check dir exists
 			if(stat_file(dir_path, &st) >= 0)
 			{
-				DIR *dir = opendir(dir_path);
+				printf("-> %s\n", dir_path);
+				dirpath_len = (strncmp(dir_path, root_directory, root_len) == 0) ? root_len : 0;
 
-				if(dir)
-				{
-					printf("-> %s\n", dir_path);
-					dirpath_len = sprintf(path, "%s/", dir_path);
-
-					// list dir
-					while ((entry = readdir(dir)))
-					{
-						if(IS_PARENT_DIR(entry->d_name)) continue;
-
-						#ifdef WIN32
-						d_name_len = entry->d_namlen;
-						#else
-						d_name_len = strlen(entry->d_name);
-						#endif
-
-						if(IS_RANGE(d_name_len, 1, MAX_FILE_LEN))
-						{
-							sprintf(path + dirpath_len, "%s", entry->d_name);
-
-							if(stat_file(path, &st) < 0)
-							{
-								st.file_size = 0;
-								st.mode = S_IFDIR;
-								st.mtime = 0;
-								st.atime = 0;
-								st.ctime = 0;
-							}
-
-							if(!st.mtime) {st.mtime = st.ctime;
-							if(!st.mtime)  st.mtime = st.atime;}
-
-							if((st.mode & S_IFDIR) == S_IFDIR)
-							{
-								dir_entries[items].file_size = (0);
-								dir_entries[items].is_directory = 1;
-							}
-							else
-							{
-								dir_entries[items].file_size =  BE64(st.file_size);
-								dir_entries[items].is_directory = 0;
-							}
-
-							sprintf(dir_entries[items].name, "%s", entry->d_name);
-							dir_entries[items].mtime = BE64(st.mtime);
-
-							items++;
-							if(items >= max_items) break;
-						}
-					}
-
-					closedir(dir); dir = NULL;
-				}
+				process_read_dir(dir_entries, dir_path, dirpath_len, path_len, max_items, &items, client->subdirs);
 			}
 
 			// read next line

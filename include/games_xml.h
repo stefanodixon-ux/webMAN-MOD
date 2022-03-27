@@ -937,7 +937,7 @@ scan_roms:
 			set_scan_path(li, f0, f1, is_net, uprofile, param);
 
 			#ifdef NET_SUPPORT
-			if(is_net && open_remote_dir(ns, param, &abort_connection, true) < 0) goto continue_reading_folder_xml; //continue;
+			if(is_net && open_remote_dir(ns, param, &abort_connection, !IS_JB_FOLDER) < 0) goto continue_reading_folder_xml; //continue;
 			#endif
 			{
 				CellFsDirectoryEntry entry; u32 read_e;

@@ -694,11 +694,12 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 							if(param[1] == 0)
 								flen = sprintf(templn, "/%s", dir_items[n].name);
+							else if(dir_items[n].name[0] == '/')
+								flen = sprintf(templn, "%.5s%s", param, dir_items[n].name);
 							else
-							{
 								flen = sprintf(templn, "%s%s", param, dir_items[n].name);
-							}
-							if(templn[flen - 1] == '/') templn[flen--] = '\0';
+
+							while(flen && (templn[flen - 1] == '/')) templn[flen--] = '\0';
 
 							cellRtcSetTime_t(&rDate, dir_items[n].mtime);
 
