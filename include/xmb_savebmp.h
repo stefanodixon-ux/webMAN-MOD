@@ -89,18 +89,17 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	// initialize graphic
 	init_graphic();
 
-	u16 c, i, k, idx, ww = w;
-	u16 rr = small ? 2 : 1, r2 = 2 * rr; w /= rr, h /= rr; // resize bmp image if small flag is true
+	u16 c, y, x, idx;
+	u16 rr = small ? 2 : 1; w /= rr, h /= rr; // resize bmp image if small flag is true
 
 	u16 margin_w = small ? 80 : 0, margin_h = small ? 30 : 0;
 
-	w -= 2 * margin_w, h -= 2 * margin_h;
+	w -= 2 * margin_w, h -= 2 * margin_h; margin_w *= rr;
 
 	// calc buffer sizes
 	u32 line_frame_size = (w * 4); // ABGR
 
 	// alloc buffers
-	u64 *line_frame = (u64*)sysmem;
 	u8 *tmp_buf = (u8*)sysmem;
 	u8 *bmp_buf = tmp_buf + (4 * line_frame_size); // start offset: 30 KB
 
@@ -132,30 +131,28 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	cellFsWrite(fd, (void *)bmp_header, bmp_header_size, NULL);
 
 	// dump...
-	u32 _ww; idx = 0;
-	for(c = 0, i = h * rr; i > margin_h; i-=rr, c++)
+	#define bottom_margin h * rr
+	u32 px = 4 * rr; line_frame_size *= rr; c = idx = 0;
+	for(y = bottom_margin; y > 0; y -= rr)
 	{
-		tmp = (i * pitch) + (rr * margin_w), _ww = tmp + ww - (rr * margin_w);
-		for(k = 0; tmp < _ww; tmp+=r2, k++)
-			line_frame[k] = *(u64*)(OFFSET(tmp));
+		tmp = (y * pitch) + margin_w;
+		tmp_buf = (u8*)(u64*)(OFFSET(tmp));
 
 		// convert line from ABGR to RGB
-		for(k = 0; k < line_frame_size; k+=4, idx+=3)
+		for(x = 0; x < line_frame_size; x += px, idx += 3)
 		{
-			bmp_buf[idx]   = tmp_buf[k + 3];  // R
-			bmp_buf[idx+1] = tmp_buf[k + 2];  // G
-			bmp_buf[idx+2] = tmp_buf[k + 1];  // B
+			bmp_buf[idx]   = tmp_buf[x + 3];  // R
+			bmp_buf[idx+1] = tmp_buf[x + 2];  // G
+			bmp_buf[idx+2] = tmp_buf[x + 1];  // B
 		}
 
 		// write bmp data
-		if(c >= 3)
+		if(++c >= 4)
 		{
 			cellFsWrite(fd, bmp_buf, idx, NULL);
 			c = idx = 0;
 		}
 	}
-
-	cellFsWrite(fd, bmp_buf, idx, NULL);
 
 	// continue rsx rendering
 	rsx_fifo_pause(0);
