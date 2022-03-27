@@ -669,12 +669,13 @@ void screenshot(uint8_t mode)
 		}
 
 		// write bmp data
-		if(c == 3)
+		if(c >= 3)
 		{
 			fwrite(bmp_buf, 1, idx, fd);
 			c = idx = 0;
 		}
 	}
+	fwrite(bmp_buf, 1, idx, fd);
 
 	// padding
 	int32_t rest = (w*3) % 4, pad = 0;
