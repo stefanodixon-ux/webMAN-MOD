@@ -1222,7 +1222,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								if(isDir(source))
 									folder_copy(source, param);
 								else
-									file_copy(source, param, COPY_WHOLE_FILE);
+									file_copy(source, param);
 
 								show_msg(STR_CPYFINISH);
 								copy_in_progress = false;

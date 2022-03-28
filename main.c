@@ -294,7 +294,7 @@ static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_si
 static bool not_exists(const char* path);
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
-static void _file_copy(const char *file1, char *file2);
+static void force_copy(const char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, const char *param);
 static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param);
 static char *remove_filename(const char *path);
@@ -342,8 +342,6 @@ static int prepNTFS(u8 clear);
 
 int wwwd_start(size_t args, void *argp);
 int wwwd_stop(void);
-static void stop_prx_module(void);
-static void unload_prx_module(void);
 
 #ifdef REMOVE_SYSCALLS
 static void remove_cfw_syscalls(bool keep_ccapi);
@@ -664,21 +662,6 @@ static void wwwd_stop_thread(u64 arg)
 	while(refreshing_xml) sys_ppu_thread_usleep(500000);
 
 	u64 exit_code;
-
-/*
-	sys_ppu_thread_t t_id;
-
-	#ifndef LITE_EDITION
-	sys_ppu_thread_create(&t_id, netiso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-	sys_ppu_thread_join(t_id, &exit_code);
-	#endif
-
-	sys_ppu_thread_create(&t_id, rawseciso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-	sys_ppu_thread_join(t_id, &exit_code);
-
-	while(netiso_loaded || rawseciso_loaded) {sys_ppu_thread_usleep(100000);}
-*/
-
 	sys_ppu_thread_join(thread_id_wwwd, &exit_code);
 
 	if(thread_id_ftpd != SYS_PPU_THREAD_NONE)
@@ -707,16 +690,28 @@ static void wwwd_stop_thread(u64 arg)
 			sys_ppu_thread_join(thread_id_poll, &exit_code);
 		}
 	}
+/*
+	sys_ppu_thread_t t_id;
 
+	#ifndef LITE_EDITION
+	sys_ppu_thread_create(&t_id, netiso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
+	sys_ppu_thread_join(t_id, &exit_code);
+	#endif
+
+	sys_ppu_thread_create(&t_id, rawseciso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
+	sys_ppu_thread_join(t_id, &exit_code);
+
+	while(netiso_loaded || rawseciso_loaded) {sys_ppu_thread_usleep(100000);}
+*/
 	sys_ppu_thread_exit(0);
 }
 
 int wwwd_stop(void)
 {
 	sys_ppu_thread_t t_id;
-	int ret = sys_ppu_thread_create(&t_id, wwwd_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-
 	u64 exit_code;
+
+	int ret = sys_ppu_thread_create(&t_id, wwwd_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
 	if (ret == 0) sys_ppu_thread_join(t_id, &exit_code);
 
 	sys_ppu_thread_usleep(500000);
@@ -725,9 +720,8 @@ int wwwd_stop(void)
 	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
 	#endif
 
-	unload_prx_module();
+	finalize_module();
 
 	_sys_ppu_thread_exit(0);
-
 	return SYS_PRX_STOP_OK;
 }

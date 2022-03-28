@@ -18,7 +18,7 @@
 			if(!chart_init)
 			{
 				if(file_exists("/dev_hdd0/cpursx.html"))
-					_file_copy("/dev_hdd0/cpursx.html", (char*)(CPU_RSX_CHART)); // copy the chart template
+					force_copy("/dev_hdd0/cpursx.html", (char*)(CPU_RSX_CHART)); // copy the chart template
 				else
 				{
 					sprintf(msg, "<meta http-equiv=\"refresh\" content=\"15\"><style>"

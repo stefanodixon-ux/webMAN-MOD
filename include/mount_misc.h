@@ -124,7 +124,7 @@
 				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
 				sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
 
-				_file_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
+				force_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
 				cellFsUnlink(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce");
 			}
 			else
@@ -142,7 +142,7 @@
 					sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
 				}
 
-				_file_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
+				force_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
 				cellFsUnlink(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak");
 			}
 
@@ -185,7 +185,7 @@
 			cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
 			cellFsUnlink(PS2_CLASSIC_ISO_PATH);
 
-			if(file_copy(_path, (char*)PS2_CLASSIC_ISO_PATH, COPY_WHOLE_FILE) >= 0)
+			if(file_copy(_path, (char*)PS2_CLASSIC_ISO_PATH) >= 0)
 			{
 				copy_ps2config(temp, _path);
 

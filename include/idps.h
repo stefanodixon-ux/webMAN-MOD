@@ -204,7 +204,7 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 	if(*act_dat)
 	{
 		sprintf(filename, "%s/home/%08i/exdata/act.dat", drives[0], xusers()->GetCurrentUserNumber());
-		_file_copy(filename, act_dat);
+		force_copy(filename, act_dat);
 	}
 
 	*param = NULL;

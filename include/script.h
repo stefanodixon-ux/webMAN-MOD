@@ -100,8 +100,8 @@ static void parse_script(const char *script_file)
 					if(*line == '/') {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
 	#endif
 					if(_islike(line, "ren /"))  {path += 4; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_RENAME, dest);} else rename_file(path, dest);} else
-					if(_islike(line, "copy /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_COPY, dest);}  else if(isDir(path))  folder_copy(path, dest); else  file_copy(path, dest, COPY_WHOLE_FILE);} else
-					if(_islike(line, "fcopy /")){path += 6; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_FCOPY, dest);} else if(isDir(path)) _folder_copy(path, dest); else _file_copy(path, dest);} else
+					if(_islike(line, "copy /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_COPY, dest);}  else if(isDir(path))  folder_copy(path, dest); else file_copy(path, dest);} else
+					if(_islike(line, "fcopy /")){path += 6; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_FCOPY, dest);} else if(isDir(path)) _folder_copy(path, dest); else force_copy(path, dest);} else
 					if(_islike(line, "swap /")) {path += 5; strcpy(cp_path, path); char *slash = get_filename(cp_path); sprintf(slash, "/~swap"); rename_file(path, cp_path); rename_file(dest, path); rename_file(cp_path, dest);} else
 					if(_islike(line, "move /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_MOVE, dest);} else rename_file(path, dest);} else
 					if(_islike(line, "list /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);} else

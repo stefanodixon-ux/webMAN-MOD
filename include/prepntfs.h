@@ -178,7 +178,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		if( get_image_file(tmp_path, plen - extlen) ) return; // found image in WMTMP
 
 		// copy external image to WMTMP
-		_file_copy(path, tmp_path);
+		force_copy(path, tmp_path);
 
 /*
 		for_sfo:
@@ -195,11 +195,11 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 
 				if(file_exists("/dev_bdvd/PS3_GAME/PARAM.SFO"))
 				{
-					file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", path, COPY_WHOLE_FILE);
+					file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", path);
 
 					strcpy(path + plen - 3, "PNG");
 					if(not_exists(path))
-						file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", path, COPY_WHOLE_FILE);
+						file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", path);
 				}
 
 				sys_ppu_thread_t t;

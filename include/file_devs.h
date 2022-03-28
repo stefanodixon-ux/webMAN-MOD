@@ -1,3 +1,5 @@
+#define NO_MSG							NULL
+
 #define SC_BDVD_DECRYPT 				(36)
 #define SC_FS_MOUNT 					(837)
 #define SC_FS_UMOUNT					(838)

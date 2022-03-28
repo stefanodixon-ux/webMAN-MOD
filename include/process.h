@@ -8,14 +8,14 @@ static inline sys_prx_id_t prx_get_module_id_by_address(void *addr)
 	system_call_1(SC_GET_PRX_MODULE_BY_ADDRESS, (u64)(u32)addr);
 	return (int)p1;
 }
-
+/*
 static void unload_prx_module(void)
 {
 	sys_prx_id_t prx = prx_get_module_id_by_address(unload_prx_module);
 	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
 }
-
-static void stop_prx_module(void)
+*/
+static void finalize_module(void)
 {
 	show_msg(STR_WMUNL);
 
@@ -25,7 +25,7 @@ static void stop_prx_module(void)
 
 	working = 0;
 
-	sys_prx_id_t prx = prx_get_module_id_by_address(stop_prx_module);
+	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
 
 	// int *result = NULL;
 	// {system_call_6(SC_STOP_PRX_MODULE, (u64)(u32)prx, 0, NULL, (u64)(u32)result, 0, NULL);}

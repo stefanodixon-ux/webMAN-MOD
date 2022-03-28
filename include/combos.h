@@ -735,8 +735,8 @@
 
 						restore_settings();
 
-						stop_prx_module();
-						sys_ppu_thread_exit(0);
+						finalize_module();
+						_sys_ppu_thread_exit(0);
 						break;
 					}
 					else if(!(webman_config->combo & GOTO_HOME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))

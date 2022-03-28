@@ -139,9 +139,9 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			else if(fop == SCAN_COPY || fop == SCAN_FCOPY || fop == SCAN_COPYBK)
 			{
 				if(fop == SCAN_FCOPY)
-					_file_copy(entry, dest_entry); // force copy ntfs & cellFS
+					force_copy(entry, dest_entry); // force copy ntfs & cellFS
 				else
-					file_copy(entry, dest_entry, COPY_WHOLE_FILE); // copy ntfs & cellFS
+					file_copy(entry, dest_entry); // copy ntfs & cellFS
 
 				if((fop == SCAN_COPYBK) && file_exists(dest_entry))
 					{sprintf(dest_entry, "%s.bak", entry); rename_file(entry, dest_entry);}
@@ -151,14 +151,14 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			{
 				char *ntfs_entry = (char*)ntfs_path(entry);
 				if(fop == SCAN_DELETE) {ps3ntfs_unlink(ntfs_entry);} else
-				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) ps3ntfs_unlink(ntfs_entry);} else
+				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry) >= CELL_OK) ps3ntfs_unlink(ntfs_entry);} else
 				if(fop == SCAN_RENAME) {ps3ntfs_rename(ntfs_entry, dest_entry);}
 			}
 #endif
 			else
 			{
 				if(fop == SCAN_DELETE) {cellFsUnlink(entry);} else
-				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry, COPY_WHOLE_FILE) >= CELL_OK) cellFsUnlink(entry);} else
+				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry) >= CELL_OK) cellFsUnlink(entry);} else
 				if(fop == SCAN_RENAME) {cellFsRename(entry, dest_entry);}
 			}
 		}

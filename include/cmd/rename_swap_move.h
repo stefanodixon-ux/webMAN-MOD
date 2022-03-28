@@ -48,7 +48,7 @@
 				}
 				else
 				{
-					if(file_copy(source, dest, COPY_WHOLE_FILE) >= CELL_OK) del(source, false);
+					if(file_copy(source, dest) >= CELL_OK) del(source, false);
 				}
 			}
 			else

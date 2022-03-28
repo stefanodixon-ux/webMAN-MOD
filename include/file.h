@@ -1,21 +1,9 @@
-#define NO_MSG							NULL
-
-int64_t file_copy(const char *file1, char *file2, u64 maxbytes);
-
-static bool copy_in_progress = false;
-static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
-static bool allow_sc36 = true; // used to skip decrypt dev_bdvd files in file_copy function if it's called from folder_copy
-
-static u32 copied_count = 0;
-
-#define COPY_WHOLE_FILE		0
 #define SAVE_ALL			0
 #define APPEND_TEXT			(-0xADD0ADD0ADD000ALL)
 #define DONT_CLEAR_DATA		-1
 #define RECURSIVE_DELETE	2 // don't check for ADMIN/USER
 
-static void enable_dev_blind(const char *msg);
-static sys_addr_t g_sysmem = NULL;
+//////////////////////////////////////////////////////////////
 
 #include "file_ntfs.h"
 #include "file_devs.h"
@@ -315,31 +303,21 @@ static int write_file(const char *file, int flags, const char *data, u64 offset,
 	return FAILED;
 }
 
+static int patch_file(const char *file, const char *data, u64 offset, int size)
+{
+	return write_file(file, CELL_FS_O_WRONLY, data, offset, size, false);
+}
+
 int save_file(const char *file, const char *mem, s64 size)
 {
 	bool crlf = (size == APPEND_TEXT); // auto add new line
 
 	int flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;
 	if( size < 0 )  {flags = CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY; size = crlf ? SAVE_ALL : -size;} else
-	if(!extcmp(file, "/PARAM.SFO", 10)) flags = CELL_FS_O_CREAT | CELL_FS_O_WRONLY;
-/*
-	cellFsChmod(file, MODE); // set permissions for overwrite
-
-	int fd = 0;
-	if(cellFsOpen(file, flags, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
-	{
-		if(size) cellFsWrite(fd, (void *)mem, size, NULL);
-		if(crlf) cellFsWrite(fd, (void *)"\r\n", 2, NULL);
-		cellFsClose(fd);
-
-		cellFsChmod(file, MODE); // set permissions if created
-
-		return CELL_FS_SUCCEEDED;
-	}
-	return FAILED;
-*/
+	if(!extcmp(file, "/PARAM.SFO", 10)) flags = CELL_FS_O_WRONLY;
 	return write_file(file, flags, mem, 0, (int)size, crlf);
 }
+
 /*
 static void addlog(const char *msg1, const char *msg2, u64 i)
 {
@@ -377,57 +355,3 @@ static u8 wait_for_xmb(void)
 	while(View_Find("explore_plugin") == 0) {if(++t > MAX_WAIT) break; sys_ppu_thread_sleep(1);}
 	return (t > MAX_WAIT); // true = timeout
 }
-
-#ifdef MOUNT_ROMS
-static void copy_rom_media(const char *src_path)
-{
-	// get rom name & file extension
-	char *name = get_filename(src_path);
-	if(!name) return;
-
-	char dst_path[64];
-	char path[MAX_LINE_LEN];
-	const char *PS3_GAME[2] = { "/PS3_GAME", ""};
-
-	char *ext  = strrchr(++name, '.');
-	if(ext)
-	{
-		for(u8 p = 0; p < 2; p++)
-		{
-			// copy rom icon to ICON0.PNG
-			sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], "ICON0.PNG");
-			{strcpy(ext, ".png"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
-			{strcpy(ext, ".PNG"); if(file_exists(src_path)) {file_copy(src_path, dst_path, COPY_WHOLE_FILE);} else
-			{
-				sprintf(path, "%s/%s", WMTMP, name);
-				char *ext2 = strrchr(path, '.');
-				{strcpy(ext2, ".png"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
-				{strcpy(ext2, ".PNG"); if(file_exists(path)) {file_copy(path, dst_path, COPY_WHOLE_FILE);} else
-															 {file_copy(PKGLAUNCH_ICON, dst_path, COPY_WHOLE_FILE);}}}
-			}}}
-
-			strcpy(path, src_path); char *path_ = get_filename(path) + 1;
-
-			const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
-			for(u8 i = 0; i < 5; i++)
-			{
-				sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], media[i]); cellFsUnlink(dst_path);
-				strcpy(ext + 1, media[i]);
-				if(file_exists(src_path))
-					file_copy(src_path, dst_path, COPY_WHOLE_FILE);
-				else
-				{
-					strcpy(path_, media[i]);
-					if(file_exists(path))
-						file_copy(path, dst_path, COPY_WHOLE_FILE);
-				}
-			}
-		}
-		*ext = NULL;
-	}
-
-	// patch title name in PARAM.SFO of PKGLAUNCH
-	sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
-	write_file(dst_path, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, name, 0x378, 0x80, false);
-}
-#endif // #ifdef MOUNT_ROMS

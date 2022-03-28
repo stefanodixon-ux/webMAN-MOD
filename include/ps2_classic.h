@@ -38,7 +38,7 @@ static void copy_ps2icon(char *imgfile, const char *_path)
 	sprintf(imgfile, "%s.bak", PS2_CLASSIC_ISO_ICON);
 
 	if(not_exists(imgfile))
-		_file_copy(pic, imgfile);
+		force_copy(pic, imgfile);
 
 	int len = sprintf(imgfile, "%s.png", _path); len -= 12;
 	if(not_exists(imgfile)) sprintf(imgfile, "%s.PNG", _path);
@@ -50,7 +50,7 @@ static void copy_ps2icon(char *imgfile, const char *_path)
 	else
 		sprintf(imgfile, "%s.bak", PS2_CLASSIC_ISO_ICON);
 
-	_file_copy(imgfile, pic);
+	force_copy(imgfile, pic);
 
 	for(u8 i = 0; i <= 2; i++)
 	{
@@ -59,7 +59,7 @@ static void copy_ps2icon(char *imgfile, const char *_path)
 		if(not_exists(imgfile))
 		{
 			sprintf(pic, "%s/PIC%i.PNG", PS2_CLASSIC_LAUCHER_DIR, i);
-			_file_copy(pic, imgfile);
+			force_copy(pic, imgfile);
 		}
 
 		// get game picture from /PS2ISO
@@ -70,11 +70,11 @@ static void copy_ps2icon(char *imgfile, const char *_path)
 		sprintf(pic, "%s/PIC%i.PNG", PS2_CLASSIC_LAUCHER_DIR, i);
 		cellFsUnlink(pic);
 		if(file_exists(imgfile))
-			_file_copy(imgfile, pic);
+			force_copy(imgfile, pic);
 		else
 		{
 			sprintf(imgfile, "%s/PIC%i.PNG.bak", PS2_CLASSIC_LAUCHER_DIR, i); // restore original
-			_file_copy(imgfile, pic);
+			force_copy(imgfile, pic);
 		}
 	}
 }
@@ -154,16 +154,16 @@ static bool copy_ps2config_iso(char *entry_name, char *_path)
 		char temp[STD_PATH_LEN];
 		sprintf(temp, "%s/%s.CONFIG", PS2CONFIG_PATH, tempID);
 		if(file_exists(temp))
-			_file_copy(temp, _path);
+			force_copy(temp, _path);
 		else
 		{
 			const char *config_path[4] = {"CUSTOM", "NET", "GX", "SOFT"};
 			for(u8 i = 0; i < 4; i++)
 			{
 				sprintf(temp, "%s/CONFIG/%s/%s.CONFIG", PS2CONFIG_PATH, config_path[i], tempID);
-				if(file_exists(temp)) {_file_copy(temp, _path); return true;}
+				if(file_exists(temp)) {force_copy(temp, _path); return true;}
 				sprintf(temp, "%s/sys/CONFIG/%s/%s.CONFIG", MANAGUNZ, config_path[i], tempID);
-				if(file_exists(temp)) {_file_copy(temp, _path); return true;}
+				if(file_exists(temp)) {force_copy(temp, _path); return true;}
 			}
 		}
 		return true;
@@ -195,9 +195,9 @@ static void copy_ps2config(char *config, const char *_path)
 	}
 
 	cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
-	_file_copy(config, (char*)PS2_CLASSIC_ISO_CONFIG);
+	force_copy(config, (char*)PS2_CLASSIC_ISO_CONFIG);
 
-	if(!webman_config->ps2config && not_exists(config_path)) _file_copy(config, config_path);
+	if(!webman_config->ps2config && not_exists(config_path)) force_copy(config, config_path);
 }
 
 static void copy_ps2savedata(char *vme, const char *_path)
@@ -220,7 +220,7 @@ static void copy_ps2savedata(char *vme, const char *_path)
 			if(file_exists(vme))
 			{
 				cellFsRename(savedata_vme, savedata_bak); // backup default vme
-				_file_copy(vme, savedata_vme);
+				force_copy(vme, savedata_vme);
 			}
 			else if(file_exists(savedata_bak))
 			{
@@ -231,7 +231,7 @@ static void copy_ps2savedata(char *vme, const char *_path)
 			len = sprintf(vme, "%s", savedata_vme); vme[len - 5] = '1' - i;
 
 			if(not_exists(vme))
-				_file_copy(savedata_vme, vme);
+				force_copy(savedata_vme, vme);
 		}
 	}
 }

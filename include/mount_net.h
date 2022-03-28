@@ -89,9 +89,10 @@ if(netid >= '0' && netid <= '4')
 			}
 			sclose(&ns);
 
-			if(file_exists(TEMP_NET_PSXCUE))
+			size_t cue_size = file_size(TEMP_NET_PSXCUE);
+			if(cue_size)
 			{
-				char *cue_buf = malloc(_4KB_);
+				char *cue_buf = malloc(cue_size);
 				if(cue_buf)
 				{
 					u16 cue_size = read_sfo(TEMP_NET_PSXCUE, cue_buf);

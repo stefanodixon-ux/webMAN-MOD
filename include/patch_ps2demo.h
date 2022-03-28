@@ -23,7 +23,7 @@ static void patch_ps2_demo(const char *iso_file)
 				if(!memcmp(entry_name, title_id, 0xD))
 				{
 					entry_name[3] = 'X'; // patch exe name in directory
-					write_file(iso_file, CELL_FS_O_WRONLY, data, offset, 0x3C, false);
+					patch_file(iso_file, data, offset, 0x3C);
 					break;
 				}
 			}
@@ -46,7 +46,7 @@ static void patch_ps2_demo(const char *iso_file)
 						exe_name[3] = 'X'; // patch SYSTEM.CNF
 
 						cellFsChmod(iso_file, MODE);
-						write_file(iso_file, CELL_FS_O_WRONLY, data, offset2, 0x40, false);
+						patch_file(iso_file, data, offset2, 0x40);
 
 						offset = root; // re-scan root directory to patch exec name
 						entry = 0;

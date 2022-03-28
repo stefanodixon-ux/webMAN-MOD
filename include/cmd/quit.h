@@ -16,6 +16,6 @@
 		if(strstr(param, "?0")) restore_fan(SYSCON_MODE);  //syscon
 		if(strstr(param, "?1")) restore_fan(SET_PS2_MODE); //ps2 mode
 
-		stop_prx_module();
-		sys_ppu_thread_exit(0);
+		finalize_module();
+		_sys_ppu_thread_exit(0);
 	}

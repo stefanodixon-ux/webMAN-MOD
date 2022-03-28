@@ -457,13 +457,13 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							{
 								strcpy(tempstr, source);
 								strcpy(get_filename(tempstr), "/stage2.bin");
-								if(file_exists(tempstr)) _file_copy(tempstr, target);
+								if(file_exists(tempstr)) force_copy(tempstr, target);
 							}
 
 							// copy: /dev_flash/sys/lv2_self
 							sprintf(target, "/dev_blind/sys/lv2_self");
 							if((cellFsStat(target, &buf) != CELL_FS_SUCCEEDED) || (buf.st_size != size))
-								_file_copy(source, target);
+								force_copy(source, target);
 
 							if((cellFsStat(target, &buf) == CELL_FS_SUCCEEDED) && (buf.st_size == size))
 							{
@@ -909,7 +909,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				else if(isDir(source))
 					folder_copy(source, target);
 				else
-					file_copy(source, target, COPY_WHOLE_FILE);
+					file_copy(source, target);
 
 				copy_in_progress = false;
 
@@ -1168,7 +1168,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 
 			dont_copy_same_size = true;
 			copy_in_progress = true, copied_count = 1;
-			file_copy(source, target, COPY_WHOLE_FILE);
+			file_copy(source, target);
 			copy_in_progress = false;
 
 			if(copy_aborted)
@@ -1201,8 +1201,8 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
-			if(file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
-			if(file_copy("/dev_bdvd/PS3_GM01/PARAM.SFO", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", destpath) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GM01/PARAM.SFO", destpath) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}
@@ -1213,8 +1213,8 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	{
 		for(u8 retry = 0; retry < 10; retry++)
 		{
-			if(file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
-			if(file_copy("/dev_bdvd/PS3_GM01/ICON0.PNG", destpath, COPY_WHOLE_FILE) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", destpath) >= CELL_FS_SUCCEEDED) break;
+			if(file_copy("/dev_bdvd/PS3_GM01/ICON0.PNG", destpath) >= CELL_FS_SUCCEEDED) break;
 			sys_ppu_thread_usleep(500000);
 		}
 	}

@@ -263,7 +263,7 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	if(pos)
 	{
 		sprintf(templn, "%'8i", t_count); memcpy(pos, templn, 8);
-		write_file(MY_GAMES_XML, CELL_FS_O_WRONLY, tempstr, 200, KB, false);
+		patch_file(MY_GAMES_XML, tempstr, 200, KB);
 	}
 }
 #endif
@@ -1065,7 +1065,7 @@ scan_roms:
 								{
 									char *_param_sfo = templn; // GAMEI
 									sprintf(_param_sfo, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
-									mkdir_tree(param_sfo); file_copy(_param_sfo, param_sfo, COPY_WHOLE_FILE);
+									mkdir_tree(param_sfo); file_copy(_param_sfo, param_sfo);
 								}
 								if(!webman_config->gamei) continue;
 
@@ -1450,8 +1450,8 @@ save_xml:
 		if(webman_config->root)
 		{
 			sprintf(templn, "/%s", FB_HEN_XML); // force copy file instead of link (using //dev_hdd0)
-			_file_copy(xml_file, templn);
-			write_file(FB_HEN_XML, CELL_FS_O_WRONLY, "fb\"     ", 66, 8, false); // replace seg_mygames with seg_fb
+			force_copy(xml_file, templn);
+			patch_file(FB_HEN_XML, "fb\"     ", 66, 8); // replace seg_mygames with seg_fb
 
 			if(get_explore_interface())
 			{

@@ -108,7 +108,7 @@ static void patch_gameboot(u8 boot_type)
 					{
 						char src_path[40];
 						sprintf(src_path, "%s/%s_%s", "/dev_hdd0/tmp/gameboot", id, media[i]);
-						file_copy(src_path, path, COPY_WHOLE_FILE);
+						file_copy(src_path, path);
 					}
 				}
 			}

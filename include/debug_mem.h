@@ -215,7 +215,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			}
 
 			found_address = address, found = true;
-			write_file(fname, CELL_FS_O_WRONLY, templn, address, flen, false);
+			patch_file(fname, templn, address, flen);
 			goto view_file;
 		}
 	}

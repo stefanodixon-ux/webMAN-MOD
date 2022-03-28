@@ -1,3 +1,13 @@
+static sys_addr_t g_sysmem = NULL;
+
+static bool copy_in_progress = false;
+static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
+static bool allow_sc36 = true; // used to skip decrypt dev_bdvd files in file_copy function if it's called from folder_copy
+
+static u32 copied_count = 0;
+
+#define COPY_WHOLE_FILE		0
+
 //////////////////////////////////////////////////////////////
 
 static bool is_ext(const char *path, const char *ext)
@@ -42,7 +52,8 @@ static void filepath_check(char *file)
 #endif
 }
 
-int64_t file_copy(const char *file1, char *file2, u64 maxbytes)
+int64_t file_copy(const char *file1, char *file2);
+int64_t file_copy(const char *file1, char *file2)
 {
 	struct CellFsStat buf;
 	int fd1, fd2;
@@ -78,7 +89,7 @@ int64_t file_copy(const char *file1, char *file2, u64 maxbytes)
 		if(islike(file1, "/net"))
 		{
 			int ns = connect_to_remote_server((file1[4] & 0x0F));
-			copy_net_file(file2, (char*)file1 + 5, ns, maxbytes);
+			copy_net_file(file2, (char*)file1 + 5, ns, COPY_WHOLE_FILE);
 			if(ns >= 0) sclose(&ns);
 
 			if(file_exists(file2)) return 0;
@@ -170,7 +181,6 @@ merge_next:
 		if(sysmem || (!sysmem && sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK))
 		{
 			u64 size = buf.st_size, part_size = buf.st_size; u8 part = 0;
-			if(maxbytes > 0 && size > maxbytes) size = maxbytes;
 
 			if((part_size > 0xFFFFFFFFULL) && islike(file2, "/dev_usb"))
 			{
@@ -289,11 +299,11 @@ next_part:
 	return ret;
 }
 
-static void _file_copy(const char *file1, char *file2)
+static void force_copy(const char *file1, char *file2)
 {
 	if(not_exists(file1)) return;
 	dont_copy_same_size = false; // force copy file with the same size than existing file
-	file_copy(file1, file2, COPY_WHOLE_FILE);
+	file_copy(file1, file2);
 	dont_copy_same_size = true;  // restore default mode (assume file is already copied if existing file has same size)
 }
 
@@ -377,7 +387,7 @@ static int folder_copy(const char *path1, char *path2)
 				folder_copy(source, target);
 			}
 			else
-				file_copy(source, target, COPY_WHOLE_FILE);
+				file_copy(source, target);
 		}
 
 		if(g_sysmem) {sys_memory_free(g_sysmem); g_sysmem = NULL;}
@@ -503,3 +513,60 @@ static void backup_act_dat(void)
 #else
 #define backup_act_dat()
 #endif
+
+#ifdef MOUNT_ROMS
+static char *get_filename(const char *path);
+static int patch_file(const char *file, const char *data, u64 offset, int size);
+
+static void copy_rom_media(const char *src_path)
+{
+	// get rom name & file extension
+	char *name = get_filename(src_path);
+	if(!name) return;
+
+	char dst_path[64];
+	char path[MAX_LINE_LEN];
+	const char *PS3_GAME[2] = { "/PS3_GAME", ""};
+
+	char *ext  = strrchr(++name, '.');
+	if(ext)
+	{
+		for(u8 p = 0; p < 2; p++)
+		{
+			// copy rom icon to ICON0.PNG
+			sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], "ICON0.PNG");
+			{strcpy(ext, ".png"); if(file_exists(src_path)) {file_copy(src_path, dst_path);} else
+			{strcpy(ext, ".PNG"); if(file_exists(src_path)) {file_copy(src_path, dst_path);} else
+			{
+				sprintf(path, "%s/%s", WMTMP, name);
+				char *ext2 = strrchr(path, '.');
+				{strcpy(ext2, ".png"); if(file_exists(path)) {file_copy(path, dst_path);} else
+				{strcpy(ext2, ".PNG"); if(file_exists(path)) {file_copy(path, dst_path);} else
+															 {file_copy(PKGLAUNCH_ICON, dst_path);}}}
+			}}}
+
+			strcpy(path, src_path); char *path_ = get_filename(path) + 1;
+
+			const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
+			for(u8 i = 0; i < 5; i++)
+			{
+				sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], media[i]); cellFsUnlink(dst_path);
+				strcpy(ext + 1, media[i]);
+				if(file_exists(src_path))
+					file_copy(src_path, dst_path);
+				else
+				{
+					strcpy(path_, media[i]);
+					if(file_exists(path))
+						file_copy(path, dst_path);
+				}
+			}
+		}
+		*ext = NULL;
+	}
+
+	// patch title name in PARAM.SFO of PKGLAUNCH
+	sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
+	patch_file(dst_path, name, 0x378, 0x80);
+}
+#endif // #ifdef MOUNT_ROMS

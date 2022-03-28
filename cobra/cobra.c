@@ -113,7 +113,7 @@ typedef struct
 size_t read_file(const char *file, char *data, size_t size, int32_t offset);
 int save_file(const char *file, const char *mem, int64_t size);
 
-int file_copy(const char *file1, char *file2, uint64_t maxbytes);
+int file_copy(const char *file1, char *file2);
 int wait_for(const char *path, uint8_t timeout);
 
 // storage.h inline functions merged
@@ -1472,11 +1472,11 @@ static void restore_bak(const char *filename)
 	if(cellFsStat(bak, &stat) == CELL_FS_SUCCEEDED)
 	{
 		cellFsUnlink(filename);
-		file_copy(bak, (char*)filename, 0); // restore original edat from bak
+		file_copy(bak, (char*)filename); // restore original edat from bak
 	}
 	else // create bak if not exists
 	{
-		file_copy(filename, bak, 0);
+		file_copy(filename, bak);
 	}
 }
 
@@ -1675,7 +1675,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	if(is_dir)
 	{
 		sprintf(umd_file, "%s/ICON0.PNG", root);
-		do_mount = (file_copy(umd_file, icon_save_path, 0) >= CELL_FS_SUCCEEDED);
+		do_mount = (file_copy(umd_file, icon_save_path) >= CELL_FS_SUCCEEDED);
 	}
 
 	if(do_mount)
@@ -1711,20 +1711,20 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 				len = sprintf(umd_file, "%s.", root);
 
 			sprintf(umd_file + len, "PIC1.PNG");
-			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG", 0);
-			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG", 0);
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC1.PNG");
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC1.PNG");
 
 			sprintf(umd_file + len, "PIC0.PNG");
-			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG", 0);
-			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG", 0);
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/PIC0.PNG");
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/PIC0.PNG");
 
 			sprintf(umd_file + len, "SND0.AT3");
-			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/SND0.AT3", 0);
-			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/SND0.AT3", 0);
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/SND0.AT3");
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/SND0.AT3");
 
 			sprintf(umd_file + len, "ICON1.PAM");
-			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/ICON1.PAM", 0);
-			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/ICON1.PAM", 0);
+			if(pspl1) file_copy(umd_file, (char*)PSPL_PATH1 "/ICON1.PAM");
+			if(pspl2) file_copy(umd_file, (char*)PSPL_PATH2 "/ICON1.PAM");
 
 			if (header[0] == 0x7E505350) // "~PSP"
 			{

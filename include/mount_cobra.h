@@ -182,14 +182,14 @@ mount_again:
 						if(isDir(PSP_LAUNCHER_MINIS))
 						{
 							sprintf(iso_list[1], "/%s", PSP_LAUNCHER_MINIS "/USRDIR/MINIS.EDAT");
-							_file_copy(templn, iso_list[1]);
+							force_copy(templn, iso_list[1]);
 							edat = read_file(iso_list[1], templn, 4, 0);
 						}
 
 						if(isDir(PSP_LAUNCHER_REMASTERS))
 						{
 							sprintf(iso_list[1], "/%s", PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS.EDAT");
-							_file_copy(templn, iso_list[1]);
+							force_copy(templn, iso_list[1]);
 							edat = read_file(iso_list[1], templn, 4, 0);
 						}
 					}
@@ -200,7 +200,7 @@ mount_again:
 						if(isDir(PSP_LAUNCHER_REMASTERS))
 						{
 							sprintf(iso_list[1], "/%s", PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS2.EDAT");
-							_file_copy(templn, iso_list[1]);
+							force_copy(templn, iso_list[1]);
 							edat = read_file(iso_list[1], templn, 4, 0);
 						}
 					}
@@ -221,7 +221,7 @@ mount_again:
 								&& not_exists("/dev_flash/pspemu/psp_emulator.self.original"))
 								{
 									enable_dev_blind(NULL);
-									_file_copy(WM_RES_PATH "/psp_emulator.self", (char*)"/dev_blind/pspemu/psp_emulator.self.dec_edat");
+									force_copy(WM_RES_PATH "/psp_emulator.self", (char*)"/dev_blind/pspemu/psp_emulator.self.dec_edat");
 								}
 							}
 

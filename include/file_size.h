@@ -1,5 +1,11 @@
 #define SC_FS_LINK						(810)
 
+static int sysLv2FsLink(const char *oldpath, const char *newpath)
+{
+	system_call_2(SC_FS_LINK, (u64)(u32)oldpath, (u64)(u32)newpath);
+	return_to_user_prog(int);
+}
+
 static void free_size(const char *dev_name, char *out)
 {
 	const char *str_free = (char *)STR_MBFREE;
@@ -34,12 +40,6 @@ static u64 file_size(const char *path)
 	return fs;
 }
 #endif
-
-static int sysLv2FsLink(const char *oldpath, const char *newpath)
-{
-	system_call_2(SC_FS_LINK, (u64)(u32)oldpath, (u64)(u32)newpath);
-	return_to_user_prog(int);
-}
 
 #ifdef COPY_PS3
 static u8  do_chmod = 0;
