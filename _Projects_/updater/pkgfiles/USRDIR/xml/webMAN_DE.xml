@@ -59,7 +59,7 @@
 			<T key="redirect_usb_links">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/usbredirect.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
-				<P key="title"><>Redirect USB000</></P>
+				<P key="title"><>Umleitung USB000</></P>
 				<P key="child"><>segment</></P>
 			</T>
 		</A>
@@ -81,27 +81,27 @@
 				<P key="module_name"><>webrender_plugin</></P>
 			</T>
 			<T key="remap_home" include="inc">
-				<P key="title"><>Remap home to USB000</></P>
-				<P key="info"><>Redirect /dev_hdd0/home to /dev_usb000/home</></P>
+				<P key="title"><>Umleitung home auf USB000</></P>
+				<P key="info"><>Umleitung /dev_hdd0/home auf /dev_usb000/home</></P>
 				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/home&to=/dev_usb000/home</></P>
 			</T>
 			<T key="remap_usb0" include="inc">
-				<P key="title"><>Remap USB000 to HDD</></P>
-				<P key="info"><>Redirect /dev_usb000 to /dev_hdd0/packages</></P>
+				<P key="title"><>Umleitung USB000 auf HDD</></P>
+				<P key="info"><>Umleitung /dev_usb000 auf /dev_hdd0/packages</></P>
 				<P key="module_action"><>http://0/remap.ps3/dev_usb000&to=/dev_hdd0/packages</></P>
 			</T>
 			<T key="remap_bdvd" include="inc">
-				<P key="title"><>Remap USB000 to BDVD</></P>
-				<P key="info"><>Redirect /dev_usb000 to /dev_bdvd</></P>
+				<P key="title"><>Umleitung USB000 auf BDVD</></P>
+				<P key="info"><>Umleitung /dev_usb000 auf /dev_bdvd</></P>
 				<P key="module_action"><>http://0/remap.ps3/dev_usb000&to=/dev_bdvd</></P>
 			</T>
 			<T key="unmap_usb0" include="inc">
-				<P key="title"><>Unmap USB000</></P>
-				<P key="info"><>Restore redirection access to /dev_usb000</></P>
+				<P key="title"><>Umleitung von USB000 aufheben</></P>
+				<P key="info"><>Umleitung von /dev_usb000 aufheben</></P>
 				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
 			</T>
 			<T key="unmap_all" include="inc">
-				<P key="title"><>Unmap PS3</></P>
+				<P key="title"><>Alle Umleitungen aufheben</></P>
 				<P key="module_action"><>http://0/unmap.ps3</></P>
 			</T>
 		</A>
@@ -203,8 +203,8 @@
 			<T key="nethost3_links">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
-				<P key="title"><>Net3 Folders</></P>
-				<P key="info"><>Mount /net3 folders as local /dev_bdvd</></P>
+				<P key="title"><>Net3 Ordner</></P>
+				<P key="info"><>Mounte /net3 Ordner als /dev_bdvd</></P>
 				<P key="child"><>segment</></P>
 			</T>
 		</A>
@@ -218,8 +218,8 @@
 			<T key="nethost4_links">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
-				<P key="title"><>Net4 Folders</></P>
-				<P key="info"><>Mount /net4 folders as local /dev_bdvd</></P>
+				<P key="title"><>Net4 Ordner</></P>
+				<P key="info"><>Mounte /net4 Ordner als /dev_bdvd</></P>
 				<P key="child"><>segment</></P>
 			</T>
 		</A>
@@ -512,7 +512,7 @@
 		<A>
 			<T key="webman_cpursx">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/sysinfo.png</></P>
-				<P key="title"><>PS3 webMAN [Temperatur]</></P>
+				<P key="title"><>PS3 webMAN MOD [Temperatur]</></P>
 				<P key="info"><>Zeige die PS3 Temperatur im Web Browser</></P>
 				<P key="module_name"><>webbrowser_plugin</></P>
 				<P key="module_action"><>http://0/cpursx.ps3</></P>
@@ -526,7 +526,7 @@
 		<A>
 			<T key="webman_games">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamesbrowser.png</></P>
-				<P key="title"><>PS3 webMAN [Spiele]</></P>
+				<P key="title"><>PS3 webMAN MOD [Spiele]</></P>
 				<P key="info"><>Zeige meine Spiele im Web Browser</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/index.ps3</></P>
@@ -540,7 +540,7 @@
 		<A>
 			<T key="webman_files">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/filemanager.png</></P>
-				<P key="title"><>PS3 webMAN [Dateien]</></P>
+				<P key="title"><>PS3 webMAN MOD [Dateien]</></P>
 				<P key="info"><>Zeige meine Dateien im Web Browser</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/</></P>
@@ -554,8 +554,8 @@
 		<A>
 			<T key="seg_webman_cache">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/cachefiles.png</></P>
-				<P key="title"><>PS3 webMAN [Cache]</></P>
-				<P key="info"><>Lösche die Dateien von /dev_hdd0/tmp/wmtmp</></P>
+				<P key="title"><>PS3 webMAN MOD [Cache]</></P>
+				<P key="info"><>Lösche Dateien im Verzeichnis /dev_hdd0/tmp/wmtmp</></P>
 				<P key="child"><>segment</></P>
 			</T>
 		</A>
@@ -569,7 +569,7 @@
 		<A>
 			<T key="webman_setup">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/settings.png</></P>
-				<P key="title"><>PS3 webMAN [Einstellungen]</></P>
+				<P key="title"><>PS3 webMAN MOD [Einstellungen]</></P>
 				<P key="info"><>Einstellungen für die Gerätesuche und den Startvorgang</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/setup.ps3</></P>
@@ -583,8 +583,8 @@
 		<A>
 			<T key="webman_block_psn">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/blockpsn.png</></P>
-				<P key="title"><>Block PSN Servers</></P>
-				<P key="info"><>Block access to PSN servers in LV1 / LV2</></P>
+				<P key="title"><>Blockiere PSN Server</></P>
+				<P key="info"><>Blockiere den Zugriff auf PSN Server (LV1 / LV2) HEN (LV2)</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/browser.ps3$block_servers</></P>
@@ -598,7 +598,7 @@
 		<A>
 			<T key="webman_devblind">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</></P>
-				<P key="title"><>Aktivieren /dev_blind</></P>
+				<P key="title"><>Aktivieren von /dev_blind</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/popup.ps3?/dev_blind+aktiviert;/dev_blind</></P>
@@ -613,7 +613,7 @@
 			<T key="webman_gamedata">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</></P>
 				<P key="title"><>Externe Spieldaten Installation Ein/Aus</></P>
-				<P key="info"><>Externe Spieldaten Installation via USB Ein/Aus schalten</></P>
+				<P key="info"><>Externe Spieldaten Installation auf USB Gerät ein-/ausschalten</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/extgd.ps3</></P>
@@ -627,8 +627,8 @@
 		<A>
 			<T key="webman_gamefix">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamefix.png</></P>
-				<P key="title"><>Fix mounted game</></P>
-				<P key="info"><>Change minimum system requirement to 4.20 (JB games only & hdd0)</></P>
+				<P key="title"><>Repariere geladenes Spiel</></P>
+				<P key="info"><>Ändere die minimale Systemanforderung auf 4.20 (Nur JB Spiele & HDD0)</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/fixgame.ps3/dev_bdvd</></P>
 			</T>
@@ -669,7 +669,7 @@
 		<A>
 			<T key="webman_uninstall">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
-				<P key="title"><>Deinstallieren webMAN MOD</></P>
+				<P key="title"><>PS3 webMAN MOD [Deinstallieren]</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/delete.ps3?uninstall</></P>
@@ -683,7 +683,7 @@
 		<A>
 			<T key="webman_unload">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/unload.png</></P>
-				<P key="title"><>webMAN deaktivieren</></P>
+				<P key="title"><>PS3 webMAN MOD [Deaktivieren]</></P>
 				<P key="info"><>Deaktiviere webMAN im Speicher [R2+L3+R3]</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -698,7 +698,7 @@
 		<A>
 			<T key="wm_vsh_menu_load">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/vshmenu.png</></P>
-				<P key="title"><>Load VSH Menu</></P>
+				<P key="title"><>Lade VSH Menü</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/browser.ps3$vsh_menu</></P>
@@ -712,7 +712,7 @@
 		<A>
 			<T key="wm_slaunch_load">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/slaunch.png</></P>
-				<P key="title"><>Load sLaunch Menu</></P>
+				<P key="title"><>Lade sLaunch Menü</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/browser.ps3$slaunch</></P>
@@ -726,7 +726,7 @@
 		<A>
 			<T key="webman_restart">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/restartps3.png</></P>
-				<P key="title"><>PS3 Neustarten</></P>
+				<P key="title"><>PS3 neu starten</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/restart.ps3</></P>
@@ -740,7 +740,7 @@
 		<A>
 			<T key="webman_shutdown">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/shutdownps3.png</></P>
-				<P key="title"><>Shutdown PS3</></P>
+				<P key="title"><>PS3 herunterfahren</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/shutdown.ps3</></P>
@@ -754,15 +754,15 @@
 		<A>
 			<T key="webman_help">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
-				<P key="title"><>PS3 webMAN MOD [Help]</></P>
+				<P key="title"><>PS3 webMAN MOD [Hilfe]</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/help.html</></P>
 			</T>
 			<T key="wm_update_link">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
-				<P key="title"><>Aktualisieren Sie den webMAN MOD</></P>
-				<P key="info"><>Laden Sie die neueste Version herunter und installieren Sie sie. Nach der Installation manuell neu starten.</></P>
+				<P key="title"><>PS3 webMAN MOD [Aktualisieren]</></P>
+				<P key="info"><>Laden Sie die neueste Version herunter und installieren Sie sie. Nach der Installation PS3 neu starten.</></P>
 				<P key="child"><>segment</></P>
 			</T>
 		</A>
