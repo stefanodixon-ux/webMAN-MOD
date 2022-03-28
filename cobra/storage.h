@@ -97,7 +97,7 @@ int sys_storage_read(sys_device_handle_t device_handle, uint64_t mode, uint64_t 
 	return (int)p1;
 } */
 
-int sys_storage_execute_device_command(sys_device_handle_t device_handle, unsigned int command, void *indata, uint64_t inlen, void *outdata, uint64_t outlen, uint64_t *ret);
+//int sys_storage_execute_device_command(sys_device_handle_t device_handle, unsigned int command, void *indata, uint64_t inlen, void *outdata, uint64_t outlen, uint64_t *ret);
 
 /* Payload storage extensions */
 

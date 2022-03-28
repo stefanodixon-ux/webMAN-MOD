@@ -666,15 +666,45 @@
 	<!-- Main > webMAN > Uninstall webMAN -->
 	<V id="seg_webman_uninstall">
 		<A>
-			<T key="webman_uninstall">
+			<T key="webman_uninstall_links">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
+				<P key="title"><>卸載 webMAN MOD</></P>
+				<P key="child"><>segment</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="webman_uninstall_links" attr="webman_uninstall_links" src="#seg_webman_uninstall_links"/>
+		</I>
+	</V>
+
+	<V id="seg_webman_uninstall_links">
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="webman_uninstall_links" src="#seg_webman_uninstall_sublinks"/>
+		</I>
+	</V>
+
+	<V id="seg_webman_uninstall_sublinks">
+		<A>
+			<T key="webman_cancel">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="title"><>回到 webMAN MOD</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+				<P key="module_action"><>/xmb.ps3$close_all_list</></P>
+			</T>
+			<T key="webman_uninstall">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/sysfiles.png</></P>
 				<P key="title"><>卸載 webMAN MOD</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/delete.ps3?uninstall</></P>
 			</T>
 		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_uninstall" attr="webman_uninstall"/></I>
+		<I>
+			<I class="type:x-xmb/module-action" key="webman_cancel"    attr="webman_cancel"/>
+			<I class="type:x-xmb/module-action" key="webman_uninstall" attr="webman_uninstall"/>
+		</I>
 	</V>
 
 	<!-- Main > webMAN > Unload webMAN -->
