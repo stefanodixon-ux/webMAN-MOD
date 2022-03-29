@@ -1304,7 +1304,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 						  "<input type=\"submit\" value=\" Unload \" title=\"id=%i\">"
 						  "</form>"
 						 "</td>"
-						"</tr>", HTML_FORM_METHOD, islike(tmp_filename, "/dev_flash"),  pid, mod_list[slot], mod_list[slot]);
+						"</tr>", HTML_FORM_METHOD,  pid, mod_list[slot], islike(tmp_filename, "/dev_flash"), mod_list[slot]);
 			}
 			else
 			{

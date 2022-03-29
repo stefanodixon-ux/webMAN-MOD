@@ -48,6 +48,8 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 	{
 		u16 len = sprintf(absPath_s, "%s", cwd);
 
+		if(absPath_s[len - 1] != '/') strcat(absPath_s + len, "/");
+
 		strcat(absPath_s + len, path);
 	}
 
@@ -214,6 +216,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	while(connactive && working && ftp_session)
 	{
+		memset(buffer, 0, FTP_RECV_SIZE);
 		rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
 		{
@@ -254,11 +257,11 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							if(sysmem)
 							{
-#ifdef COPY_PS3
+							#ifdef COPY_PS3
 								if(!copy_in_progress) {ftp_state = 1; strcpy(current_file, filename);}
-#endif
+							#endif
 								char *buffer2 = (char*)sysmem;
-#ifdef USE_NTFS
+							#ifdef USE_NTFS
 								if(is_ntfs_path(filename))
 								{
 									fd = ps3ntfs_open(ntfs_path(filename), O_RDONLY, 0);
@@ -290,7 +293,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									}
 								}
 								else
-#endif
+							#endif
 								if(cellFsOpen(filename, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 								{
 									u64 read_e, pos;
@@ -523,12 +526,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					if(split)
 					{
 						absPath(filename, param, cwd);
-#ifdef USE_NTFS
+						#ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
 							if(ps3ntfs_unlink(ntfs_path(filename)) >= 0) is_ntfs = true;
 						}
-#endif
+						#endif
 						if(is_ntfs || cellFsUnlink(filename) == CELL_FS_SUCCEEDED)
 						{
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
