@@ -94,6 +94,7 @@ static void poll_start_play_time(void)
 			}
 		}
 	#endif
+		start_event(EVENT_INGAME);
 	}
 }
 

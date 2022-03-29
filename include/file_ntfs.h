@@ -60,12 +60,7 @@ static void check_ntfs_volumes(void)
 	}
 
 	if(mountCount <= 0)
-		for(u8 retry = 0; retry < 5; retry++)
-		{
-			mount_all_ntfs_volumes();
-			if(mountCount > 0) break;
-			sys_ppu_thread_sleep(2);
-		}
+		mount_all_ntfs_volumes();
 }
 
 static DIR_ITER *ps3ntfs_opendir(const char *full_path)

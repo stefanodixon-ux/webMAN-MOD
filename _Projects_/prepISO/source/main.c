@@ -326,13 +326,22 @@ int main(int argc, const char* argv[])
 									{
 										titleID[0] = '\0';
 
-										sprintf(wm_path, "%s:/%s%s%s/%s.SFO", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), filename);
+										*ext = '\0'; sprintf(wm_path, "%s:/%s%s%s/%s.SFO", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), filename);
 										if(not_exists(wm_path))
-											ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
+										{
+											*ext = '.'; sprintf(wm_path, "%s:/%s%s%s/%s.SFO", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), filename);
+											if(not_exists(wm_path))
+												ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
+										}
 
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.SFO", filename);
+										*ext = '\0'; sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.SFO", filename);
 										if(not_exists(wm_path))
-											ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
+										{
+											*ext = '.'; sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.SFO", filename);
+											if(not_exists(wm_path))
+												ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
+										}
+										*ext = '.';
 
 										if(c_firmware < FW_VERSION && need_fix(wm_path))
 										{

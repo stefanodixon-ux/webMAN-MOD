@@ -153,6 +153,12 @@ static const char *smonth[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"
 static char drives[17][12] = {"/dev_hdd0", "/dev_usb000", "/dev_usb001", "/dev_usb002", "/dev_usb003", "/dev_usb006", "/dev_usb007", "/net0", "/net1", "/net2", "/net3", "/net4", "/dev_ntfs", "/dev_sd", "/dev_ms", "/dev_cf", "/dev_blind"};
 static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
 
+static const char *script_events[4] = {
+										"/dev_hdd0/boot_init.txt",
+										"/dev_hdd0/autoexec.bat",
+										"/dev_hdd0/onxmb.bat",
+										"/dev_hdd0/ingame.bat"
+									  };
 #define NET				(7)
 #define NTFS 			(12)
 #define MAX_DRIVES		16
@@ -162,3 +168,4 @@ static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS
 #define STD_PATH_LEN	263 // standard path len (260 characters in NTFS - Windows 10 removed this limit in 2016)
 #define MAX_PATH_LEN	512 // do not change!
 #define MAX_TEXT_LEN	1300 // should not exceed HTML_RECV_SIZE (RECV buffer is unstable above 1400 bytes)
+

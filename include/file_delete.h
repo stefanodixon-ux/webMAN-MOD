@@ -112,7 +112,7 @@ static void uninstall(char *param)
 
 	// delete files
 	sprintf(param, "plugins/");
-	for(u8 d = 0; d < 2; d++)
+	for(u8 i = 0; i < 2; i++)
 	{
 		unlink_file("/dev_hdd0", param, "webftp_server.sprx");
 		unlink_file("/dev_hdd0", param, "webftp_server_ps3mapi.sprx");
@@ -131,8 +131,9 @@ static void uninstall(char *param)
 	cellFsUnlink(WMNET_DISABLED);
 	cellFsUnlink(WMONLINE_GAMES);
 	cellFsUnlink(WMOFFLINE_GAMES);
-	cellFsUnlink("/dev_hdd0/boot_init.txt");
-	cellFsUnlink("/dev_hdd0/autoexec.bat");
+
+	for(u8 i = 0; i < 4; i++)
+		cellFsUnlink(script_events[i]);
 
 	// delete folders & subfolders
 	del(WMTMP, RECURSIVE_DELETE);

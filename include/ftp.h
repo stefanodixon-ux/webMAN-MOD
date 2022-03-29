@@ -1,5 +1,6 @@
 #define FTP_OK_150			"150 OK\r\n"						// File status okay; about to open data connection.
 #define FTP_OK_200			"200 OK\r\n"						// The requested action has been successfully completed.
+#define FTP_OK_202			"202 OK\r\n"						// Command not implemented, superfluous at this site.
 #define FTP_OK_TYPE_200		"200 TYPE OK\r\n"					// The requested action has been successfully completed.
 #define FTP_OK_221			"221 BYE\r\n"						// Service closing control connection.
 #define FTP_OK_226			"226 OK\r\n"						// Closing data connection. Requested file action successful (for example, file transfer or file abort).
@@ -864,8 +865,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							}
 							else
 							{
-								free_size(d_path, param);
-								sprintf(buffer, "226 [%s] [%s %s]\r\n", d_path, param, cpursx);
+								char *size = cpursx + 0x20;
+								free_size(d_path, size);
+								sprintf(buffer, "226 [%s] [%s %s]\r\n", d_path, size, cpursx);
 								ssend(conn_s_ftp, buffer);
 							}
 						}
@@ -1250,7 +1252,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 #endif //#ifndef LITE_EDITION
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_500);
+							ssend(conn_s_ftp, FTP_ERROR_500); // Syntax error, command unrecognized and the requested	action did not take place.
 						}
 					}
 					else
@@ -1277,6 +1279,11 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										" MDTM\r\n"
 										" MLST type*;size*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;\r\n"
 										"211 End\r\n");
+				}
+				// RFC 5797 mandatory
+				else if(_IS(cmd, "ACCT") || _IS(cmd, "ALLO"))
+				{
+					ssend(conn_s_ftp, FTP_OK_202);	// OK, not implemented, superfluous at this site.
 				}
 				else
 				/*if(  _IS(cmd, "AUTH") || _IS(cmd, "ADAT")
@@ -1319,7 +1326,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				else
 				if(_IS(cmd, "PASS"))
 				{
-					if((webman_config->ftp_password[0] == NULL) || IS(webman_config->ftp_password, param))
+					if((webman_config->ftp_password[0] == '\0') || IS(webman_config->ftp_password, param))
 					{
 						ssend(conn_s_ftp, FTP_OK_230);		// User logged in, proceed. Logged out if appropriate.
 						loggedin = 1;

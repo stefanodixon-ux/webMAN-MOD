@@ -29,9 +29,10 @@
 
 // <webman_cmd> e.g. /mount.ps3<path>
 
-#define EVENT_BOOT_INIT	1
-#define EVENT_AUTOEXEC	2
-#define	EVENT_ON_XMB	3
+#define EVENT_BOOT_INIT	0
+#define EVENT_AUTOEXEC	1
+#define	EVENT_ON_XMB	2
+#define EVENT_INGAME	3
 
 #ifdef COPY_PS3
 
@@ -171,28 +172,19 @@ static void parse_script(const char *script_file)
 
 static void script_thread(u64 event_id)
 {
-	switch (event_id)
-	{
-		case 1: parse_script("/dev_hdd0/boot_init.txt"); break;
-		case 2: parse_script("/dev_hdd0/autoexec.bat"); break;
-		case 3:
-		{
-			wait_for_xmb();
-			sys_ppu_thread_sleep(3);
-			parse_script("/dev_hdd0/onxmb.bat");
-		}
-	}
+	parse_script(script_events[event_id]);
 
 	sys_ppu_thread_exit(0);
 }
 
 static void start_event(u8 event_id)
 {
-	switch (event_id)
+	if(not_exists(script_events[event_id])) return;
+
+	if(event_id == EVENT_ON_XMB)
 	{
-		case 1: if(not_exists("/dev_hdd0/boot_init.txt")) return; break; // EVENT_BOOT_INIT
-		case 2: if(not_exists("/dev_hdd0/autoexec.bat")) return; break;  // EVENT_AUTOEXEC
-		case 3: if(not_exists("/dev_hdd0/onxmb.bat")) return; break;     // EVENT_ON_XMB
+		wait_for_xmb();
+		sys_ppu_thread_sleep(3);
 	}
 
 	sys_ppu_thread_t t_id;
