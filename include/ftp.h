@@ -1280,8 +1280,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										" MLST type*;size*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;\r\n"
 										"211 End\r\n");
 				}
-				// RFC 5797 mandatory
-				else if(_IS(cmd, "ACCT") || _IS(cmd, "ALLO"))
+				else if(strcasestr("AUTH|ADAT|CCC|CLNT|CONF|ENC|EPRT|EPSV|LANG|LPRT|LPSV|MIC|OPTS|HELP|PBSZ|PROT|SMNT|STOU|XRCP|XSEN|XSEM|XRSQ|ACCT|ALLO|MODE|REIN|STAT|STRU", cmd))
 				{
 					ssend(conn_s_ftp, FTP_OK_202);	// OK, not implemented, superfluous at this site.
 				}
@@ -1292,7 +1291,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					|| _IS(cmd, "EPRT") || _IS(cmd, "EPSV")
 					|| _IS(cmd, "LANG") || _IS(cmd, "LPRT")
 					|| _IS(cmd, "LPSV") || _IS(cmd, "MIC" )
-					|| _IS(cmd, "OPTS")
+					|| _IS(cmd, "OPTS") || _IS(cmd, "HELP")
 					|| _IS(cmd, "PBSZ") || _IS(cmd, "PROT")
 					|| _IS(cmd, "SMNT") || _IS(cmd, "STOU")
 					|| _IS(cmd, "XRCP") || _IS(cmd, "XSEN")

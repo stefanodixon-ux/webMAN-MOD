@@ -1252,6 +1252,7 @@ static void process_read_dir(netiso_read_dir_result_data *dir_entries, char *pat
 	struct dirent *entry;
 	size_t d_name_len;
 
+	normalize_path(path, true);
 	DIR *dir2 = opendir(path);
 	strcat(path, "/");
 	size_t dir2path_len = strlen(path);
@@ -1281,13 +1282,13 @@ static void process_read_dir(netiso_read_dir_result_data *dir_entries, char *pat
 				st.ctime = 0;
 			}
 
-			path[dir2path_len] = '\0';
-
 			if((st.mode & S_IFDIR) == S_IFDIR)
 			{
 				if(subdirs)
 				{
 					if(subdirs < 2) process_read_dir(dir_entries, path, dirpath_len, path_len, max_items, &items, 2);
+
+					path[dir2path_len] = '\0';
 					continue;
 				}
 
@@ -1306,9 +1307,11 @@ static void process_read_dir(netiso_read_dir_result_data *dir_entries, char *pat
 			dir_entries[items].mtime = BE64(st.mtime);
 
 			if(subdirs)
-				sprintf(dir_entries[items].name, "%s%s", path + dirpath_len, entry->d_name);
+				sprintf(dir_entries[items].name, "%s", path + dirpath_len);
 			else
 				sprintf(dir_entries[items].name, "%s", entry->d_name);
+
+			path[dir2path_len] = '\0';
 
 			items++;
 			if(items >= max_items) break;
@@ -1663,7 +1666,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20220326");
+	printf("ps3netsrv build 20220330");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");

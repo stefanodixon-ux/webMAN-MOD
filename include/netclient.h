@@ -783,7 +783,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 {
 	copy_aborted = false;
 
-	if((ns < 0) || (maxbytes <= 0)) return FAILED;
+	if(ns < 0) return FAILED;
 
 	if(file_exists(local_file)) return CELL_OK; // local file already exists
 
@@ -792,9 +792,6 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 	{
 		if(strchr("\"<|>:*?", remote_file[c])) return FAILED;
 	}
-
-	// check remote file exists
-	if(remote_file_exists(ns, remote_file) == false) return FAILED;
 
 	// copy remote file
 	int ret = FAILED;
@@ -814,7 +811,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 
 			if(cellFsOpen(local_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
 			{
-				if(file_size > maxbytes) file_size = maxbytes;
+				if(maxbytes) file_size = MIN(file_size, maxbytes);
 
 				if(chunk_size > file_size) chunk_size = (u32)file_size;
 
