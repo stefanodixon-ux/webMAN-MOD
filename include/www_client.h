@@ -485,6 +485,7 @@ parse_request:
 					{
 						is_busy = false;
 
+						// Add GET verb
 						if(*header == '/')
 							buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", wm_url);
 						else
@@ -494,27 +495,29 @@ parse_request:
 					for(u16 n = 0; header[n]; n++) {if(header[n] == '\t') header[n] = ' ';}
 
 					#ifdef PHOTO_GUI
+					#define photo_path	header
 					///// Process PhotoGUI request /////
-					if(!(webman_config->launchpad_xml) && islike(header, "/dev_hdd0/photo/"))
+					if(!(webman_config->launchpad_xml) && islike(photo_path, "/dev_hdd0/photo/"))
 					{
-						char *filename = get_filename(header); if(filename) filename++;
+						char *filename = get_filename(photo_path); if(filename) filename++;
 
 						play_rco_sound("snd_trophy");
 
 						#ifdef MOUNT_PNG
-						if(file_size(header) >= _2MB_)
+						if(file_size(photo_path) >= _2MB_)
 						{
-							bool is_ISO = (read_file(header, param, 5, 0x18801) == 5) && IS(param, "CD001"); // BD/DVD
+							bool is_ISO = (read_file(photo_path, param, 5, 0x18801) == 5) && IS(param, "CD001"); // BD/DVD
 							if(!IS(param, "CD001"))
-								 is_ISO = (read_file(header, param, 5, 0x19319) == 5) && IS(param, "CD001"); // CD
+								 is_ISO = (read_file(photo_path, param, 5, 0x19319) == 5) && IS(param, "CD001"); // CD
 
 							if(is_ISO)
 							{
 								// show filename
 								if(!(webman_config->minfo & 1)) show_msg(filename);
 
-								strcpy(param, header);
-								sprintf(header, "/mount_ps3%s", param);
+								// add /mount_ps3 prefix
+								strcpy(param, photo_path);
+								sprintf(photo_path, "/mount_ps3%s", param);
 							}
 						}
 						else
@@ -532,7 +535,7 @@ parse_request:
 							init_delay = -5; // prevent show Not in XMB message
 
 							// replace header with found full path
-							strcpy(header, filename);
+							strcpy(photo_path, filename);
 						}
 					}
 					///// End PhotoGUI request /////

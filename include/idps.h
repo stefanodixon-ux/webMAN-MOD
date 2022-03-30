@@ -170,7 +170,7 @@ static void show_idps(char *msg)
 
 static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param)
 {
-	char *filename = param + 9, *act_dat = header;
+	char *filename = param + 9, *act_dat = header, *file_path = header, *buffer = param;
 	bool is_default = (*filename != '/') || (is_psid & is_idps);
 
 	show_idps(header);
@@ -207,31 +207,31 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 		force_copy(filename, act_dat);
 	}
 
-	*param = NULL;
+	*buffer = NULL;
 
 	if(is_default)
 	{
 		if(file_exists(act_dat))
 		{
-			add_breadcrumb_trail(param, act_dat); strcat(param, " from: ");
-			sprintf(header, "%s/home/%08i", drives[0], xusers()->GetCurrentUserNumber());
-			add_breadcrumb_trail(param, header); strcat(param, "<br>");
+			add_breadcrumb_trail(buffer, act_dat); strcat(buffer, " from: ");
+			sprintf(file_path, "%s/home/%08i", drives[0], xusers()->GetCurrentUserNumber());
+			add_breadcrumb_trail(buffer, file_path); strcat(buffer, "<br>");
 		}
 	}
 	else
-		strcpy(header, filename); // show custom filename
+		strcpy(file_path, filename); // show custom filename
 
 	if(i < 0) i = 0;
 
 	if(is_idps)
 	{
-		if(is_default) sprintf(header, "%s/idps.hex", drives[i]);
-		if(file_exists(header)) {add_breadcrumb_trail(param, header); sprintf(header, " • %016llX%016llX<br>", IDPS[0], IDPS[1]); strcat(param, header);}
+		if(is_default) sprintf(file_path, "%s/idps.hex", drives[i]);
+		if(file_exists(file_path)) {add_breadcrumb_trail(buffer, file_path); sprintf(header, " • %016llX%016llX<br>", IDPS[0], IDPS[1]); strcat(buffer, header);}
 	}
 	if(is_psid)
 	{
-		if(is_default) sprintf(header, "%s/psid.hex", drives[i]);
-		if(file_exists(header)) {add_breadcrumb_trail(param, header); sprintf(header, " • %016llX%016llX<br>", PSID[0], PSID[1]); strcat(param, header);}
+		if(is_default) sprintf(file_path, "%s/psid.hex", drives[i]);
+		if(file_exists(file_path)) {add_breadcrumb_trail(buffer, file_path); sprintf(header, " • %016llX%016llX<br>", PSID[0], PSID[1]); strcat(buffer, header);}
 	}
 }
 

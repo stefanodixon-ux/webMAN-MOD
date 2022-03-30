@@ -22,8 +22,7 @@
 
 		if(islike(pkg_file, "/net"))
 		{
-			sprintf(header, "%s%s", "/mount_ps3", pkg_file); // use /mount.ps3 command to install the remote pkg
-			strcpy(param, header);
+			sprintf(param, "%s%s", "/mount_ps3", pkg_file); // use /mount.ps3 command to install the remote pkg
 			is_binary = WEB_COMMAND;
 			goto html_response;
 		}

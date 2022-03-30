@@ -20,9 +20,9 @@
 
 		if(sc == 840)
 		{	// FS_DISK_FREE
-			strcpy(header, params);
-			ret = get_free_space(header); int dm = ((ret>>20) % KB) / 100;
-			sprintf(param, "<a href=%s>%s</a>: %i.%i %s (%llu %s)", header, header, ret>>30, dm, STR_GBFREE, ret, STR_BYTE);
+			char *disk_size = header + 0x80, *dev_name = header; strcpy(dev_name, params);
+			ret = get_free_space(dev_name); free_size(dev_name, disk_size);
+			sprintf(param, "<a href=%s>%s</a>: %s (%llu %s)", dev_name, dev_name, disk_size, ret, STR_BYTE);
 		}
 		else
 		if(sc == 200 || sc == 904)

@@ -145,7 +145,7 @@
 			params += 11; char *pos = strchr(params, ')');
 			if(pos)
 			{
-				*pos = 0; u32 value; *header = 0;
+				*pos = '\0'; u32 value; memset(header, 0, sizeof(header));
 				if(pos[1] == '=')
 				{
 					strcpy(header, pos + 2);
@@ -197,6 +197,7 @@
 
 			if(size >= 0x80)
 			{
+				memset(header, 0, sizeof(header));
 				char *pos2 = strchr(params, ','); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
 				if(size > 0x80)
 					xusers()->GetRegistryString(xusers()->GetCurrentUserNumber(), id, header, size);
