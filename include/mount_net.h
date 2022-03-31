@@ -81,16 +81,30 @@ if(netid >= '0' && netid <= '4')
 		{
 			// load cuesheet
 			cellFsUnlink(TEMP_NET_PSXCUE);
-			const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
-			for(u8 e = 0; e < 4; e++)
 			{
-				strcpy(netiso_args.path + len - 4, cue_ext[e]);
-				if(copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns, _8KB_) == CELL_OK) break;
+				u8 e = 3;
+				for(; e > 0; e--)
+				{
+					if(is_ext(netpath, cue_ext[e]))
+					{
+						for(u8 i = 0; i < 9; i++)
+						{
+							strcpy(netpath + len - 4, iso_ext[i]);
+							if(remote_file_exists(ns, netpath) == CELL_OK) break;
+						}
+						break;
+					}
+				}
+				for(; e < 4; e++)
+				{
+					strcpy(netiso_args.path + len - 4, cue_ext[e]);
+					if(copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns) == CELL_OK) break;
+				}
 			}
 			sclose(&ns);
 
 			size_t cue_size = file_size(TEMP_NET_PSXCUE);
-			if(cue_size)
+			if(cue_size > 0x10)
 			{
 				char *cue_buf = malloc(cue_size);
 				if(cue_buf)

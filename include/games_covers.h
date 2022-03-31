@@ -486,7 +486,7 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 			sprintf(remote_file, "%s/%s/PS3_GAME/ICON0.PNG", param, file);
 			flen = get_name(icon, file, GET_WMTMP); sprintf(icon + flen, ".png");
 
-			copy_net_file(icon, remote_file, ns, COPY_WHOLE_FILE);
+			copy_net_file(icon, remote_file, ns);
 			if(file_exists(icon)) return;
 		}
 		else
@@ -504,7 +504,7 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 				strcpy(remote_file + tlen, ext[e]);
 
 				//Copy remote icon locally
-				copy_net_file(icon, remote_file, ns, COPY_WHOLE_FILE);
+				copy_net_file(icon, remote_file, ns);
 				if(file_exists(icon)) return;
 			}
 		}

@@ -89,7 +89,7 @@ int64_t file_copy(const char *file1, char *file2)
 		if(islike(file1, "/net"))
 		{
 			int ns = connect_to_remote_server((file1[4] & 0x0F));
-			copy_net_file(file2, (char*)file1 + 5, ns, COPY_WHOLE_FILE);
+			copy_net_file(file2, (char*)file1 + 5, ns);
 			if(ns >= 0) sclose(&ns);
 
 			if(file_exists(file2)) return 0;

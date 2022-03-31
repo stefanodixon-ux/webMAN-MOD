@@ -131,7 +131,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 					sprintf(enc_dir_name, "%s/%s/PARAM.SFO", param, data[v3_entry].name);
 				else
 					sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
-				copy_net_file(templn, enc_dir_name, ns, COPY_WHOLE_FILE);
+				copy_net_file(templn, enc_dir_name, ns);
 
 				strcpy(templn + strlen(templn) - 4, ".png");
 				strcpy(enc_dir_name + strlen(enc_dir_name) - 9, "ICON0.PNG");
@@ -141,7 +141,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 				get_name(tempstr, data[v3_entry].name, NO_EXT);
 				sprintf(enc_dir_name, "%s/%s.SFO", param, tempstr);
 			}
-			copy_net_file(templn, enc_dir_name, ns, COPY_WHOLE_FILE);
+			copy_net_file(templn, enc_dir_name, ns);
 		}
 
 		if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
@@ -158,12 +158,11 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	// check for /title/title.iso
 	if(data[v3_entry].is_directory && IS_ISO_FOLDER)
 	{
-		const char *iso_ext[10] = {"iso", "ISO", "iso.0", "ISO.0", "bin", "BIN", "mdf", "MDF", "img", "IMG"};
-		for(u8 e = 0; e < 12; e++)
+		for(u8 e = 0; e < 11; e++)
 		{
 			if(e >= 10) return FAILED;
 
-			sprintf(tempstr, "%s/%s/%s.%s", param, data[v3_entry].name, data[v3_entry].name, iso_ext[e]);
+			sprintf(tempstr, "%s/%s/%s%s", param, data[v3_entry].name, data[v3_entry].name, iso_ext[e]);
 			if(remote_stat(ns, tempstr, &is_directory, &file_size, &mtime, &ctime, &atime, &abort_connection) == CELL_OK) break;
 		}
 
@@ -179,7 +178,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		if(index < 4)
 		{
 			get_name(icon, data[v3_entry].name, GET_WMTMP); strcat(icon, ext[index]);
-			copy_net_file(icon, enc_dir_name, ns, COPY_WHOLE_FILE);
+			copy_net_file(icon, enc_dir_name, ns);
 
 			if(not_exists(icon)) *icon = NULL;
 		}

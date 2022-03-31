@@ -90,8 +90,6 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 			if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
 			else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 
-			const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
-
 			if(change_ext(path, 4, cue_ext))
 			{
 				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)

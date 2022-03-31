@@ -95,8 +95,7 @@ static void change_cue2iso(char *cue_file)
 {
 	if(is_ext(cue_file, ".cue") || is_ext(cue_file, ".ccd"))
 	{
-		const char *iso_ext[8] = {".bin", ".iso", ".img", ".mdf", ".BIN", ".ISO", ".IMG", ".MDF"};
-		change_ext(cue_file, 8, iso_ext);
+		change_ext(cue_file, 11, iso_ext);
 	}
 }
 
@@ -257,7 +256,8 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 
 static u16 read_sfo(const char *file, char *data)
 {
-	return (u16)read_file(file, data, _4KB_, 0);
+	size_t size = file_ssize(file); if(size > _8KB_) size = _8KB_;
+	return (u16)read_file(file, data, size, 0);
 }
 
 static int write_file(const char *file, int flags, const char *data, u64 offset, int size, bool crlf)

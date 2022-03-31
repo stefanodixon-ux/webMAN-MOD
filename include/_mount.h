@@ -1251,7 +1251,6 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 	}
 	else if(_path[flen] == '.')
 	{
-		const char *cue_ext[4] = {".cue", ".ccd", ".CUE", ".CCD"};
 		change_ext(_path, 4, cue_ext);
 		if(not_exists(_path)) strcpy(_path, cobra_iso_list[0]);
 	}

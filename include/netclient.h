@@ -779,7 +779,7 @@ static int read_remote_dir(int s, sys_addr_t *data /*netiso_read_dir_result_data
 	return (res.dir_size);
 }
 
-static int copy_net_file(const char *local_file, const char *remote_file, int ns, u64 maxbytes)
+static int copy_net_file(const char *local_file, const char *remote_file, int ns)
 {
 	copy_aborted = false;
 
@@ -811,8 +811,6 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 
 			if(cellFsOpen(local_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
 			{
-				if(maxbytes) file_size = MIN(file_size, maxbytes);
-
 				if(chunk_size > file_size) chunk_size = (u32)file_size;
 
 				int bytes_read; u64 boff = 0;
