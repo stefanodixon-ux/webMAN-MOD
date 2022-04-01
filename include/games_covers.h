@@ -172,8 +172,8 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	if(is_BIN_ENC(name)) {flen -= 8; name[flen] = '\0';}
 
 	if((flen > 2) && name[flen - 2] == '.' ) {flen -= 2; name[flen] = '\0';} // remove file extension (split iso)
-	if((flen > 4) && name[flen - 4] == '.' ) {flen -= 4; name[flen] = '\0';} // remove file extension
 	if((flen > 3) && name[flen - 3] == '.' ) {flen -= 3; name[flen] = '\0';} // remove file extension for roms (.gb .gg .vb)
+	if((flen > 4) && name[flen - 4] == '.' ) {flen -= 4; name[flen] = '\0';} // remove file extension
 	else if(strstr(filename + pos, ".ntfs["))
 	{
 		while(name[flen] != '.') flen--; name[flen] = '\0';
