@@ -87,7 +87,7 @@ if(netid >= '0' && netid <= '4')
 				{
 					if(is_ext(netpath, cue_ext[e]))
 					{
-						for(u8 i = 0; i < 9; i++)
+						for(u8 i = 0; i < 10; i++)
 						{
 							strcpy(netpath + len - 4, iso_ext[i]);
 							if(remote_file_exists(ns, netpath) == CELL_OK) break;

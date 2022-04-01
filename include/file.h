@@ -256,7 +256,7 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 
 static u16 read_sfo(const char *file, char *data)
 {
-	size_t size = file_ssize(file); if(size > _8KB_) size = _8KB_;
+	size_t size = file_ssize(file); if(size > _4KB_) size = _4KB_;
 	return (u16)read_file(file, data, size, 0);
 }
 

@@ -1354,6 +1354,7 @@ static void read_settings(void)
 	//for(u8 id = 0; id < 5; id++) webman_config->netp[id] = NETPORT; // webman_config->netd[id] = 0; webman_config->neth[id][0] = '\0';
 
 	//webman_config->foot  = 0;       //Standard (896KB)
+	webman_config->vsh_mc = 4;
 	webman_config->nospoof = 1;       //don't spoof fw version
 
 	#ifdef MOUNT_GAMEI

@@ -271,14 +271,14 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 #ifndef LITE_EDITION
 static void add_tag(char *tags, u16 code)
 {
-	char tag[4] = {0xEF, (code >> 8), (code & 0xFF), 0};
+	char tag[5] = {' ', 0xEF, (code >> 8), (code & 0xFF), 0};
 	strcat(tags, tag);
 }
 #endif
 
 static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *filename, char *title_id, u8 f0, u8 f1, u8 s)
 {
-	char tags[20] = {' ', 0}; u8 info = webman_config->info & 0xF;
+	char tags[20]; *tags = '\0'; u8 info = webman_config->info & 0xF;
 
 	#ifndef LITE_EDITION
 	if(use_imgfont && (webman_config->info & 0x10))

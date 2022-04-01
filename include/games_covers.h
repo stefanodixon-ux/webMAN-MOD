@@ -134,7 +134,7 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	//   returns file name with WMTMP path                      (cache == 1 -> remove path first)
 
 	int flen, pos = 0;
-	if(cache) {pos = strlen(filename); while(pos > 0 && filename[pos - 1] != '/') pos--;}
+	if(cache) {pos = strlen(filename); while((pos > 0) && filename[pos - 1] != '/') pos--;}
 	if(cache == NO_PATH) cache = 0;
 
 	if(cache == WM_COVERS)
@@ -609,7 +609,7 @@ static int get_title_and_id_from_sfo(char *param_sfo, char *title_id, const char
 	char *title = param_sfo;
 
 	// get title_id & title from PARAM.SFO
-	if(is_sfo(mem))
+	if(sfo_size && is_sfo(mem))
 	{
 		if((IS_HDD0 && islike(param_sfo + 9, "/game/")) || islike(param_sfo + 11, "/GAMEI/") || strstr(param_sfo, "_00-")) use_filename = false;
 
