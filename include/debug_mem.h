@@ -148,8 +148,10 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 			if(start >= LV1_UPPER_MEMORY - ((u64)(size * _1MB_))) start = LV1_UPPER_MEMORY - ((u64)(size * _1MB_));
 		}
 
-		char *pos = strstr(param, "&size=");
-		if(pos) size = convertH(pos + 6);
+		char *pos = strstr(param, "&size=");  if(pos) size  = val(pos + 6);
+			  pos = strstr(param, "&start="); if(pos) start = val(pos + 7);
+
+		if(start <= 0x100) start *= _1MB_;
 
 		sprintf(dump_file, "/dev_hdd0/dump_%s.bin", param + 10);
 		ps3mapi_dump_process(dump_file, pid, start, (size * _1MB_));
