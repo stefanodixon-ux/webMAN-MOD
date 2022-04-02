@@ -17,10 +17,10 @@ if(netid >= '0' && netid <= '4')
 	int ns = connect_to_remote_server(netid);
 	if(ns >= 0)
 	{
-		bool notfound = (remote_file_exists(ns, netpath) == FAILED);
+		bool found = remote_file_exists(ns, netpath);
 		sclose(&ns);
 
-		if(notfound)
+		if(!found)
 		{
 			ret = false;
 			goto exit_mount;
@@ -82,20 +82,16 @@ if(netid >= '0' && netid <= '4')
 			// load cuesheet
 			cellFsUnlink(TEMP_NET_PSXCUE);
 			{
-				u8 e = 3;
-				for(; e > 0; e--)
-				{
-					if(is_ext(netpath, cue_ext[e]))
+				// change .cue / .ccd extension to .bin / .iso
+				if(is_ext(netpath, ".cue") || is_ext(netpath, ".ccd"))
+					for(u8 e = 0; e < 10; e++)
 					{
-						for(u8 i = 0; i < 10; i++)
-						{
-							strcpy(netpath + len - 4, iso_ext[i]);
-							if(remote_file_exists(ns, netpath) == CELL_OK) break;
-						}
-						break;
+						strcpy(netpath + len - 4, iso_ext[e]);
+						if(remote_file_exists(ns, netpath)) break;
 					}
-				}
-				for(; e < 4; e++)
+
+				// copy .cue / .ccd to local TEMP_NET_PSXCUE
+				for(u8 e = 0; e < 4; e++)
 				{
 					strcpy(netiso_args.path + len - 4, cue_ext[e]);
 					if(copy_net_file(TEMP_NET_PSXCUE, netiso_args.path, ns) == CELL_OK) break;

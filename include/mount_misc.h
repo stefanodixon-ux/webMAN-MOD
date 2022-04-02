@@ -52,7 +52,7 @@
  #ifdef PKG_LAUNCHER
 	char *ext = get_ext(_path);
 
-	if(isDir(PKGLAUNCH_DIR))
+	if(isDir(PKGLAUNCH_DIR) && !islike(_path, "/net"))
 	{
 		if( !extcasecmp(_path, ".self", 5) ||
 			(strcasestr(ARCHIVE_EXTENSIONS + 4, ext) != NULL) ||

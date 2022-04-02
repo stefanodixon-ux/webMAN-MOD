@@ -154,7 +154,7 @@ static char drives[17][12] = {"/dev_hdd0", "/dev_usb000", "/dev_usb001", "/dev_u
 static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
 
 #ifdef COBRA_ONLY
-static const char *iso_ext[11] = {".bin", ".iso", ".iso.0", ".img", ".mdf", ".BIN", ".ISO", ".ISO.0", ".IMG", ".MDF", ".bin"};
+static const char *iso_ext[11] = {".bin", ".iso", ".iso.0", ".BIN", ".ISO", ".ISO.0", ".img", ".mdf", ".IMG", ".MDF", ".bin"};
 static const char *cue_ext[4]  = {".cue", ".ccd", ".CUE", ".CCD"};
 #endif
 

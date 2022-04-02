@@ -85,7 +85,7 @@ static void add_title_id(char *templn, char *title_id)
 //static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0);
 static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *templn, char *tempstr, char *enc_dir_name, char *icon, char *title_id, char *app_ver, u8 f1, u8 is_html)
 {
-	int abort_connection = 0, is_directory = 0; s64 file_size; u64 mtime, ctime, atime; *app_ver = NULL;
+	*app_ver = NULL;
 
 	if(data[v3_entry].is_directory == false)
 	{
@@ -163,7 +163,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			if(e >= 10) return FAILED;
 
 			sprintf(tempstr, "%s/%s/%s%s", param, data[v3_entry].name, data[v3_entry].name, iso_ext[e]);
-			if(remote_stat(ns, tempstr, &is_directory, &file_size, &mtime, &ctime, &atime, &abort_connection) == CELL_OK) break;
+			if(remote_file_exists(ns, tempstr)) break;
 		}
 
 		u8 index = 4;
@@ -172,7 +172,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		for(u8 e = 0; e < 4; e++)
 		{
 			sprintf(enc_dir_name, "%s/%s/%s%s", param, data[v3_entry].name, data[v3_entry].name, ext[ex[e]]);
-			if(remote_stat(ns, enc_dir_name, &is_directory, &file_size, &mtime, &ctime, &atime, &abort_connection) == CELL_OK) {index = ex[e]; if(e>0) {ex[e]=ex[0],ex[0]=index;}; break;}
+			if(remote_file_exists(ns, enc_dir_name)) {index = ex[e]; swap_ex(e); break;}
 		}
 
 		if(index < 4)
@@ -348,13 +348,15 @@ static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *templn)
 
 	sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
 
+#ifdef COBRA_ONLY
 	if(IS_NTFS)
 	{
 		char *ext = strstr(templn, ".ntfs["); if(!ext) return true;
-		sprintf(ext, ".iso"); if(file_exists(templn)) return true;
-		sprintf(ext, ".ISO"); if(file_exists(templn)) return true;
-		sprintf(ext, ".bin"); if(file_exists(templn)) return true; *ext = NULL;
+		for(u8 e = 0; e < 10; e++)
+			{strcpy(ext, iso_ext[e]); if(file_exists(templn)) return true;}
+		*ext = NULL;
 	}
+#endif
 
 	return file_exists(templn);
 }
