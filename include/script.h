@@ -38,7 +38,7 @@
 
 #define line	buffer	/* "line", "path" and "buffer" are synonyms */
 #define path	buffer	/* "line", "path" and "buffer" are synonyms */
-#define IS_WEB_COMMAND(line)	(islike(line, "/mount") || (strstr(line, ".ps3") != NULL) || (strstr(line, "_ps3") != NULL))
+#define IS_WEB_COMMAND(line)	(islike(line, "/mount") || strstr(line, ".ps3") || strstr(line, "_ps3") || strstr(line, ".lv1?") || strstr(line, ".lv2?"))
 
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
 static void handle_file_request(const char *wm_url)
@@ -92,7 +92,7 @@ static void parse_script(const char *script_file)
 				}
 				if(dest)
 				{
-					*dest++ = NULL; if(*dest == ' ') dest++; //split parameters
+					*dest++ = NULL; while(*dest == ' ') dest++; //split parameters
 					char *wildcard = strchr(line, '*');
 	#ifdef COBRA_ONLY
 					if(_islike(line, "map /"))  {line += 4;}
