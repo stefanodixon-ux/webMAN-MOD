@@ -87,6 +87,16 @@ static void ps3mapi_get_vsh_plugin_info(unsigned int slot, char *tmp_name, char 
 	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename);
 }
 
+static void ps3mapi_check_unload(unsigned int slot, char *tmp_name, char *tmp_filename)
+{
+	ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
+	if(IS(tmp_name, "WWWD"))
+	{
+		finalize_module();
+		sys_ppu_thread_exit(0);
+	}
+}
+
 static unsigned int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, bool unload)
 {
 	char tmp_name[30];
@@ -97,7 +107,10 @@ static unsigned int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, bool u
 	unsigned int slot;
 	for (slot = 1; slot < 7; slot++)
 	{
-		ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
+		if(unload)
+			ps3mapi_check_unload(slot, tmp_name, tmp_filename);
+		else
+			ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
 
 		if(find_free_slot) {if(*tmp_name) continue; break;} else
 		if(IS(tmp_name, name) || strstr(tmp_filename, name)) {if(unload) cobra_unload_vsh_plugin(slot); break;}
@@ -1066,7 +1079,12 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 
 			if(strstr(param, "unload_slot="))
 			{
-				if ( uslot ) {system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_VSH_PLUGIN, (u64)uslot);}
+				ps3mapi_check_unload(uslot, tmp_name, tmp_filename);
+
+				if ( uslot )
+				{
+					system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_VSH_PLUGIN, (u64)uslot);
+				}
 			}
 			else
 			{
@@ -1210,7 +1228,13 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 			if(pos)
 			{
 				unsigned int prx_id = get_valuen32(pos, "unload_slot=");
-				if(get_valuen32(param, "sys="))
+				unsigned int sys = get_valuen32(param, "sys=");
+				if(sys >= 2)
+				{
+					finalize_module();
+					sys_ppu_thread_exit(0);
+				}
+				else if(sys)
 					stop_unload(prx_id); // <- unload system modules
 				else
 					{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); }
@@ -1304,7 +1328,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 						  "<input type=\"submit\" value=\" Unload \" title=\"id=%i\">"
 						  "</form>"
 						 "</td>"
-						"</tr>", HTML_FORM_METHOD,  pid, mod_list[slot], islike(tmp_filename, "/dev_flash"), mod_list[slot]);
+						"</tr>", HTML_FORM_METHOD, pid, mod_list[slot], islike(tmp_filename, "/dev_flash") | IS(tmp_name, "WWWD")<<1, mod_list[slot]);
 			}
 			else
 			{

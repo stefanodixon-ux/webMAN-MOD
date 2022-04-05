@@ -15,6 +15,11 @@ static void unload_prx_module(void)
 	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
 }
 */
+static inline void _sys_ppu_thread_exit(u64 val)
+{
+	system_call_1(SC_PPU_THREAD_EXIT, val); // prxloader = mandatory; cobra = optional; ccapi = don't use !!!
+}
+
 static void finalize_module(void)
 {
 	show_msg(STR_WMUNL);
@@ -23,7 +28,12 @@ static void finalize_module(void)
 	remove_cfw_syscall8(); // remove cobra if syscalls were disabled
 #endif
 
+	#ifdef MOUNT_ROMS
+	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
+	#endif
+
 	working = 0;
+	sys_ppu_thread_sleep(1);
 
 	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
 
@@ -40,9 +50,6 @@ static void finalize_module(void)
 
 	{system_call_3(SC_STOP_PRX_MODULE, prx, 0, (u64)(u32)meminfo);}
 	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
-}
 
-static inline void _sys_ppu_thread_exit(u64 val)
-{
-	system_call_1(SC_PPU_THREAD_EXIT, val); // prxloader = mandatory; cobra = optional; ccapi = don't use !!!
+	_sys_ppu_thread_exit(0);
 }

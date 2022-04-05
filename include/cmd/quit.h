@@ -17,5 +17,5 @@
 		if(strstr(param, "?1")) restore_fan(SET_PS2_MODE); //ps2 mode
 
 		finalize_module();
-		_sys_ppu_thread_exit(0);
+		sys_ppu_thread_exit(0);
 	}

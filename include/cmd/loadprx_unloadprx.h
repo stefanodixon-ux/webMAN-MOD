@@ -56,6 +56,10 @@
 
 			if(slot < 7)
 			{
+				char *tmp_name = header;
+				char *tmp_filename = header + 40;
+				ps3mapi_check_unload(slot, tmp_name, tmp_filename);
+
 				cobra_unload_vsh_plugin(slot);
 
 				if(prx_found)
