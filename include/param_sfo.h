@@ -226,12 +226,42 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 	return ret;
 }
 
+static void set_param_sfo(char *path)
+{
+	strcpy(path, "/dev_bdvd/PS3_GAME/PARAM.SFO");
+	if(not_exists(path)) strcpy(path, "/app_home/PS3_GAME/PARAM.SFO");
+	if(not_exists(path)) strcpy(path, "/app_home/PARAM.SFO");
+}
+
 static void get_local_app_ver(char *app_ver, char *title_id, char *param_sfo)
 {
-	if(*app_ver && *title_id)
+	if(*title_id)
 	{
-		char app_ver2[8]; *app_ver2 = NULL;
 		sprintf(param_sfo, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+		if(not_exists(param_sfo)) return;
+
+		char app_ver2[8]; *app_ver2 = NULL;
 		getTitleID(param_sfo, app_ver2, GET_VERSION); if(*app_ver2) strcpy(app_ver, app_ver2);
 	}
+}
+
+static void get_game_version(char *sfo, char *title, char *title_id, char *app_ver)
+{
+	*title = *title_id = *app_ver = NULL;
+
+	if(get_game_info())
+	{
+		strcpy(title, _game_Title);
+		strcpy(title_id, _game_TitleID);
+	}
+	else
+	{
+		strcpy(title, sfo);
+		getTitleID(title, title_id, GET_TITLE_AND_ID);
+	}
+
+	if(file_exists(sfo))
+		getTitleID(sfo, app_ver, GET_VERSION);
+
+	get_local_app_ver(app_ver, title_id, sfo);
 }

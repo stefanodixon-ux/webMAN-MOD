@@ -118,21 +118,16 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 
 		if(strlen(_game_TitleID) == 9)
 		{
-			char path[MAX_PATH_LEN], version[8] = "01.00", *app_ver = version;
-
 			sprintf(templn, "<hr><span style=\"position:relative;top:-20px;\"><H2><a href=\"%s/%s/%s-ver.xml\" target=\"_blank\">%s</a>", "https://a0.ww.np.dl.playstation.net/tpl/np", _game_TitleID, _game_TitleID, _game_TitleID); buffer += concat(buffer, templn);
 
-			sprintf(path, "%s%s/PARAM.SFO", HDD0_GAME_DIR, _game_TitleID);
-			if(not_exists(path)) sprintf(path, "%s%s/PARAM.SFO", _HDD0_GAME_DIR, _game_TitleID);
-			if(not_exists(path)) sprintf(path, "/dev_bdvd/PS3_GAME/PARAM.SFO");
+			char *title = templn + 0x10, *title_id = templn;
+			char path[MAX_PATH_LEN], app_ver[8];
 
-			getTitleID(path, app_ver, GET_VERSION); if(*app_ver == '0') *app_ver='v'; if(strstr(_game_Title, app_ver)) *app_ver = NULL;
+			set_param_sfo(path);
+			get_game_version(path, title, title_id, app_ver);
+			remove_filename(path);
 
 			sprintf(templn, " <a href=\"%s%s\">%s %s</a> &nbsp; ", search_url, _game_Title, _game_Title, app_ver); buffer += concat(buffer, templn);
-
-			sprintf(path, "%s%s", HDD0_GAME_DIR, _game_TitleID);
-			if(not_exists(path)) sprintf(path, "%s%s", _HDD0_GAME_DIR, _game_TitleID);
-			if(not_exists(path)) sprintf(path, "/dev_bdvd/PS3_GAME");
 
 			sprintf(templn, "<a href=\"%s\"><img src=\"%s/ICON0.PNG\" height=\"60\" border=0%s></a> "
 							"<a href=\"/%s.ps3mapi?proc=%i\"><small>pid=%08x</small></a>",

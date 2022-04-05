@@ -80,13 +80,13 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	if( !is_dir && IS(name, "PARAM.SFO") )
 	{
-		char titleid[10], version[8], title[128]; snprintf(title, 127, "%s", templn);
+		char titleid[10], app_ver[8], title[128]; snprintf(title, 127, "%s", templn);
 
-		//get title & app version from PARAM.SFO
-		getTitleID(templn, version, GET_VERSION);
+		//get title & app app_ver from PARAM.SFO
+		getTitleID(templn, app_ver, GET_VERSION);
 		getTitleID(title, titleid, GET_TITLE_AND_ID); get_flag(title, " ["); get_flag(title, "\n");
 		get_cover_from_name(tempstr, get_filename(param) + 1, titleid); // get title id from path (if title ID was not found in PARAM.SFO)
-		if(*version >= '0') {strcat(title, " v"); strcat(title, version);}
+		if(*app_ver >= '0') {strcat(title, " v"); strcat(title, app_ver);}
 		sprintf(tempstr, "%s%s", HDD0_GAME_DIR, titleid); bool has_updates_dir = file_exists(tempstr);
 
 		sprintf(tempstr, " title=\"%s\">%s</a>", title, name); snprintf(name, maxlen, "%s", tempstr);

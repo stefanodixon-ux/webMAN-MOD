@@ -926,37 +926,16 @@
 #endif
 							{
 								char path[STD_PATH_LEN];
-								char *sfo = (char*)"/dev_bdvd/PS3_GAME/PARAM.SFO";
-								if(!file_exists(sfo)) sfo = (char*)"/app_home/PARAM.SFO";
+								set_param_sfo(path);
 
-								if(file_exists(sfo) || IS_INGAME)
+								if(file_exists(path) || IS_INGAME)
 								{
-									char title[128], title_id[12], version[8], version2[8];
+									char title[128], title_id[12], app_ver[8];
 
-									if(get_game_info())
-									{
-										strcpy(title, _game_Title);
-										strcpy(title_id, _game_TitleID);
-									}
-									else
-									{
-										strcpy(title, sfo);
-										getTitleID(title, title_id, GET_TITLE_AND_ID);
-									}
-
-									int len = sprintf(msg, "ID: %s", title_id);
-
-									strcpy(path, sfo);
-									getTitleID(path, version, GET_VERSION);
-
-									sprintf(path, "%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
-									if(!file_exists(path))
-										strcpy(path, sfo);
-
-									getTitleID(path, version2, GET_VERSION); if(*version2) strcpy(version, version2);
+									get_game_version(path, title, title_id, app_ver);
 									get_last_game(path);
 
-									sprintf(msg + len, " - v%s\n%s\n\n%s", version, title, path);
+									sprintf(msg, "ID: %s - v%s\n%s\n\n%s", title_id, app_ver, title, path);
 									show_msg(msg);
 									sys_ppu_thread_sleep(5);
 								}
