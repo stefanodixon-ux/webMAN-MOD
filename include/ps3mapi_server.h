@@ -475,9 +475,9 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 								if(_IS(cmd, "UNLOAD"))
 								{
-									s32 prx_id = val(param2);
-									//{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); }
-									stop_unload(prx_id); // <- unload system modules
+									s32 prx_id = val(param2); int ret;
+									{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_UNLOAD_PROC_MODULE, (u64)pid, (u64)prx_id); ret = p1;}
+									if(ret) stop_unload(prx_id); // <- unload system modules
 								}
 								else
 								{

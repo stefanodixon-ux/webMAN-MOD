@@ -34,9 +34,12 @@ static void finalize_module(void)
 
 	meminfo[0] = 0x28;
 	meminfo[1] = 2;
+	meminfo[2] = 0;
 	meminfo[3] = 0;
+	meminfo[4] = 0;
 
 	{system_call_3(SC_STOP_PRX_MODULE, prx, 0, (u64)(u32)meminfo);}
+	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
 }
 
 static inline void _sys_ppu_thread_exit(u64 val)
