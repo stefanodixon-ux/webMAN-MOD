@@ -107,13 +107,10 @@ static unsigned int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, bool u
 	unsigned int slot;
 	for (slot = 1; slot < 7; slot++)
 	{
-		if(unload)
-			ps3mapi_check_unload(slot, tmp_name, tmp_filename);
-		else
-			ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
+		ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
 
 		if(find_free_slot) {if(*tmp_name) continue; break;} else
-		if(IS(tmp_name, name) || strstr(tmp_filename, name)) {if(unload) cobra_unload_vsh_plugin(slot); break;}
+		if(IS(tmp_name, name) || strstr(tmp_filename, name)) {if(unload) {ps3mapi_check_unload(slot, tmp_name, tmp_filename); cobra_unload_vsh_plugin(slot);} break;}
 	}
 	return slot;
 }
