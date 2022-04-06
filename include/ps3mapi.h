@@ -126,8 +126,15 @@ static void start_vsh_gui(bool vsh_menu)
 	unsigned int slot;
 	slot = unload_vsh_plugin(vsh_menu ? "VSH_MENU" : "sLaunch");
 	if(slot < 7) return; unload_vsh_gui();
-	slot = get_free_slot(); char arg[2] = {1, 0};
-	if(slot < 7) cobra_load_vsh_plugin(slot, vsh_menu ? WM_RES_PATH "/wm_vsh_menu.sprx" : WM_RES_PATH "/slaunch.sprx", (u8*)arg, 1);
+
+	slot = get_free_slot();
+	if(slot < 7)
+	{
+		char arg[2] = {1, 0};
+		char plugin_path[40];
+		sprintf(plugin_path, "%s/%s.sprx", WM_RES_PATH, vsh_menu ? "wm_vsh_menu" : "slaunch");
+		cobra_load_vsh_plugin(slot, plugin_path, (u8*)arg, 1);
+	}
 }
 #endif
 ///////////////////////////////
@@ -416,7 +423,6 @@ static void ps3mapi_syscall8(char *buffer, char *templn, const char *param)
 	{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); ret_val = (int)p1;}
 
 	syscalls_removed = (ret_val != 0); peek_lv1 = (syscalls_removed) ? lv1_peek_ps3mapi : lv1_peek_cfw;
-	if(!syscalls_removed) disable_signin_dialog();
 
 	#ifdef REMOVE_SYSCALLS
 	if(!syscalls_removed) disable_signin_dialog();

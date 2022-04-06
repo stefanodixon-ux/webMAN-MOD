@@ -5,7 +5,7 @@
 static bool fix_in_progress = false;
 static bool fix_aborted = false;
 
-#ifdef COPY_PS3
+#if defined(COPY_PS3) || defined(USE_NTFS) || defined(FIX_GAME)
 static u32 fixed_count = 0;
 #endif
 

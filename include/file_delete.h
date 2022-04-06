@@ -132,6 +132,7 @@ static void uninstall(char *param)
 	cellFsUnlink(WMONLINE_GAMES);
 	cellFsUnlink(WMOFFLINE_GAMES);
 
+	#ifdef COPY_PS3
 	for(u8 i = 0; i < 4; i++)
 		cellFsUnlink(script_events[i]);
 
@@ -144,6 +145,7 @@ static void uninstall(char *param)
 	del(HTML_BASE_PATH, RECURSIVE_DELETE);
 	del(VSH_MENU_IMAGES, RECURSIVE_DELETE);
 	del(PS2CONFIG_PATH, RECURSIVE_DELETE);
+	#endif
 
 	restore_fan(SYSCON_MODE);
 

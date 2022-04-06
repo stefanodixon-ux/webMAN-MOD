@@ -250,6 +250,7 @@ Requirements for GNU/Linux:
 - Berion & Brunolee for the graphics & icons
 - bucanero port of libraries for zip, rar, 7-zip, bz2, tgz, tar
 - lmirel port of libraries for exFAT
+- TheRouleteBoi for FPS counter plugin
 - LuanTeles for the help file (based on XMB offline documentation tool by xp3riments & DeViL303)
 - DeViL303 for ideas, gameboot mods, Sign In blocker, XML mods
 - PSX-SCENE, PSX-PLACE, PLAYSTATIONHAX, PS3HAX & other scene websites/users, who translated, helped in the testing process

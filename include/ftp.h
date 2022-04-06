@@ -967,7 +967,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					{
 						absPath(filename, param, cwd);
 
-#ifndef LITE_EDITION
+#ifdef COPY_PS3
 						if(del(filename, true) == CELL_FS_SUCCEEDED)
 #else
 						if(cellFsRmdir(filename) == CELL_FS_SUCCEEDED)

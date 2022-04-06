@@ -342,8 +342,7 @@
 							if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R2 | CELL_PAD_CTRL_L2)) && IS_ON_XMB)
 							{
   #ifdef WM_CUSTOM_COMBO
-							if(do_custom_combo("l2_r2_select_start")) break;
-							else
+								if(do_custom_combo("l2_r2_select_start")) break;
   #endif
 								{BEEP2; memset(msg, 0, sizeof(msg)); saveBMP(msg, true, false); n = 0; break;} // L2 + R2 + SELECT + START
 							}
@@ -478,7 +477,6 @@
 							// SELECT+UP + R2 = increase TEMP of dynamic fan control / manual FAN SPEED +5
  #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_up")) break;
-							else
  #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
@@ -513,7 +511,6 @@
 							// SELECT+DOWN+R2 = decrease TEMP of dynamic fan control / manual FAN SPEED -5
  #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_down")) break;
-							else
  #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
@@ -545,7 +542,6 @@
 							// SELECT+LEFT = decrease Minfan
  #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_left")) break;
-							else
  #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
@@ -566,7 +562,6 @@
 							// SELECT+RIGHT = increase Minfan
  #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("select_right")) break;
-							else
  #endif
 							{
 								if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
@@ -611,7 +606,6 @@
 								{
  #ifdef WM_CUSTOM_COMBO
 									if(do_custom_combo("select_square")) break;
-									else
  #endif
 									{
  #ifdef EXT_GDATA
@@ -631,7 +625,6 @@
 								 // SELECT+L1 = mount previous title
  #ifdef WM_CUSTOM_COMBO
 								if(do_custom_combo("select_l1")) break;
-								else
  #endif
 								{
 									mount_game("_prev", EXPLORE_CLOSE_ALL);
@@ -646,7 +639,6 @@
 								// SELECT+R1 = mount next title
  #ifdef WM_CUSTOM_COMBO
 								if(do_custom_combo("select_r1")) break;
-								else
  #endif
 								{
 									mount_game("_next", EXPLORE_CLOSE_ALL);
@@ -663,7 +655,6 @@
 								// SELECT+R2+X = Install PKG (JAP)
   #ifdef WM_CUSTOM_COMBO
 								if(do_custom_combo("select_r2_circle")) break;
-								else
   #endif
 								installPKG_all(DEFAULT_PKG_PATH, true);
 
@@ -678,7 +669,6 @@
 								// SELECT+X = unmount (JAP)
  #ifdef WM_CUSTOM_COMBO
 								if(do_custom_combo("select_circle")) break;
-								else
  #endif
  #ifdef ALLOW_DISABLE_MAP_PATH
 								{
@@ -738,6 +728,18 @@
 						finalize_module();
 						break;
 					}
+ #ifdef WM_REQUEST
+					else if(!(webman_config->combo & C_FPSINFO) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
+																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0)) //  L3+R3 = FPS Counter
+					{
+  #ifdef WM_CUSTOM_COMBO
+						if(do_custom_combo("l3_r3")) break;
+  #endif
+						do_web_command(WM_FILE_REQUEST, "/loadprx.ps3/wm_res/VshFpsCounter.sprx"); n = 0;
+						sys_ppu_thread_sleep(3);
+						break;
+					}
+ #endif
 					else if(!(webman_config->combo & GOTO_HOME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
 																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) //  L2+L3+R3 / L3+R3+L2 / L3+L2+R3
 					{
@@ -746,7 +748,6 @@
 						bool reload_game = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) == CELL_PAD_CTRL_R2;
   #ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo(reload_game ? "l3_r3_l2_r2" : "l3_r3_l2")) break;
-						else
   #endif
 						goto_xmb_home(reload_game);
 						n = 0;
@@ -843,7 +844,6 @@
 							// R2+L2+TRIANGLE = Toggle user/admin mode
   #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("l2_r2_triangle")) break;
-							else
   #endif
 							{
 								sys_admin ^= 1, pwd_tries = 0;
@@ -894,7 +894,6 @@
 						{
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_triangle")) break;
-							else
 #endif
 							{
 #ifdef REMOVE_SYSCALLS
@@ -907,11 +906,9 @@
 						{
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_square")) break;
-							else
 #endif
 #ifdef WM_REQUEST
 							if(do_custom_combo(WM_COMBO_PATH)) break;
-							else
 #endif
 							{
 								block_online_servers(true);
@@ -922,7 +919,6 @@
 						{
 #ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("r2_circle")) break;
-							else
 #endif
 							{
 								char path[STD_PATH_LEN];

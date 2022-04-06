@@ -14,6 +14,7 @@
 #define DISACOBRA (1<<12)
 #define SYS_ADMIN (1<<13)
 #define GOTO_HOME (1<<14)
+#define C_FPSINFO (1<<15)
 
 //combo2
 #define EXTGAMDAT (1<<0)
@@ -157,6 +158,9 @@ static void setup_parse_settings(char *param)
 	if(IS_UNMARKED("pdf=1")) webman_config->combo|=DISABLEFC;
 	if(IS_UNMARKED("psc=1")) webman_config->combo|=DISABLESH;
 	if(IS_UNMARKED("hom=1")) webman_config->combo|=GOTO_HOME;
+	#ifdef WM_REQUEST
+	if(IS_UNMARKED("fps=1")) webman_config->combo|=C_FPSINFO;
+	#endif
 	if(IS_UNMARKED("kcc=1")) webman_config->keep_ccapi = true;
 
 #ifdef COBRA_ONLY
@@ -1047,6 +1051,9 @@ static void setup_form(char *buffer, char *templn)
 #ifdef COBRA_ONLY
 	add_checkbox("vs", "VSH MENU",      " : <b>SELECT</b><br>"       , !(webman_config->combo2 & C_VSHMENU), buffer);
 	add_checkbox("gm", "GAME MENU",     " : <b>START / L2+R2</b><br>", !(webman_config->combo2 & C_SLAUNCH), buffer);
+	#ifdef WM_REQUEST
+	add_checkbox("fps","FPS COUNT",     " : <b>L3+R3</b><br>"       ,  !(webman_config->combo  & C_FPSINFO), buffer);
+	#endif
 #endif
 
 #ifdef SYS_ADMIN_MODE

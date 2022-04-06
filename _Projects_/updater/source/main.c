@@ -892,6 +892,7 @@ int main()
 		// update VSH Menu and sLaunch Menu
 		file_copy(APP_USRDIR "/res/slaunch.sprx", RES_DIR "/slaunch.sprx");
 		file_copy(APP_USRDIR "/res/wm_vsh_menu.sprx", RES_DIR "/wm_vsh_menu.sprx");
+		file_copy(APP_USRDIR "/res/VshFpsCounter.sprx", RES_DIR "/VshFpsCounter.sprx");
 	}
 
 	// skip update custom language file

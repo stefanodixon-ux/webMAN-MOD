@@ -36,11 +36,12 @@
 
 #ifdef COPY_PS3
 
+#if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
+
 #define line	buffer	/* "line", "path" and "buffer" are synonyms */
 #define path	buffer	/* "line", "path" and "buffer" are synonyms */
 #define IS_WEB_COMMAND(line)	(islike(line, "/mount") || strstr(line, ".ps3") || strstr(line, "_ps3") || strstr(line, ".lv1?") || strstr(line, ".lv2?"))
 
-#if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
 static void handle_file_request(const char *wm_url)
 {
 	if(wm_url || file_exists(WMREQUEST_FILE))

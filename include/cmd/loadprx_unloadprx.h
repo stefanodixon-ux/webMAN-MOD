@@ -39,7 +39,7 @@
 			if(*sprx_path)
 			{
 				slot = ps3mapi_get_vsh_plugin_slot_by_name(sprx_path, false);
-				if(islike(param, "/unloadprx.ps3")) prx_found = false;
+				if(islike(param, "/unloadprx.ps3") || (slot < 7)) prx_found = false;
 			}
 			if((slot < 1) || (slot > 6))
 			{
@@ -56,8 +56,8 @@
 
 			if(slot < 7)
 			{
-				char *tmp_name = header;
-				char *tmp_filename = header + 40;
+				char *tmp_name = templn + 512;
+				char *tmp_filename = templn + 550;
 				ps3mapi_check_unload(slot, tmp_name, tmp_filename);
 
 				cobra_unload_vsh_plugin(slot);
