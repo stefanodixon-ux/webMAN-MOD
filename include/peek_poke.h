@@ -237,24 +237,19 @@ static void add_to_map(const char *path1, const char *path2)
 
 static u16 string_to_lv2(const char *path, u64 addr)
 {
-	u16 plen = strlen(path);
-	u16 len  = (plen + 8) & 0x7f8;
+	u16 len = MIN(strlen(path), MAX_PATH_MAP - 1);
 
-	len = RANGE(len, 8, MAX_PATH_MAP);
-	if(plen > len) plen = len;
+	u8 data[MAX_PATH_MAP];
+	u64 *data2 = (u64 *)data;
+	memset(data, 0, MAX_PATH_MAP);
+	memcpy(data, path, len);
 
-	u8 path_buf[MAX_PATH_MAP];
-	u8 *data  = path_buf;
-
-	memcpy(data, path, plen);
-	memset(data + plen, 0, MAX_PATH_MAP - plen);
-
-	u64 *data2 = (u64 *)path_buf;
-	for(u64 n = 0; n < len; n += 8)
+	len = (len + 7) >> 3;
+	for(u8 n = 0; n < (MAX_PATH_MAP / 8); n++, addr += 8)
 	{
-		pokeq(addr + n, data2[n]);
+		pokeq(addr, data2[n]);
 	}
-	return len;
+	return len * 8;
 }
 #endif
 
