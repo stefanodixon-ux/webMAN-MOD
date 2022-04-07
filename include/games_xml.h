@@ -382,7 +382,7 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 	}
 	#endif
 
-	// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none, 0x10 = tags
+	// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none, 0x10 = tags, 0x20 = version
 	if(info <= 1)
 	{
 		if((info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
@@ -391,9 +391,9 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 	else if(info == 2)
 	{
 		if(HAS_TITLE_ID)
-			sprintf(tempstr, XML_PAIR("info","%s | %s%s"), title_id, drives[f0] + s, tags);
+			sprintf(tempstr, XML_PAIR("info","%s%s"), title_id, tags);
 		else
-			sprintf(tempstr, XML_PAIR("info","%s%s"), drives[f0] + s, tags);
+			sprintf(tempstr, XML_PAIR("info","%s"), tags);
 	}
 	else if(webman_config->info & 0x13)
 	{
@@ -1150,7 +1150,7 @@ scan_roms:
 							else
 								*folder_name = NULL;
 
-							get_local_app_ver(app_ver, title_id, tempstr);
+							if(webman_config->info & 0x20) get_local_app_ver(app_ver, title_id, tempstr);
 
 							read_e = sprintf(tempstr, "<T key=\"%04i\" include=\"inc\">"
 											 XML_PAIR("icon","%s")
