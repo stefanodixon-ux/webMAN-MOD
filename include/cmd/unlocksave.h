@@ -10,6 +10,7 @@
 
 		if(file_exists(savedata_path))
 		{
+			Check_Overlay();
 			scan(savedata_path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);
 			keep_alive = http_response(conn_s, header, param, CODE_BREADCRUMB_TRAIL, param);
 		}

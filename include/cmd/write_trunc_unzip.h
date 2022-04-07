@@ -139,11 +139,13 @@
 			char *wildcard = strchr(filename, '*');
 			if(wildcard)
 			{
+				Check_Overlay();
 				wildcard = strrchr(filename, '/'); *wildcard++ = NULL;
 				scan(filename, true, wildcard, SCAN_TRUNCATE, NULL);
 			}
 			else if(isDir(filename))
 			{
+				Check_Overlay();
 				scan(filename, true, NULL, SCAN_TRUNCATE, NULL);
 			}
 			else

@@ -59,6 +59,7 @@
 		char *params = param + 10;
 
 		keep_alive = 0;
+		Check_Overlay();
 
 		#ifdef COBRA_ONLY
 		if(islike(param, "/mount.ps3"))
@@ -116,4 +117,5 @@
 		game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
 
 		is_busy = false;
+		show_progress("", 0);
 	}

@@ -38,7 +38,7 @@
 		{
 			if(*sprx_path)
 			{
-				slot = ps3mapi_get_vsh_plugin_slot_by_name(sprx_path, false);
+				slot = ps3mapi_get_vsh_plugin_slot_by_name(sprx_path, 0);
 				if(islike(param, "/unloadprx.ps3") || (slot < 7)) prx_found = false;
 			}
 			if((slot < 1) || (slot > 6))
@@ -63,7 +63,12 @@
 				cobra_unload_vsh_plugin(slot);
 
 				if(prx_found)
-					{cobra_load_vsh_plugin(slot, sprx_path, NULL, 0); if(strstr(sprx_path, "/webftp_server")) goto quit;}
+				{
+					cobra_load_vsh_plugin(slot, sprx_path, NULL, 0);
+					if(strstr(sprx_path, "/webftp_server")) goto quit;
+				}
+
+				if(strstr(sprx_path, "/VshFpsCounter")) overlay_enabled = prx_found;
 			}
 		}
 		else

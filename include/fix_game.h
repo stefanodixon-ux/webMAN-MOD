@@ -66,6 +66,8 @@ static void fix_game_folder(char *path)
 
 	int fd;
 
+	show_progress(path, 3);
+
 	if(working && cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
 	{
 #ifdef COPY_PS3
@@ -142,6 +144,8 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 #ifdef COPY_PS3
 	sprintf(current_file, "%s", iso_file);
 #endif
+
+	show_progress(iso_file, 3);
 
 	cellFsChmod(iso_file, MODE); //fix file read-write permission
 
@@ -374,6 +378,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 
 		if(webman_config->fixgame == FIX_GAME_FORCED) {webman_config->fixgame=FIX_GAME_QUICK; save_settings();}
 	}
+	show_progress("", 0);
 }
 
 #endif //#ifdef FIX_GAME

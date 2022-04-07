@@ -413,6 +413,7 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 			if(li == LANG_CUSTOM) sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
 		}
 	}
+	show_progress(param, 1);
 }
 
 static bool game_listing(char *buffer, char *templn, char *param, char *tempstr, u8 mode, bool auto_mount)
@@ -1087,5 +1088,6 @@ next_html_entry:
 
 		loading_games = 0;
 	}
+	show_progress("", 0);
 	return true;
 }

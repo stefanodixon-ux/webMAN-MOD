@@ -66,6 +66,7 @@ static void parse_script(const char *script_file)
 		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE);
 
 		script_running = true;
+		Check_Overlay();
 
 		while(*buffer)
 		{
@@ -168,6 +169,7 @@ static void parse_script(const char *script_file)
 		sys_memory_free(sysmem);
 
 		script_running = false;
+		show_progress("", 0);
 	}
 }
 

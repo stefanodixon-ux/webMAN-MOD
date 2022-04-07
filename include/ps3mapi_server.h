@@ -500,9 +500,11 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 							split = ssplit(param2, param1, PS3MAPI_MAX_LEN, param2, PS3MAPI_MAX_LEN);
 							if(split)
 							{
+								char *prx_path = param2;
+								check_path_alias(prx_path);
 								unsigned int slot = val(param1);
 								if(!slot ) slot = get_free_slot();
-								if( slot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)slot, (u64)(u32)param2, NULL, 0); }}
+								if( slot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)slot, (u64)(u32)prx_path, NULL, 0); }}
 								ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 							}
 						}

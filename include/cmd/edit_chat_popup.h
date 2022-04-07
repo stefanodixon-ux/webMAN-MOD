@@ -72,6 +72,11 @@
 
 			if(param[10] == '*')
 				show_msg2(msg);
+			else if(param[10] == '@')
+			{
+				overlay = 1;
+				show_progress(msg, 99);
+			}
 			else
 				show_msg(msg);
 

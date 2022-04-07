@@ -358,7 +358,6 @@ static void installPKG_all(const char *path, bool delete_after_install);
 static void start_www(u64 conn_s_p);
 static void handleclient_www(u64 conn_s_p);
 static void do_web_command(u64 conn_s_p, const char *wm_url);
-static void finalize_module(void);
 
 static void do_umount(bool clean);
 static void mount_autoboot(void);

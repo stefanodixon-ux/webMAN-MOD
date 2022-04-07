@@ -92,6 +92,8 @@
 			#endif
 		}
 
+		Check_Overlay();
+
 		char *wildcard = strchr(param, '*');
 		if(wildcard)
 		{

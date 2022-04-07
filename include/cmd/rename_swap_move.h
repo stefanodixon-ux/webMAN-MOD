@@ -18,6 +18,8 @@
 		#define SWAP_CMD	9
 		#define RENAME_CMD	11
 
+		Check_Overlay();
+
 		size_t cmd_len = islike(param, "/rename.ps3") ? RENAME_CMD : SWAP_CMD;
 
 		char *source = param + cmd_len, *dest = strchr(source, '|');

@@ -19,7 +19,7 @@ static void start_www(u64 conn_s_p)
 
 			if(profile || !(webman_config->wmstart))
 			{
-				if(!payload_ps3hen) sys_ppu_thread_sleep(9); // wait from boot
+				if(!payload_ps3hen && (View_Find("explore_plugin") == 0) && (View_Find("game_plugin") == 0)) sys_ppu_thread_sleep(9); // wait from boot
 
 				show_wm_version(templn);
 				do_sleep = false;

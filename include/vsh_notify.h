@@ -1,3 +1,42 @@
+#define Check_Overlay()		overlay = (peekq(OVERLAY_ADDR) == 0)
+#define OVERLAY_ADDR		0x8000000000700000ULL
+
+static u8 overlay = 0;
+static u8 overlay_enabled = 0;
+
+static void show_progress(const char *path, u8 oper)
+{
+	if(!overlay_enabled) return;
+	if(!overlay) return;
+
+	char data[0x80];
+	u64 *data2 = (u64 *)data;
+
+	if(oper == 0)
+		{memset(data, 0, 0x80); overlay = 0;}
+	else if(oper == 1)
+		snprintf(data, 0x80, "\n%s:\n%s", STR_SCAN2, path);
+	else if(oper == 2)
+		snprintf(data, 0x80, "\n%s:\n%s", STR_COPYING, path);
+	else if(oper == 3)
+		snprintf(data, 0x80, "\n%s:\n%s", STR_FIXING, path);
+	else if(oper == 4)
+		snprintf(data, 0x80, "\n%s:\n%s", STR_DELETE, path);
+	else if(oper == 5)
+		snprintf(data, 0x80, "\n%s:\n%s", "Dumping", path);
+	else if(oper == 6)
+		snprintf(data, 0x80, "\n%s:\n%s", "Searching", path);
+	else
+		snprintf(data, 0x80, "%s", path);
+
+	u8 len = strlen(data); memset(data + len, 0, 0x80 - len);
+
+	u64 addr = OVERLAY_ADDR;
+	for(u8 n = 0; n < 0x10; n++, addr += 8)
+	{
+		pokeq(addr, data2[n]);
+	}
+}
 static void play_rco_sound(const char *sound)
 {
 	char *system_plugin = (char*)"system_plugin";
@@ -182,9 +221,10 @@ static void show_msg(const char *text)
 static void show_status(const char *label, const char *status)
 {
 	char msg[200];
-	snprintf(msg, 199, "%s %s", label, status);
+	snprintf(msg, 200, "%s %s", label, status);
 	if(IS(label, STR_ERROR))
 		vshNotify_WithIcon(ICON_ERROR, msg);
 	else
 		vshtask_notify(msg);
 }
+

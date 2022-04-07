@@ -88,6 +88,8 @@ int64_t file_copy(const char *file1, char *file2)
 #ifdef COBRA_ONLY
 		if(islike(file1, "/net"))
 		{
+			show_progress(file1, 2);
+
 			int ns = connect_to_remote_server((file1[4] & 0x0F));
 			copy_net_file(file2, file1 + 5, ns);
 			if(ns >= 0) sclose(&ns);
@@ -101,6 +103,8 @@ int64_t file_copy(const char *file1, char *file2)
 
 	char *file1_666 = NULL;
 	bool check_666 = false;
+
+	show_progress(file1, 2);
 
 #ifdef UNLOCK_SAVEDATA
 	if(webman_config->unlock_savedata && (buf.st_size < _4KB_))

@@ -45,8 +45,7 @@ static u8 check_password(char *param)
 static void restore_settings(void)
 {
 #ifdef COBRA_ONLY
-	unload_vsh_plugin("VSH_MENU"); // unload vsh menu
-	unload_vsh_plugin("sLaunch");  // unload sLaunch
+	unload_vsh_gui();
 #endif
 
 	for(u8 n = 0; n < 4; n++)

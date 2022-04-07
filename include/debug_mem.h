@@ -109,12 +109,16 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 
 		vshNotify_WithIcon(ICON_WAIT, "Dumping...");
 
+		Check_Overlay();
+
 		if(cellFsOpen(dump_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
+			char label[20];
 			for(u32 addr = 0; addr < size; addr += _64KB_)
 			{
 				ps3mapi_get_memory(pid, (address + addr), mem_buf, _64KB_);
 				cellFsWrite(fd, mem_buf, _64KB_, NULL);
+				sprintf(label, "0x%x", address + addr); show_progress(label, 5);
 			}
 			cellFsClose(fd);
 		}
@@ -123,6 +127,8 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 		show_msg("Dump completed!");
 
 		play_rco_sound("snd_trophy");
+
+		show_progress("", 0);
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
@@ -265,13 +271,15 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	else
 	if(islike(param, "/find.lv"))
 	{
-		char tfind[33];
+		char tfind[33], label[20];
 		if(isHEX(v + 1))
 			flen = Hex2Bin(v + 1, sfind);
 		else
 			flen = sprintf(sfind, "%s", v + 1);
 
 		u64 (*peek_mem)(u64) = lv1 ? peek_lv1 : peekq;
+
+		Check_Overlay();
 
 		u64 _upper_memory = (upper_memory - flen + 8) & 0x8FFFFFFFFFFFFFF0ULL;
 		for(addr = address; addr < _upper_memory; addr += step)
@@ -281,6 +289,8 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			if(flen > 16) {value = peek_mem(addr + 16); memcpy(tfind + 16, (char*)&value, 8);}
 			if(flen > 24) {value = peek_mem(addr + 24); memcpy(tfind + 24, (char*)&value, 8);}
 			if(!bcompare(tfind, sfind, flen, sfind) && !(--rep)) {address = found_address = addr; found = true; break;}
+
+			if((addr & 0xF00) == 0) {sprintf(label, "0x%llx", address + addr); show_progress(label, 6);}
 		}
 
 		if(!found)
@@ -292,6 +302,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			found_address = address = addr;
 			sprintf(templn, "Offset: 0x%08X<br><br>", (u32)address); buffer += concat(buffer, templn);
 		}
+		show_progress("", 0);
 	}
 	else
 	if(islike(param, "/poke.lv"))

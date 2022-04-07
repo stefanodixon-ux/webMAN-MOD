@@ -1,6 +1,7 @@
 	if(islike(param, "/popup.ps3"))
 	{
 		// /popup.ps3	- show info once
+		// /popup.ps3@	- show overlay text using VshFpsCounter.sprx
 		// /popup.ps3$	- show persistent info ON
 		// /popup.ps3*	- show persistent info OFF
 		// /popup.ps3?	- show webman version

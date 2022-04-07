@@ -1499,6 +1499,7 @@ save_xml:
 	}
 	#endif
 
+	show_progress("", 0);
 	led(GREEN, ON);
 
 	// --- release allocated memory
@@ -1515,6 +1516,8 @@ save_xml:
 static void update_xml_thread(u64 conn_s_p)
 {
 	refreshing_xml = 1;
+
+	Check_Overlay();
 
 	if(IS_ON_XMB)
 		wait_for_xmb(); // wait for explore_plugin
