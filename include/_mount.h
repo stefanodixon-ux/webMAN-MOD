@@ -1134,6 +1134,8 @@ static void do_umount(bool clean)
 		cobra_send_fake_disc_eject_event();
 		sys_ppu_thread_usleep(4000);
 
+		disable_progress();
+
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
 #else
@@ -1174,6 +1176,9 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 			sprintf(msg, "%s %s\n"
 						 "%s %s", STR_COPYING, source, STR_CPYDEST, basepath);
 			show_msg(msg);
+
+			Check_Overlay();
+			show_progress(msg, OV_COPY);
 
 			dont_copy_same_size = true;
 			copy_in_progress = true, copied_count = 1;
@@ -1613,7 +1618,10 @@ static void mount_thread(u64 action)
 	// MOUNT ISO OR PATH //
 	///////////////////////
 
-	#include "mount_misc.h"
+	if(!strstr(_path, "/ROMS/PS"))
+	{
+		#include "mount_misc.h" // mount GAMEI, NPDRM, ROMS, PS2 Classic
+	}
 	#include "mount_cobra.h"
 	#include "mount_noncobra.h"
 
@@ -1799,6 +1807,7 @@ mounting_done:
 	// --------------
 
 finish:
+	disable_progress();
 
 #ifdef VIRTUAL_PAD
 	unregister_ldd_controller();

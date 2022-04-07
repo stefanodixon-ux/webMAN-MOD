@@ -729,6 +729,7 @@
   #ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("l3_r3")) break;
   #endif
+						if(!webman_config->nobeep) { if(overlay_enabled) BEEP2 else BEEP1 }
 						do_web_command(WM_FILE_REQUEST, "/loadprx.ps3/wm_res/VshFpsCounter.sprx");
 						sys_ppu_thread_sleep(3);
 						break_and_wait;

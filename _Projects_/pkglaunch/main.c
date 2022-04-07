@@ -575,9 +575,9 @@ int main(int argc, const char* argv[])
 			if(strcasestr(path, "/ROMS/MPCE/")) sprintf(path, "%s/mednafen_pce%s",		  RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/PCFX/")) sprintf(path, "%s/mednafen_pcfx%s",		  RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/PCECD/"))sprintf(path, "%s/mednafen_pce_fast%s",	  RETROARCH, sufix[i]); else
-			if(strcasestr(path, "/ROMS/NGP/"))  sprintf(path, "%s/mednafen_ngp%s",		  RETROARCH, sufix[i]); else
+			if(strcasestr(path, "/ROMS/NGP"))   sprintf(path, "%s/mednafen_ngp%s",		  RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/VBOY/")) sprintf(path, "%s/mednafen_vb%s",		  RETROARCH, sufix[i]); else
-			if(strcasestr(path, "/ROMS/WSWAM/"))sprintf(path, "%s/mednafen_wswan%s",	  RETROARCH, sufix[i]); else
+			if(strcasestr(path, "/ROMS/WSWAM")) sprintf(path, "%s/mednafen_wswan%s",	  RETROARCH, sufix[i]); else
 			if(strcasestr(path, "/ROMS/SGX/"))
 			{
 									 sprintf(path, "%s/mednafen_supergrafx%s", RETROARCH, sufix[i]);

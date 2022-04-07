@@ -171,7 +171,7 @@ static void parse_script(const char *script_file)
 		sys_memory_free(sysmem);
 
 		script_running = false;
-		show_progress("", 0);
+		disable_progress();
 	}
 }
 

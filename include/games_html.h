@@ -131,6 +131,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 					sprintf(enc_dir_name, "%s/%s/PARAM.SFO", param, data[v3_entry].name);
 				else
 					sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
+
 				copy_net_file(templn, enc_dir_name, ns);
 
 				strcpy(templn + strlen(templn) - 4, ".png");
@@ -413,7 +414,7 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 			if(li == LANG_CUSTOM) sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
 		}
 	}
-	show_progress(param, 1);
+	show_progress(param, OV_SCAN);
 }
 
 static bool game_listing(char *buffer, char *templn, char *param, char *tempstr, u8 mode, bool auto_mount)
@@ -1088,6 +1089,6 @@ next_html_entry:
 
 		loading_games = 0;
 	}
-	show_progress("", 0);
+	disable_progress();
 	return true;
 }

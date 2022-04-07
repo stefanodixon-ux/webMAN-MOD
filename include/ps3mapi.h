@@ -593,19 +593,19 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 		retval = ps3mapi_get_memory(pid, address, mem, sizeof(mem));
 		if(retval < 0) break;
 
-		sprintf(label, "0x%x", address); show_progress(label, 6);
+		sprintf(label, "0x%x", address); show_progress(label, OV_FIND);
 
 		for(int offset = 0; offset < m; offset += step)
 		{
 			if( !bcompare(mem + offset, sfind, len, mask) )
 			{
-				show_progress("", 0);
+				disable_progress();
 				found_offset = (address + offset);
 				return found_offset;
 			}
 		}
 	}
-	show_progress("", 0);
+	disable_progress();
 	return found_offset;
 }
 

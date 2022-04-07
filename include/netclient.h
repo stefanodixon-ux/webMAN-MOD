@@ -793,6 +793,8 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 		if(strchr("\"<|>:*?", remote_file[c])) return FAILED;
 	}
 
+	if(remote_file_exists(ns, remote_file) == false) return FAILED;
+
 	// copy remote file
 	int ret = FAILED;
 	int abort_connection = 0;
@@ -808,6 +810,8 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 		if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
 		{
 			char *chunk = (char*)sysmem; int fdw;
+
+			show_progress(remote_file, OV_COPY);
 
 			if(cellFsOpen(local_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
 			{

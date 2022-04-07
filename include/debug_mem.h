@@ -118,7 +118,7 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 			{
 				ps3mapi_get_memory(pid, (address + addr), mem_buf, _64KB_);
 				cellFsWrite(fd, mem_buf, _64KB_, NULL);
-				sprintf(label, "0x%x", address + addr); show_progress(label, 5);
+				sprintf(label, "0x%x", address + addr); show_progress(label, OV_DUMP);
 			}
 			cellFsClose(fd);
 		}
@@ -128,7 +128,7 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 
 		play_rco_sound("snd_trophy");
 
-		show_progress("", 0);
+		disable_progress();
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
@@ -290,7 +290,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			if(flen > 24) {value = peek_mem(addr + 24); memcpy(tfind + 24, (char*)&value, 8);}
 			if(!bcompare(tfind, sfind, flen, sfind) && !(--rep)) {address = found_address = addr; found = true; break;}
 
-			if((addr & 0xF00) == 0) {sprintf(label, "0x%llx", address + addr); show_progress(label, 6);}
+			if((addr & 0xF00) == 0) {sprintf(label, "0x%llx", address + addr); show_progress(label, OV_FIND);}
 		}
 
 		if(!found)
@@ -302,7 +302,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			found_address = address = addr;
 			sprintf(templn, "Offset: 0x%08X<br><br>", (u32)address); buffer += concat(buffer, templn);
 		}
-		show_progress("", 0);
+		disable_progress();
 	}
 	else
 	if(islike(param, "/poke.lv"))

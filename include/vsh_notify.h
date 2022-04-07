@@ -4,29 +4,41 @@
 static u8 overlay = 0;
 static u8 overlay_enabled = 0;
 
+enum show_progress_options
+{
+	OV_CLEAR,
+	OV_SCAN,
+	OV_COPY,
+	OV_FIX,
+	OV_DELETE,
+	OV_DUMP,
+	OV_FIND,
+	OV_SHOW
+};
+
 static void show_progress(const char *path, u8 oper)
 {
 	if(!overlay_enabled) return;
-	if(!overlay) return;
+	if(!overlay || syscalls_removed) return;
 
 	char data[0x80];
 	u64 *data2 = (u64 *)data;
 
-	if(oper == 0)
+	if(oper == OV_CLEAR)
 		{memset(data, 0, 0x80); overlay = 0;}
-	else if(oper == 1)
+	else if(oper == OV_SCAN)
 		snprintf(data, 0x80, "\n%s:\n%s", STR_SCAN2, path);
-	else if(oper == 2)
+	else if(oper == OV_COPY)
 		snprintf(data, 0x80, "\n%s:\n%s", STR_COPYING, path);
-	else if(oper == 3)
+	else if(oper == OV_FIX)
 		snprintf(data, 0x80, "\n%s:\n%s", STR_FIXING, path);
-	else if(oper == 4)
+	else if(oper == OV_DELETE)
 		snprintf(data, 0x80, "\n%s:\n%s", STR_DELETE, path);
-	else if(oper == 5)
+	else if(oper == OV_DUMP)
 		snprintf(data, 0x80, "\n%s:\n%s", "Dumping", path);
-	else if(oper == 6)
+	else if(oper == OV_FIND)
 		snprintf(data, 0x80, "\n%s:\n%s", "Searching", path);
-	else
+	else // if(oper == OV_SHOW)
 		snprintf(data, 0x80, "%s", path);
 
 	u8 len = strlen(data); memset(data + len, 0, 0x80 - len);
@@ -37,6 +49,12 @@ static void show_progress(const char *path, u8 oper)
 		pokeq(addr, data2[n]);
 	}
 }
+
+static void disable_progress(void)
+{
+	show_progress("", OV_CLEAR);
+}
+
 static void play_rco_sound(const char *sound)
 {
 	char *system_plugin = (char*)"system_plugin";

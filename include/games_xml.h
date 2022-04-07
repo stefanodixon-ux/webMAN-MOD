@@ -329,47 +329,55 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 			if(roms_index >= 45 && roms_index <= 48) add_tag(tags, 0x959E); else // MSX
 			if(roms_index >= 49 && roms_index <= 51) add_tag(tags, 0x95A0); else // NEO
 			if(roms_index >= 52 && roms_index <= 55) add_tag(tags, 0x95A4); else // PCE
-			if(roms_index == 56)                     add_tag(tags, 0x95A3); else // NGP
-			if(roms_index >= 57 && roms_index <= 60) add_tag(tags, 0x95A1); else // NES
-			if(roms_index == 62)                     add_tag(tags, 0x9593); else // GBC
-			if(roms_index >= 61 && roms_index <= 64) add_tag(tags, 0x9591); else // GB
-			if(roms_index >= 65 && roms_index <= 67) add_tag(tags, 0x9592); else // GBA
-//			if(roms_index == 68)                     add_tag(tags, 0x95BC); else // VBOY
-//			if(roms_index == 69)                     add_tag(tags, 0x95BC); else // PALM
-//			if(roms_index == 70)                     add_tag(tags, 0x95BC); else // POKEMINI
-//			if(roms_index == 71)                     add_tag(tags, 0x95BC); else // SCUMMVM
-			if(roms_index == 74)                     add_tag(tags, 0x95BE); else // SEGACD
-			if(roms_index >= 72 && roms_index <= 76) add_tag(tags, 0x9594); else // GEN
-			if(roms_index >= 77 && roms_index <= 78) add_tag(tags, 0x959D); else // GG
-			if(roms_index == 79)                     add_tag(tags, 0x95BF); else // MASTER
-			if(roms_index == 80)                     add_tag(tags, 0x9594); else // PICO
-//			if(roms_index == 81)                     add_tag(tags, 0x95BC); else // SG1000
-//			if(roms_index >= 82 && roms_index <= 83) add_tag(tags, 0x95BC); else // Sinclair
-			if(roms_index >= 84 && roms_index <= 89) add_tag(tags, 0x9680); else // SNES
-//			if(roms_index == 90)                     add_tag(tags, 0x95BC); else // THEODORE
-//			if(roms_index == 91)                     add_tag(tags, 0x95BC); else // VECX
-			if(roms_index == 92)                     add_tag(tags, 0x9682); else // WSWAM
+			if(roms_index >= 56 && roms_index <= 57) add_tag(tags, 0x95A3); else // NGP / NGPC
+			if(roms_index >= 58 && roms_index <= 61) add_tag(tags, 0x95A1); else // NES
+			if(roms_index == 63)                     add_tag(tags, 0x9593); else // GBC
+			if(roms_index >= 62 && roms_index <= 65) add_tag(tags, 0x9591); else // GB
+			if(roms_index >= 66 && roms_index <= 68) add_tag(tags, 0x9592); else // GBA
+//			if(roms_index == 69)                     add_tag(tags, 0x95BC); else // VBOY
+//			if(roms_index == 70)                     add_tag(tags, 0x95BC); else // PALM
+			if(roms_index == 71)                     add_tag(tags, 0x95A6); else // PS1
+			if(roms_index == 72)                     add_tag(tags, 0x95A7); else // PS2
+			if(roms_index == 73)                     add_tag(tags, 0x95A8); else // PS3
+			if(roms_index == 74)                     add_tag(tags, 0x95B5); else // PSP
+//			if(roms_index == 75)                     add_tag(tags, 0x95BC); else // POKEMINI
+//			if(roms_index == 76)                     add_tag(tags, 0x95BC); else // SCUMMVM
+			if(roms_index == 79)                     add_tag(tags, 0x95BE); else // SEGACD
+			if(roms_index >= 77 && roms_index <= 81) add_tag(tags, 0x9594); else // GEN
+			if(roms_index >= 82 && roms_index <= 83) add_tag(tags, 0x959D); else // GG
+			if(roms_index == 84)                     add_tag(tags, 0x95BF); else // MASTER
+			if(roms_index == 85)                     add_tag(tags, 0x9594); else // PICO
+//			if(roms_index == 86)                     add_tag(tags, 0x95BC); else // SG1000
+//			if(roms_index >= 87 && roms_index <= 88) add_tag(tags, 0x95BC); else // Sinclair
+			if(roms_index >= 89 && roms_index <= 94) add_tag(tags, 0x9680); else // SNES
+//			if(roms_index == 95)                     add_tag(tags, 0x95BC); else // THEODORE
+//			if(roms_index == 96)                     add_tag(tags, 0x95BC); else // VECX
+			if(roms_index == 97)                     add_tag(tags, 0x9682); else // WSWAM
+			if(roms_index == 98)                     add_tag(tags, 0x9683); else // WSWAMC
 													 add_tag(tags, 0x95BC);      // ROM
 		}
 		#endif
 
 		// TAG#4
-		if(f1 == 0)                      add_tag(tags, 0x96B2); else // GAMES
-		if(f1 == 1)                      add_tag(tags, 0x97B2); else // GAMEZ
-		if(strcasestr(filename, ".bin")) add_tag(tags, 0x91BE); else // BIN
-		if(strcasestr(filename, ".iso")) add_tag(tags, 0x9288); else // ISO
-		if(strcasestr(filename, ".img")) add_tag(tags, 0x9287); else // IMG
-		if(strcasestr(filename, ".mdf")) add_tag(tags, 0x928A); else // MDF
-		if(strcasestr(filename, ".zip")) add_tag(tags, 0x90B6); else // ZIP
-		if(strcasestr(filename, ".rar")) add_tag(tags, 0x90B5); else // RAR
-		if(strcasestr(filename, ".7z"))  add_tag(tags, 0x90B0); else // 7Z
-		if(IS_NTFS)
+		if(f1 == 0) add_tag(tags, 0x96B2); else // GAMES
+		if(f1 == 1) add_tag(tags, 0x97B2); else // GAMEZ
 		{
-			if(strcasestr(filename, ".pkg")) add_tag(tags, 0x90B3); else // PKG
-			if(strcasestr(filename, ".avi")) add_tag(tags, 0x93A6); else // AVI
-			if(strcasestr(filename, ".mp4")) add_tag(tags, 0x93AE); else // MP4
-			if(strcasestr(filename, ".mp3")) add_tag(tags, 0x93AD); else // MP3
-			if(strcasestr(filename, ".p3t")) add_tag(tags, 0x96A4);		 // P3T
+			char *ext = get_ext(filename);
+			if(_IS(ext, ".bin")) add_tag(tags, 0x91BE); else // BIN
+			if(_IS(ext, ".iso")) add_tag(tags, 0x9288); else // ISO
+			if(_IS(ext, ".img")) add_tag(tags, 0x9287); else // IMG
+			if(_IS(ext, ".mdf")) add_tag(tags, 0x928A); else // MDF
+			if(_IS(ext, ".zip")) add_tag(tags, 0x90B6); else // ZIP
+			if(_IS(ext, ".rar")) add_tag(tags, 0x90B5); else // RAR
+			if(_IS(ext, ".7z"))  add_tag(tags, 0x90B0); else // 7Z
+			if(IS_NTFS)
+			{
+				if(_IS(ext, ".pkg")) add_tag(tags, 0x90B3); else // PKG
+				if(_IS(ext, ".avi")) add_tag(tags, 0x93A6); else // AVI
+				if(_IS(ext, ".mp4")) add_tag(tags, 0x93AE); else // MP4
+				if(_IS(ext, ".mp3")) add_tag(tags, 0x93AD); else // MP3
+				if(_IS(ext, ".p3t")) add_tag(tags, 0x96A4);		 // P3T
+			}
 		}
 	}
 	#endif
@@ -751,8 +759,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	check_cover_folders(templn);
 
 	#ifdef MOUNT_ROMS
-	#define ROM_PATHS	93
-	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME2000", "MAME2003", "MIDWAY", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI800", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "CANNONBALL", "NXENGINE", "COLECO", "AMIGA", "CD32", "VICE", "X64", "X64SC", "X64DTV", "XSCPU64", "X128", "XCBM2", "XCMB25X0", "XPET", "XPLUS4", "XVIC", "DOSBOX", "GME", "GW", "DOOM", "QUAKE", "JAVAME", "JUMP", "O2EM", "INTV", "BMSX", "MSX", "FMSX", "MSX2", "NEOCD", "NEO", "NEOGEO", "PCE", "PCECD", "PCFX", "SGX", "NGP", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBA", "MGBA", "VBOY", "PALM", "POKEMINI", "SCUMMVM", "GENESIS", "GEN", "SEGACD", "MEGAD", "MEGADRIVE", "GG", "GEARBOY", "MASTER", "PICO", "SG1000", "FUSE", "ZX81", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM" };
+	#define ROM_PATHS	99
+	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME2000", "MAME2003", "MIDWAY", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI800", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "CANNONBALL", "NXENGINE", "COLECO", "AMIGA", "CD32", "VICE", "X64", "X64SC", "X64DTV", "XSCPU64", "X128", "XCBM2", "XCMB25X0", "XPET", "XPLUS4", "XVIC", "DOSBOX", "GME", "GW", "DOOM", "QUAKE", "JAVAME", "JUMP", "O2EM", "INTV", "MSX", "FMSX", "MSX2", "BMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCECD", "PCFX", "SGX", "NGP", "NGPC", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBA", "MGBA", "VBOY", "PALM", "PSXISO", "PS2ISO", "PS3ISO", "PSPISO", "POKEMINI", "SCUMMVM", "GENESIS", "GEN", "SEGACD", "MEGAD", "MEGADRIVE", "GG", "GEARBOY", "MASTER", "PICO", "SG1000", "FUSE", "ZX81", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM", "WSWAMC" };
 	u16 roms_count[ROM_PATHS]; u32 count_roms = 0;
 	#endif
 	u8 roms_index = 0;
@@ -1499,7 +1507,7 @@ save_xml:
 	}
 	#endif
 
-	show_progress("", 0);
+	disable_progress();
 	led(GREEN, ON);
 
 	// --- release allocated memory

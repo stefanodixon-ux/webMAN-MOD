@@ -64,9 +64,9 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	}
 #endif
 
-	show_progress(path, (fop == SCAN_LIST)   ? 1 :
-						(fop == SCAN_DELETE) ? 4 :
-						(fop <= SCAN_COPYBK) ? 2 : 0);
+	show_progress(path, (fop == SCAN_LIST)   ? OV_SCAN :
+						(fop == SCAN_DELETE) ? OV_DELETE :
+						(fop <= SCAN_COPYBK) ? OV_COPY : OV_CLEAR);
 
 	bool is_root = IS(path, "/");
 
@@ -196,6 +196,6 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			cellFsRmdir(path);
 	}
 
-	show_progress("", 0);
+	disable_progress();
 	return CELL_FS_SUCCEEDED;
 }

@@ -117,5 +117,5 @@
 		game_mount(pbuffer, templn, param, tempstr, mount_ps3, forced_mount);
 
 		is_busy = false;
-		show_progress("", 0);
+		disable_progress();
 	}

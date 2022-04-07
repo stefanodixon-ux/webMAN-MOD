@@ -29,18 +29,15 @@ if(netid >= '0' && netid <= '4')
 
 	size_t len = sprintf(netiso_args.path, "%s", netpath);
 
-	bool is_iso = false;
 	char *ext = strrchr(netpath, '.');
+	bool is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
 
 	// allow mount any file type on ROMS
-	if(islike(netpath, "/ROMS/")) is_iso = false; else
+	if(islike(netpath, "/ROMS/")) ; else
 
 	// check mount ISOs
 	if(ext)
 	{
-		if(strlen(ext) == 4 || islike(ext, ".0"))
-			is_iso = (strcasestr(ISO_EXTENSIONS, ext) != NULL);
-
 		if(!is_iso) ext = NULL;
 	}
 
@@ -63,11 +60,11 @@ if(netid >= '0' && netid <= '4')
 
 	mount_unk = netiso_args.emu_mode = EMU_BD;
 
-	if(islike(netpath, "/PS3ISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_PS3; else
-	if(islike(netpath, "/BDISO" ) && is_iso) mount_unk = netiso_args.emu_mode = EMU_BD;  else
-	if(islike(netpath, "/DVDISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_DVD; else
-	if(islike(netpath, "/PS2ISO") && is_iso) goto copy_ps2iso_to_hdd0;                   else
-	if(islike(netpath, "/PSPISO") && is_iso)
+	if(strstr(netpath, "/PS3ISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_PS3; else
+	if(strstr(netpath, "/BDISO" ) && is_iso) mount_unk = netiso_args.emu_mode = EMU_BD;  else
+	if(strstr(netpath, "/DVDISO") && is_iso) mount_unk = netiso_args.emu_mode = EMU_DVD; else
+	if(strstr(netpath, "/PS2ISO") && is_iso) goto copy_ps2iso_to_hdd0;                   else
+	if(strstr(netpath, "/PSPISO") && is_iso)
 	{
 		sprintf(netiso_args.path, "/***DVD***%s", "/PSPISO");
 	}
@@ -137,7 +134,7 @@ if(netid >= '0' && netid <= '4')
 		if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);
 		set_bdvd_as_app_home(); // mount (NET) PS3ISO in /app_home
 	}
-	else if(islike(netpath, "/ROMS/") && !is_iso)
+	else if(islike(netpath, "/ROMS/"))
 	{
 		//netiso_args.emu_mode = EMU_BD;
 		mount_unk = EMU_ROMS;
