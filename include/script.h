@@ -65,6 +65,8 @@ static void parse_script(const char *script_file)
 		size_t buffer_size = read_file(script_file, buffer, max_size, 0); buffer[buffer_size] = 0;
 		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE);
 
+		if(*buffer && !strchr(buffer, '\n')) strcat(buffer, "\n");
+
 		script_running = true;
 		Check_Overlay();
 
