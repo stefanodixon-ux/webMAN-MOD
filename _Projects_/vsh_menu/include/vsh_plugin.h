@@ -24,7 +24,7 @@ static inline sys_prx_id_t prx_get_module_id_by_address(void *addr)
 #define PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO       0x0047
 #define PS3MAPI_OPCODE_UNLOAD_VSH_PLUGIN         0x0046
 
-static int cobra_load_vsh_plugin(unsigned int slot, char *path, void *arg, uint32_t arg_size)
+static int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, uint32_t arg_size)
 {
 	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, slot, (uint64_t)(uint32_t)path, (uint64_t)(uint32_t)arg, arg_size);
 	return (int)p1;

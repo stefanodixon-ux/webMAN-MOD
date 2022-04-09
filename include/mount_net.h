@@ -175,7 +175,7 @@ retry_net:
 #ifdef USE_INTERNAL_NET_PLUGIN
 	else
 	{
-		sys_ppu_thread_create(&thread_id_net, netiso_thread, 0, THREAD_PRIO, THREAD_STACK_SIZE_NET_ISO, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NET);
+		sys_ppu_thread_create(&thread_id_net, netiso_thread, 0, THREAD_PRIO, THREAD_STACK_SIZE_NET_ISO, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_NET);
 	}
 #endif
 	if(ret)

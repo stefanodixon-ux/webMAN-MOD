@@ -137,7 +137,7 @@
 						if(do_custom_combo("l1_r1_triangle")) continue;
 						#endif
 
-						if(syscalls_removed || refreshing_xml || file_exists(WM_RELOAD_FILE)) continue;
+						if(syscalls_removed || is_mounting || refreshing_xml || file_exists(WM_RELOAD_FILE)) continue;
 
 						#ifndef LITE_EDITION
 						#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server_lite.sprx"
@@ -150,9 +150,12 @@
 						if(!webman_config->nobeep) BEEP1;
 						create_file(WM_RELOAD_FILE);
 
-						load_vsh_plugin(TOGGLE_PLUGIN);
+						// get VSH id
+						u32 pid = IS_INGAME ? 0x01000300 : get_current_pid(); // VSH;
 
-						// TO-DO: Fix bug to allow reuse unloaded slot
+						//load_vsh_plugin(TOGGLE_PLUGIN);
+						{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)TOGGLE_PLUGIN, NULL, 0); }
+
 						unload_me(1);
 					}
 					#endif
@@ -741,7 +744,7 @@
 						// R2+L3+R3 / L3+R3+R2 / L3+R2+R3 = Quit / Unload webMAN
 						unload_me(1); // keep fan control running
 					}
-					#ifdef WM_REQUEST
+					#ifdef COBRA_ONLY
 					else if(!(webman_config->combo & C_FPSINFO) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
 																&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0)) //  L3+R3 = FPS Counter
 					{
@@ -750,9 +753,9 @@
 		 				#endif
 						#ifdef FPS_OVERLAY
 						if(!webman_config->nobeep) { if(overlay_enabled) BEEP2 else BEEP1 }
-						do_web_command(WM_FILE_REQUEST, "/loadprx.ps3/wm_res/VshFpsCounter.sprx");
-						sys_ppu_thread_sleep(3);
 						#endif
+						toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounter.sprx");
+						sys_ppu_thread_sleep(3);
 						break_and_wait;
 					}
 					#endif

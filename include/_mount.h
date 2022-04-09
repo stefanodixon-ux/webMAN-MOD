@@ -1112,15 +1112,14 @@ static void do_umount(bool clean)
 		{
 		#if defined(USE_INTERNAL_NET_PLUGIN) || defined(USE_INTERNAL_NTFS_PLUGIN)
 			sys_ppu_thread_t t_id;
-			u64 exit_code;
 		#endif
 		#ifdef USE_INTERNAL_NET_PLUGIN
 			sys_ppu_thread_create(&t_id, netiso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-			sys_ppu_thread_join(t_id, &exit_code);
+			thread_join(t_id);
 		#endif
 		#ifdef USE_INTERNAL_NTFS_PLUGIN
 			sys_ppu_thread_create(&t_id, rawseciso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-			sys_ppu_thread_join(t_id, &exit_code);
+			thread_join(t_id);
 		#endif
 
 			// wait for unload of netiso or rawiso plugin
@@ -1835,6 +1834,7 @@ static bool mount_game(const char *path, u8 action)
 
 	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, mount_thread, (u64)action, THREAD_PRIO_HIGH, THREAD_STACK_SIZE_MOUNT_GAME, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
+	thread_join(t_id);
 
 	while(is_mounting && working) sys_ppu_thread_sleep(1); // wait until thread mount game
 

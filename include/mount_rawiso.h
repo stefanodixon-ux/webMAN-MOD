@@ -57,8 +57,7 @@ if(ntfs_ext)
 		char *rawseciso_data = (char*)addr;
 		if(read_file(_path, rawseciso_data, _64KB_, 0) > sizeof(rawseciso_args))
 		{
-			sys_ppu_thread_create(&thread_id_ntfs, rawseciso_thread, (u64)addr, THREAD_PRIO, THREAD_STACK_SIZE_NTFS_ISO, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NTFS);
-
+			sys_ppu_thread_create(&thread_id_ntfs, rawseciso_thread, (u64)addr, THREAD_PRIO, THREAD_STACK_SIZE_NTFS_ISO, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_NTFS);
 			sys_ppu_thread_sleep(1);
 		}
 		else

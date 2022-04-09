@@ -707,7 +707,7 @@ relisten:
 
 				// handle client
 				sys_ppu_thread_t t_id;
-				sys_ppu_thread_create(&t_id, handleclient_net, (u64)index, THREAD_PRIO_NET, THREAD_STACK_SIZE_NET_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVRD);
+				sys_ppu_thread_create(&t_id, handleclient_net, (u64)index, THREAD_PRIO_NET, THREAD_STACK_SIZE_NET_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_NETSVRD);
 			}
 			else if((sys_net_errno == SYS_NET_EBADF) || (sys_net_errno == SYS_NET_ENETDOWN))
 			{

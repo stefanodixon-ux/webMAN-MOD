@@ -195,7 +195,7 @@ static void start_event(u8 event_id)
 	}
 
 	sys_ppu_thread_t t_id;
-	sys_ppu_thread_create(&t_id, script_thread, event_id, THREAD_PRIO, THREAD_STACK_SIZE_SCRIPT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
+	sys_ppu_thread_create(&t_id, script_thread, event_id, THREAD_PRIO, THREAD_STACK_SIZE_SCRIPT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
 }
 
 #undef line

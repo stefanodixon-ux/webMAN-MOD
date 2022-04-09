@@ -1107,7 +1107,7 @@ static void rawseciso_thread(u64 arg)
 	{
 		get_psx_track_data();
 
-		sys_ppu_thread_create(&thread_id_eject, eject_thread, 0, 3000, THREAD_STACK_SIZE_8KB, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PSX_EJECT);
+		sys_ppu_thread_create(&thread_id_eject, eject_thread, 0, 3000, THREAD_STACK_SIZE_8KB, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_PSX_EJECT);
 	}
 #endif
 
@@ -1305,7 +1305,7 @@ static void rawseciso_stop_thread(u64 arg)
 
 	if(thread_id_ntfs != SYS_PPU_THREAD_NONE)
 	{
-		sys_ppu_thread_join(thread_id_ntfs, &exit_code);
+		thread_join(thread_id_ntfs);
 	}
 
 #ifdef RAWISO_PSX_MULTI
@@ -1313,7 +1313,7 @@ static void rawseciso_stop_thread(u64 arg)
 
 	if(thread_id_eject != SYS_PPU_THREAD_NONE)
 	{
-		sys_ppu_thread_join(thread_id_eject, &exit_code);
+		thread_join(thread_id_eject);
 	}
 #endif
 

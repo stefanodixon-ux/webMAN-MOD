@@ -75,3 +75,8 @@ static sys_ppu_thread_t thread_id_poll = SYS_PPU_THREAD_NONE;
 #define MAX_WWW_THREADS		(8)
 #define MAX_FTP_THREADS		(10)
 
+static void thread_join(sys_ppu_thread_t thread_id)
+{
+	u64 exit_code;
+	sys_ppu_thread_join(thread_id, &exit_code);
+}

@@ -187,7 +187,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 			{
 				if(isDir("/dev_bdvd")) do_umount(false);
 
-				sys_ppu_thread_create(&thread_id_ntfs, rawseciso_thread, (u64)plugin_args, THREAD_PRIO, THREAD_STACK_SIZE_NTFS_ISO, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NTFS);
+				sys_ppu_thread_create(&thread_id_ntfs, rawseciso_thread, (u64)plugin_args, THREAD_PRIO, THREAD_STACK_SIZE_NTFS_ISO, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_NTFS);
 
 				wait_for("/dev_bdvd/PS3_GAME/PARAM.SFO", 2);
 
@@ -201,7 +201,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 				}
 
 				sys_ppu_thread_t t;
-				sys_ppu_thread_create(&t, rawseciso_stop_thread, 0, 0, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
+				sys_ppu_thread_create(&t, rawseciso_stop_thread, 0, 0, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_NORMAL, STOP_THREAD_NAME);
 				while(rawseciso_loaded) {sys_ppu_thread_usleep(50000);}
 			}
 		}

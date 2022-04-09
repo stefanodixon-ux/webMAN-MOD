@@ -22,19 +22,6 @@ static inline void _sys_ppu_thread_exit(u64 val)
 
 static void finalize_module(void)
 {
-	show_msg(STR_WMUNL);
-
-#ifdef REMOVE_SYSCALLS
-	remove_cfw_syscall8(); // remove cobra if syscalls were disabled
-#endif
-
-	#ifdef MOUNT_ROMS
-	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
-	#endif
-
-	working = 0;
-	sys_ppu_thread_sleep(2);
-
 	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
 
 	// int *result = NULL;

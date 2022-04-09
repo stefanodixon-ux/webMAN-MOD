@@ -100,7 +100,7 @@ static char search_url[50];
 #endif
 /////////////////////////////////////
 
-SYS_MODULE_INFO(WWWD, 0, 1, 1);
+SYS_MODULE_INFO(WWWD, 0, 1, 0);
 SYS_MODULE_START(wwwd_start);
 SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
@@ -261,6 +261,7 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode);
 #define get_free_slot(a)	 ps3mapi_get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, 0)
 #define unload_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 1)
 #define load_vsh_plugin(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
+#define toggle_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 3)
 
 static bool is_mamba = false;
 #endif
@@ -345,7 +346,7 @@ static bool root_check = true; // check ntfs volumes accessing file manager's ro
 static int prepNTFS(u8 clear);
 #endif
 
-int wwwd_start(size_t args, void *argp);
+int wwwd_start(u64 arg);
 int wwwd_stop(void);
 
 #ifdef REMOVE_SYSCALLS
@@ -386,6 +387,7 @@ static bool from_reboot = false;
 static bool is_busy = false;
 static u8 mount_unk = EMU_OFF;
 
+#include "include/process.h"
 #include "include/buffer_size.h"
 #include "include/eject_insert.h"
 #include "include/vsh_notify.h"
@@ -419,7 +421,6 @@ static u8 mount_unk = EMU_OFF;
 #include "include/ps3mapi.h"
 #include "include/ps3mapi_server.h"
 #include "include/stealth.h"
-#include "include/process.h"
 #include "include/video_rec.h"
 #include "include/secure_file_id.h"
 
@@ -521,7 +522,7 @@ static void wwwd_thread(u64 arg)
 		sys_ppu_thread_create(&thread_id_ftpd, ftpd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_FTP_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_FTP); // start ftp daemon immediately
 
 	sys_ppu_thread_t t_id;
-	sys_ppu_thread_create(&t_id, start_www, (u64)START_DAEMON, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
+	sys_ppu_thread_create(&t_id, start_www, (u64)START_DAEMON, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_CMD);
 
 	#ifdef PS3NET_SERVER
 	if(!webman_config->netsrvd && (webman_config->ftp_port != NETPORT))
@@ -627,11 +628,10 @@ relisten:
 end:
 	sclose(&list_s);
 
-	thread_id_wwwd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }
 
-int wwwd_start(size_t args, void *argp)
+int wwwd_start(u64 arg)
 {
 	cellRtcGetCurrentTick(&rTick); gTick = rTick;
 
@@ -665,35 +665,42 @@ int wwwd_start(size_t args, void *argp)
 static void wwwd_stop_thread(u64 arg)
 {
 	working = 0;
+	show_msg(STR_WMUNL);
 
-	while(refreshing_xml) sys_ppu_thread_usleep(50000);
+	while(is_mounting | refreshing_xml) sys_ppu_thread_usleep(50000);
 
-	sys_ppu_thread_sleep(2);
+	#ifdef MOUNT_ROMS
+	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
+	#endif
+
+	sys_ppu_thread_sleep(2); // wait for other threads
 
 	restore_settings();
 
-	u64 exit_code;
-	if(thread_id_wwwd != SYS_PPU_THREAD_NONE)
-		sys_ppu_thread_join(thread_id_wwwd, &exit_code);
+	thread_join(thread_id_wwwd);
 
 	if(thread_id_ftpd != SYS_PPU_THREAD_NONE)
-		sys_ppu_thread_join(thread_id_ftpd, &exit_code);
+		thread_join(thread_id_ftpd);
 
-#ifdef PS3NET_SERVER
+	#ifdef PS3NET_SERVER
 	if(thread_id_netsvr != SYS_PPU_THREAD_NONE)
-		sys_ppu_thread_join(thread_id_netsvr, &exit_code);
-#endif
+		thread_join(thread_id_netsvr);
+	#endif
 
-#ifdef PS3MAPI
+	#ifdef PS3MAPI
 	if(thread_id_ps3mapi != SYS_PPU_THREAD_NONE)
-		sys_ppu_thread_join(thread_id_ps3mapi, &exit_code);
-#endif
+		thread_join(thread_id_ps3mapi);
+	#endif
 
 	if(wm_unload_combo != 1) // keep fan control running
 	{
 		if(thread_id_poll != SYS_PPU_THREAD_NONE)
-			sys_ppu_thread_join(thread_id_poll, &exit_code);
+			thread_join(thread_id_poll);
 	}
+
+	#ifdef REMOVE_SYSCALLS
+	remove_cfw_syscall8(); // remove cobra if syscalls were disabled
+	#endif
 
 	thread_id_wwwd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
@@ -702,13 +709,15 @@ static void wwwd_stop_thread(u64 arg)
 int wwwd_stop(void)
 {
 	sys_ppu_thread_t t_id;
-	u64 exit_code;
 
-	int ret = sys_ppu_thread_create(&t_id, wwwd_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-	if (ret == 0) sys_ppu_thread_join(t_id, &exit_code);
+	sys_ppu_thread_create(&t_id, wwwd_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
+	thread_join(t_id);
+
+	// wait for stop thread
+	while(thread_id_wwwd != SYS_PPU_THREAD_NONE) sys_ppu_thread_sleep(1);
 
 	finalize_module();
 
-	_sys_ppu_thread_exit(0);
+	sys_ppu_thread_exit(0);
 	return SYS_PRX_STOP_OK;
 }
