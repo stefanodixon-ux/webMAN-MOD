@@ -751,8 +751,14 @@
  						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("l3_r3")) break;
 		 				#endif
+						if(is_mounting || refreshing_xml) continue;
 						#ifdef FPS_OVERLAY
-						if(!webman_config->nobeep) { if(overlay_enabled) BEEP2 else BEEP1 }
+						if(!overlay_enabled)
+						{
+							unload_vsh_plugin("VshFpsCounter"); // unload any loaded VshFpsCounter
+							show_status("FPS", STR_ENABLED);
+							if(!webman_config->nobeep) play_sound_id(5); // trophy sound
+						}
 						#endif
 						toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounter.sprx");
 						sys_ppu_thread_sleep(3);
