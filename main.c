@@ -127,12 +127,23 @@ SYS_MODULE_EXIT(wwwd_stop);
  #define PS3MAPI_REENABLE_SYSCALL8			{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); pdisable_sc8 = (int)p1;} \
 											if(pdisable_sc8 > 0) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 0); }
  #define PS3MAPI_RESTORE_SC8_DISABLE_STATUS	if(pdisable_sc8 > 0) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, pdisable_sc8); }
+
+////// PS3MAPI VSH PLUGIN MANAGEMENT //////
+static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode);
+#define get_free_slot(a)	 ps3mapi_get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, 0)
+#define unload_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 1)
+#define load_vsh_plugin(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
+#define toggle_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 3)
+#define load_vsh_gui(a)      ps3mapi_get_vsh_plugin_slot_by_name(a, 4)
+///////////////////////////////////////////
+
 #else
  #define PS3MAPI_ENABLE_ACCESS_SYSCALL8
  #define PS3MAPI_DISABLE_ACCESS_SYSCALL8
  #define PS3MAPI_REENABLE_SYSCALL8
  #define PS3MAPI_RESTORE_SC8_DISABLE_STATUS
 #endif
+
 ///////////// PS3MAPI END ////////////////
 
 #define SC_SYS_POWER 					(379)
@@ -257,12 +268,6 @@ int npklic_struct_offset = 0; u8 klic_polling = 0;
 #endif
 
 #ifdef COBRA_ONLY
-static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode);
-#define get_free_slot(a)	 ps3mapi_get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, 0)
-#define unload_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 1)
-#define load_vsh_plugin(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
-#define toggle_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 3)
-
 static bool is_mamba = false;
 #endif
 static u16 cobra_version = 0;

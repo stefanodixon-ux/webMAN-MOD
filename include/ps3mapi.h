@@ -116,10 +116,10 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 	char tmp_filename[STD_PATH_LEN];
 
 	bool find_free_slot = (!name || (*name == PS3MAPI_FIND_FREE_SLOT));
-	bool load_in_new_slot = (mode >= 2) && file_exists(name);
+	bool load_in_new_slot = !find_free_slot && (mode >= 2) && file_exists(name);
 
 	int slot; bool prx_found = false;
-	if(mode == 3)
+	if(!find_free_slot && (mode == 3)) // 3 = toggle mode (check unload)
 	{
 		slot = ps3mapi_get_vsh_plugin_slot_by_name(name, 0);
 		if(slot < 7) goto unload_plugin;
@@ -129,32 +129,36 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 	{
 		ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
 
-		if(find_free_slot || load_in_new_slot)
+		if(find_free_slot || load_in_new_slot) // 0 = find mode, 2 = load mode, 3 = toggle mode (load)
 		{
 			if(*tmp_name) continue;
 			if(load_in_new_slot)
 			{
-				cobra_load_vsh_plugin(slot, name, NULL, 0);
+				char arg[2] = {1, 0};
+				if(mode == 4) // 4 = load vsh_menu
+					cobra_load_vsh_plugin(slot, name, (u8*)arg, 1);
+				else
+					cobra_load_vsh_plugin(slot, name, NULL, 0);
+
 				ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
-				if(*tmp_filename == NULL) continue;
-				prx_found = true;
+				if(*tmp_filename) prx_found = true; else continue;
 			}
 			break;
 		}
 		else if(IS(tmp_name, name) || strstr(tmp_filename, name))
 		{
-			if(mode == 1)
+			if(mode == 1) // 1 = unload mode
 			{
 				unload_plugin:
 					ps3mapi_check_unload(slot, tmp_name, tmp_filename);
 					cobra_unload_vsh_plugin(slot);
 			}
-			else prx_found = true;
+			else prx_found = true; // 0 = find mode
 			break;
 		}
 	}
 	#ifdef FPS_OVERLAY
-	if(strstr(name, "/VshFpsCounter")) overlay_enabled = prx_found;
+	if(!find_free_slot && (strstr(name, "/VshFpsCounter") != NULL)) overlay_enabled = prx_found;
 	#endif
 	return slot;
 }
@@ -169,14 +173,9 @@ static void start_vsh_gui(bool vsh_menu)
 {
 	unload_vsh_gui();
 
-	int slot = get_free_slot();
-	if(slot < 7)
-	{
-		char arg[2] = {1, 0};
-		char plugin_path[40];
-		sprintf(plugin_path, "%s/%s.sprx", WM_RES_PATH, vsh_menu ? "wm_vsh_menu" : "slaunch");
-		cobra_load_vsh_plugin(slot, plugin_path, (u8*)arg, 1);
-	}
+	char plugin_path[40];
+	sprintf(plugin_path, "%s/%s.sprx", WM_RES_PATH, vsh_menu ? "wm_vsh_menu" : "slaunch");
+	load_vsh_gui(plugin_path);
 }
 #endif
 ///////////////////////////////
