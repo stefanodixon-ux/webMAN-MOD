@@ -53,14 +53,10 @@
 
 #define PS3MAPI_OPCODE_PHOTO_GUI					0x2222
 
-#define PS3MAPI_FIND_FREE_SLOT						NULL
-
 #define PS3MAPI_ENABLED								1	// R2+TRIANGLE - CFW syscalls partially disabled - keep syscall 8 (PS3MAPI enabled)
 #define PS3MAPI_DISABLED							4	// R2+TRIANGLE - CFW syscalls fully disabled - remove syscall 8 (PS3MAPI disabled)
 
-#define load_vsh_plugin(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
-#define unload_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 1)
-#define get_free_slot(a)	 ps3mapi_get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, 0)
+#define PS3MAPI_FIND_FREE_SLOT						NULL
 
 ///////////// PS3MAPI END //////////////
 
@@ -91,15 +87,14 @@ static void ps3mapi_get_vsh_plugin_info(unsigned int slot, char *tmp_name, char 
 static void ps3mapi_check_unload(unsigned int slot, char *tmp_name, char *tmp_filename)
 {
 	ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
-	if(IS(tmp_name, "WWWD"))
-	{
-		wwwd_stop();
-		sys_ppu_thread_exit(0);
-	}
+	if(IS(tmp_name, "WWWD")) wwwd_stop();
+
+	#ifdef FPS_OVERLAY
 	if(strstr(tmp_filename, "/VshFpsCounter")) overlay_enabled = 0;
+	#endif
 }
 
-static unsigned int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
+static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 {
 	char tmp_name[30];
 	char tmp_filename[STD_PATH_LEN];
@@ -107,7 +102,7 @@ static unsigned int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mo
 	bool find_free_slot = (!name || (*name == PS3MAPI_FIND_FREE_SLOT));
 	bool load_in_new_slot = (mode == 2) && file_exists(name);
 
-	unsigned int slot;
+	int slot;
 	for (slot = 1; slot < 7; slot++)
 	{
 		ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
@@ -115,7 +110,12 @@ static unsigned int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mo
 		if(find_free_slot || load_in_new_slot)
 		{
 			if(*tmp_name) continue;
-			if(load_in_new_slot) cobra_load_vsh_plugin(slot, name, NULL, 0);
+			if(load_in_new_slot)
+			{
+				cobra_load_vsh_plugin(slot, name, NULL, 0);
+				ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
+				if(*tmp_filename == '\0') continue;
+			}
 			break;
 		}
 		else if(IS(tmp_name, name) || strstr(tmp_filename, name))
@@ -1085,7 +1085,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 
 			sprintf(templn, "<p><a href=\"%s\" style=\"padding:8px;background:#900;border-radius:8px;\">%s</a><p>", tmp_filename, tmp_filename); concat(buffer, templn);
 
-			save_file(tmp_filename, "", SAVE_ALL);
+			create_file(tmp_filename);
 			for (unsigned int slot = 1; slot < 7; slot++)
 			{
 				ps3mapi_get_vsh_plugin_info(slot, tmp_name, templn);
@@ -1117,7 +1117,9 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 					check_path_alias(prx_path);
 					if (!uslot ) uslot = get_free_slot(); // find free slot if slot == 0
 					if ( uslot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)prx_path, NULL, 0);}}
+					#ifdef FPS_OVERLAY
 					if(strstr(prx_path, "/VshFpsCounter")) overlay_enabled = 1;
+					#endif
 				}
 			}
 		}

@@ -121,15 +121,16 @@ static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_si
 }
 #endif
 
+#ifdef FIX_GAME
 static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo_size)
 {
 	READ_SFO_HEADER(false)
 
 	memset(title_id, 0, 10);
 
-#ifdef FIX_GAME
+	#ifdef FIX_GAME
 	u8 fcount = 0;
-#endif
+	#endif
 
 	bool ret = false;
 
@@ -138,14 +139,13 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 		if(!memcmp((char *) &mem[str], "TITLE_ID", 8))
 		{
 			strncpy(title_id, (char *) &mem[pos], TITLE_ID_LEN);
-#ifdef FIX_GAME
+			#ifdef FIX_GAME
 			if(opcode == GET_TITLE_ID_ONLY) break;
 			fcount++; if(fcount >= 2) break;
-#else
+			#else
 			break;
-#endif
+			#endif
 		}
-#ifdef FIX_GAME
 		else
 		if(!memcmp((char *) &mem[str], "PS3_SYSTEM_VER", 14))
 		{
@@ -160,13 +160,13 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 			}
 			fcount++; if(fcount >= 2) break;
 		}
-#endif
 
 		READ_NEXT_SFO_FIELD()
 	}
 
 	return ret;
 }
+#endif
 
 static void get_param_sfo(unsigned char *mem, const char *field, char *value, u8 value_len, u16 sfo_size)
 {
@@ -215,12 +215,14 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 		}
 		else if(opcode == GET_TITLE_AND_ID)
 			parse_param_sfo(mem, title_id, filename, sfo_size);    // get titleid & return title in the file name (used to backup games in _mount.h)
+		#ifdef FIX_GAME
 		else
 		{
 			ret = fix_param_sfo(mem, title_id, opcode, sfo_size);  // get titleid & show warning if game needs to fix PS3_SYSTEM_VER
 
 			if(ret && opcode == FIX_SFO) save_file(filename, param_sfo, sfo_size);
 		}
+		#endif
 	}
 
 	return ret;

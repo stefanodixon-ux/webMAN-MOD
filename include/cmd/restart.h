@@ -22,16 +22,16 @@
 		del_turnoff(2);
 
 		bool allow_scan = get_flag(param,"?0");
-		if (!allow_scan) save_file(WMNOSCAN, NULL, SAVE_ALL);
+		if (!allow_scan) create_file(WM_NOSCAN_FILE);
 
 		bool is_restart = IS(param, "/restart.ps3");
 
 		char mode = 'h', *params = strchr(param, '?');
-	#ifndef LITE_EDITION
+		#ifndef LITE_EDITION
 		if(params) {mode = params[1] | 0x20; if(strchr(param, '$')) {webman_config->default_restart = mode; save_settings();}} else if(is_restart) mode = webman_config->default_restart;
-	#else
+		#else
 		if(params)  mode = params[1] | 0x20; else if(is_restart) mode = webman_config->default_restart;
-	#endif
+		#endif
 		if(mode == 'q')
 			{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);} // (quick reboot) load LPAR id 1
 		else

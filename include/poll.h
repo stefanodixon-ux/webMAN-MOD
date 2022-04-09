@@ -15,8 +15,8 @@ static void poll_start_play_time(void)
 	if(IS_ON_XMB)
 	{
 		//if(gTick.tick != rTick.tick) vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // re-apply redirection of custom update file returning to XMB
-#ifdef COBRA_ONLY
- #ifdef WM_PROXY_SPRX
+	#ifdef COBRA_ONLY
+	 #ifdef WM_PROXY_SPRX
 		if(gTick.tick != rTick.tick)
 		{
 			gTick = rTick;
@@ -31,19 +31,19 @@ static void poll_start_play_time(void)
 
 			start_event(EVENT_ON_XMB);
 		}
- #endif
-#endif
+	 #endif
+	#endif
 		gTick = rTick;
 
-	#ifdef OFFLINE_INGAME
+		#ifdef OFFLINE_INGAME
 		if(net_status >= 0)
 		{
 			xnet()->GetSettingNet_enable(&status);
 			xnet()->SetSettingNet_enable(net_status);
 			net_status = NONE; if(net_status && !status) vshNotify_WithIcon(ICON_NETWORK, ONLINE_TAG);
-			cellFsUnlink(WMNET_DISABLED);
+			cellFsUnlink(WM_NETDISABLED);
 		}
-	#endif
+		#endif
 
 		if(toggle_snd0 && webman_config->nosnd0) { toggle_snd0 = false; cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", NOSND); } /* disable SND0.AT3 on XMB */
 	}
@@ -55,16 +55,16 @@ static void poll_start_play_time(void)
 
 		close_ftp_sessions_idle();
 
-	#ifdef PS3MAPI
+		#ifdef PS3MAPI
 		// unmap gameboot audio
 		sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  NULL);
 		sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", NULL);
-	#endif
-	#ifdef PATCH_GAMEBOOT
+		#endif
+		#ifdef PATCH_GAMEBOOT
 		patched_address1 = patched_address2 = patched_address3 = patched_address4 = BASE_PATCH_ADDRESS;
-	#endif
+		#endif
 
-	#ifdef OFFLINE_INGAME
+		#ifdef OFFLINE_INGAME
 		if((webman_config->spp & 4) || (net_status >= 0))
 		{
 			get_game_info();
@@ -88,12 +88,12 @@ static void poll_start_play_time(void)
 				{
 					xnet()->GetSettingNet_enable(&status);
 					xnet()->SetSettingNet_enable(net_status < 0 ? 0 : net_status);
-					if(status && (net_status <= 0)) {save_file(WMNET_DISABLED, NULL, SAVE_ALL); vshNotify_WithIcon(ICON_NETWORK, OFFLINE_TAG);}
+					if(status && (net_status <= 0)) {create_file(WM_NETDISABLED); vshNotify_WithIcon(ICON_NETWORK, OFFLINE_TAG);}
 					net_status = status;
 				}
 			}
 		}
-	#endif
+		#endif
 		start_event(EVENT_INGAME);
 	}
 }
@@ -136,6 +136,8 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		// Poll combos for 3 seconds
 		#include "combos.h"
 
+		if(!working) break;
+
 		// detect aprox. time when a game is launched & set network connect status
 		#ifdef OFFLINE_INGAME
 		if((sec % 3) == 0 || (webman_config->spp & 4)) poll_start_play_time();
@@ -151,17 +153,17 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		}
 		sec += step;
 
-#ifdef PKG_HANDLER
+		#ifdef PKG_HANDLER
 		// Poll downloaded pkg files (if is on XMB)
 		if(_IS_ON_XMB_) poll_downloaded_pkg_files(msg);
-#endif
+		#endif
 
-#ifdef COBRA_ONLY
+		#ifdef COBRA_ONLY
 		// Poll insert USB
 		mount_on_insert_usb(_IS_ON_XMB_, msg);
-#endif
+		#endif
 
-#ifdef PHOTO_GUI
+		#ifdef PHOTO_GUI
 		// Poll requests via local file
 		if(webman_config->launchpad_xml) continue; // poll wm_request file only if PhotoGUI is enabled
 
@@ -173,9 +175,12 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 			sys_ppu_thread_t t_id;
 			if(working) sys_ppu_thread_create(&t_id, handleclient_www, WM_FILE_REQUEST, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_WEB);
 		}
-#endif
+		#endif
 
 	}
 
+	if(wm_unload_combo)
+
+	thread_id_poll = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }

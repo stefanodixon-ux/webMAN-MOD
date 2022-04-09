@@ -52,6 +52,7 @@ static void start_www(u64 conn_s_p)
 
 		check_cover_folders(templn);
 
+		#ifndef LITE_EDITION
 		// Use system icons if wm_icons don't exist
 		char *icon_path = templn;
 		for(u8 i = 0; i < 14; i++)
@@ -72,6 +73,7 @@ static void start_www(u64 conn_s_p)
 											sprintf(icon + 5, "icon_home.png"); // setup / eject
 			}
 		}
+		#endif
 
 		#ifndef EMBED_JS
 		css_exists = file_exists(COMMON_CSS);
@@ -137,7 +139,7 @@ static void start_www(u64 conn_s_p)
 				block_online_servers(false);
 			}
 			#ifdef OFFLINE_INGAME
-			if(file_exists(WMNET_DISABLED)) //re-enable network (force offline in game)
+			if(file_exists(WM_NETDISABLED)) //re-enable network (force offline in game)
 			{
 				net_status = 1;
 				poll_start_play_time();

@@ -7,7 +7,7 @@
 		get_temperature(0, &t1); // CPU: 3E030000 -> 3E.03°C -> 62.(03/256)°C
 		get_temperature(1, &t2); // RSX: 3E030000 -> 3E.03°C -> 62.(03/256)°C
 
-#ifndef LITE_EDITION
+		#ifndef LITE_EDITION
 		if(webman_config->chart && ++chart_count >= 4)
 		{
 			chart_count = 0;
@@ -42,7 +42,7 @@
 					hh, mm, ss, t1, t2, fs, t1, t1, t2, t2, fs, fs);
 			save_file(CPU_RSX_CHART, msg, APPEND_TEXT);
 		}
-#endif
+		#endif
 
 		if(t2 > t1) t1 = t2;
 

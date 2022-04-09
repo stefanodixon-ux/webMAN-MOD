@@ -77,7 +77,7 @@ static u32 get_xreg_value(const char *key, int new_value, char *str_value, bool 
 
 	return reg_value;
 }
-#endif
+#endif // #ifdef DEBUG_XREGISTRY
 
 #ifdef PS3_BROWSER
 static int get_xreg_entry_size(int id)
@@ -118,4 +118,4 @@ static int get_xreg_entry_size(int id)
 	}
 	return 0;
 }
-#endif
+#endif // #ifdef PS3_BROWSER

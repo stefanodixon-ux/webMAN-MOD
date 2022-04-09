@@ -316,7 +316,7 @@ static int prepNTFS(u8 clear)
 
 	if(mountCount <= 0) {mountCount = NTFS_UNMOUNTED; goto exit_prepntfs;}
 
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) != CELL_OK) goto exit_prepntfs;
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) /*!= CELL_OK*/) goto exit_prepntfs;
 
 	if(!addr) goto exit_prepntfs;
 
@@ -360,4 +360,4 @@ exit_prepntfs:
 	prepntfs_working = false;
 	return ntfs_count;
 }
-#endif
+#endif // #ifdef USE_NTFS

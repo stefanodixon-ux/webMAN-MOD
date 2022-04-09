@@ -303,4 +303,3 @@ static int sys_map_path(const char *oldpath, const char *newpath)
 #endif
 
 #endif /* __STORAGE_H__ */
-

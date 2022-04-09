@@ -257,6 +257,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	}
 	else
 #endif
+#ifndef LITE_EDITION
 	{
 		_concat(&sbuffer,
 						"<style type=\"text/css\"><!--\r\n"
@@ -275,10 +276,10 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 		_concat(&sbuffer,
 						"a:active,a:active:hover,a:visited:hover,a:link:hover{color:#FFFFFF;}"
 						".list{display:inline;}"
-#ifdef PS3MAPI
+		#ifdef PS3MAPI
 						"table{border-spacing:0;border-collapse:collapse;}"
 						".la{text-align:left;float:left}.ra{text-align:right;float:right;}"
-#endif
+		#endif
 						"input:focus{border:2px solid #0099FF;}"
 						".propfont{font-family:\"Courier New\",Courier,monospace;text-shadow:1px 1px #101010;}"
 						"body{background-color:#101010}body,a.s,td,th{color:#F0F0F0;white-space:nowrap");
@@ -311,6 +312,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 
 		_concat(&sbuffer, ".bu{background:#444;}.bf{background:#121;}--></style>");
 	}
+#endif
 
 	if(param[1] != NULL && !strstr(param, ".ps3")) {_concat(&sbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
 
@@ -474,7 +476,7 @@ parse_request:
 			ssend(debug_s, "ACC - ");
 			#endif
 
-#ifdef WM_REQUEST
+			#ifdef WM_REQUEST
 			if(wm_request)
 			{
 				// Set the content of WMREQUEST_FILE as header
@@ -520,7 +522,7 @@ parse_request:
 							}
 						}
 						else
-						#endif
+						#endif // #ifdef MOUNT_PNG
 						if(filename)
 						{
 							char *pos1 = strcasestr(filename, ".jpg"); if(pos1) *pos1 = '\0';
@@ -553,7 +555,7 @@ parse_request:
 				// Delete WMREQUEST_FILE
 				cellFsUnlink(WMREQUEST_FILE);
 			}
-#endif // #ifndef LITE_EDITION
+			#endif // #ifdef WM_REQUEST
 		}
 		else
 		{
@@ -624,18 +626,18 @@ parse_request:
 
 			bool allow_retry_response = true; u8 mobile_mode = false;
 
- #ifdef USE_DEBUG
-	ssend(debug_s, param);
-	ssend(debug_s, "\r\n");
- #endif
+			#ifdef USE_DEBUG
+			ssend(debug_s, param);
+			ssend(debug_s, "\r\n");
+			#endif
 
 			#include "www_admin.h" // security check
 
- #ifdef VIRTUAL_PAD
+			#ifdef VIRTUAL_PAD
 			bool is_pad = islike(param, "/pad.ps3");
 
 			if(!is_pad)
- #endif
+			#endif
 			{
 	redirect_url:
 				urldec(param, param_original);
@@ -659,7 +661,7 @@ parse_request:
 			#include "cmd/shutdown.h"
 			#include "cmd/quit.h"
 
- #ifndef LITE_EDITION
+#ifndef LITE_EDITION
 			#include "cmd/abort.h"
 			#include "cmd/wait.h"
 			#include "cmd/edit.h"
@@ -692,7 +694,7 @@ parse_request:
 			if(islike(param, "/copy")) {if(!copy_in_progress) dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same files
 			else
 			#endif // #ifdef COPY_PS3
- #endif // #ifndef LITE_EDITION
+#endif // #ifndef LITE_EDITION
 
 			#include "www_isadmin.h" // check is admin / is_busy
 			{
@@ -787,6 +789,7 @@ continue_rendering:
 					#include "cmd/setup.h"
 					#include "cmd/insert_eject.h"
 					#include "cmd/delete.h"
+#ifndef LITE_EDITION
 					#include "cmd/ps3mapi.h"
 					#include "cmd/install_list.h"
 					#include "cmd/loadprx_unloadprx.h"
@@ -795,6 +798,7 @@ continue_rendering:
 					#include "cmd/extgd.h"
 					#include "cmd/nobd.h"
 					#include "cmd/debug_mem.h" // /hexview.ps3, /find.lv2, /peek.lv1, etc.
+#endif
 					#include "cmd/mount_copy.h"
 					#include "cmd/index.h"
 
@@ -802,9 +806,10 @@ continue_rendering:
 					{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 
 					is_busy = false;
-#ifdef LAUNCHPAD
+
+					#ifdef LAUNCHPAD
 					if(mobile_mode == LAUNCHPAD_MODE) {sprintf(templn, "%s LaunchPad: OK", STR_REFRESH); if(!mc) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, templn); if(!(webman_config->minfo & 1)) show_msg(templn); goto exit_handleclient_www;}
-#endif
+					#endif
 				}
 
 send_response:
@@ -859,8 +864,10 @@ send_response:
 	goto exit_handleclient_www;
   }
 
-#ifdef COBRA_ONLY
+#ifdef COBRA_NON_LITE
 exit_nocobra_error:
+#endif
+#ifdef COBRA_ONLY
 	if(!mc) keep_alive = http_response(conn_s, header, param, CODE_FORBIDDEN, " Cobra payload not available.");
 #endif
 
@@ -884,9 +891,9 @@ static void handleclient_www(u64 conn_s_p)
 {
 	int conn_s = (int)conn_s_p;
 
- #ifdef USE_DEBUG
+	#ifdef USE_DEBUG
 	ssend(debug_s, "waiting...");
- #endif
+	#endif
 
 	if(loading_html > 10) loading_html = 0;
 

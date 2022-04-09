@@ -1,3 +1,4 @@
+#ifdef FPS_OVERLAY
 #define Check_Overlay()		overlay = (peekq(OVERLAY_ADDR) == 0)
 #define OVERLAY_ADDR		0x8000000000700000ULL
 
@@ -54,6 +55,11 @@ static void disable_progress(void)
 {
 	show_progress("", OV_CLEAR);
 }
+#else
+#define Check_Overlay()
+#define show_progress(path, oper)
+#define disable_progress()
+#endif // FPS_OVERLAY
 
 static void play_rco_sound(const char *sound)
 {

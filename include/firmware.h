@@ -109,10 +109,12 @@ static void detect_firmware(void)
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
 
 		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW488) ? 4.88f :
+#ifndef LITE_EDITION
 																					(peek(0x2FCB68) == FW487) ? 4.87f :
 																					(peek(0x2FCB68) == FW486) ? 4.86f :
 																					(peek(0x2FCB68) == FW485) ? 4.85f :
 																					(peek(0x2FCB68) == FW484) ? 4.84f :
+#endif
 #ifndef LAST_FIRMWARE_ONLY
 																					(peek(0x2FCB68) == FW483) ? 4.83f :
 																					(peek(0x2FCB68) == FW482) ? 4.82f :
@@ -699,6 +701,7 @@ static void patch_lv2(void)
 		}
 		else
 #endif //#ifndef LAST_FIRMWARE_ONLY
+#ifndef LITE_EDITION
 		if(c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x8000000000267144ULL, 0x800000000005688CULL, 0x800000000005664CULL,
@@ -712,6 +715,7 @@ static void patch_lv2(void)
 			#endif
 		}
 		else
+#endif
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026714CULL, 0x800000000005658CULL, 0x8000000000056650ULL,
@@ -769,6 +773,7 @@ static void patch_lv2(void)
 		}
 		else
  #endif
+ #ifndef LITE_EDITION
 		if(c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x800000000026E528ULL, 0x800000000005A340ULL, 0x800000000005A020ULL,
@@ -781,6 +786,7 @@ static void patch_lv2(void)
 			#endif
 		}
 		else
+ #endif
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026E530ULL, (c_firmware >= 4.81f) ? 0x800000000005A584ULL : 0x800000000005A344ULL, 0x800000000005A408ULL,
@@ -949,6 +955,7 @@ static void patch_lv2(void)
 		}
 		else
  #endif //#ifndef LAST_FIRMWARE_ONLY
+ #ifndef LITE_EDITION
 		if(c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x800000000026D860ULL, 0x8000000000059F58ULL, 0x800000000005A01CULL,
@@ -962,6 +969,7 @@ static void patch_lv2(void)
 			#endif
 		}
 		else
+ #endif
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026D868ULL, 0x8000000000059F5CULL, 0x800000000005A020ULL,

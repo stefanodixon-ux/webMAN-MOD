@@ -1,3 +1,4 @@
+#ifdef MUTE_SND0
 static sys_ppu_thread_t t_snd0_thread_id = SYS_PPU_THREAD_NONE;
 static u8 prev_nosnd0 = 0;
 
@@ -37,3 +38,5 @@ static void mute_snd0(bool scan_gamedir)
 	if((t_snd0_thread_id == SYS_PPU_THREAD_NONE) && !payload_ps3hen)
 		sys_ppu_thread_create(&t_snd0_thread_id, snd0_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_64KB, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_SND0);
 }
+#endif // #ifdef MUTE_SND0
+

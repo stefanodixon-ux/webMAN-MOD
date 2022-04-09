@@ -67,8 +67,9 @@
 					cobra_load_vsh_plugin(slot, sprx_path, NULL, 0);
 					if(strstr(sprx_path, "/webftp_server")) goto quit;
 				}
-
+				#ifdef FPS_OVERLAY
 				if(strstr(sprx_path, "/VshFpsCounter")) overlay_enabled = prx_found;
+				#endif
 			}
 		}
 		else

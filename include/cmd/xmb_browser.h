@@ -252,8 +252,7 @@
 		}
 		else
 		#endif
-		#ifdef COBRA_ONLY
-		 #ifndef LITE_EDITION
+		#ifdef COBRA_NON_LITE
 		if(islike(params, "$toggle_cobra"))
 		{
 			if(toggle_cobra()) goto reboot;
@@ -300,8 +299,7 @@
 			sys_ppu_thread_sleep(3);
 		}
 		else
-		 #endif // #ifndef LITE_EDITION
-		#endif // #ifdef COBRA_ONLY
+		#endif // #ifdef COBRA_NON_LITE
 		if(IS_ON_XMB || *params == '?' || *params == '/')
 		{   // in-XMB
 			#ifdef COBRA_ONLY

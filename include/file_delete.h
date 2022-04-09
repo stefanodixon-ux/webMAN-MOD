@@ -127,9 +127,9 @@ static void uninstall(char *param)
 	unlink_file(TMP_DIR, "wm_vsh_menu", ".cfg");
 
 	cellFsUnlink(WMCONFIG);
-	cellFsUnlink(WMNOSCAN);
+	cellFsUnlink(WM_NOSCAN_FILE);
 	cellFsUnlink(WMREQUEST_FILE);
-	cellFsUnlink(WMNET_DISABLED);
+	cellFsUnlink(WM_NETDISABLED);
 	cellFsUnlink(WMONLINE_GAMES);
 	cellFsUnlink(WMOFFLINE_GAMES);
 
@@ -188,15 +188,20 @@ static void delete_history(bool delete_folders)
 
 static void del_turnoff(u8 beeps)
 {
+	#ifdef COBRA_ONLY
+	unload_vsh_gui();
+	unload_vsh_plugin("VshFpsCounter");
+	#endif
+
 	do_umount(false);
 	cellFsUnlink("/dev_hdd0/tmp/turnoff");
 
-#ifdef WM_REQUEST
+	#ifdef WM_REQUEST
 	cellFsUnlink(WMREQUEST_FILE);
-#endif
-#ifdef WEB_CHAT
+	#endif
+	#ifdef WEB_CHAT
 	cellFsUnlink(WMCHATFILE);
-#endif
+	#endif
 
 	if(!webman_config->nobeep)
 	{

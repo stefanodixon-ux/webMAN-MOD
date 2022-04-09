@@ -477,7 +477,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		else
 		if(_IS(ext, ".svg"))
 			_concat(&header, "image/svg+xml");
-#ifndef LITE_EDITION
+		#ifndef LITE_EDITION
 		else
 		if(_IS(ext, ".gif"))
 			_concat(&header, "image/gif");
@@ -553,7 +553,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		else
 		if(_IS(ext, ".swf"))
 			_concat(&header, "application/x-shockwave-flash");
-#endif
+		#endif
 		else
 			_concat(&header, "application/octet-stream");
 	}

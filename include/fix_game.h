@@ -70,9 +70,9 @@ static void fix_game_folder(char *path)
 
 	if(working && cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
 	{
-#ifdef COPY_PS3
+		#ifdef COPY_PS3
 		strcpy(current_file, path);
-#endif
+		#endif
 		struct CellFsStat s;
 
 		CellFsDirectoryEntry dir; u32 read_e;
@@ -141,9 +141,9 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 
 	int fd; char title_id[10], update_path[STD_PATH_LEN];
 
-#ifdef COPY_PS3
+	#ifdef COPY_PS3
 	sprintf(current_file, "%s", iso_file);
-#endif
+	#endif
 
 	show_progress(iso_file, OV_FIX);
 
@@ -292,11 +292,11 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 	{
 		fix_in_progress = true, fix_aborted = false, fixed_count = 0;
 
-#ifdef COBRA_ONLY
+		#ifdef COBRA_ONLY
 		if(is_ext(game_path, ".iso") || is_iso_0(game_path))
 			fix_iso(game_path, 0x100000UL, false);
 		else
-#endif //#ifdef COBRA_ONLY
+		#endif //#ifdef COBRA_ONLY
 
 		{
 			// -- get TitleID from PARAM.SFO

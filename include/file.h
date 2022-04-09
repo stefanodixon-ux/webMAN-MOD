@@ -3,6 +3,8 @@
 #define DONT_CLEAR_DATA		-1
 #define RECURSIVE_DELETE	2 // don't check for ADMIN/USER
 
+#define create_file(file)	save_file(file, NULL, SAVE_ALL)
+
 //////////////////////////////////////////////////////////////
 
 #include "file_ntfs.h"
@@ -32,11 +34,6 @@ static bool isDir(const char *path)
 static bool file_exists(const char *path)
 {
 	return (file_ssize(path) >= 0);
-}
-
-static bool not_exists(const char *path)
-{
-	return !file_exists(path);
 }
 
 #ifdef COBRA_ONLY
@@ -333,11 +330,12 @@ static int wait_path(const char *path, u8 timeout, bool found)
 {
 	if(*path!='/') return FAILED;
 
-	for(u8 n = 0; n < (timeout * 20); n++)
+	timeout *= 8;
+	for(u8 n = 0; n < timeout; n++)
 	{
 		if(file_exists(path) == found) return CELL_FS_SUCCEEDED;
 		if(!working) break;
-		sys_ppu_thread_usleep(50000);
+		sys_ppu_thread_usleep(125000);
 	}
 	return FAILED;
 }
@@ -352,6 +350,6 @@ int wait_for(const char *path, u8 timeout)
 static u8 wait_for_xmb(void)
 {
 	u8 t = 0;
-	while(View_Find("explore_plugin") == 0) {if(++t > MAX_WAIT) break; sys_ppu_thread_sleep(1);}
+	while(working && (View_Find("explore_plugin") == 0)) {if(++t > MAX_WAIT) break; sys_ppu_thread_sleep(1);}
 	return (t > MAX_WAIT); // true = timeout
 }

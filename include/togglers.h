@@ -1,6 +1,4 @@
-#ifndef LITE_EDITION
-
-#if defined(COBRA_ONLY) || defined(REX_ONLY)
+#ifdef COBRA_NON_LITE
 static void swap_file(const char *path, const char *curfile, const char *rento, const char *newfile)
 {
 	char file1[64], file2[64];
@@ -19,9 +17,7 @@ static void swap_file(const char *path, const char *curfile, const char *rento, 
 		cellFsRename(file2, file1);
 	}
 }
-#endif
-
-#endif
+#endif // #ifdef COBRA_NON_LITE
 
 #ifdef REX_ONLY
 static bool toggle_rebug_mode(void)
@@ -131,13 +127,11 @@ static void toggle_debug_menu(void)
 }
 #endif //#ifdef REX_ONLY
 
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
-
+#ifdef COBRA_NON_LITE
 static bool toggle_cobra(void)
 {
 	enable_dev_blind("COBRA Toggle activated!");
- #ifdef REX_ONLY
+	#ifdef REX_ONLY
 	if( (file_exists(REBUG_COBRA_PATH "stage2.cex")) /* &&
 		(file_exists(REBUG_COBRA_PATH "stage2.dex")) */)
 	{
@@ -162,7 +156,7 @@ static bool toggle_cobra(void)
 		cellFsRename(REBUG_COBRA_PATH "stage2.dex.bak", REBUG_COBRA_PATH "stage2.dex");
 		return true; // vsh reboot
 	}
- #endif //#ifdef REX_ONLY
+	#endif //#ifdef REX_ONLY
 	if(file_exists(HABIB_COBRA_PATH "stage2.cex"))
 	{
 		show_msg("COBRA is active!\n"
@@ -210,7 +204,7 @@ static bool toggle_cobra(void)
 static void toggle_ps2emu(void)
 {
 	enable_dev_blind("Swapping ps2emu activated!");
- #ifdef REX_ONLY
+	#ifdef REX_ONLY
 	if(file_exists(REBUG_TOOLBOX "ps2_netemu.self"))
 	{
 		struct CellFsStat s;
@@ -263,7 +257,7 @@ static void toggle_ps2emu(void)
 										(char*)PS2_EMU_PATH  "ps2_emu.self");
 	}
 	else
- #endif //#ifdef REX_ONLY
+	#endif //#ifdef REX_ONLY
 	if(file_exists(PS2_EMU_PATH "ps2_netemu.self.swap"))
 	{
 		show_msg("Switch to custom ps2emu...");
@@ -298,6 +292,4 @@ static void toggle_ps2emu(void)
 		}
 	}
 }
-
- #endif //#ifndef LITE_EDITION
-#endif //#ifdef COBRA_ONLY
+#endif //#ifdef COBRA_NON_LITE

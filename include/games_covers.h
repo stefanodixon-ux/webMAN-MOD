@@ -67,9 +67,9 @@ static bool HAS(char *icon)
 
 static void check_cover_folders(char *buffer)
 {
-#ifndef ENGLISH_ONLY
+		#ifndef ENGLISH_ONLY
 													covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
-#endif
+		#endif
 		u8 p;
 		for(p = 0; p < 3; p++)
 		{
@@ -82,7 +82,7 @@ static void check_cover_folders(char *buffer)
 													covers_exist[6] = isDir(WMTMP_COVERS);
 													covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
 
-#ifndef ENGLISH_ONLY
+	#ifndef ENGLISH_ONLY
 	if(!covers_exist[0]) {use_custom_icon_path = strstr(COVERS_PATH, "%s"); use_icon_region = strstr(COVERS_PATH, "%s/%s");} else {use_icon_region = use_custom_icon_path = false;}
 
 	// disable custom icon from web repository if network is disabled //
@@ -94,17 +94,17 @@ static void check_cover_folders(char *buffer)
 
 		is_devil303_server = islike(COVERS_PATH, LAUNCHPAD_COVER_SVR);
 	}
-#endif
+	#endif
 
 	wm_icons_exists = file_exists(WM_ICONS_PATH "/icon_wm_ps3.png");
 
-#ifdef MOUNT_ROMS
+	#ifdef MOUNT_ROMS
 	covers_exist[7] = file_exists(WM_ICONS_PATH "/icon_wm_album_emu.png");
-#endif
+	#endif
 
-#ifdef LAUNCHPAD
+	#ifdef LAUNCHPAD
 	nocover_exists = file_exists(WM_ICONS_PATH "/icon_lp_nocover.png");
-#endif
+	#endif
 }
 
 static u8 ex[4] = {0, 1, 2, 3};
@@ -211,14 +211,14 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 
 	if(SHOW_COVERS)
 	{
-#ifndef ENGLISH_ONLY
+		#ifndef ENGLISH_ONLY
 		// Search covers in custom path
 		if(covers_exist[0] && ((webman_config->nocov == SHOW_MMCOVERS) && (*COVERS_PATH == '/')))
 		{
 			flen = sprintf(icon, "%s/%s", COVERS_PATH, title_id);
 			if(get_image_file(icon, flen)) return true;
 		}
-#endif
+		#endif
 
 		// Search retro covers in MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
 		if(*title_id == 'S')
@@ -259,13 +259,13 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 		}
 
 		// Search online covers
-#ifdef ENGLISH_ONLY
+		#ifdef ENGLISH_ONLY
 		if(webman_config->nocov == ONLINE_COVERS)
 		{
 			sprintf(icon, COVERS_PATH, title_id);
 			return true;
 		}
-#else
+		#else
 		if(use_custom_icon_path && (webman_config->nocov == ONLINE_COVERS) && (COVERS_PATH[0] == 'h'))
 		{
 			if(is_devil303_server && (*title_id != 'B' && *title_id != 'N')) {*icon = NULL; return false;}
@@ -276,7 +276,7 @@ static bool get_cover_by_titleid(char *icon, char *title_id)
 								sprintf(icon, COVERS_PATH, title_id);
 			return true;
 		}
-#endif
+		#endif
 	}
 
 	*icon = NULL;
@@ -363,14 +363,14 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 			// get path/name and remove file extension
 			int flen = sprintf(icon, "%s/%s", param, entry_name);
 
-#ifdef COBRA_ONLY
+			#ifdef COBRA_ONLY
 			if(f0 == NTFS)
 			{
 				if(flen > 13 && icon[flen-13] == '.' && (!extcmp(icon, ".ntfs[PS3ISO]", 13) || !extcmp(icon, ".ntfs[PS2ISO]", 13)  || !extcmp(icon, ".ntfs[PSPISO]", 13) || !extcmp(icon, ".ntfs[DVDISO]", 13) || !extcmp(icon, ".ntfs[PSXISO]", 13) || !extcmp(icon, ".ntfs[BDFILE]", 13))) flen -= 13; else
 				if(flen > 12 && icon[flen-12] == '.' &&  !extcmp(icon, ".ntfs[BDISO]" , 12)) flen -= 12;
 				if(get_image_file(icon, flen)) return;
 			}
-#endif
+			#endif
 			if(flen > 2 && icon[flen - 2] == '.') flen -= 2; // remove file extension (split iso)
 			if(flen > 4 && icon[flen - 4] == '.') flen -= 4; // remove file extension
 			else
@@ -475,7 +475,7 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 	//copy remote file
 	if(not_exists(icon))
 	{
-#ifdef NET_SUPPORT
+		#ifdef NET_SUPPORT
 		if(ns < 0) {*icon = NULL; return;}
 
 		char remote_file[MAX_PATH_LEN];
@@ -508,7 +508,7 @@ static void get_default_icon_for_iso(char *icon, const char *param, char *file, 
 				if(file_exists(icon)) return;
 			}
 		}
-#endif //#ifdef NET_SUPPORT
+		#endif //#ifdef NET_SUPPORT
 
 		*icon = NULL;
 	}

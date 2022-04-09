@@ -757,6 +757,7 @@ end:
 	}
 	else vshNotify_WithIcon(ICON_EXCLAMATION, (char *)"PS3MAPI Server not loaded!");
 
+	thread_id_ps3mapi = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }
 

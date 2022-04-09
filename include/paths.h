@@ -52,9 +52,10 @@
 #define WM_LANG_PATH		TMP_DIR "/wm_lang"				// webMAN language folder
 #define WM_ICONS_PATH		TMP_DIR "/wm_icons"				// webMAN icons folder
 #define WM_COMBO_PATH		TMP_DIR "/wm_combo"				// webMAN custom combos folder
-#define WMNOSCAN			TMP_DIR "/wm_noscan"			// webMAN config file to skip on boot
+#define WM_NOSCAN_FILE		TMP_DIR "/wm_noscan"			// webMAN config file to skip on boot
+#define WM_RELOAD_FILE		TMP_DIR "/wm_reload"			// webMAN config file to skip on reload
 #define WMREQUEST_FILE		TMP_DIR "/wm_request"			// webMAN request file
-#define WMNET_DISABLED		TMP_DIR "/wm_netdisabled"		// webMAN config file to re-enable network
+#define WM_NETDISABLED		TMP_DIR "/wm_netdisabled"		// webMAN config file to re-enable network
 
 #define SC_LOG_FILE			TMP_DIR "/log.txt"
 
@@ -177,3 +178,4 @@ static const char *script_events[4] = {
 #define MAX_PATH_LEN	512 // do not change!
 #define MAX_TEXT_LEN	1300 // should not exceed HTML_RECV_SIZE (RECV buffer is unstable above 1400 bytes)
 
+#define not_exists(path)	!file_exists(path)

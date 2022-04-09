@@ -15,6 +15,8 @@
  #ifndef LITE_EDITION
   #define NET_SUPPORT
   #define DEBUG_XREGISTRY
+  #define FPS_OVERLAY
+  #define MUTE_SND0
  #else
   #undef VISUALIZERS
   #undef NET_SUPPORT
@@ -30,6 +32,7 @@
  #undef VISUALIZERS
  #undef NET_SUPPORT
  #undef LOAD_PRX
+ #undef BDVD_REGION
 #endif
 
 #ifndef PS3MAPI
@@ -56,4 +59,10 @@
 
 #ifndef LAUNCHPAD
  #undef PHOTO_GUI
+#endif
+
+#ifdef COBRA_ONLY
+ #ifndef LITE_EDITION
+  #define COBRA_NON_LITE
+ #endif
 #endif

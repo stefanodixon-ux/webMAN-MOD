@@ -66,4 +66,4 @@ static void hook_savedata_plugin(void)
 	}
 }
 
-#endif
+#endif // #ifdef SECURE_FILE_ID

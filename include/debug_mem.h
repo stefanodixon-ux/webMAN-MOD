@@ -244,9 +244,10 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	address|=0x8000000000000000ULL;
 
 	lv1 = strstr(param,".lv1?") ? 1 : 0;
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
-#endif
+	#endif
+
 	if(islike(param, "/find.lv"))
 	{
 		char *pos = strstr(param, "&rep="); if(pos) {rep = (u8)val(pos + 5); *pos = NULL;}
@@ -366,9 +367,10 @@ view_file:
 
 	//if(address + HEXVIEW_SIZE > (upper_memory + 8)) address = 0;
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
-#endif
+	#endif
+
 	for(u16 i = 0; i < HEXVIEW_SIZE; i++)
 	{
 		if(!p)
@@ -417,9 +419,10 @@ view_file:
 		p++; if(p>=0x10) p=0;
 	}
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_ENABLE_COBRA); }
-#endif
+	#endif
+
 	// footer
 
 	if(!is_file)
@@ -441,4 +444,4 @@ view_file:
 					"</script>");
 }
 
-#endif
+#endif // #ifdef DEBUG_MEM

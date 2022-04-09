@@ -298,7 +298,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	char hdd_free[40];
 
-#ifndef LITE_EDITION
+	#ifndef LITE_EDITION
 	for(u8 d = 1; d < 7; d++)
 	{
 		if(isDir(drives[d]))
@@ -307,7 +307,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 			sprintf(param, "<br><a href=\"%s\">USB%.3s: %s</a>", drives[d], drives[d] + 8, hdd_free); strcat(templn, param);
 		}
 	}
-#endif
+	#endif
 
 	sprintf(param,	"<hr><font size=\"42px\">"
 					"<b><a class=\"s\" href=\"/cpursx.ps3?up\">"
@@ -405,25 +405,25 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 						"%s : %s %s<br>"
 						"%s<br>"
 						"<span id='ht' style='display:none;'>"
-#ifdef SPOOF_CONSOLEID
+		#ifdef SPOOF_CONSOLEID
 						"PSID LV2 : %016llX%016llX<hr>"
 						"IDPS EID0: %016llX%016llX<br>"
 						"IDPS LV2 : %016llX%016llX<br>"
-#endif
+		#endif
 						"MAC Addr : %02X:%02X:%02X:%02X:%02X:%02X - %s %s"
 						"</span></h2></a></b>",
 						STR_FIRMWARE, fw_version, cfw_info,
 						(syscalls_removed) ? STR_CFWSYSALRD : "",
-#ifdef SPOOF_CONSOLEID
+		#ifdef SPOOF_CONSOLEID
 						PSID[0], PSID[1],
 						eid0_idps[0], eid0_idps[1],
 						IDPS[0], IDPS[1],
-#endif
+		#endif
 						mac_address[13], mac_address[14], mac_address[15], mac_address[16], mac_address[17], mac_address[18], ip, net_type); buffer += concat(buffer, templn);
 	}
 
 	/////////////////////////////
-#ifdef COPY_PS3
+	#ifdef COPY_PS3
 	if(copy_in_progress)
 	{
 		sprintf( templn, "<hr>%s %s (%i %s)", STR_COPYING, current_file, copied_count, STR_FILES); buffer += concat(buffer, templn);
@@ -433,7 +433,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	{
 		sprintf( templn, "<hr>%s %s (%i %s)", STR_FIXING, current_file, fixed_count, STR_FILES); buffer += concat(buffer, templn);
 	}
-#endif
+	#endif
 	/////////////////////////////
 
 	buffer += concat(buffer, HTML_BLU_SEPARATOR

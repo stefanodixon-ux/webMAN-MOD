@@ -22,7 +22,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 	if(recursive == RECURSIVE_DELETE) ; else
 	if(!sys_admin || !working) return FAILED;
 
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	if((fop == SCAN_DELETE) && !wildcard && !isDir(path))
 	{
 		if(is_ntfs_path(path))
@@ -30,9 +30,9 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 		else
 			return cellFsUnlink(path);
 	}
-#else
+	#else
 	if((fop == SCAN_DELETE) && !wildcard && !isDir(path)) return cellFsUnlink(path);
-#endif
+	#endif
 
 	if((fop == SCAN_DELETE || fop == SCAN_TRUNCATE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
@@ -53,7 +53,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	copy_aborted = false;
 
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	struct stat bufn;
 	DIR_ITER *pdir = NULL;
 
@@ -62,7 +62,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 		pdir = ps3ntfs_opendir(ntfs_path(path));
 		if(pdir) is_ntfs = true;
 	}
-#endif
+	#endif
 
 	show_progress(path, (fop == SCAN_LIST)   ? OV_SCAN :
 						(fop == SCAN_DELETE) ? OV_DELETE :
@@ -91,14 +91,14 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 		while(working)
 		{
-#ifdef USE_NTFS
+			#ifdef USE_NTFS
 			if(is_ntfs)
 			{
 				if(ps3ntfs_dirnext(pdir, entry_name, &bufn)) break;
 				if(entry_name[0]=='$' && path[12] == 0) continue;
 			}
 			else
-#endif
+			#endif
 			if(is_root && ((cellFsReaddir(fd, &dir, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0))) break;
 			else
 			if(cellFsGetDirectoryEntries(fd, &entry_d, sizeof(entry_d), &read_f) || !read_f) break;
@@ -125,7 +125,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 				save_file(dest, entry, APPEND_TEXT);
 			}
-#ifdef UNLOCK_SAVEDATA
+			#ifdef UNLOCK_SAVEDATA
 			else if(fop == SCAN_UNLOCK_SAVE)
 			{
 				char sfo[_4KB_];
@@ -135,10 +135,10 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 					save_file(entry, (void*)sfo, sfo_size);
 				}
 			}
-#endif
+			#endif
 			else if(fop == SCAN_TRUNCATE)
 			{
-				save_file(entry, "", SAVE_ALL);
+				create_file(entry);
 			}
 			else if(fop == SCAN_COPY || fop == SCAN_FCOPY || fop == SCAN_COPYBK)
 			{
@@ -150,7 +150,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 				if((fop == SCAN_COPYBK) && file_exists(dest_entry))
 					{sprintf(dest_entry, "%s.bak", entry); rename_file(entry, dest_entry);}
 			}
-#ifdef USE_NTFS
+			#ifdef USE_NTFS
 			else if(is_ntfs)
 			{
 				char *ntfs_entry = (char*)ntfs_path(entry);
@@ -158,7 +158,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry) >= CELL_OK) ps3ntfs_unlink(ntfs_entry);} else
 				if(fop == SCAN_RENAME) {ps3ntfs_rename(ntfs_entry, dest_entry);}
 			}
-#endif
+			#endif
 			else
 			{
 				if(fop == SCAN_DELETE) {cellFsUnlink(entry);} else
@@ -167,10 +167,10 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			}
 		}
 
-#ifdef USE_NTFS
+		#ifdef USE_NTFS
 		if(is_ntfs) ps3ntfs_dirclose(pdir);
 		else
-#endif
+		#endif
 		cellFsClosedir(fd);
 
 		if(copy_aborted) return FAILED;

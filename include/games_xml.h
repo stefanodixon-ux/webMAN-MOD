@@ -638,7 +638,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		// skip scan if rebooting or if scan on startup is disabled
 		else if(webman_config->refr || from_reboot)
 		{
-			cellFsUnlink(WMNOSCAN);
+			cellFsUnlink(WM_NOSCAN_FILE);
 
 			if(file_exists(MY_GAMES_XML))
 			{
@@ -726,7 +726,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	make_fb_xml();
 
-	#if defined(MOUNT_ROMS)
+	#ifdef MOUNT_ROMS
 	bool c_roms = webman_config->roms;
 	const char *RETROARCH_DIR = NULL;
 	const char *cores_roms = NULL;
@@ -1548,7 +1548,9 @@ static void refresh_xml(char *msg)
 
 	setPluginActive();
 
+#ifndef LITE_EDITION
 	webman_config->profile = profile; save_settings();
+#endif
 
 	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
 	vshNotify_WithIcon(ICON_NOTIFY, msg);
@@ -1562,11 +1564,13 @@ static void refresh_xml(char *msg)
 
 	// refresh SND0 settings for new installed games only with combo SELECT+R3+L1+R1 (reload_xmb)
 
+	#ifdef MUTE_SND0
 	// check for SELECT+R3+L1+R1 (reload_xmb)
 	if(is_pressed(CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1))
 	{
 		mute_snd0(true);
 	}
+	#endif
 
 	// wait until complete
 	while(refreshing_xml && working) sys_ppu_thread_sleep(1);

@@ -241,12 +241,12 @@ Requirements for GNU/Linux:
 - Aldo Vargas (aldostools) for all his works on this project!
 - Zar & m@tsumot0 for starting the modding project
 - NzV for PS3 Manager API (aka PS3MAPI), Mamba/PRX Loader & Mamba improvements
+- OsirisX for PS3XPAD and the source code needed for gamepad emulation & PS3MAPI modifications
 - bguerville for ps3xploit, tools, web downloader & package installer modules and port of ntfslib
 - The team that ported NTFS library from PSL1ght to PS3 SDK (freddy38510, bguerville, Zar, deank, Joonie)
 - Mysis, who wrote some useful libs and did the reverse engineering of [VSH Exports functions](https://www.psdevwiki.com/ps3/VSH_Exports)
 - 3141card for unlock HDD, vsh stub-libs + header RE and for VSH Menu POC & Littlebalup for his enhancement/new features
 - jjolano (John Olano) for OpenFTP server
-- OsirisX for PS3XPAD and the source code needed for gamepad emulation
 - Berion & Brunolee for the graphics & icons
 - bucanero port of libraries for zip, rar, 7-zip, bz2, tgz, tar
 - lmirel port of libraries for exFAT

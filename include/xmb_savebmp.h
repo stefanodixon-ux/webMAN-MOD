@@ -82,7 +82,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	// max bmp buffer size = 1920 pixel * 3(byte per pixel) = 5760 byte = 6 KB
 
 	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) {cellFsClose(fd); return;}
+	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) /*!= CELL_OK*/) {cellFsClose(fd); return;}
 
 	rsx_fifo_pause(1);
 

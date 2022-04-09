@@ -590,8 +590,18 @@ int main(int argc, const char* argv[])
 				if(not_exists(path)) sprintf(path, "%s/stella%s",	  RETROARCH, sufix[i]);
 			}
 			else
-			if(strcasestr(path, "/ROMS/ATARI800/")) sprintf(path, "%s/atari800%s",		RETROARCH, sufix[i]);  else
-			if(strcasestr(path, "/ROMS/ATARI5200/"))sprintf(path, "%s/a5200%s",			RETROARCH, sufix[i]);  else
+			if(strcasestr(path, "/ROMS/ATARI800/"))
+			{
+									 sprintf(path, "%s/atari800%s", RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/a5200%s",	RETROARCH, sufix[i]);
+			}
+			else
+			if(strcasestr(path, "/ROMS/ATARI5200/"))
+			{
+									 sprintf(path, "%s/a5200%s",	RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/atari800%s", RETROARCH, sufix[i]);
+			}
+			else
 			if(strcasestr(path, "/ROMS/ATARI7800/"))sprintf(path, "%s/prosystem%s",		RETROARCH, sufix[i]);  else
 			if(strcasestr(path, "/ROMS/HATARI/"))	sprintf(path, "%s/hatari%s",		RETROARCH, sufix[i]);  else
 			if(strcasestr(path, "/ROMS/LYNX/"))		sprintf(path, "%s/mednafen_lynx%s",	RETROARCH, sufix[i]);  else

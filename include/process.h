@@ -33,7 +33,7 @@ static void finalize_module(void)
 	#endif
 
 	working = 0;
-	sys_ppu_thread_sleep(1);
+	sys_ppu_thread_sleep(2);
 
 	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
 
@@ -50,6 +50,4 @@ static void finalize_module(void)
 
 	{system_call_3(SC_STOP_PRX_MODULE, prx, 0, (u64)(u32)meminfo);}
 	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
-
-	_sys_ppu_thread_exit(0);
 }

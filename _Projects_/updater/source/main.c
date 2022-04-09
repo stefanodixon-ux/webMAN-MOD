@@ -1283,6 +1283,8 @@ cont:
 				file_copy(APP_USRDIR "/webftp_server_lite.sprx", PLUGINS_DIR "/webftp_server.sprx");
 			else
 				file_copy(APP_USRDIR "/webftp_server_rebug_cobra_ps3mapi.sprx", PLUGINS_DIR "/webftp_server.sprx");
+
+			file_copy(APP_USRDIR "/webftp_server_lite.sprx", PLUGINS_DIR "/webftp_server_lite.sprx");
 		}
 		else
 		{

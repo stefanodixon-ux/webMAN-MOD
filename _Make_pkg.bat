@@ -2,6 +2,7 @@
 title Building webMAN_MOD_1.47.xx_Updater.pkg ...
 
 if exist webftp_server_full.sprx                copy /Y webftp_server_full.sprx                _Projects_\updater\update\dev_hdd0\plugins\webftp_server.sprx
+if exist webftp_server_lite.sprx                copy /Y webftp_server_lite.sprx                _Projects_\updater\update\dev_hdd0\plugins\webftp_server_lite.sprx
 if exist webftp_server_noncobra.sprx            copy /Y webftp_server_noncobra.sprx            _Projects_\updater\update\dev_hdd0\plugins\webftp_server_noncobra.sprx
 
 if exist webftp_server_lite.sprx                move /Y webftp_server_lite.sprx                _Projects_\updater\pkgfiles\USRDIR

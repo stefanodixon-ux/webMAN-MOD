@@ -197,7 +197,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// -----------------
 	// unmount ps2_disc
 	// -----------------
-#ifdef PS2_DISC
+	#ifdef PS2_DISC
 	else if(islike(param, "/mount") && islike(uparam, "ps2/unmount"))
 	{
 		do_umount_ps2disc(false);
@@ -206,7 +206,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		umounted = true;
 		check_alias = false;
 	}
-#endif
+	#endif
 
 	if(umounted)
 	{
@@ -227,7 +227,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		u8 plen = MOUNT_CMD; // /mount.ps3
 		enum icon_type default_icon = iPS3;
 
-#ifdef COPY_PS3
+		#ifdef COPY_PS3
 		char target[STD_PATH_LEN]; *target = '\0';
 		if(islike(param, "/copy.ps3"))
 		{
@@ -247,7 +247,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			if(islike(param,  "/dev_blind") || islike(param,  "/dev_hdd1")) mount_device(param,  NULL, NULL); // auto-mount source device
 			if(islike(target, "/dev_blind") || islike(target, "/dev_hdd1")) mount_device(target, NULL, NULL); // auto-mount destination device
 		}
-#endif
+		#endif
+
 		char enc_dir_name[STD_PATH_LEN * 3], *source = param + plen;
 		max_mapped = 0;
 
@@ -265,10 +266,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			purl--, *purl = NULL;
 		}
 
-#ifdef OFFLINE_INGAME
+		#ifdef OFFLINE_INGAME
 		purl = strstr(source, "offline=");
 		if(purl) net_status = (*(purl + 8) == '0') ? 1 : 0;
-#endif
+		#endif
+
 		get_flag(source, "?random=");
 		get_flag(source, "?/sman.ps3");
 
@@ -285,11 +287,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -----------
 		// mount game
 		// -----------
-#ifdef COPY_PS3
+		#ifdef COPY_PS3
 		if(script_running) forced_mount = true;
 
 		if(!is_copy)
-#endif
+		#endif
 		{
 			if(isDir(source)) get_flag(param, "/PS3_GAME"); // remove /PS3_GAME
 
@@ -306,7 +308,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					param[6] = '.';
 			}
 
-#ifdef PS2_DISC
+			#ifdef PS2_DISC
 			if(islike(param, "/mount.ps2"))
 			{
 				do_umount(true);
@@ -319,7 +321,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				mounted = mount_ps2disc(source);
 			}
 			else
-#endif
+			#endif
 			if(!mount_ps3 && !forced_mount && get_game_info())
 			{
 				if(islike(_game_TitleID, "PKGLAUNCH"))
@@ -398,12 +400,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name); check_ps3_game(templn);
 						get_title_and_id_from_sfo(templn, title_id, d_name, icon, buf, 0); f1 = id_GAMES;
 					}
-#ifdef COBRA_ONLY
+					#ifdef COBRA_ONLY
 					else
 					{
 						get_name_iso_or_sfo(templn, title_id, icon, _path, d_name, f0, f1, FROM_MOUNT, strlen(d_name), buf);
 					}
-#endif
+					#endif
 					free(buf);
 				}
 				default_icon = get_default_icon(icon, _path, d_name, is_dir, title_id, NONE, f0, f1);
@@ -417,7 +419,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// ----------------
 			// set target path
 			// ----------------
-#ifdef COPY_PS3
+			#ifdef COPY_PS3
 			if(plen == COPY_CMD)
 			{
 				bool is_copying_from_hdd = islike(source, "/dev_hdd0");
@@ -438,7 +440,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				else
 				{
 					char *ext4 = source + slen - 4;
- #ifdef SWAP_KERNEL
+					#ifdef SWAP_KERNEL
 					if(strstr(source, "/lv2_kernel"))
 					{
 						struct CellFsStat buf;
@@ -497,7 +499,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 									working = 0;
 									del_turnoff(0); // no beep
-									save_file(WMNOSCAN, NULL, SAVE_ALL);
+									create_file(WM_NOSCAN_FILE);
 									{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);} /*load LPAR id 1*/
 									sys_ppu_thread_exit(0);
 								}
@@ -506,7 +508,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						plen = 0; //do not copy
 					}
 					else
- #endif // #ifdef SWAP_KERNEL
+					#endif // #ifdef SWAP_KERNEL
 					if(strstr(source, "/***PS3***/"))
 					{
 						sprintf(target, "/dev_hdd0/PS3ISO%s.iso", filename); // /copy.ps3/net0/***PS3***/GAMES/BLES12345  -> /dev_hdd0/PS3ISO/BLES12345.iso
@@ -704,9 +706,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				// show copying file
 				// ------------------
 				filepath_check(target);
-#ifdef USE_NTFS
+				#ifdef USE_NTFS
 				filepath_check(source);
-#endif
+				#endif
 
 				bool is_error = ((islike(target, drives[usb]) && isDir(drives[usb]) == false)) || islike(target, source) || !sys_admin;
 
@@ -727,7 +729,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(is_error) {vshNotify_WithIcon(ICON_EXCLAMATION, STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
 			}
 			else
-#endif // #ifdef COPY_PS3
+			#endif // #ifdef COPY_PS3
 
 			// ------------------
 			// show mounted game
@@ -736,14 +738,15 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				size_t mlen;
 				bool is_movie = strstr(param, "/BDISO") || strstr(param, "/DVDISO") || !extcmp(param, ".ntfs[BDISO]", 12) || !extcmp(param, ".ntfs[DVDISO]", 13);
 
-#ifndef ENGLISH_ONLY
+				#ifndef ENGLISH_ONLY
 				char buf[296];
 				char *STR_GAMETOM  = buf; //[48];//	= "Game to mount";
 				char *STR_MOVIETOM = buf; //[48];//	= "Movie to mount";
 				if(is_movie)	language("STR_MOVIETOM", STR_MOVIETOM, "Movie to mount");
 				else			language("STR_GAMETOM",  STR_GAMETOM,  "Game to mount");
 				close_language();
-#endif
+				#endif
+
 				strcat(buffer, "<div id=\"mount\">");
 				add_breadcrumb_trail2(buffer, is_movie ? STR_MOVIETOM : STR_GAMETOM, source);
 
@@ -751,45 +754,48 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				if(is_movie)
 				{
-#ifndef ENGLISH_ONLY
+					#ifndef ENGLISH_ONLY
 					char *STR_MOVIELOADED = buf; //[272];//= "Movie loaded successfully. Start the movie from the disc icon<br>under the Video column.</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the movie.";
 					sprintf(STR_MOVIELOADED, "Movie %s%s%smovie.",
 											 "loaded successfully. Start the ", "movie from the disc icon<br>under the Video column"                , ".</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the ");
 					language("STR_MOVIELOADED", STR_MOVIELOADED, STR_MOVIELOADED);
-#endif
+					#endif
+
 					mlen = sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
 											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[strstr(param,"BDISO") ? iBDVD : iDVD], mounted ? STR_MOVIELOADED : STR_ERROR);
 				}
 				else if(is_BIN_ENC(param))
 				{
-#ifndef ENGLISH_ONLY
+					#ifndef ENGLISH_ONLY
 					char *STR_PS2LOADED = buf; //[240]; //	= "Game loaded successfully. Start the game using <b>PS2 Classic Launcher</b>.<hr>";
 					sprintf(STR_PS2LOADED,   "Game %s%s%s</b>.<hr>",
 											 "loaded successfully. Start the ", "game using <b>", "PS2 Classic Launcher");
 					language("STR_PS2LOADED", STR_PS2LOADED, STR_PS2LOADED);
-#endif
+					#endif
+
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
 											"<hr>%s", enc_dir_name, wm_icons[iPS2], 300, mounted ? STR_PS2LOADED : STR_ERROR);
 				}
 				else if((strstr(param, "/PSPISO") || strstr(param, "/ISO/")) && is_ext(param, ".iso"))
 				{
-#ifndef ENGLISH_ONLY
+					#ifndef ENGLISH_ONLY
 					char *STR_PSPLOADED = buf; //[232]; //	= "Game loaded successfully. Start the game using <b>PSP Launcher</b>.<hr>";
 					sprintf(STR_PSPLOADED,   "Game %s%s%s</b>.<hr>",
 											 "loaded successfully. Start the ", "game using <b>", "PSP Launcher");
 					language("STR_PSPLOADED", STR_PSPLOADED, STR_PSPLOADED);
-#endif
+					#endif
+
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"
 											"<hr>%s", enc_dir_name, wm_icons[iPSP], strcasestr(enc_dir_name,".png") ? 200 : 300, mounted ? STR_PSPLOADED : STR_ERROR);
 				}
 				else
 				{
-#ifndef ENGLISH_ONLY
+					#ifndef ENGLISH_ONLY
 					char *STR_GAMELOADED = buf; //[288];//	= "Game loaded successfully. Start the game from the disc icon<br>or from <b>/app_home</b>&nbsp;XMB entry.</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the game.";
 					sprintf(STR_GAMELOADED,  "Game %s%s%sgame.",
 											 "loaded successfully. Start the ", "game from the disc icon<br>or from <b>/app_home</b>&nbsp;XMB entry", ".</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the ");
 					language("STR_GAMELOADED", STR_GAMELOADED, STR_GAMELOADED);
-#endif
+					#endif
 					mlen = sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
 											"<hr><a href=\"/dev_bdvd\">%s</a>", (!mounted && IS_INGAME) ? XMB_DISC_ICON : enc_dir_name, wm_icons[default_icon], mounted ? STR_GAMELOADED : STR_ERROR);
 				}
@@ -799,32 +805,30 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					if(!c_firmware || syscalls_removed)
 						mlen += sprintf(tempstr + mlen, "%s", STR_CFWSYSALRD);
 					else
-#ifndef ENGLISH_ONLY
+					#ifndef ENGLISH_ONLY
 					if(webman_config->lang == 0 || webman_config->lang == LANG_CUSTOM)
-#endif
+					#endif
 					{
 						if(is_mounting)
 							mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
 						else if(IS_INGAME)
 							mlen += sprintf(tempstr + mlen, " Click to quit the game.");
-#ifdef COBRA_ONLY
+						#ifdef COBRA_ONLY
 						else if(!cobra_version)
 							mlen += sprintf(tempstr + mlen, " Cobra payload not available.");
-#endif
+						#endif
 					}
-#ifndef LITE_EDITION
- #ifdef COBRA_ONLY
+					#ifdef COBRA_NON_LITE
 					if(islike(params, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
- #endif
-#endif
+					#endif
 					if(!forced_mount && IS_INGAME)
 					{
 						sprintf(tempstr + mlen, " <a href=\"/mount_ps3%s\">/mount_ps3%s</a>", params, params);
 					}
 				}
-#ifndef ENGLISH_ONLY
+				#ifndef ENGLISH_ONLY
 				close_language();
-#endif
+				#endif
 			}
 
 			strcat(buffer, tempstr);
@@ -832,7 +836,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// ----------------------------
 			// show associated [PS2] games
 			// ----------------------------
-#ifdef PS2_DISC
+			#ifdef PS2_DISC
 			if(mounted && (strstr(source, "/GAME") || strstr(source, "/PS3ISO") || strstr(source, ".ntfs[PS3ISO]")))
 			{
 				int fd2; u16 pcount = 0; u32 tlen = strlen(buffer) + 8; u8 is_iso = 0;
@@ -872,7 +876,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					cellFsClosedir(fd2);
 				}
 			}
-#endif // #ifdef PS2_DISC
+			#endif // #ifdef PS2_DISC
 
 			// auto-focus Data Disc
 			if(mounted && (strstr(source, "DVDISO") || strstr(source, "BDISO"))) auto_play(param, false);
@@ -881,7 +885,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -------------
 		// perform copy
 		// -------------
-#ifdef COPY_PS3
+		#ifdef COPY_PS3
 		if(sys_admin && is_copy)
 		{
 			if(islike(target, source))
@@ -935,7 +939,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			if(!copy_aborted && (cp_mode == CP_MODE_MOVE) && file_exists(target)) del(source, true);
 			if(cp_mode) {cp_mode = CP_MODE_NONE, *cp_path = NULL;}
 		}
-#endif //#ifdef COPY_PS3
+		#endif //#ifdef COPY_PS3
 	}
 
 	is_busy = false;
@@ -1038,15 +1042,15 @@ static void do_umount_iso(void)
 	randomize_vsh_resources(false, filename);
 	#endif
 }
-#endif
+#endif // #ifdef COBRA_ONLY
 
 static void do_umount(bool clean)
 {
 	if(clean) {cellFsUnlink(LAST_GAME_TXT); mount_unk = EMU_OFF;}
 
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	root_check = true;
-#endif
+	#endif
 
 	check_multipsx = NONE;
 
@@ -1055,20 +1059,20 @@ static void do_umount(bool clean)
 	ps2_classic_mounted = false;
 	if(fan_ps2_mode) reset_fan_mode(); // restore normal fan mode
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	{
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
 		cobra_unset_psp_umd(); // eject PSPISO
 		lock_psp_launchers();
 
- #ifndef LITE_EDITION
+		#ifndef LITE_EDITION
 		swap_file(PSP_EMU_PATH, "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original"); // restore original psp_emulator.self
- #endif
+		#endif
 		do_umount_iso();	// unmount iso
- #ifdef PS2_DISC
+		#ifdef PS2_DISC
 		do_umount_ps2disc(false); // unmount ps2disc
- #endif
+		#endif
 		sys_ppu_thread_usleep(20000);
 
 		cobra_unload_vsh_plugin(0); // unload external rawseciso / netiso plugins
@@ -1093,7 +1097,7 @@ static void do_umount(bool clean)
 		set_app_home(NULL); // unmap app_home
 
 		// unmap GAMEI & PKGLAUNCH
- #ifdef MOUNT_GAMEI
+		#ifdef MOUNT_GAMEI
 		if(*map_title_id)
 		{
 			char gamei_mapping[32];
@@ -1102,7 +1106,7 @@ static void do_umount(bool clean)
 			sys_map_path(PKGLAUNCH_DIR, NULL);
 			*map_title_id = NULL;
 		}
- #endif
+		#endif
 
 		// unload internal netiso or rawiso plugin
 		{
@@ -1138,7 +1142,7 @@ static void do_umount(bool clean)
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
-#else
+	#else
 	{
 		pokeq(0x8000000000000000ULL + MAP_ADDR, 0x0000000000000000ULL);
 		pokeq(0x8000000000000008ULL + MAP_ADDR, 0x0000000000000000ULL);
@@ -1148,8 +1152,7 @@ static void do_umount(bool clean)
 		if(isDir("/dev_flash/pkg"))
 			mount_game("/dev_flash/pkg", MOUNT_SILENT);
 	}
-
-#endif //#ifdef COBRA_ONLY
+	#endif //#ifdef COBRA_ONLY
 }
 
 static void get_last_game(char *last_path)
@@ -1233,7 +1236,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 
 	dont_copy_same_size = true;
 }
-#endif
+#endif // #ifdef COBRA_ONLY
 
 #ifdef COBRA_ONLY
 static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_parts, int emu_type)
@@ -1369,7 +1372,7 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
-				save_file(WMNOSCAN, NULL, SAVE_ALL);
+				create_file(WM_NOSCAN_FILE);
 			}
 			else if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF);
 
@@ -1401,9 +1404,9 @@ static void mount_autoboot(void)
 
 	// get autoboot path
 	if(webman_config->autob && (
-#ifdef COBRA_ONLY
+		#ifdef COBRA_ONLY
 		islike(webman_config->autoboot_path, "/net") ||
-#endif
+		#endif
 		islike(webman_config->autoboot_path, "http") || file_exists(webman_config->autoboot_path)
 	)) // autoboot
 		strcpy(path, (char *) webman_config->autoboot_path);
@@ -1438,14 +1441,13 @@ static void mount_autoboot(void)
 	if(do_mount)
 	{   // add some delay
 		if(webman_config->delay) {sys_ppu_thread_sleep(3); wait_for(path, 2 * (webman_config->boots + webman_config->bootd));}
-#ifndef COBRA_ONLY
+		#ifndef COBRA_ONLY
 		if(islike(path, "/net") || (strstr(path, ".ntfs[") != NULL)) return;
-#endif
-#ifndef LITE_EDITION
- #ifdef COBRA_ONLY
+		#endif
+		#ifdef COBRA_NON_LITE
 		if(islike(path, "/net") && !is_netsrv_enabled(path[4])) return;
- #endif
-#endif
+		#endif
+
 		if(is_last_game)
 		{
 			// prevent auto-launch game on boot (last game only). AUTOBOOT.ISO is allowed to auto-launch on boot
@@ -1480,7 +1482,7 @@ static void mount_thread(u64 action)
 	// --------------------------------------------
 	// show message if syscalls are fully disabled
 	// --------------------------------------------
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	if(syscalls_removed && peekq(TOC) != SYSCALLS_UNAVAILABLE) {syscalls_removed = false; disable_signin_dialog();}
 
 	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE)
@@ -1493,12 +1495,11 @@ static void mount_thread(u64 action)
 		if(ret_val < 0) { vshNotify_WithIcon(ICON_EXCLAMATION, STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
 		if(ret_val > 1) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 1); }
 	}
-
-#else
+	#else
 
 	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE) { vshNotify_WithIcon(ICON_EXCLAMATION, STR_CFWSYSALRD); goto finish; }
 
-#endif
+	#endif
 
 	// -----------------
 	// fix mount errors
@@ -1528,14 +1529,14 @@ static void mount_thread(u64 action)
 	char netid = NULL;
 	char _path[STD_PATH_LEN], title_id[TITLEID_LEN];
 
-#ifdef PKG_HANDLER
+	#ifdef PKG_HANDLER
 	if(is_ext(_path0, ".pkg") && file_exists(_path0))
 	{
 		mount_ret = (installPKG(_path0, _path) == CELL_OK);
 		is_mounting = false;
 		sys_ppu_thread_exit(0);
 	}
-#endif
+	#endif
 
 	ret = true;
 
@@ -1564,14 +1565,14 @@ static void mount_thread(u64 action)
 
 		goto finish;
 	}
-#ifdef COPY_PS3
+	#ifdef COPY_PS3
 	else if(is_ext(_path0, ".txt") || is_ext(_path0, ".bat"))
 	{
 		parse_script(_path0);
 		ret = true;
 		goto finish;
 	}
-#endif
+	#endif
 
 	// -----------------
 	// remove /PS3_GAME
@@ -1599,7 +1600,7 @@ static void mount_thread(u64 action)
 	// ----------------------------------------
 	// show start mounting message (game path)
 	// ----------------------------------------
-	cellFsUnlink(WMNOSCAN); // remove wm_noscan if a PS2ISO has been mounted
+	cellFsUnlink(WM_NOSCAN_FILE); // remove wm_noscan if a PS2ISO has been mounted
 
 	if(action == EXPLORE_CLOSE_ALL) {action = MOUNT_NORMAL; explore_close_all(_path);}
 
@@ -1703,7 +1704,7 @@ exit_mount:
 
 			if(not_exists(filename))
 			{
-#ifdef COBRA_ONLY
+				#ifdef COBRA_ONLY
 				if(strcasestr(_path0, "[PSN]"))
 				{
 					// Map /dev_hdd0/game/[GAME_ID] to /dev_bdvd/PS3_GAME (if the folder does not exist)
@@ -1714,14 +1715,14 @@ exit_mount:
 						sys_map_path(filename, "/dev_bdvd/PS3_GAME");
 					}
 				}
-#endif
+				#endif
 				sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");
 			}
 
-#ifdef FIX_GAME
+			#ifdef FIX_GAME
 			if(c_firmware < LATEST_CFW)
 				getTitleID(filename, title_id, SHOW_WARNING);
-#endif
+			#endif
 		}
 	}
 
@@ -1735,7 +1736,7 @@ exit_mount:
 	// remove syscalls hodling R2 (or prevent remove syscall if path contains [online] tag)
 	// -------------------------------------------------------------------------------------
 
-#ifdef REMOVE_SYSCALLS
+	#ifdef REMOVE_SYSCALLS
 	else if(mount_unk == EMU_PS3)
 	{
 		// check if holding R2 to disable syscalls on PS3
@@ -1743,7 +1744,7 @@ exit_mount:
 		bool otag = (strcasestr(_path, ONLINE_TAG) != NULL);
 		if((!r2 && otag) || (r2 && !otag)) disable_cfw_syscalls(webman_config->keep_ccapi);
 	}
-#endif
+	#endif
 
 mounting_done:
 
@@ -1755,9 +1756,9 @@ mounting_done:
 	// auto-enable gamedata on bdvd if game folder or ISO contains GAMEI
 	// ------------------------------------------------------------------
 
- #ifdef EXT_GDATA
+	#ifdef EXT_GDATA
 	if((extgd == 0) && isDir("/dev_bdvd/GAMEI")) set_gamedata_status(2, true); // auto-enable external gameDATA (if GAMEI exists on /bdvd)
- #endif
+	#endif
 
 	// -----------------------------------------------
 	// redirect system files (PUP, net/PKG, SND0.AT3)
@@ -1800,7 +1801,7 @@ mounting_done:
 
 		{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 	}
-#endif
+#endif // #ifdef COBRA_ONLY
 
 	// --------------
 	// exit function
@@ -1809,9 +1810,9 @@ mounting_done:
 finish:
 	disable_progress();
 
-#ifdef VIRTUAL_PAD
+	#ifdef VIRTUAL_PAD
 	unregister_ldd_controller();
-#endif
+	#endif
 
 	led(GREEN, ON);
 	max_mapped = 0;
@@ -1824,11 +1825,9 @@ finish:
 
 static bool mount_game(const char *path, u8 action)
 { /*
-#ifndef LITE_EDITION
- #ifdef COBRA_ONLY
+ #ifdef COBRA_NON_LITE
 	if(islike(path, "/net") && !is_netsrv_enabled(path[4])) return false;
  #endif
-#endif
 */
 	if(is_mounting) return false; is_mounting = true;
 

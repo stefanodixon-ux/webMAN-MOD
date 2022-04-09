@@ -38,6 +38,9 @@
 #define IS_ON_XMB		(GetCurrentRunningMode() == 0)
 #define IS_INGAME		(GetCurrentRunningMode() != 0)
 
+static volatile u8 wm_unload_combo = 0;
+static volatile u8 working = 1;
+
 #include "common.h"
 
 #include "cobra/cobra.h"
@@ -196,8 +199,6 @@ static bool payload_ps3hen = false;
  static char debug[256];
 #endif
 
-static volatile u8 wm_unload_combo = 0;
-static volatile u8 working = 1;
 static u8 max_mapped = 0;
 static int init_delay = 0;
 
@@ -256,6 +257,11 @@ int npklic_struct_offset = 0; u8 klic_polling = 0;
 #endif
 
 #ifdef COBRA_ONLY
+static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode);
+#define get_free_slot(a)	 ps3mapi_get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, 0)
+#define unload_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 1)
+#define load_vsh_plugin(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
+
 static bool is_mamba = false;
 #endif
 static u16 cobra_version = 0;
@@ -291,7 +297,6 @@ static void sys_get_cobra_version(void);
 #ifdef UNLOCK_SAVEDATA
 static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size);
 #endif
-static bool not_exists(const char* path);
 static bool file_exists(const char* path);
 static bool isDir(const char* path);
 static void force_copy(const char *file1, char *file2);
@@ -373,8 +378,9 @@ static size_t get_name(char *name, const char *filename, u8 cache);
 static void get_cpursx(char *cpursx);
 static void get_last_game(char *last_path);
 static void add_game_info(char *buffer, char *templn, u8 is_cpursx);
+#ifdef MUTE_SND0
 static void mute_snd0(bool scan_gamedir);
-
+#endif
 static bool use_open_path = false;
 static bool from_reboot = false;
 static bool is_busy = false;
@@ -386,13 +392,12 @@ static u8 mount_unk = EMU_OFF;
 #include "include/vsh.h"
 
 #ifdef COBRA_ONLY
-
 #include "include/cue_file.h"
 #include "include/psxemu.h"
 #include "include/rawseciso.h"
 #include "include/netclient.h"
 #include "include/netserver.h"
-#endif //#ifdef COBRA_ONLY
+#endif
 
 #include "include/webchat.h"
 #include "include/file.h"
@@ -475,10 +480,10 @@ static void wwwd_thread(u64 arg)
 	if(!ROMS_EXTENSIONS) ROMS_EXTENSIONS = (char *)".BIN.ISO.CUE.CCD.CHD.ZIP.7Z.GBA.NES.GB.GBC.MD.SMD.GEN.SMS.GG.SG.IOS.FLAC.NGP.NGC.PCE.VB.VBOY.WS.WSC.FDS.EXE.WAD.IWAD.SMC.FIG.SFC.SWC.A26.PAK.LUA.PRG.M3U.COM.BAT";
 	#endif
 
-#ifdef COPY_PS3
+	#ifdef COPY_PS3
 	memset(cp_path, 0, sizeof(cp_path));
 	start_event(EVENT_BOOT_INIT);
-#endif
+	#endif
 
 	if(webman_config->fanc)
 	{
@@ -486,25 +491,25 @@ static void wwwd_thread(u64 arg)
 		set_fan_speed(webman_config->man_speed);
 	}
 
-#ifdef NOBD_PATCH
+	#ifdef NOBD_PATCH
 	apply_noBD_patches(webman_config->noBD);
-#endif
+	#endif
 
-#ifdef WM_REQUEST
+	#ifdef WM_REQUEST
 	cellFsUnlink(WMREQUEST_FILE);
-#endif
+	#endif
 
 	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	// mount custom app in /app_home/PS3_GAME if has USRDIR/EBOOT.BIN
 	if(webman_config->homeb && is_app_dir(webman_config->home_url, "."))
 		set_app_home(webman_config->home_url);
 	else
 		sys_map_path("/app_home", NULL);
-#endif
+	#endif
 
-	from_reboot = file_exists(WMNOSCAN);
+	from_reboot = file_exists(WM_NOSCAN_FILE) || file_exists(WM_RELOAD_FILE);
 
 	#ifdef AUTO_POWER_OFF
 	restoreAutoPowerOff();
@@ -518,17 +523,17 @@ static void wwwd_thread(u64 arg)
 	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, start_www, (u64)START_DAEMON, THREAD_PRIO, THREAD_STACK_SIZE_WEB_CLIENT, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
 
-#ifdef PS3NET_SERVER
+	#ifdef PS3NET_SERVER
 	if(!webman_config->netsrvd && (webman_config->ftp_port != NETPORT))
 		sys_ppu_thread_create(&thread_id_netsvr, netsvrd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_NET_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_NETSVR);
-#endif
+	#endif
 
-#ifdef PS3MAPI
+	#ifdef PS3MAPI
 	///////////// PS3MAPI BEGIN //////////// [requires PS3MAPI enabled in /setup.ps3, the option is found in "XMB/In-Game PAD SHORTCUTS", next to DEL CFW SYSCALLS]
 	if(!webman_config->ftpd && (webman_config->ftp_port != PS3MAPIPORT) && (webman_config->sc8mode != PS3MAPI_DISABLED))
 		sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);
 	///////////// PS3MAPI END //////////////
-#endif
+	#endif
 
 #ifdef USE_DEBUG
 	u8 d_retries = 0;
@@ -546,14 +551,16 @@ again_debug:
 
 	start_event(EVENT_AUTOEXEC);
 
+	cellFsUnlink(WM_RELOAD_FILE);
+
 	////////////////////////////////////////
 
 	int list_s = NONE;
 
 relisten:
-#ifdef USE_DEBUG
+	#ifdef USE_DEBUG
 	ssend(debug_s, "Listening on port 80...");
-#endif
+	#endif
 
 	if(!working) goto end;
 
@@ -619,6 +626,8 @@ relisten:
 
 end:
 	sclose(&list_s);
+
+	thread_id_wwwd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }
 
@@ -629,7 +638,9 @@ int wwwd_start(size_t args, void *argp)
 	detect_firmware();
 
 	if(!payload_ps3hen && !(webman_config->fanc)) // SYSCON
-		sys_ppu_thread_sleep(webman_config->boots);
+	{
+		if(not_exists(WM_RELOAD_FILE)) sys_ppu_thread_sleep(webman_config->boots);
+	}
 
 #ifdef PS3MAPI
  #ifdef REMOVE_SYSCALLS
@@ -645,9 +656,9 @@ int wwwd_start(size_t args, void *argp)
 
 	sys_ppu_thread_create(&thread_id_wwwd, wwwd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_WEB_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_SVR);
 
-#ifndef CCAPI
+//#ifndef CCAPI
 	_sys_ppu_thread_exit(0); // remove for ccapi compatibility
-#endif
+//#endif
 	return SYS_PRX_RESIDENT;
 }
 
@@ -655,54 +666,36 @@ static void wwwd_stop_thread(u64 arg)
 {
 	working = 0;
 
+	while(refreshing_xml) sys_ppu_thread_usleep(50000);
+
+	sys_ppu_thread_sleep(2);
+
 	restore_settings();
 
-	sys_ppu_thread_sleep(2);  // Prevent unload too fast (give time to other threads to finish)
-
-	while(refreshing_xml) sys_ppu_thread_usleep(500000);
-
 	u64 exit_code;
-	sys_ppu_thread_join(thread_id_wwwd, &exit_code);
+	if(thread_id_wwwd != SYS_PPU_THREAD_NONE)
+		sys_ppu_thread_join(thread_id_wwwd, &exit_code);
 
 	if(thread_id_ftpd != SYS_PPU_THREAD_NONE)
-	{
 		sys_ppu_thread_join(thread_id_ftpd, &exit_code);
-	}
 
 #ifdef PS3NET_SERVER
 	if(thread_id_netsvr != SYS_PPU_THREAD_NONE)
-	{
 		sys_ppu_thread_join(thread_id_netsvr, &exit_code);
-	}
 #endif
 
 #ifdef PS3MAPI
 	if(thread_id_ps3mapi != SYS_PPU_THREAD_NONE)
-	{
 		sys_ppu_thread_join(thread_id_ps3mapi, &exit_code);
-	}
 #endif
 
-	if(wm_unload_combo != 1)
+	if(wm_unload_combo != 1) // keep fan control running
 	{
 		if(thread_id_poll != SYS_PPU_THREAD_NONE)
-		{
 			sys_ppu_thread_join(thread_id_poll, &exit_code);
-		}
 	}
-/*
-	sys_ppu_thread_t t_id;
 
-	#ifndef LITE_EDITION
-	sys_ppu_thread_create(&t_id, netiso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-	sys_ppu_thread_join(t_id, &exit_code);
-	#endif
-
-	sys_ppu_thread_create(&t_id, rawseciso_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
-	sys_ppu_thread_join(t_id, &exit_code);
-
-	while(netiso_loaded || rawseciso_loaded) {sys_ppu_thread_usleep(100000);}
-*/
+	thread_id_wwwd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }
 

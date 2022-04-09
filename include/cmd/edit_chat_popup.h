@@ -72,11 +72,13 @@
 
 			if(param[10] == '*')
 				show_msg2(msg);
+			#ifdef FPS_OVERLAY
 			else if(param[10] == '@')
 			{
 				overlay = 1;
 				show_progress(msg, OV_SHOW);
 			}
+			#endif
 			else
 				show_msg(msg);
 

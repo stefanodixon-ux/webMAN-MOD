@@ -310,7 +310,7 @@ copy_ps2iso_to_hdd0:
 						mount_ps_disc_image(_path, cobra_iso_list, iso_parts, EMU_PS2_DVD);
 
 					// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
-					save_file(WMNOSCAN, NULL, SAVE_ALL);
+					create_file(WM_NOSCAN_FILE);
 
 					if(mount_unk == EMU_PS2_CD) goto exit_mount; // don't call cobra_send_fake_disc_insert_event again
 				}

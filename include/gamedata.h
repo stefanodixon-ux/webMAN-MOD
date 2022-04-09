@@ -34,12 +34,12 @@ static int set_gamedata_status(u8 status, bool do_mount)
 
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
-#ifndef COBRA_ONLY
+	#ifndef COBRA_ONLY
 	sprintf(gamei_path, "/%s", "/dev_hdd0/game");
 	if(do_mount) max_mapped = 0;
-#else
+	#else
 	disable_map_path(false);
-#endif
+	#endif
 
 	if(status)
 	{
@@ -63,22 +63,24 @@ static int set_gamedata_status(u8 status, bool do_mount)
 
 		if(n < MAX_DRIVES)
 		{
-#ifdef COBRA_ONLY
+			#ifdef COBRA_ONLY
 			sys_map_path("/dev_hdd0/game", gamei_path);
 			if(isDir(MM_ROOT_STD)) sys_map_path(MM_ROOT_STD, "/" MM_ROOT_STD);
-#else
+			#else
 			if(isDir(MM_ROOT_STD)) add_to_map(MM_ROOT_STD, MM_ROOT_STD);
 			add_to_map("/dev_hdd0/game", gamei_path);
-#endif
+			#endif
 			sprintf(msg, "gameDATA %s (%s)", STR_ENABLED, n ? drives[n] : "/dev_bdvd");
 		}
 		else
 		{
 			extgd = 0;
-#ifdef COBRA_ONLY
+
+			#ifdef COBRA_ONLY
 			sys_map_path("/dev_hdd0/game", NULL);
 			{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
-#endif
+			#endif
+
 			sprintf(msg, "gameDATA %s (no usb)", STR_ERROR);
 			show_msg(msg);
 			return FAILED;
@@ -88,11 +90,11 @@ static int set_gamedata_status(u8 status, bool do_mount)
 	{
 		sprintf(msg, "gameDATA %s", STR_DISABLED);
 
-#ifdef COBRA_ONLY
+		#ifdef COBRA_ONLY
 		sys_map_path("/dev_hdd0/game", NULL);
-#else
+		#else
 		add_to_map("/dev_hdd0/game", gamei_path);
-#endif
+		#endif
 	}
 
 	extgd = status;
@@ -102,9 +104,9 @@ static int set_gamedata_status(u8 status, bool do_mount)
 	if(do_mount)
 	{
 		show_msg(msg);
-#ifndef COBRA_ONLY
+		#ifndef COBRA_ONLY
 		mount_game(gamei_path, MOUNT_EXT_GDATA);
-#endif
+		#endif
 	}
 
 	return CELL_OK;

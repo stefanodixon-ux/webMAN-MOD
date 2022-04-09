@@ -135,8 +135,7 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 		sprintf(title_id, "%.9s", game_id); // SLxS00000
 }
 
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
+#ifdef COBRA_NON_LITE
 static bool copy_ps2config_iso(char *entry_name, char *_path)
 {
 	char *tempID = to_upper(entry_name);
@@ -170,7 +169,6 @@ static bool copy_ps2config_iso(char *entry_name, char *_path)
 	}
 	return false;
 }
- #endif
 #endif
 
 static void copy_ps2config(char *config, const char *_path)
@@ -240,7 +238,7 @@ static void copy_ps2savedata(char *vme, const char *_path)
 
 static void enable_classic_ps2_mode(void)
 {
-	save_file(PS2_CLASSIC_TOGGLER, NULL, SAVE_ALL);
+	create_file(PS2_CLASSIC_TOGGLER);
 }
 
 static void disable_classic_ps2_mode(void)

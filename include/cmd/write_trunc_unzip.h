@@ -149,7 +149,7 @@
 				scan(filename, true, NULL, SCAN_TRUNCATE, NULL);
 			}
 			else
-				save_file(filename, "", SAVE_ALL);
+				create_file(filename);
 		}
 		#ifdef COBRA_ONLY
 		else if(islike(param, "/dozip.ps3") || islike(param, "/unzip.ps3"))

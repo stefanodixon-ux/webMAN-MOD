@@ -58,7 +58,7 @@ static void parse_script(const char *script_file)
 	{
 		u32 max_size = _64KB_;
 		sys_addr_t sysmem = NULL;
-		if(sys_memory_allocate(max_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)) return;
+		if(sys_memory_allocate(max_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) /* != CELL_OK */) return;
 
 		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0;
 		u8 exec_mode = true, enable_db = true, do_else = true;
@@ -185,6 +185,8 @@ static void script_thread(u64 event_id)
 static void start_event(u8 event_id)
 {
 	if(not_exists(script_events[event_id])) return;
+
+	if(file_exists(WM_RELOAD_FILE)) return;
 
 	if(event_id == EVENT_ON_XMB)
 	{

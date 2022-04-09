@@ -258,11 +258,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							if(sysmem)
 							{
-							#ifdef COPY_PS3
+								#ifdef COPY_PS3
 								if(!copy_in_progress) {ftp_state = 1; strcpy(current_file, filename);}
-							#endif
+								#endif
 								char *buffer2 = (char*)sysmem;
-							#ifdef USE_NTFS
+								#ifdef USE_NTFS
+
 								if(is_ntfs_path(filename))
 								{
 									fd = ps3ntfs_open(ntfs_path(filename), O_RDONLY, 0);
@@ -576,12 +577,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					if(split && (*source == '/'))
 					{
 						absPath(filename, param, cwd);
-#ifdef USE_NTFS
+
+						#ifdef USE_NTFS
 						if(is_ntfs_path(source) && is_ntfs_path(filename))
 						{
 							if(ps3ntfs_rename(ntfs_path(source), ntfs_path(filename)) >= 0) is_ntfs = true;
 						}
-#endif
+						#endif
 						if(is_ntfs || (cellFsRename(source, filename) == CELL_FS_SUCCEEDED))
 						{
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
@@ -603,12 +605,12 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					if(split)
 					{
 						findPath(filename, param, cwd);
-#ifdef USE_NTFS
+						#ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
 							if(ps3ntfs_stat(ntfs_path(filename), &bufn) >= 0) {is_ntfs = true; buf.st_mtime = bufn.st_mtime;}
 						}
-#endif
+						#endif
 						if(is_ntfs || cellFsStat(filename, &buf) == CELL_FS_SUCCEEDED)
 						{
 							cellRtcSetTime_t(&rDate, buf.st_mtime);
@@ -747,7 +749,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						bool is_root = (d_path_len < 6); if(is_root) d_path_len = sprintf(filename, "/");
 						char *path_file = filename + d_path_len;
 
-#ifdef USE_NTFS
+						#ifdef USE_NTFS
 						DIR_ITER *pdir = NULL;
 
 						if(is_root) check_ntfs_volumes();
@@ -758,7 +760,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							pdir = ps3ntfs_opendir(ntfs_path(d_path)); // /dev_ntfs1v -> ntfs1:
 							if(pdir) is_ntfs = true;
 						}
-#endif
+						#endif
 						if(is_ntfs || cellFsOpendir(d_path, &fd) == CELL_FS_SUCCEEDED)
 						{
 							ssend(conn_s_ftp, FTP_OK_150); // File status okay; about to open data connection.
@@ -770,10 +772,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							while(working)
 							{
-#ifdef USE_NTFS
+								#ifdef USE_NTFS
 								if(is_ntfs) {if(ps3ntfs_dirnext(pdir, entry_name, &bufn) != CELL_OK) break; entry.attribute.st_mode = bufn.st_mode, entry.attribute.st_size = bufn.st_size, entry.attribute.st_mtime = bufn.st_mtime;}
 								else
-#endif
+								#endif
 								if(is_root) {if(cellFsReaddir(fd, &entry_s, &read_e) || !read_e) break;}
 								else
 								if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
@@ -781,7 +783,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								if(*wcard && strcasestr(entry_name, wcard) == NULL) continue;
 
 								if((entry_name[0] == '$' && d_path[12] == '\0') || (*wcard && strcasestr(entry_name, wcard) == NULL)) continue;
-#ifdef USE_NTFS
+
+								#ifdef USE_NTFS
 								// use host_root to expand all /dev_ntfs entries in root
 								bool is_host = is_root && ((mountCount > 0) && IS(entry_name, "host_root") && mounts);
 
@@ -791,7 +794,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								for(u8 u = 0; u < ntmp; u++)
 								{
 									if(u) sprintf(entry_name, "dev_%s:", mounts[u-1].name);
-#endif
+								#endif
 									if(nolist)
 										slen = sprintf(buffer, "%s\015\012", entry_name);
 									else
@@ -844,16 +847,16 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 													rDate.hour, rDate.minute, entry_name);
 									}
 									if(send(data_s, buffer, slen, 0) < 0) break;
-#ifdef USE_NTFS
+								#ifdef USE_NTFS
 								}
-#endif
+								#endif
 							}
 
-#ifdef USE_NTFS
+							#ifdef USE_NTFS
 							if(is_ntfs)
 								ps3ntfs_dirclose(pdir);
 							else
-#endif
+							#endif
 								cellFsClosedir(fd);
 
 							get_cpursx(cpursx); cpursx[7] = cpursx[20] = ' ';
@@ -939,12 +942,14 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					if(split)
 					{
 						absPath(filename, param, cwd);
-#ifdef USE_NTFS
+
+						#ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
 							if(ps3ntfs_mkdir(ntfs_path(filename), DMODE) >= CELL_OK) is_ntfs = true;
 						}
-#endif
+						#endif
+
 						if(is_ntfs || cellFsMkdir(filename, DMODE) == CELL_FS_SUCCEEDED)
 						{
 							sprintf(buffer, "257 \"%s\" OK\r\n", param);
@@ -967,11 +972,11 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					{
 						absPath(filename, param, cwd);
 
-#ifdef COPY_PS3
+						#ifdef COPY_PS3
 						if(del(filename, true) == CELL_FS_SUCCEEDED)
-#else
+						#else
 						if(cellFsRmdir(filename) == CELL_FS_SUCCEEDED)
-#endif
+						#endif
 						{
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 						}
@@ -1025,24 +1030,24 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							ssend(conn_s_ftp, "214-CMDs:\r\n"
 											  " SITE FLASH\r\n"
 											  " SITE CHMOD 777 <file>\r\n"
-#ifndef LITE_EDITION
- #ifdef USE_NTFS
+						#ifndef LITE_EDITION
+							#ifdef USE_NTFS
 											  " SITE NTFS\r\n"
- #endif
- #ifdef PKG_HANDLER
+							#endif
+							#ifdef PKG_HANDLER
 											  " SITE INSTALL <file>\r\n"
- #endif
- #ifdef EXT_GDATA
+							#endif
+							#ifdef EXT_GDATA
 											  " SITE EXTGD <ON/OFF>\r\n"
- #endif
+							#endif
 											  " SITE MAPTO <path>\r\n"
- #ifdef FIX_GAME
+							#ifdef FIX_GAME
 											  " SITE FIX <path>\r\n"
- #endif
+							#endif
 											  " SITE UMOUNT\r\n"
 											  " SITE COPY <file>\r\n"
 											  " SITE PASTE <file>\r\n"
-#endif
+						#endif
 											  " SITE SHUTDOWN\r\n"
 											  " SITE RESTART\r\n"
 											  " SITE STOP\r\n"
@@ -1055,11 +1060,11 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							ssend(conn_s_ftp, FTP_OK_221); // Service closing control connection.
 							if(sysmem) sys_memory_free(sysmem);
 							working = 0;
-							if(_IS(cmd, "REBOOT")) save_file(WMNOSCAN, NULL, SAVE_ALL);
+							if(_IS(cmd, "REBOOT")) create_file(WM_NOSCAN_FILE);
 							if(_IS(cmd, "SHUTDOWN")) {del_turnoff(1); vsh_shutdown();} else {del_turnoff(2); vsh_reboot();}
 							sys_ppu_thread_exit(0);
 						}
-#ifdef USE_NTFS
+						#ifdef USE_NTFS
 						else
 						if(_IS(cmd, "NTFS"))
 						{
@@ -1068,7 +1073,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							ssend(conn_s_ftp, buffer);
 						}
-#endif
+						#endif
 						else
 						if(_IS(cmd, "STOP"))
 						{
@@ -1124,7 +1129,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 						}
 #ifndef LITE_EDITION
- #ifdef PKG_HANDLER
+						#ifdef PKG_HANDLER
 						else
 						if(_IS(cmd, "INSTALL"))
 						{
@@ -1137,8 +1142,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							show_msg(msg);
 						}
- #endif
- #ifdef EXT_GDATA
+						#endif
+						#ifdef EXT_GDATA
 						else
 						if(_IS(cmd, "EXTGD"))
 						{
@@ -1151,14 +1156,14 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							if(_IS(status, "OFF"))	set_gamedata_status(1, true);
 
 						}
- #endif
+						#endif
 						else
 						if(_IS(cmd, "UMOUNT"))
 						{
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 							do_umount(true);
 						}
- #ifdef COBRA_ONLY
+						#ifdef COBRA_ONLY
 						else
 						if(_IS(cmd, "MAPTO"))
 						{
@@ -1176,8 +1181,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								mount_game(cwd, 0);
 							}
 						}
- #endif //#ifdef COBRA_ONLY
- #ifdef FIX_GAME
+						#endif //#ifdef COBRA_ONLY
+						#ifdef FIX_GAME
 						else
 						if(_IS(cmd, "FIX"))
 						{
@@ -1192,18 +1197,18 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 								fix_in_progress = true, fix_aborted = false;
 
-  #ifdef COBRA_ONLY
+								#ifdef COBRA_ONLY
 								if(strcasestr(filename, ".iso"))
 									fix_iso(param, 0x100000UL, false);
 								else
-  #endif //#ifdef COBRA_ONLY
+								#endif
 									fix_game(param, filename, FIX_GAME_FORCED);
 
 								fix_in_progress = false;
 							}
 						}
- #endif //#ifdef FIX_GAME
- #ifdef COPY_PS3
+						#endif //#ifdef FIX_GAME
+						#ifdef COPY_PS3
 						else
 						if(_IS(cmd, "COPY"))
 						{
@@ -1237,8 +1242,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								ssend(conn_s_ftp, FTP_ERROR_500);
 							}
 						}
- #endif
- #ifdef WM_REQUEST
+						#endif
+						#ifdef WM_REQUEST
 						else
 						if(*param == '/')
 						{
@@ -1248,7 +1253,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 							ssend(conn_s_ftp, FTP_OK_200); // The requested action has been successfully completed.
 						}
- #endif
+						#endif
 #endif //#ifndef LITE_EDITION
 						else
 						{
@@ -1415,5 +1420,7 @@ relisten:
 	}
 end:
 	sclose(&list_s);
+
+	thread_id_ftpd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }

@@ -1,3 +1,4 @@
+#ifndef LITE_EDITION
 	//-- select content profile
 	if(strstr(param, ".ps3?"))
 	{
@@ -19,3 +20,4 @@
 		if((uprofile != profile) || is_index_ps3) {DELETE_CACHED_GAMES}
 	}
 	//--
+#endif

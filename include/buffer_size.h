@@ -62,11 +62,11 @@ static u32 get_buffer_size(u8 footprint)
 
 	if(footprint == 1) //MIN
 	{
-#ifndef LITE_EDITION
+		#ifndef LITE_EDITION
 		return ( 320*KB);
-#else
+		#else
 		return ( _256KB_);
-#endif
+		#endif
 	}
 	else
 	if(footprint == 2 || footprint >= 4) //MAX
@@ -175,9 +175,9 @@ static void set_buffer_sizes(u8 footprint)
 	if((webman_config->cmask & PSP)) BUFFER_SIZE_PSP = (_4KB_);
 	if((webman_config->cmask & (BLU | DVD)) == (BLU | DVD)) BUFFER_SIZE_DVD = (_4KB_);
 
-#ifdef MOUNT_ROMS
+	#ifdef MOUNT_ROMS
 	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD + BUFFER_SIZE_IGN);
-#else
+	#else
 	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD);
-#endif
+	#endif
 }

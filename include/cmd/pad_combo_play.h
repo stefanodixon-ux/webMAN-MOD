@@ -94,8 +94,8 @@
 
 			// default: play.ps3?col=game&seg=seg_device
 			char col[16], seg[80]; *col = *seg = NULL;
-	#ifdef COBRA_ONLY
-			#ifndef LITE_EDITION
+
+			#ifdef COBRA_NON_LITE
 			strcpy(header, params); params = (char*)header;
 			if(_islike(params, "movian") || IS(params, "HTSS00003"))
 											 {sprintf(params, "col=tv&seg=HTSS00003"); mount_unk = APP_GAME;} else
@@ -105,6 +105,7 @@
 			if(_islike(params, "rebug"))     {sprintf(params, "RBGTLBOX2");}
 			#endif
 
+			#ifdef COBRA_ONLY
 			char path[32];
 			snprintf(path, 32, "%s%s", HDD0_GAME_DIR, params);
 
@@ -124,7 +125,7 @@
 				launch_app_home_icon(true);
 			}
 			else
-	#endif
+			#endif
 			{
 				get_param("col=", col, params, 16); // game / video / friend / psn / network / music / photo / tv
 				get_param("seg=", seg, params, 80);

@@ -398,7 +398,7 @@ static void build_iso_record(uint8_t *buf, uint32_t offset)
 static void build_blank_iso(const char *title_id)
 {
 	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) return;
+	if(sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) /*!= CELL_OK*/) return;
 	uint8_t *buf = (uint8_t*)sysmem;
 
 /*

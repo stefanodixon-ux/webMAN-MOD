@@ -4,14 +4,14 @@
 
 static void no_singstar_icon(void)
 {
-#ifndef USE_OLD_METHOD_FOR_NO_SINGSTAR
+	#ifndef USE_OLD_METHOD_FOR_NO_SINGSTAR
 	del(XIL2_DIR, RECURSIVE_DELETE);
 	if(webman_config->noss)
 	{
-		save_file(XIL2_DIR, NULL, SAVE_ALL); // DeViL303's new method for no singstar:
+		create_file(XIL2_DIR); // DeViL303's new method for no singstar:
 		cellFsChmod(XIL2_DIR, 0444); // make fake game dir read only
 	}
-#else
+	#else
 	int fd;
 
 	if(cellFsOpendir(XIL2_DIR, &fd) == CELL_FS_SUCCEEDED)
@@ -47,7 +47,7 @@ static void no_singstar_icon(void)
 
 							if(file_exists(xmlpath))
 							{
-								save_file(xmlpath, NULL, SAVE_ALL);
+								create_file(xmlpath);
 								cellFsChmod(xmlpath, 0444); // make blank xml read only
 							}
 						}
@@ -63,6 +63,6 @@ static void no_singstar_icon(void)
 		}
 		cellFsClosedir(fd);
 	}
-#endif
+	#endif
 }
-#endif
+#endif // #ifdef NOSINGSTAR

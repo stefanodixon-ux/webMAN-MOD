@@ -158,17 +158,17 @@ static void setup_parse_settings(char *param)
 	if(IS_UNMARKED("pdf=1")) webman_config->combo|=DISABLEFC;
 	if(IS_UNMARKED("psc=1")) webman_config->combo|=DISABLESH;
 	if(IS_UNMARKED("hom=1")) webman_config->combo|=GOTO_HOME;
-	#ifdef WM_REQUEST
+#ifdef WM_REQUEST
 	if(IS_UNMARKED("fps=1")) webman_config->combo|=C_FPSINFO;
-	#endif
+#endif
 	if(IS_UNMARKED("kcc=1")) webman_config->keep_ccapi = true;
 
-#ifdef COBRA_ONLY
- #ifndef LITE_EDITION
+#ifdef COBRA_NON_LITE
 	if(IS_UNMARKED("pdc=1")) webman_config->combo|=DISACOBRA;
 	if(IS_UNMARKED("cf2=1")) webman_config->ps2config = true;
- #endif
+#endif
 
+#ifdef COBRA_ONLY
 	webman_config->sc8mode = IS_MARKED("sc8=1") ? PS3MAPI_ENABLED : PS3MAPI_DISABLED;
 
 	webman_config->bus = IS_MARKED("bus=1");
@@ -382,22 +382,18 @@ static void setup_parse_settings(char *param)
 	get_param("hurl=", webman_config->home_url, param, 255);
 #endif
 
-#ifdef COBRA_ONLY
- #ifdef BDVD_REGION
-	{
-		cobra_read_config(cobra_config);
+#ifdef BDVD_REGION
+	cobra_read_config(cobra_config);
 
-		cobra_config->bd_video_region  = get_valuen(param, "bdr=", 0, 4);  //BD Region
-		cobra_config->dvd_video_region = get_valuen(param, "dvr=", 0, 32); //DVD Region
+	cobra_config->bd_video_region  = get_valuen(param, "bdr=", 0, 4);  //BD Region
+	cobra_config->dvd_video_region = get_valuen(param, "dvr=", 0, 32); //DVD Region
 
-		if(webman_config->fanc)
-			cobra_config->fan_speed = (webman_config->man_speed < MIN_FANSPEED_8BIT) ? 1 : webman_config->man_speed;
-		else
-			cobra_config->fan_speed = 0; // SYSCON
+	if(webman_config->fanc)
+		cobra_config->fan_speed = (webman_config->man_speed < MIN_FANSPEED_8BIT) ? 1 : webman_config->man_speed;
+	else
+		cobra_config->fan_speed = 0; // SYSCON
 
-		cobra_write_config(cobra_config);
-	}
- #endif
+	cobra_write_config(cobra_config);
 #endif
 
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
@@ -806,6 +802,7 @@ static void setup_form(char *buffer, char *templn)
 
 	value = webman_config->info;
 	concat(buffer, "Info <select name=\"xi\">");
+
 	#ifndef LITE_EDITION
 	use_imgfont = (file_ssize(IMAGEFONT_PATH) > 900000);
 					add_option_item(0x03, "None",                       (value == 0x03), buffer);
@@ -982,14 +979,13 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, "</select><p>");
 
 
-#ifndef LITE_EDITION
+	#ifndef LITE_EDITION
 	//Home
 	sprintf(templn, " : " HTML_INPUT("hurl", "%s", "255", "50") "<p>", webman_config->home_url);
 	add_checkbox("hm", STR_HOME, templn, webman_config->homeb, buffer);
-#endif
+	#endif
 
-#ifdef COBRA_ONLY
-#ifdef BDVD_REGION
+	#ifdef BDVD_REGION
 	cobra_read_config(cobra_config);
 
 	cobra_config->bd_video_region = cconfig[4]; // One of BDRegion, or 0 for default
@@ -1017,10 +1013,9 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item(16, "5- Asia"            , (value == 16) , buffer);
 	add_option_item(32, "6- China"           , (value == 32) , buffer);
 	concat(buffer, "</select>");
-#endif
-#endif
+	#endif // #ifdef BDVD_REGION
 
-#ifdef VIDEO_REC
+	#ifdef VIDEO_REC
 	concat(buffer, " • Rec Video: <select name=\"vif\">");
 	add_option_item( 1110 , "AVC MP 272p", (rec_video_format==0x1110) , buffer);
 	add_option_item( 2110 , "AVC BL 272p", (rec_video_format==0x2110) , buffer);
@@ -1039,7 +1034,7 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item( 2008 , "PCM 768K"   , (rec_audio_format==0x2008) , buffer);
 	add_option_item( 2009 , "PCM 1536K"  , (rec_audio_format==0x2009) , buffer);
 	concat(buffer, "</select>");
-#endif
+	#endif // #ifdef VIDEO_REC
 
 	buffer += strlen(buffer);
 
@@ -1048,17 +1043,17 @@ static void setup_form(char *buffer, char *templn)
 					"<button onclick=\"var cb=document.getElementById('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
 					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", STR_COMBOS2, STR_COMBOS); concat(buffer, templn);
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	add_checkbox("vs", "VSH MENU",      " : <b>SELECT</b><br>"       , !(webman_config->combo2 & C_VSHMENU), buffer);
 	add_checkbox("gm", "GAME MENU",     " : <b>START / L2+R2</b><br>", !(webman_config->combo2 & C_SLAUNCH), buffer);
 	#ifdef WM_REQUEST
 	add_checkbox("fps","FPS COUNT",     " : <b>L3+R3</b><br>"       ,  !(webman_config->combo  & C_FPSINFO), buffer);
 	#endif
-#endif
+	#endif // #ifdef COBRA_ONLY
 
-#ifdef SYS_ADMIN_MODE
+	#ifdef SYS_ADMIN_MODE
 	add_checkbox("adm", "ADMIN/USER MODE", " : <b>L2+R2+&#8710;</b><br>" ,  (webman_config->combo & SYS_ADMIN),  buffer);
-#endif
+	#endif
 
 	add_checkbox("pfs", STR_FAILSAFE,   " : <b>SELECT+L3+L2+R2</b><br>"  , !(webman_config->combo & FAIL_SAFE),  buffer);
 	add_checkbox("pss", STR_SHOWTEMP,   " : <b>SELECT+START</b><br>"     , !(webman_config->combo & SHOW_TEMP),  buffer);
@@ -1072,9 +1067,9 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(templn, "%s XML", STR_REFRESH);
 	add_checkbox("pxr", templn,         " : <b>SELECT+L3</b><br>"        , !(webman_config->combo2 & XMLREFRSH), buffer);
 
-#ifdef VIDEO_REC
+	#ifdef VIDEO_REC
 	add_checkbox("vrc", "VIDEO REC (in-game)", " : <b>SELECT+R3</b><br>" , !(webman_config->combo2 & VIDRECORD), buffer);
-#endif
+	#endif
 
 #ifdef REX_ONLY
 	sprintf(templn, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
@@ -1082,21 +1077,23 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("puw", STR_UNLOADWM,   " : <b>L3+R2+R3</b><br>"         , !(webman_config->combo & UNLOAD_WM),  buffer);
 	add_checkbox("psd", STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"          , !(webman_config->combo & SHUT_DOWN),  buffer);
 	add_checkbox("prs", STR_RESTART2,   " : <b>L3+R2+O</b><br>"          , !(webman_config->combo & RESTARTPS),  buffer);
- #ifdef WM_REQUEST
+	#ifdef WM_REQUEST
 	add_checkbox("psv", "CUSTOM COMBO", " : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
- #else
+	#else
 	add_checkbox("psv", "BLOCK SERVERS"," : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
- #endif
+	#endif
 #else
- #ifdef SPOOF_CONSOLEID
+	#ifdef SPOOF_CONSOLEID
 	sprintf(templn, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
 	add_checkbox("pid", STR_SHOWIDPS,   templn                         ,   !(webman_config->combo & SHOW_IDPS),  buffer);
- #endif
- #ifdef WM_REQUEST
+	#endif
+
+	#ifdef WM_REQUEST
 	add_checkbox("psv", "CUSTOM COMBO", " : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
- #else
+	#else
 	add_checkbox("psv", "BLOCK SERVERS"," : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
- #endif
+	#endif
+
 	add_checkbox("puw", STR_UNLOADWM,   " : <b>L3+R2+R3</b><br>"         , !(webman_config->combo & UNLOAD_WM),  buffer);
 	add_checkbox("psd", STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"          , !(webman_config->combo & SHUT_DOWN),  buffer);
 	add_checkbox("prs", STR_RESTART2,   " : <b>L3+R2+O</b><br>"          , !(webman_config->combo & RESTARTPS),  buffer);
@@ -1104,29 +1101,28 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("pdf", STR_FANCTRL4,   " : <b>L3+R2+START</b><br>"      , !(webman_config->combo & DISABLEFC),  buffer);
 	add_checkbox("pf1", STR_FANCTRL2,   " : <b>SELECT+&#8593;/&#8595;</b><br>", !(webman_config->combo & MANUALFAN),  buffer);
 	add_checkbox("pf2", STR_FANCTRL5,   " : <b>SELECT+&#8592;/&#8594;</b><br>", !(webman_config->combo & MINDYNFAN),  buffer);
+
 #ifdef REMOVE_SYSCALLS
 	add_checkbox("psc", STR_DELCFWSYS2, " : <b>R2+&#8710;</b><BR>&nbsp; (", !(webman_config->combo & DISABLESH),  buffer);
 	add_checkbox("dsc", "PS3 DISC", " ", (webman_config->dsc), buffer);
 	add_checkbox("kcc", "CCAPI", " ",  !(webman_config->keep_ccapi), buffer);
 
- #ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	concat(buffer, "• PS3MAPI <select name=\"sc8\">");
 	add_option_item(1, STR_ENABLED,  (webman_config->sc8mode != PS3MAPI_DISABLED), buffer);
 	add_option_item(0, STR_DISABLED, (webman_config->sc8mode == PS3MAPI_DISABLED), buffer);
 	concat(buffer, "</select>)<br>");
- #else
+	#else
 	concat(buffer, ")<br>");
- #endif
+	#endif
 #endif
 
-#ifndef LITE_EDITION
- #ifdef COBRA_ONLY
-	add_checkbox("pdc", STR_DISCOBRA,   " : <b>L3+L2+&#8710;</b><br>"    , !(webman_config->combo & DISACOBRA),  buffer);
- #endif
- #ifdef NET_SUPPORT
+#ifdef COBRA_NON_LITE
+	add_checkbox("pdc", STR_DISCOBRA,  " : <b>L3+L2+&#8710;</b>"    , !(webman_config->combo & DISACOBRA),  buffer);
+	#ifdef NET_SUPPORT
 	add_checkbox("pn0", "NET0",        " : <b>SELECT+R2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET0), buffer);
 	add_checkbox("pn1", "NET1",        " : <b>SELECT+L2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET1), buffer);
- #endif
+	#endif
 #endif
 
 #ifdef REX_ONLY
@@ -1226,18 +1222,18 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, "</form>");
 
 #ifndef LITE_EDITION
- #ifdef PKG_HANDLER
+	#ifdef PKG_HANDLER
 	concat(buffer,  HTML_RED_SEPARATOR
 					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a> • "
 					"<a href=\"/install.ps3/dev_hdd0/packages\">Install PKG</a> • "
 					"<a href=\"/install.ps3/dev_hdd0/theme\">Install P3T</a> • "
 					"<a href=\"/install.ps3$\">Add-ons</a><br>"
 					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
- #else
+	#else
 	concat(buffer,  HTML_RED_SEPARATOR
 					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a><br>"
 					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
- #endif
+	#endif
 #else
 	concat(buffer,  HTML_BLU_SEPARATOR
 					WM_APPNAME " - Simple Web Server" EDITION "<p>");
@@ -1271,20 +1267,22 @@ static void setup_form(char *buffer, char *templn)
 
 static int save_settings(void)
 {
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	apply_remaps(); // update remaps on startup / save settngs
-#endif
+	#endif
+
+	#ifdef MUTE_SND0
 	mute_snd0(webman_config->nosnd0 != prev_nosnd0);
+	#endif
 
-
-#ifdef PHOTO_GUI
+	#ifdef PHOTO_GUI
 	photo_gui = !webman_config->launchpad_xml;
 	if(photo_gui) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PHOTO_GUI, (u64)photo_gui); }
-#endif
+	#endif
 
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	root_check = true;
-#endif
+	#endif
 
 	return save_file(WMCONFIG, (char*)wmconfig, sizeof(WebmanCfg));
 }
@@ -1306,13 +1304,13 @@ static void read_settings(void)
 	//webman_config->dev_ms = 0;
 	//webman_config->dev_cf = 0;
 
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	webman_config->ntfs = 1; // use internal prepNTFS to scan content
-#endif
+	#endif
 
-#if defined(MOUNT_ROMS)
+	#ifdef MOUNT_ROMS
 	webman_config->roms = isDir(PKGLAUNCH_DIR); f1_len = webman_config->roms ? 13 : 11;
-#endif
+	#endif
 
 	//webman_config->lastp = 0;       //disable last play
 	//webman_config->autob = 0;       //disable check for AUTOBOOT.ISO
@@ -1400,11 +1398,11 @@ static void read_settings(void)
 	//memset(webman_config->uaccount, 0, 8);
 
 	// set default language
-#ifndef ENGLISH_ONLY
+	#ifndef ENGLISH_ONLY
 	get_system_language(&webman_config->lang);
-#else
+	#else
 	webman_config->lang = 0; // english
-#endif
+	#endif
 
 	bool save_defaults = false;
 
@@ -1414,13 +1412,15 @@ static void read_settings(void)
 	else
 		save_defaults = true;
 
-#ifndef COBRA_ONLY
+	#ifndef COBRA_ONLY
 	webman_config->spp = 0; //disable removal of syscalls on nonCobra
-#else
+	#else
 	if(webman_config->sc8mode < 1 || webman_config->sc8mode >= 4) webman_config->sc8mode = PS3MAPI_DISABLED; // default: disable all syscalls (including sc8)
-#endif
+	#endif
 
+	#ifdef MUTE_SND0
 	prev_nosnd0 = webman_config->nosnd0;
+	#endif
 
 	// set default autoboot path
 	if((webman_config->autoboot_path[0] != '/') && !islike(webman_config->autoboot_path, "http")) sprintf(webman_config->autoboot_path, "%s", DEFAULT_AUTOBOOT_PATH);
@@ -1469,7 +1469,9 @@ static void read_settings(void)
 	}
 #endif
 
+#ifndef LITE_EDITION
 	profile = webman_config->profile;
+#endif
 
 #ifdef VIDEO_REC
 	rec_video_format = webman_config->rec_video_format;

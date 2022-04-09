@@ -24,9 +24,9 @@ static bool usb0_picture_exists = false;
 
 static int create_slaunch_file(void)
 {
-#ifdef WM_REQUEST
+	#ifdef WM_REQUEST
 	usb0_picture_exists = photo_gui && isDir("/dev_usb000/PICTURE");
-#endif
+	#endif
 	int fd; custom_icon = false;
 	if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		return fd;
@@ -48,7 +48,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 					IS_PS2ISO      ? TYPE_PS2 :
 					IS_PSPISO      ? TYPE_PSP : TYPE_VID;
 
-#ifdef WM_REQUEST
+	#ifdef WM_REQUEST
 	if(usb0_picture_exists)
 	{
 		u8 f1 = (slaunch.type == TYPE_PS1) ? id_PSXISO :
@@ -63,7 +63,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 
 		if(not_exists(enc_filename)) file_copy(icon, enc_filename);
 	}
-#endif
+	#endif
 
 	snprintf(slaunch.id, sizeof(slaunch.id), "%s", id); urlenc_ex(enc_filename, filename, false);
 
@@ -102,4 +102,4 @@ static int find_slaunch_game(char *filename, u8 offset)
 	}
 	return ret;
 }
-#endif
+#endif // #ifdef SLAUNCH_FILE
