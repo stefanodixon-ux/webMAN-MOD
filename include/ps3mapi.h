@@ -114,14 +114,16 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 {
 	char tmp_name[30];
 	char tmp_filename[STD_PATH_LEN];
+	const char *plugin_path = name; // alias
 
 	bool find_free_slot = (!name || (*name == PS3MAPI_FIND_FREE_SLOT));
-	bool load_in_new_slot = !find_free_slot && (mode >= 2) && file_exists(name);
+	bool load_in_new_slot = !find_free_slot && (mode >= 2) && file_exists(plugin_path);
+	bool prx_found = false;
 
-	int slot; bool prx_found = false;
+	int slot;
 	if(!find_free_slot && (mode == 3)) // 3 = toggle mode (check unload)
 	{
-		slot = ps3mapi_get_vsh_plugin_slot_by_name(name, 0);
+		slot = ps3mapi_get_vsh_plugin_slot_by_name(plugin_path, 0);
 		if(slot < 7) goto unload_plugin;
 	}
 
@@ -129,18 +131,18 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 	{
 		ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
 
-		if(find_free_slot || load_in_new_slot) // 0 = find mode, 2 = load mode, 3 = toggle mode (load)
+		if(find_free_slot || load_in_new_slot) // 0 = find mode, 2 = load mode, 3 = toggle mode (load), 4 = load vsh gui
 		{
 			if(*tmp_name) continue;
 			if(load_in_new_slot)
 			{
 				char arg[2] = {1, 0};
-				if(mode == 4) // 4 = load vsh_menu
-					cobra_load_vsh_plugin(slot, name, (u8*)arg, 1);
-				else
-					cobra_load_vsh_plugin(slot, name, NULL, 0);
+				if(mode == 4) // 4 = load vsh gui
+					cobra_load_vsh_plugin(slot, plugin_path, (u8*)arg, 1);
+				else // 2-3 = load vsh plugin
+					cobra_load_vsh_plugin(slot, plugin_path, NULL, 0);
 
-				ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename);
+				ps3mapi_get_vsh_plugin_info(slot, tmp_name, tmp_filename); // check if plugin was loaded
 				if(*tmp_filename) prx_found = true; else continue;
 			}
 			break;
@@ -158,7 +160,7 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 		}
 	}
 	#ifdef FPS_OVERLAY
-	if(!find_free_slot && (strstr(name, "/VshFpsCounter") != NULL)) overlay_enabled = prx_found;
+	if(!find_free_slot && (strstr(plugin_path, "/VshFpsCounter") != NULL)) overlay_enabled = prx_found;
 	#endif
 	return slot;
 }

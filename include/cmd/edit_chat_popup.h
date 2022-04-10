@@ -70,13 +70,22 @@
 		{
 			char *msg = (param + 11); // /popup.ps3?<msg>
 
+			char *pos; u8 op = 0;
+			pos = strstr(param, "@info");
+			if(pos) {op = val(pos + 5) + 10; get_sys_info(pos + (pos < msg), op);}
+
 			if(param[10] == '*')
 				show_msg2(msg);
 			#ifdef FPS_OVERLAY
 			else if(param[10] == '@')
 			{
+				if(overlay_enabled && (op >= 10)) overlay_enabled = op; // show
+
 				overlay = 1;
-				show_progress(msg, OV_SHOW);
+				if(*msg)
+					show_progress(msg, OV_SHOW);
+				else
+					disable_progress();
 			}
 			#endif
 			else

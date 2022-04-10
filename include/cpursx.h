@@ -473,3 +473,152 @@ static void show_wm_version(char *param)
 	}
 	show_msg(param);
 }
+
+static void poll_start_play_time(void);
+static void get_sys_info(char *msg, u8 op)
+{
+	u8 t1 = 0, t2 = 0; bool R2 = (op % 20) == 1 || (op == 23);
+
+	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
+
+	CellRtcTick pTick; u32 dd, hh, mm, ss;
+
+	cellRtcGetCurrentTick(&pTick);
+
+	{
+		u8 st, mode, unknown;
+		sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
+	}
+
+	_meminfo meminfo;
+	{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
+
+	// detect aprox. time when a game is launched
+	poll_start_play_time();
+
+	///// startup/play time /////
+	bool bb = (!R2 && gTick.tick > rTick.tick); // show play time
+	ss = (u32)((pTick.tick - (bb ? gTick.tick : rTick.tick)) / 1000000);
+	#ifndef LITE_EDITION
+	if(op == 23)
+	{
+		// get runtime data by @3141card
+		int32_t arg_1, total_time_in_sec, power_on_ctr, power_off_ctr;
+		sys_sm_request_be_count(&arg_1, &total_time_in_sec, &power_on_ctr, &power_off_ctr);
+		ss += (u32)total_time_in_sec;
+	}
+	#endif
+	dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
+	/////////////////////////////
+
+	char net_type[8] = "", ip[ip_size] = "-";
+	get_net_info(net_type, ip);
+
+	char cfw_info[24], tmp[200];
+	get_cobra_version(cfw_info);
+
+	char fan_mode[24];
+	if(fan_ps2_mode || ps2_classic_mounted)
+		sprintf(fan_mode, "   PS2 Mode");
+	else if(webman_config->fanc == FAN_AUTO2)
+		sprintf(fan_mode, "   MAX: AUTO");
+	else if(max_temp)
+		sprintf(fan_mode, "   MAX: %i°C", max_temp);
+	else if(webman_config->fanc == DISABLED)
+		sprintf(fan_mode, "   SYSCON");
+	else
+		memset(fan_mode, 0, sizeof(fan_mode));
+
+	get_temperature(0, &t1); // CPU
+	get_temperature(1, &t2); // RSX
+
+	char *RSX = (char*)" RSX:";
+	if(webman_config->lang == 99) RSX = (char*)"/";
+
+	char days[6]; *days = NULL;
+	if(dd) sprintf(days, "%id ", dd);
+
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	if(!syscalls_removed) disable_signin_dialog();
+
+	u16 len =
+	sprintf(msg, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
+				 "%s: %s%02d:%02d:%02d%s\n"
+				 "%s : %s %s\n"
+				 "IP: %s  %s  %s\n",
+				 t1, RSX, t2, (int)(((int)fan_speed*100)/255),
+				 bb ? "Play" : "Startup", days, hh, mm, ss, fan_mode,
+				 STR_FIRMWARE, fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
+					  (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "");
+
+	#ifndef LITE_EDITION
+	if(op == 17) // ip
+		sprintf(msg, "IP: %s %s", ip, net_type);
+	if(op == 18) // syscalls
+		sprintf(msg, "Syscalls: %s", syscalls_removed ? STR_DISABLED : STR_ENABLED);
+	if(op == 19) // temp
+		*(strchr(msg, '\n')) = 0;
+	if(op == 20) // fan mode
+		sprintf(msg, "%s", fan_mode);
+	if(op == 21) // Startup time
+		sprintf(msg, "%s: %s%02d:%02d:%02d", "Startup", days, hh, mm, ss);
+	if(op == 22) // Play time
+		sprintf(msg, "%s: %s%02d:%02d:%02d", "Play", days, hh, mm, ss);
+	if(op == 23) // Runtime
+		sprintf(msg, "%s: %s%02d:%02d:%02d", "Runtime", days, hh, mm, ss);
+	if(op == 24) // Time
+	{
+		CellRtcDateTime t;
+		cellRtcGetCurrentClockLocalTime(&t);
+		sprintf(msg, "%d/%d %02d:%02d:%02d", t.month, t.day, t.hour, t.minute, t.second);
+	}
+	if(op == 25)
+		{get_game_info(); sprintf(msg, "%s %s", _game_TitleID, _game_Title);}
+	if(op == 26)
+		sprintf(msg, "PID: 0x%xl", get_current_pid());
+	if(op == 27)
+		sprintf(msg, "%s: %016llX%016llX", "PSID", PSID[0], PSID[1]);
+	if(op == 28)
+		sprintf(msg, "%s: %016llX%016llX", "IDPS", IDPS[0], IDPS[1]);
+	if(op >= 17) return;
+	#endif
+
+	if(R2 && (gTick.tick > rTick.tick))
+	{
+		////// play time //////
+		ss = (u32)((pTick.tick-gTick.tick)/1000000);
+		dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
+
+		if(dd < 100)
+		{
+			get_game_info(); strcpy(tmp, msg);
+			*days = NULL; if(dd) sprintf(days, "%id ", dd);
+			snprintf(msg, 200,  "%s %s\n\n"
+								"Play: %s%02d:%02d:%02d\n"
+								"%s", _game_TitleID, _game_Title, days, hh, mm, ss, msg);
+		}
+	}
+	else
+	{
+		char hdd_free[40]; t1 = 0;
+		#ifndef LITE_EDITION
+		if(op >= 10) t1 = op % 10; if(t1 == 5) t1 = NTFS;
+		#endif
+		free_size(drives[t1], hdd_free);
+		int mem_free = (int)(meminfo.avail>>10);
+		sprintf(msg + len,  "%s: %s\n"
+							"%s: %i %s\n",
+							STR_STORAGE, hdd_free,
+							STR_MEMORY,  mem_free, STR_KBFREE);
+
+		#ifndef LITE_EDITION
+		if(op >= 10 && op <= 15) // storage
+			sprintf(msg, "%s: %s", drives[t1], hdd_free);
+		if(op == 16) // mem free
+			sprintf(msg, "%s: %i %s", STR_MEMORY,  mem_free, STR_KBFREE);
+		#endif
+	}
+
+	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
+
+}

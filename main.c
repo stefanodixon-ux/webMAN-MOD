@@ -678,6 +678,11 @@ static void wwwd_stop_thread(u64 arg)
 	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
 	#endif
 
+	#ifdef FPS_OVERLAY
+	if(overlay_enabled)
+		{overlay = 1; disable_progress();} // clear message address
+	#endif
+
 	sys_ppu_thread_sleep(2); // wait for other threads
 
 	restore_settings();

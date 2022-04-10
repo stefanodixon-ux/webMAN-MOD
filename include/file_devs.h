@@ -55,6 +55,7 @@ static void disable_dev_blind(void)
 #ifdef USE_NTFS
 static void get_ntfs_disk_space(const char *dev_name, u64 *freeSize, u64 *devSize)
 {
+	check_ntfs_volumes();
 	struct statvfs vbuf;
 	ps3ntfs_statvfs(dev_name, &vbuf);
 	*freeSize = ((u64)vbuf.f_bfree * (u64)vbuf.f_bsize);
@@ -78,6 +79,7 @@ static u64 get_free_space(const char *dev_name)
 	if(!islike(dev_name, "/dev_")) return 0;
 
 	{system_call_3(SC_FS_DISK_FREE, (u64)(u32)(dev_name), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
+	if((freeSize>>30) > KB) freeSize = 0;
 	return freeSize;
 /*
 	u32 blockSize;

@@ -316,8 +316,8 @@
 
 								if((!recording) && (IS_INGAME) && file_exists(VIDEO_REC_PLUGIN))
 								{
-									unsigned int slot = get_free_slot();
-									if((slot < 7) && cobra_load_vsh_plugin(slot, VIDEO_REC_PLUGIN, NULL, 0) == CELL_OK) unload_me(1); // unload webMAN to free resources
+									unsigned int slot = load_vsh_plugin(VIDEO_REC_PLUGIN);
+									if(slot < 7) unload_me(1); // unload webMAN to free resources
 								}
 							}
 							else
@@ -409,101 +409,7 @@
 								#endif
 								/////////////////////////////
  show_popup:
-								{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
-
-								CellRtcTick pTick; u32 dd, hh, mm, ss;
-
-								cellRtcGetCurrentTick(&pTick);
-
-								{
-									u8 st, mode, unknown;
-									sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
-								}
-
-								_meminfo meminfo;
-								{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
-
-								// detect aprox. time when a game is launched
-								poll_start_play_time();
-
-								bool R2 = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2), bb;
-
-								///// startup/play time /////
-								bb = (!R2 && gTick.tick > rTick.tick); // show play time
-								ss = (u32)((pTick.tick - (bb ? gTick.tick : rTick.tick)) / 1000000); dd = (u32)(ss / 86400);
-								if(dd > 100) {bb = false; ss = (u32)((pTick.tick-rTick.tick)/1000000); dd = (u32)(ss / 86400);}
-								ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
-								/////////////////////////////
-
-								char net_type[8] = "", ip[ip_size] = "-";
-								get_net_info(net_type, ip);
-
-								char cfw_info[24];
-								get_cobra_version(cfw_info);
-
-								char smax[24];
-								if(fan_ps2_mode || ps2_classic_mounted)
-									sprintf(smax, "   PS2 Mode");
-								else if(webman_config->fanc == FAN_AUTO2)
-									sprintf(smax, "   MAX: AUTO");
-								else if(max_temp)
-									sprintf(smax, "   MAX: %i°C", max_temp);
-								else if(webman_config->fanc == DISABLED)
-									sprintf(smax, "   SYSCON");
-								else
-									memset(smax, 0, sizeof(smax));
-
-								get_temperature(0, &t1); // CPU
-								get_temperature(1, &t2); // RSX
-
-								char *RSX = (char*)" RSX:";
-								if(webman_config->lang == 99) RSX = (char*)"/";
-
-								char days[6]; *days = NULL;
-								if(dd) sprintf(days, "%id ", dd);
-
-								syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
-								if(!syscalls_removed) disable_signin_dialog();
-
-								u16 len =
-								sprintf(msg, "CPU: %i°C %s %i°C  FAN: %i%%   \n"
-											 "%s: %s%02d:%02d:%02d%s\n"
-											 "%s : %s %s\n"
-											 "IP: %s  %s  %s\n",
-											 t1, RSX, t2, (int)(((int)fan_speed*100)/255),
-											 bb ? "Play" : "Startup", days, hh, mm, ss, smax,
-											 STR_FIRMWARE, fw_version, cfw_info, ip, net_type, syscalls_removed ? "[noSC]" :
-												  (webman_config->combo & SYS_ADMIN) ? (sys_admin ? "[ADMIN]":"[USER]") : "");
-
-								if(R2 && (gTick.tick > rTick.tick))
-								{
-									////// play time //////
-									ss = (u32)((pTick.tick-gTick.tick)/1000000);
-									dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
-
-									if(dd < 100)
-									{
-										char tmp[202]; get_game_info();
-										*days = NULL; if(dd) sprintf(days, "%id ", dd);
-										snprintf(tmp, 200,  "%s %s\n\n"
-															"Play: %s%02d:%02d:%02d\n"
-															"%s", _game_TitleID, _game_Title, days, hh, mm, ss, msg);
-										strcpy(msg, tmp);
-									}
-								}
-								else
-								{
-									char hdd_free[40];
-									free_size(drives[0], hdd_free);
-									int mem_free = (int)(meminfo.avail>>10);
-									sprintf(msg + len,  "%s: %s\n"
-														"%s: %i %s\n",
-														STR_STORAGE, hdd_free,
-														STR_MEMORY,  mem_free, STR_KBFREE);
-								}
-
-								{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
-
+								get_sys_info(msg, (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2));
 								show_msg(msg);
 								sys_ppu_thread_sleep(2);
 							}
@@ -753,7 +659,9 @@
 		 				#endif
 						if(is_mounting || refreshing_xml) continue;
 						#ifdef FPS_OVERLAY
-						if(!overlay_enabled)
+						if(overlay_enabled)
+							{overlay = 1; disable_progress();}
+						else
 						{
 							unload_vsh_plugin("VshFpsCounter"); // unload any loaded VshFpsCounter
 							show_status("FPS", STR_ENABLED);

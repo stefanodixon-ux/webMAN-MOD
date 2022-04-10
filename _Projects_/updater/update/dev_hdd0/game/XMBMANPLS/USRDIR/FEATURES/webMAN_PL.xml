@@ -18,8 +18,15 @@
 	</V>
 
 	<V id="seg_webman_links_items">
+		<A>
+			<T key="webman_setup_link">
+				<P key="focus_priority"><>-80</></P>
+			</T>
+		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_setup_link" src="#seg_webman_setup"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webman_prepare_ntfs" src="xcb://localhost/query?limit=1&cond=Ae+Game:Game.titleId BLES80616"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webman_wm_slaunch" src="#seg_wm_slaunch"/>
+			<Q class="type:x-xmb/folder-pixmap" attr="webman_setup_link" key="webman_setup_link" src="#seg_webman_setup"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_unmount_link" src="#seg_webman_unmount"/>
 
 			<Q class="type:x-xmb/folder-pixmap" key="webman_refresh_xmb_link" src="#seg_webman_refresh_xmb"/>
@@ -27,7 +34,9 @@
 			<Q class="type:x-xmb/folder-pixmap" key="webman_refresh_html_link" src="#seg_webman_refresh_html"/>
 			<Q class="type:x-xmb/folder-pixmap" key="reloadxmb" src="xcb://localhost/query?limit=1&cond=Ae+Game:Game.titleId RELOADXMB"/>
 
+			<Q class="type:x-xmb/folder-pixmap" key="webman_wm_vsh_menu" src="#seg_wm_vsh_menu"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_webman_cpursx" src="#seg_webman_cpursx"/>
+
 			<Q class="type:x-xmb/folder-pixmap" key="webman_games_link" src="#seg_webman_games"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_files_link" src="#seg_webman_files"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_cache_link" src="#seg_webman_cache"/>
@@ -43,7 +52,6 @@
 			<Q class="type:x-xmb/folder-pixmap" key="webman_insert_link" src="#seg_webman_insert"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_uninstall_link" src="#seg_webman_uninstall"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_unload_link" src="#seg_webman_unload"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_wm_vsh_menu" src="#seg_wm_vsh_menu"/>
 
 			<Q class="type:x-xmb/folder-pixmap" key="webman_restart_link" src="#seg_webman_restart"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_shutdown_link" src="#seg_webman_shutdown"/>
@@ -734,6 +742,20 @@
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="wm_vsh_menu_load" attr="wm_vsh_menu_load"/></I>
+	</V>
+
+	<!-- Main > webMAN > Load sLaunch Menu -->
+	<V id="seg_wm_slaunch">
+		<A>
+			<T key="wm_slaunch_load">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/slaunch.png</></P>
+				<P key="title"><>Załaduj menu sLaunch</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+				<P key="module_action"><>/browser.ps3$slaunch</></P>
+			</T>
+		</A>
+		<I><I class="type:x-xmb/module-action" key="wm_slaunch_load" attr="wm_slaunch_load"/></I>
 	</V>
 
 	<!-- Main > webMAN > Restart PS3 -->

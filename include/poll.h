@@ -145,6 +145,14 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		if((sec % 3) == 0) poll_start_play_time();
 		#endif
 
+		#ifdef FPS_OVERLAY
+		if(((sec % 3) == 0) && (overlay_enabled >= 10))
+		{
+			get_sys_info(msg, overlay_enabled);
+			overlay = 1; show_progress(msg, OV_SHOW);
+		}
+		#endif
+
 		// USB Polling
 		if((sec >= 120) && !webman_config->poll) // check USB drives each 120 seconds
 		{
