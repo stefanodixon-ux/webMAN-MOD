@@ -692,6 +692,20 @@ static u8 get_flag(const char *param, const char *label)
 	return false;
 }
 
+#ifndef LITE_EDITION
+static u8 parse_tags(char *text)
+{
+	char *pos; u8 op = 0;
+	pos = strstr(text, "@info");
+	if(pos)
+	{
+		op = val(pos + 5) + 10;
+		get_sys_info(pos, op % 100, (op >= 100));
+	}
+	return op;
+}
+#endif
+
 /*
 static void replace_char(char *text, char c, char r)
 {

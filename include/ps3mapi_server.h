@@ -138,6 +138,12 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						split = sprintf(buffer, "200 %s\r\n", param2);
 						ssend(conn_s_ps3mapi, buffer);
 					}
+					else if(_IS(cmd, "GETSYSINFO"))	// PS3 GETSYSINFO <id>
+					{
+						get_sys_info(param2, val(param2), true);
+						split = sprintf(buffer, "200 %s\r\n", param2);
+						ssend(conn_s_ps3mapi, buffer);
+					}
 					else if(_IS(cmd, "NOTIFY"))	// PS3 NOTIFY <msg>&icon=<0-50>&snd=<0-9>
 					{
 						if(split)
@@ -504,7 +510,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 								check_path_alias(prx_path);
 								unsigned int slot = val(param1);
 								if(!slot ) slot = get_free_slot();
-								if( slot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)slot, (u64)(u32)prx_path, NULL, 0); }}
+								if( slot ) cobra_load_vsh_plugin(slot, prx_path, NULL, 0);
 								ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 							}
 						}
@@ -515,7 +521,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						{
 							unsigned int slot = val(param2);
 							ps3mapi_check_unload(slot, param1, param2);
-							if( slot ) {{system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_VSH_PLUGIN, (u64)slot); }}
+							if( slot ) cobra_unload_vsh_plugin(slot);
 							ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 						}
 					}
@@ -616,29 +622,9 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 				{
 					split = ssplit(param1, cmd, 19, param2, PS3MAPI_MAX_LEN);
 
-					char *p, *params = param2;
-					u64 sp[9], ret = 0; u8 n = 0;
-					u16 sc = (u16)val(params);
-
-					for(; n <= 8; n++)
-					{
-						sp[n] = 0, p = strchr(params, '|'); if(!p) break;
-						params = p + 1, *p = NULL;;
-						sp[n] = (u64)val(params); if(!sp[n] && (*params != '0')) sp[n] = (u64)(u32)(params);
-					}
-
-					switch (n)
-					{
-						case 0: {system_call_0(sc); ret = p1; break;}
-						case 1: {system_call_1(sc, sp[0]); ret = p1; break;}
-						case 2: {system_call_2(sc, sp[0], sp[1]); ret = p1; break;}
-						case 3: {system_call_3(sc, sp[0], sp[1], sp[2]); ret = p1; break;}
-						case 4: {system_call_4(sc, sp[0], sp[1], sp[2], sp[3]); ret = p1; break;}
-						case 5: {system_call_5(sc, sp[0], sp[1], sp[2], sp[3], sp[4]); ret = p1; break;}
-						case 6: {system_call_6(sc, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5]); ret = p1; break;}
-						case 7: {system_call_7(sc, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5], sp[6]); ret = p1; break;}
-						case 8: {system_call_8(sc, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5], sp[6], sp[7]); ret = p1; break;}
-					}
+					u64 sp[9]; u8 n;
+					u16 sc = parse_syscall(param2, sp, &n);
+					u64 ret = call_syscall(sc, sp, n);
 
 					sprintf(buffer, "200 %llu\r\n", ret);
 					ssend(conn_s_ps3mapi, buffer);

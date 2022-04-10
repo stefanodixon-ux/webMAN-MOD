@@ -137,7 +137,15 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 			if(load_in_new_slot)
 			{
 				char arg[2] = {1, 0};
-				if(mode == 4) // 4 = load vsh gui
+				if(mode == 5)
+				{
+					// get VSH id
+					u32 pid = IS_INGAME ? 0x01000300 : get_current_pid(); // VSH;
+
+					// load VSH module
+					{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)plugin_path, NULL, 0); }
+				}
+				else if(mode == 4) // 4 = load vsh gui
 					cobra_load_vsh_plugin(slot, plugin_path, (u8*)arg, 1);
 				else // 2-3 = load vsh plugin
 					cobra_load_vsh_plugin(slot, plugin_path, NULL, 0);
@@ -309,6 +317,8 @@ static void ps3mapi_notify(char *buffer, char *templn, const char *param)
 	if(get_param("?msg=", msg, param, 199))
 	{
 		if(icon_id) webman_config->msg_icon = 0; // enable icons
+
+		parse_tags(msg);
 		vshNotify_WithIcon(icon_id, msg);
 	}
 

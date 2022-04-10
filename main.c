@@ -135,6 +135,7 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode);
 #define load_vsh_plugin(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
 #define toggle_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 3)
 #define load_vsh_gui(a)      ps3mapi_get_vsh_plugin_slot_by_name(a, 4)
+#define load_vsh_module(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 5)
 ///////////////////////////////////////////
 
 #else
@@ -299,6 +300,7 @@ static char *ROMS_EXTENSIONS = NULL;
 static void show_msg(const char *text);
 static void show_status(const char *label, const char *status);
 static void sys_get_cobra_version(void);
+static void get_sys_info(char *msg, u8 op, bool nolabel);
 
 #ifdef UNLOCK_SAVEDATA
 static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size);
@@ -329,6 +331,7 @@ int wait_for(const char *path, u8 timeout);
 #include "include/string.h"
 #include "include/wm_config.h"
 #include "include/html.h"
+#include "include/syscall.h"
 #include "include/xregistry.h"
 #include "include/peek_poke.h"
 #include "include/hdd_unlock_space.h"

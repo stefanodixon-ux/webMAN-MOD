@@ -68,18 +68,18 @@
 		#endif
 
 		{
+			u8 mode = param[10];
 			char *msg = (param + 11); // /popup.ps3?<msg>
 
-			char *pos; u8 op = 0;
-			pos = strstr(param, "@info");
-			if(pos) {op = val(pos + 5) + 10; get_sys_info(pos + (pos < msg), op);}
+			if(islike(param + 10, "@info")) --msg;
+			u8 op = parse_tags(msg);
 
-			if(param[10] == '*')
+			if(mode == '*')
 				show_msg2(msg);
 			#ifdef FPS_OVERLAY
-			else if(param[10] == '@')
+			else if(mode == '@')
 			{
-				if(overlay_enabled && (op >= 10)) overlay_enabled = op; // show
+				if(overlay_enabled && (op >= 10)) overlay_enabled = op; // set persistent show
 
 				overlay = 1;
 				if(*msg)
@@ -91,7 +91,8 @@
 			else
 				show_msg(msg);
 
-			sprintf(templn, "Message sent: %s", msg); _concat(&sbuffer, templn);
+			if(op) strcpy(templn, msg); else sprintf(templn, "Message sent: %s", msg);
+			_concat(&sbuffer, templn);
 		}
 
 		loading_html = keep_alive = is_popup = 0; goto send_response;

@@ -129,8 +129,8 @@ static void parse_script(const char *script_file)
 					#else
 					if(_islike(line, "beep"))      {if(line[4] == '3') {BEEP3;} else if(line[4] == '2') {BEEP2;} else {BEEP1;}} else
 					#endif
-					if(_islike(line, "popup "))    {line += 6; show_msg(line);} else
-					if(_islike(line, "log "))      {line += 4; save_file(log_file, line, APPEND_TEXT);} else
+					if(_islike(line, "popup "))    {line += 6; parse_tags(line); show_msg(line);} else
+					if(_islike(line, "log "))      {line += 4; parse_tags(line); save_file(log_file, line, APPEND_TEXT);} else
 					if(_islike(line, "logfile /")) {path += 8; strcpy(log_file, path);} else
 	#ifdef UNLOCK_SAVEDATA
 					if(_islike(line, "unlock /"))  {path += 7; scan(path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);} else

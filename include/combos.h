@@ -150,11 +150,7 @@
 						if(!webman_config->nobeep) BEEP1;
 						create_file(WM_RELOAD_FILE);
 
-						// get VSH id
-						u32 pid = IS_INGAME ? 0x01000300 : get_current_pid(); // VSH;
-
-						//load_vsh_plugin(TOGGLE_PLUGIN);
-						{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)TOGGLE_PLUGIN, NULL, 0); }
+						load_vsh_module(TOGGLE_PLUGIN);
 
 						unload_me(1);
 					}
@@ -409,7 +405,7 @@
 								#endif
 								/////////////////////////////
  show_popup:
-								get_sys_info(msg, (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2));
+								get_sys_info(msg, (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2), false);
 								show_msg(msg);
 								sys_ppu_thread_sleep(2);
 							}

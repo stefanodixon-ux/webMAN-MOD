@@ -20,7 +20,7 @@
 		#ifdef COBRA_ONLY
 		char *plugin_path = param + 9;
 		check_path_alias(plugin_path);
-		if(file_exists(plugin_path)) load_vsh_plugin(plugin_path);
+		if(file_exists(plugin_path)) load_vsh_module(plugin_path);
 		#endif
 
 		wwwd_stop();
