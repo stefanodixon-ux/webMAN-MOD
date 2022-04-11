@@ -169,12 +169,14 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 
 	if(op >= 10)
 	{
+		#ifndef LITE_EDITION
 		if(op == 18) // syscalls
 			sprintf(msg, "Syscalls: %s", syscalls_removed ? STR_DISABLED : STR_ENABLED);
 		if(op == 19) // temp
 			{*(strchr(msg, '\n')) = 0; return;}
 		if(op == 20) // fan mode
 			{sprintf(msg, "%s", fan_mode + 3); return;}
+		#endif
 		if(op == 21) // Startup time
 			sprintf(msg, "%s: %s%02d:%02d:%02d", "Startup", days, hh, mm, ss);
 		if(op == 22) // Play time
@@ -184,6 +186,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			len = sprintf(msg, "%s: %s%02d:%02d:%02d", "Runtime", days, hh, mm, ss);
 			sprintf(msg + len, " • %'i ON • %'i OFF (%i)", power_on_ctr, power_off_ctr, power_on_ctr - power_off_ctr);
 		}
+		#ifndef LITE_EDITION
 		if(op == 24) // Time
 		{
 			CellRtcDateTime t;
@@ -193,8 +196,11 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		}
 		if(op == 25) // id+title
 			{get_game_info(); sprintf(msg, "%s %s", _game_TitleID, _game_Title); return;}
+		#ifdef COBRA_ONLY
 		if(op == 26) // pid
 			sprintf(msg, "PID: 0x%x", get_current_pid());
+		#endif
+		#endif
 		#ifdef SPOOF_CONSOLEID
 		if(op == 27) // psid
 			sprintf(msg, "%s: %016llX%016llX", "PSID LV2 ", PSID[0], PSID[1]);
@@ -211,10 +217,12 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			{system_call_3(SYS_NET_EURUS_POST_COMMAND, CMD_GET_MAC_ADDRESS, (u64)(u32)mac_address, 0x13);}
 			sprintf(msg, "MAC Addr : %02X:%02X:%02X:%02X:%02X:%02X", mac_address[13], mac_address[14], mac_address[15], mac_address[16], mac_address[17], mac_address[18]);
 		}
+		#ifndef LITE_EDITION
 		if(op == 32) // ip
 			sprintf(msg, "%s: %s %s", "IP", ip, net_type);
 		if(op == 33) // home
 			sprintf(msg, "%s: %s/%08i", STR_HOME, HDD0_HOME_DIR, xusers()->GetCurrentUserNumber());
+		#endif
 		if(op >= 18)
 		{
 			if(nolabel) sprintf(msg, "%s", strchr(msg, ':') + 2);
@@ -249,7 +257,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 							STR_STORAGE, hdd_free,
 							STR_MEMORY,  mem_free, STR_KBFREE);
 
-
+		#ifndef LITE_EDITION
 		if(op >= 10 && op <= 15) // storage
 		{
 			if(nolabel)
@@ -276,6 +284,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			else
 				sprintf(msg, "%s: %i%% %i %s / %i %s", STR_MEMORY, (int)(100 * mem_usage / mem_total), mem_usage, STR_KILOBYTE, mem_total, STR_KILOBYTE);
 		}
+		#endif
 	}
 
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
