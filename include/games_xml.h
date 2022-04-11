@@ -855,7 +855,9 @@ scan_roms:
 
 	#ifdef NET_SUPPORT
 	int abort_connection = 0;
+	#ifdef USE_INTERNAL_NET_PLUGIN
 	if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection, false) < 0) do_umount(false);
+	#endif
 	#endif
 
 	for(u8 f0 = 0; f0 < MAX_DRIVES; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
@@ -883,7 +885,7 @@ scan_roms:
 		if(!(is_net || IS_NTFS) && (isDir(drives[f0]) == false)) continue;
 
 		#ifdef NET_SUPPORT
-		if((ns >= 0) && (ns!=g_socket)) sclose(&ns);
+		if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 		#endif
 
 		ns = NONE; uprofile = profile;
@@ -918,7 +920,9 @@ scan_roms:
 			}
 
 			#ifdef NET_SUPPORT
-			if(is_net && (netiso_svrid == (f0-NET)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
+			#ifdef USE_INTERNAL_NET_PLUGIN
+			if(is_net && (netiso_svrid == (f0-NET)) && (g_socket != NONE)) ns = g_socket; /* reuse current server connection */ else
+			#endif
 			if(is_net && (ns<0)) ns = connect_to_remote_server(f0-NET);
 			if(is_net && (ns<0)) break;
 			#endif

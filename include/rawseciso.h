@@ -1,7 +1,5 @@
 #define CD_CACHE_SIZE           (48) // sectors 48*2448 = 115KB (up to 52 sectors fit in 128KB)
 
-#define CD_SECTOR_SIZE_2048     2048
-
 #define LAST_SECTOR             1
 #define READ_SECTOR             0xFFFFFFFF
 
@@ -96,8 +94,6 @@ typedef struct
 	offset += parts * 2; // to the next disc sector array datas...
 
 */
-
-static u32 CD_SECTOR_SIZE_2352 = 2352;
 
 #ifdef USE_INTERNAL_NTFS_PLUGIN
 

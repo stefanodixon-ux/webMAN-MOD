@@ -148,7 +148,7 @@
 						if(not_exists(TOGGLE_PLUGIN)) continue;
 
 						if(!webman_config->nobeep) BEEP1;
-						create_file(WM_RELOAD_FILE);
+						create_file(WM_RELOAD_FILE); // create semaphore file
 
 						load_vsh_module(TOGGLE_PLUGIN);
 

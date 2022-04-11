@@ -144,6 +144,8 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 
 					// load VSH module
 					{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)plugin_path, NULL, 0); }
+
+					prx_found = true; break;
 				}
 				else if(mode == 4) // 4 = load vsh gui
 					cobra_load_vsh_plugin(slot, plugin_path, (u8*)arg, 1);

@@ -42,7 +42,7 @@
 					hh, mm, ss, t1, t2, fs, t1, t1, t2, t2, fs, fs);
 			save_file(CPU_RSX_CHART, msg, APPEND_TEXT);
 		}
-		#endif
+		#endif // #ifndef LITE_EDITION
 
 		if(t2 > t1) t1 = t2;
 

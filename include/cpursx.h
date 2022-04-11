@@ -253,9 +253,9 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		char hdd_free[40];
 		free_size(drives[ndx], hdd_free);
 		sprintf(msg + len,  "%s: %s\n"
-							"%s: %i %s\n",
+							"%s: %i %s %s\n",
 							STR_STORAGE, hdd_free,
-							STR_MEMORY,  mem_free, STR_KBFREE);
+							STR_MEMORY,  mem_free, STR_KBFREE, _EDITION);
 
 		#ifndef LITE_EDITION
 		if(op >= 10 && op <= 15) // storage

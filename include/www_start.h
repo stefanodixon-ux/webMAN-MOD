@@ -93,7 +93,14 @@ static void start_www(u64 conn_s_p)
 
 		if(conn_s_p == START_DAEMON)
 		{
-			#ifdef COBRA_ONLY
+			if(file_exists(WM_RELOAD_FILE))
+			{
+				sys_ppu_thread_sleep(3);
+				cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
+				sys_ppu_thread_exit(0);
+			}
+
+			#ifdef COBRA_NON_LITE
 			cobra_read_config(cobra_config);
 
 			// cobra spoofer not working since 4.53
@@ -163,6 +170,7 @@ static void start_www(u64 conn_s_p)
 			#endif
 
 			wait_for_xmb();
+
 			if(file_exists("/dev_hdd0/ps3-updatelist.txt"))
 				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 

@@ -70,9 +70,12 @@ static char search_url[50];
 /////////////////////////////////////
  #ifdef LITE_EDITION
 	#define EDITION_ " [Lite]"
+	#define _EDITION EDITION_
  #elif defined(PS3NET_SERVER) && defined(NET3NET4) && defined(XMB_SCREENSHOT)
 	#define EDITION_ " [Full]"
+	#define _EDITION EDITION_
  #else
+  #define _EDITION ""
   #ifdef PS3MAPI
 	#ifdef REX_ONLY
 		#define EDITION_ " [Rebug-PS3MAPI]"
@@ -89,6 +92,7 @@ static char search_url[50];
  #endif
 #else
  #define EDITION_ " [nonCobra]"
+ #define _EDITION EDITION_
  #undef PS3MAPI
  #undef WM_PROXY_SPRX
 #endif
@@ -404,9 +408,10 @@ static u8 mount_unk = EMU_OFF;
 #ifdef COBRA_ONLY
 #include "include/cue_file.h"
 #include "include/psxemu.h"
-#include "include/rawseciso.h"
 #include "include/netclient.h"
 #include "include/netserver.h"
+#include "include/netiso.h"
+#include "include/rawseciso.h"
 #endif
 
 #include "include/webchat.h"
@@ -554,13 +559,11 @@ again_debug:
 	ssend(debug_s, debug);
 #endif
 
-	//sys_ppu_thread_sleep(2);
+	// sys_ppu_thread_sleep(2);
 
 	led(YELLOW, OFF);
 
 	start_event(EVENT_AUTOEXEC);
-
-	cellFsUnlink(WM_RELOAD_FILE);
 
 	////////////////////////////////////////
 
@@ -636,6 +639,7 @@ relisten:
 end:
 	sclose(&list_s);
 
+	thread_id_wwwd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }
 
@@ -664,9 +668,9 @@ int wwwd_start(u64 arg)
 
 	sys_ppu_thread_create(&thread_id_wwwd, wwwd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_WEB_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_SVR);
 
-//#ifndef CCAPI
+#ifndef CCAPI
 	_sys_ppu_thread_exit(0); // remove for ccapi compatibility
-//#endif
+#endif
 	return SYS_PRX_RESIDENT;
 }
 
@@ -686,9 +690,9 @@ static void wwwd_stop_thread(u64 arg)
 		{overlay = 1; disable_progress();} // clear message address
 	#endif
 
-	sys_ppu_thread_sleep(2); // wait for other threads
-
 	restore_settings();
+
+	sys_ppu_thread_sleep(2); // wait for other threads
 
 	thread_join(thread_id_wwwd);
 
@@ -715,7 +719,6 @@ static void wwwd_stop_thread(u64 arg)
 	remove_cfw_syscall8(); // remove cobra if syscalls were disabled
 	#endif
 
-	thread_id_wwwd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }
 
@@ -731,6 +734,6 @@ int wwwd_stop(void)
 
 	finalize_module();
 
-	sys_ppu_thread_exit(0);
+	_sys_ppu_thread_exit(0);
 	return SYS_PRX_STOP_OK;
 }

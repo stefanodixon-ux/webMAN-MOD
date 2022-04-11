@@ -49,7 +49,7 @@ static void restore_settings(void)
 #endif
 
 	for(u8 n = 0; n < 4; n++)
-		if(active_socket[n]>NONE) sys_net_abort_socket(active_socket[n], SYS_NET_ABORT_STRICT_CHECK);
+		if(active_socket[n]>NONE) {sys_net_abort_socket(active_socket[n], SYS_NET_ABORT_STRICT_CHECK); sclose(&active_socket[n]);}
 
 	if(webman_config->fanc == DISABLED || webman_config->man_speed == FAN_AUTO)
 	{

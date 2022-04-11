@@ -570,7 +570,9 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 
 		#ifdef NET_SUPPORT
 		int abort_connection = 0;
+		#ifdef USE_INTERNAL_NET_PLUGIN
 		if(g_socket >= 0 && open_remote_dir(g_socket, "/", &abort_connection, false) < 0) do_umount(false);
+		#endif
 		#endif
 
 		#ifdef SLAUNCH_FILE
@@ -678,7 +680,7 @@ list_games:
 			if(!(is_net || IS_NTFS) && (isDir(drives[f0]) == false)) continue;
 //
 			#ifdef NET_SUPPORT
-			if((ns >= 0) && (ns!=g_socket)) sclose(&ns);
+			if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 			#endif
 			ns = NONE; uprofile = profile;
 			for(u8 f1 = filter1; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
@@ -707,7 +709,9 @@ list_games:
 					if(check_content_type(f1)) continue;
 
 				#ifdef NET_SUPPORT
-				if(is_net && (netiso_svrid == (f0-NET)) && (g_socket != -1)) ns = g_socket; /* reuse current server connection */ else
+				#ifdef USE_INTERNAL_NET_PLUGIN
+				if(is_net && (netiso_svrid == (f0-NET)) && (g_socket != NONE)) ns = g_socket; /* reuse current server connection */ else
+				#endif
 				if(is_net && (ns<0)) ns = connect_to_remote_server(f0-NET);
 				#endif
 				if(is_net && (ns<0)) break;

@@ -22,8 +22,6 @@ static inline void _sys_ppu_thread_exit(u64 val)
 
 static void finalize_module(void)
 {
-	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
-
 	// int *result = NULL;
 	// {system_call_6(SC_STOP_PRX_MODULE, (u64)(u32)prx, 0, NULL, (u64)(u32)result, 0, NULL);}
 
@@ -31,9 +29,9 @@ static void finalize_module(void)
 
 	meminfo[0] = 0x28;
 	meminfo[1] = 2;
-	meminfo[2] = 0;
 	meminfo[3] = 0;
-	meminfo[4] = 0;
+
+	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
 
 	{system_call_3(SC_STOP_PRX_MODULE, prx, 0, (u64)(u32)meminfo);}
 	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}

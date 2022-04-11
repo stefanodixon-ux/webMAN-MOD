@@ -800,10 +800,10 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("tid", STR_TITLEID, " • ", (webman_config->tid),  buffer);
 	add_checkbox("sfo", "PARAM.SFO", " • ",!(webman_config->use_filename), buffer);
 
-	value = webman_config->info;
 	concat(buffer, "Info <select name=\"xi\">");
 
 	#ifndef LITE_EDITION
+	value = webman_config->info;
 	use_imgfont = (file_ssize(IMAGEFONT_PATH) > 900000);
 					add_option_item(0x03, "None",                       (value == 0x03), buffer);
 	if(use_imgfont) add_option_item(0x13, "Tags",                       (value == 0x13), buffer);
@@ -818,6 +818,7 @@ static void setup_form(char *buffer, char *templn)
 					add_option_item(0x21, "Path + ID + Version",        (value == 0x21), buffer);
 	if(use_imgfont) add_option_item(0x31, "Path + ID + Version + Tags", (value == 0x31), buffer);
 	#else
+	value = webman_config->info & 0xF;
 	add_option_item(0x03, "None",      (value == 0x03), buffer);
 	add_option_item(0x02, "ID",        (value == 0x02), buffer);
 	add_option_item(0x00, "Path",      (value == 0x00), buffer);

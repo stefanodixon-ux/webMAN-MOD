@@ -1,4 +1,4 @@
-#ifdef NET_SUPPORT
+#ifdef COBRA_ONLY
 
 // -----------------------
 // mount /net ISO or path
@@ -262,4 +262,4 @@ retry_net:
 	goto exit_mount;
 }
 
-#endif // #ifdef NET_SUPPORT
+#endif // #ifdef COBRA_ONLY

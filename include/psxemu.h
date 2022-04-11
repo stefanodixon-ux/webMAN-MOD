@@ -1,8 +1,10 @@
 #ifdef COBRA_ONLY
 
-#define PLAYSTATION      "PLAYSTATION "
+#define CD_SECTOR_SIZE_2048     2048
 
 #ifndef LITE_EDITION
+#define PLAYSTATION      "PLAYSTATION "
+
 static u32 detect_cd_sector_size(char *buffer)
 {
 	u16 sec_size[7] = {2352, 2048, 2336, 2448, 2328, 2340, 2368};
