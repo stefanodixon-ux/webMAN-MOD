@@ -1,5 +1,7 @@
 #include "../vsh/xregistry.h"
 
+#ifndef LITE_EDITION
+
 #ifdef DEBUG_XREGISTRY
 
 static u32 get_xreg_value(const char *key, int new_value, char *str_value, bool read_only)
@@ -119,3 +121,5 @@ static int get_xreg_entry_size(int id)
 	return 0;
 }
 #endif // #ifdef PS3_BROWSER
+
+#endif // #ifndef LITE_EDITION

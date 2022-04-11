@@ -20,6 +20,7 @@
  #else
   #undef VISUALIZERS
   #undef NET_SUPPORT
+  #undef DEBUG_XREGISTRY
  #endif
 #else
  #undef WM_PROXY_SPRX

@@ -655,6 +655,7 @@ parse_request:
 			#include "cmd/download.h"
 			#include "cmd/install.h"
 			#include "cmd/reloadxmb.h"
+			#include "cmd/xmb_browser.h"
 			#include "cmd/games.h"
 			#include "cmd/popup.h"
 			#include "cmd/restart.h"
@@ -666,7 +667,6 @@ parse_request:
 			#include "cmd/wait.h"
 			#include "cmd/edit.h"
 			#include "cmd/chat.h"
-			#include "cmd/xmb_browser.h"
 			#include "cmd/mount_search.h"
 			if(sys_admin)
 			{

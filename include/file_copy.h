@@ -14,7 +14,7 @@ static bool is_ext(const char *path, const char *ext)
 {
 	return !extcasecmp(path, ext, 4);
 }
-
+#ifndef LITE_EDITION
 static void check_path_tags(char *param)
 {
 	if(!param) return;
@@ -27,6 +27,9 @@ static void check_path_tags(char *param)
 		memcpy(tag, uid, 8);
 	}
 }
+#else
+#define check_path_tags(a)
+#endif
 
 static void filepath_check(char *file)
 {

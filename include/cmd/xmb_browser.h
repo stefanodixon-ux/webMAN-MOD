@@ -40,13 +40,17 @@
 
 		char *params = param + (islike(param, "/xmb.ps3") ? 8 : 12);
 		char *url = params + 1;
+
+		#ifndef LITE_EDITION
 		check_path_tags(params);
 
 		if(islike(params, "$home"))
 		{
 			goto_xmb_home(params[5] != 0);
 		}
-		else if(islike(params, "$exit"))
+		else
+		#endif
+		if(islike(params, "$exit"))
 		{
 			int is_ingame = View_Find("game_plugin");
 
@@ -73,7 +77,7 @@
 			}
 		}
 		else
-		#ifdef COBRA_ONLY
+		#ifdef COBRA_NON_LITE
 		if(islike(params, "$eject"))
 		{
 			if(islike(params + 6, "/dev_usb"))
@@ -106,6 +110,7 @@
 		}
 		else
 		#endif
+		#ifndef LITE_EDITION
 		if(islike(params, "$rsx"))
 		{
 			static u8 rsx = 1;
@@ -125,6 +130,7 @@
 			restore_blocked_urls(true);
 		}
 		else
+		#endif //#ifndef LITE_EDITION
 		/*if(islike(params, "$dlna"))
 		{
 			int status = 2;
@@ -332,6 +338,7 @@
 			else
 			#endif
 			{
+				#ifndef LITE_EDITION
 				if(*params == NULL) sprintf(params, "/");
 				if(*params == '/' ) {do_umount(false); check_path_alias(params); sprintf(header, "http://%s%s", local_ip, params); open_browser(header, 0);} else
 				if(*params == '$' ) {if(get_explore_interface()) exec_xmb_command(url);} else
@@ -339,6 +346,7 @@
 									{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23
 
 				if(*params != '$' ) if(!(webman_config->minfo & 1)) show_msg(url);
+				#endif
 			}
 		}
 		else

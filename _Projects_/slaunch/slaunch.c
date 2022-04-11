@@ -490,10 +490,10 @@ static uint8_t draw_side_menu(void)
 		{
 			send_wm_request("/popup.ps3?sLaunch%20unloaded!");
 
-			if(!unload_mode)
-				send_wm_request("/unloadprx.ps3?prx=sLaunch");
-			else
+			if(unload_mode)
 				send_wm_request("/quit.ps3");
+			//else
+			//	send_wm_request("/unloadprx.ps3?prx=sLaunch");
 
 			running=0;
 		}
@@ -925,7 +925,7 @@ static void slaunch_thread(uint64_t arg)
 		{
 			if(unload_mode > 2)
 			{
-				send_wm_request("/unloadprx.ps3?prx=sLaunch");
+				//send_wm_request("/unloadprx.ps3?prx=sLaunch");
 				sys_ppu_thread_exit(0);
 			}
 

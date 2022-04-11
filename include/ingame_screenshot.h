@@ -1,5 +1,7 @@
 #define ENABLE_INGAME_SCREENSHOT	((int*)getNIDfunc("vshmain",0x981D7E9F,0))[0] -= 0x2C;
 
+#ifndef LITE_EDITION
+
 #ifdef PS3_BROWSER
 static int (*vshmain_is_ss_enabled)(void) = NULL;
 static int (*set_SSHT_)(int) = NULL;
@@ -21,4 +23,6 @@ static void enable_ingame_screenshot(void)
 		sys_ppu_thread_sleep(2);
 	}
 }
-#endif
+#endif // #ifdef PS3_BROWSER
+
+#endif // #ifndef LITE_EDITION

@@ -3,6 +3,8 @@
 *
 * u8 pause    = pause fifo (1), continue fifo (0)
 ***********************************************************************/
+#ifndef LITE_EDITION
+
 #if defined(PS3_BROWSER) || defined(XMB_SCREENSHOT)
 static s32 rsx_fifo_pause(u8 pause)
 {
@@ -196,4 +198,6 @@ static void saveBMP2(char *path, bool notify_bmp)
 }
 */
 
-#endif
+#endif // #ifdef XMB_SCREENSHOT
+
+#endif // #ifndef LITE_EDITION

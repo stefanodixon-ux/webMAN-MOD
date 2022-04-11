@@ -536,7 +536,7 @@ static void do_rebug_menu_action(void)
 	switch(line)
 	{
 		case 0:
-			send_wm_request("/unloadprx.ps3?prx=VSH_MENU");
+			//send_wm_request("/unloadprx.ps3?prx=VSH_MENU");
 			break;
 
 		case 1:
@@ -1475,7 +1475,7 @@ static void vsh_menu_thread(uint64_t arg)
 		{
 			if(unload_mode > 2)
 			{
-				send_wm_request("/unloadprx.ps3?prx=VSH_MENU");
+				//send_wm_request("/unloadprx.ps3?prx=VSH_MENU");
 				sys_ppu_thread_exit(0);
 			}
 
