@@ -21,6 +21,7 @@ cd _Projects_\updater
 call Make_PKG.bat
 title Building webMAN_MOD_latest.pkg ...
 call make_update.bat
+rd custom
 
 set ver=1.47
 set rev=39

@@ -952,6 +952,7 @@ setTimeout(function(){
 <tr><td>NET<td>SLES_517.55<td>Disney/Pixar's Finding Nemo</tr>
 <tr><td>NET<td>SCES_511.76<td>Disney's Treasure Planet</tr>
 <tr><td>NET<td>SLES_507.73<td>Donald Duck: Phantomias Platyrhynchos Kineticus</tr>
+<tr><td>NET<td>SCPS_150.22<td>Dual Hearts</tr>
 <tr><td>NET<td>SLUS_207.66<td>Fatal Frame 2: Crimson Butterfly</tr>
 <tr><td>NET<td>SCPS_110.26<td>Gacharoku</tr>
 <tr><td>NET<td>SLPS_255.09<td>Garou: Mark of the Wolves</tr>
@@ -970,11 +971,14 @@ setTimeout(function(){
 <tr><td>NET<td>SLUS_200.62<td>Grand Theft Auto III</tr>
 <tr><td>NET<td>SLES_503.30<td>Grand Theft Auto III</tr>
 <tr><td>NET<td>SLUS_216.04<td>GRIMgRiMoiRe</tr>
+<tr><td>NET<td>SLPS_257.72<td>GRIMgRiMoiRe</tr>
 <tr><td>NET<td>SLUS_215.71<td>Growlanser Heritage of War</tr>
 <tr><td>NET<td>SLES_526.02<td>GT Racers</tr>
 <tr><td>NET<td>SLES_526.80<td>Intellivision Lives!: The History of Video Gaming</tr>
 <tr><td>NET<td>SLUS_210.08<td>Katamari Damacy</tr>
 <tr><td>NET<td>SLPS_253.60<td>Katamari Damacy</tr>
+<tr><td>NET<td>SLPS_200.58<td>Kengo</tr>
+<tr><td>NET<td>SLPM_657.00<td>Kengo 3</tr>
 <tr><td>NET<td>SLUS_202.75<td>Kessen 2</tr>
 <tr><td>NET<td>SLUS_208.47<td>La Pucelle: Tactics</tr>
 <tr><td>NET<td>SLPM_551.14<td>Mana-Khemia 2: Ochita Gakuen to Renkinjutsushi-tachi</tr>
@@ -2713,6 +2717,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SCES_504.59<td>Dropship: United Peace Force</tr>
 <tr><td>ENC<td>SLUS_204.63<td>Dropship: United Peace Force</tr>
 <tr><td>ENC<td>SLUS_217.93<td>DT Carnage</tr>
+<tr><td>ENC<td>SCPS_150.22<td>Dual Hearts</tr>
 <tr><td>ENC<td>SLES_528.84<td>Duel Masters</tr>
 <tr><td>ENC<td>SLUS_200.79<td>Dynasty Warriors 2</tr>
 <tr><td>ENC<td>SLES_500.57<td>Dynasty Warriors 2</tr>
@@ -2934,6 +2939,7 @@ setTimeout(function(){
 <tr><td>ENC<td title="Adds pressure sensitivity to allow controllable speeds while driving">NPED_000.63<td>Grand Theft Auto III</tr>
 <tr><td>ENC<td>SLUS_216.04<td>GRIMgRiMoiRe</tr>
 <tr><td>ENC<td>NPUD_216.04<td>GRIMgRiMoiRe</tr>
+<tr><td>ENC<td>SLPS_257.72<td>GRIMgRiMoiRe</tr>
 <tr><td>ENC<td>SLUS_207.58<td>Growlanser Generations [Disc1of2]</tr>
 <tr><td>ENC<td>SLUS_207.59<td>Growlanser Generations [Disc2of2]</tr>
 <tr><td>ENC<td>SLUS_215.71<td>Growlanser Heritage of War</tr>
@@ -3085,6 +3091,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPS_253.60<td>Katamari Damacy</tr>
 <tr><td>ENC<td>SCKA_200.25<td>Katamari Damacy</tr>
 <tr><td>ENC<td>SLPS_250.33<td>Kaze no Klonoa 2: Sekai ga Nozonda Wasuremono (風のクロノア2 世界が望んだ忘れもの)</tr>
+<tr><td>ENC<td>SLPS_200.58<td>Kengo</tr>
+<tr><td>ENC<td>SLPM_657.00<td>Kengo 3</tr>
 <tr><td>ENC<td>SLES_500.18<td>Kessen</tr>
 <tr><td>ENC<td>SLES_500.19<td>Kessen</tr>
 <tr><td>ENC<td>SLES_500.20<td>Kessen</tr>
@@ -3933,7 +3941,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2167, count = tr.length, classics = i;
+var i = 2171, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}

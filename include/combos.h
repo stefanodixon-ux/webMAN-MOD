@@ -137,7 +137,7 @@
 						if(do_custom_combo("l1_r1_triangle")) continue;
 						#endif
 
-						if(syscalls_removed || is_mounting || refreshing_xml || file_exists(WM_RELOAD_FILE)) continue;
+						if(syscalls_removed || is_mounting || refreshing_xml || file_exists(WM_RELOAD_FILE)) {BEEP3; continue;}
 
 						#ifndef LITE_EDITION
 						#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server_lite.sprx"
@@ -653,7 +653,7 @@
  						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("l3_r3")) break;
 		 				#endif
-						if(is_mounting || refreshing_xml) continue;
+						if(syscalls_removed || is_mounting || refreshing_xml) {BEEP3; continue;}
 						#ifdef FPS_OVERLAY
 						if(overlay_enabled)
 							{overlay = 1; disable_progress();}
