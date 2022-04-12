@@ -96,6 +96,7 @@ static void start_www(u64 conn_s_p)
 			if(file_exists(WM_RELOAD_FILE))
 			{
 				sys_ppu_thread_sleep(3);
+				from_reboot = false;
 				cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
 				sys_ppu_thread_exit(0);
 			}

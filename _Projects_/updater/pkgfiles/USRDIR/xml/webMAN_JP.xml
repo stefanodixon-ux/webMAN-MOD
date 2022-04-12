@@ -57,7 +57,6 @@
 			<Q class="type:x-xmb/folder-pixmap" key="webman_restart_link" src="#seg_webman_restart"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_shutdown_link" src="#seg_webman_shutdown"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_update_link" src="#seg_webman_update"/>
-			<Q class="type:x-xmb/folder-pixmap" key="webman_prepare_ntfs" src="xcb://localhost/query?limit=1&cond=Ae+Game:Game.titleId BLES80616"/>
 		</I>
 	</V>
 
