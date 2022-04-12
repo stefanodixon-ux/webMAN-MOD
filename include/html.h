@@ -464,7 +464,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 			_concat(&header, "image/jpeg");
 		else
 		if(_IS(ext, ".htm") || _IS(ext5, ".html") || _IS(ext5, ".shtm"))
-			{_concat(&header, "text/html"); set_base_path = true;}
+			{_concat(&header, "text/html;charset=UTF-8"); set_base_path = true;}
 		else
 		if(_IS(ext + 1, ".js"))
 			_concat(&header, "text/javascript");
@@ -473,7 +473,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 			_concat(&header, "text/css");
 		else
 		if(_IS(ext, ".txt") || _IS(ext, ".log") || _IS(ext, ".ini") || _IS(ext, ".cfg") || IS(ext, ".HIP") || IS(ext, ".HIS") || IS(ext, ".HIP") || IS(ext, ".CNF"))
-			_concat(&header, "text/plain");
+			_concat(&header, "text/plain;charset=UTF-8");
 		else
 		if(_IS(ext, ".svg"))
 			_concat(&header, "image/svg+xml");
@@ -558,7 +558,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 			_concat(&header, "application/octet-stream");
 	}
 	else
-		{_concat(&header, "text/html"); set_base_path = true;}
+		{_concat(&header, "text/html;charset=UTF-8"); set_base_path = true;}
 
 	if(set_base_path && (is_binary != WEB_COMMAND) && param[0] == '/') {strcpy(html_base_path, param); if(!isDir(param)) remove_filename(html_base_path);}
 

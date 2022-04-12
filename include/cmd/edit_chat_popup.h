@@ -93,6 +93,8 @@
 
 			if(op) strcpy(templn, msg); else sprintf(templn, "Message sent: %s", msg);
 			_concat(&sbuffer, templn);
+
+			if(mode=='=') sbuffer.size = sprintf(sbuffer.str, "%s", msg); // raw mode
 		}
 
 		loading_html = keep_alive = is_popup = 0; goto send_response;

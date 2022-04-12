@@ -173,7 +173,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		if(op == 18) // syscalls
 			sprintf(msg, "Syscalls: %s", syscalls_removed ? STR_DISABLED : STR_ENABLED);
 		if(op == 19) // temp
-			{*(strchr(msg, '\n')) = 0; return;}
+			{char *p = strchr(msg, '\n'); memset(p, 0, len-30); return;}
 		if(op == 20) // fan mode
 			{sprintf(msg, "%s", fan_mode + 3); return;}
 		#endif
