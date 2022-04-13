@@ -139,17 +139,16 @@
 					if(do_custom_combo("l1_r1_triangle")) continue;
 					#endif
 
-					if(syscalls_removed || is_mounting || refreshing_xml || file_exists(WM_RELOAD_FILE)) {BEEP3; continue;}
-
 					#ifndef LITE_EDITION
 					#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server_lite.sprx"
 					#else
 					#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server.sprx"
 					#endif
 
-					if(not_exists(TOGGLE_PLUGIN)) continue;
+					if(syscalls_removed || is_mounting || refreshing_xml || file_exists(WM_RELOAD_FILE) || not_exists(TOGGLE_PLUGIN)) {BEEP3; continue;}
 
 					if(!webman_config->nobeep) BEEP1;
+
 					create_file(WM_RELOAD_FILE); // create semaphore file
 
 					load_vsh_module(TOGGLE_PLUGIN);
@@ -666,7 +665,7 @@
 						if(!webman_config->nobeep) play_sound_id(5); // trophy sound
 					}
 					#else
-					{ BEEP1 }
+					if(!webman_config->nobeep) BEEP1;
 					#endif
 					toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounter.sprx");
 					sys_ppu_thread_sleep(3);

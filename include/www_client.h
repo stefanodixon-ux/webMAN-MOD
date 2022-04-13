@@ -44,9 +44,9 @@ static u8 check_password(char *param)
 
 static void restore_settings(void)
 {
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	unload_vsh_gui();
-#endif
+	#endif
 
 	for(u8 n = 0; n < 4; n++)
 		if(active_socket[n]>NONE) {sys_net_abort_socket(active_socket[n], SYS_NET_ABORT_STRICT_CHECK); sclose(&active_socket[n]);}
@@ -61,17 +61,18 @@ static void restore_settings(void)
 			restore_fan(SYSCON_MODE);  //restore syscon fan control mode
 	}
 
-#ifdef WM_PROXY_SPRX
+	#ifdef WM_PROXY_SPRX
 	{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", NULL);}
-#endif
+	#endif
 
 	#ifdef AUTO_POWER_OFF
 	setAutoPowerOff(false);
 	#endif
 
-#ifdef COBRA_ONLY
+	#ifdef COBRA_ONLY
 	if(cobra_config->fan_speed) cobra_read_config(cobra_config);
-#endif
+	#endif
+
 	working = plugin_active = 0;
 	sys_ppu_thread_usleep(500000);
 }
