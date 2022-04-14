@@ -687,7 +687,7 @@ static void wwwd_stop_thread(u64 arg)
 
 	#ifdef FPS_OVERLAY
 	if(overlay_enabled)
-		{overlay = 1; disable_progress();} // clear message address
+		disable_progress(); // clear message address
 	#endif
 
 	restore_settings();

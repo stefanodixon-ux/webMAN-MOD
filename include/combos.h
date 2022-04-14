@@ -657,7 +657,7 @@
 					if(syscalls_removed || is_mounting || refreshing_xml) {BEEP3; continue;}
 					#ifdef FPS_OVERLAY
 					if(overlay_enabled)
-						{overlay = 1; disable_progress();}
+						disable_progress();
 					else
 					{
 						unload_vsh_plugin("VshFpsCounter"); // unload any loaded VshFpsCounter

@@ -146,9 +146,9 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		#endif
 
 		#ifdef FPS_OVERLAY
-		if(overlay_enabled >= 10)
+		if(overlay_info)
 		{
-			get_sys_info(msg, overlay_enabled, false);
+			get_sys_info(msg, overlay_info, false);
 			overlay = 1; show_progress(msg, OV_SHOW);
 		}
 		#endif

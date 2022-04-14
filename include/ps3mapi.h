@@ -170,7 +170,7 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 		}
 	}
 	#ifdef FPS_OVERLAY
-	if(!find_free_slot && (strstr(plugin_path, "/VshFpsCounter") != NULL)) overlay_enabled = prx_found;
+	if(!find_free_slot && (strstr(plugin_path, "/VshFpsCounter") != NULL)) {overlay_enabled = prx_found, overlay_info = overlay = 0;}
 	#endif
 	return slot;
 }
@@ -1120,7 +1120,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 					if (!uslot ) uslot = get_free_slot(); // find free slot if slot == 0
 					if ( uslot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)prx_path, NULL, 0);}}
 					#ifdef FPS_OVERLAY
-					if(strstr(prx_path, "/VshFpsCounter")) overlay_enabled = 1;
+					if(strstr(prx_path, "/VshFpsCounter")) {overlay_enabled = 1, overlay_info = overlay = 0;}
 					#endif
 				}
 			}

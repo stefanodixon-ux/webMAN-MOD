@@ -4,6 +4,7 @@
 
 static u8 overlay = 0;
 static u8 overlay_enabled = 0;
+static u8 overlay_info = 0;
 
 enum show_progress_options
 {
@@ -20,13 +21,13 @@ enum show_progress_options
 static void show_progress(const char *path, u8 oper)
 {
 	if(!overlay_enabled) return;
-	if(!overlay || syscalls_removed) return;
+	if(!overlay || syscalls_removed || CFW_SYSCALLS_REMOVED(TOC)) return;
 
 	char data[0x80];
 	u64 *data2 = (u64 *)data;
 
 	if(oper == OV_CLEAR)
-		{memset(data, 0, 0x80); overlay = 0;}
+		{memset(data, 0, 0x80); overlay_info = overlay = 0;}
 	else if(oper == OV_SCAN)
 		snprintf(data, 0x80, "\n%s:\n%s", STR_SCAN2, path);
 	else if(oper == OV_COPY)
@@ -42,6 +43,15 @@ static void show_progress(const char *path, u8 oper)
 	else // if(oper == OV_SHOW)
 		snprintf(data, 0x80, "%s", path);
 
+	// fix degree character
+	if(overlay_info)
+	{
+		replace_char(data, 0x80, '\n'); // •
+		replace_char(data, 0xC2, 0x9F); // °
+		for(int c = 0xA0; c <= 0xFF; c++)
+			replace_char(data, c, 0x20);
+	}
+
 	u8 len = strlen(data); memset(data + len, 0, 0x80 - len);
 
 	u64 addr = OVERLAY_ADDR;
@@ -53,6 +63,7 @@ static void show_progress(const char *path, u8 oper)
 
 static void disable_progress(void)
 {
+	overlay = 1; // force update if FPS counter is enabled
 	show_progress("", OV_CLEAR);
 }
 #else

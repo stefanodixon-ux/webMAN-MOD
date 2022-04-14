@@ -79,9 +79,9 @@
 			#ifdef FPS_OVERLAY
 			else if(mode == '@')
 			{
-				if(overlay_enabled && (op >= 10)) overlay_enabled = op; // set persistent show
+				if(op >= 10) overlay_info = op; // set persistent show
 
-				overlay = 1;
+				overlay = 1; // force update if FPS counter is enabled
 				if(*msg)
 					show_progress(msg, OV_SHOW);
 				else
