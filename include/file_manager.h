@@ -8,7 +8,7 @@ static u16 _MAX_LINE_LEN = MAX_LINE_LEN;
 #define _48GB_	0xC00000000ULL
 
 #define TABLE_ITEM_PREFIX  "<tr><td><a class=\""
-#define TABLE_ITEM_SUFIX   "</td></tr>"
+#define TABLE_ITEM_SUFIX   "</tr>"
 
 #define TABLE_ITEM_SIZE  28  // strlen(TABLE_ITEM_PREFIX + TABLE_ITEM_SUFIX) = (18 + 10)
 
@@ -405,15 +405,15 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	// -- name column
 	flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
-							 "%c%s\" href=\"%s\"%s%c%s</a></td>",
+							 "%c%s\" href=\"%s\"%s%c%s</a>",
 							 dclass, ftype, templn,
 			#ifndef LITE_EDITION
 							 show_img ? " onmouseover=\"s(this,0);\"" : (is_dir && show_icon0) ? " onmouseover=\"s(this,1);\"" :
 			#endif
-							 "", is_param_sfo, name);
+							"" , is_param_sfo, name);
 
 	// -- size column
-	slen =  sprintf(templn, "<td> %s%s</td>",
+	slen =  sprintf(templn, "<td> %s%s",
 							fsize, is_root ? "" : " &nbsp; ");
 
 	// -- reduce features if html code is too long
@@ -423,14 +423,14 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		if(is_dir) sprintf(fsize, HTML_DIR); else sprintf(fsize, "%llu %s", sz, sf);
 
 		// -- rebuild size column without link
-		slen = sprintf(templn, "<td> %s%s</td>",
+		slen = sprintf(templn, "<td> %s%s",
 								fsize, is_root ? "" : " &nbsp; ");
 
 		// -- rebuild name without link if html code is still too long
 		if((FILE_MGR_KEY_LEN + flen + slen + dlen) >= _LINELEN)
 		{
 			flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
-									 "%c%s\"%c%s</a></td>",
+									 "%c%s\"%c%s</a>",
 									 dclass, ftype, is_param_sfo, name);
 		}
 	}
@@ -458,7 +458,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 	strcpy(templn, param);
 
 	// add links to path
-	prev_dest = last_dest = NULL; // init fast concat
+	fast_concat.str = NULL;
 
 	while((slash = strchr(templn + 1, '/')))
 	{
@@ -542,7 +542,8 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 		if( param[11] ) {sprintf(templn, HTML_REDIRECT_TO_URL, "/", HTML_REDIRECT_WAIT); _concat(&sout, templn);}
 
-		sprintf(templn, "/dev_blind: %s", isDir("/dev_blind") ? STR_ENABLED : STR_DISABLED); _concat(&sout, templn); return true;
+		_concat2(&sout, "/dev_blind: ", isDir("/dev_blind") ? STR_ENABLED : STR_DISABLED);
+		return true;
 	}
 
 	absPath(templn, param, "/"); // auto mount /dev_blind & /dev_hdd1
@@ -669,7 +670,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 					urlenc(swap, templn);
 					flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
-														  "d\" href=\"%s\">..</a></td>"
+														  "d\" href=\"%s\">..</a>"
 														  "<td> " HTML_URL "%s"
 														, swap, swap, HTML_DIR, HTML_ENTRY_DATE);
 
@@ -772,7 +773,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			if(is_ntfs && !npath[6])
 			{
 				flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
-													  "d\" href=\"%s\">..</a></td>"
+													  "d\" href=\"%s\">..</a>"
 													  "<td> " HTML_URL "%s"
 													, "/", "/", HTML_DIR, HTML_ENTRY_DATE);
 				idx++, dirs++;
@@ -874,7 +875,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				if(is_netsrv_enabled(n))
 				{
 					sprintf(line_entry[idx].path, "dnet%i     " // <-- size should be = FILE_MGR_KEY_LEN
-												  "d\" href=\"/net%i\">net%i (%s:%i)</a></td>"
+												  "d\" href=\"/net%i\">net%i (%s:%i)</a>"
 												  "<td> <a href=\"/mount.ps3/net%i\">%s</a>%s"
 												  , n, n, n, webman_config->neth[n], webman_config->netp[n], n, HTML_DIR, HTML_ENTRY_DATE); idx++;
 				}
@@ -931,7 +932,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				bool show_icon = false;
 				if(is_net && jb_games)
 				{
-					char *p = strchr(param + 12, '/'); if(p) *p = NULL;
+					replace_char(param + 12, '/', 0);
 					sprintf(templn, "%s/PS3_GAME/ICON0.PNG", param);
 					show_icon = true;
 				}
@@ -942,7 +943,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					if(!show_icon) sprintf(templn, "%s/ICON2.PNG", param); show_icon = file_exists(templn);     // ps3_extra folder
 					if(!show_icon)
 					{
-						char *p = strchr(param + 18, '/'); if(p) *p = NULL;
+						replace_char(param + 18, '/', 0);
 						sprintf(templn, "%s/PS3_GAME/ICON0.PNG", param); show_icon = file_exists(templn); // dev_bdvd or jb folder
 						if(!show_icon) sprintf(templn, "%s/ICON0.PNG", param); show_icon = file_exists(templn); // game dir
 					}
@@ -963,7 +964,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					sprintf(templn, "%s", wm_icons[dt]); show_icon = true;
 				}
 
-				for(u16 m = idx; m < 10; m++) _concat(&sout, "<BR>");
+				for(u16 m = idx; m < 10; m++) _concat(&sout, "<br>");
 
 				if(show_icon || show_icon0)
 					{urlenc(swap, templn); sprintf(templn, "<script>icon.src=\"%s\";icon.style.display='block';</script>", swap); _concat(&sout, templn);}
@@ -1033,8 +1034,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			#endif
 
 			///////////
-			char *slash = strchr(param + 1, '/');
-			if(slash) *slash = NULL;
+			replace_char(param + 1, '/', 0);
 
 			sprintf(templn, "<hr>"
 							"<b>" HTML_URL "%c", param, param, (param[10] == ':') ? 0 : ':');
@@ -1058,15 +1058,15 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		}
 		else
 		{
-
 			_concat(&sout,	HTML_BLU_SEPARATOR);
 
 			#ifndef LITE_EDITION
-			_concat(&sout,	webman_config->sman ? "<a class='tg' " : "<a ");
-			_concat(&sout,	"onclick=\"o=lg.style,o.display=(o.display=='none')?'block':'none';\" style=\"cursor:pointer;\"> ");
+			_concat2(&sout, webman_config->sman ? "<a class='tg' " : "<a ",
+							"onclick=\"o=lg.style,o.display=(o.display=='none')?'block':'none';\" "
+							"style=\"cursor:pointer;\"> ");
 			#endif
 
-			_concat(&sout,	WM_APPNAME " - Simple Web Server" EDITION "</a>");
+			_concat2(&sout, WM_APPNAME, " - Simple Web Server" EDITION "</a>");
 
 			#ifndef LITE_EDITION
 			_concat(&sout, "<div id=\"lg\" style=\"display:none\">");

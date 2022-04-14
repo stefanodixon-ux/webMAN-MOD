@@ -24,7 +24,7 @@
 		if(islike(params , "?history"))
 		{
 			delete_history(true);
-			sprintf(tempstr, "%s : history", STR_DELETE); _concat(&sbuffer, tempstr);
+			_concat2(&sbuffer, STR_DELETE, " : history");
 			sprintf(params, "/"); // redirect to root
 		}
 		else if(islike(params , "?uninstall"))

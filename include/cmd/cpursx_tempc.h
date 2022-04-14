@@ -2,15 +2,17 @@
 	{
 		char *cpursx = header, *buffer = param; get_cpursx(cpursx);
  /*		// prevents flickering but cause error 80710336 in ps3 browser (silk mode)
-		sprintf(buffer, "<meta http-equiv=\"refresh\" content=\"15;URL=%s\">"
+		sprintf(buffer, "%s15;URL=%s\">"
 						"<script>parent.document.getElementById('lbl_cpursx').innerHTML = \"%s\";</script>",
-						"/cpursx_ps3", cpursx);
+						HTML_REFRESH, "/cpursx_ps3", cpursx);
  */
-		int buf_len = sprintf(buffer, "<meta http-equiv=\"refresh\" content=\"15;URL=%s\">"
+		int buf_len = sprintf(buffer, "%s15;URL=%s\">"
 									  "%s"
 									  "<a href=\"%s\" target=\"_parent\" style=\"text-decoration:none;\">"
 									  "<font color=\"#fff\">%s</a>",
-									  "/cpursx_ps3", HTML_BODY, "/cpursx.ps3", cpursx);
+									  HTML_REFRESH, "/cpursx_ps3",
+									  HTML_BODY, "/cpursx.ps3", cpursx);
+
 		buf_len = sprintf(header, HTML_RESPONSE_FMT,
 								  CODE_HTTP_OK, "/cpursx_ps3", HTML_HEADER, buffer, HTML_BODY_END);
 

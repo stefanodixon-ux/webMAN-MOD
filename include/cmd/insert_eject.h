@@ -2,8 +2,8 @@
 	{
 		// /eject.ps3   eject physical disc from bd drive
 		eject_insert(1, 0);
-		_concat(&sbuffer, STR_EJECTED);
-		sprintf(templn, HTML_REDIRECT_TO_URL, "javascript:history.back();", HTML_REDIRECT_WAIT); _concat(&sbuffer, templn);
+		sprintf(templn, HTML_REDIRECT_TO_URL, "javascript:history.back();", HTML_REDIRECT_WAIT);
+		_concat2(&sbuffer, STR_EJECTED, templn);
 	}
 	else
 	if(islike(param, "/insert.ps3"))

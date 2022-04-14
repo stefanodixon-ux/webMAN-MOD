@@ -13,6 +13,8 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 #define IS_MARKED(key)			(strstr(param, key) != NULL)
 #define IS_UNMARKED(key)		(!strstr(param, key))
 
+#define HTML_REFRESH			"<meta http-equiv=\"refresh\" content=\""
+
 #define HTML_URL				"<a href=\"%s\">%s</a>"
 #define HTML_URL2				"<a href=\"%s%s\">%s</a>"
 
@@ -36,7 +38,7 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 
 #define HTML_FORM_METHOD		".ps3mapi\" method=\"get\" enctype=\"application/x-www-form-urlencoded\" target=\"_self\">"
 
-#define HTML_ENTRY_DATE			" &nbsp; </td>" \
+#define HTML_ENTRY_DATE			" &nbsp; " \
 								"<td>11-Nov-2006 11:11"
 
 #define _BR_					NULL
@@ -69,6 +71,8 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 #define HTML_REDIRECT_TO_BACK	"<script>history.back();</script>"
 #define HTML_CLOSE_BROWSER		"<script>window.close(this);</script>"
 #define HTML_REDIRECT_WAIT		3000
+
+#define HTML_TOGGLER			HTML_BLU_SEPARATOR "<b><a class=\"tg\" href=\"javascript:tgl("
 
 #define HTML_SHOW_LAST_GAME		"<span style=\"position:absolute;right:8px\"><font size=2>"
 #define HTML_SHOW_LAST_GAME_END	"</font></span>"
@@ -118,31 +122,6 @@ static bool bcompare(const char *a, const char *b, u8 len, const char *mask)
 	return len;
 }
 #endif
-
-static char *last_dest = NULL; // for fast concat -avoids find last byte
-static char *prev_dest = NULL;
-
-static size_t concat(char *dest, const char *src)
-{
-	if(!dest) return 0;
-
-	if(last_dest && (dest == prev_dest))
-		dest = last_dest;
-	else
-		prev_dest = dest;
-
-	while (*dest) dest++; // find last byte
-
-	size_t size = 0;
-
-	last_dest = dest;
-
-	while ((*dest++ = *src++)) size++;  // append src
-
-	last_dest += size;
-
-	return size; // return size of src
-}
 
 static char *to_upper(char *text)
 {
@@ -275,45 +254,30 @@ static size_t utf8enc(char *dst, char *src, u8 cpy2src)
 	size_t j = 0; unsigned int c;
 	for(size_t i = 0; src[i]; i++)
 	{
-		c = ((unsigned char)src[i] & 0x7fffffff);
-
+		c = (unsigned char)src[i];
 		if(c <= 0x7F)
 			dst[j++] = c;
-		else if(c <= 0x7FF)
-		{
+		else { if(c <= 0x07FF) {
 			dst[j++] = 0xC0 | (c>>06);
-			dst[j++] = 0x80 | (0x3F & c);
-		}
-		else if(c <= 0xFFFF)
-		{
+		} else if(c <= 0xFFFF) {
 			dst[j++] = 0xE0 | (0x0F & (c>>12));
 			dst[j++] = 0x80 | (0x3F & (c>>06));
-			dst[j++] = 0x80 | (0x3F &  c);
-		}
-		else if(c <= 0x1FFFFF)
-		{
+		} else if(c <= 0x1FFFFF) {
 			dst[j++] = 0xF0 | (0x0F & (c>>18));
 			dst[j++] = 0x80 | (0x3F & (c>>12));
 			dst[j++] = 0x80 | (0x3F & (c>>06));
-			dst[j++] = 0x80 | (0x3F &  c);
-		}
-		else if(c <= 0x3FFFFFF)
-		{
+		} else if(c <= 0x3FFFFFF) {
 			dst[j++] = 0xF8 | (0x0F & (c>>24));
 			dst[j++] = 0x80 | (0x3F & (c>>18));
 			dst[j++] = 0x80 | (0x3F & (c>>12));
 			dst[j++] = 0x80 | (0x3F & (c>>06));
-			dst[j++] = 0x80 | (0x3F &  c);
-		}
-		else if(c <= 0x7fffffff)
-		{
+		} else if(c <= 0x7FFFFFFF) {
 			dst[j++] = 0xFC | (0x0F & (c>>30));
 			dst[j++] = 0x80 | (0x3F & (c>>24));
 			dst[j++] = 0x80 | (0x3F & (c>>18));
 			dst[j++] = 0x80 | (0x3F & (c>>12));
 			dst[j++] = 0x80 | (0x3F & (c>>06));
-			dst[j++] = 0x80 | (0x3F &  c);
-		}
+		}	dst[j++] = 0x80 | (0x3F & c); }
 	}
 
 	j = MIN(j, MAX_LINE_LEN);
@@ -458,107 +422,107 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		const char *ext = (char*)param + MAX(flen - 4, 0), *ext5 = (char*)param + MAX(flen - 5, 0);
 
 		if(_IS(ext, ".png"))
-			_concat(&header, "image/png");
+			_concat2(&header, "image/", "png");
 		else
 		if(_IS(ext, ".jpg") || _IS(ext5, ".jpeg") || IS(ext, ".STH"))
-			_concat(&header, "image/jpeg");
+			_concat2(&header, "image/", "jpeg");
 		else
 		if(_IS(ext, ".htm") || _IS(ext5, ".html") || _IS(ext5, ".shtm"))
-			{_concat(&header, "text/html;charset=UTF-8"); set_base_path = true;}
+			{_concat2(&header, "text/", "html;charset=UTF-8"); set_base_path = true;}
 		else
 		if(_IS(ext + 1, ".js"))
-			_concat(&header, "text/javascript");
+			_concat2(&header, "text/", "javascript");
 		else
 		if(_IS(ext, ".css"))
-			_concat(&header, "text/css");
+			_concat2(&header, "text/", "css");
 		else
 		if(_IS(ext, ".txt") || _IS(ext, ".log") || _IS(ext, ".ini") || _IS(ext, ".cfg") || IS(ext, ".HIP") || IS(ext, ".HIS") || IS(ext, ".HIP") || IS(ext, ".CNF"))
-			_concat(&header, "text/plain;charset=UTF-8");
+			_concat2(&header, "text/", "plain;charset=UTF-8");
 		else
 		if(_IS(ext, ".svg"))
-			_concat(&header, "image/svg+xml");
+			_concat2(&header, "image/", "svg+xml");
 		#ifndef LITE_EDITION
 		else
 		if(_IS(ext, ".gif"))
-			_concat(&header, "image/gif");
+			_concat2(&header, "image/", "gif");
 		else
 		if(_IS(ext, ".bmp"))
-			_concat(&header, "image/bmp");
+			_concat2(&header, "image/", "bmp");
 		else
 		if(_IS(ext, ".tif"))
-			_concat(&header, "image/tiff");
+			_concat2(&header, "image/", "tiff");
 		else
 		if(_IS(ext, ".avi"))
-			_concat(&header, "video/x-msvideo");
+			_concat2(&header, "video/", "x-msvideo");
 		else
 		if(_IS(ext, ".mp4") || IS(ext, ".MTH"))
-			_concat(&header, "video/mp4");
+			_concat2(&header, "video/", "mp4");
 		else
 		if(_IS(ext, ".mkv"))
-			_concat(&header, "video/x-matroska");
+			_concat2(&header, "video/", "x-matroska");
 		else
 		if(_IS(ext, ".mpg") || _IS(ext, ".mp2") || strcasestr(ext5, ".mpe"))
-			_concat(&header, "video/mpeg");
+			_concat2(&header, "video/", "mpeg");
 		else
 		if(_IS(ext, ".vob"))
-			_concat(&header, "video/vob");
+			_concat2(&header, "video/", "vob");
 		else
 		if(_IS(ext, ".wmv"))
-			_concat(&header, "video/x-ms-wmv");
+			_concat2(&header, "video/", "x-ms-wmv");
 		else
 		if(_IS(ext, ".flv"))
-			_concat(&header, "video/x-flv");
+			_concat2(&header, "video/", "x-flv");
 		else
 		if(_IS(ext, ".mov"))
-			_concat(&header, "video/quicktime");
+			_concat2(&header, "video/", "quicktime");
 		else
 		if(_IS(ext5, ".webm"))
-			_concat(&header, "video/webm");
+			_concat2(&header, "video/", "webm");
 		else
 		if(_IS(ext, ".mp3"))
-			_concat(&header, "audio/mpeg");
+			_concat2(&header, "audio/", "mpeg");
 		else
 		if(_IS(ext, ".wav"))
-			_concat(&header, "audio/x-wav");
+			_concat2(&header, "audio/", "x-wav");
 		else
 		if(_IS(ext, ".wma"))
-			_concat(&header, "audio/x-ms-wma");
+			_concat2(&header, "audio/", "x-ms-wma");
 		else
 		if(_IS(ext, ".mid") || _IS(ext, ".kar"))
-			_concat(&header, "audio/midi");
+			_concat2(&header, "audio/", "midi");
 		else
 		if(_IS(ext, ".mod"))
-			_concat(&header, "audio/mod");
+			_concat2(&header, "audio/", "mod");
 		else
 		if(_IS(ext, ".zip"))
-			_concat(&header, "application/zip");
+			_concat2(&header, "application/", "zip");
 		else
 		if(_IS(ext, ".pdf"))
-			_concat(&header, "application/pdf");
+			_concat2(&header, "application/", "pdf");
 		else
 		if(_IS(ext, ".doc"))
-			_concat(&header, "application/msword");
+			_concat2(&header, "application/", "msword");
 		else
 		if(_IS(ext5, ".docx"))
-			_concat(&header, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+			_concat2(&header, "application/", "vnd.openxmlformats-officedocument.wordprocessingml.document");
 		else
 		if(_IS(ext, ".xls"))
-			_concat(&header, "application/vnd.ms-excel");
+			_concat2(&header, "application/", "vnd.ms-excel");
 		else
 		if(_IS(ext5, ".xlsx"))
-			_concat(&header, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			_concat2(&header, "application/", "vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		else
 		if(_IS(ext, ".ppt") || _IS(ext, ".pps"))
-			_concat(&header, "application/vnd.ms-powerpoint");
+			_concat2(&header, "application/", "vnd.ms-powerpoint");
 		else
 		if(_IS(ext, ".swf"))
-			_concat(&header, "application/x-shockwave-flash");
+			_concat2(&header, "application/", "x-shockwave-flash");
 		#endif
 		else
-			_concat(&header, "application/octet-stream");
+			_concat2(&header, "application/", "octet-stream");
 	}
 	else
-		{_concat(&header, "text/html;charset=UTF-8"); set_base_path = true;}
+		{_concat2(&header, "text/", "html;charset=UTF-8"); set_base_path = true;}
 
 	if(set_base_path && (is_binary != WEB_COMMAND) && param[0] == '/') {strcpy(html_base_path, param); if(!isDir(param)) remove_filename(html_base_path);}
 
@@ -706,7 +670,6 @@ static u8 parse_tags(char *text)
 }
 #endif
 
-/*
 static void replace_char(char *text, char c, char r)
 {
 	char *pos = strchr(text, c);
@@ -715,4 +678,3 @@ static void replace_char(char *text, char c, char r)
 		*pos = r; pos = strchr(pos, c);
 	}
 }
-*/

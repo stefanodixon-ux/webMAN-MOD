@@ -194,7 +194,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 		sbuffer.size = read_file(HTML_BASE_PATH "/sman.htm", sbuffer.str, _16KB_, 0);
 
 		if(is_cpursx)
-			_concat(&sbuffer, "<meta http-equiv=\"refresh\" content=\"15;URL=/cpursx.ps3?/sman.ps3\">");
+			_concat2(&sbuffer, HTML_REFRESH, "15;URL=/cpursx.ps3?/sman.ps3\">");
 
 		// add javascript
 		{
@@ -234,7 +234,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	sbuffer.size = sprintf(sbuffer.str, HTML_HEADER);
 
 	if(is_cpursx)
-		_concat(&sbuffer, "<meta http-equiv=\"refresh\" content=\"10;URL=/cpursx.ps3\">");
+		_concat2(&sbuffer, HTML_REFRESH, "10;URL=/cpursx.ps3\">");
 
 	if(mount_ps3) {_concat(&sbuffer, HTML_BODY); return sbuffer.size;}
 
@@ -306,9 +306,8 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 			else
 				_concat(&sbuffer, ".gi{max-height:210px;max-width:260px;");
 
-			_concat(&sbuffer,
-							"position:absolute;bottom:0px;top:0px;left:0px;right:0px;margin:auto;}"
-							".gn{position:absolute;height:38px;bottom:0px;right:7px;left:7px;text-align:center;}");
+			_concat(&sbuffer, "position:absolute;bottom:0px;top:0px;left:0px;right:0px;margin:auto;}"
+							  ".gn{position:absolute;height:38px;bottom:0px;right:7px;left:7px;text-align:center;}");
 		}
 
 		_concat(&sbuffer, ".bu{background:#444;}.bf{background:#121;}--></style>");
@@ -320,7 +319,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	if(is_ps3_http == 1)
 		{sprintf(templn, "<style>%s</style>", ".gi{height:210px;width:267px"); _concat(&sbuffer, templn);}
 
-	sprintf(templn, "</head>%s", HTML_BODY); _concat(&sbuffer, templn);
+	_concat2(&sbuffer, "</head>", HTML_BODY);
 
 	char *coverflow = NULL; if(file_exists(MOBILE_HTML)) coverflow = (char*)" [<a href=\"/games.ps3\">Coverflow</a>]";
 
@@ -367,7 +366,7 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 	u8 keep_alive = 0, use_keep_alive = 0;
 	u8 ap_param = 0; force_ap = 0; // 0 = do nothing, 1 = use webman_config->autoplay, 2 = force auto_play
 
-	prev_dest = last_dest = NULL; // init fast concat
+	fast_concat.str = NULL;
 
 	char cmd[16], header[HTML_RECV_SIZE];
 	char *mc = NULL, *mc_param = NULL;
@@ -769,7 +768,7 @@ continue_rendering:
 
 				////////////////////////////////////
 
-				prev_dest = last_dest = NULL; // init fast concat
+				fast_concat.str = NULL;
 
 				if(is_binary == FOLDER_LISTING) // folder listing
 				{
@@ -821,7 +820,7 @@ send_response:
 				else
 				{
 					// add bdvd & go to top links to the footer
-					sprintf(templn, "<div style=\"position:fixed;right:20px;bottom:10px;opacity:0.2\">"); _concat(&sbuffer, templn);
+					_concat(&sbuffer, "<div style=\"position:fixed;right:20px;bottom:10px;opacity:0.2\">");
 					if(isDir("/dev_bdvd")) {sprintf(templn, "<a href=\"%s\"><img src=\"%s\" height=\"12\"></a> ", "/dev_bdvd", wm_icons[iPS3]); _concat(&sbuffer, templn);}
 					_concat(&sbuffer, "<a href=\"#Top\">&#9650;</a></div><b>");
 

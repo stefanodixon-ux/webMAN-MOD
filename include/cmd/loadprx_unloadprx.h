@@ -48,11 +48,11 @@
 			}
 
 			if(prx_found)
-				sprintf(param, "slot: %i<br>load prx: %s%s", slot, sprx_path, HTML_BODY_END);
+				sprintf(param, "slot: %i<br>load prx: %s", slot, sprx_path);
 			else
-				sprintf(param, "unload slot: %i%s", slot, HTML_BODY_END);
+				sprintf(param, "unload slot: %i", slot);
 
-			_concat(&sbuffer, param);
+			_concat2(&sbuffer, param, HTML_BODY_END);
 
 			if(slot < 7)
 			{

@@ -91,8 +91,7 @@
 			else
 				show_msg(msg);
 
-			if(op) strcpy(templn, msg); else sprintf(templn, "Message sent: %s", msg);
-			_concat(&sbuffer, templn);
+			if(op) _concat(&sbuffer, msg); else _concat2(&sbuffer, "Message sent: ", msg);
 
 			if(mode=='=') sbuffer.size = sprintf(sbuffer.str, "%s", msg); // raw mode
 		}

@@ -33,20 +33,16 @@
 
 		if(strstr(params, "xmb")) reload_xmb();
 
-	 #ifndef ENGLISH_ONLY
-		sprintf(templn, "<br>");
-
-		char *STR_XMLRF = (char *)templn + 4;
+		#ifndef ENGLISH_ONLY
+		char *STR_XMLRF = (char *)templn;
 
 		sprintf(STR_XMLRF, "Game list refreshed (<a href=\"%s\">mygames.xml</a>).%s", MY_GAMES_XML, "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
 
 		language("STR_XMLRF", STR_XMLRF, STR_XMLRF);
 		close_language();
+		 #endif
+		_concat2(&sbuffer, "<br>", STR_XMLRF);
 
-		_concat(&sbuffer, templn);
-	 #else
-		sprintf(templn,  "<br>%s", STR_XMLRF); _concat(&sbuffer, templn);
-	 #endif
 		if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT) && is_app_home_onxmb())
 		{
 			sprintf(templn, " [<a href=\"/reloadxmb.ps3\">%s XMB</a>]", STR_REFRESH);

@@ -181,14 +181,14 @@ mount_again:
 					{
 						if(isDir(PSP_LAUNCHER_MINIS))
 						{
-							sprintf(iso_list[1], "/%s", PSP_LAUNCHER_MINIS "/USRDIR/MINIS.EDAT");
+							sprintf(iso_list[1], "/%s%s", PSP_LAUNCHER_MINIS, "/USRDIR/MINIS.EDAT");
 							force_copy(templn, iso_list[1]);
 							edat = read_file(iso_list[1], templn, 4, 0);
 						}
 
 						if(isDir(PSP_LAUNCHER_REMASTERS))
 						{
-							sprintf(iso_list[1], "/%s", PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS.EDAT");
+							sprintf(iso_list[1], "/%s%s", PSP_LAUNCHER_REMASTERS, "/USRDIR/MINIS.EDAT");
 							force_copy(templn, iso_list[1]);
 							edat = read_file(iso_list[1], templn, 4, 0);
 						}
@@ -199,7 +199,7 @@ mount_again:
 					{
 						if(isDir(PSP_LAUNCHER_REMASTERS))
 						{
-							sprintf(iso_list[1], "/%s", PSP_LAUNCHER_REMASTERS "/USRDIR/MINIS2.EDAT");
+							sprintf(iso_list[1], "/%s%s", PSP_LAUNCHER_REMASTERS, "/USRDIR/MINIS2.EDAT");
 							force_copy(templn, iso_list[1]);
 							edat = read_file(iso_list[1], templn, 4, 0);
 						}

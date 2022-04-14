@@ -21,9 +21,11 @@ static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_
 
 		if(cellFsOpen(WMCHATFILE, CELL_FS_O_WRONLY | CELL_FS_O_TRUNC | CELL_FS_O_CREAT | CELL_FS_O_APPEND, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
-			size = sprintf(templn,	"<meta http-equiv=\"refresh\" content=\"10\">"
+			size = sprintf(templn,	"%s10\">"
 									"<body bgcolor=\"#101010\" text=\"#c0c0c0\">"
-									"<script>window.onload=toBottom;function toBottom(){window.scrollTo(0, document.body.scrollHeight);}</script>\0");
+									"<script>window.onload=toBottom;function toBottom(){window.scrollTo(0, document.body.scrollHeight);}"
+									"</script>\0", HTML_REFRESH);
+
 			if(*tempstr) {strcat(templn, "<!--"); size += 4;}
 
 			cellFsWrite(fd, templn, size, NULL);

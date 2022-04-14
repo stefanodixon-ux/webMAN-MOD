@@ -13,7 +13,7 @@
 		if(pos && !islike(_path, "/net"))
 		{
 			pos += 7; // folder is title_id
-			char *slash = strchr(pos, '/'); if(slash) *slash = 0;
+			replace_char(pos, '/', 0);
 
 			do_umount(false);
 

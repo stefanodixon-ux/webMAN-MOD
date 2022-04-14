@@ -526,6 +526,7 @@ static void setup_form(char *buffer, char *templn)
 
 	close_language();
  #endif
+	fast_concat.str = NULL;
 
 	u8 value, b, h = is_app_home_onxmb();
 	sprintf(templn, "<style>#cnt,#cfg,#adv,#cmb,#wt{max-height:0px;overflow: hidden;transition:max-height 0.25s linear;}td+td{vertical-align:top;text-align:left;white-space:nowrap}</style>"
@@ -597,7 +598,7 @@ static void setup_form(char *buffer, char *templn)
 
 	add_checkbox("igf", "wm_ignore.txt", " <button onclick=\"window.location='/edit.ps3" WMIGNORE_FILES "';return false;\">&#x270D;</button><br>", webman_config->ignore, buffer);
 
-	concat(buffer, "</td></tr></table>" HTML_BLU_SEPARATOR);
+	concat(buffer, "</tr></table>" HTML_BLU_SEPARATOR);
 
 #ifdef COBRA_ONLY
  #ifdef NET_SUPPORT
@@ -621,26 +622,26 @@ static void setup_form(char *buffer, char *templn)
 	//fan control settings
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR "<table width=\"900\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td>");
 
-	add_checkbox("fc\" onchange=\"temp[fc.checked?0:3].checked=1;" , STR_FANCTRL, "</td><td>", (webman_config->fanc), buffer);
-	add_checkbox("warn", STR_NOWARN, " </td></tr>", (webman_config->nowarn), buffer);
+	add_checkbox("fc\" onchange=\"temp[fc.checked?0:3].checked=1;" , STR_FANCTRL, "<td>", (webman_config->fanc), buffer);
+	add_checkbox("warn", STR_NOWARN, " </tr>", (webman_config->nowarn), buffer);
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->man_speed == 0), buffer);
-	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C</td>"
+	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C"
 					"<td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% - "
-					HTML_NUMBER("mfs", "%i", "40", "95") " %% %s </td></tr>",
+					HTML_NUMBER("mfs", "%i", "40", "95") " %% %s </tr>",
 					webman_config->dyn_temp, (webman_config->fanc && (webman_config->man_speed == 0)) ? ITEM_CHECKED : "",
 					STR_LOWEST, webman_config->minfan, webman_config->maxfan, STR_FANSPEED); concat(buffer, templn);
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->man_speed != 0), buffer);
-	sprintf(templn, HTML_NUMBER("manu", "%i", "20", "95") " %% %s </td>"
-					"<td> %s : " HTML_NUMBER("fsp0", "%i", "20", "95") " %% %s </td></tr>",
+	sprintf(templn, HTML_NUMBER("manu", "%i", "20", "95") " %% %s "
+					"<td> %s : " HTML_NUMBER("fsp0", "%i", "20", "95") " %% %s </tr>",
 					(webman_config->man_rate), STR_FANSPEED, STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, templn);
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 3, "t_3", "Auto #2", _BR_, (webman_config->fanc == FAN_AUTO2), buffer);
-	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "</td><td>", !(webman_config->fanc), buffer);
+	add_radio_button("temp\" onchange=\"fc.checked=0;", 2, "t_2", "SYSCON", "<td>", !(webman_config->fanc), buffer);
 
 #ifndef LITE_EDITION
 	concat(buffer, "<br>");
@@ -650,8 +651,7 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, "</table>");
 
 	//general settings
-	sprintf(templn,	HTML_BLU_SEPARATOR
-					"<b><a class=\"tg\" href=\"javascript:tgl(cfg);\"> " WM_APPNAME " MOD %s </a></b><br><div id=\"cfg\">", STR_SETUP); concat(buffer, templn);
+	sprintf(templn, "%scfg);\"> " WM_APPNAME " MOD %s </a></b><br><div id=\"cfg\">", HTML_TOGGLER, STR_SETUP); concat(buffer, templn);
 
 	add_checkbox("lp", STR_LPG   , " • ",   (webman_config->lastp),  buffer);
 	add_checkbox("nb", "BEEP", " • ",      !(webman_config->nobeep), buffer);
@@ -871,11 +871,9 @@ static void setup_form(char *buffer, char *templn)
 
 	//general settings
 #ifdef SPOOF_CONSOLEID
-	sprintf(templn,	HTML_BLU_SEPARATOR
-					"<b><a class=\"tg\" href=\"javascript:tgl(adv);\"> IDPS & MEM %s </a></b><br><div id=\"adv\">", STR_SETUP); concat(buffer, templn);
+	sprintf(templn,	"%sadv);\"> IDPS & MEM %s </a></b><br><div id=\"adv\">", HTML_TOGGLER, STR_SETUP); concat(buffer, templn);
 #else
-	sprintf(templn,	HTML_BLU_SEPARATOR
-					"<b><a class=\"tg\" href=\"javascript:tgl(adv);\"> MEM %s </a></b><br><div id=\"adv\">", STR_SETUP); concat(buffer, templn);
+	sprintf(templn,	"%sadv);\"> MEM %s </a></b><br><div id=\"adv\">", HTML_TOGGLER, STR_SETUP); concat(buffer, templn);
 #endif
 
 #ifdef SPOOF_CONSOLEID
@@ -1040,9 +1038,9 @@ static void setup_form(char *buffer, char *templn)
 	buffer += strlen(buffer);
 
 	//combos
-	sprintf(templn, "</div>" HTML_BLU_SEPARATOR "<b><a class=\"tg\" href=\"javascript:tgl(cmb);\"> %s </a></b><br><div id=\"cmb\">"
+	sprintf(templn, "</div>%scmb);\"> %s </a></b><br><div id=\"cmb\">"
 					"<button onclick=\"var cb=document.getElementById('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
-					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", STR_COMBOS2, STR_COMBOS); concat(buffer, templn);
+					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", HTML_TOGGLER, STR_COMBOS2, STR_COMBOS); concat(buffer, templn);
 
 	#ifdef COBRA_ONLY
 	add_checkbox("vs", "VSH MENU",      " : <b>SELECT</b><br>"       , !(webman_config->combo2 & C_VSHMENU), buffer);
@@ -1074,14 +1072,14 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef REX_ONLY
 	sprintf(templn, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
-	add_checkbox("pid", STR_SHOWIDPS,   templn                           , !(webman_config->combo & SHOW_IDPS),  buffer);
-	add_checkbox("puw", STR_UNLOADWM,   " : <b>L3+R2+R3</b><br>"         , !(webman_config->combo & UNLOAD_WM),  buffer);
-	add_checkbox("psd", STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"          , !(webman_config->combo & SHUT_DOWN),  buffer);
-	add_checkbox("prs", STR_RESTART2,   " : <b>L3+R2+O</b><br>"          , !(webman_config->combo & RESTARTPS),  buffer);
+	add_checkbox("pid", STR_SHOWIDPS,   templn                    , !(webman_config->combo & SHOW_IDPS),  buffer);
+	add_checkbox("puw", STR_UNLOADWM,   " : <b>L3+R2+R3</b><br>"  , !(webman_config->combo & UNLOAD_WM),  buffer);
+	add_checkbox("psd", STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"   , !(webman_config->combo & SHUT_DOWN),  buffer);
+	add_checkbox("prs", STR_RESTART2,   " : <b>L3+R2+O</b><br>"   , !(webman_config->combo & RESTARTPS),  buffer);
 	#ifdef WM_REQUEST
-	add_checkbox("psv", "CUSTOM COMBO", " : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
+	add_checkbox("psv", "CUSTOM COMBO", " : <b>R2+&#9633;</b><td>", !(webman_config->combo2 & CUSTOMCMB), buffer);
 	#else
-	add_checkbox("psv", "BLOCK SERVERS"," : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
+	add_checkbox("psv", "BLOCK SERVERS"," : <b>R2+&#9633;</b><td>", !(webman_config->combo2 & CUSTOMCMB), buffer);
 	#endif
 #else
 	#ifdef SPOOF_CONSOLEID
@@ -1090,16 +1088,16 @@ static void setup_form(char *buffer, char *templn)
 	#endif
 
 	#ifdef WM_REQUEST
-	add_checkbox("psv", "CUSTOM COMBO", " : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
+	add_checkbox("psv", "CUSTOM COMBO", " : <b>R2+&#9633;</b><td>", !(webman_config->combo2 & CUSTOMCMB), buffer);
 	#else
-	add_checkbox("psv", "BLOCK SERVERS"," : <b>R2+&#9633;</b></td><td>",   !(webman_config->combo2 & CUSTOMCMB), buffer);
+	add_checkbox("psv", "BLOCK SERVERS"," : <b>R2+&#9633;</b><td>", !(webman_config->combo2 & CUSTOMCMB), buffer);
 	#endif
 
-	add_checkbox("puw", STR_UNLOADWM,   " : <b>L3+R2+R3</b><br>"         , !(webman_config->combo & UNLOAD_WM),  buffer);
-	add_checkbox("psd", STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"          , !(webman_config->combo & SHUT_DOWN),  buffer);
-	add_checkbox("prs", STR_RESTART2,   " : <b>L3+R2+O</b><br>"          , !(webman_config->combo & RESTARTPS),  buffer);
+	add_checkbox("puw", STR_UNLOADWM,   " : <b>L3+R2+R3</b><br>"  , !(webman_config->combo & UNLOAD_WM),  buffer);
+	add_checkbox("psd", STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"   , !(webman_config->combo & SHUT_DOWN),  buffer);
+	add_checkbox("prs", STR_RESTART2,   " : <b>L3+R2+O</b><br>"   , !(webman_config->combo & RESTARTPS),  buffer);
 #endif
-	add_checkbox("pdf", STR_FANCTRL4,   " : <b>L3+R2+START</b><br>"      , !(webman_config->combo & DISABLEFC),  buffer);
+	add_checkbox("pdf", STR_FANCTRL4,   " : <b>L3+R2+START</b><br>", !(webman_config->combo & DISABLEFC),  buffer);
 	add_checkbox("pf1", STR_FANCTRL2,   " : <b>SELECT+&#8593;/&#8595;</b><br>", !(webman_config->combo & MANUALFAN),  buffer);
 	add_checkbox("pf2", STR_FANCTRL5,   " : <b>SELECT+&#8592;/&#8594;</b><br>", !(webman_config->combo & MINDYNFAN),  buffer);
 
@@ -1119,7 +1117,7 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef COBRA_NON_LITE
-	add_checkbox("pdc", STR_DISCOBRA,  " : <b>L3+L2+&#8710;</b>"    , !(webman_config->combo & DISACOBRA),  buffer);
+	add_checkbox("pdc", STR_DISCOBRA,  " : <b>L3+L2+&#8710;</b>", !(webman_config->combo & DISACOBRA),  buffer);
 	#ifdef NET_SUPPORT
 	add_checkbox("pn0", "NET0",        " : <b>SELECT+R2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET0), buffer);
 	add_checkbox("pn1", "NET1",        " : <b>SELECT+L2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET1), buffer);
@@ -1146,7 +1144,7 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("hom", "GOTO_HOME", " : <b>L2+L3+R3</b><br>"           , !(webman_config->combo & GOTO_HOME), buffer);
 
 	add_checkbox("pld", "PLAY DISC", " : <b>L2+START</b><br>"
-						"</td></tr></table>"                            , !(webman_config->combo2 & PLAY_DISC), buffer);
+						"</tr></table>"                            , !(webman_config->combo2 & PLAY_DISC), buffer);
 
 	// custom combo R2+SQUARE
 #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
@@ -1198,7 +1196,7 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, "</div>");
 
 	//Wait for any USB device to be ready
-	sprintf(templn, HTML_BLU_SEPARATOR "<b><a class=\"tg\" href=\"javascript:tgl(wt);\"> %s </a></b><br><div id=\"wt\">", STR_ANYUSB); concat(buffer, templn);
+	sprintf(templn, "%swt);\"> %s </a></b><br><div id=\"wt\">", HTML_TOGGLER, STR_ANYUSB); concat(buffer, templn);
 
 	value = webman_config->bootd;
 	add_radio_button("b", 0,  "b_0", "0 sec" , _BR_, (value == 0),  buffer);

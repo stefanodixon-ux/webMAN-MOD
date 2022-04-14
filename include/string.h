@@ -28,3 +28,30 @@ static char *_concat(t_string *dest, const char *src)
 
 	return dest->str;
 }
+
+static void _concat2(t_string *dest, const char *src1, const char *src2)
+{
+	_concat(dest, src1);
+	_concat(dest, src2);
+}
+
+static void _concat3(t_string *dest, const char *src1, const char *src2, const char *src3)
+{
+	_concat(dest, src1);
+	_concat(dest, src2);
+	_concat(dest, src3);
+}
+
+static t_string fast_concat;
+
+static size_t concat(char *dest, const char *src)
+{
+	if(!dest) return 0;
+	if(fast_concat.str != dest)
+	{
+		fast_concat.str = dest;
+		fast_concat.size = 0;
+	}
+
+	return _concat(&fast_concat, src) - dest;
+}

@@ -27,9 +27,20 @@ static u32 *sections_sizeP = NULL;
 
 static sys_addr_t sysmem_p = NULL;
 
-static void create_ntfs_file(char *path, char *filename, size_t plen)
+static void extract_iso_file(const char *iso_path, const char *file, u8 len, const char *out_path, const char *dirlist, char *buffer)
 {
-	int parts = ps3ntfs_file_to_sectors(path, sectionsP, sections_sizeP, MAX_SECTIONS, 1);
+	u32 size;
+	u16 start = 0x40; u64 lba = getlba(dirlist, _4KB_, file, 11, &start, &size);
+	if(lba)
+	{
+		read_file(iso_path, buffer, size, lba * 0x800ULL);
+		save_file(out_path, buffer, size);
+	}
+}
+
+static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
+{
+	int parts = ps3ntfs_file_to_sectors(iso_path, sectionsP, sections_sizeP, MAX_SECTIONS, 1);
 
 	if(parts <= 0) return;
 
@@ -46,7 +57,7 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 	// get multi-part file sectors
 	if(is_iso_0(filename))
 	{
-		size_t nlen = sprintf(tmp_path, "%s", path);
+		size_t nlen = sprintf(tmp_path, "%s", iso_path);
 		extlen = 6, --nlen;
 
 		for(u8 o = 1; o < 64; o++)
@@ -76,29 +87,29 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 		{
 			emu_mode = EMU_PSX;
 
-			if(ps3ntfs_stat(path, &bufn) < 0) return;
+			if(ps3ntfs_stat(iso_path, &bufn) < 0) return;
 			cd_sector_size = default_cd_sector_size(bufn.st_size);
 
 			// detect CD sector size
 			if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
 			{
 				char *buffer = (char*)sysmem_p;
-				read_file(path, buffer, _48KB_, 0);
+				read_file(iso_path, buffer, _48KB_, 0);
 				cd_sector_size = detect_cd_sector_size(buffer);
 			}
 
 			if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
 			else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 
-			if(change_ext(path, 4, cue_ext))
+			if(change_ext(iso_path, 4, cue_ext))
 			{
 				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
 				{
+					char *cue_file = iso_path;
 					char *cue_buf = (char*)sysmem_p;
-					int cue_size = read_file(path, cue_buf, _8KB_, 0);
+					int cue_size = read_file(cue_file, cue_buf, _8KB_, 0);
 
-					char *templn = path;
-					num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);
+					num_tracks = parse_cue(cue_file, cue_buf, cue_size, tracks);
 				}
 			}
 		}
@@ -158,25 +169,24 @@ static void create_ntfs_file(char *path, char *filename, size_t plen)
 				// extract PARAM.SFO from ISO
 				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
 				{
-					char *buffer = (char*)sysmem_p;
-					read_file(path, buffer, _4KB_, 0x10800);
-					u16 start = 0x40; u64 lba = getlba(buffer, _4KB_, "PARAM.SFO;1", 11, &start);
-					if(lba)
-					{
-						read_file(path, buffer, _4KB_, lba * 0x800ULL);
-						save_file(tmp_path, buffer, _4KB_);
-					}
+					char *dirlist = (char*)sysmem_p, *buffer = (char*)sysmem_p + _4KB_;
+					read_file(iso_path, dirlist, _4KB_, 0x10800);
+					extract_iso_file(iso_path, "PARAM.SFO;1", 11, tmp_path, dirlist, buffer);
+					snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.PNG", WMTMP, filename, SUFIX2(profile));
+					extract_iso_file(iso_path, "ICON0.PNG;1", 11, tmp_path, dirlist, buffer);
+					return;
 				}
 			}
 		}
 
-		if(!get_image_file(path, plen - extlen)) return; // not found image in NTFS
+		char *img_path = iso_path;
+		if(!get_image_file(img_path, plen - extlen)) return; // not found image in NTFS
 
 		plen = sprintf(tmp_path, "%s/%s", WMTMP, filename);
 		if( get_image_file(tmp_path, plen - extlen) ) return; // found image in WMTMP
 
 		// copy external image to WMTMP
-		force_copy(path, tmp_path);
+		force_copy(img_path, tmp_path);
 
 /*
 		for_sfo:

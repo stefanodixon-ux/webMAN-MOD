@@ -107,8 +107,7 @@ skip_code2:
 		if(!nobypass) { PS3MAPI_REENABLE_SYSCALL8 } else *nobypass = NULL;
 		#endif
 
-		sprintf( templn, "</form><hr>");
-		_concat(&sbuffer, templn);
+		_concat(&sbuffer, "</form><hr>");
 
 #ifndef LITE_EDITION
 continue_rendering:

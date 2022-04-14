@@ -325,7 +325,7 @@ int main(int argc, const char* argv[])
 									if(m == PS3ISO)
 									{
 										titleID[0] = '\0';
-
+/*
 										*ext = '\0'; sprintf(wm_path, "%s:/%s%s%s/%s.SFO", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), filename);
 										if(not_exists(wm_path))
 										{
@@ -333,7 +333,7 @@ int main(int argc, const char* argv[])
 											if(not_exists(wm_path))
 												ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
 										}
-
+*/
 										*ext = '\0'; sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.SFO", filename);
 										if(not_exists(wm_path))
 										{
@@ -377,10 +377,11 @@ int main(int argc, const char* argv[])
 
 										if(e >= 4)
 										{
+/*
 											sprintf(wm_path, "%s:/%s%s%s/%s.PNG", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), filename);
 											if(not_exists(wm_path))
 												ExtractFileFromISO(path, "/PS3_GAME/ICON0.PNG;1", wm_path);
-
+*/
 											sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.PNG", filename);
 											if(not_exists(wm_path))
 												ExtractFileFromISO(path, "/PS3_GAME/ICON0.PNG;1", wm_path);
@@ -414,6 +415,7 @@ int main(int argc, const char* argv[])
 												break;
 											}
 										}
+
 										if(e >= 4)
 										{
 											sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s%s", filename, ".png");

@@ -75,6 +75,9 @@ static u8 loading_games = 0;
 
 static void add_title_id(char *templn, char *title_id)
 {
+	// invalid character breaks XML / HTML
+	replace_char(templn, '<', ' ');
+
 	if(webman_config->tid && HAS_TITLE_ID)
 	{
 		int tlen = strlen(templn); if((tlen < 50) && !strstr(templn, " [")) sprintf(templn + tlen, " [%s]", title_id);
@@ -86,6 +89,8 @@ static void add_title_id(char *templn, char *title_id)
 static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *templn, char *tempstr, char *enc_dir_name, char *icon, char *title_id, char *app_ver, u8 f1, u8 is_html)
 {
 	*app_ver = NULL;
+
+	if((data[v3_entry].name[0] == '.') || strchr(data[v3_entry].name, '<')) return FAILED;
 
 	if(data[v3_entry].is_directory == false)
 	{
@@ -102,11 +107,6 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		if(IS_PSPISO && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
 		else
 			if(!strcasestr(ISO_EXTENSIONS + 10, ext)) return FAILED;
-	}
-	else
-	{
-		if(data[v3_entry].name[0] == '.') return FAILED;
-		//if(!strstr(param, "/GAME")) return FAILED;
 	}
 
 	*icon = *title_id = NULL;
@@ -902,6 +902,7 @@ next_html_entry:
 							if(mobile_mode)
 							{
 								if(strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
+
 								for(unsigned char *c = (unsigned char *)templn; *c; c++) {if((*c == '"') || (*c < ' ')) *c = ' ';} // replace invalid chars
 
 								int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320, h = 176;} else if(strstr(icon, "icon_wm_")) {w = 280, h = 280;}
@@ -1065,9 +1066,7 @@ next_html_entry:
 		{
 			for(u16 m = 0; m < idx; m++)
 			{
-				_concat(&sout, GAME_DIV_PREFIX);
-				_concat(&sout, (line_entry[m].path) + HTML_KEY_LEN);
-				_concat(&sout, GAME_DIV_SUFIX);
+				_concat3(&sout, GAME_DIV_PREFIX, (line_entry[m].path) + HTML_KEY_LEN, GAME_DIV_SUFIX);
 			}
 		}
 

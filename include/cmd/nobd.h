@@ -8,8 +8,6 @@
 
 		u8 noBD = 0;
 
-		_concat(&sbuffer, "noBD: ");
-
 		// noBD LV1 4.75 - 4.88
 		if(ALLOW_NOBD)
 		{
@@ -24,12 +22,14 @@
 			{
 				apply_noBD_patches(noBD);
 			}
-			_concat(&sbuffer, noBD ? STR_ENABLED : STR_DISABLED);
+
+			_concat2(&sbuffer, "noBD: ", noBD ? STR_ENABLED : STR_DISABLED);
+
 			sprintf(param, "/peek.lv1?712790");
 			ps3mapi_find_peek_poke_hexview(pbuffer, templn, param);
 		}
 		else
-			_concat(&sbuffer, STR_ERROR);
+			_concat2(&sbuffer, "noBD: ", STR_ERROR);
 	}
 	else
 #endif // #ifdef NOBD_PATCH

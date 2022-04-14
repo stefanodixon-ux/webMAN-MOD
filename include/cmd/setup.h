@@ -9,7 +9,7 @@
 		}
 		if(save_settings() == CELL_FS_SUCCEEDED)
 		{
-			sprintf(templn, "<br> %s", STR_SETTINGSUPD); _concat(&sbuffer, templn);
+			_concat2(&sbuffer, "<br>", STR_SETTINGSUPD);
 		}
 		else
 			_concat(&sbuffer, STR_ERROR);

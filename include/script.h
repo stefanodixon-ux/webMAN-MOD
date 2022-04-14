@@ -60,7 +60,7 @@ static void parse_script(const char *script_file)
 		sys_addr_t sysmem = NULL;
 		if(sys_memory_allocate(max_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) /* != CELL_OK */) return;
 
-		char *buffer = (char*)sysmem, *cr, *pos, *dest = NULL; u16 l = 0;
+		char *buffer = (char*)sysmem, *pos, *dest = NULL; u16 l = 0;
 		u8 exec_mode = true, enable_db = true, do_else = true;
 		size_t buffer_size = read_file(script_file, buffer, max_size, 0); buffer[buffer_size] = 0;
 		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE);
@@ -84,8 +84,8 @@ static void parse_script(const char *script_file)
 
 			if(pos)
 			{
-				if(pos) *pos = NULL; //EOL
-				cr = strchr(line, '\r'); if(cr) *cr = NULL;
+				*pos = NULL; //EOL
+				replace_char(line, '\r', 0); // crlf
 
 				if(exec_mode)
 				{

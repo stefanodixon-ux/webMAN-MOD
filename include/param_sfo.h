@@ -42,28 +42,28 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 		if(!memcmp((char *) &mem[str], "TITLE_ID", 8))
 		{
 			strncpy(title_id, (char *)mem + pos, TITLE_ID_LEN);
-#ifndef ENGLISH_ONLY
+			#ifndef ENGLISH_ONLY
 			if(*TITLE_XX == NULL)
-#endif
+			#endif
 				if(*title) break;
 		}
 		else
 		if(!memcmp((char *) &mem[str], "TITLE", 6))
 		{
 			strncpy(title, (char *)mem + pos, 128);
-#ifndef ENGLISH_ONLY
+			#ifndef ENGLISH_ONLY
 			if(*TITLE_XX == NULL)
-#endif
+			#endif
 				if(*title_id) break;
 		}
-#ifndef ENGLISH_ONLY
+		#ifndef ENGLISH_ONLY
 		else
 		if(!memcmp((char *) &mem[str], TITLE_XX, TITLE_ID_LEN))
 		{
 			strncpy(title, (char *)mem + pos, 128);
 			if(*title_id) break;
 		}
-#endif
+		#endif
 		READ_NEXT_SFO_FIELD()
 	}
 

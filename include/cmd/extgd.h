@@ -20,12 +20,10 @@
 			if(~param[11] & 1) extgd = 0;		//disable
 		}
 
-		_concat(&sbuffer, "External Game DATA: ");
-
 		if((param[11] != 's') && set_gamedata_status(extgd, true))
-			_concat(&sbuffer, STR_ERROR);
+			_concat2(&sbuffer, "External Game DATA: ", STR_ERROR);
 		else
-			_concat(&sbuffer, extgd ? STR_ENABLED : STR_DISABLED);
+			_concat2(&sbuffer, "External Game DATA: ", extgd ? STR_ENABLED : STR_DISABLED);
 	}
 	else
 #endif
