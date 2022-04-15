@@ -93,10 +93,10 @@ static void start_www(u64 conn_s_p)
 
 		if(conn_s_p == START_DAEMON)
 		{
-			if(file_exists(WM_RELOAD_FILE))
+			if(wm_reload)
 			{
 				sys_ppu_thread_sleep(3);
-				from_reboot = false;
+				wm_reload = from_reboot = false;
 				cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
 				sys_ppu_thread_exit(0);
 			}
