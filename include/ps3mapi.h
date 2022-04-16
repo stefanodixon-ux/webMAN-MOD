@@ -589,26 +589,33 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 {
 	int retval = NONE;
 	found_offset = fallback;
+	const u32 chunk_size = _64KB_;
+
+	sys_addr_t sysmem = NULL;
+	if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) return found_offset;
+
 	Check_Overlay();
 
-	char mem[0x200], label[20]; int m = sizeof(mem) - len; u8 gap = len + 0x10 - (len % 0x10);
-	for(; address < stop; address += sizeof(mem) - gap)
+	char label[20], *mem = (char*)sysmem;
+	const u32 m = chunk_size - len, gap = (len + 0x10) - (len % 0x10);
+	for(; address < stop; address += chunk_size - gap)
 	{
-		retval = ps3mapi_get_memory(pid, address, mem, sizeof(mem));
+		retval = ps3mapi_get_memory(pid, address, mem, chunk_size);
 		if(retval < 0) break;
 
 		sprintf(label, "0x%x", address); show_progress(label, OV_FIND);
 
-		for(int offset = 0; offset < m; offset += step)
+		for(u32 offset = 0; offset < m; offset += step)
 		{
 			if( !bcompare(mem + offset, sfind, len, mask) )
 			{
-				disable_progress();
 				found_offset = (address + offset);
-				return found_offset;
+				address = stop;
+				break;
 			}
 		}
 	}
+	sys_memory_free(sysmem);
 	disable_progress();
 	return found_offset;
 }

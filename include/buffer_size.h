@@ -89,85 +89,117 @@ static void set_buffer_sizes(u8 footprint)
 	BUFFER_SIZE_ALL = get_buffer_size(footprint);
 	BUFFER_SIZE_FTP = ( _128KB_);
 
-	BUFFER_SIZE_PSP = ( _32KB_);
-	BUFFER_SIZE_PS2 = ( _64KB_);
-	BUFFER_SIZE_DVD = ( _64KB_);
+	BUFFER_SIZE_PSP = ( _32KB_); //  50 games
+	BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+	BUFFER_SIZE_DVD = ( _64KB_); // 100 items
 
-	if(footprint == USE_MC) //vsh_mc
+	if(footprint == USE_MC) //vsh_mc (3MB)
 	{
-		//BUFFER_SIZE_FTP = ( _256KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
 
-		//BUFFER_SIZE	= (1792*KB);
-		BUFFER_SIZE_PSX = (webman_config->foot == 5) ? _768KB_ : _384KB_;
-		BUFFER_SIZE_PSP = (webman_config->foot == 7) ? _768KB_ : _128KB_;
-		BUFFER_SIZE_PS2 = (webman_config->foot == 8) ? _768KB_ : _256KB_;
-		BUFFER_SIZE_DVD = (webman_config->foot == 6) ? _768KB_ : _512KB_;
+		//BUFFER_SIZE	= (896*KB to 1408*KB); // 1200-2200 games
+		BUFFER_SIZE_PSX = (webman_config->foot == 5) ? _768KB_ : _512KB_; // 800-1200 games (formerly 384KB: +128KB)
+		BUFFER_SIZE_PSP = (webman_config->foot == 7) ? _768KB_ : _256KB_; // 400-1200 games (formerly 128KB: +128KB)
+		BUFFER_SIZE_PS2 = (webman_config->foot == 8) ? _768KB_ : _384KB_; // 600-1200 games (formerly 256KB: +128KB)
+		BUFFER_SIZE_DVD = (webman_config->foot == 6) ? _768KB_ : _512KB_; // 800-1200 items (same as before)
 	}
 	else
-	if(footprint == 1) //MIN
+	if(footprint == 1) //MIN (256 KB / 320 KB)
 	{
-		//BUFFER_SIZE	= ( _128KB_);
-		BUFFER_SIZE_PSX = (  _32KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= ( _128KB_);  // 200 games or 100 games on Lite edition
+		BUFFER_SIZE_PSX = (  _32KB_);  //  50 items
+		//BUFFER_SIZE_PSP = ( _32KB_); //  50 games
+		//BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+		//BUFFER_SIZE_DVD = ( _64KB_); // 100 items
 	}
 	else
-	if(footprint == 2) //MAX
+	if(footprint == 2) //MAX (1280 KB)
 	{
 		BUFFER_SIZE_FTP	= ( _256KB_);
 
-		//BUFFER_SIZE	= ( _512KB_);
-		BUFFER_SIZE_PSX = ( _256KB_);
-		BUFFER_SIZE_PSP = (  _64KB_);
-		BUFFER_SIZE_PS2 = ( _128KB_);
-		BUFFER_SIZE_DVD = ( _192KB_);
+		//BUFFER_SIZE	= ( _640KB_); //1000 games
+		BUFFER_SIZE_PSX = ( _256KB_); // 400 games
+		BUFFER_SIZE_PSP = (  _64KB_); // 100 games
+		BUFFER_SIZE_PS2 = ( _128KB_); // 200 games
+		BUFFER_SIZE_DVD = ( _192KB_); // 300 items
 	}
 	else
-	if(footprint == 3) //MIN+
+	if(footprint == 3) //MIN+ (512 KB)
 	{
-		//BUFFER_SIZE	= ( 320*KB);
-		BUFFER_SIZE_PSX = (  _32KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= ( 320*KB);   // 500 games
+		BUFFER_SIZE_PSX = (  _32KB_);  //  50 games
+		//BUFFER_SIZE_PSP = ( _32KB_); //  50 games
+		//BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+		//BUFFER_SIZE_DVD = ( _64KB_); // 100 items
 	}
 	else
-	if(footprint == 4) //MAX PS3+
+	if(footprint == 4) //MAX PS3+ (1280 KB)
 	{
-		//BUFFER_SIZE	= ( 1088*KB);
-		BUFFER_SIZE_PSX = (  _32KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= ( 1088*KB);  //1700 games
+		BUFFER_SIZE_PSX = (  _32KB_);  //  50 games
+		//BUFFER_SIZE_PSP = ( _32KB_); //  50 games
+		//BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+		//BUFFER_SIZE_DVD = ( _64KB_); // 100 items
 	}
 	else
-	if(footprint == 5) //MAX PSX+
+	if(footprint == 5) //MAX PSX+ (1280 KB)
 	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = ( _768KB_);
-		BUFFER_SIZE_PSP = (  _64KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= (  320*KB);  // 500 games
+		BUFFER_SIZE_PSX = ( _768KB_);  //1200 games
+		BUFFER_SIZE_PSP = (  _64KB_);  // 100 games
+		//BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+		//BUFFER_SIZE_DVD = ( _64KB_); // 100 items
 	}
 	else
-	if(footprint == 6) //MAX BLU+
+	if(footprint == 6) //MAX BLU+ (1280 KB)
 	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = (  _64KB_);
-		BUFFER_SIZE_PSP = (  _64KB_);
-		BUFFER_SIZE_DVD = ( _768KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= (  320*KB);  // 500 games
+		BUFFER_SIZE_PSX = (  _64KB_);  // 100 games
+		BUFFER_SIZE_PSP = (  _64KB_);  // 100 games
+		//BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+		BUFFER_SIZE_DVD = ( _768KB_);  //1200 items
 	}
 	else
-	if(footprint == 7) //MAX PSP+
+	if(footprint == 7) //MAX PSP+ (1280 KB)
 	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = (  _64KB_);
-		BUFFER_SIZE_PSP = ( _768KB_);
-		BUFFER_SIZE_DVD = (  _64KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= (  320*KB);  // 500 games
+		BUFFER_SIZE_PSX = (  _64KB_);  // 100 games
+		BUFFER_SIZE_PSP = ( _768KB_);  //1200 games
+		//BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+		BUFFER_SIZE_DVD = (  _64KB_);  // 100 items
 	}
 	else
-	if(footprint == 8) //MAX PS2+
+	if(footprint == 8) //MAX PS2+ (1280 KB)
 	{
-		//BUFFER_SIZE	= (  368*KB);
-		BUFFER_SIZE_PSX = (  _64KB_);
-		BUFFER_SIZE_PS2 = ( _768KB_);
-		BUFFER_SIZE_DVD = (  _64KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= (  352*KB);  // 550 games
+		BUFFER_SIZE_PSX = (  _64KB_);  // 100 games
+		//BUFFER_SIZE_PSP = ( _32KB_); //  50 games
+		BUFFER_SIZE_PS2 = ( _768KB_);  //1200 games
+		BUFFER_SIZE_DVD = (  _64KB_);  // 100 items
 	}
-	else	// if(footprint == 0) STANDARD
+	else	// if(footprint == 0) STANDARD (896 KB)
 	{
-		//BUFFER_SIZE	= ( 448*KB);
-		BUFFER_SIZE_PSX = ( 160*KB);
-		BUFFER_SIZE_DVD = ( _192KB_);
+		//BUFFER_SIZE_FTP = (_128KB_);
+
+		//BUFFER_SIZE	= ( 448*KB);   // 700 games
+		BUFFER_SIZE_PSX = ( 160*KB);   // 250 games
+		//BUFFER_SIZE_PSP = ( _32KB_); //  50 games
+		//BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
+		BUFFER_SIZE_DVD = ( _192KB_);  // 300 items
 	}
 
 	if((webman_config->cmask & PS1)) BUFFER_SIZE_PSX = (_4KB_);

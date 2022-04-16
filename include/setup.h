@@ -1349,7 +1349,6 @@ static void read_settings(void)
 
 	//webman_config->bind = 0;        //enable remote access to FTP/WWW services
 	//webman_config->ftpd = 0;        //enable ftp server
-	//webman_config->refr = 0;        //enable content scan on startup
 	//webman_config->ftp_password  =  "";
 
 	//webman_config->netsrvp  = NETPORT;
@@ -1357,8 +1356,9 @@ static void read_settings(void)
 
 	//for(u8 id = 0; id < 5; id++) webman_config->netp[id] = NETPORT; // webman_config->netd[id] = 0; webman_config->neth[id][0] = '\0';
 
+	webman_config->refr = 1;          //Disable content scan on startup (as default)
 	//webman_config->foot  = 0;       //Standard (896KB)
-	webman_config->vsh_mc = 4;
+	webman_config->vsh_mc = 4;        //Use background VSH Memory Container (allocates 3MB for content scanning)
 	webman_config->nospoof = 1;       //don't spoof fw version
 
 	#ifdef MOUNT_GAMEI

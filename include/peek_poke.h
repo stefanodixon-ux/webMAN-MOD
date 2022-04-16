@@ -297,7 +297,8 @@ static u16 Hex2Bin(const char *src, char *out)
 	while(*src && src[1])
 	{
 		if(*src <= ' ') {++src; continue;} // ignore spaces & line breaks
-		if(*src == '*') {*(target++) = '*'; src += 2; continue;} // convert mask ** to binary *
+		if((*src == '*') || (*src == '?'))
+			{*(target++) = '*'; src += 2; continue;} // convert mask ** / ?? to binary *
 
 		value[0] = src[0], value[1] = src[1];
 		*(target++) = (u8)convertH(value);

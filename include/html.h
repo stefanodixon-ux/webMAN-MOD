@@ -118,7 +118,7 @@ static bool _IS(const char *a, const char *b)
 #if defined(PS3MAPI) || defined(DEBUG_MEM)
 static bool bcompare(const char *a, const char *b, u8 len, const char *mask)
 {
-	while(len && ((*a == *b) || (*mask == '*'))) {a++,b++,mask++,len--;}
+	while(len && ((*a == *b) || (*mask == '*') || (*mask == '?'))) {a++,b++,mask++,len--;}
 	return len;
 }
 #endif
