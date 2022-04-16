@@ -114,6 +114,8 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 
 	char msg[0x100];
 
+	if(wm_reload) sys_ppu_thread_sleep(3);
+
 	old_fan = 0;
 	while(working)
 	{

@@ -1299,18 +1299,12 @@ static void rawseciso_stop_thread(u64 arg)
 		}
 	}
 
-	if(thread_id_ntfs != SYS_PPU_THREAD_NONE)
-	{
-		thread_join(thread_id_ntfs);
-	}
+	thread_join(thread_id_ntfs);
 
 #ifdef RAWISO_PSX_MULTI
 	eject_running = 0;
 
-	if(thread_id_eject != SYS_PPU_THREAD_NONE)
-	{
-		thread_join(thread_id_eject);
-	}
+	thread_join(thread_id_eject);
 #endif
 
 	sys_ppu_thread_exit(0);

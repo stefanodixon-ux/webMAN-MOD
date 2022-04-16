@@ -162,7 +162,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	}
 
 #ifdef USE_NTFS
-	if(!ftp_active && (mountCount == NTFS_UNMOUNTED) && !refreshing_xml && root_check) check_ntfs_volumes();
+	//if(!ftp_active && (mountCount == NTFS_UNMOUNTED) && !refreshing_xml && root_check) check_ntfs_volumes();
 #endif
 
 	setPluginActive();

@@ -639,8 +639,6 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		// skip scan if rebooting or if scan on startup is disabled
 		else if(webman_config->refr || from_reboot)
 		{
-			cellFsUnlink(WM_NOSCAN_FILE);
-
 			if(file_exists(MY_GAMES_XML))
 			{
 				make_fb_xml();

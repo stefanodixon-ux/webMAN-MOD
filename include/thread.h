@@ -78,5 +78,6 @@ static sys_ppu_thread_t thread_id_poll = SYS_PPU_THREAD_NONE;
 static void thread_join(sys_ppu_thread_t thread_id)
 {
 	u64 exit_code;
-	sys_ppu_thread_join(thread_id, &exit_code);
+	if(thread_id != SYS_PPU_THREAD_NONE)
+		sys_ppu_thread_join(thread_id, &exit_code);
 }

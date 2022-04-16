@@ -396,6 +396,7 @@ static void mute_snd0(bool scan_gamedir);
 #endif
 static bool use_open_path = false;
 static bool from_reboot = false;
+static bool wm_reload = false;
 static bool is_busy = false;
 static u8 mount_unk = EMU_OFF;
 
@@ -512,6 +513,12 @@ static void wwwd_thread(u64 arg)
 	#ifdef WM_REQUEST
 	cellFsUnlink(WMREQUEST_FILE);
 	#endif
+
+	wm_reload = file_exists(WM_RELOAD_FILE);
+	from_reboot = wm_reload || file_exists(WM_NOSCAN_FILE);
+
+	cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
+	cellFsUnlink(WM_NOSCAN_FILE); // delete wm_noscan file
 
 	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 
@@ -696,23 +703,19 @@ static void wwwd_stop_thread(u64 arg)
 
 	thread_join(thread_id_wwwd);
 
-	if(thread_id_ftpd != SYS_PPU_THREAD_NONE)
-		thread_join(thread_id_ftpd);
+	thread_join(thread_id_ftpd);
 
 	#ifdef PS3NET_SERVER
-	if(thread_id_netsvr != SYS_PPU_THREAD_NONE)
-		thread_join(thread_id_netsvr);
+	thread_join(thread_id_netsvr);
 	#endif
 
 	#ifdef PS3MAPI
-	if(thread_id_ps3mapi != SYS_PPU_THREAD_NONE)
-		thread_join(thread_id_ps3mapi);
+	thread_join(thread_id_ps3mapi);
 	#endif
 
 	if(wm_unload_combo != 1) // keep fan control running
 	{
-		if(thread_id_poll != SYS_PPU_THREAD_NONE)
-			thread_join(thread_id_poll);
+		thread_join(thread_id_poll);
 	}
 
 	#ifdef REMOVE_SYSCALLS
@@ -730,7 +733,7 @@ int wwwd_stop(void)
 	thread_join(t_id);
 
 	// wait for stop thread
-	while(thread_id_wwwd != SYS_PPU_THREAD_NONE) sys_ppu_thread_sleep(1);
+	while(thread_id_wwwd != SYS_PPU_THREAD_NONE) sys_timer_sleep(1);
 
 	finalize_module();
 

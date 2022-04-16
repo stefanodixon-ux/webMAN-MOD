@@ -186,7 +186,7 @@ static void start_event(u8 event_id)
 {
 	if(not_exists(script_events[event_id])) return;
 
-	if(file_exists(WM_RELOAD_FILE)) return;
+	if(wm_reload) return;
 
 	if(event_id == EVENT_ON_XMB)
 	{

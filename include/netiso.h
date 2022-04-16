@@ -371,10 +371,7 @@ static void netiso_stop_thread(__attribute__((unused)) u64 arg)
 		}
 	}
 
-	if(thread_id_net != SYS_PPU_THREAD_NONE)
-	{
-		thread_join(thread_id_net);
-	}
+	thread_join(thread_id_net);
 
 	sys_ppu_thread_exit(0);
 }
