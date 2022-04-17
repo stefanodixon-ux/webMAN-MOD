@@ -554,7 +554,7 @@ parse_request:
 				{
 					refresh_xml(param);
 
-					if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT) && is_app_home_onxmb())
+					if(IS_ON_XMB && is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
 					{
 						reload_xmb();
 						sys_ppu_thread_sleep(3);

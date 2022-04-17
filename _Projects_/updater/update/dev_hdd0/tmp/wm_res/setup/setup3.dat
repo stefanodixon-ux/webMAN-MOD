@@ -1,0 +1,14 @@
+Info <select id="xi" name="xi">
+<option value=03>None
+<option value=19>Tags
+<option value=02>ID
+<option value=18>ID + Tags
+<option value=34>ID + Version
+<option value=50>ID + Version + Tags
+<option value=00>Path
+<option value=16>Path + Tags
+<option value=01>Path + ID
+<option value=17>Path + ID + Tags
+<option value=33>Path + ID + Version
+<option value=49>Path + ID + Version + Tags
+</select><script>$("xi").value=1*"    "</script>

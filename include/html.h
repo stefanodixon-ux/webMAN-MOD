@@ -354,6 +354,23 @@ static void add_url(char *body, const char *prefix, const char *url, const char 
 	strcat(body, sufix);
 }
 
+static void add_html(u8 id, int value, char *buffer, char *templn)
+{
+	char res_file[40];
+	sprintf(res_file, "%s/setup/setup%c.dat", WM_RES_PATH, id);
+	read_file(res_file, templn, 1023, 0);
+	char *pos = strstr(templn, "  ");
+	if(pos)
+	{
+		if((id == 'a') || (id == 'v'))
+			sprintf(res_file, "%04x", value);
+		else
+			sprintf(res_file, "%04i", value);
+		memcpy(pos, res_file, 4);
+	}
+	concat(buffer, templn);
+}
+
 static size_t add_radio_button(const char *name, int value, const char *id, const char *label, const char *sufix, bool checked, char *buffer)
 {
 	char templn[MAX_LINE_LEN];
@@ -389,17 +406,17 @@ static size_t _add_checkbox(const char *name, const char *label, bool checked, c
 static size_t add_option_item(int value, const char *label, bool selected, char *buffer)
 {
 	char templn[MAX_LINE_LEN];
-	sprintf(templn, "<option value=\"%i\"%s/>%s</option>", value, selected ? ITEM_SELECTED : "", label);
+	sprintf(templn, "<option value=\"%i\"%s/>%s", value, selected ? ITEM_SELECTED : "", label);
 	return concat(buffer, templn);
 }
 
 #if defined(VIDEO_REC) || defined(USE_UACCOUNT)
-static size_t add_string_item(const char *value, const char *label, bool selected, char *buffer)
-{
-	char templn[MAX_LINE_LEN];
-	sprintf(templn, "<option value=\"%s\"%s/>%s</option>", value, selected ? ITEM_SELECTED : "", label);
-	return concat(buffer, templn);
-}
+//static size_t add_string_item(const char *value, const char *label, bool selected, char *buffer)
+//{
+//	char templn[MAX_LINE_LEN];
+//	sprintf(templn, "<option value=\"%s\"%s/>%s", value, selected ? ITEM_SELECTED : "", label);
+//	return concat(buffer, templn);
+//}
 #endif
 
 static size_t prepare_header(char *buffer, const char *param, u8 is_binary)

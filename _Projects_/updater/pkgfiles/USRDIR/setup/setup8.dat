@@ -1,0 +1,8 @@
+<option value=1>1- US/Canada
+<option value=2>2- Europe/Japan
+<option value=4>3- Korea/HK
+<option value=8>4- Latino/Australia
+<option value=16>5- Asia
+<option value=32>6- China
+</select>
+<script>$("dvr").value=1*"    "</script>

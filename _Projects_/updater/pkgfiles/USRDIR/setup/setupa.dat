@@ -1,0 +1,9 @@
+ • Audio: <select name="auf" id="auf"> 
+<option value="0002">AAC 64K
+<option value="0000">AAC 96K
+<option value="0001">AAC 128K
+<option value="2007">PCM 384K
+<option value="2008">PCM 768K
+<option value="2009">PCM 1536K
+</select>
+</select><script>$("auf").value="    "</script>

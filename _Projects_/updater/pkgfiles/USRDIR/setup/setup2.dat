@@ -1,0 +1,26 @@
+<select name="l" id="l" accesskey="L">
+<option value=0>English
+<option value=1>Fran&ccedil;ais
+<option value=2>Italiano
+<option value=3>Espa&ntilde;ol
+<option value=4>Deutsch
+<option value=5>Nederlands
+<option value=6>Portugu&ecirc;s
+<option value=7>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081
+<option value=8>Magyar
+<option value=9>Polski
+<option value=10>&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;&alpha;
+<option value=11>Hrvatski
+<option value=12>&#1041;&#1098;&#1083;&#1075;&#1072;&#1088;&#1089;&#1082;&#1080;
+<option value=20>Dansk
+<option value=21>&#268;e&scaron;tina
+<option value=22>Sloven&#269;ina
+<option value=16>&#20013;&#25991;
+<option value=14>T&uuml;rk&ccedil;e
+<option value=15>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;
+<option value=16>&#20013;&#25991;
+<option value=17>&#54620;&#44397;&#50612;
+<option value=18>&#26085;&#26412;&#35486;
+<option value=19>&#32321;&#39636;&#20013;&#25991;
+<option value=99>Custom
+</select><script>$("l").value=1*"    "</script>

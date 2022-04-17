@@ -843,7 +843,7 @@ scan_roms:
 	f1_len = ((webman_config->nogrp && c_roms) ? id_ROMS : webman_config->gamei ? id_GAMEI : id_VIDEO) + 1;
 	#endif
 
-	int ns = NONE; u8 uprofile = profile;
+	int ns = NONE; u8 uprofile, all_profiles = (profile >= 5);
 
 	bool allow_npdrm = webman_config->npdrm && (!isDir("/dev_hdd0/GAMEZ") && is_app_home_onxmb());
 
@@ -882,7 +882,7 @@ scan_roms:
 		if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 		#endif
 
-		ns = NONE; uprofile = profile;
+		ns = NONE;
 		for(u8 f1 = 0; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 		{
 			if(!refreshing_xml) break;
@@ -924,7 +924,7 @@ scan_roms:
 			bool ls; u8 li, subfolder; li=subfolder=0; ls=false; // single letter folder
 
 		subfolder_letter_xml:
-			subfolder = 0; uprofile = profile;
+			subfolder = 0; if(all_profiles) uprofile = 1; else uprofile = profile;
 		read_folder_xml:
 		//
 			if(!refreshing_xml) break;
@@ -1178,10 +1178,10 @@ scan_roms:
 			}
 		//
 		continue_reading_folder_xml:
-			if(f1 < id_ISO && !IS_NTFS)
+			if(scanning_roms || (f1 < id_ISO && !IS_NTFS))
 			{
-				if(uprofile > 0) {subfolder = uprofile = 0; goto read_folder_xml;}
-				if(is_net && (f1 > id_GAMEZ))
+				if(uprofile > 0) {subfolder = 0; if(all_profiles && (uprofile < 4)) ++uprofile; else uprofile = 0; goto read_folder_xml;}
+				if(is_net && (f1 > id_GAMEZ) && !scanning_roms)
 				{
 					if(ls && (li < 27)) {li++; goto subfolder_letter_xml;} else if(li < LANG_CUSTOM) {li = LANG_CUSTOM; goto subfolder_letter_xml;}
 				}

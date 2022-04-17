@@ -195,7 +195,7 @@ static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IX
 #define REFRESH_CONTENT		(0xC0FEBAB0)
 #define WM_FILE_REQUEST		(0xC0FEBEB0)
 
-static u8 profile = 0;
+static u8 profile = 0; // 0 = default, 1-4 = user profiles, 5 = all profiles
 
 static volatile u8 loading_html = 0;
 static volatile u8 refreshing_xml = 0;
@@ -309,8 +309,9 @@ static void get_sys_info(char *msg, u8 op, bool nolabel);
 #ifdef UNLOCK_SAVEDATA
 static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size);
 #endif
-static bool file_exists(const char* path);
 static bool isDir(const char* path);
+static bool file_exists(const char* path);
+static bool is_app_dir(const char *path, const char *app_name);
 static void force_copy(const char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, const char *param);
 static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param);

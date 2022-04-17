@@ -566,7 +566,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			if(strchr(param, '?') != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && (strstr(param, "?html") == NULL) && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
 		}
 
-		int ns = NONE; u8 uprofile = profile; enum icon_type default_icon;
+		int ns = NONE; u8 uprofile, all_profiles = (profile >= 5); enum icon_type default_icon;
 
 		#ifdef NET_SUPPORT
 		int abort_connection = 0;
@@ -682,7 +682,7 @@ list_games:
 			#ifdef NET_SUPPORT
 			if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 			#endif
-			ns = NONE; uprofile = profile;
+			ns = NONE;
 			for(u8 f1 = filter1; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 			{
 				if(!loading_games) break;
@@ -719,7 +719,7 @@ list_games:
 				bool ls; u8 li, subfolder; li=subfolder=0; ls=false; // single letter folder
 
 		subfolder_letter_html:
-				subfolder = 0; uprofile = profile;
+				subfolder = 0; if(all_profiles) uprofile = 1; else uprofile = profile;
 		read_folder_html:
 //
 				if(!loading_games) break;
@@ -942,10 +942,10 @@ next_html_entry:
 
 //
 	continue_reading_folder_html:
-				if(f1 < id_ISO && !IS_NTFS)
+				if(IS_ROMS_FOLDER || (f1 < id_ISO && !IS_NTFS))
 				{
-					if(uprofile > 0) {subfolder = uprofile = 0; goto read_folder_html;}
-					if(is_net && (f1 > id_GAMEZ))
+					if(uprofile > 0) {subfolder = 0; if(all_profiles && (uprofile < 4)) ++uprofile; else uprofile = 0; goto read_folder_html;}
+					if(is_net && (f1 > id_GAMEZ) && !IS_ROMS_FOLDER)
 					{
 						if(ls && (li < 27)) {li++; goto subfolder_letter_html;} else if(li < LANG_CUSTOM) {li = LANG_CUSTOM; goto subfolder_letter_html;}
 					}

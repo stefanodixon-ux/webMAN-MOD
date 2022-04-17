@@ -1,0 +1,13 @@
+<div style="display:none"><datalist id="cmds">
+<option>/xmb.ps3$block_servers
+<option>/xmb.ps3$disable_syscalls?keep_ccapi
+<option>/xmb.ps3$screenshot
+<option>/xmb.ps3$video
+<option>/xmb.ps3$music
+<option>/cpursx.ps3?mode
+<option>/klic.ps3?log
+<option>/refresh.ps3?xmb
+<option>/play.ps3?remoteplay
+<option>/install_ps3/dev_hdd0/packages
+<option>/beep.ps3;/move.ps3/dev_hdd0/vsh/task/*.pkg&to=/dev_hdd0/packages
+</datalist></div>

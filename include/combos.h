@@ -645,7 +645,7 @@
 															&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)) //  R2+L3+R3 / L3+R3+R2 / L3+R2+R3 (Quit / Unload webMAN)
 				{
 					// R2+L3+R3 / L3+R3+R2 / L3+R2+R3 = Quit / Unload webMAN
-					unload_me(1); // keep fan control running
+					unload_me(2); // keep fan control running
 				}
 				#ifdef COBRA_ONLY
 				else if(!(webman_config->combo & C_FPSINFO) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))

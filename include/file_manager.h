@@ -27,7 +27,7 @@ static void set_file_type(const char *path, const char *filename, char *ftype)
 	if(strstr(path, "/PSX") || strstr(ext, ".ntfs[PSX"))
 		sprintf(ftype, " psx");
 	#ifdef MOUNT_ROMS
-	else if(strstr(path, "/ROMS/"))
+	else if(strstr(path, "/ROMS"))
 		sprintf(ftype, " rom");
 	#endif
 	else if(is_BIN_ENC(filename) || strstr(path, "/PS2") || strstr(ext, ".ntfs[PS2"))
@@ -310,7 +310,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 #endif
 
 #ifdef MOUNT_ROMS
-	else if( ((strstr(templn, "/ROMS/") != NULL) || (strcasestr(ROMS_EXTENSIONS, ext) != NULL)) )
+	else if( ((strstr(templn, "/ROMS") != NULL) || (strcasestr(ROMS_EXTENSIONS, ext) != NULL)) )
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		if(wm_icons_exists) sprintf(ftype, show_img ? " pic" : " rom");

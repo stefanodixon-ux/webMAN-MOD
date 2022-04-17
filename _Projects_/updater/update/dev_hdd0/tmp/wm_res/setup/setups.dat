@@ -1,0 +1,7 @@
+<label><input type="radio" name="s" value="0" id="s_0"/> 0 sec<br></label>
+<label><input type="radio" name="s" value="3" id="s_3"/> 3 sec<br></label>
+<label><input type="radio" name="s" value="5" id="s_5"/> 5 sec<br></label>
+<label><input type="radio" name="s" value="10" id="s_10"/> 10 sec<br></label>
+<label><input type="radio" name="s" value="15" id="s_15"/> 15 sec<br></label>
+</div>
+<script>id=1*"    ";$("s_"+id).checked=true;</script>

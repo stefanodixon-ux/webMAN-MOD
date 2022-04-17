@@ -333,7 +333,7 @@ static void reload_xmb(void)
 	if(IS_ON_XMB)
 	{
 		mount_unk = EMU_OFF;
-		if(file_exists(RELOADXMB_EBOOT) && is_app_home_onxmb())
+		if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
 		{
 			set_app_home(RELOADXMB_DIR);
 			mount_unk = APP_GAME;
@@ -356,7 +356,7 @@ static void reload_xmb(void)
 	// hold L2 to cancel reload xmb
 	if(is_pressed(CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
 
-	if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT))
+	if(IS_ON_XMB && is_app_dir(_HDD0_GAME_DIR, "RELOADXMB"))
 	{
 		if(!get_explore_interface()) return;
 

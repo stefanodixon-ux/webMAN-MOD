@@ -434,14 +434,7 @@ view_file:
 	}
 
 	// add navigation with left/right keys
-	concat(buffer,  "<script>"
-					"document.addEventListener('keydown',kd,false);"
-					"function kd(e){"
-					"if(typeof document.activeElement.name!='undefined')return;"
-					"e=e||window.event;var kc=e.keyCode;"
-					"if(kc==37){e.ctrlKey?pblk.click():back.click();}"
-					"if(kc==39){e.ctrlKey?nblk.click():next.click();}}"
-					"</script>");
+	add_html('k', 0, buffer, templn);
 }
 
 #endif // #ifdef DEBUG_MEM

@@ -43,7 +43,7 @@
 		 #endif
 		_concat2(&sbuffer, "<br>", STR_XMLRF);
 
-		if(IS_ON_XMB && file_exists(RELOADXMB_EBOOT) && is_app_home_onxmb())
+		if(IS_ON_XMB && is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
 		{
 			sprintf(templn, " [<a href=\"/reloadxmb.ps3\">%s XMB</a>]", STR_REFRESH);
 			_concat(&sbuffer, templn);

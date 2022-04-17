@@ -43,6 +43,7 @@
 #define COMBO_DIR            TMP_DIR "/wm_combo"
 #define ICONS_DIR            TMP_DIR "/wm_icons"
 #define RES_DIR              TMP_DIR "/wm_res"
+#define SETUP_DIR            RES_DIR "/setup"
 
 #define XMLHOST_DIR          "/dev_hdd0/xmlhost/game_plugin"
 
@@ -421,6 +422,7 @@ int main()
 	sysLv2FsMkdir(COMBO_DIR, DMODE);
 	sysLv2FsMkdir(ICONS_DIR, DMODE);
 	sysLv2FsMkdir(RES_DIR,   DMODE);
+	sysLv2FsMkdir(SETUP_DIR, DMODE);
 
 	sysLv2FsMkdir(HDDROOT_DIR "/xmlhost", DMODE);
 	sysLv2FsMkdir(XMLHOST_DIR, DMODE);
@@ -650,6 +652,26 @@ int main()
 	file_copy(APP_USRDIR "/addons/wm_theme_metalification.pkg"	, RES_DIR "/wm_theme_metalification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_flowerification.pkg"	, RES_DIR "/wm_theme_flowerification.pkg");
+
+	file_copy(APP_USRDIR "/setup/setup0.dat", SETUP_DIR "/setup0.dat");
+	file_copy(APP_USRDIR "/setup/setup1.dat", SETUP_DIR "/setup1.dat");
+	file_copy(APP_USRDIR "/setup/setup2.dat", SETUP_DIR "/setup2.dat");
+	file_copy(APP_USRDIR "/setup/setup3.dat", SETUP_DIR "/setup3.dat");
+	file_copy(APP_USRDIR "/setup/setup4.dat", SETUP_DIR "/setup4.dat");
+	file_copy(APP_USRDIR "/setup/setup5.dat", SETUP_DIR "/setup5.dat");
+	file_copy(APP_USRDIR "/setup/setup6.dat", SETUP_DIR "/setup6.dat");
+	file_copy(APP_USRDIR "/setup/setup7.dat", SETUP_DIR "/setup7.dat");
+	file_copy(APP_USRDIR "/setup/setup8.dat", SETUP_DIR "/setup8.dat");
+	file_copy(APP_USRDIR "/setup/setupa.dat", SETUP_DIR "/setupa.dat");
+	file_copy(APP_USRDIR "/setup/setupv.dat", SETUP_DIR "/setupv.dat");
+	file_copy(APP_USRDIR "/setup/setupd.dat", SETUP_DIR "/setupd.dat");
+	file_copy(APP_USRDIR "/setup/setups.dat", SETUP_DIR "/setups.dat");
+	file_copy(APP_USRDIR "/setup/setupx.dat", SETUP_DIR "/setupx.dat");
+	file_copy(APP_USRDIR "/setup/setupz.dat", SETUP_DIR "/setupz.dat");
+	file_copy(APP_USRDIR "/setup/setupk.dat", SETUP_DIR "/setupk.dat");
+
+	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
+
 /*
 	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
 	sysLv2FsMkdir(RELOADXMB_DIR "/USRDIR", DMODE);

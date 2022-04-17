@@ -1,0 +1,6 @@
+<style>
+#cnt,#cfg,#adv,#cmb,#wt{max-height:0px;overflow: hidden;transition:max-height 0.25s linear;}
+td+td{vertical-align:top;text-align:left;white-space:nowrap}
+</style>
+<form action="/setup.ps3" method="get" enctype="application/x-www-form-urlencoded" target="_self">
+<b><a class="tg" href="javascript:tgl(cnt);">

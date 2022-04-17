@@ -31,5 +31,6 @@ static void finalize_module(void)
 	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
 
 	{system_call_3(SC_STOP_PRX_MODULE, prx, 0, (u64)(u32)meminfo);}
-	{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
+	if(wm_unload_combo != 2)
+		{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
 }

@@ -851,15 +851,8 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			//
 
 			// add navigation with left/right keys
-			concat(buffer,  "<script>"
-							"document.addEventListener('keydown',kd,false);"
-							"function kd(e){"
-							"if(typeof document.activeElement.name!='undefined')return;"
-							"e=e||window.event;var kc=e.keyCode;"
-							"if(kc==37){e.ctrlKey?pblk.click():back.click();}"
-							"if(kc==39){e.ctrlKey?nblk.click():next.click();}}"
-							"</script>"
-							"<textarea id=\"output\" style=\"display:none\">");
+			add_html('k', 0, buffer, templn);
+			concat(buffer,  "<textarea id=\"output\" style=\"display:none\">");
 
 			for(int i = 0; i < length; i++)
 			{
@@ -1058,7 +1051,7 @@ static void add_plugins_list(char *buffer, char *templn, u8 is_vsh)
 			{
 				if(!extcmp(entry_name, ".sprx", 5))
 				{
-					sprintf(templn + plen, "%s</option>", entry_name); buffer += concat(buffer, templn); if(++cnt > 450) break;
+					sprintf(templn + plen, "%s", entry_name); buffer += concat(buffer, templn); if(++cnt > 450) break;
 				}
 			}
 			cellFsClosedir(fd);

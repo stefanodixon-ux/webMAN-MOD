@@ -1,0 +1,6 @@
+<select name="ic" id="ic" onchange="nc.checked=(ic.value==1);" accesskey="C">
+<option value=0>MM COVERS
+<option value=1>ICON0.PNG
+<option value=2>DISC ICONS
+<option value=3>ONLINE COVERS
+</select><script>$("ic").value=    </script>

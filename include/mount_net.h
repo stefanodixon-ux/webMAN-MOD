@@ -33,7 +33,7 @@ if(netid >= '0' && netid <= '4')
 	bool is_iso = ext && (strcasestr(ISO_EXTENSIONS, ext) != NULL);
 
 	// allow mount any file type on ROMS
-	if(islike(netpath, "/ROMS/")) ; else
+	if(islike(netpath, "/ROMS")) ; else
 
 	// check mount ISOs
 	if(ext)
@@ -134,7 +134,7 @@ if(netid >= '0' && netid <= '4')
 		if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);
 		set_bdvd_as_app_home(); // mount (NET) PS3ISO in /app_home
 	}
-	else if(islike(netpath, "/ROMS/"))
+	else if(islike(netpath, "/ROMS"))
 	{
 		//netiso_args.emu_mode = EMU_BD;
 		mount_unk = EMU_ROMS;
@@ -217,7 +217,7 @@ retry_net:
 			ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 		}
 
-		else if(islike(netpath, "/ROMS/"))
+		else if(islike(netpath, "/ROMS"))
 		{
 			mount_unk = EMU_ROMS;
 

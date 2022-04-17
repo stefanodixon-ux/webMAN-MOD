@@ -347,7 +347,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -------------------
 		if(mount_ps3)
 		{
-			if(mounted && islike(source, "/net") && (strstr(source, "/ROMS/") != NULL)) launch_app_home_icon(webman_config->autoplay);
+			if(mounted && islike(source, "/net") && (strstr(source, "/ROMS") != NULL)) launch_app_home_icon(webman_config->autoplay);
 
 			is_busy = false;
 			return mounted;
@@ -1618,7 +1618,8 @@ static void mount_thread(u64 action)
 	// MOUNT ISO OR PATH //
 	///////////////////////
 
-	if(!strstr(_path, "/ROMS/PS"))
+	char *ps = strstr(_path, "/ROMS"); // check is not like /ROMS*/PS*
+	if(!(ps && (ps[5] && ps[6] && ps[7] && (islike(ps + 5, "/PS") || islike(ps + 7, "/PS")))))
 	{
 		#include "mount_misc.h" // mount GAMEI, NPDRM, ROMS, PS2 Classic
 	}

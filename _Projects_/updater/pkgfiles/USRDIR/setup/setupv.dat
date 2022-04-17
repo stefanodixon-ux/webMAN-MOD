@@ -1,0 +1,11 @@
+ • Rec Video: <select name="vif" id="vif"> 
+<option value="1110">AVC MP 272p
+<option value="2110">AVC BL 272p
+<option value="0000">MPEG4 240p
+<option value="0110">MPEG4 272p
+<option value="0240">MPEG4 368p
+<option value="3160">M4HD 272p
+<option value="3270">M4HD 368p
+<option value="4660">M4HD 720p
+<option value="3670">MJPEG 720p
+</select><script>$("vif").value="    "</script>

@@ -1,0 +1,12 @@
+<select name="fp" id="fp" accesskey="M">
+<option value=0>Standard (896KB)
+<option value=1>Min (320KB)
+<option value=3>Min+ (512KB)
+<option value=2>Max (1280KB)
+<option value=4>Max PS3+ (1088K PS3)
+<option value=5>Max PSX+ ( 368K PS3 + 768K PSX)
+<option value=6>Max BLU+ ( 368K PS3 + 768K BLU)
+<option value=7>Max PSP+ ( 368K PS3 + 768K PSP)
+<option value=8>Max PS2+ ( 368K PS3 + 768K PS2)
+</select><script>$("fp").value=    </script>
+ 3072KB [MC]: <select id="mc" name="mc">

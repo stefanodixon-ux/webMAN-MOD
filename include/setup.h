@@ -341,6 +341,7 @@ static void setup_parse_settings(char *param)
 	}
 #endif
 
+	profile = webman_config->profile = get_valuen(param, "&usr=", 0, 5);
 	webman_config->lang = 0; //English
 
 #ifndef ENGLISH_ONLY
@@ -529,9 +530,8 @@ static void setup_form(char *buffer, char *templn)
 	fast_concat.str = NULL;
 
 	u8 value, b, h = is_app_home_onxmb();
-	sprintf(templn, "<style>#cnt,#cfg,#adv,#cmb,#wt{max-height:0px;overflow: hidden;transition:max-height 0.25s linear;}td+td{vertical-align:top;text-align:left;white-space:nowrap}</style>"
-					"<form action=\"/setup.ps3\" method=\"get\" enctype=\"application/x-www-form-urlencoded\" target=\"_self\">"
-					"<b><a class=\"tg\" href=\"javascript:tgl(cnt);\"> %s </a></b><br><div id=\"cnt\">"
+	add_html('0', 0, buffer, templn);
+	sprintf(templn, " %s </a></b><br><div id=\"cnt\">"
 					"<table width=\"820\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\">"
 					"<tr><td width=\"250\">", STR_SCAN2); concat(buffer, templn);
 
@@ -744,94 +744,25 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("nc\" onclick=\"ic.value=(nc.checked)?1:0;", STR_MMCOVERS, " : ", (value == SHOW_ICON0), buffer);
 
 	// icon type
-	concat(buffer, "<select name=\"ic\" onchange=\"nc.checked=(ic.value==1);\" accesskey=\"C\">");
-	add_option_item(0, "MM COVERS",     (value == SHOW_MMCOVERS), buffer);
-	add_option_item(1, "ICON0.PNG",     (value == SHOW_ICON0),    buffer);
-	add_option_item(2, "DISC ICONS",    (value == SHOW_DISC),     buffer);
-#ifndef ENGLISH_ONLY
-	add_option_item(3, "ONLINE COVERS", (value == ONLINE_COVERS), buffer);
-#endif
+	add_html('1', value, buffer, templn);
 
 #ifndef ENGLISH_ONLY
-	concat(buffer, "</select>");
-
 	//language
-	sprintf(templn, " • %s: <select name=\"l\" accesskey=\"L\">", STR_PLANG); concat(buffer, templn);
-
-	const char *languages[24] = {
-								"English",
-								"Fran&ccedil;ais",
-								"Italiano",
-								"Espa&ntilde;ol",
-								"Deutsch",
-								"Nederlands",
-								"Portugu&ecirc;s",
-								"&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081",
-								"Magyar",
-								"Polski",
-								"&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;&alpha;",
-								"Hrvatski",
-								"&#1041;&#1098;&#1083;&#1075;&#1072;&#1088;&#1089;&#1082;&#1080;",
-
-								"Indonesian",
-								"T&uuml;rk&ccedil;e",
-								"&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;",
-								"&#20013;&#25991;",
-								"&#54620;&#44397;&#50612;",
-								"&#26085;&#26412;&#35486;",
-								"&#32321;&#39636;&#20013;&#25991;",
-
-								"Dansk",
-								"&#268;e&scaron;tina",
-								"Sloven&#269;ina",
-
-								"Custom",
-								};
-
-	value = webman_config->lang;
-	for(u8 l, ll, n = 0; n < 24; n++)
-	{
-		l = n; if(n >= 13 && n <= 15) l += 7; else if(n > 16) l -= 3; ll = l; if(n >= LANG_XX) {ll = LANG_XX, l = LANG_CUSTOM;}
-		add_option_item(l, languages[ll], (value == l) , buffer);
-	}
+	sprintf(templn, " • %s: ", STR_PLANG); concat(buffer, templn);
+	add_html('2', webman_config->lang, buffer, templn);
 #endif
-	concat(buffer, "</select><br>");
+	concat(buffer, "<br>");
 
 	add_checkbox("tid", STR_TITLEID, " • ", (webman_config->tid),  buffer);
 	add_checkbox("sfo", "PARAM.SFO", " • ",!(webman_config->use_filename), buffer);
 
-	concat(buffer, "Info <select name=\"xi\">");
-
+	// info
 	#ifndef LITE_EDITION
-	value = webman_config->info;
-	use_imgfont = (file_ssize(IMAGEFONT_PATH) > 900000);
-					add_option_item(0x03, "None",                       (value == 0x03), buffer);
-	if(use_imgfont) add_option_item(0x13, "Tags",                       (value == 0x13), buffer);
-					add_option_item(0x02, "ID",                         (value == 0x02), buffer);
-	if(use_imgfont) add_option_item(0x12, "ID + Tags",                  (value == 0x12), buffer);
-					add_option_item(0x22, "ID + Version",               (value == 0x22), buffer);
-	if(use_imgfont) add_option_item(0x32, "ID + Version + Tags",        (value == 0x32), buffer);
-					add_option_item(0x00, "Path",                       (value == 0x00), buffer);
-	if(use_imgfont) add_option_item(0x10, "Path + Tags",                (value == 0x10), buffer);
-					add_option_item(0x01, "Path + ID",                  (value == 0x01), buffer);
-	if(use_imgfont) add_option_item(0x11, "Path + ID + Tags",           (value == 0x11), buffer);
-					add_option_item(0x21, "Path + ID + Version",        (value == 0x21), buffer);
-	if(use_imgfont) add_option_item(0x31, "Path + ID + Version + Tags", (value == 0x31), buffer);
+	add_html('3', webman_config->info, buffer, templn);
 	#else
-	value = webman_config->info & 0xF;
-	add_option_item(0x03, "None",      (value == 0x03), buffer);
-	add_option_item(0x02, "ID",        (value == 0x02), buffer);
-	add_option_item(0x00, "Path",      (value == 0x00), buffer);
-	add_option_item(0x01, "Path + ID", (value == 0x01), buffer);
+	add_html('3', webman_config->info & 0xF, buffer, templn);
 	#endif
-
-	value = webman_config->minfo;
-	concat(buffer, "</select> • Mount Info <select name=\"mi\">");
-	add_option_item(3, "None",   (value == 3), buffer);
-	add_option_item(2, "Info 1", (value == 2), buffer);
-	add_option_item(1, "Info 2", (value == 1), buffer);
-	add_option_item(0, "Info 1 + 2", (value == 0), buffer);
-	concat(buffer, "</select><br>");
+	add_html('4', webman_config->minfo, buffer, templn);
 
 #ifdef PHOTO_GUI
 	if(file_exists(LAUNCHPAD_FILE_XML))
@@ -922,6 +853,7 @@ static void setup_form(char *buffer, char *templn)
 	add_option_item(2, "2", (profile == 2) , buffer);
 	add_option_item(3, "3", (profile == 3) , buffer);
 	add_option_item(4, "4", (profile == 4) , buffer);
+	add_option_item(5, "*", (profile >= 5) , buffer);
 
 	#ifdef USE_UACCOUNT
 	//default user account
@@ -941,7 +873,6 @@ static void setup_form(char *buffer, char *templn)
 			}
 			cellFsClosedir(fd);
 		}
-
 	}
 	#endif
 
@@ -953,30 +884,12 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 	//memory usage
-	sprintf(templn, " %s [%iKB]: <select name=\"fp\" accesskey=\"M\">", STR_MEMUSAGE, (webman_config->vsh_mc) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, templn);
-
-	value = webman_config->foot;
-	add_option_item(0, "Standard (896KB)"                , (value == 0), buffer);
-	add_option_item(1, "Min (320KB)"                     , (value == 1), buffer);
-	add_option_item(3, "Min+ (512KB)"                    , (value == 3), buffer);
-	add_option_item(2, "Max (1280KB)"                    , (value == 2), buffer);
-	add_option_item(4, "Max PS3+ (1088K PS3)"            , (value == 4), buffer);
-	add_option_item(5, "Max PSX+ ( 368K PS3 + 768K PSX)" , (value == 5), buffer);
-	add_option_item(6, "Max BLU+ ( 368K PS3 + 768K BLU)" , (value == 6), buffer);
-	add_option_item(7, "Max PSP+ ( 368K PS3 + 768K PSP)" , (value == 7), buffer);
-	add_option_item(8, "Max PS2+ ( 368K PS3 + 768K PS2)" , (value == 8), buffer);
-	concat(buffer, "</select>");
+	sprintf(templn, " %s [%iKB]: ", STR_MEMUSAGE, (webman_config->vsh_mc) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, templn);
+	add_html('5', webman_config->foot, buffer, templn);
 
 	//memory container
-	concat(buffer, " 3072KB [MC]: <select name=\"mc\">");
-	value = webman_config->vsh_mc;
-	add_option_item(0, STR_DISABLED, (value == 0), buffer);
-	add_option_item(4, "4 - bg",     (value == 4), buffer);
-	add_option_item(3, "3 - fg",     (value == 3), buffer);
-	add_option_item(2, "2 - debug",  (value == 2), buffer);
-	add_option_item(1, "1 - app"  ,  (value == 1), buffer);
-	concat(buffer, "</select><p>");
-
+	add_option_item(0,  STR_DEFAULT, (webman_config->vsh_mc == 0)  , buffer);
+	add_html('6', webman_config->vsh_mc, buffer, templn);
 
 	#ifndef LITE_EDITION
 	//Home
@@ -992,47 +905,18 @@ static void setup_form(char *buffer, char *templn)
 	cobra_config->fan_speed = cconfig[15]; // 0 = SYSCON, 1 = Dynamic Fan Controller, 0x33 to 0xFF = Set manual fan speed
 
 	//BD Region
-	concat(buffer, "BD Region: <select name=\"bdr\">");
-	value = cobra_config->bd_video_region;
-
-	add_option_item(0, STR_DEFAULT , (value == 0) , buffer);
-	add_option_item(1, "A- America", (value == 1) , buffer);
-	add_option_item(2, "B- Europe" , (value == 2) , buffer);
-	add_option_item(4, "C- Asia"   , (value == 4) , buffer);
+	concat(buffer, "BD Region: <select id=\"bdr\" name=\"bdr\">");
+	add_option_item(0,  STR_DEFAULT, (cobra_config->bd_video_region == 0)  , buffer);
+	add_html('7', cobra_config->bd_video_region, buffer, templn);
 
 	//DVD Region
-	concat(buffer, "</select> • DVD Region: <select name=\"dvr\">");
-	value = cobra_config->dvd_video_region;
-
-	add_option_item(0,  STR_DEFAULT          , (value == 0)  , buffer);
-	add_option_item(1,  "1- US/Canada"       , (value == 1)  , buffer);
-	add_option_item(2,  "2- Europe/Japan"    , (value == 2)  , buffer);
-	add_option_item(4,  "3- Korea/HK"        , (value == 4)  , buffer);
-	add_option_item(8,  "4- Latino/Australia", (value == 8)  , buffer);
-	add_option_item(16, "5- Asia"            , (value == 16) , buffer);
-	add_option_item(32, "6- China"           , (value == 32) , buffer);
-	concat(buffer, "</select>");
+	add_option_item(0,  STR_DEFAULT, (cobra_config->dvd_video_region == 0)  , buffer);
+	add_html('8', cobra_config->dvd_video_region, buffer, templn);
 	#endif // #ifdef BDVD_REGION
 
 	#ifdef VIDEO_REC
-	concat(buffer, " • Rec Video: <select name=\"vif\">");
-	add_option_item( 1110 , "AVC MP 272p", (rec_video_format==0x1110) , buffer);
-	add_option_item( 2110 , "AVC BL 272p", (rec_video_format==0x2110) , buffer);
-	add_string_item("0000", "MPEG4 240p" , (rec_video_format==0x0000) , buffer);
-	add_string_item("0110", "MPEG4 272p" , (rec_video_format==0x0110) , buffer);
-	add_string_item("0240", "MPEG4 368p" , (rec_video_format==0x0240) , buffer);
-	add_option_item( 3160 , "M4HD  272p" , (rec_video_format==0x3160) , buffer);
-	add_option_item( 3270 , "M4HD  368p" , (rec_video_format==0x3270) , buffer);
-	add_option_item( 4660 , "M4HD  720p" , (rec_video_format==0x4660) , buffer);
-	add_option_item( 3670 , "MJPEG 720p" , (rec_video_format==0x3670) , buffer);
-	concat(buffer, "</select> • Audio: <select name=\"auf\">");
-	add_string_item("0002", "AAC 64K"    , (rec_audio_format==0x0002) , buffer);
-	add_string_item("0000", "AAC 96K"    , (rec_audio_format==0x0000) , buffer);
-	add_string_item("0001", "AAC 128K"   , (rec_audio_format==0x0001) , buffer);
-	add_option_item( 2007 , "PCM 384K"   , (rec_audio_format==0x2007) , buffer);
-	add_option_item( 2008 , "PCM 768K"   , (rec_audio_format==0x2008) , buffer);
-	add_option_item( 2009 , "PCM 1536K"  , (rec_audio_format==0x2009) , buffer);
-	concat(buffer, "</select>");
+	add_html('v', webman_config->rec_video_format, buffer, templn);
+	add_html('a', webman_config->rec_audio_format, buffer, templn);
 	#endif // #ifdef VIDEO_REC
 
 	buffer += strlen(buffer);
@@ -1163,71 +1047,34 @@ static void setup_form(char *buffer, char *templn)
 					"<br>", command); concat(buffer, templn);
 					#endif
 
-	concat(buffer,
-					"<div style=\"display:none\"><datalist id=\"cmds\">"
- #ifdef PS3_BROWSER
-					"<option>/xmb.ps3$block_servers"
-  #ifdef REMOVE_SYSCALLS
-					"<option>/xmb.ps3$disable_syscalls?keep_ccapi"
-  #endif
-  #ifdef XMB_SCREENSHOT
-					"<option>/xmb.ps3$screenshot"
-  #endif
-  #ifdef PLAY_MUSIC
-					"<option>/xmb.ps3$video"
-					"<option>/xmb.ps3$music"
-  #endif
- #endif //#ifdef PS3_BROWSER
-					"<option>/cpursx.ps3?mode"
- #ifdef GET_KLICENSEE
-					"<option>/klic.ps3?log"
- #endif
- #ifndef LITE_EDITION
-					"<option>/refresh.ps3?xmb"
-					"<option>/play.ps3?remoteplay"
- #endif
- #ifdef PKG_HANDLER
-					"<option>/install_ps3/dev_hdd0/packages"
-					"<option>/beep.ps3;/move.ps3/dev_hdd0/vsh/task/*.pkg&to=/dev_hdd0/packages"
- #endif
-					"</datalist></div>");
+	add_html('x', 0, buffer, templn);
+
 #endif // #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
 
 	concat(buffer, "</div>");
 
 	//Wait for any USB device to be ready
 	sprintf(templn, "%swt);\"> %s </a></b><br><div id=\"wt\">", HTML_TOGGLER, STR_ANYUSB); concat(buffer, templn);
-
-	value = webman_config->bootd;
-	add_radio_button("b", 0,  "b_0", "0 sec" , _BR_, (value == 0),  buffer);
-	add_radio_button("b", 5,  "b_1", "5 sec" , _BR_, (value == 5),  buffer);
-	add_radio_button("b", 9,  "b_2", "10 sec", _BR_, (value == 9),  buffer);
-	add_radio_button("b", 15, "b_3", "15 sec", _BR_, (value == 15), buffer);
+	add_html('d', webman_config->bootd, buffer, templn);
 
 	//Wait additionally for each selected USB device to be ready
 	sprintf(templn, HTML_BLU_SEPARATOR "<u> %s:</u><br>", STR_ADDUSB); concat(buffer, templn);
-
-	value = webman_config->boots;
-	add_radio_button("s", 0,  "s_0", "0 sec" , _BR_, (value == 0),  buffer);
-	add_radio_button("s", 3,  "s_1", "3 sec" , _BR_, (value == 3),  buffer);
-	add_radio_button("s", 5,  "s_2", "5 sec" , _BR_, (value == 5),  buffer);
-	add_radio_button("s", 10, "s_3", "10 sec", _BR_, (value == 10), buffer);
-	add_radio_button("s", 15, "s_4", "15 sec", _BR_, (value == 15), buffer);
-	concat(buffer, "</div>");
+	add_html('s', webman_config->boots, buffer, templn);
 
 	sprintf(templn, HTML_RED_SEPARATOR "<input class=\"bs\" type=\"submit\" accesskey=\"S\" value=\" %s \"/>"
-					"<script>function tgl(o){o.style.maxHeight=(o.style.maxHeight=='500px')?'0px':'500px';}</script>",
-					STR_SAVE); concat(buffer, templn);
-	concat(buffer, "</form>");
+					"<script>function tgl(o){o.style.maxHeight=(o.style.maxHeight=='500px')?'0px':'500px';}</script>"
+					"</form>", STR_SAVE); concat(buffer, templn);
 
 #ifndef LITE_EDITION
 	#ifdef PKG_HANDLER
-	concat(buffer,  HTML_RED_SEPARATOR
-					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a> • "
-					"<a href=\"/install.ps3/dev_hdd0/packages\">Install PKG</a> • "
-					"<a href=\"/install.ps3/dev_hdd0/theme\">Install P3T</a> • "
-					"<a href=\"/install.ps3$\">Add-ons</a><br>"
-					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
+	add_html('z', 0, buffer, templn);
+
+//	concat(buffer,  HTML_RED_SEPARATOR
+//					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a> • "
+//					"<a href=\"/install.ps3/dev_hdd0/packages\">Install PKG</a> • "
+//					"<a href=\"/install.ps3/dev_hdd0/theme\">Install P3T</a> • "
+//					"<a href=\"/install.ps3$\">Add-ons</a><br>"
+//					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
 	#else
 	concat(buffer,  HTML_RED_SEPARATOR
 					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a><br>"

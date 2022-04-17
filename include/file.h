@@ -36,7 +36,6 @@ static bool file_exists(const char *path)
 	return (file_ssize(path) >= 0);
 }
 
-#ifdef COBRA_ONLY
 static bool is_app_dir(const char *path, const char *app_name)
 {
 	char eboot[STD_PATH_LEN + 1];
@@ -44,6 +43,7 @@ static bool is_app_dir(const char *path, const char *app_name)
 	return file_exists(eboot);
 }
 
+#ifdef COBRA_ONLY
 static bool is_iso_0(const char *filename)
 {
 	#ifdef MOUNT_PNG
