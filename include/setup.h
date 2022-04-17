@@ -1483,3 +1483,42 @@ static void reset_settings(void)
 	cellFsUnlink(WMCONFIG);
 	read_settings();
 }
+
+static void restore_settings(void)
+{
+	#ifdef COBRA_ONLY
+	unload_vsh_gui();
+	#endif
+
+	for(u8 n = 0; n < 4; n++)
+		if(active_socket[n]>NONE) {sys_net_abort_socket(active_socket[n], SYS_NET_ABORT_STRICT_CHECK); sclose(&active_socket[n]);}
+
+	if(webman_config->fanc == DISABLED || webman_config->man_speed == FAN_AUTO)
+	{
+		bool set_ps2mode = (webman_config->fanc == ENABLED) && (webman_config->ps2_rate >= MIN_FANSPEED);
+
+		if(set_ps2mode)
+			restore_fan(SET_PS2_MODE); //set ps2 fan control mode
+		else
+			restore_fan(SYSCON_MODE);  //restore syscon fan control mode
+	}
+
+	#ifdef WM_PROXY_SPRX
+	{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", NULL);}
+	#endif
+
+	#ifdef AUTO_POWER_OFF
+	setAutoPowerOff(false);
+	#endif
+
+	#ifdef COBRA_ONLY
+	if(cobra_config->fan_speed) cobra_read_config(cobra_config);
+	#endif
+
+	#ifdef USE_NTFS
+	unmount_all_ntfs_volumes();
+	#endif
+
+	working = plugin_active = 0;
+	sys_ppu_thread_usleep(500000);
+}

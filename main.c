@@ -315,10 +315,7 @@ static void force_copy(const char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, const char *param);
 static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *param);
 static char *remove_filename(const char *path);
-
-#ifndef LITE_EDITION
-static void parse_script(const char *script_file);
-#endif
+static int save_settings(void);
 
 #ifdef PATCH_GAMEBOOT
 static void patch_gameboot(u8 boot_type);
@@ -387,13 +384,10 @@ static void set_app_home(const char *game_path);
 static bool is_iso_0(const char *filename);
 #endif
 
-static size_t get_name(char *name, const char *filename, u8 cache);
 static void get_cpursx(char *cpursx);
 static void get_last_game(char *last_path);
 static void add_game_info(char *buffer, char *templn, u8 is_cpursx);
-#ifdef MUTE_SND0
-static void mute_snd0(bool scan_gamedir);
-#endif
+
 static bool use_open_path = false;
 static bool from_reboot = false;
 static bool wm_reload = false;
@@ -438,11 +432,11 @@ static u8 mount_unk = EMU_OFF;
 #include "include/video_rec.h"
 #include "include/secure_file_id.h"
 
+#include "include/snd0.h"
 #include "include/games_html.h"
 #include "include/games_xml.h"
 #include "include/prepntfs.h"
 
-#include "include/snd0.h"
 #include "include/setup.h"
 #include "include/cpursx.h"
 #include "include/togglers.h"
@@ -686,20 +680,12 @@ static void wwwd_stop_thread(u64 arg)
 	working = 0;
 	show_msg(STR_WMUNL);
 
-	while(is_mounting | refreshing_xml) sys_ppu_thread_usleep(50000);
-
-	#ifdef MOUNT_ROMS
-	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
-	#endif
-
 	#ifdef FPS_OVERLAY
 	if(overlay_enabled)
 		disable_progress(); // clear message address
 	#endif
 
 	restore_settings();
-
-	sys_ppu_thread_sleep(2); // wait for other threads
 
 	thread_join(thread_id_wwwd);
 
@@ -713,7 +699,7 @@ static void wwwd_stop_thread(u64 arg)
 	thread_join(thread_id_ps3mapi);
 	#endif
 
-	if(wm_unload_combo != 1) // keep fan control running
+	if(!wm_unload_combo)
 	{
 		thread_join(thread_id_poll);
 	}
@@ -727,13 +713,14 @@ static void wwwd_stop_thread(u64 arg)
 
 int wwwd_stop(void)
 {
-	sys_ppu_thread_t t_id;
+	while(is_mounting | refreshing_xml) sys_ppu_thread_usleep(50000);
+	#ifdef MOUNT_ROMS
+	if(ROMS_EXTENSIONS) free(ROMS_EXTENSIONS);
+	#endif
 
+	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, wwwd_stop_thread, NULL, THREAD_PRIO_STOP, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, STOP_THREAD_NAME);
 	thread_join(t_id);
-
-	// wait for stop thread
-	while(thread_id_wwwd != SYS_PPU_THREAD_NONE) sys_timer_sleep(1);
 
 	finalize_module();
 

@@ -199,6 +199,4 @@ static u8 cconfig[sizeof(CobraConfig)];
 static CobraConfig *cobra_config = (CobraConfig*) cconfig;
 #endif
 
-static int save_settings(void);
-static void restore_settings(void);
 ////////////////////////////////

@@ -22,9 +22,6 @@ static inline void _sys_ppu_thread_exit(u64 val)
 
 static void finalize_module(void)
 {
-	// int *result = NULL;
-	// {system_call_6(SC_STOP_PRX_MODULE, (u64)(u32)prx, 0, NULL, (u64)(u32)result, 0, NULL);}
-
 	u64 meminfo[5];
 
 	meminfo[0] = 0x28;
