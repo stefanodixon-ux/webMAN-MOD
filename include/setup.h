@@ -1351,7 +1351,7 @@ static void restore_settings(void)
 	}
 
 	#ifdef WM_PROXY_SPRX
-	{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", NULL);}
+	//{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", NULL);}
 	#endif
 
 	#ifdef AUTO_POWER_OFF
