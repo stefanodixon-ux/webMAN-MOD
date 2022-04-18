@@ -29,7 +29,6 @@
 #define WM_REQUEST		// accept commands via local file /dev_hdd0/tmp/wm_request
 #define GET_KLICENSEE	// /klic.ps3
 #define PS3_BROWSER		/xmb.ps3 / /browser.ps3 / open browser combos
-#define EMBED_JS		// use embedded javascript instead of external js files
 #define AUTO_POWER_OFF	// Disable temporarily the auto power off setting in xRegistry during ftp session, /install.ps3 & /download.ps3 (idea by 444nonymous)
 #define OFFLINE_INGAME	// allow set auto-disable network in-game (idea by 444nonymous)
 #define SYS_ADMIN_MODE	// Enable restricted / admin modes using L2+R2+TRIANGLE

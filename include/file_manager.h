@@ -977,47 +977,6 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			{
 				sprintf(templn, SCRIPT_SRC_FMT, FM_SCRIPT_JS); _concat(&sout, templn);
 			}
-			#if 0 //#ifdef EMBED_JS
-			else
-			{
-				sprintf(tempstr, // popup menu
-							"<div id='mnu' style='position:fixed;width:140px;background:#333;display:none;padding:5px;'>"
-							#ifdef PKG_HANDLER
-							"<a id='m0'>%s</a>"
-							#endif
-							"<a id='m1'>%s</a><a id='m2'>%s</a><hr><a id='m3'>%s<br></a><a href=\"javascript:t=prompt('%s',self.location.pathname);if(t.indexOf('/dev_')==0)self.location='/mkdir.ps3'+t\">%s</a><hr>"
-							"<a id='m4'>%s<br></a><a id='m5'>%s<br></a><a id='m6'>%s</a><hr><a id='m7'>%s<br></a><a id='m8'>%s</a>"
-							"</div>"
-							"<script>var s,m;window.addEventListener('contextmenu',function(e){"
-							"if(s)s.color='#ccc';t=e.target,s=t.style,c=t.className,m=mnu.style,p=t.pathname;"
-							"if(c.charAt(0)=='w'||c=='w'||c=='d'){e.preventDefault();s.color='#fff',b='block',n='none';m.display=b;m.left=(e.clientX+12)+'px';"
-							#ifdef PKG_HANDLER
-							"m0.href='/install.ps3'+p;m0.style.display=(p.indexOf('.pkg')>0)?b:n;"
-							#endif
-							"m1.href='/mount.ps3'+p;m1.style.display=(p.toLowerCase().indexOf('.iso')>0||c=='d'||p.indexOf('/GAME')>0)?b:n;"
-							"m2.href=p;m2.text=(c=='w')?'Download':'Open';"
-							"m3.href='/delete.ps3'+p;"
-							"m4.href='/cut.ps3'+p;"
-							"m5.href='/cpy.ps3'+p;"
-							"m6.href='/paste.ps3'+self.location.pathname;"
-							"m7.href='javascript:rn(\"'+p+'\")';m7.style.display=(p.substring(0,5)=='/dev_')?b:n;"
-							"y=e.clientY;w=window.innerHeight;m.top=(((y+mnu.clientHeight)<w)?(y+12):(w-mnu.clientHeight))+'px';"
-							"m8.href='/copy.ps3'+p}},false);"
-							"window.onclick=function(e){if(m)m.display=n;};"
-
-							// F2 = rename/move item pointed with mouse
-							"document.addEventListener('keyup',ku,false);"
-							"function rn(f){if(f.substring(0,5)=='/dev_'){f=unescape(f);t=prompt('Rename to:',f);if(t&&t!=f)self.location='/rename.ps3'+f+'|'+escape(t)}}"
-							"function ku(e){e=e||window.event;if(e.keyCode==113){var a=document.querySelectorAll('a:hover')[0].pathname;rn(a);}}"
-
-						 	"</script>",
-							#ifdef PKG_HANDLER
-							"Install PKG", //m0
-							#endif
-							"Mount", "Open", "Delete", "New Folder", "New Folder", "Cut", "Copy", "Paste", "Rename", "Copy To");
-				_concat(&sout, tempstr);
-			}
-			#endif // #ifdef EMBED_JS
 			#endif // #ifdef COPY_PS3
 
 			*tempstr = NULL;

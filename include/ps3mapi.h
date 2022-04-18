@@ -1006,7 +1006,7 @@ static void ps3mapi_setidps(char *buffer, char *templn, const char *param)
 	concat(buffer, templn);
 
 	concat(buffer,	"<style>.ht{-webkit-text-security:disc}</style>"
-					"<script>var t='th';function h(){var e=document.getElementById('ht').getElementsByTagName('INPUT');t=t.split('').reverse().join('');for(var n=0;n<e.length;n++)e[n].className=t;}h();</script>"
+					"<script>var t='th';function h(){var e=$('ht').getElementsByTagName('INPUT');t=t.split('').reverse().join('');for(var n=0;n<e.length;n++)e[n].className=t;}h();</script>"
 					" <button onclick='h();return false;'>&#x1F453;</button>"
 					"</tr>"
 					"</table></form><br>");

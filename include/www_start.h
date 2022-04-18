@@ -75,10 +75,8 @@ static void start_www(u64 conn_s_p)
 		}
 		#endif
 
-		#ifndef EMBED_JS
 		css_exists = file_exists(COMMON_CSS);
 		common_js_exists = file_exists(COMMON_SCRIPT_JS);
-		#endif
 
 		#ifdef NOSINGSTAR
 		no_singstar_icon();

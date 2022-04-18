@@ -998,14 +998,14 @@ next_html_entry:
 			_concat(&sout, "slides = [");
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
-			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
+			sprintf(templn, "<script>$('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
 		}
 		else
 		{
 			sprintf(templn, // wait dialog div
 							"<div id=\"wmsg\"><H1>. . .</H1></div>"
 							// show games count + find icon
-							"<a href=\"javascript:var s=prompt('Search:','');if(s){document.getElementById('rhtm').style.display='block';self.location='/index.ps3?'+escape(s)}\"> &nbsp; %'i %s &#x1F50D;</a></font>"
+							"<a href=\"javascript:var s=prompt('Search:','');if(s){$('rhtm').style.display='block';self.location='/index.ps3?'+escape(s)}\"> &nbsp; %'i %s &#x1F50D;</a></font>"
 							// separator
 							"<HR><span style=\"white-space:normal;\">", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
 
@@ -1023,14 +1023,12 @@ next_html_entry:
 
 		if(!mobile_mode)
 		{
-			#ifndef EMBED_JS
 			if(file_exists(GAMES_SCRIPT_JS))
 			{
 				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, templn);
 			}
-			#endif
 			_concat(&sout, "<div id=\"mg\">"
-							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;document.getElementById('mg').style.zoom=z/100;</script>");
+							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;$('mg').style.zoom=z/100;</script>");
 		}
 
 		tlen = buf_len;

@@ -4,9 +4,7 @@
 		// /shutdown.ps3?vsh    Shutdown using VSH
 		// /shutdown.ps3?off    Power off
 
-		#ifndef EMBED_JS
 		css_exists = common_js_exists = false;
-		#endif
 
 		http_response(conn_s, header, param, CODE_HTTP_OK, param);
 		setPluginExit();

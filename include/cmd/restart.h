@@ -10,9 +10,7 @@
 		// /restart.ps3?<mode>$  Sets the default restart mode for /restart.ps3
 		// /restart.ps3?min      Reboot & show min version
 	 reboot:
-		#ifndef EMBED_JS
 		css_exists = common_js_exists = false;
-		#endif
 
 		http_response(conn_s, header, param, CODE_HTTP_OK, param);
 		setPluginExit();

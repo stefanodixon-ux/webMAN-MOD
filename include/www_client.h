@@ -17,10 +17,8 @@
 #define CODE_PREVIEW_FILE      1225
 
 ////////////////////////////////
-#ifndef EMBED_JS
 static bool css_exists = false;
 static bool common_js_exists = false;
-#endif
 
 #ifdef SYS_ADMIN_MODE
 static u8 check_password(char *param)
@@ -126,7 +124,6 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg(body + 4);
 
-#ifndef EMBED_JS
 		if(css_exists)
 		{
 			sprintf(header, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); strcat(body, header);
@@ -135,7 +132,6 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		{
 			sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); strcat(body, header);
 		}
-#endif
 
 		sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
 						HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); strcat(body, header);
@@ -211,7 +207,6 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 //						"</style>" // fallback style if external css fails
 	);
 
-#ifndef EMBED_JS
 	if(param[1] == 0)
 	{
 		// minimize times that these files are checked (at startup & root)
@@ -222,63 +217,6 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	{
 		sprintf(templn, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); _concat(&sbuffer, templn);
 	}
-#endif
-#if 0 //#ifndef LITE_EDITION
-	else
-	{
-		_concat(&sbuffer,
-						"<style type=\"text/css\"><!--\r\n"
-
-						"a.s:active{color:#F0F0F0;}"
-						"a:link{color:#909090;}"
-
-						"a.f:active{color:#F8F8F8;}"
-						"a,a.f:link,a:visited{color:#D0D0D0;}");
-
-		if(!is_cpursx)
-				_concat(&sbuffer,
-						"a.d:link,a.d:visited{background:0px 2px url('data:image/gif;base64,R0lGODlhEAAMAIMAAOenIumzLbmOWOuxN++9Me+1Pe+9QvDAUtWxaffKXvPOcfTWc/fWe/fWhPfckgAAACH5BAMAAA8ALAAAAAAQAAwAAARQMI1Agzk4n5Sa+84CVNUwHAz4KWzLMo3SzDStOkrHMO8O2zmXsAXD5DjIJEdxyRie0KfzYChYr1jpYVAweb/cwrMbAJjP54AXwRa433A2IgIAOw==') no-repeat;padding:0 0 0 20px;}"
-						"a.w:link,a.w:visited{background:url('data:image/gif;base64,R0lGODlhDgAQAIMAAAAAAOfn5+/v7/f39////////////////////////////////////////////wAAACH5BAMAAA8ALAAAAAAOABAAAAQx8D0xqh0iSHl70FxnfaDohWYloOk6papEwa5g37gt5/zO475fJvgDCW8gknIpWToDEQA7') no-repeat;padding:0 0 0 20px;}");
-
-		_concat(&sbuffer,
-						"a:active,a:active:hover,a:visited:hover,a:link:hover{color:#FFFFFF;}"
-						".list{display:inline;}"
-		#ifdef PS3MAPI
-						"table{border-spacing:0;border-collapse:collapse;}"
-						".la{text-align:left;float:left}.ra{text-align:right;float:right;}"
-		#endif
-						"input:focus{border:2px solid #0099FF;}"
-						".propfont{font-family:\"Courier New\",Courier,monospace;text-shadow:1px 1px #101010;}"
-						"body{background-color:#101010}body,a.s,td,th{color:#F0F0F0;white-space:nowrap");
-
-		if(file_exists("/dev_hdd0/xmlhost/game_plugin/background.jpg"))
-			_concat(&sbuffer, "background-image: url(\"/dev_hdd0/xmlhost/game_plugin/background.jpg\");");
-
-		if(is_ps3_http == 2)
-			_concat(&sbuffer, "width:800px;}");
-		else
-			_concat(&sbuffer, "}");
-
-		if(!islike(param, "/setup.ps3")) _concat(&sbuffer, "td+td{text-align:right;white-space:nowrap}");
-
-		if(islike(param, "/index.ps3"))
-		{
-			_concat(&sbuffer,
-							".gc{float:left;overflow:hidden;position:relative;text-align:center;width:280px;height:260px;margin:3px;border:1px dashed grey;}"
-							".ic{position:absolute;top:5px;right:5px;left:5px;bottom:40px;}");
-
-			if(is_ps3_http == 1)
-				_concat(&sbuffer, ".gi{height:210px;width:267px;");
-			else
-				_concat(&sbuffer, ".gi{max-height:210px;max-width:260px;");
-
-			_concat(&sbuffer, "position:absolute;bottom:0px;top:0px;left:0px;right:0px;margin:auto;}"
-							  ".gn{position:absolute;height:38px;bottom:0px;right:7px;left:7px;text-align:center;}");
-		}
-
-		_concat(&sbuffer, ".bu{background:#444;}.bf{background:#121;}--></style>");
-	}
-#endif
 
 	if(param[1] != NULL && !strstr(param, ".ps3")) {_concat(&sbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
 
@@ -790,13 +728,11 @@ send_response:
 					if(isDir("/dev_bdvd")) {sprintf(templn, "<a href=\"%s\"><img src=\"%s\" height=\"12\"></a> ", "/dev_bdvd", wm_icons[iPS3]); _concat(&sbuffer, templn);}
 					_concat(&sbuffer, "<a href=\"#Top\">&#9650;</a></div><b>");
 
-					#ifndef EMBED_JS
 					// extend web content using custom javascript
 					if(common_js_exists)
 					{
 						sprintf(templn, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); _concat(&sbuffer, templn);
 					}
-					#endif
 
 					_concat(&sbuffer, HTML_BODY_END); //end-html
 				}

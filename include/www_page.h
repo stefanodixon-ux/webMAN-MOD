@@ -56,21 +56,7 @@ skip_code2:
 
 		if((islike(param, "/dev_") && !strstr(param,"?")) && !islike(param,"/dev_flash") && !strstr(param,".ps3/") && !strstr(param,".ps3?"))
 		{	// add buttons + javascript code to handle delete / cut / copy / paste (requires fm.js)
-			#if 0 //#ifdef EMBED_JS
-			sprintf(templn, "<script>"
-							"function tg(b,m,x,c){"
-							"var i,p,o,h,l=document.querySelectorAll('.d,.w'),s=m.length,n=1;"
-							"for(i=1;i<l.length;i++){o=l[i];"
-							"h=o.href;p=h.indexOf('/cpy.ps3');if(p>0){n=0;s=8;bCpy.value='Copy';}"
-							"if(p<1){p=h.indexOf('/cut.ps3');if(p>0){n=0;s=8;bCut.value='Cut';}}"
-							"if(p<1){p=h.indexOf('/delete.ps3');if(p>0){n=0;s=11;bDel.value='%s';}}"
-							"if(p>0){o.href=h.substring(p+s,h.length);o.style.color='#ccc';}"
-							"else{p=h.indexOf('/',8);o.href=m+h.substring(p,h.length);o.style.color=c;}"
-							"}if(n)b.value=(b.value == x)?x+' %s':x;"
-							"}</script>", STR_DELETE, STR_ENABLED); _concat(&sbuffer, templn);
-			#else
 			if(file_exists(FM_SCRIPT_JS))
-			#endif
 			{
 				sprintf(templn, "%s%s\" id=\"%s\" onclick=\"tg(this,'%s','%s','#%x');\">", HTML_BUTTON, STR_DELETE, "bDel", "/delete.ps3", STR_DELETE, ORANGE); _concat(&sbuffer, templn);
 				sprintf(templn, "%s%s\" id=\"%s\" onclick=\"tg(this,'%s','%s','#%x');\">", HTML_BUTTON, "Cut", "bCut", "/cut.ps3", "Cut", MAGENTA); _concat(&sbuffer, templn);
@@ -85,8 +71,8 @@ skip_code2:
 
 		sprintf(templn,  "%s%s XML%s\" %s'%s';\"> "
 						 "%s%s HTML%s\" %s'%s';\">",
-						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/refresh.ps3';document.getElementById('rxml').style.display='block",
-						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/index.ps3?html';document.getElementById('rhtm').style.display='block");
+						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/refresh.ps3';$('rxml').style.display='block",
+						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/index.ps3?html';$('rhtm').style.display='block");
 
 		_concat(&sbuffer, templn);
 
