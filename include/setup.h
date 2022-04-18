@@ -849,10 +849,9 @@ static void setup_form(char *buffer, char *templn)
 	//default content profile
 	sprintf(templn, "%s : <select name=\"usr\">", STR_PROFILE); concat(buffer, templn);
 	add_option_item(0 , STR_DEFAULT, (profile == 0) , buffer);
-	add_option_item(1, "1", (profile == 1) , buffer);
-	add_option_item(2, "2", (profile == 2) , buffer);
-	add_option_item(3, "3", (profile == 3) , buffer);
-	add_option_item(4, "4", (profile == 4) , buffer);
+	char profile_id[] = {'1', 0};
+	for(u8 usr = 1; usr <= 4; ++usr, ++profile_id[0])
+		add_option_item(usr, profile_id, (profile == usr) , buffer);
 	add_option_item(5, "*", (profile >= 5) , buffer);
 
 	#ifdef USE_UACCOUNT

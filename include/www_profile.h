@@ -8,7 +8,7 @@
 
 		if( is_index_ps3 || islike(param, "/refresh.ps3") ) {char mode, *cover_mode = strstr(param, "?cover="); if(cover_mode) {custom_icon = true; mode = *(cover_mode + 7) | 0x20, *cover_mode = NULL; webman_config->nocov = (mode == 'o') ? ONLINE_COVERS : (mode == 'd' || mode == 'n') ? SHOW_DISC : (mode == 'i') ? SHOW_ICON0 : SHOW_MMCOVERS;}}
 
-		for(u8 i = 0; i < 5; i++)
+		for(u8 i = 0; i <= 5; i++)
 		{
 			sprintf(url, "?%i",    i); if(strstr(param, url)) {profile = i; break;}
 			sprintf(url, "usr=%i", i); if(strstr(param, url)) {profile = i; break;}
