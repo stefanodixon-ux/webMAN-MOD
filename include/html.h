@@ -359,7 +359,7 @@ static void add_html(u8 id, int value, char *buffer, char *templn)
 	char res_file[40];
 	sprintf(res_file, "%s/setup/setup%c.dat", WM_RES_PATH, id);
 	read_file(res_file, templn, 1023, 0);
-	char *pos = strstr(templn, "  ");
+	char *pos = strstr(templn, "    ");
 	if(pos)
 	{
 		if((id == 'a') || (id == 'v'))

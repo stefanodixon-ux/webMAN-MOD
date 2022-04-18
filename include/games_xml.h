@@ -52,17 +52,6 @@
 									"xcb://0/query?cond=AGL+Game:Game.titleId " PSP_LAUNCHER_REMASTERS_ID \
 																			" " PSP_LAUNCHER_MINIS_ID)
 
-#define QUERY_VIDEOS1			SRC("rx_video1",	"xcb://0/query?table=MMS_MEDIA_TYPE_SYSTEM" \
-									"&genre=Video&sort=+StorageMedia:StorageMedia.sortOrder+StorageMedia:StorageMedia.timeInserted" \
-									"&cond=Ae+StorageMedia:StorageMedia.stat.mediaStatus %xCB_MEDIA_INSERTED" \
-										 "+Ae+StorageMedia:StorageMedia.mediaFormat %xCB_MEDIA_FORMAT_DATA" \
-										 "+AGL+StorageMedia:StorageMedia.type %xCB_MEDIA_TYPE_BDROM %xCB_MEDIA_TYPE_WM")
-#define QUERY_VIDEOS2			SRC("rx_video2",	"xcb://0/query?sort=+Game:Common.titleForSort" \
-									"&cond=AGL+Game:Game.titleId RXMOV0000 RXMOVZZZZ+An+Game:Game.category 2D" \
-										 "+An+Game:Game.category BV" \
-										 "+An+Game:Game.category HG") \
-								XML_END_ITEMS
-
 typedef struct
 {
 	char value[1 + XML_KEY_LEN + 4];
@@ -1329,9 +1318,10 @@ scan_roms:
 			_concat(&myxml_dvd, XML_END_ITEMS);
 			if(webman_config->rxvid)
 			{
-				_concat3(&myxml_dvd, "<V id=\"seg_wm_bdvd\"><I>",
-									 XML_QUERY, QUERY_VIDEOS1);
-				_concat2(&myxml_dvd, XML_QUERY, QUERY_VIDEOS2);
+				add_html('i', 0, enc_dir_name, templn); // QUERY_VIDEOS1
+				_concat2(&myxml_dvd, "<V id=\"seg_wm_bdvd\"><I>", templn);
+				add_html('j', 0, enc_dir_name, templn); // QUERY_VIDEOS2
+				_concat(&myxml_dvd, templn);
 			}
 		}
 		#endif

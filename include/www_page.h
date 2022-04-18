@@ -56,7 +56,7 @@ skip_code2:
 
 		if((islike(param, "/dev_") && !strstr(param,"?")) && !islike(param,"/dev_flash") && !strstr(param,".ps3/") && !strstr(param,".ps3?"))
 		{	// add buttons + javascript code to handle delete / cut / copy / paste (requires fm.js)
-			#ifdef EMBED_JS
+			#if 0 //#ifdef EMBED_JS
 			sprintf(templn, "<script>"
 							"function tg(b,m,x,c){"
 							"var i,p,o,h,l=document.querySelectorAll('.d,.w'),s=m.length,n=1;"

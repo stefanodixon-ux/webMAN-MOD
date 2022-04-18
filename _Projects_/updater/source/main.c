@@ -665,10 +665,13 @@ int main()
 	file_copy(APP_USRDIR "/setup/setupa.dat", SETUP_DIR "/setupa.dat");
 	file_copy(APP_USRDIR "/setup/setupv.dat", SETUP_DIR "/setupv.dat");
 	file_copy(APP_USRDIR "/setup/setupd.dat", SETUP_DIR "/setupd.dat");
+	file_copy(APP_USRDIR "/setup/setupc.dat", SETUP_DIR "/setupc.dat");
+	file_copy(APP_USRDIR "/setup/setupi.dat", SETUP_DIR "/setupi.dat");
+	file_copy(APP_USRDIR "/setup/setupj.dat", SETUP_DIR "/setupj.dat");
+	file_copy(APP_USRDIR "/setup/setupk.dat", SETUP_DIR "/setupk.dat");
 	file_copy(APP_USRDIR "/setup/setups.dat", SETUP_DIR "/setups.dat");
 	file_copy(APP_USRDIR "/setup/setupx.dat", SETUP_DIR "/setupx.dat");
 	file_copy(APP_USRDIR "/setup/setupz.dat", SETUP_DIR "/setupz.dat");
-	file_copy(APP_USRDIR "/setup/setupk.dat", SETUP_DIR "/setupk.dat");
 
 	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
 

@@ -1,0 +1,1 @@
+<script>function rz(z){document.cookie=z + '; expires=Tue, 19 Jan 2038 03:14:07 UTC';document.getElementById('mg').style.zoom=z/100;}</script>&nbsp;<input id="sz" type="range" value="100" min="20" max="200" style="width:80px;position:relative;top:7px;" ondblclick="this.value=100;rz(100);" onchange="rz(this.value);">

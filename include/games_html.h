@@ -106,7 +106,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		#endif
 		if(IS_PSPISO && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
 		else
-			if(!strcasestr(ISO_EXTENSIONS + 10, ext)) return FAILED;
+			if(!strcasestr(ISO_EXTENSIONS + 8, ext)) return FAILED;
 	}
 
 	*icon = *title_id = NULL;
@@ -385,7 +385,7 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 				(              _IS(ext, ".iso")) ||
 				((flen > 6) && _IS(entry_name + flen - 6, ".iso.0")) ||
 				((IS_PS2ISO) && strcasestr(".bin|.img|.mdf|.enc", ext)) ||
-				((IS_PSXISO || IS_DVDISO || IS_BDISO) && strcasestr(ISO_EXTENSIONS + 17, ext))
+				((IS_PSXISO || IS_DVDISO || IS_BDISO) && strcasestr(ISO_EXTENSIONS + 14, ext))
 				));
 	}
 #else
@@ -466,8 +466,8 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		add_query_html(pbuffer, "usb");
 	#endif //#ifdef COBRA_ONLY
 
-		strcat(pbuffer, "<script>function rz(z){document.cookie=z + '; expires=Tue, 19 Jan 2038 03:14:07 UTC';document.getElementById('mg').style.zoom=z/100;}</script>"
-						"&nbsp;<input id=\"sz\" type=\"range\" value=\"100\" min=\"20\" max=\"200\" style=\"width:80px;position:relative;top:7px;\" ondblclick=\"this.value=100;rz(100);\" onchange=\"rz(this.value);\">");
+		// cookies script
+		add_html('c', 0, pbuffer, templn);
 
 		if(webman_config->sman) strcat(pbuffer, "<p></font>");
 

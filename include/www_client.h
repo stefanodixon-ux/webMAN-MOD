@@ -204,11 +204,12 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	if(mount_ps3) {_concat(&sbuffer, HTML_BODY); return sbuffer.size;}
 
 	_concat(&sbuffer,
-					"<head><title>" WEBMAN_MOD "</title>"
-					"<style>"
-					"a{" HTML_URL_STYLE "}"
-					"#rxml,#rhtm,#rcpy,#wmsg{position:fixed;top:40%;left:30%;width:40%;height:90px;z-index:5;border:5px solid #ccc;border-radius:25px;padding:10px;color:#fff;text-align:center;background-image:-webkit-gradient(linear,0 0,0 100%,color-stop(0,#999),color-stop(0.02,#666),color-stop(1,#222));background-image:-moz-linear-gradient(top,#999,#666 2%,#222);display:none;}"
-					"</style>"); // fallback style if external css fails
+						"<head><title>" WEBMAN_MOD "</title>"
+//						"<style>"
+//						"a{" HTML_URL_STYLE "}"
+//						"#rxml,#rhtm,#rcpy,#wmsg{position:fixed;top:40%;left:30%;width:40%;height:90px;z-index:5;border:5px solid #ccc;border-radius:25px;padding:10px;color:#fff;text-align:center;background-image:-webkit-gradient(linear,0 0,0 100%,color-stop(0,#999),color-stop(0.02,#666),color-stop(1,#222));background-image:-moz-linear-gradient(top,#999,#666 2%,#222);display:none;}"
+//						"</style>" // fallback style if external css fails
+	);
 
 #ifndef EMBED_JS
 	if(param[1] == 0)
@@ -221,9 +222,9 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	{
 		sprintf(templn, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); _concat(&sbuffer, templn);
 	}
-	else
 #endif
-#ifndef LITE_EDITION
+#if 0 //#ifndef LITE_EDITION
+	else
 	{
 		_concat(&sbuffer,
 						"<style type=\"text/css\"><!--\r\n"

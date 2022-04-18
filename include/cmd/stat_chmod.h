@@ -25,7 +25,7 @@
 
 		if(stitle_id) cellFsUnlink(FILE_LIST_TXT);
 
-		*buffer = NULL; add_breadcrumb_trail2(buffer, "Path:", path);
+		*buffer = NULL; add_breadcrumb_trail(buffer, path);
 
 		dir_count = file_count = 0;
 		u64 dir_size = folder_size(path);

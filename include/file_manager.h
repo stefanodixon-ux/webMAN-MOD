@@ -977,7 +977,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			{
 				sprintf(templn, SCRIPT_SRC_FMT, FM_SCRIPT_JS); _concat(&sout, templn);
 			}
-			#ifdef EMBED_JS
+			#if 0 //#ifdef EMBED_JS
 			else
 			{
 				sprintf(tempstr, // popup menu

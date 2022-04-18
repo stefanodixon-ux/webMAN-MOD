@@ -25,7 +25,7 @@ input:focus{border:2px solid #0099FF;}
 	50%{color:#101010}
 	100%{color:#ffffff}
 }
-#rxml,#rhtm,#rcpy,#wmsg{position:fixed;top:40%;left:30%;width:40%;height:90px;z-index:5;border:5px solid #ccc;border-radius:25px;padding:10px;color:#fff;text-align:center;background-image:-webkit-gradient(linear,0 0,0 100%,color-stop(0,#999),color-stop(0.02,#666),color-stop(1,#222));background-image:-moz-linear-gradient(top,#999,#666 2%,#222);animation-name:msg;animation-duration: 6s;animation-iteration-count:infinite;}
+#rxml,#rhtm,#rcpy,#wmsg{position:fixed;top:40%;left:30%;width:40%;height:90px;z-index:5;border:5px solid #ccc;border-radius:25px;padding:10px;color:#fff;text-align:center;background-image:-webkit-gradient(linear,0 0,0 100%,color-stop(0,#999),color-stop(0.02,#666),color-stop(1,#222));background-image:-moz-linear-gradient(top,#999,#666 2%,#222);animation-name:msg;animation-duration: 6s;animation-iteration-count:infinite;display:none;}
 body{background-color:#101010}body,a.s,td,th{color:#F0F0F0;white-space:nowrap;}
 td+td{text-align:right;white-space:nowrap}
 .gc{float:left;overflow:hidden;position:relative;text-align:center;width:280px;height:260px;margin:3px;border:1px dashed grey;}
