@@ -195,6 +195,7 @@ static void del_turnoff(u8 beeps)
 
 	do_umount(false);
 	cellFsUnlink("/dev_hdd0/tmp/turnoff");
+	cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
 
 	#ifdef WM_REQUEST
 	cellFsUnlink(WMREQUEST_FILE);

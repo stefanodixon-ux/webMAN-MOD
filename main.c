@@ -511,9 +511,15 @@ static void wwwd_thread(u64 arg)
 
 	wm_reload = file_exists(WM_RELOAD_FILE);
 	from_reboot = wm_reload || file_exists(WM_NOSCAN_FILE);
-
-	cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
 	cellFsUnlink(WM_NOSCAN_FILE); // delete wm_noscan file
+
+	if(wm_reload)
+	{
+		char prx_id[20]; sys_ppu_thread_sleep(3); // wait for the unload of the previous plugin
+		read_file(WM_RELOAD_FILE, prx_id, 20, 0); // read the prx_id of the other plugin
+		cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
+		sys_prx_id_t prx = val(prx_id); if(prx) {system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
+	}
 
 	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 

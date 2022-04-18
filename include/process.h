@@ -31,6 +31,10 @@ static void finalize_module(void)
 	sys_prx_id_t prx = prx_get_module_id_by_address(finalize_module);
 
 	{system_call_3(SC_STOP_PRX_MODULE, prx, 0, (u64)(u32)meminfo);}
-	if(wm_unload_combo != 2)
-		{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
+
+	if(wm_unload_combo == 3) // L1+R1+TRIANGLE
+	{
+		char prx_id[20]; sprintf(prx_id, "%d", prx);
+		save_file(WM_RELOAD_FILE, prx_id, 0); // save prx_id for unload this process from the other plugin
+	}
 }

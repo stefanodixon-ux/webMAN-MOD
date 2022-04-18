@@ -153,7 +153,7 @@
 
 					load_vsh_module(TOGGLE_PLUGIN);
 
-					unload_me(1);
+					unload_me(3);
 				}
 				#endif
 				if(!(webman_config->combo2 & PLAY_DISC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START))

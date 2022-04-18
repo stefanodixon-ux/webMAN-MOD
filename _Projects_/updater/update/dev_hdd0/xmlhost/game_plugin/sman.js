@@ -1,8 +1,8 @@
 var dots=' <span class="dots"><span class="d1">.</span> <span class="d2">.</span> <span class="d3">.</span></span>';
 
+if(typeof $!=="function"){window.$=function(id){return document.getElementById(id);}}
 function dot(){document.write(dots);}
-function $(id){return document.getElementById(id);}
-function s(id){return document.getElementById(id).style;}
+function s(id){return $(id).style;}
 function l(id,txt){
 	txt=txt.replace('[','').replace(']','');$(id).innerHTML=txt;
 	if(id=='refresh')$('msg1').innerHTML=txt+' XML'+dots;
