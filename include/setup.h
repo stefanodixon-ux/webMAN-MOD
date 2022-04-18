@@ -821,7 +821,7 @@ static void setup_form(char *buffer, char *templn)
 	//sprintf(templn, HTML_BUTTON_FMT "<br><br>", HTML_BUTTON, " ", "onclick=\"vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
 	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
 
-	concat(buffer, "</span><style>.ht{-webkit-text-security:disc}</style><script>var t='th';function h(){var e=document.getElementById('ht').getElementsByTagName('INPUT');t=t.split('').reverse().join('');for(var n=0;n<e.length;n++)e[n].className=t;}h();</script> <input type=button onclick='h();return false;' value='&#x1F453;'><br><br>");
+	add_html('p', 0, buffer, templn);
 #endif
 
 	//Disable lv1&lv2 peek&poke syscalls (6,7,9,10,36) and delete history files at system startup
@@ -923,7 +923,7 @@ static void setup_form(char *buffer, char *templn)
 
 	//combos
 	sprintf(templn, "</div>%scmb);\"> %s </a></b><br><div id=\"cmb\">"
-					"<button onclick=\"var cb=document.getElementById('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
+					"<button onclick=\"var cb=$('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
 					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", HTML_TOGGLER, STR_COMBOS2, STR_COMBOS); concat(buffer, templn);
 
 	#ifdef COBRA_ONLY
