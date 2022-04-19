@@ -1247,9 +1247,9 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						else
 						if(*param == '/')
 						{
-							save_file(WMREQUEST_FILE, param, SAVE_ALL);
+							save_file(WM_REQUEST_FILE, param, SAVE_ALL);
 
-							do_custom_combo(WMREQUEST_FILE);
+							do_custom_combo(WM_REQUEST_FILE);
 
 							ssend(conn_s_ftp, FTP_OK_200); // The requested action has been successfully completed.
 						}

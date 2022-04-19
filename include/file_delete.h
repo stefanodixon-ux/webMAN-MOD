@@ -126,12 +126,14 @@ static void uninstall(char *param)
 
 	unlink_file(TMP_DIR, "wm_vsh_menu", ".cfg");
 
-	cellFsUnlink(WMCONFIG);
+	cellFsUnlink(WM_CONFIG_FILE);
 	cellFsUnlink(WM_NOSCAN_FILE);
-	cellFsUnlink(WMREQUEST_FILE);
+	cellFsUnlink(WM_REQUEST_FILE);
+	cellFsUnlink(WM_UNLOAD_FILE);
+	cellFsUnlink(WM_RELOAD_FILE);
 	cellFsUnlink(WM_NETDISABLED);
-	cellFsUnlink(WMONLINE_GAMES);
-	cellFsUnlink(WMOFFLINE_GAMES);
+	cellFsUnlink(WM_ONLINE_IDS_FILE);
+	cellFsUnlink(WM_OFFLINE_IDS_FILE);
 
 	#ifdef COPY_PS3
 	for(u8 i = 0; i < 4; i++)
@@ -198,7 +200,7 @@ static void del_turnoff(u8 beeps)
 	cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
 
 	#ifdef WM_REQUEST
-	cellFsUnlink(WMREQUEST_FILE);
+	cellFsUnlink(WM_REQUEST_FILE);
 	#endif
 	#ifdef WEB_CHAT
 	cellFsUnlink(WMCHATFILE);

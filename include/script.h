@@ -44,7 +44,7 @@
 
 static void handle_file_request(const char *wm_url)
 {
-	if(wm_url || file_exists(WMREQUEST_FILE))
+	if(wm_url || file_exists(WM_REQUEST_FILE))
 	{
 		do_web_command(WM_FILE_REQUEST, wm_url);
 	}

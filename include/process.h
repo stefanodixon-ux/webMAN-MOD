@@ -37,4 +37,6 @@ static void finalize_module(void)
 		char prx_id[20]; sprintf(prx_id, "%d", prx);
 		save_file(WM_RELOAD_FILE, prx_id, 0); // save prx_id for unload this process from the other plugin
 	}
+	else if((wm_unload_combo == 4) || file_exists(WM_UNLOAD_FILE)) // force unload module
+		{system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);}
 }

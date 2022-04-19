@@ -279,7 +279,7 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 	char *file_query = param + HTML_RECV_LAST; *file_query = NULL;
 
  #ifdef WM_REQUEST
-	struct CellFsStat buf; u8 wm_request = (wm_url != NULL) || (cellFsStat(WMREQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
+	struct CellFsStat buf; u8 wm_request = (wm_url != NULL) || (cellFsStat(WM_REQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
 
 	if(!wm_request)
  #endif
@@ -325,7 +325,7 @@ again3:
 			keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR); BEEP3;
 
 			#ifdef WM_REQUEST
-			if(wm_request) cellFsUnlink(WMREQUEST_FILE);
+			if(wm_request) cellFsUnlink(WM_REQUEST_FILE);
 			#endif
 
 			goto exit_handleclient_www;
@@ -383,8 +383,8 @@ parse_request:
 			#ifdef WM_REQUEST
 			if(wm_request)
 			{
-				// Set the content of WMREQUEST_FILE as header
-				if(wm_url || (buf.st_size > 5 && buf.st_size < HTML_RECV_SIZE && read_file(WMREQUEST_FILE, header, buf.st_size, 0) > 4))
+				// Set the content of WM_REQUEST_FILE as header
+				if(wm_url || (buf.st_size > 5 && buf.st_size < HTML_RECV_SIZE && read_file(WM_REQUEST_FILE, header, buf.st_size, 0) > 4))
 				{
 					if(wm_url)
 					{
@@ -456,8 +456,8 @@ parse_request:
 					if(islike(header + 4, "/play.ps3")) {if(IS_INGAME && (++retry < 30)) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}
 				}
 
-				// Delete WMREQUEST_FILE
-				cellFsUnlink(WMREQUEST_FILE);
+				// Delete WM_REQUEST_FILE
+				cellFsUnlink(WM_REQUEST_FILE);
 			}
 			#endif // #ifdef WM_REQUEST
 		}

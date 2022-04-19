@@ -230,7 +230,7 @@
 						close_language();
 						#endif
 
-						cellFsUnlink(WMCONFIG);
+						cellFsUnlink(WM_CONFIG_FILE);
 						{ BEEP1 }
 						show_msg(STR_RMVWMCFG);
 						sys_ppu_thread_sleep(2);

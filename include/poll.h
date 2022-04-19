@@ -75,11 +75,11 @@ static void poll_start_play_time(void)
 				if(net_status < 0)
 				{
 					char online_title_ids[512];
-					read_file(WMOFFLINE_GAMES, online_title_ids, 512, 0); // auto-disable network only on these title ids
+					read_file(WM_OFFLINE_IDS_FILE, online_title_ids, 512, 0); // auto-disable network only on these title ids
 					if(*online_title_ids) set_net_setatus = strstr(online_title_ids, _game_TitleID);
 					else
 					{
-						read_file(WMONLINE_GAMES, online_title_ids, 512, 0);  // auto-disable network except on these title ids
+						read_file(WM_ONLINE_IDS_FILE, online_title_ids, 512, 0);  // auto-disable network except on these title ids
 						set_net_setatus = (strstr(online_title_ids, _game_TitleID) == NULL);
 					}
 				}
@@ -179,7 +179,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 
 		if(_IS_IN_GAME_) continue; // slow down poll in-game
 
-		if(file_exists(WMREQUEST_FILE))
+		if(file_exists(WM_REQUEST_FILE))
 		{
 			loading_html++;
 			sys_ppu_thread_t t_id;

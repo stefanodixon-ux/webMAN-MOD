@@ -4,6 +4,7 @@
 		// quit.ps3?0          Stops webMAN and sets fan to syscon mode
 		// quit.ps3?1          Stops webMAN and sets fan to fixed speed specified in PS2 mode
 		// quit.ps3<prx-path>  Stops webMAN and load vsh plugin
+		// quit.ps3?unload     Stops webMAN and force unload from memory but causes an interrupt(exception) in the user PPU Thread
 
 	#ifdef LOAD_PRX
 	quit:
@@ -14,8 +15,9 @@
 
 		restore_settings();
 
-		if(strstr(param, "?0")) restore_fan(SYSCON_MODE);  //syscon
-		if(strstr(param, "?1")) restore_fan(SET_PS2_MODE); //ps2 mode
+		if(get_flag(param, "?0")) restore_fan(SYSCON_MODE);  //syscon
+		if(get_flag(param, "?1")) restore_fan(SET_PS2_MODE); //ps2 mode
+		if(get_flag(param, "?u")) wm_unload_combo = 4; //force unload module from memory
 
 		#ifdef COBRA_ONLY
 		char *plugin_path = param + 9;

@@ -14,7 +14,7 @@
 
 		bool is_reset = false; char *params = param + 11; int ret = 0;
 		if(islike(params, "?wmreset")) is_reset=true;
-		if(is_reset || islike(params, "?wmconfig")) {reset_settings(); sprintf(param, "/delete_ps3%s", WMCONFIG);}
+		if(is_reset || islike(params, "?wmconfig")) {reset_settings(); sprintf(param, "/delete_ps3%s", WM_CONFIG_FILE);}
 		if(is_reset || islike(params, "?wmtmp")) {do_umount(true); sprintf(param, "/delete_ps3%s", WMTMP);}
 
 		check_path_tags(params);

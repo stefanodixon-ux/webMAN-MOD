@@ -506,7 +506,7 @@ static void wwwd_thread(u64 arg)
 	#endif
 
 	#ifdef WM_REQUEST
-	cellFsUnlink(WMREQUEST_FILE);
+	cellFsUnlink(WM_REQUEST_FILE);
 	#endif
 
 	wm_reload = file_exists(WM_RELOAD_FILE);

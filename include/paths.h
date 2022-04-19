@@ -45,22 +45,24 @@
 
 #define TMP_DIR				"/dev_hdd0/tmp"
 
-#define WMCONFIG			TMP_DIR "/wm_config.bin"		// webMAN config file
 #define WMTMP				TMP_DIR "/wmtmp"				// webMAN work/temp folder
 #define WMTMP_COVERS		TMP_DIR "/wmtmp/covers"			// webMAN covers folder
 #define WM_RES_PATH			TMP_DIR "/wm_res"				// webMAN resources
 #define WM_LANG_PATH		TMP_DIR "/wm_lang"				// webMAN language folder
 #define WM_ICONS_PATH		TMP_DIR "/wm_icons"				// webMAN icons folder
 #define WM_COMBO_PATH		TMP_DIR "/wm_combo"				// webMAN custom combos folder
+
+#define WM_CONFIG_FILE		TMP_DIR "/wm_config.bin"		// webMAN config file
 #define WM_NOSCAN_FILE		TMP_DIR "/wm_noscan"			// webMAN config file to skip on boot
+#define WM_UNLOAD_FILE		TMP_DIR "/wm_unload"			// webMAN config file to force unload the plugin from memory; causes an interrupt(exception) in the user PPU Thread that freezes some consoles
 #define WM_RELOAD_FILE		TMP_DIR "/wm_reload"			// webMAN config file to skip on reload
-#define WMREQUEST_FILE		TMP_DIR "/wm_request"			// webMAN request file
+#define WM_REQUEST_FILE		TMP_DIR "/wm_request"			// webMAN request file
 #define WM_NETDISABLED		TMP_DIR "/wm_netdisabled"		// webMAN config file to re-enable network
 
 #define SC_LOG_FILE			TMP_DIR "/log.txt"
 
-#define WMONLINE_GAMES		WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
-#define WMOFFLINE_GAMES		WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
+#define WM_ONLINE_IDS_FILE	WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
+#define WM_OFFLINE_IDS_FILE	WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
 
 #define WMIGNORE_FILES		WM_RES_PATH "/wm_ignore.txt"	// webMAN config file to ignore files during content scanning
 #define WMROMS_EXTENSIONS	WM_RES_PATH "/roms_extensions.txt"

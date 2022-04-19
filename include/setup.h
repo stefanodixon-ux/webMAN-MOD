@@ -1129,7 +1129,7 @@ static int save_settings(void)
 	root_check = true;
 	#endif
 
-	return save_file(WMCONFIG, (char*)wmconfig, sizeof(WebmanCfg));
+	return save_file(WM_CONFIG_FILE, (char*)wmconfig, sizeof(WebmanCfg));
 }
 
 static void read_settings(void)
@@ -1252,8 +1252,8 @@ static void read_settings(void)
 	bool save_defaults = false;
 
 	// read current settings
-	if(file_exists(WMCONFIG))
-		read_file(WMCONFIG, (char*)&wmconfig, sizeof(WebmanCfg), DONT_CLEAR_DATA);
+	if(file_exists(WM_CONFIG_FILE))
+		read_file(WM_CONFIG_FILE, (char*)&wmconfig, sizeof(WebmanCfg), DONT_CLEAR_DATA);
 	else
 		save_defaults = true;
 
@@ -1326,7 +1326,7 @@ static void read_settings(void)
 
 static void reset_settings(void)
 {
-	cellFsUnlink(WMCONFIG);
+	cellFsUnlink(WM_CONFIG_FILE);
 	read_settings();
 }
 
@@ -1335,6 +1335,7 @@ static void restore_settings(void)
 	#ifdef COBRA_ONLY
 	unload_vsh_gui();
 	#endif
+
 
 	for(u8 n = 0; n < 4; n++)
 		if(active_socket[n]>NONE) {sys_net_abort_socket(active_socket[n], SYS_NET_ABORT_STRICT_CHECK); sclose(&active_socket[n]);}
@@ -1348,6 +1349,8 @@ static void restore_settings(void)
 		else
 			restore_fan(SYSCON_MODE);  //restore syscon fan control mode
 	}
+
+	sys_map_path(FB_XML, NULL); // hide webMAN Games after reload XMB
 
 	#ifdef WM_PROXY_SPRX
 	//{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", NULL);}

@@ -67,9 +67,9 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 			#ifdef WM_REQUEST
 			if((*buffer == '/') || islike(buffer, "GET"))
 			{
-				save_file(WMREQUEST_FILE, buffer, SAVE_ALL); // e.g.  GET /install.ps3<pkg-path>
+				save_file(WM_REQUEST_FILE, buffer, SAVE_ALL); // e.g.  GET /install.ps3<pkg-path>
 
-				do_custom_combo(WMREQUEST_FILE);
+				do_custom_combo(WM_REQUEST_FILE);
 
 				ssend(conn_s_ps3mapi, PS3MAPI_OK_200);
 				continue;
