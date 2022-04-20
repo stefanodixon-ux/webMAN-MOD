@@ -105,7 +105,11 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		else
 			sprintf(tempstr, "<div class='sfo'>%s</div>", fsize);
 
+		#ifdef VIEW_PARAM_SFO
 		snprintf(fsize, maxlen, "<a href=\"%s%s%s\">%'llu %s</a>%s", "/view.ps3", templn, "", sz, sf, tempstr);
+		#else
+		snprintf(fsize, maxlen, "%'llu %s%s", sz, sf, tempstr);
+		#endif
 
 		#ifdef FIX_GAME
 		if(has_updates_dir) snprintf(fsize, maxlen, "<a href=\"%s%s%s\">%'llu %s</a>%s", "/fixgame.ps3", HDD0_GAME_DIR, titleid, sz, sf, tempstr);
@@ -356,6 +360,10 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "<a href=\"%s%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", action, islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, "/dev_hdd0") ? drives[usb] : "/dev_hdd0", sz, sf);
 #endif //#ifdef COPY_PS3
 
+#ifdef VIEW_PARAM_SFO
+	else if( IS(ext, ".SFO") )
+		sprintf(fsize, "<a href=\"/view.ps3%s\">%'llu %s</a>", templn, sz, sf);
+#endif
 #ifdef LOAD_PRX
 	else if(!is_net && ( IS(ext5, ".sprx")))
 		snprintf(fsize, maxlen, "<a href=\"/loadprx.ps3?slot=6&prx=%s\">%'llu %s</a>", templn, sz, sf);

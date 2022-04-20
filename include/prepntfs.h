@@ -29,11 +29,13 @@ static sys_addr_t sysmem_p = NULL;
 
 static void extract_iso_file(const char *iso_path, const char *file, u8 len, const char *out_path, const char *dirlist, char *buffer)
 {
-	if(!dirlist) return; u32 size;
-	u16 start = 0x40; u64 lba = getlba(dirlist, _4KB_, file, 11, &start, &size);
+	if(!dirlist) return; u32 size; fixed_count = 0;
+	u16 start = 0x40; u64 lba = getlba(dirlist, _4KB_, file, strlen(file), &start, &size);
 	if(lba)
 	{
-		read_file(iso_path, buffer, size, lba * 0x800ULL);
+		if(!size || (size > _60KB_)) return; // is file larger than buffer size?
+		lba *= 0x800ULL; if(lba > (file_size(iso_path) - size)) return; // is offset larger than iso?
+		read_file(iso_path, buffer, size, lba);
 		save_file(out_path, buffer, size);
 	}
 }
@@ -116,7 +118,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 			}
 		}
 
-		p_args = (rawseciso_args *)plugin_args; memset(p_args, 0, sizeof(rawseciso_args));
+		p_args = (rawseciso_args *)plugin_args; _memset(p_args, sizeof(rawseciso_args));
 		p_args->device = device_id;
 		p_args->emu_mode = emu_mode;
 		p_args->num_sections = parts;
@@ -169,9 +171,9 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 			if(not_exists(tmp_path) && file_size(iso_path) > _128KB_)
 			{
 				// extract PARAM.SFO from ISO
-				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
+				if(sysmem_p || (sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK))
 				{
-					char *dirlist = (char*)sysmem_p, *buffer = (char*)sysmem_p + _4KB_;
+					char *dirlist = (char*)sysmem_p, *buffer = (char*)sysmem_p + _4KB_; // (0-60KB)
 					read_file(iso_path, dirlist, _4KB_, 0x10800);
 					extract_iso_file(iso_path, "PARAM.SFO;1", 11, tmp_path, dirlist, buffer);
 					snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.PNG", WMTMP, filename, SUFIX2(profile));

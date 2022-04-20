@@ -4,7 +4,7 @@
 		// /download.ps3?url=<url>            (see pkg_handler.h for details)
 		// /download.ps3?to=<path>&url=<url>
 
-		char msg[MAX_LINE_LEN], filename[STD_PATH_LEN]; memset(msg, 0, sizeof(msg)); *filename = NULL;
+		char msg[MAX_LINE_LEN], filename[STD_PATH_LEN]; _memset(msg, sizeof(msg)); *filename = NULL;
 
 		setPluginActive();
 

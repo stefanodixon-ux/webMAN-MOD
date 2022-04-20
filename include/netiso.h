@@ -7,7 +7,7 @@ static int read_remote_file_critical(u64 offset, void *buf, u32 size)
 {
 	netiso_read_file_critical_cmd cmd;
 
-	memset(&cmd, 0, sizeof(cmd));
+	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = NETISO_CMD_READ_FILE_CRITICAL;
 	cmd.num_bytes = size;
 	cmd.offset = offset;
@@ -31,7 +31,7 @@ static int process_read_cd_2048_cmd(u8 *buf, u32 start_sector, u32 sector_count)
 {
 	netiso_read_cd_2048_critical_cmd cmd;
 
-	memset(&cmd, 0, sizeof(cmd));
+	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = NETISO_CMD_READ_CD_2048_CRITICAL;
 	cmd.start_sector = start_sector;
 	cmd.sector_count = sector_count;
@@ -64,11 +64,11 @@ static int process_read_iso_cmd(u8 *buf, u64 offset, u32 size)
 
 		if(offset >= discsize)
 		{
-			memset(buf, 0, size);
+			_memset(buf, size);
 			return CELL_OK;
 		}
 
-		memset(buf + (discsize - offset), 0, read_end - discsize);
+		_memset(buf + (discsize - offset), read_end - discsize);
 		size = discsize - offset;
 	}
 

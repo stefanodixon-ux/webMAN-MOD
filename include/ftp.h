@@ -219,7 +219,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 	while(connactive && working && ftp_session)
 	{
-		memset(buffer, 0, FTP_RECV_SIZE);
+		_memset(buffer, FTP_RECV_SIZE);
 		rlen = (int)recv(conn_s_ftp, buffer, FTP_RECV_SIZE, 0);
 		if(rlen > 0)
 		{

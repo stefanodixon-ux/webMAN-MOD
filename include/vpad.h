@@ -77,7 +77,7 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 	register_ldd_controller();
 
 	CellPadData data;
-	memset(&data, 0, sizeof(CellPadData));
+	_memset(&data, sizeof(CellPadData));
 	data.len = CELL_PAD_MAX_CODES;
 
 	// set default controller values
@@ -156,7 +156,7 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 			sys_ppu_thread_usleep(delay); // hold for 70ms
 
 			// release all buttons and set default values
-			memset(&data, 0, sizeof(CellPadData));
+			_memset(&data, sizeof(CellPadData));
 			data.len = CELL_PAD_MAX_CODES;
 
 			data.button[CELL_PAD_BTN_OFFSET_ANALOG_LEFT_X]  = // 0x0080;

@@ -27,21 +27,21 @@ static void show_progress(const char *path, u8 oper)
 	u64 *data2 = (u64 *)data;
 
 	if(oper == OV_CLEAR)
-		{memset(data, 0, 0x80); overlay_info = overlay = 0;}
+		{_memset(data, sizeof(data)); overlay_info = overlay = 0;}
 	else if(oper == OV_SCAN)
-		snprintf(data, 0x80, "\n%s:\n%s", STR_SCAN2, path);
+		snprintf(data, sizeof(data), "\n%s:\n%s", STR_SCAN2, path);
 	else if(oper == OV_COPY)
-		snprintf(data, 0x80, "\n%s:\n%s", STR_COPYING, path);
+		snprintf(data, sizeof(data), "\n%s:\n%s", STR_COPYING, path);
 	else if(oper == OV_FIX)
-		snprintf(data, 0x80, "\n%s:\n%s", STR_FIXING, path);
+		snprintf(data, sizeof(data), "\n%s:\n%s", STR_FIXING, path);
 	else if(oper == OV_DELETE)
-		snprintf(data, 0x80, "\n%s:\n%s", STR_DELETE, path);
+		snprintf(data, sizeof(data), "\n%s:\n%s", STR_DELETE, path);
 	else if(oper == OV_DUMP)
-		snprintf(data, 0x80, "\n%s:\n%s", "Dumping", path);
+		snprintf(data, sizeof(data), "\n%s:\n%s", "Dumping", path);
 	else if(oper == OV_FIND)
-		snprintf(data, 0x80, "\n%s:\n%s", "Searching", path);
+		snprintf(data, sizeof(data), "\n%s:\n%s", "Searching", path);
 	else // if(oper == OV_SHOW)
-		snprintf(data, 0x80, "%s", path);
+		snprintf(data, sizeof(data), "%s", path);
 
 	// fix degree character
 	if(overlay_info)
@@ -52,7 +52,7 @@ static void show_progress(const char *path, u8 oper)
 			replace_char(data, c, 0x20);
 	}
 
-	u8 len = strlen(data); memset(data + len, 0, 0x80 - len);
+	u8 len = strlen(data); _memset(data + len, sizeof(data) - len);
 
 	u64 addr = OVERLAY_ADDR;
 	for(u8 n = 0; n < 0x10; n++, addr += 8)

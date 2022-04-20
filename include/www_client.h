@@ -377,7 +377,7 @@ parse_request:
 	while(!served && working)
 	{
 		served++;
-		memset(header, 0, HTML_RECV_SIZE);
+		_memset(header, HTML_RECV_SIZE);
 		keep_alive = 0;
 
 		if(!mc)

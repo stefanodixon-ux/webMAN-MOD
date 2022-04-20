@@ -21,7 +21,7 @@
 		else
 		if(sc == 200 || sc == 904)
 		{	// ccapi_get_process_mem || dex_get_process_mem
-			if(sp[2] > MAX_LINE_LEN) sp[2] = MAX_LINE_LEN; memset(header, 0, sp[2]);
+			if(sp[2] > MAX_LINE_LEN) sp[2] = MAX_LINE_LEN; _memset(header, sp[2]);
 			{system_call_4(sc, sp[0], sp[1], sp[2], (uint64_t)(uint32_t)header); ret = p1;}
 
 			for(int i = 0; i < (u16)sp[2]; i++) sprintf(param + (2 * i), "%02X", (u8)header[i]);

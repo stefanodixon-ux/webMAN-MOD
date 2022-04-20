@@ -236,7 +236,7 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 
 	int fd = 0; u64 read_e = 0;
 
-	if(offset < 0) offset = 0; else memset(data, 0, size);
+	if(offset < 0) offset = 0; else _memset(data, size);
 
 #ifdef USE_NTFS
 	if(is_ntfs_path(file))

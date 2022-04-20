@@ -334,8 +334,8 @@ int wait_for(const char *path, u8 timeout);
 #include "include/wm_config.h"
 #include "include/html.h"
 #include "include/syscall.h"
-#include "include/xregistry.h"
 #include "include/peek_poke.h"
+#include "include/xregistry.h"
 #include "include/hdd_unlock_space.h"
 #include "include/idps.h"
 #include "include/led.h"
@@ -491,7 +491,7 @@ static void wwwd_thread(u64 arg)
 	#endif
 
 	#ifdef COPY_PS3
-	memset(cp_path, 0, sizeof(cp_path));
+	_memset(cp_path, sizeof(cp_path));
 	start_event(EVENT_BOOT_INIT);
 	#endif
 

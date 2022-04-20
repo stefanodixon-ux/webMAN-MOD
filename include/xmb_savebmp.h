@@ -108,7 +108,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 	#define bmp_header			tmp_buf
 	#define bmp_header_size		0x36
 
-	memset(bmp_header, 0, bmp_header_size);
+	_memset(bmp_header, bmp_header_size);
 	bmp_header[0x00] = 0x42;
 	bmp_header[0x01] = 0x4D;
 	bmp_header[0x0A] = bmp_header_size;

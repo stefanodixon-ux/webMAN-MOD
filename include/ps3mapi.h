@@ -95,8 +95,8 @@ static u32 get_current_pid(void)
 
 static void ps3mapi_get_vsh_plugin_info(unsigned int slot, char *tmp_name, char *tmp_filename)
 {
-	memset(tmp_name, 0, 30);
-	memset(tmp_filename, 0, STD_PATH_LEN);
+	_memset(tmp_name, 32);
+	_memset(tmp_filename, STD_PATH_LEN);
 	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_VSH_PLUGIN_INFO, (u64)slot, (u64)(u32)tmp_name, (u64)(u32)tmp_filename);
 }
 
@@ -112,7 +112,7 @@ static void ps3mapi_check_unload(unsigned int slot, char *tmp_name, char *tmp_fi
 
 static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 {
-	char tmp_name[30];
+	char tmp_name[32];
 	char tmp_filename[STD_PATH_LEN];
 	const char *plugin_path = name; // alias
 
@@ -517,7 +517,7 @@ static void ps3mapi_syscall8(char *buffer, char *templn, const char *param)
 
 static void ps3mapi_get_process_name_by_id(u32 pid, char *name, u16 size)
 {
-	memset(name, 0, size);
+	_memset(name, size);
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_NAME_BY_PID, (u64)pid, (u64)(u32)name);
 }
 
@@ -696,7 +696,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 				for(u8 i = 0, n = 0; i < len; i++, n+=2) mask[i] = addr_tmp[n]; sfind[len] = mask[len] = 0;
 			}
 			else if(strstr(param, "&exact"))
-				memset(mask, 0, len);
+				_memset(mask, len);
 
 			if(address == 0) address = 4;
 
@@ -772,7 +772,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 	concat(buffer, templn);
 
 	sprintf(templn, HTML_FORM_METHOD_FMT("/getmem")
-					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn); memset(templn, 0, MAX_LINE_LEN);
+					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn); _memset(templn, MAX_LINE_LEN);
 
 	add_proc_list(buffer, templn, &pid, 1);
 
@@ -798,7 +798,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&addr=%x&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param, address, "Find", find, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
 		concat(buffer, templn); if(pos) *pos = '&';
 		char buffer_tmp[length + 1];
-		memset(buffer_tmp, 0, sizeof(buffer_tmp));
+		_memset(buffer_tmp, sizeof(buffer_tmp));
 		int retval = NONE;
 		retval = ps3mapi_get_memory(pid, address, buffer_tmp, length);
 		if(0 <= retval)
@@ -1073,7 +1073,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
-	char tmp_name[30];
+	char tmp_name[32];
 	char tmp_filename[STD_PATH_LEN];
 
 	if(islike(param, "/vshplugin.ps3mapi") && param[18] == '?')
@@ -1303,7 +1303,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 	sprintf(templn, HTML_FORM_METHOD_FMT("/gameplugin")
 					"<b><u>%s:</u></b>  ", HTML_FORM_METHOD, "Process"); concat(buffer, templn);
 
-	memset(templn, 0, MAX_LINE_LEN);
+	_memset(templn, MAX_LINE_LEN);
 
 	u8 is_vsh = add_proc_list(buffer, templn, &pid, 3);
 
@@ -1325,16 +1325,16 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 
 		#define MAX_SLOTS	61
 
-		char tmp_name[30];
+		char tmp_name[32];
 		char tmp_filename[STD_PATH_LEN];
 		u32 mod_list[MAX_SLOTS];
-		memset(mod_list, 0, sizeof(mod_list));
+		_memset(mod_list, sizeof(mod_list));
 		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_MODULE_PID, (u64)pid, (u64)(u32)mod_list);}
 
 		for(unsigned int slot = 0; slot < MAX_SLOTS; slot++)
 		{
-			memset(tmp_name, 0, sizeof(tmp_name));
-			memset(tmp_filename, 0, sizeof(tmp_filename));
+			_memset(tmp_name, sizeof(tmp_name));
+			_memset(tmp_filename, sizeof(tmp_filename));
 			if(1 < mod_list[slot])
 			{
 				{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MODULE_NAME, (u64)pid, (u64)mod_list[slot], (u64)(u32)tmp_name);}
@@ -1402,7 +1402,7 @@ static void ps3mapi_home(char *buffer, char *templn)
 	if(syscall8_state>=0) {system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_CORE_VERSION); core_version = (int)(p1);}
 	int versionfw = 0;
 	if(syscall8_state>=0) {system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_FW_VERSION); versionfw = (int)(p1);}
-	char fwtype[32]; memset(fwtype, 0, 32);
+	char fwtype[32]; _memset(fwtype, 32);
 	if(syscall8_state>=0) {system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_FW_TYPE, (u64)(u32)fwtype);}
 
 	if(!versionfw)

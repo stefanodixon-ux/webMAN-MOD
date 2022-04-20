@@ -38,7 +38,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 {
 	if(!fd) return;
 
-	_slaunch slaunch; memset(&slaunch, 0, sizeof(_slaunch));
+	_slaunch slaunch; _memset(&slaunch, sizeof(_slaunch));
 
 	char c, enc_filename[MAX_PATH_LEN];
 

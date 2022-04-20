@@ -12,7 +12,7 @@
 
 		char *path1 = header, *path2 = header + MAX_PATH_LEN, *url = header + 2 * MAX_PATH_LEN, *title = header + 2 * MAX_PATH_LEN;
 
-		memset(header, 0, sizeof(header));
+		_memset(header, sizeof(header));
 
 		#ifdef ALLOW_DISABLE_MAP_PATH
 		// /remap.ps3?status                  status of map path

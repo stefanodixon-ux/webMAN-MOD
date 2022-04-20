@@ -26,14 +26,13 @@ static u64 getlba(const char *chunk, u16 chunk_size, const char *filename, u16 f
 	if(!chunk) return 0; // chunk is NULL
 
 	chunk_size -= flen;
-	for(u16 n = *start + 0x1F; n < chunk_size; n++)
+	for(u16 n = *start + 0x27; n < chunk_size; n++)
 	{
-		if(memcmp(&chunk[n], filename, flen) == 0)
+		if((memcmp(&chunk[n], filename, flen) == 0) && (chunk[n - 1] == flen))
 		{
-			while((n > 0x1D) && (chunk[n--] != 0x01)); n-=0x18;
-			u32 lba = *((u32*)(chunk + n));
-			*size = *((u32*)(chunk + n + 8));
-			*start = n + 0x18 + flen; fixed_count++;
+			u32 lba = *((u32*)(chunk + n - 0x1B));
+			*size = *((u32*)(chunk + n - 0x13));
+			*start = n + flen; fixed_count++;
 			return lba;
 		}
 	}
@@ -289,7 +288,7 @@ exit_fix:
 
 static void fix_game(char *game_path, char *title_id, u8 fix_type)
 {
-	memset(title_id, 0, 10);
+	_memset(title_id, 10);
 
 	if(c_firmware >= LATEST_CFW) return;
 

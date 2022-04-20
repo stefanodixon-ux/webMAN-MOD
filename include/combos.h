@@ -357,7 +357,7 @@
 							show_rec_format(msg);
 						}
 						else
-							{memset(msg, 0, sizeof(msg)); toggle_video_rec(msg);} // SELECT+R3  Record Video
+							{_memset(msg, sizeof(msg)); toggle_video_rec(msg);} // SELECT+R3  Record Video
 
 						break_and_wait;
 					}
@@ -379,7 +379,7 @@
 							#ifdef WM_CUSTOM_COMBO
 							if(do_custom_combo("l2_r2_select_start")) break;
 							#endif
-							{BEEP2; memset(msg, 0, sizeof(msg)); saveBMP(msg, true, false); break_and_wait} // L2 + R2 + SELECT + START
+							{BEEP2; _memset(msg, sizeof(msg)); saveBMP(msg, true, false); break_and_wait} // L2 + R2 + SELECT + START
 						}
 						else
 						#endif

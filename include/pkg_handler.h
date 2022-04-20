@@ -230,8 +230,8 @@ static int download_file(const char *param, char *msg)
 	wmemset(pkg_durl, 0, MAX_URL_LEN); // Use wmemset from stdc.h instead of reinitialising wchar_t with a loop.
 	wmemset(pkg_dpath, 0, MAX_DLPATH_LEN);
 
-	memset(pdurl, 0, MAX_URL_LEN);
-	memset(pdpath, 0, MAX_DLPATH_LEN);
+	_memset(pdurl,  MAX_URL_LEN);
+	_memset(pdpath, MAX_DLPATH_LEN);
 
 	int len;
 	size_t conv_num = 0;

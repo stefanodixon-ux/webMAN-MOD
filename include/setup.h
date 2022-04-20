@@ -40,7 +40,7 @@ static void setup_parse_settings(char *param)
 {
 	if(!strstr(param, "&ic=")) return;
 
-	memset(webman_config, 0, sizeof(WebmanCfg) - 12); // reset wm_config except resource_id[10]
+	_memset(webman_config, sizeof(WebmanCfg) - 12); // reset wm_config except resource_id[10]
 
 	get_param("&autop=", webman_config->autoboot_path, param, 255);
 
@@ -1134,7 +1134,7 @@ static int save_settings(void)
 
 static void read_settings(void)
 {
-	memset(webman_config, 0, sizeof(WebmanCfg));
+	_memset(webman_config, sizeof(WebmanCfg));
 
 	webman_config->version = 0x1337;
 
@@ -1240,7 +1240,7 @@ static void read_settings(void)
 	//webman_config->rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_96K;
 
 	// default user account (used by /copy.ps3 to import .edat, /exdata, /savedata, /trophy)
-	//memset(webman_config->uaccount, 0, 8);
+	//_memset(webman_config->uaccount, 8);
 
 	// set default language
 	#ifndef ENGLISH_ONLY

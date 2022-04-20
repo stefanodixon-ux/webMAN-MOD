@@ -220,7 +220,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 
 		if((idx == NONE) || (sections[idx] == 0xFFFFFFFF))
 		{
-			memset(buf, 0, readsize);
+			_memset(buf, readsize);
 			buf += readsize;
 			offset += readsize;
 			remaining -= readsize;
@@ -441,7 +441,7 @@ static int process_read_file_cmd_iso(u8 *buf, u64 offset, u64 size)
 		if((idx == NONE) || (path_name[0x200 * idx] == 0))
 		{
 #endif
-			memset(buf, 0, readsize);
+			_memset(buf, readsize);
 			buf += readsize;
 			offset += readsize;
 			remaining -= readsize;

@@ -15,7 +15,7 @@ static int connect_to_server_ex(const char *server_ip, u16 port, u8 rcv_timeout)
 
 	struct sockaddr_in sin;
 	socklen_t sin_len = sizeof(sin);
-	memset(&sin, 0, sin_len);
+	_memset(&sin, sin_len);
 
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(port);
@@ -79,7 +79,7 @@ static int slisten(int port, int backlog)
 
 	struct sockaddr_in sa;
 	socklen_t sin_len = sizeof(sa);
-	memset(&sa, 0, sin_len);
+	_memset(&sa, sin_len);
 
 	sa.sin_family = AF_INET;
 	sa.sin_port = htons(port);

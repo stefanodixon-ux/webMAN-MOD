@@ -737,6 +737,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_542.71<td>Scarface: The World is Yours</tr>
 <tr><td>CUSTOM<td>SLES_545.34<td>Scarface: The World is Yours</tr>
 <tr><td>CUSTOM<td>SLUS_219.00<td>Scooby-Doo! First Frights</tr>
+<tr><td>CUSTOM<td>SLUS_207.01<td>Scooby-Doo! Mystery Mayhem</tr>
+<tr><td>CUSTOM<td>SLES_518.83<td>Scooby-Doo! Mystery Mayhem</tr>
 <tr><td>CUSTOM<td>SLUS_218.50<td>SCORE International Baja 1000: The Official Game</tr>
 <tr><td>CUSTOM<td>SLES_552.95<td>SCORE International Baja 1000: World Championship Off Road Racing</tr>
 <tr><td>CUSTOM<td>SCUS_976.23<td>Secret Agent Clank</tr>
@@ -3508,6 +3510,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_542.71<td>Scarface: The World is Yours</tr>
 <tr><td>ENC<td>SLES_545.34<td>Scarface: The World is Yours</tr>
 <tr><td>ENC<td>SLUS_219.00<td>Scooby-Doo! First Frights</tr>
+<tr><td>ENC<td>SLUS_207.01<td>Scooby-Doo! Mystery Mayhem</tr>
+<tr><td>ENC<td>SLES_518.83<td>Scooby-Doo! Mystery Mayhem</tr>
 <tr><td>ENC<td>SLUS_218.50<td>SCORE International Baja 1000: The Official Game</tr>
 <tr><td>ENC<td>SLES_552.95<td>SCORE International Baja 1000: World Championship Off Road Racing</tr>
 <tr><td>ENC<td>SCUS_976.23<td>Secret Agent Clank</tr>
@@ -3955,7 +3959,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2178, count = tr.length, classics = i;
+var i = 2180, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}

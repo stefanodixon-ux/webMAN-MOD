@@ -172,7 +172,7 @@ static void make_fb_xml(void)
 										  XML_QUERY, MY_GAMES_XML, XML_END_OF_FILE);
 
 			save_file(fb_xml, myxml, size);
-			memset(myxml, 0, size);
+			_memset(myxml, size);
 		}
 
 		sys_memory_free(sysmem);

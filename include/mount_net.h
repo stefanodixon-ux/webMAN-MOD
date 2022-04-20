@@ -7,7 +7,7 @@
 if(netid >= '0' && netid <= '4')
 {
 	netiso_svrid = (netid & 0x0F);
-	memset((void*)&netiso_args, 0, sizeof(_netiso_args));
+	_memset((void*)&netiso_args, sizeof(_netiso_args));
 
 	if(_path[5] == '\0') strcat(_path, "/.");
 

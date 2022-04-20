@@ -59,7 +59,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	while(connactive == 1 && working)
 	{
-		memset(buffer, 0, sizeof(buffer));
+		_memset(buffer, sizeof(buffer));
 		if(working && (recv(conn_s_ps3mapi, buffer, PS3MAPI_RECV_SIZE, 0) > 0))
 		{
 			if(!get_flag(buffer, "\r\n")) break;
@@ -133,7 +133,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else if(_IS(cmd, "GETFWTYPE"))	// PS3 GETFWTYPE
 					{
-						memset(param2, 0, sizeof(param2));
+						_memset(param2, sizeof(param2));
 						{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_FW_TYPE, (u64)(u32)param2); }
 						split = sprintf(buffer, "200 %s\r\n", param2);
 						ssend(conn_s_ps3mapi, buffer);
@@ -441,7 +441,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 							{
 								u32 pid = val(param1);
 								s32 prxid = val(param2);
-								memset(param2, 0, sizeof(param2));
+								_memset(param2, sizeof(param2));
 
 								if(_IS(cmd, "GETFILENAME"))
 									{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MODULE_FILENAME, (u64)pid, (u64)prxid, (u64)(u32)param2); }
@@ -459,7 +459,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						{
 							s32 prxid_list[128];
 							u32 pid = val(param2);
-							memset(buffer, 0, sizeof(buffer));
+							_memset(buffer, sizeof(buffer));
 							u32 buf_len = sprintf(buffer, "200 ");
 							{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_MODULE_PID, (u64)pid, (u64)(u32)prxid_list); }
 							for(u8 i = 0; i < 128; i++)
@@ -550,7 +550,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					{
 						if(_IS(cmd, "GET")) // REGISTRY GET <regkey>
 						{
-							memset(param1, 0, PS3MAPI_MAX_LEN);
+							_memset(param1, PS3MAPI_MAX_LEN);
 							int value = get_xreg_value(param2, 0, param1, true);
 							if(*param1)
 								sprintf(buffer, "200 %s\r\n", param1);

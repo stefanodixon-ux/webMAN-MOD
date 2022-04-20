@@ -43,7 +43,7 @@ static u32 get_xreg_value(const char *key, int new_value, char *str_value, bool 
 		off_string += 3;
 
 		//string
-		memset(string, 0, sizeof(string));
+		_memset(string, sizeof(string));
 		cellFsReadWithOffset(reg, off_string, string, len_string, &r);
 
 		//Find key

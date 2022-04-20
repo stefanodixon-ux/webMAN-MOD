@@ -83,7 +83,7 @@
 								{
 									// insert data at found offset (pos)
 									for(int i = strlen(pos); i >= 0; i--) pos[i + len] = pos[i];
-									memcpy(pos, data, len);
+									memcpy64(pos, data, len);
 
 									// save file
 									save_file(filename, buffer, SAVE_ALL);

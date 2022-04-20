@@ -110,11 +110,14 @@ typedef struct
 } __attribute__((packed)) netiso_args;
 */
 
+void _memset(void *m, size_t n);
+
 size_t read_file(const char *file, char *data, size_t size, int32_t offset);
 int save_file(const char *file, const char *mem, int64_t size);
 
 int file_copy(const char *file1, char *file2);
 int wait_for(const char *path, uint8_t timeout);
+
 
 // storage.h inline functions merged
 static int sys_storage_ext_get_emu_state(sys_emu_state_t *state)
@@ -415,7 +418,7 @@ static void build_blank_iso(const char *title_id)
 	return;
 */
 
-	memset(buf, 0, _128KB_);
+	_memset(buf, _128KB_);
 
 	buf[3] = 2;
 	buf[0x17] = 0x3F;
@@ -627,7 +630,7 @@ static int parse_param_sfo(char *file, const char *field, char *title_name)
 			return -2;
 		}
 
-		memset(mem, 0, len + 16);
+		_memset(mem, len + 16);
 
 		fseek(fp, 0, SEEK_SET);
 		fread((void *) mem, len, 1, fp);
@@ -776,7 +779,7 @@ int cobra_disc_auth(void)
 
 	if (real_disctype == DEVICE_TYPE_PS3_BD || real_disctype == DEVICE_TYPE_PS3_DVD)
 	{
-		static uint8_t buf[1024]; memset(buf, 0, sizeof(buf));
+		static uint8_t buf[1024]; _memset(buf, sizeof(buf));
 
 		sys_ss_disc_auth(0x5007, (uint64_t)(uint32_t)buf);
 	}
@@ -840,7 +843,7 @@ int cobra_mount_bd_disc_image(char *files[], unsigned int num)
 
 static void init_tracks(int num_tracks, TrackDef *tracks, ScsiTrackDescriptor *scsi_tracks)
 {
-	memset(scsi_tracks, 0, sizeof(scsi_tracks));
+	_memset(scsi_tracks, sizeof(scsi_tracks));
 
 	for (int i = 0; i < num_tracks; i++)
 	{
@@ -904,7 +907,7 @@ int cobra_get_disc_phys_info(uint32_t handle, uint8_t layer, DiscPhysInfo *info)
 	ScsiCmdReadDiscStructure *cmd = (ScsiCmdReadDiscStructure *)scsi_cmd;
 	StorageCmdScsiData *data = (StorageCmdScsiData *)(scsi_cmd+32);
 
-	memset(scsi_cmd, 0, sizeof(scsi_cmd));
+	_memset(scsi_cmd, sizeof(scsi_cmd));
 	cmd->opcode = SCSI_CMD_READ_DISC_STRUCTURE;
 	cmd->alloc_length = sizeof(ScsiReadDiscStructureFormat0Response);
 	cmd->layer_num = layer;
@@ -937,7 +940,7 @@ int cobra_get_cd_td(uint32_t handle, TrackDef *td, unsigned int max_tracks, unsi
 	StorageCmdScsiData *data = (StorageCmdScsiData *)(scsi_cmd+32);
 	ScsiTocResponse toc_info;
 
-	memset(scsi_cmd, 0, sizeof(scsi_cmd));
+	_memset(scsi_cmd, sizeof(scsi_cmd));
 	cmd->opcode = SCSI_CMD_READ_TOC_PMA_ATIP;
 	cmd->alloc_length = sizeof(toc_info);
 	data->inlen = 12;
@@ -1056,7 +1059,7 @@ int cobra_cd_read(uint32_t handle, void *buf, uint32_t sector, uint32_t count, i
 
 	for (uint32_t i = 0; i < count; i++)
 	{
-		memset(scsi_cmd, 0, sizeof(scsi_cmd));
+		_memset(scsi_cmd, sizeof(scsi_cmd));
 		cmd->opcode = SCSI_CMD_READ_CD;
 		cmd->lba = sector;
 		cmd->length[0] = 0;
@@ -1080,7 +1083,7 @@ int cobra_cd_read(uint32_t handle, void *buf, uint32_t sector, uint32_t count, i
 			{
 				unsigned int disctype;
 
-				memset(read_buf, 0, 2352);
+				_memset(read_buf, 2352);
 				nerrors++;
 				DPRINTF("Read sector: %lx all retries failed (%x)\n", (long unsigned int)sector, ret);
 
@@ -1794,7 +1797,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 		return EABORT;
 	}
 
-	int fd; uint8_t sector[2048]; memset(sector, 0, sizeof(sector));
+	int fd; uint8_t sector[2048]; _memset(sector, sizeof(sector));
 
 	if (cellFsOpen(path, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
@@ -1810,7 +1813,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	if (sector[0] != 1 || memcmp(sector+1, "CD001", 5) != CELL_FS_SUCCEEDED)
 		return EIO;
 
-	memset(title_id, 0, sizeof(title_id));
+	_memset(title_id, sizeof(title_id));
 	memcpy(title_id, sector+0x373, 10);
 
 	root = umd_root;
@@ -2045,7 +2048,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 		return ESYSVER;
 	}
 
-	//uint8_t sector[2048]; memset(sector, 0, sizeof(sector));
+	//uint8_t sector[2048]; _memset(sector, sizeof(sector));
 	uint8_t *sector = (uint8_t*)malloc(1024);
 
 	int fd;
@@ -2065,7 +2068,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 	unsigned int real_disctype, effective_disctype, iso_disctype;
 
 	char title_id[11];
-	memset(title_id, 0, sizeof(title_id));
+	_memset(title_id, sizeof(title_id));
 	memcpy(title_id, sector+0x373, 10);
 	free(sector);
 
@@ -2287,7 +2290,7 @@ int cobra_get_usb_device_name(char *mount_point, char *dev_name)
 	if (ret == 0)
 	{
 		uint8_t cmd[64];
-		memset(cmd, 0, sizeof(cmd));
+		_memset(cmd, sizeof(cmd));
 
 		UfiCmdInquiry *inquiry_cmd = (UfiCmdInquiry *)(cmd+4);
 
@@ -2394,7 +2397,7 @@ int cobra_build_netiso_params(void *param_buf, char *server, uint16_t port, char
 	netiso_args *args = (netiso_args *)param_buf;
 	ScsiTrackDescriptor *scsi_tracks = (ScsiTrackDescriptor *)&args->tracks[0];
 
-	memset(param_buf, 0, 65536);
+	_memset(param_buf, 65536);
 
 	if (emu_mode < EMU_PS3 || emu_mode >= EMU_MAX || num_tracks >= MAX_TRACKS)
 		return EINVAL;
@@ -2454,7 +2457,7 @@ int cobra_read_config(CobraConfig *cfg)
 {
 	if(!cfg) return EINVAL;
 
-	memset((uint8_t*)cfg, 0, sizeof(CobraConfig));
+	_memset((uint8_t*)cfg, sizeof(CobraConfig));
 
 	uint16_t cobra_version;
 	sys_get_version2(&cobra_version);

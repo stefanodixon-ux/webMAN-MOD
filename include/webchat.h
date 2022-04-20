@@ -12,7 +12,7 @@ static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_
 	// truncate msg log
 	if(cellFsStat(WMCHATFILE, &buf) != CELL_FS_SUCCEEDED || buf.st_size > _32KB_ || buf.st_size == 0)
 	{
-		memset(tempstr, 0, _4KB_);
+		_memset(tempstr, _4KB_);
 
 		if(buf.st_size > _32KB_)
 		{

@@ -1,7 +1,7 @@
 	if(islike(param, "/minver.ps3"))
 	{
 		u8 data[0x20];
-		memset(data, 0, sizeof(data));
+		_memset(data, sizeof(data));
 
 		int ret = GetApplicableVersion(data);
 		if(ret)

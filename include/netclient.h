@@ -32,7 +32,7 @@ static int read_remote_file(int s, void *buf, u64 offset, u32 size, int *abort_c
 	netiso_read_file_cmd cmd;
 	netiso_read_file_result res;
 
-	memset(&cmd, 0, sizeof(cmd));
+	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_READ_FILE);
 	cmd.offset = (offset);
 	cmd.num_bytes = (size);
@@ -78,7 +78,7 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 	netiso_open_result res;
 
 	int len = strlen(path);
-	memset(&cmd, 0, sizeof(cmd));
+	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = BE16(NETISO_CMD_OPEN_FILE);
 	cmd.fp_len = BE16(len);
 
@@ -147,7 +147,7 @@ static int remote_stat(int s, const char *path, int *is_directory, s64 *file_siz
 	netiso_stat_result res;
 
 	int len = strlen(path);
-	memset(&cmd, 0, sizeof(cmd));
+	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_STAT_FILE);
 	cmd.fp_len = (len);
 
@@ -369,7 +369,7 @@ static int open_remote_dir(int s, const char *path, int *abort_connection, bool 
 	if(subdirs) strcat(_path, "//");
 
 	int len = strlen(path);
-	memset(&cmd, 0, sizeof(cmd));
+	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_OPEN_DIR);
 	cmd.dp_len = (len);
 
@@ -405,7 +405,7 @@ static int read_remote_dir(int s, sys_addr_t *data /*netiso_read_dir_result_data
 	netiso_read_dir_entry_cmd cmd;
 	netiso_read_dir_result res;
 
-	memset(&cmd, 0, sizeof(cmd));
+	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_READ_DIR);
 
 	//MM_LOG("Sending request...(%i) ", s);

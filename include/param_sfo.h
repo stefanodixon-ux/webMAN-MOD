@@ -35,8 +35,8 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 {
 	READ_SFO_HEADER()
 
-	memset(title_id, 0, 10);
-	memset(title, 0, 128);
+	_memset(title_id, 10);
+	_memset(title, 128);
 
 	FOR_EACH_SFO_FIELD()
 	{
@@ -91,11 +91,11 @@ static u8 patch_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_siz
 	{
 		if(!memcmp((char *) &mem[str], "ACCOUNT_ID", 10))
 		{
-			memset((char *) &mem[pos], 0, 16); save++;
+			_memset((char *) &mem[pos], 16); save++;
 		}
 		else if(!memcmp((char *) &mem[str], "ACCOUNTID", 9))
 		{
-			memset((char *) &mem[pos], 0, 16); save++;
+			_memset((char *) &mem[pos], 16); save++;
 		}
 		else if(!memcmp((char *) &mem[str], "ATTRIBUTE", 9))
 		{
@@ -105,8 +105,8 @@ static u8 patch_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_siz
 		{
 			int userid = xusers()->GetCurrentUserNumber();
 			mem[pos + 24] = (u8)(userid);           // User 1
-			memset((char *) &mem[pos + 28], 0, 16); // PSID
-			memset((char *) &mem[pos + 48], 0, 16); // Account ID
+			_memset((char *) &mem[pos + 28], 16); // PSID
+			_memset((char *) &mem[pos + 48], 16); // Account ID
 			if(++save >= 3) break;
 		}
 		READ_NEXT_SFO_FIELD()
@@ -127,7 +127,7 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 {
 	READ_SFO_HEADER(false)
 
-	memset(title_id, 0, 10);
+	_memset(title_id, 10);
 
 	#ifdef FIX_GAME
 	u8 fcount = 0;
@@ -234,7 +234,7 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 {
 	bool ret = false;
 
-	memset(title_id, 0, 10);
+	_memset(title_id, 10);
 
 	char param_sfo[_4KB_];
 	unsigned char *mem = (u8*)param_sfo;

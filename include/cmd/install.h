@@ -62,7 +62,7 @@
 			}
 		}
 
-		char msg[MAX_LINE_LEN]; memset(msg, 0, sizeof(msg));
+		char msg[MAX_LINE_LEN]; _memset(msg, sizeof(msg));
 
 		setPluginActive();
 

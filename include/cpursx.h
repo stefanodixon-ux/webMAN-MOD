@@ -83,7 +83,7 @@ static void get_net_info(char *net_type, char *ip)
 	if(status == 0) {strcpy(net_type, "OFFLINE"); *ip = NULL; return;}
 
 	net_info info;
-	memset(&info, 0, sizeof(net_info));
+	_memset(&info, sizeof(net_info));
 	xnet()->sub_44A47C(&info); //info.ipAddress
 
 	if (info.device == 0) strcpy(net_type, "LAN"); else
@@ -143,7 +143,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 	else if(webman_config->fanc == DISABLED)
 		sprintf(fan_mode, "   SYSCON");
 	else
-		memset(fan_mode, 0, sizeof(fan_mode));
+		_memset(fan_mode, sizeof(fan_mode));
 
 	get_temperature(0, &t1); // CPU
 	get_temperature(1, &t2); // RSX
@@ -173,7 +173,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		if(op == 18) // syscalls
 			sprintf(msg, "Syscalls: %s", syscalls_removed ? STR_DISABLED : STR_ENABLED);
 		if(op == 19) // temp
-			{char *p = strchr(msg, '\n'); memset(p, 0, len-30); return;}
+			{char *p = strchr(msg, '\n'); _memset(p, len-30); return;}
 		if(op == 20) // fan mode
 			{sprintf(msg, "%s", fan_mode + 3); return;}
 		#endif

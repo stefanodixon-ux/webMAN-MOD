@@ -54,7 +54,7 @@ static int peek_chunk_device(u64 device, u64 start_sector, u32 size, u64 *buffer
 	}
 	else
 	{
-		memset((u8*)buffer, 0, size);
+		_memset((u8*)buffer, size);
 		return FAILED;
 	}
 }

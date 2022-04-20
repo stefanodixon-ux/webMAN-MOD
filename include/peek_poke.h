@@ -13,6 +13,8 @@
 
 #define CFW_SYSCALLS_REMOVED(a)			((lv2_peek_hen(a) & 0xFFFFFFFFFF000000) != 0x8000000000000000)
 
+void _memset(void *m, size_t n);
+
 /////////////////// LV1 PEEK //////////////////////
 static u64 lv1_peek_cfw(u64 addr)
 {
@@ -241,7 +243,7 @@ static u16 string_to_lv2(const char *path, u64 addr)
 
 	u8 data[MAX_PATH_MAP];
 	u64 *data2 = (u64 *)data;
-	memset(data, 0, MAX_PATH_MAP);
+	_memset(data, MAX_PATH_MAP);
 	memcpy(data, path, len);
 
 	len = (len + 7) >> 3;
@@ -311,6 +313,7 @@ static u16 Hex2Bin(const char *src, char *out)
 #if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT) || defined(USE_NTFS) || defined(DEBUG_MEM)
 static void memcpy64(void *dst, void *src, int n)
 {
+	if(!dst || !src || !n) return;
 	uint8_t p = n & 7;
 
 	n >>= 3;
@@ -326,3 +329,19 @@ static void memcpy64(void *dst, void *src, int n)
 	}
 }
 #endif
+
+void _memset(void *m, size_t n)
+{
+	if(!m || !n) return;
+	uint8_t p = n & 7;
+
+	n >>= 3;
+	uint64_t *s = (uint64_t *) m;
+	while (n--) *s++ = 0LL;
+
+	if(p)
+	{
+		char *c = (char *) m;
+		while (p--) *c++ = '\0';
+	}
+}

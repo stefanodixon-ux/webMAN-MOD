@@ -152,7 +152,7 @@ static int process_open_cmd(u8 index, netiso_open_cmd *cmd)
 		}
 	}
 
-	memset(filepath, 0, root_len + fp_len);
+	_memset(filepath, root_len + fp_len);
 
 	/// send result ///
 
@@ -401,7 +401,7 @@ static int process_stat_cmd(u8 index, netiso_stat_cmd *cmd)
 		result.atime = (s64)(st.st_atime);
 	}
 
-	memset(filepath, 0, root_len + fp_len);
+	_memset(filepath, root_len + fp_len);
 
 	/// send result ///
 

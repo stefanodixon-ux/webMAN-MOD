@@ -3,8 +3,8 @@ static void patch_ps2_demo(const char *iso_file)
 {
 	u32 offset, root;
 	char data[0x40];
-	char game_id[12];    memset(game_id,  0, sizeof(game_id));
-	char title_id[0x10]; memset(title_id, 0, sizeof(title_id));
+	char game_id[12];    _memset(game_id,  sizeof(game_id));
+	char title_id[0x10]; _memset(title_id, sizeof(title_id));
 
 	read_file(iso_file, data, 0x3C, 0x80A0);
 	root = offset = *((u32*)(data + 2)) * 0x800; // 0x105 * 800

@@ -6,7 +6,7 @@
 			// /edit.ps3<file>              open text file (up to 2000 bytes)
 			// /edit.ps3?f=<file>&t=<txt>   saves text to file
 
-			char *filename = templn, *txt = buffer + BUFFER_SIZE_HTML - _6KB_, *backup = txt; memset(txt, 0, _2KB_); *filename = 0;
+			char *filename = templn, *txt = buffer + BUFFER_SIZE_HTML - _6KB_, *backup = txt; _memset(txt, _2KB_); *filename = 0;
 
 			// get file name
 			get_value(filename, param + ((param[9] == '/') ? 9 : 12), MAX_PATH_LEN); // /edit.ps3<file>  *or* /edit.ps3?f=<file>&t=<txt>
