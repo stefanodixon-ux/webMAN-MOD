@@ -9,7 +9,7 @@
 #define  _16KB_		    16384UL
 #define  _32KB_		    32768UL
 #define  _48KB_		    49152UL
-#define  _60KB_		    61440UL
+#define  _62KB_		    63488UL
 #define  _64KB_		    65536UL
 #define _128KB_		   131072UL
 #define _192KB_		   196608UL

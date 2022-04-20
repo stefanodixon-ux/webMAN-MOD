@@ -341,7 +341,7 @@ void _memset(void *m, size_t n)
 
 	if(p)
 	{
-		char *c = (char *) m;
+		char *c = (char *) s;
 		while (p--) *c++ = '\0';
 	}
 }

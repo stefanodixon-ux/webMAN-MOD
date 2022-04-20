@@ -21,18 +21,18 @@ enum FIX_GAME_MODES
 
 #ifdef COBRA_ONLY
  #if defined(USE_NTFS) || defined(FIX_GAME)
-static u64 getlba(const char *chunk, u16 chunk_size, const char *filename, u16 flen, u16 *start, u32 *size)
+static u32 getLBA(const char *chunk, u16 chunk_size, const char *filename, u16 flen, u16 *start, u32 *size)
 {
 	if(!chunk) return 0; // chunk is NULL
 
-	chunk_size -= flen;
-	for(u16 n = *start + 0x27; n < chunk_size; n++)
+	chunk_size -= (flen + 1);
+	for(u16 n = *start + 0x26; n < chunk_size; n++)
 	{
-		if((memcmp(&chunk[n], filename, flen) == 0) && (chunk[n - 1] == flen))
+		if((chunk[n] == flen) && (memcmp(&chunk[n + 1], filename, flen) == 0))
 		{
-			u32 lba = *((u32*)(chunk + n - 0x1B));
-			*size = *((u32*)(chunk + n - 0x13));
-			*start = n + flen; fixed_count++;
+			u32 lba = *((u32*)(chunk + n - 0x1A));
+			*size   = *((u32*)(chunk + n - 0x12));
+			*start  = n + (flen + 1); fixed_count++;
 			return lba;
 		}
 	}
@@ -174,7 +174,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 			{
 				cellFsReadWithOffset(fd, pos, chunk, chunk_size, &bytes_read); if(!bytes_read) break;
 
-				start = 0, lba = getlba(chunk, chunk_size, "PARAM.SFO;1", 11, &start, &siz);
+				start = 0, lba = getLBA(chunk, chunk_size, "PARAM.SFO;1", 11, &start, &siz);
 
 				if(lba)
 				{
@@ -200,7 +200,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 					sprintf(chunk, "%s %s", STR_FIXING, iso_file);
 					show_msg(chunk);
 
-					start = 0, lba = getlba(chunk, chunk_size, "PS3_DISC.SFB;1", 14, &start, &siz), lba *= 0x800ULL, chunk_size = 0x800; //1 sector
+					start = 0, lba = getLBA(chunk, chunk_size, "PS3_DISC.SFB;1", 14, &start, &siz), lba *= 0x800ULL, chunk_size = 0x800; //1 sector
 					if(lba > 0 && size > lba) size = lba;
 				}
 			}
@@ -216,11 +216,11 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 					sys_ppu_thread_usleep(1000);
 					if(fix_aborted) goto exit_fix;
 
-					if(t == 0) lba = getlba(chunk, chunk_size, "EBOOT.BIN;1", 11, &start, &siz); else
-					if(t == 1) lba = getlba(chunk, chunk_size, ".SELF;1", 7, &start, &siz);      else
-					if(t == 2) lba = getlba(chunk, chunk_size, ".self;1", 7, &start, &siz);      else
-					if(t == 3) lba = getlba(chunk, chunk_size, ".SPRX;1", 7, &start, &siz);      else
-					if(t == 4) lba = getlba(chunk, chunk_size, ".sprx;1", 7, &start, &siz);
+					if(t == 0) lba = getLBA(chunk, chunk_size, "EBOOT.BIN;1", 11, &start, &siz); else
+					if(t == 1) lba = getLBA(chunk, chunk_size, ".SELF;1", 7, &start, &siz);      else
+					if(t == 2) lba = getLBA(chunk, chunk_size, ".self;1", 7, &start, &siz);      else
+					if(t == 3) lba = getLBA(chunk, chunk_size, ".SPRX;1", 7, &start, &siz);      else
+					if(t == 4) lba = getLBA(chunk, chunk_size, ".sprx;1", 7, &start, &siz);
 
 					if(lba)
 					{

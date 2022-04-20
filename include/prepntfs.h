@@ -27,17 +27,24 @@ static u32 *sections_sizeP = NULL;
 
 static sys_addr_t sysmem_p = NULL;
 
-static void extract_iso_file(const char *iso_path, const char *file, u8 len, const char *out_path, const char *dirlist, char *buffer)
+// extract ICON0.PNG & PARAM.SFO from ISO
+static u64 extract_iso_file(const char *iso_path, const char *file, u8 len, const char *out_path, const char *sector)
 {
-	if(!dirlist) return; u32 size; fixed_count = 0;
-	u16 start = 0x40; u64 lba = getlba(dirlist, _4KB_, file, strlen(file), &start, &size);
+	if(!sector) return 0;
+	u16 start = 0x40; u32 size; fixed_count = 0;
+	u64 lba = getLBA(sector, 0x800, file, len, &start, &size);
+	if(!lba && (len == 11)) lba = getLBA(sector, 0x800, file, len - 2, &start, &size); // search without ;1
 	if(lba)
 	{
-		if(!size || (size > _60KB_)) return; // is file larger than buffer size?
-		lba *= 0x800ULL; if(lba > (file_size(iso_path) - size)) return; // is offset larger than iso?
+		if(!size || (size > _62KB_)) return 0; // is file larger than buffer size?
+		lba *= 0x800ULL; if(lba > (file_size(iso_path) - size)) return 0; // is offset larger than iso?
+		if(!out_path) return lba; // return offset
+
+		char *buffer = (char*)sector + 0x800; // (0-62KB)
 		read_file(iso_path, buffer, size, lba);
 		save_file(out_path, buffer, size);
 	}
+	return lba; // return offset
 }
 
 static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
@@ -98,7 +105,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 			if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
 			{
 				char *buffer = (char*)sysmem_p;
-				read_file(iso_path, buffer, _48KB_, 0);
+				read_file(iso_path, buffer + _32KB_, _8KB_, 0);
 				cd_sector_size = detect_cd_sector_size(buffer);
 			}
 
@@ -173,12 +180,20 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 				// extract PARAM.SFO from ISO
 				if(sysmem_p || (sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK))
 				{
-					char *dirlist = (char*)sysmem_p, *buffer = (char*)sysmem_p + _4KB_; // (0-60KB)
-					read_file(iso_path, dirlist, _4KB_, 0x10800);
-					extract_iso_file(iso_path, "PARAM.SFO;1", 11, tmp_path, dirlist, buffer);
-					snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.PNG", WMTMP, filename, SUFIX2(profile));
-					extract_iso_file(iso_path, "ICON0.PNG;1", 11, tmp_path, dirlist, buffer);
-					return;
+					char *sector = (char*)sysmem_p;
+
+					read_file(iso_path, sector, 0x800, 0x10000); // get root sector 20
+					u64 offset = extract_iso_file(iso_path, "PS3_GAME", 8, NULL, sector);
+					if(offset)
+					{
+						read_file(iso_path, sector, 0x800, offset); // get PS3_GAME sector
+						extract_iso_file(iso_path, "PARAM.SFO;1", 11, tmp_path, sector);
+
+						snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.PNG", WMTMP, filename, SUFIX2(profile));
+						extract_iso_file(iso_path, "ICON0.PNG;1", 11, tmp_path, sector);
+
+						if(file_exists(tmp_path)) return;
+					}
 				}
 			}
 		}

@@ -674,19 +674,28 @@ int main()
 	file_copy(APP_USRDIR "/setup/setupx.dat", SETUP_DIR "/setupx.dat");
 	file_copy(APP_USRDIR "/setup/setupz.dat", SETUP_DIR "/setupz.dat");
 
-	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
+	sysLv2FsRename(APP_USRDIR "/xmb/RELOADXMB", RELOADXMB_DIR);
 
-/*
+	// fallback to manual copy
 	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
 	sysLv2FsMkdir(RELOADXMB_DIR "/USRDIR", DMODE);
 	file_copy(APP_USRDIR "/xmb/RELOADXMB/ICON0.PNG", RELOADXMB_DIR "/ICON0.PNG");
 	file_copy(APP_USRDIR "/xmb/RELOADXMB/PARAM.SFO", RELOADXMB_DIR "/PARAM.SFO");
 	file_copy(APP_USRDIR "/xmb/RELOADXMB/EBOOT.BIN", RELOADXMB_DIR "/USRDIR/EBOOT.BIN");
-*/
-	sysLv2FsRename(APP_USRDIR "/xmb/RELOADXMB", RELOADXMB_DIR);
+
 	sysLv2FsRename(APP_USRDIR "/xmb/PKGLAUNCH", PKGLAUNCH_DIR);
 
+	// fallback to manual copy
+	sysLv2FsMkdir(PKGLAUNCH_DIR, DMODE);
+	sysLv2FsMkdir(PKGLAUNCH_DIR"/USRDIR", DMODE);
+	sysLv2FsMkdir(PKGLAUNCH_DIR"/PS3_GAME", DMODE);
+	sysLv2FsMkdir(PKGLAUNCH_DIR"/PS3_GAME/USRDIR", DMODE);
+	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/ICON0.PNG",                     PKGLAUNCH_DIR "/ICON0.PNG");
+	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/PARAM.SFO",                     PKGLAUNCH_DIR "/PARAM.SFO");
 	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/USRDIR/EBOOT.BIN",              PKGLAUNCH_DIR "/USRDIR/EBOOT.BIN");
+	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/USRDIR/unrar.self",             PKGLAUNCH_DIR "/USRDIR/unrar.self");
+	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/PS3_GAME/ICON0.PNG",            PKGLAUNCH_DIR "/PS3_GAME/ICON0.PNG");
+	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/PS3_GAME/PARAM.SFO",            PKGLAUNCH_DIR "/PS3_GAME/PARAM.SFO");
 	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/PS3_GAME/USRDIR/EBOOT.BIN",     PKGLAUNCH_DIR "/PS3_GAME/USRDIR/EBOOT.BIN");
 	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/PS3_GAME/USRDIR/retroarch.bak", PKGLAUNCH_DIR "/PS3_GAME/USRDIR/retroarch.bak");
 	file_copy(APP_USRDIR "/xmb/PKGLAUNCH/PS3_GAME/USRDIR/retroarch.cce", PKGLAUNCH_DIR "/PS3_GAME/USRDIR/retroarch.cce");

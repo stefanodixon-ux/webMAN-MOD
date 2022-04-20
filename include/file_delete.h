@@ -118,6 +118,7 @@ static void uninstall(char *param)
 	for(u8 i = 0; i < 2; i++)
 	{
 		unlink_file("/dev_hdd0", param, "webftp_server.sprx");
+		unlink_file("/dev_hdd0", param, "webftp_server_lite.sprx");
 		unlink_file("/dev_hdd0", param, "webftp_server_ps3mapi.sprx");
 		unlink_file("/dev_hdd0", param, "webftp_server_noncobra.sprx");
 		unlink_file("/dev_hdd0", param, "wm_vsh_menu.sprx");
