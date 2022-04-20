@@ -107,6 +107,8 @@ static void unlink_file(const char *drive, const char *path, const char *file)
 #ifndef LITE_EDITION
 static void uninstall(char *param)
 {
+	if(get_explore_interface()) exec_xmb_command("close_all_list");
+
 	if(file_size("/dev_hdd0/boot_plugins.txt")             < 45) cellFsUnlink("/dev_hdd0/boot_plugins.txt");
 	if(file_size("/dev_hdd0/boot_plugins_nocobra.txt")     < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra.txt");
 	if(file_size("/dev_hdd0/boot_plugins_nocobra_dex.txt") < 46) cellFsUnlink("/dev_hdd0/boot_plugins_nocobra_dex.txt");

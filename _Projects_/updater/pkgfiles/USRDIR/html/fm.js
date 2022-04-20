@@ -76,7 +76,7 @@ window.addEventListener('contextmenu',function(e){
 		m0.href='/install.ps3'+p;m0.style.display=y?b:n;
 		m1.href='/mount.ps3'+p;m1.style.display=!y&&(w||c=='d'||p.indexOf('/GAME')>0||p.indexOf('ISO/')>0)?b:n;
 		m2.href=p;m2.text=(w||c=='w')?'Download':'Open';
-		v2.href='/hexview.ps3'+p;v2.style.display=(c!='d')?b:n;
+		v2.href='/view.ps3'+p;v2.style.display=(c!='d')?b:n;
 		m3.href='/delete.ps3'+p;
 		m4.href='/cut.ps3'+p;
 		m5.href='/cpy.ps3'+p;
@@ -101,4 +101,4 @@ window.addEventListener('contextmenu',function(e){
 },false);
 
 // Clear menu
-window.onclick=function(e){if(m)m.display='none';t=e.target;if(t.id.indexOf('im')==0||(typeof(t.href)=='string'&&t.href.indexOf('.ps3')>0&&t.href.indexOf('prompt')<0&&t.href.indexOf('#Top')<0))wmsg.style.display='block';}
+window.onclick=function(e){wmsg.style.display='none';if(m)m.display='none';t=e.target;if(t.id.indexOf('im')==0||(typeof(t.href)=='string'&&t.href.indexOf('.ps3')>0&&t.href.indexOf('view.ps3')<0&&t.href.indexOf('.png')<0&&t.href.indexOf('.jpg')<0&&t.href.indexOf('prompt')<0&&t.href.indexOf('#Top')<0))wmsg.style.display='block';}

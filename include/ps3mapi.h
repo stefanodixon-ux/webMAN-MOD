@@ -587,16 +587,23 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 
 static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const char *sfind, u8 len, const char *mask, u32 fallback)
 {
+	char label[20], buffer[0x200], *mem;
+
 	int retval = NONE;
 	found_offset = fallback;
-	const u32 chunk_size = _64KB_;
 
-	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK) return found_offset;
+	u32 chunk_size = _64KB_; sys_addr_t sysmem = NULL;
+	if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	{
+		mem = (char*)sysmem;
+	}
+	else // fallback to small buffer
+	{
+		mem = buffer, chunk_size = sizeof(buffer);
+	}
 
 	Check_Overlay();
 
-	char label[20], *mem = (char*)sysmem;
 	const u32 m = chunk_size - len, gap = (len + 0x10) - (len % 0x10);
 	for(; address < stop; address += chunk_size - gap)
 	{
@@ -615,7 +622,8 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 			}
 		}
 	}
-	sys_memory_free(sysmem);
+	if(chunk_size == _64KB_)
+		sys_memory_free(sysmem);
 	disable_progress();
 	return found_offset;
 }

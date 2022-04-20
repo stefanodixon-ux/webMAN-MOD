@@ -4,9 +4,10 @@
 		char *pkg_file = param + 12;
 		check_path_alias(pkg_file);
 
-		strcat(buffer, "Install PKG: <select autofocus onchange=\"$('wmsg').style.display='block';window.location='/install.ps3");
-		strcat(buffer, pkg_file);
-		strcat(buffer, "/'+this.value;\"><option>");
+		add_url(buffer, "Install PKG: "
+						"<select autofocus onchange=\"$('wmsg').style.display='block';"
+						"window.location='/install.ps3", pkg_file, "/'+this.value;\">"
+						"<option>");
 
 		int fd, len;
 		if(cellFsOpendir(pkg_file, &fd) == CELL_FS_SUCCEEDED)
@@ -18,13 +19,13 @@
 				len = entry.entry_name.d_namlen -4; if(len < 0) continue;
 				if(!strcmp(entry.entry_name.d_name + len, ".pkg") || !strcmp(entry.entry_name.d_name + len, ".p3t"))
 				{
-					strcat(buffer, "<option>");
-					strcat(buffer, entry.entry_name.d_name);
+					concat(buffer, "<option>");
+					concat(buffer, entry.entry_name.d_name);
 				}
 			}
 			cellFsClosedir(fd);
 		}
-		strcat(buffer, "</select>");
+		concat(buffer, "</select>");
 	}
 	else
 #endif

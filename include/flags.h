@@ -11,6 +11,8 @@
  #define MOUNT_GAMEI
 #endif
 
+#define VIEW_PARAM_SFO
+
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
   #define NET_SUPPORT
@@ -21,6 +23,7 @@
   #undef VISUALIZERS
   #undef NET_SUPPORT
   #undef DEBUG_XREGISTRY
+  #undef VIEW_PARAM_SFO
  #endif
 #else
  #undef WM_PROXY_SPRX

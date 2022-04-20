@@ -15,6 +15,8 @@
 
 static bool isDir(const char *path)
 {
+	if(!path) return false;
+
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))
 	{
@@ -55,6 +57,8 @@ static bool is_iso_0(const char *filename)
 
 static char *get_ext(const char *path)
 {
+	if(!path) return NULL;
+
 	int plen = strlen(path) - 4;
 	if(plen < 0) plen = 0;
 	else if(path[plen + 1] == '.') plen++;
@@ -79,6 +83,8 @@ static char *remove_filename(const char *path)
 #ifdef COBRA_ONLY
 static bool change_ext(char *filename, int num_ext, const char *file_ext[])
 {
+	if(!filename || !file_ext) return false;
+
 	char *ext = get_ext(filename);
 	for(u8 e = 0; e < num_ext; e++)
 	{
@@ -100,6 +106,8 @@ static void change_cue2iso(char *cue_file)
 #else
 static void check_ps3_game(char *path)
 {
+	if(!path) return;
+
 	char *p = strstr(path, "/PS3_GAME");
 	if(p)
 	{
@@ -112,6 +120,8 @@ static void check_ps3_game(char *path)
 
 static void check_path_alias(char *param)
 {
+	if(!param) return;
+
 	if(islike(param, "/dev_blind")) enable_dev_blind(NULL);
 
 	if(not_exists(param))
@@ -222,7 +232,7 @@ static void rename_file(char *source, char *dest)
 
 size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 {
-	if(!data) return 0;
+	if(!file || !data) return 0;
 
 	int fd = 0; u64 read_e = 0;
 
@@ -231,6 +241,7 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 #ifdef USE_NTFS
 	if(is_ntfs_path(file))
 	{
+		if(mountCount <= 0) mount_all_ntfs_volumes();
 		fd = ps3ntfs_open(ntfs_path(file), O_RDONLY, 0);
 		if(fd >= 0)
 		{
@@ -259,7 +270,7 @@ static u16 read_sfo(const char *file, char *data)
 
 static int write_file(const char *file, int flags, const char *data, u64 offset, int size, bool crlf)
 {
-	int fd = 0;
+	if(!file) return FAILED; int fd = 0;
 
 #ifdef USE_NTFS
 	if(is_ntfs_path(file))
@@ -268,6 +279,7 @@ static int write_file(const char *file, int flags, const char *data, u64 offset,
 		if(flags & CELL_FS_O_APPEND) nflags |= O_APPEND;
 		if(flags & CELL_FS_O_TRUNC)  nflags |= O_TRUNC;
 
+		if(mountCount <= 0) mount_all_ntfs_volumes();
 		fd = ps3ntfs_open(ntfs_path(file), nflags, MODE);
 		if(fd >= 0)
 		{
@@ -328,7 +340,7 @@ static void addlog(const char *msg1, const char *msg2, int i)
 
 static int wait_path(const char *path, u8 timeout, bool found)
 {
-	if(*path!='/') return FAILED;
+	if(!path || (*path != '/')) return FAILED;
 
 	timeout *= 8;
 	for(u8 n = 0; n < timeout; n++)

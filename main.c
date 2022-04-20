@@ -481,11 +481,11 @@ static void wwwd_thread(u64 arg)
 	set_buffer_sizes(webman_config->foot);
 
 	#ifdef MOUNT_ROMS
-	size_t fsize = file_ssize(WMROMS_EXTENSIONS);
+	size_t fsize = file_ssize(WM_ROMS_EXTENSIONS);
 	if((fsize > 0) && (fsize <= 1024))
 	{
 		ROMS_EXTENSIONS = malloc(fsize);
-		read_file(WMROMS_EXTENSIONS, ROMS_EXTENSIONS, fsize, 0);
+		read_file(WM_ROMS_EXTENSIONS, ROMS_EXTENSIONS, fsize, 0);
 	}
 	if(!ROMS_EXTENSIONS) ROMS_EXTENSIONS = (char *)".BIN.ISO.CUE.CCD.IMG.ZIP";
 	#endif

@@ -596,7 +596,7 @@ static void setup_form(char *buffer, char *templn)
 		concat(buffer, "<br>");
 	#endif
 
-	add_checkbox("igf", "wm_ignore.txt", " <button onclick=\"window.location='/edit.ps3" WMIGNORE_FILES "';return false;\">&#x270D;</button><br>", webman_config->ignore, buffer);
+	add_checkbox("igf", "wm_ignore.txt", " <button onclick=\"window.location='/edit.ps3" WM_IGNORE_FILES "';return false;\">&#x270D;</button><br>", webman_config->ignore, buffer);
 
 	concat(buffer, "</tr></table>" HTML_BLU_SEPARATOR);
 
@@ -1350,7 +1350,9 @@ static void restore_settings(void)
 			restore_fan(SYSCON_MODE);  //restore syscon fan control mode
 	}
 
+	#ifdef COBRA_ONLY
 	sys_map_path(FB_XML, NULL); // hide webMAN Games after reload XMB
+	#endif
 
 	#ifdef WM_PROXY_SPRX
 	//{sys_map_path(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", NULL);}

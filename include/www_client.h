@@ -10,6 +10,7 @@
 #define CODE_INSTALL_PKG       1201
 #define CODE_DOWNLOAD_FILE     1202
 #define CODE_RETURN_TO_ROOT    1203
+#define CODE_HTTP_NOCSS        1210
 #define CODE_BREADCRUMB_TRAIL  1220
 #define CODE_GOBACK            1222
 #define CODE_CLOSE_BROWSER     1223
@@ -124,13 +125,18 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg(body + 4);
 
-		if(css_exists)
+		if(code == CODE_HTTP_NOCSS)
+			code = CODE_HTTP_OK;
+		else
 		{
-			sprintf(header, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); strcat(body, header);
-		}
-		if(common_js_exists)
-		{
-			sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); strcat(body, header);
+			if(css_exists)
+			{
+				sprintf(header, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); strcat(body, header);
+			}
+			if(common_js_exists)
+			{
+				sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); strcat(body, header);
+			}
 		}
 
 		sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
@@ -487,34 +493,7 @@ parse_request:
 
 			char *param_original = header; // used in /download.ps3
 
-			if((refreshing_xml == 0) && islike(param, "/refresh"))
-			{
-				if(islike(param + 8, "_ps3"))
-				{
-					refresh_xml(param);
-
-					if(IS_ON_XMB && is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
-					{
-						reload_xmb();
-						sys_ppu_thread_sleep(3);
-						if(IS_ON_XMB) launch_app_home_icon(true);
-					}
-
-					#ifdef WM_REQUEST
-					if(!wm_request)
-					#endif
-					keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, param);
-					goto exit_handleclient_www;
-				}
-
-				#ifdef USE_NTFS
-				if(webman_config->ntfs)
-				{
-					get_game_info();
-					skip_prepntfs = (strcmp(_game_TitleID, "BLES80616") == 0); // /refresh.ps3 called from prepNTFS application
-				}
-				#endif
-			}
+			#include "cmd/refresh_ps3.h"
 
 			bool is_setup = islike(param, "/setup.ps3?");
 
@@ -570,6 +549,7 @@ parse_request:
 			#include "cmd/abort.h"
 			#include "cmd/wait.h"
 			#include "cmd/edit.h"
+			#include "cmd/view.h"
 			#include "cmd/chat.h"
 			#include "cmd/mount_search.h"
 			if(sys_admin)
@@ -635,7 +615,6 @@ parse_request:
 					sbuffer.size = prepare_html(buffer, templn, param, is_ps3_http, is_cpursx, mount_ps3);
 
 				char *pbuffer = buffer + sbuffer.size;
-
 				char *tempstr = buffer + BUFFER_SIZE_HTML - _4KB_;
 
 				if(is_cpursx)
@@ -685,7 +664,7 @@ continue_rendering:
 				{
 					{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 					#ifndef LITE_EDITION
-					if(!strstr(param, "$nobypass")) { PS3MAPI_REENABLE_SYSCALL8 }
+					if(!get_flag(param, "$nobypass")) { PS3MAPI_REENABLE_SYSCALL8 }
 					#endif
 					is_busy = true;
 

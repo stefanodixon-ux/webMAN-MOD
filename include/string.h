@@ -5,7 +5,7 @@ typedef struct {
 
 static void _alloc(t_string *item, char *mem)
 {
-	if(!mem) return;
+	if(!item || !mem) return;
 	*mem = NULL;
 	item->str  = mem;
 	item->size = 0;
@@ -13,18 +13,20 @@ static void _alloc(t_string *item, char *mem)
 
 static void _set(t_string *item, char *mem, u32 len)
 {
-	if(!mem) return;
+	if(!item || !mem) return;
 	item->str  = mem;
 	item->size = len;
 }
 
 static char *_concat(t_string *dest, const char *src)
 {
+	if(!dest) return NULL;
+
 	char *str = dest->str + dest->size;
 
 	while (*str) {str++, dest->size++;} // find last byte
 
-	while ((*str++ = *src++)) dest->size++; // append src
+	if(src) while ((*str++ = *src++)) dest->size++; // append src
 
 	return dest->str;
 }
@@ -46,7 +48,8 @@ static t_string fast_concat;
 
 static size_t concat(char *dest, const char *src)
 {
-	if(!dest) return 0;
+	if(!dest || !src) return 0;
+
 	if(fast_concat.str != dest)
 	{
 		fast_concat.str = dest;

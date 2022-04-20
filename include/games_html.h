@@ -633,7 +633,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 				#endif
 				if(mobile_mode)
 				{
-					if(strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
+					if(!icon || strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
 					for(unsigned char *c = (unsigned char *)templn; *c; c++) {if((*c == '"') || (*c < ' ')) *c = ' ';} // replace invalid chars
 
 					int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320, h = 176;} else if(strstr(icon, "icon_wm_")) {w = 280, h = 280;}
@@ -788,7 +788,7 @@ list_games:
 						#endif
 						if(mobile_mode)
 						{
-							if(strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore: cause syntax error in javascript: gamelist.js
+							if(!icon ||  strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore: cause syntax error in javascript: gamelist.js
 
 							for(size_t c = 0; templn[c]; c++) {if(templn[c] == '"' || templn[c] < ' ') templn[c] = ' ';} // replace invalid chars
 
@@ -901,7 +901,7 @@ next_html_entry:
 							#endif
 							if(mobile_mode)
 							{
-								if(strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
+								if(!icon || strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
 
 								for(unsigned char *c = (unsigned char *)templn; *c; c++) {if((*c == '"') || (*c < ' ')) *c = ' ';} // replace invalid chars
 

@@ -133,12 +133,14 @@ static char *to_upper(char *text)
 #ifndef LITE_EDITION
 static bool _islike(const char *param, const char *text)
 {
+	if(!param || !text) return false;
 	return strncasecmp(param, text, strlen(text)) == 0;
 }
 #endif
 
 static bool islike(const char *param, const char *text)
 {
+	if(!param || !text) return false;
 	while(*text && (*text == *param)) text++, param++;
 	return !*text;
 }
@@ -155,9 +157,10 @@ static char h2a(const char hex)
 
 static void urldec(char *url, char *original)
 {
+	if(!url) return;
 	if(strchr(url, '+') || strchr(url, '%'))
 	{
-		strcpy(original, url); // return original url
+		if(original) strcpy(original, url); // return original url
 
 		u16 pos = 0; char c;
 		for(u16 i = 0; url[i] >= ' '; i++, pos++)
@@ -183,6 +186,8 @@ static void urldec(char *url, char *original)
 
 static bool urlenc_ex(char *dst, const char *src, bool gurl)
 {
+	if(!src || !dst) return false;
+
 	size_t i, j = 0, pos = 0;
 
 	if(islike(src, "http") && (src[4] == ':' || src[5] == ':') && (src[6] == '/') && src[7]) { for(i = 8; src[i]; i++) if(src[i] == '/') {pos = i; break;} }
@@ -230,6 +235,8 @@ static bool urlenc(char *dst, const char *src)
 
 static size_t htmlenc(char *dst, char *src, u8 cpy2src)
 {
+	if(!src || !dst) return 0;
+
 	size_t j = 0;
 	char tmp[10]; u8 t, c;
 	for(size_t i = 0; src[i]; i++)
@@ -251,6 +258,7 @@ static size_t htmlenc(char *dst, char *src, u8 cpy2src)
 
 static size_t utf8enc(char *dst, char *src, u8 cpy2src)
 {
+	if(!src || !dst) return 0;
 	size_t j = 0; unsigned int c;
 	for(size_t i = 0; src[i]; i++)
 	{
@@ -349,13 +357,17 @@ static size_t utf8dec(char *dst, char *src, u8 cpy2src)
 */
 static void add_url(char *body, const char *prefix, const char *url, const char *sufix)
 {
-	strcat(body, prefix);
-	strcat(body, url);
-	strcat(body, sufix);
+	if(!body) return;
+
+	if(prefix) concat(body, prefix);
+	if(url)    concat(body, url);
+	if(sufix)  concat(body, sufix);
 }
 
 static void add_html(u8 id, int value, char *buffer, char *templn)
 {
+	if(!buffer || !templn) return;
+
 	char res_file[40];
 	sprintf(res_file, "%s/setup/setup%c.dat", WM_RES_PATH, id);
 	read_file(res_file, templn, 1023, 0);
@@ -373,6 +385,8 @@ static void add_html(u8 id, int value, char *buffer, char *templn)
 
 static size_t add_radio_button(const char *name, int value, const char *id, const char *label, const char *sufix, bool checked, char *buffer)
 {
+	if(!buffer || !label) return 0;
+
 	char templn[MAX_LINE_LEN];
 	sprintf(templn, "<label><input type=\"radio\" name=\"%s\" value=\"%i\" id=\"%s\"%s/> %s%s</label>", name, value, id, checked ? ITEM_CHECKED : "", label, (sufix) ? sufix : "<br>");
 	return concat(buffer, templn);
@@ -380,6 +394,8 @@ static size_t add_radio_button(const char *name, int value, const char *id, cons
 
 static size_t add_check_box(const char *name, bool disabled, const char *label, const char *sufix, bool checked, char *buffer)
 {
+	if(!buffer || !label) return 0;
+
 	char templn[MAX_LINE_LEN], clabel[MAX_LINE_LEN];
 	strcpy(clabel, label);
 	char *p = strstr(clabel, AUTOBOOT_PATH);
@@ -421,6 +437,8 @@ static size_t add_option_item(int value, const char *label, bool selected, char 
 
 static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 {
+	if(!buffer || !param) return 0;
+
 	bool set_base_path = false;
 
 	size_t slen = sprintf(buffer,	"HTTP/1.1 200 OK\r\n"
@@ -552,6 +570,8 @@ static u64 convertH(const char *val); // peek_poke.h
 
 static int oct(const char *c)
 {
+	if(!c) return 0;
+
 	int value = 0;
 	if(c)
 		while(ISDIGIT(*c))
@@ -564,6 +584,8 @@ static int oct(const char *c)
 
 static s64 val(const char *c)
 {
+	if(!c) return 0;
+
 	if(islike(c, "0x"))
 	{
 		return convertH((char*)c);
@@ -601,6 +623,8 @@ static s64 val(const char *c)
 
 static u16 get_value(char *value, const char *url, u16 max_size)
 {
+	if(!value || !url || !max_size) return 0;
+
 	u16 n;
 	for(n = 0; n < max_size; n++)
 	{
@@ -613,7 +637,7 @@ static u16 get_value(char *value, const char *url, u16 max_size)
 
 static u16 get_param(const char *name, char *value, const char *url, u16 max_size)
 {
-	if(!value || !max_size) return 0;
+	if(!name || !value || !url || !max_size) return 0;
 
 	u8 name_len = strlen(name);
 
@@ -633,6 +657,8 @@ static u16 get_param(const char *name, char *value, const char *url, u16 max_siz
 
 static s64 get_valuen64(const char *param, const char *label)
 {
+	if(!param || !label) return false;
+
 	char value[12], *pos = strstr(param, label);
 	if(pos)
 	{
@@ -665,6 +691,8 @@ static u8 get_valuen(const char *param, const char *label, u8 min_value, u8 max_
 
 static u8 get_flag(const char *param, const char *label)
 {
+	if(!param || !label) return false;
+
 	char *flag = strstr(param, label);
 	if(flag)
 	{
@@ -676,6 +704,8 @@ static u8 get_flag(const char *param, const char *label)
 #ifndef LITE_EDITION
 static u8 parse_tags(char *text)
 {
+	if(!text) return 0;
+
 	char *pos; u8 op = 0;
 	pos = strstr(text, "@info");
 	if(pos)
@@ -689,6 +719,8 @@ static u8 parse_tags(char *text)
 
 static void replace_char(char *text, char c, char r)
 {
+	if(!text) return;
+
 	char *pos = strchr(text, c);
 	while (pos)
 	{

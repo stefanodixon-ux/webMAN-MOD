@@ -29,7 +29,7 @@ static sys_addr_t sysmem_p = NULL;
 
 static void extract_iso_file(const char *iso_path, const char *file, u8 len, const char *out_path, const char *dirlist, char *buffer)
 {
-	u32 size;
+	if(!dirlist) return; u32 size;
 	u16 start = 0x40; u64 lba = getlba(dirlist, _4KB_, file, 11, &start, &size);
 	if(lba)
 	{
@@ -40,6 +40,8 @@ static void extract_iso_file(const char *iso_path, const char *file, u8 len, con
 
 static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 {
+	if(!plugin_args || !sectionsP || !sections_sizeP) return;
+
 	int parts = ps3ntfs_file_to_sectors(iso_path, sectionsP, sections_sizeP, MAX_SECTIONS, 1);
 
 	if(parts <= 0) return;
@@ -164,7 +166,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		if(ntfs_m == mPS3)
 		{
 			snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
-			if(not_exists(tmp_path))
+			if(not_exists(tmp_path) && file_size(iso_path) > _128KB_)
 			{
 				// extract PARAM.SFO from ISO
 				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
@@ -183,7 +185,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		if(!get_image_file(img_path, plen - extlen)) return; // not found image in NTFS
 
 		plen = sprintf(tmp_path, "%s/%s", WMTMP, filename);
-		if( get_image_file(tmp_path, plen - extlen) ) return; // found image in WMTMP
+		if( get_image_file(tmp_path, plen - extlen)) return; // found image in WMTMP
 
 		// copy external image to WMTMP
 		force_copy(img_path, tmp_path);

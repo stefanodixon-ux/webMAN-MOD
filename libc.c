@@ -8,31 +8,31 @@
 
 // external
 extern int stdc_E1E83C65(const char *str1, const char *str2, size_t num);				// strncmp()
-inline int strncmp(const char *str1, const char *str2, size_t num) {return stdc_E1E83C65(str1, str2, num);}
+int strncmp(const char *str1, const char *str2, size_t num) {if(!str1 || !str2) return -1; return stdc_E1E83C65(str1, str2, num);}
 
 extern int stdc_3D85D6F8(const char *str1, const char *str2);							// strcmp()
-inline int strcmp(const char *str1, const char *str2) {return stdc_3D85D6F8(str1, str2);}
+int strcmp(const char *str1, const char *str2) {if(!str1 || !str2) return -1; return stdc_3D85D6F8(str1, str2);}
 
 extern size_t stdc_2F45D39C(const char *str);											// strlen()
-inline size_t strlen(const char *str) {return stdc_2F45D39C(str);}
+size_t strlen(const char *str) {if(!str) return 0; return stdc_2F45D39C(str);}
 
 extern void *stdc_5909E3C4(void *str, int c, size_t n);									// memset()
-inline void* memset(void *str, int c, size_t n) {return stdc_5909E3C4(str, c, n);}
+void* memset(void *str, int c, size_t n) {if(!str || !n) return NULL; return stdc_5909E3C4(str, c, n);}
 
 extern void *stdc_831D70A5(void *dest, const void *src, size_t num);					// memcpy()
-inline void* memcpy(void *dest, const void *src, size_t num) {return stdc_831D70A5(dest, src, num);}
+void* memcpy(void *dest, const void *src, size_t num) {if(!dest || !src || !num) return NULL; return stdc_831D70A5(dest, src, num);}
 
 extern char *stdc_C5C09834(const char *str1, const char *str2);							// strstr()
-inline char* strstr(const char *str1, const char *str2) {return stdc_C5C09834(str1, str2);}
+char* strstr(const char *str1, const char *str2) {if(!str1 || !str2) return NULL; return stdc_C5C09834(str1, str2);}
 
 extern int* stdc_44115DD0(void);
 inline int* _Geterrno(void){return stdc_44115DD0();}									// _Geterrno
 
 extern void allocator_77A602DD(void *ptr);												// free()
-inline void free(void *ptr) {allocator_77A602DD(ptr);}
+void free(void *ptr) {if(!ptr) return; allocator_77A602DD(ptr);}
 
 extern void *allocator_759E0635(size_t size);											// malloc()
-inline void* malloc (size_t size) {return allocator_759E0635(size);}
+void* malloc (size_t size) {if(!size) return NULL; return allocator_759E0635(size);}
 
 extern void *allocator_6137D196(size_t alignment, size_t size);							// memalign()
 inline void* memalign(size_t alignment, size_t size) {return allocator_6137D196(alignment, size);}
@@ -44,10 +44,10 @@ extern void *allocator_F7A14A22(void *ptr, size_t size);								// realloc()
 inline void* realloc(void *ptr, size_t size) {return allocator_F7A14A22(ptr, size);}
 
 extern void *stdc_5B162B7F(void *str1, const void *str2, size_t n);						// memmove()
-inline void* memmove(void *str1, const void *str2, size_t n) {return stdc_5B162B7F(str1, str2, n);}
+void* memmove(void *str1, const void *str2, size_t n) {if(!str1 || !str2) return NULL; return stdc_5B162B7F(str1, str2, n);}
 
 extern char *stdc_FC0428A6(const char *s);												// strdup()
-inline char* strdup(const char *s) {return stdc_FC0428A6(s);}
+char* strdup(const char *s) {if(!s) return NULL; return stdc_FC0428A6(s);}
 
 extern char *stdc_44796E5C(int errnum);													// strerror()
 inline char* strerror(int errnum) {return stdc_44796E5C(errnum);}
@@ -62,7 +62,7 @@ extern time_t stdc_89F6F026(time_t *timer);												// time()
 inline time_t time(time_t *timer) {return stdc_89F6F026(timer);}
 
 extern size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max);				// mbstowcs()
-inline size_t mbstowcs(wchar_t *dest, const char *src, size_t max) {return stdc_FCAC2E8E(dest, src, max);}
+size_t mbstowcs(wchar_t *dest, const char *src, size_t max) {if(!dest || !src) return 0; return stdc_FCAC2E8E(dest, src, max);}
 
 extern size_t stdc_12A55FB7(wchar_t *restrict pwc, const char *restrict s, size_t n, mbstate_t *restrict ps); // mbrtowc
 int mbtowc(wchar_t * restrict pwc, const char * restrict s, size_t n)
@@ -96,28 +96,28 @@ int wctomb(char *s, wchar_t wchar)
 }
 
 extern int stdc_C3E14CBE(const void *ptr1, const void *ptr2, size_t num);				// memcmp()
-inline int memcmp(const void *ptr1, const void *ptr2, size_t num) {return stdc_C3E14CBE(ptr1, ptr2, num);}
+int memcmp(const void *ptr1, const void *ptr2, size_t num) {if(!ptr1 || !ptr1 || !num) return -1; return stdc_C3E14CBE(ptr1, ptr2, num);}
 
-extern char *stdc_DEBEE2AF(const char *str, int c);										// strchr()
-inline char* strchr(const char *str, int c) {return stdc_DEBEE2AF(str, c);}
+char *stdc_DEBEE2AF(const char *str, int c);										// strchr()
+char* strchr(const char *str, int c) {if(!str) return NULL; return stdc_DEBEE2AF(str, c);}
 
 extern char *stdc_73EAE03D(const char *s, int c);										// strrchr()
-inline char* strrchr(const char *s, int c) {return stdc_73EAE03D(s, c);}
+char* strrchr(const char *s, int c) {if(!s) return NULL; return stdc_73EAE03D(s, c);}
 
 extern char *stdc_04A183FC(char *dest, const char *src);								// strcpy()
-inline char* strcpy(char *dest, const char *src) {return stdc_04A183FC(dest, src);}
+char* strcpy(char *dest, const char *src) {if(!dest || !src) return NULL; return stdc_04A183FC(dest, src);}
 
 extern char *stdc_8AB0ABC6(char *dest, const char *src, size_t num);					// strncpy()
-inline char* strncpy(char *dest, const char *src, size_t num) {return stdc_8AB0ABC6(dest, src, num);}
+char* strncpy(char *dest, const char *src, size_t num) {if(!dest || !src || !num) return NULL; return stdc_8AB0ABC6(dest, src, num);}
 
 extern char *stdc_AA9635D7(char *dest, const char *src);								// strcat()
-inline char* strcat(char *dest, const char *src) {return stdc_AA9635D7(dest, src);}
+char* strcat(char *dest, const char *src) {if(!dest || !src) return NULL; return stdc_AA9635D7(dest, src);}
 
 extern int stdc_B6257E3D(const char *s1, const char *s2, size_t n);						// strncasecmp()
-inline int strncasecmp(const char *s1, const char *s2, size_t n) {return stdc_B6257E3D(s1, s2, n);}
+int strncasecmp(const char *s1, const char *s2, size_t n) {if(!s2 || !s2) return -1; return stdc_B6257E3D(s1, s2, n);}
 
 extern int stdc_B6D92AC3(const char *s1, const char *s2);								// strcasecmp()
-inline int strcasecmp(const char *s1, const char *s2) {return stdc_B6D92AC3(s1, s2);}
+int strcasecmp(const char *s1, const char *s2) {if(!s2 || !s2) return -1; return stdc_B6D92AC3(s1, s2);}
 
 //extern char *stdc_E40BA755(char *str, const char *delimiters);							// strtok()
 //inline char* strtok(char *str, const char *delimiters) {return stdc_E40BA755(str, delimiters);}
@@ -244,12 +244,12 @@ int strcasecmp (__const char *s1, __const char *s2)
 char *strcasestr(const char *s1, const char *s2);
 char *strcasestr(const char *s1, const char *s2)
 {
-	if(!s1) return 0;
+	if(!s1 || !s2) return 0;
 
-	size_t n = strlen(s2); if(n == 0) return 0;
+	size_t n = stdc_2F45D39C(s2); if(n == 0) return 0;
 
 	while(*s1)
-		if(!strncasecmp(s1++, s2, n))
+		if(!stdc_B6257E3D(s1++, s2, n))
 			return (char*)(s1 - 1);
 
 	return 0;
@@ -332,29 +332,34 @@ size_t strspn(const char *s1, const char *s2)
 */
 size_t strcspn(const char *s1, const char *s2)
 {
-	size_t ret = 0;
-	while(*s1)
-		if(strchr(s2,*s1))
-			return ret;
-		else
-			s1++, ret++;
-
-	return ret;
+	register const char *p, *spanp;
+	register char c, sc;
+	for (p = s1;;) {
+		c = *p++;
+		spanp = s2;
+		do {
+			if ((sc = *spanp++) == c)
+				return (p - 1 - s1);
+		} while (sc != 0);
+	}
+	/* NOTREACHED */
 }
 
 int extcasecmp(const char *s1, const char *s2, size_t n);
 int extcasecmp(const char *s1, const char *s2, size_t n)
 {
-	int s = strlen(s1) - n;
+	if(!s1 || !s2) return -1;
+	int s = stdc_2F45D39C(s1) - n;
 	if(s < 0) return -1;
-	return strncasecmp(s1 + s, s2, n);
+	return stdc_B6257E3D(s1 + s, s2, n);
 }
 
 int extcmp(const char *s1, const char *s2, size_t n);
 int extcmp(const char *s1, const char *s2, size_t n)
 {
-	int s = strlen(s1) - n;
+	if(!s1 || !s2) return -1;
+	int s = stdc_2F45D39C(s1) - n;
 	if(s < 0) return -1;
-	if(n == 8 && !memcmp(s2, ".BIN.ENC", n)) return strncasecmp(s1 + s, s2, n);
-	return memcmp(s1 + s, s2, n);
+	if(n == 8 && !stdc_C3E14CBE(s2, ".BIN.ENC", n)) return stdc_B6257E3D(s1 + s, s2, n);
+	return stdc_C3E14CBE(s1 + s, s2, n);
 }

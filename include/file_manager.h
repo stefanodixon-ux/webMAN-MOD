@@ -105,10 +105,10 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		else
 			sprintf(tempstr, "<div class='sfo'>%s</div>", fsize);
 
-		snprintf(fsize, maxlen, "%'llu %s%s", sz, sf, tempstr);
+		snprintf(fsize, maxlen, "<a href=\"%s%s%s\">%'llu %s</a>%s", "/view.ps3", templn, "", sz, sf, tempstr);
 
 		#ifdef FIX_GAME
-		if(has_updates_dir) snprintf(fsize, maxlen, "<a href=\"/fixgame.ps3%s%s\">%'llu %s</a>%s", HDD0_GAME_DIR, titleid, sz, sf, tempstr);
+		if(has_updates_dir) snprintf(fsize, maxlen, "<a href=\"%s%s%s\">%'llu %s</a>%s", "/fixgame.ps3", HDD0_GAME_DIR, titleid, sz, sf, tempstr);
 		#endif
 	}
 #endif

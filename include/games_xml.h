@@ -674,9 +674,9 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		set_buffer_sizes(webman_config->foot);
 
 		{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
-		if( meminfo.avail<(BUFFER_SIZE_ALL+MIN_MEM)) set_buffer_sizes(3); //MIN+
-		if (meminfo.avail<(BUFFER_SIZE_ALL+MIN_MEM)) set_buffer_sizes(1); //MIN
-		if((meminfo.avail<(BUFFER_SIZE_ALL+MIN_MEM)) || sys_memory_allocate((BUFFER_SIZE_ALL), SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK)
+		if( meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) set_buffer_sizes(3); //MIN+
+		if( meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) set_buffer_sizes(1); //MIN
+		if((meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) || sys_memory_allocate((BUFFER_SIZE_ALL), SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK)
 		{
 			show_msg(STR_ERROR);
 			return false;  //leave if cannot allocate memory
@@ -684,21 +684,21 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	}
 	#endif
 
+	if(!sysmem) return false; // recheck
+
 	sys_addr_t sysmem_psx = sysmem + (BUFFER_SIZE);
 	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX);
 	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
 	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
 
-	sys_addr_t sysmem_igf = NULL;
-	bool ignore = false;
 	char *ignore_files = NULL;
-	if(file_exists(WMIGNORE_FILES))
+	if(webman_config->ignore && file_exists(WM_IGNORE_FILES))
 	{
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_igf) == CELL_OK)
+		size_t size = file_size(WM_IGNORE_FILES) + 1;
+		if(size < _32KB_)
 		{
-			ignore_files = (char*)sysmem_igf;
-			read_file(WMIGNORE_FILES, ignore_files, _32KB_, 0);
-			ignore = !sys_admin || webman_config->ignore;
+			ignore_files = malloc(size);
+			if(ignore_files) read_file(WM_IGNORE_FILES, ignore_files, size, 0);
 		}
 	}
 
@@ -989,13 +989,13 @@ scan_roms:
 					#ifdef NET_SUPPORT
 					if(is_net)
 					{
-						if(ignore && ignore_files && (strstr(ignore_files, data[v3_entry].name) != NULL)) continue;
+						if(ignore_files && (strstr(ignore_files, data[v3_entry].name) != NULL)) continue;
 
 						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0')) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 0) == FAILED) {v3_entry++; continue;}
 
-						if(ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) {v3_entry++; continue;}
+						if(ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) {v3_entry++; continue;}
 
 						#ifdef SLAUNCH_FILE
 						if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
@@ -1023,7 +1023,7 @@ scan_roms:
 					{
 						if((entry.entry_name.d_name[0] == '.') || strchr(entry.entry_name.d_name, '<')) continue;
 
-						if(ignore && ignore_files && (strstr(ignore_files, entry.entry_name.d_name) != NULL)) continue;
+						if(ignore_files && (strstr(ignore_files, entry.entry_name.d_name) != NULL)) continue;
 
 						//////////////////////////////
 						subfolder = 0;
@@ -1105,7 +1105,7 @@ scan_roms:
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
-							if(ignore && ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) continue;
+							if(ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) continue;
 
 							#ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
@@ -1470,7 +1470,7 @@ save_xml:
 		}
 		else
 		{
-			ignore = scanning_roms = true;
+			scanning_roms = true;
 			cellFsUnlink(HTML_BASE_PATH "/ROMS.xml");
 		}
 
@@ -1501,11 +1501,11 @@ save_xml:
 	led(GREEN, ON);
 
 	// --- release allocated memory
-	sys_memory_free(sysmem_igf);
+	if(ignore_files) free(ignore_files);
 	#ifdef USE_VM
 	sys_vm_unmap(sysmem);
 	#else
-	sys_memory_free(sysmem);
+	if(sysmem) sys_memory_free(sysmem);
 	#endif
 
 	return false;

@@ -39,8 +39,8 @@ static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_
 	if(conn_info_main.remote_adr.s_addr==0x7F000001) strcpy(user,"console\0");
 	if(islike(param, "/chat.ps3?"))
 	{
-		pos = strstr(param, "u="); if(pos) get_value(user, pos+2, 20);
-		pos = strstr(param, "m="); if(pos) get_value(msg , pos+2, 200);
+		pos = strstr(param, "u="); if(pos) get_value(user, pos + 2, 20);
+		pos = strstr(param, "m="); if(pos) get_value(msg , pos + 2, 200);
 
 		size = sprintf(templn, "<font color=\"red%s\"><b>%s</b></font><br>%s<br><!---->", user, user, msg);
 

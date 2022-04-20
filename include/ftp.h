@@ -36,6 +36,8 @@ static u8 ftp_session = 1;
 
 static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool scan)
 {
+	if(!absPath_s || !path || !cwd) return 0;
+
 	if(*path == '/')
 	{
 		u16 len = sprintf(absPath_s, "%s", path);

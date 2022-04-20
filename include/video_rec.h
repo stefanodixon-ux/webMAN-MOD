@@ -93,12 +93,12 @@ s32 (*reco_open)(s32) = NULL; // base pointer
 static void set_setting_to_change(char *msg, const char *text)
 {
 	sprintf(msg, "%s", text);
-	if(rec_setting_to_change == 0) strcat(msg, "Recording Options"); else
-	if(rec_setting_to_change == 1) strcat(msg, "Video Format");      else
-	if(rec_setting_to_change == 2) strcat(msg, "Video Size");        else
-	if(rec_setting_to_change == 3) strcat(msg, "Video Bitrate");     else
-	if(rec_setting_to_change == 4) strcat(msg, "Audio Format");      else
-	if(rec_setting_to_change == 5) strcat(msg, "Audio Bitrate");
+	if(rec_setting_to_change == 0) concat(msg, "Recording Options"); else
+	if(rec_setting_to_change == 1) concat(msg, "Video Format");      else
+	if(rec_setting_to_change == 2) concat(msg, "Video Size");        else
+	if(rec_setting_to_change == 3) concat(msg, "Video Bitrate");     else
+	if(rec_setting_to_change == 4) concat(msg, "Audio Format");      else
+	if(rec_setting_to_change == 5) concat(msg, "Audio Bitrate");
 }
 
 static void show_rec_format(const char *msg)
@@ -107,53 +107,53 @@ static void show_rec_format(const char *msg)
 	sprintf(text, "%s\nVideo: ", msg);
 
 	u32 flags = (rec_video_format & 0xF000); // video format
-	if(flags == 0x0000) strcat(text, "MPEG4 ");  else
-	if(flags == 0x1000) strcat(text, "AVC MP "); else
-	if(flags == 0x2000) strcat(text, "AVC BL "); else
-	if(flags == 0x3000) strcat(text, "MJPEG ");  else
-	if(flags == 0x4000) strcat(text, "M4HD ");
+	if(flags == 0x0000) concat(text, "MPEG4 ");  else
+	if(flags == 0x1000) concat(text, "AVC MP "); else
+	if(flags == 0x2000) concat(text, "AVC BL "); else
+	if(flags == 0x3000) concat(text, "MJPEG ");  else
+	if(flags == 0x4000) concat(text, "M4HD ");
 
 	flags = (rec_video_format & 0xF00); // video size
-	if(flags == 0x000) strcat(text, "240p @ "); else
-	if(flags == 0x100) strcat(text, "272p @ "); else
-	if(flags == 0x200) strcat(text, "368p @ "); else
-	if(flags == 0x300) strcat(text, "480p @ "); else
-	if(flags == 0x600) strcat(text, "720p @ ");
-	//if(flags == 0x700) strcat(text, "1080p @ ");
+	if(flags == 0x000) concat(text, "240p @ "); else
+	if(flags == 0x100) concat(text, "272p @ "); else
+	if(flags == 0x200) concat(text, "368p @ "); else
+	if(flags == 0x300) concat(text, "480p @ "); else
+	if(flags == 0x600) concat(text, "720p @ ");
+	//if(flags == 0x700) concat(text, "1080p @ ");
 
 	flags = (rec_video_format & 0xF0); // video bitrate
-	if(flags == 0x00) strcat(text, "512K");   else
-	if(flags == 0x10) strcat(text, "768K");   else
-	if(flags == 0x20) strcat(text, "1024K");  else
-	if(flags == 0x30) strcat(text, "1536K");  else
-	if(flags == 0x40) strcat(text, "2048K");  else
-	if(flags == 0x60) strcat(text, "5000K");  else
-	if(flags == 0x70) strcat(text, "11000K"); else
-	if(flags == 0x80) strcat(text, "20000K"); else
-	if(flags == 0x90) strcat(text, "25000K");
-	//if(flags == 0xA0) strcat(text, "30000K");
+	if(flags == 0x00) concat(text, "512K");   else
+	if(flags == 0x10) concat(text, "768K");   else
+	if(flags == 0x20) concat(text, "1024K");  else
+	if(flags == 0x30) concat(text, "1536K");  else
+	if(flags == 0x40) concat(text, "2048K");  else
+	if(flags == 0x60) concat(text, "5000K");  else
+	if(flags == 0x70) concat(text, "11000K"); else
+	if(flags == 0x80) concat(text, "20000K"); else
+	if(flags == 0x90) concat(text, "25000K");
+	//if(flags == 0xA0) concat(text, "30000K");
 
-	strcat(text, "\nAudio: ");  // audio format
+	concat(text, "\nAudio: ");  // audio format
 
 	flags = (rec_audio_format & 0xF000);
-	if(flags == 0x0000) strcat(text, "AAC ");  else
-	if(flags == 0x1000) strcat(text, "ULAW "); else
-	if(flags == 0x2000) strcat(text, "PCM ");
+	if(flags == 0x0000) concat(text, "AAC ");  else
+	if(flags == 0x1000) concat(text, "ULAW "); else
+	if(flags == 0x2000) concat(text, "PCM ");
 
 	flags = (rec_audio_format & 0xF); // audio bitrate
-	if(flags == 0x0) strcat(text, "96K");  else
-	if(flags == 0x1) strcat(text, "128K"); else
-	if(flags == 0x2) strcat(text, "64K");  else
-	if(flags == 0x7) strcat(text, "384K"); else
-	if(flags == 0x8) strcat(text, "768K"); else
-	if(flags == 0x9) strcat(text, "1536K");
+	if(flags == 0x0) concat(text, "96K");  else
+	if(flags == 0x1) concat(text, "128K"); else
+	if(flags == 0x2) concat(text, "64K");  else
+	if(flags == 0x7) concat(text, "384K"); else
+	if(flags == 0x8) concat(text, "768K"); else
+	if(flags == 0x9) concat(text, "1536K");
 
 	show_msg(text);
 }
 
 static bool rec_start(const char *param)
 {
-	char value[8];
+	char value[8]; if(!param) return false;
 
 	// set video format
 	if(get_param("video=", value, param, 4))

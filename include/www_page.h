@@ -89,8 +89,7 @@ skip_code2:
 		}
 
 		#ifndef LITE_EDITION
-		char *nobypass = strstr(param, "$nobypass");
-		if(!nobypass) { PS3MAPI_REENABLE_SYSCALL8 } else *nobypass = NULL;
+		if(!get_flag(param, "$nobypass")) { PS3MAPI_REENABLE_SYSCALL8 }
 		#endif
 
 		_concat(&sbuffer, "</form><hr>");

@@ -118,6 +118,7 @@ static void swap_ex(u8 e)
 
 static bool get_image_file(char *icon, int flen)
 {
+	if(!icon || (flen <= 0)) return false;
 	for(u8 e = 0; e < 4; e++)
 	{
 		strcpy(icon + flen, ext[ex[e]]);
@@ -203,8 +204,10 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	return (size_t) flen;
 }
 
-static bool get_cover_by_titleid(char *icon, char *title_id)
+static bool get_cover_by_titleid(char *icon, const char *title_id)
 {
+	if(!icon || !title_id) return false;
+
 	if(!HAS_TITLE_ID) return false;
 
 	int flen;

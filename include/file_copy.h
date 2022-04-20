@@ -306,7 +306,7 @@ next_part:
 
 static void force_copy(const char *file1, char *file2)
 {
-	if(not_exists(file1)) return;
+	if(!file1 || !file2 || not_exists(file1)) return;
 	dont_copy_same_size = false; // force copy file with the same size than existing file
 	file_copy(file1, file2);
 	dont_copy_same_size = true;  // restore default mode (assume file is already copied if existing file has same size)

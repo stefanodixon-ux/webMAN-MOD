@@ -5,8 +5,10 @@
 #ifndef LITE_EDITION
 #define PLAYSTATION      "PLAYSTATION "
 
-static u32 detect_cd_sector_size(char *buffer)
+static u32 detect_cd_sector_size(const char *buffer)
 {
+	if(!buffer) return 2352;
+
 	u16 sec_size[7] = {2352, 2048, 2336, 2448, 2328, 2340, 2368};
 	for(u8 n = 0; n < 7; n++)
 	{

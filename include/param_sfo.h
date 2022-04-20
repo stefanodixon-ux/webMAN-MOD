@@ -15,19 +15,20 @@ static bool is_sfo(unsigned char *mem)
 
 #define READ_SFO_HEADER(ret) \
 	if(is_sfo(mem) == false) return ret; \
-	u16 pos, str, fld, dat, indx = 0; \
+	u16 pos, str, fld, dat, siz, typ, indx = 0; \
 	fld=str=(mem[0x8]+(mem[0x9]<<8)); \
-	dat=pos=(mem[0xc]+(mem[0xd]<<8));
+	dat=pos=(mem[0xc]+(mem[0xd]<<8)); \
 
 #define FOR_EACH_SFO_FIELD() \
 	while(pos < sfo_size) \
 	{ \
-		if((str>=dat) || (mem[str]==0)) break;
+		if((str>=dat) || (mem[str]==0)) break; \
+		siz=mem[0x1c+indx]+(mem[0x1d+indx]<<8); \
+		typ=mem[0x17+indx];
 
 #define READ_NEXT_SFO_FIELD() \
 		while((str < dat) && mem[str]) str++;str++; \
-		pos+=(mem[0x1c+indx]+(mem[0x1d+indx]<<8)); \
-		indx+=0x10; if(indx>=fld) break; \
+		pos+=siz, indx+=0x10; if(indx>=fld) break; \
 	}
 
 static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16 sfo_size)
@@ -168,14 +169,53 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 }
 #endif
 
+#ifdef VIEW_PARAM_SFO
+static u64 c2b(unsigned char *mem, u8 len)
+{
+	u64 value = 0;
+	for(u8 b = 0; b < len; b+=8, mem++)
+		value += *mem<<b;
+	return value;
+}
+#endif
+
 static void get_param_sfo(unsigned char *mem, const char *field, char *value, u8 value_len, u16 sfo_size)
 {
 	READ_SFO_HEADER()
 
+	#ifdef VIEW_PARAM_SFO
+	u16 len = 0;
+	if(!field)
+		len = sprintf(value, "<table cellspacing=8 width=800>");
+	else
+		len = strlen(field);
+	#else
 	u8 len = strlen(field);
+	#endif
 
 	FOR_EACH_SFO_FIELD()
 	{
+		#ifdef VIEW_PARAM_SFO
+		if(!field)
+		{
+			len += 30; if(len + siz >= 5500) break;
+			concat(value, "<tr><td align=top>");
+			len += concat(value, (char*)&mem[str]);
+			concat(value, "<td>");
+			if(typ==4)
+			{
+				char tmp[20];
+				if(siz==8)
+					{len += sprintf(tmp, "0x%016llX", c2b(&mem[pos],64)); concat(value, tmp);}
+				else
+					{len += sprintf(tmp, "0x%08llX", c2b(&mem[pos],32)); concat(value, tmp);}
+			}
+			else
+				len += concat(value, (char*)&mem[pos]);
+			concat(value, "</tr>");
+		}
+		else
+		#endif
 		if(!memcmp((char *) &mem[str], field, len))
 		{
 			strncpy(value, (char *) &mem[pos], value_len);
@@ -184,6 +224,10 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *value, u8
 
 		READ_NEXT_SFO_FIELD()
 	}
+	#ifdef VIEW_PARAM_SFO
+	if(!field)
+		concat(value, "</table>");
+	#endif
 }
 
 static bool getTitleID(char *filename, char *title_id, u8 opcode)

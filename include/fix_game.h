@@ -21,20 +21,24 @@ enum FIX_GAME_MODES
 
 #ifdef COBRA_ONLY
  #if defined(USE_NTFS) || defined(FIX_GAME)
-static u64 getlba(const char *s1, u16 n1, const char *s2, u16 n2, u16 *start, u32 *size)
+static u64 getlba(const char *chunk, u16 chunk_size, const char *filename, u16 flen, u16 *start, u32 *size)
 {
-	for(u16 n = *start + 0x1F; n < (n1 - n2); n++)
+	if(!chunk) return 0; // chunk is NULL
+
+	chunk_size -= flen;
+	for(u16 n = *start + 0x1F; n < chunk_size; n++)
 	{
-		if(memcmp(&s1[n], s2, n2) == 0)
+		if(memcmp(&chunk[n], filename, flen) == 0)
 		{
-			while(n > 0x1D && s1[n--] != 0x01); n-=0x18, fixed_count++;
-			u32 lba = *((u32*)(s1 + n));
-			*size = *((u32*)(s1 + n + 8));
-			*start = n + 0x18 + n2;
+			while((n > 0x1D) && (chunk[n--] != 0x01)); n-=0x18;
+			u32 lba = *((u32*)(chunk + n));
+			*size = *((u32*)(chunk + n + 8));
+			*start = n + 0x18 + flen; fixed_count++;
 			return lba;
 		}
 	}
-	return 0;
+
+	return 0; // not found
 }
  #endif
 #endif

@@ -16,6 +16,7 @@ static void free_size(const char *dev_name, char *out)
 
 static s64 file_ssize(const char *path)
 {
+	if(!path) return 0;
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))
 	{

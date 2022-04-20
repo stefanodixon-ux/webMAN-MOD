@@ -47,6 +47,8 @@ static int get_line(char *templn, const char *cue_buf, const int buf_size, const
 
 static unsigned int parse_cue(char *templn, const char *cue_buf, const int cue_size, TrackDef *tracks)
 {
+	if(!cue_buf || !templn || !tracks) return 1; // default 1 track
+
 	unsigned int num_tracks = 0;
 
 	tracks[0].lba = 0;
