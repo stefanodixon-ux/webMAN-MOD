@@ -241,7 +241,7 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 #ifdef USE_NTFS
 	if(is_ntfs_path(file))
 	{
-		if(mountCount <= 0) mount_all_ntfs_volumes();
+		if(mountCount == NTFS_UNMOUNTED) mount_all_ntfs_volumes();
 		fd = ps3ntfs_open(ntfs_path(file), O_RDONLY, 0);
 		if(fd >= 0)
 		{
@@ -279,7 +279,7 @@ static int write_file(const char *file, int flags, const char *data, u64 offset,
 		if(flags & CELL_FS_O_APPEND) nflags |= O_APPEND;
 		if(flags & CELL_FS_O_TRUNC)  nflags |= O_TRUNC;
 
-		if(mountCount <= 0) mount_all_ntfs_volumes();
+		if(mountCount == NTFS_UNMOUNTED) mount_all_ntfs_volumes();
 		fd = ps3ntfs_open(ntfs_path(file), nflags, MODE);
 		if(fd >= 0)
 		{

@@ -18,14 +18,10 @@
 	{
 		// /paste.ps3<path>  performs a copy or move of path stored in <cp_path clipboard> to <path> indicated in url
 
-		#define PASTE_CMD	10
-
-		char *source = header, *dest = cp_path;
 		if(file_exists(cp_path))
 		{
-			sprintf(source, "/copy.ps3%s", cp_path);
-			strcpy(dest, param + PASTE_CMD);
-			strcpy(param, source); strcat(dest, get_filename(param));
+			char *dest = header;
+			strcpy(dest, param + 10); sprintf(param, "/copy.ps3%s|%s", dest, dest);
 			is_binary = WEB_COMMAND;
 			goto html_response;
 		}

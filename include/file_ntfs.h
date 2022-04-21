@@ -65,7 +65,7 @@ static void check_ntfs_volumes(void)
 
 static DIR_ITER *ps3ntfs_opendir(const char *full_path)
 {
-	if(mountCount <= 0) mount_all_ntfs_volumes();
+	if(mountCount == NTFS_UNMOUNTED) mount_all_ntfs_volumes();
 
 	char *path = (char *)ntfs_path(full_path);  // /dev_ntfs1v -> ntfs1:
 

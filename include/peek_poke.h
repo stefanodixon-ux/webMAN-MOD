@@ -314,18 +314,18 @@ static u16 Hex2Bin(const char *src, char *out)
 static void memcpy64(void *dst, void *src, int n)
 {
 	if(!dst || !src || !n) return;
-	uint8_t p = n & 7;
+	uint8_t p = n & 7; // remaining bytes (same as n % 8)
 
-	n >>= 3;
+	n >>= 3; // same as n /= 8;
 	uint64_t *d = (uint64_t *) dst;
 	uint64_t *s = (uint64_t *) src;
-	while (n--) *d++ = *s++;
+	while (n--) *d++ = *s++; // 64bit memcpy
 
 	if(p)
 	{
 		char *m = (char *) d;
 		char *c = (char *) s;
-		while (p--) *m++ = *c++;
+		while (p--) *m++ = *c++; // memcpy(d, s, p);
 	}
 }
 #endif
@@ -333,15 +333,15 @@ static void memcpy64(void *dst, void *src, int n)
 void _memset(void *m, size_t n)
 {
 	if(!m || !n) return;
-	uint8_t p = n & 7;
+	uint8_t p = n & 7; // remaining bytes (same as n % 8)
 
-	n >>= 3;
+	n >>= 3; // same as n /= 8;
 	uint64_t *s = (uint64_t *) m;
-	while (n--) *s++ = 0LL;
+	while (n--) *s++ = 0LL; // 64bit memset
 
 	if(p)
 	{
 		char *c = (char *) s;
-		while (p--) *c++ = '\0';
+		while (p--) *c++ = '\0'; // memset(s, 0, p);
 	}
 }

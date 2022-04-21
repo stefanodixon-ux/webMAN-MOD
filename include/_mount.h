@@ -433,7 +433,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				if(cp_mode)
 				{
-					strcpy(target, cp_path);
+					sprintf(target, "%s%s", source, get_filename(cp_path));
+					strcpy(source, cp_path);
 				}
 				else
 				if(*target) {if(!isDir(source) && isDir(target)) strcat(target, filename);} // &to=<destination>
