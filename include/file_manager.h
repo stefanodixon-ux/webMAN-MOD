@@ -525,7 +525,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 	// add code to buffer
 	use_open_path = false;
 
-	strcat(buffer, swap);
+	concat(buffer, swap);
 
 	return slen + (buffer - pbuffer);
 }

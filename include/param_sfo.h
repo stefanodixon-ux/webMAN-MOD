@@ -13,6 +13,10 @@ static bool is_sfo(unsigned char *mem)
 	return (mem[1]=='P' && mem[2]=='S' && mem[3]=='F');
 }
 
+#define FIELD_VALUE		&mem[pos]
+#define FIELD_VALUE_	(char *)FIELD_VALUE
+#define FIELD_NAME		(char *)&mem[str]
+
 #define READ_SFO_HEADER(ret) \
 	if(is_sfo(mem) == false) return ret; \
 	u16 pos, str, fld, dat, siz, typ, indx = 0; \
@@ -40,7 +44,7 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 
 	FOR_EACH_SFO_FIELD()
 	{
-		if(!memcmp((char *) &mem[str], "TITLE_ID", 8))
+		if(!memcmp(FIELD_NAME, "TITLE_ID", 8))
 		{
 			strncpy(title_id, (char *)mem + pos, TITLE_ID_LEN);
 			#ifndef ENGLISH_ONLY
@@ -49,7 +53,7 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 				if(*title) break;
 		}
 		else
-		if(!memcmp((char *) &mem[str], "TITLE", 6))
+		if(!memcmp(FIELD_NAME, "TITLE", 6))
 		{
 			strncpy(title, (char *)mem + pos, 128);
 			#ifndef ENGLISH_ONLY
@@ -59,7 +63,7 @@ static void parse_param_sfo(unsigned char *mem, char *title_id, char *title, u16
 		}
 		#ifndef ENGLISH_ONLY
 		else
-		if(!memcmp((char *) &mem[str], TITLE_XX, TITLE_ID_LEN))
+		if(!memcmp(FIELD_NAME, TITLE_XX, TITLE_ID_LEN))
 		{
 			strncpy(title, (char *)mem + pos, 128);
 			if(*title_id) break;
@@ -89,19 +93,19 @@ static u8 patch_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_siz
 
 	FOR_EACH_SFO_FIELD()
 	{
-		if(!memcmp((char *) &mem[str], "ACCOUNT_ID", 10))
+		if(!memcmp(FIELD_NAME, "ACCOUNT_ID", 10))
 		{
-			_memset((char *) &mem[pos], 16); save++;
+			_memset(FIELD_VALUE, 16); save++;
 		}
-		else if(!memcmp((char *) &mem[str], "ACCOUNTID", 9))
+		else if(!memcmp(FIELD_NAME, "ACCOUNTID", 9))
 		{
-			_memset((char *) &mem[pos], 16); save++;
+			_memset(FIELD_VALUE, 16); save++;
 		}
-		else if(!memcmp((char *) &mem[str], "ATTRIBUTE", 9))
+		else if(!memcmp(FIELD_NAME, "ATTRIBUTE", 9))
 		{
-			memcpy((char *) &mem[pos], &attribute, sizeof(u32)); save++; // set attribute (0 = Remove Copy Protection)
+			memcpy(FIELD_VALUE, &attribute, sizeof(u32)); save++; // set attribute (0 = Remove Copy Protection)
 		}
-		else if(!memcmp((char *) &mem[str], "PARAMS", 6))
+		else if(!memcmp(FIELD_NAME, "PARAMS", 6))
 		{
 			int userid = xusers()->GetCurrentUserNumber();
 			mem[pos + 24] = (u8)(userid);           // User 1
@@ -137,9 +141,9 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 
 	FOR_EACH_SFO_FIELD()
 	{
-		if(!memcmp((char *) &mem[str], "TITLE_ID", 8))
+		if(!memcmp(FIELD_NAME, "TITLE_ID", 8))
 		{
-			strncpy(title_id, (char *) &mem[pos], TITLE_ID_LEN);
+			strncpy(title_id, FIELD_VALUE, TITLE_ID_LEN);
 			#ifdef FIX_GAME
 			if(opcode == GET_TITLE_ID_ONLY) break;
 			fcount++; if(fcount >= 2) break;
@@ -148,10 +152,10 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 			#endif
 		}
 		else
-		if(!memcmp((char *) &mem[str], "PS3_SYSTEM_VER", 14))
+		if(!memcmp(FIELD_NAME, "PS3_SYSTEM_VER", 14))
 		{
 			char version[8];
-			strncpy(version, (char *) &mem[pos], 7);
+			strncpy(version, FIELD_VALUE, 7);
 			int fw_ver = 10000 * ((version[1] & 0x0F)) + 1000 * ((version[3] & 0x0F)) + 100 * ((version[4] & 0x0F));
 			if((c_firmware >= 4.20f && c_firmware < LATEST_CFW) && (fw_ver > (int)(c_firmware * 10000.0f)))
 			{
@@ -170,23 +174,35 @@ static bool fix_param_sfo(unsigned char *mem, char *title_id, u8 opcode, u16 sfo
 #endif
 
 #ifdef VIEW_PARAM_SFO
-static u64 c2b(unsigned char *mem, u8 len)
+static u64 getLE(unsigned char *mem, u8 bits)
 {
 	u64 value = 0;
-	for(u8 b = 0; b < len; b+=8, mem++)
+	for(u8 b = 0; b < bits; b += 8, mem++)
 		value += *mem<<b;
 	return value;
 }
+
+static void setLE(unsigned char *mem, u64 value, u8 bytes)
+{
+	for(u8 b = 0; b < bytes; b++, mem++, value >>= 8)
+		*mem = (unsigned char)value;
+}
 #endif
 
-static void get_param_sfo(unsigned char *mem, const char *field, char *value, u8 value_len, u16 sfo_size)
+static void get_param_sfo(unsigned char *mem, const char *field, char *value, u16 sfo_size)
 {
 	READ_SFO_HEADER()
 
 	#ifdef VIEW_PARAM_SFO
-	u16 len = 0;
-	if(!field)
-		len = sprintf(value, "<table cellspacing=8 width=800>");
+	bool view = (!field); u16 len;
+	char *html_table = value, *new_value = NULL; if(field) new_value = strchr(field, '=');
+	if(new_value)
+	{
+		*new_value++ = NULL; // split field & new_value
+		view = true;
+	}
+	if(view)
+		len = sprintf(html_table, "<table cellspacing=8 width=800>");
 	else
 		len = strlen(field);
 	#else
@@ -196,37 +212,55 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *value, u8
 	FOR_EACH_SFO_FIELD()
 	{
 		#ifdef VIEW_PARAM_SFO
-		if(!field)
+		if(view)
 		{
 			len += 30; if(len + siz >= 5500) break;
-			concat(value, "<tr><td align=top>");
-			len += concat(value, (char*)&mem[str]);
-			concat(value, "<td>");
+
+			// show field name
+			concat(html_table, "<tr><td align=top>");
+			len += concat(html_table, FIELD_NAME);
+			concat(html_table, "<td>");
+
+			// patch field value
+			if(new_value && _IS(FIELD_NAME, field))
+			{
+				memset(FIELD_VALUE, 0, siz);
+				if(typ==4)
+					setLE(FIELD_VALUE, val(new_value), siz);
+				else
+					strncpy(FIELD_VALUE_, new_value, siz);
+			}
+
+			// show field value
 			if(typ==4)
 			{
 				char tmp[20];
 				if(siz==8)
-					{len += sprintf(tmp, "0x%016llX", c2b(&mem[pos],64)); concat(value, tmp);}
+					{len += sprintf(tmp, "0x%016llX", getLE(FIELD_VALUE, 64)); concat(html_table, tmp);}
 				else
-					{len += sprintf(tmp, "0x%08llX", c2b(&mem[pos],32)); concat(value, tmp);}
+					{len += sprintf(tmp, "0x%08llX", getLE(FIELD_VALUE, 32)); concat(html_table, tmp);}
 			}
 			else
-				len += concat(value, (char*)&mem[pos]);
-			concat(value, "</tr>");
+				len += concat(html_table, FIELD_VALUE_);
+
+			concat(html_table, "</tr>");
 		}
 		else
 		#endif
-		if(!memcmp((char *) &mem[str], field, len))
+		if(!memcmp(FIELD_NAME, field, len))
 		{
-			strncpy(value, (char *) &mem[pos], value_len);
+			strncpy(value, FIELD_VALUE_, siz);
 			break;
 		}
 
 		READ_NEXT_SFO_FIELD()
 	}
 	#ifdef VIEW_PARAM_SFO
-	if(!field)
-		concat(value, "</table>");
+	if(view)
+	{
+		concat(html_table, "</table>");
+		char tmp[KB]; add_html('t', 0, html_table, tmp);
+	}
 	#endif
 }
 
@@ -249,12 +283,12 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 		if(opcode == GET_VERSION)
 		{
 			char *app_ver = title_id;
-			get_param_sfo(mem, "APP_VER", app_ver, 6, sfo_size);   // get game version (app_ver)
+			get_param_sfo(mem, "APP_VER", app_ver, sfo_size);   // get game version (app_ver)
 		}
 		else if(opcode == IS_GAME_DATA)
 		{
 			char *category = title_id;
-			get_param_sfo(mem, "CATEGORY", category, 4, sfo_size); // get category & return if it is GD
+			get_param_sfo(mem, "CATEGORY", category, sfo_size); // get category & return if it is GD
 			return islike(category, "GD");
 		}
 		else if(opcode == GET_TITLE_AND_ID)

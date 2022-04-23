@@ -671,6 +671,7 @@ int main()
 	file_copy(APP_USRDIR "/setup/setupk.dat", SETUP_DIR "/setupk.dat");
 	file_copy(APP_USRDIR "/setup/setupp.dat", SETUP_DIR "/setupp.dat");
 	file_copy(APP_USRDIR "/setup/setups.dat", SETUP_DIR "/setups.dat");
+	file_copy(APP_USRDIR "/setup/setupt.dat", SETUP_DIR "/setupt.dat");
 	file_copy(APP_USRDIR "/setup/setupx.dat", SETUP_DIR "/setupx.dat");
 	file_copy(APP_USRDIR "/setup/setupz.dat", SETUP_DIR "/setupz.dat");
 

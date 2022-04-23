@@ -715,7 +715,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				bool is_error = ((islike(target, drives[usb]) && isDir(drives[usb]) == false)) || islike(target, source) || !sys_admin;
 
 				// show source path
-				add_breadcrumb_trail2(buffer, STR_COPYING, source); strcat(buffer, "<hr>");
+				add_breadcrumb_trail2(buffer, STR_COPYING, source); concat(buffer, "<hr>");
 
 				// show image
 				urlenc(_path, target);
