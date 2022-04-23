@@ -332,8 +332,8 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 									if(split)
 									{
 										int rr = -4;
-										sys_addr_t sysmem = NULL;
-										if(sys_memory_allocate(BUFFER_SIZE_PS3MAPI, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+										sys_addr_t sysmem = sys_mem_allocate(BUFFER_SIZE_PS3MAPI);
+										if(sysmem)
 										{
 											char *buffer2 = (char *)sysmem;
 											ssend(conn_s_ps3mapi, PS3MAPI_OK_150);
@@ -390,8 +390,8 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 								if(split)
 								{
 									int rr = NONE;
-									sys_addr_t sysmem = NULL;
-									if(sys_memory_allocate(BUFFER_SIZE_PS3MAPI, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+									sys_addr_t sysmem = sys_mem_allocate(BUFFER_SIZE_PS3MAPI);
+									if(sysmem)
 									{
 										char *buffer2 = (char*)sysmem;
 										int read_e = 0;

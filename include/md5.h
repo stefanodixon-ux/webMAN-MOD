@@ -6,17 +6,10 @@ static void calc_md5(const char *filename, char *md5)
 {
 	u64 _md5[2] = {0, 0};
 
-	sys_addr_t sysmem = NULL; size_t buffer_size = _256KB_;
-
-	if(webman_config->vsh_mc)
-	{
-		sys_memory_container_t vsh_mc = get_vsh_memory_container();
-		if(vsh_mc)	sys_memory_allocate_from_container(buffer_size, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
-	}
-
-	if(!sysmem) buffer_size = _128KB_;
-
-	if(sysmem || (!sysmem && sys_memory_allocate(buffer_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK))
+	size_t buffer_size = _256KB_; sys_addr_t sysmem = sys_mem_allocate(buffer_size);
+	if(!sysmem) {buffer_size = _128KB_; sysmem = sys_mem_allocate(buffer_size);}
+	if(!sysmem) {buffer_size =  _64KB_; sysmem = sys_mem_allocate(buffer_size);}
+	if( sysmem)
 	{
 		int fd;
 

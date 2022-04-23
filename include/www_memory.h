@@ -4,9 +4,8 @@
 			else
 			if((is_binary == FOLDER_LISTING) || islike(param, "/index.ps3") || islike(param, "/sman.ps3") || islike(param, "/gameplugin.ps3mapi"))
 			{
-				sys_memory_container_t vsh_mc = get_vsh_memory_container();
-				if(vsh_mc && sys_memory_allocate_from_container(_3MB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_1M, &sysmem) == CELL_OK) BUFFER_SIZE_HTML = _3MB_;
-
+							{BUFFER_SIZE_HTML  = _3MB_; sysmem = sys_mem_allocate(BUFFER_SIZE_HTML);}
+				if(!sysmem) {BUFFER_SIZE_HTML  = _2MB_; sysmem = sys_mem_allocate(BUFFER_SIZE_HTML);}
 				if(!sysmem)
 				{
 					BUFFER_SIZE_HTML = get_buffer_size(webman_config->foot);
@@ -23,7 +22,7 @@
 
 			// one last try before give up
 			if(!sysmem)
-				{BUFFER_SIZE_HTML = _64KB_; sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);}
+				{BUFFER_SIZE_HTML = _64KB_; sysmem = sys_mem_allocate(BUFFER_SIZE_HTML);}
 
 			if(!sysmem)
 			{

@@ -67,7 +67,6 @@
 			set_app_home(PKGLAUNCH_DIR);
 			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", _path, SAVE_ALL);
 			sys_ppu_thread_sleep(2);
-			patch_gameboot_by_type(_path);
 			if(ret) launch_app_home_icon(true);
 
 			goto mounting_done; //goto exit_mount;
@@ -111,7 +110,7 @@
 	{
 		if(islike(_path, "/net")) ; else // mount ROMS in /net module
 
-		if((strstr(_path, "/ROMS") != NULL) || (strcasestr(_path, ".SELF") != NULL) || (strcasestr(ROMS_EXTENSIONS + 20, ext) != NULL) )
+		if(strstr(_path, "/ROMS") || strcasestr(_path, ".SELF") || strcasestr(ROMS_EXTENSIONS + 20, ext))
 		{
 			do_umount(false);
 

@@ -610,9 +610,9 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		} t_line_entries;
 
 		t_line_entries *line_entry = (t_line_entries *)sysmem_html;
-		u16 max_entries = ((BUFFER_SIZE_HTML - _12KB_) / _MAX_LINE_LEN) - 1;
+		u16 max_entries = ((BUFFER_SIZE_HTML - _16KB_) / _MAX_LINE_LEN) - 1;
 
-		BUFFER_SIZE_HTML -= _2KB_;
+		BUFFER_SIZE_HTML -= _4KB_;
 
 		u8 jb_games = (strstr(param, "/GAMES") || strstr(param, "/GAMEZ"));
 		u8 show_icon0 = jb_games || (islike(param, "/dev_hdd0/game") || islike(param, HDD0_HOME_DIR));

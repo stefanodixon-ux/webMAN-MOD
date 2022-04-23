@@ -102,7 +102,8 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 			cd_sector_size = default_cd_sector_size(bufn.st_size);
 
 			// detect CD sector size
-			if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
+			if(!sysmem_p) sysmem_p = sys_mem_allocate(_64KB_);
+			if( sysmem_p)
 			{
 				char *buffer = (char*)sysmem_p;
 				read_file(iso_path, buffer + _32KB_, _8KB_, 0);
@@ -114,7 +115,8 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 
 			if(change_ext(iso_path, 4, cue_ext))
 			{
-				if(sysmem_p || sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK)
+				if(!sysmem_p) sysmem_p = sys_mem_allocate(_64KB_);
+				if( sysmem_p)
 				{
 					char *cue_file = iso_path;
 					char *cue_buf = (char*)sysmem_p;
@@ -178,7 +180,8 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 			if(not_exists(tmp_path) && file_size(iso_path) > _128KB_)
 			{
 				// extract PARAM.SFO from ISO
-				if(sysmem_p || (sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem_p) == CELL_OK))
+				if(!sysmem_p) sysmem_p = sys_mem_allocate(_64KB_);
+				if( sysmem_p)
 				{
 					char *sector = (char*)sysmem_p;
 
@@ -251,10 +254,10 @@ static void scan_path_ntfs(const char *path, bool chk_dirs)
 	if(pdir)
 	{
 		sys_addr_t sysmem = NULL;
-		if(chk_dirs) sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
+		if(chk_dirs) sysmem = sys_mem_allocate(_64KB_);
 
 		t_line_entries *dir_entries = (t_line_entries *)sysmem;
-		u16 max_entries = (_64KB_ / sizeof(t_line_entries));
+		u16 max_entries = sysmem ? (_64KB_ / sizeof(t_line_entries)) : 0;
 
 		int idx = 0;
 
@@ -270,7 +273,7 @@ static void scan_path_ntfs(const char *path, bool chk_dirs)
 
 			if(st.st_mode & S_IFDIR)
 			{
-				if(sysmem && (idx < max_entries)) {sprintf(dir_entries[idx++].path, "%s", dir.d_name);}
+				if(idx < max_entries) {sprintf(dir_entries[idx++].path, "%s", dir.d_name);}
 			}
 			else if(is_iso_file(dir.d_name, flen, ntfs_m, 0))
 			{
@@ -338,20 +341,18 @@ static int prepNTFS(u8 clear)
 	}
 	while (retry);
 
+	sys_addr_t sysmem = NULL;
+
 	// allocate memory
-	sys_addr_t addr = NULL;
-
 	if(mountCount <= 0) mount_all_ntfs_volumes(); //check_ntfs_volumes();
-
 	if(mountCount <= 0) {mountCount = NTFS_UNMOUNTED; goto exit_prepntfs;}
 
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) /*!= CELL_OK*/) goto exit_prepntfs;
+	sysmem = sys_mem_allocate(_64KB_);
+	if(!sysmem) goto exit_prepntfs;
 
-	if(!addr) goto exit_prepntfs;
-
-	plugin_args    = (u8 *)(addr);
-	sectionsP      = (u32*)(addr + sizeof(rawseciso_args));
-	sections_sizeP = (u32*)(addr + sizeof(rawseciso_args) + _32KB_);
+	plugin_args    = (u8 *)(sysmem);
+	sectionsP      = (u32*)(sysmem + sizeof(rawseciso_args));
+	sections_sizeP = (u32*)(sysmem + sizeof(rawseciso_args) + _32KB_);
 
 	// scan
 	ntfs_count = 0;
@@ -380,7 +381,7 @@ static int prepNTFS(u8 clear)
 
 exit_prepntfs:
 	if(sysmem_p) sys_memory_free(sysmem_p); sysmem_p = NULL;
-	if(addr) sys_memory_free(addr); addr = NULL;
+	if(sysmem) sys_memory_free(sysmem); sysmem = NULL;
 
 	plugin_args = NULL;
 	sectionsP = NULL;

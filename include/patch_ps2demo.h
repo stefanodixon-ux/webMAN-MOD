@@ -64,8 +64,8 @@ static void patch_ps2_demo(const char *iso_file)
 	// Patch CONFIG file if demo was patched
 	if(*game_id)
 	{
-		sys_addr_t sysmem = NULL;
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+		sys_addr_t sysmem = sys_mem_allocate(_64KB_);
+		if(sysmem)
 		{
 			char *config = (char*)sysmem;
 			char *config_buf = (char*)sysmem + _2KB_;

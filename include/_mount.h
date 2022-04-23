@@ -433,6 +433,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				if(cp_mode)
 				{
+					dont_copy_same_size = false; // force copy
 					sprintf(target, "%s%s", source, get_filename(cp_path));
 					strcpy(source, cp_path);
 				}
@@ -725,7 +726,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				use_open_path = true; add_breadcrumb_trail(buffer, target); *tempstr = NULL;
 
 				if(strstr(target, "/webftp_server")) {sprintf(tempstr, "<HR>%s", STR_SETTINGSUPD);} else
-				if(cp_mode) {char *p = get_filename(_path); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
+				if(cp_mode) {dont_copy_same_size = true; char *p = get_filename(_path); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
+
+				if(g_sysmem) {sys_memory_free(g_sysmem); g_sysmem = NULL;}
 
 				if(is_error) {vshNotify_WithIcon(ICON_EXCLAMATION, STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
 			}
@@ -1276,8 +1279,8 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 
 	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd") || (cue_offset == 0xE000UL))
 	{
-		sys_addr_t sysmem = NULL;
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+		sys_addr_t sysmem = sys_mem_allocate(_64KB_);
+		if(sysmem)
 		{
 			char *cue_buf = (char*)sysmem;
 			int cue_size = read_file(_path, cue_buf, _8KB_, cue_offset);
@@ -1618,6 +1621,7 @@ static void mount_thread(u64 action)
 	///////////////////////
 	// MOUNT ISO OR PATH //
 	///////////////////////
+	set_mount_type(_path);
 
 	char *ps = strstr(_path, "/ROMS"); // check is not like /ROMS*/PS*
 	if(!(ps && (ps[5] && ps[6] && ps[7] && (islike(ps + 5, "/PS") || islike(ps + 7, "/PS")))))
@@ -1751,8 +1755,6 @@ mounting_done:
 
 #ifdef COBRA_ONLY
 
-	patch_gameboot_by_type(_path0);
-
 	// ------------------------------------------------------------------
 	// auto-enable gamedata on bdvd if game folder or ISO contains GAMEI
 	// ------------------------------------------------------------------
@@ -1810,6 +1812,11 @@ mounting_done:
 
 finish:
 	disable_progress();
+
+	#ifdef COBRA_NONLITE
+	if(!ret)
+		patch_gameboot(0); // None
+	#endif // #ifdef COBRA_ONLY
 
 	#ifdef VIRTUAL_PAD
 	unregister_ldd_controller();

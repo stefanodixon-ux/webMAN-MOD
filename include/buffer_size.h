@@ -23,7 +23,8 @@
 #define  _3MB_		0x0300000UL
 #define _32MB_		0x2000000UL
 
-#define USE_MC		99
+#define USE_2MB		98
+#define USE_3MB		99
 #define MIN_MEM		_192KB_
 
 #define PS3 (1<<0)
@@ -56,10 +57,8 @@ typedef struct {
 
 static u32 get_buffer_size(u8 footprint)
 {
-	if(webman_config->vsh_mc && (footprint == USE_MC)) //vsh_mc
-	{
-		return _3MB_;
-	}
+	if(footprint == USE_2MB) return _2MB_;
+	if(footprint == USE_3MB) return _3MB_;
 
 	if(footprint == 1) //MIN
 	{
@@ -94,15 +93,15 @@ static void set_buffer_sizes(u8 footprint)
 	BUFFER_SIZE_PS2 = ( _64KB_); // 100 games
 	BUFFER_SIZE_DVD = ( _64KB_); // 100 items
 
-	if(footprint == USE_MC) //vsh_mc (3MB)
+	if(footprint >= USE_2MB)
 	{
 		//BUFFER_SIZE_FTP = (_128KB_);
-
+		u32 MEM = (footprint == USE_2MB) ? _128KB_ : 0; // 200 games
 		//BUFFER_SIZE	= (896*KB to 1408*KB); // 1200-2200 games
-		BUFFER_SIZE_PSX = (webman_config->foot == 5) ? _768KB_ : _512KB_; // 800-1200 games (formerly 384KB: +128KB)
-		BUFFER_SIZE_PSP = (webman_config->foot == 7) ? _768KB_ : _256KB_; // 400-1200 games (formerly 128KB: +128KB)
-		BUFFER_SIZE_PS2 = (webman_config->foot == 8) ? _768KB_ : _384KB_; // 600-1200 games (formerly 256KB: +128KB)
-		BUFFER_SIZE_DVD = (webman_config->foot == 6) ? _768KB_ : _512KB_; // 800-1200 items (same as before)
+		BUFFER_SIZE_PSX = (webman_config->foot == 5) ? _768KB_ : _512KB_ - MEM; // 800-1200 games (formerly 384KB: +128KB)
+		BUFFER_SIZE_PSP = (webman_config->foot == 7) ? _768KB_ : _256KB_ - MEM; // 400-1200 games (formerly 128KB: +128KB)
+		BUFFER_SIZE_PS2 = (webman_config->foot == 8) ? _768KB_ : _384KB_ - MEM; // 600-1200 games (formerly 256KB: +128KB)
+		BUFFER_SIZE_DVD = (webman_config->foot == 6) ? _768KB_ : _512KB_ - MEM; // 800-1200 items (same as before)
 	}
 	else
 	if(footprint == 1) //MIN (256 KB / 320 KB)

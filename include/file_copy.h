@@ -1,3 +1,4 @@
+static u32 g_chunk_size = 0;
 static sys_addr_t g_sysmem = NULL;
 
 static bool copy_in_progress = false;
@@ -36,9 +37,9 @@ static void filepath_check(char *file)
 	check_path_tags(file);
 
 	if((file[5] == 'u' && islike(file, "/dev_usb"))
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	|| (is_ntfs_path(file))
-#endif
+	#endif
 	)
 	{
 		// remove invalid chars
@@ -50,9 +51,9 @@ static void filepath_check(char *file)
 		}
 		file[n] = 0;
 	}
-#ifdef USE_NTFS
-	if(is_ntfs_path(file)) {ntfs_path(file); if(mountCount == NTFS_UNMOUNTED) check_ntfs_volumes();}
-#endif
+	#ifdef USE_NTFS
+	if(is_ntfs_path(file)) {ntfs_path(file); if(mountCount <= NTFS_UNMOUNTED) check_ntfs_volumes();}
+	#endif
 }
 
 int64_t file_copy(const char *file1, char *file2);
@@ -63,32 +64,31 @@ int64_t file_copy(const char *file1, char *file2)
 	int64_t ret = FAILED;
 	copy_aborted = false;
 
+	#ifdef USE_NTFS
+	if(is_ntfs_path(file2)) {if(mountCount <= NTFS_UNMOUNTED) check_ntfs_volumes();}
+	#endif
+
 	filepath_check(file2);
 
 	if(IS(file1, file2)) return FAILED;
 
-#ifdef USE_NTFS
-	bool is_ntfs1 = is_ntfs_path(file1), is_ntfs2 = false;
-#else
 	bool is_ntfs1 = false, is_ntfs2 = false;
-#endif
 
-#ifdef COPY_PS3
+	#ifdef COPY_PS3
 	if(!ftp_state) strcpy(current_file, file2);
-#endif
+	#endif
 
-#ifdef USE_NTFS
-	if(is_ntfs1)
+	#ifdef USE_NTFS
+	if((is_ntfs1 = is_ntfs_path(file1)))
 	{
 		struct stat bufn;
 		if(ps3ntfs_stat(ntfs_path(file1), &bufn) >= 0) buf.st_size = bufn.st_size; else return FAILED;
 	}
 	else
-#endif
+	#endif
 	if(cellFsStat(file1, &buf) != CELL_FS_SUCCEEDED)
 	{
-#ifndef LITE_EDITION
-#ifdef COBRA_ONLY
+		#ifdef COBRA_NON_LITE
 		if(islike(file1, "/net"))
 		{
 			int ns = connect_to_remote_server((file1[4] & 0x0F));
@@ -97,8 +97,7 @@ int64_t file_copy(const char *file1, char *file2)
 
 			if(file_exists(file2)) return 0;
 		}
-#endif
-#endif
+		#endif
 		return FAILED;
 	}
 
@@ -107,7 +106,7 @@ int64_t file_copy(const char *file1, char *file2)
 
 	show_progress(file1, OV_COPY);
 
-#ifdef UNLOCK_SAVEDATA
+	#ifdef UNLOCK_SAVEDATA
 	if(webman_config->unlock_savedata && (buf.st_size < _4KB_))
 	{
 		u16 size = (u16)buf.st_size;
@@ -118,7 +117,7 @@ int64_t file_copy(const char *file1, char *file2)
 			return size;
 		}
 	}
-#endif
+	#endif
 
 	if(islike(file2, INT_HDD_ROOT_PATH))
 	{
@@ -148,14 +147,14 @@ int64_t file_copy(const char *file1, char *file2)
 	if(allow_sc36 && islike(file1, "/dev_bdvd"))
 		sysLv2FsBdDecrypt(); // decrypt dev_bdvd files
 
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	if(is_ntfs1)
 	{
 		fd1 = ps3ntfs_open(ntfs_path(file1), O_RDONLY, 0);
 		if(fd1 < 0) is_ntfs1 = false;
 	}
 	else
-#endif
+	#endif
 	// skip if file already exists with same size
 	if(dont_copy_same_size)
 	{
@@ -168,22 +167,19 @@ int64_t file_copy(const char *file1, char *file2)
 
 	u64 pos;
 	u8 merge_part = 0;
+	u32 chunk_size; sys_addr_t sysmem = NULL;
 
-merge_next:
-
-	if(is_ntfs1 || cellFsOpen(file1, CELL_FS_O_RDONLY, &fd1, NULL, 0) == CELL_FS_SUCCEEDED)
+	if(g_sysmem) {chunk_size = g_chunk_size, sysmem = g_sysmem;} else
 	{
-		sys_addr_t sysmem = NULL; u64 chunk_size = (buf.st_size <= _64KB_) ? _64KB_ : _256KB_;
+		chunk_size = is_ntfs1 || (buf.st_size <= _64KB_) ? _64KB_ : _128KB_;
+		sysmem = sys_mem_allocate(chunk_size);
+		if(!sysmem) {chunk_size = _64KB_; sys_mem_allocate(chunk_size);}
+	}
 
-		if(g_sysmem) sysmem = g_sysmem; else
-		{
-			sys_memory_container_t vsh_mc = get_vsh_memory_container();
-			if(vsh_mc)	sys_memory_allocate_from_container(chunk_size, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
-		}
-
-		if(!sysmem) chunk_size = _64KB_;
-
-		if(sysmem || (!sysmem && sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK))
+	if(sysmem)
+	{
+merge_next:
+		if(is_ntfs1 || (cellFsOpen(file1, CELL_FS_O_RDONLY, &fd1, NULL, 0) == CELL_FS_SUCCEEDED))
 		{
 			u64 size = buf.st_size, part_size = buf.st_size; u8 part = 0;
 
@@ -197,44 +193,42 @@ merge_next:
 			char *chunk = (char*)sysmem;
 			u16 flen = strlen(file2);
 next_part:
-
-#ifdef USE_NTFS
-			is_ntfs2 = is_ntfs_path(file2);
-			if(is_ntfs2)
+			#ifdef USE_NTFS
+			if((is_ntfs2 = is_ntfs_path(file2)))
 			{
 				fd2 = ps3ntfs_open(ntfs_path(file2), O_CREAT | O_WRONLY | O_TRUNC, MODE);
 				if(fd2 < 0) is_ntfs2 = false;
 			}
-#endif
+			#endif
 			// copy_file
-			if(is_ntfs2 || merge_part || cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd2, 0, 0) == CELL_FS_SUCCEEDED)
+			if(is_ntfs2 || merge_part || (cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd2, 0, 0) == CELL_FS_SUCCEEDED))
 			{
 				pos = 0;
 				while(size > 0)
 				{
 					if(copy_aborted) break;
 
-#ifdef USE_NTFS
+					#ifdef USE_NTFS
 					if(is_ntfs1)
 					{
 						ps3ntfs_seek64(fd1, pos, SEEK_SET);
 						read = ps3ntfs_read(fd1, (void *)chunk, chunk_size);
 					}
 					else
-#endif
+					#endif
 					{
 						cellFsReadWithOffset(fd1, pos, chunk, chunk_size, &read);
 					}
 
 					if(!read) break;
 
-#ifdef USE_NTFS
+					#ifdef USE_NTFS
 					if(is_ntfs2)
 					{
 						written = ps3ntfs_write(fd2, chunk, read);
 					}
 					else
-#endif
+					#endif
 					cellFsWrite(fd2, chunk, read, &written);
 
 					if(!written) break;
@@ -261,18 +255,18 @@ next_part:
 					}
 				}
 
-#ifdef USE_NTFS
+				#ifdef USE_NTFS
 				if(is_ntfs2) ps3ntfs_close(fd2);
 				else
-#endif
+				#endif
 				cellFsClose(fd2);
 
 				if(copy_aborted)
 				{
-#ifdef USE_NTFS
+					#ifdef USE_NTFS
 					if(is_ntfs2) ps3ntfs_unlink(ntfs_path(file2));
 					else
-#endif
+					#endif
 					cellFsUnlink(file2); //remove incomplete file
 				}
 				else if((part > 0) && (size > 0))
@@ -291,15 +285,16 @@ next_part:
 				ret = size;
 			}
 
-			if(!g_sysmem) sys_memory_free(sysmem);
+			#ifdef USE_NTFS
+			if(is_ntfs1) ps3ntfs_close(fd1);
+			else
+			#endif
+			cellFsClose(fd1);
 		}
-
-#ifdef USE_NTFS
-		if(is_ntfs1) ps3ntfs_close(fd1);
-		else
-#endif
-		cellFsClose(fd1);
 	}
+
+	if(!g_sysmem)
+		{if(sysmem) sys_memory_free(sysmem);}
 
 	return ret;
 }
@@ -322,7 +317,7 @@ static int folder_copy(const char *path1, char *path2)
 
 	copy_aborted = false;
 
-#ifdef USE_NTFS
+	#ifdef USE_NTFS
 	struct stat bufn;
 	DIR_ITER *pdir = NULL;
 
@@ -332,7 +327,7 @@ static int folder_copy(const char *path1, char *path2)
 		if(pdir) is_ntfs = true;
 	}
 	else
-#endif
+	#endif
 	{
 		cellFsChmod(path1, DMODE);
 	}
@@ -344,11 +339,11 @@ static int folder_copy(const char *path1, char *path2)
 		if(islike(path1, "/dev_bdvd"))
 			{allow_sc36 = false; sysLv2FsBdDecrypt();} // decrypt dev_bdvd files
 
-#ifdef USE_NTFS
+		#ifdef USE_NTFS
 		if(is_ntfs_path(path2))
 			ps3ntfs_mkdir(ntfs_path(path2), DMODE);
 		else
-#endif
+		#endif
 			cellFsMkdir(path2, DMODE);
 
 		CellFsDirent dir; u64 read_e;
@@ -360,23 +355,24 @@ static int folder_copy(const char *path1, char *path2)
 
 		if(!g_sysmem)
 		{
-			sys_memory_container_t vsh_mc = get_vsh_memory_container();
-			if(vsh_mc)	sys_memory_allocate_from_container(_256KB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &g_sysmem);
+			if(!g_sysmem) {g_chunk_size = _256KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
+			if(!g_sysmem) {g_chunk_size = _128KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
+			if(!g_sysmem) {g_chunk_size =  _64KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
 		}
 
 		u16 plen1 = sprintf(source, "%s", path1);
 		u16 plen2 = sprintf(target, "%s", path2);
 
-		while(working)
+		while(g_sysmem && working)
 		{
-#ifdef USE_NTFS
+			#ifdef USE_NTFS
 			if(is_ntfs)
 			{
 				if(ps3ntfs_dirnext(pdir, entry_name, &bufn)) break;
 				if(entry_name[0]=='$' && path1[12] == 0) continue;
 			}
 			else
-#endif
+			#endif
 			if(is_root && ((cellFsReaddir(fd, &dir, &read_e) != CELL_FS_SUCCEEDED) || (read_e == 0))) break;
 			else
 			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
@@ -398,17 +394,14 @@ static int folder_copy(const char *path1, char *path2)
 
 		if(g_sysmem) {sys_memory_free(g_sysmem); g_sysmem = NULL;}
 
-#ifdef USE_NTFS
+		#ifdef USE_NTFS
 		if(is_ntfs) ps3ntfs_dirclose(pdir);
 		else
-#endif
+		#endif
 		cellFsClosedir(fd); allow_sc36 = true;
 
 		if(copy_aborted) return FAILED;
 	}
-	else
-		return FAILED;
-
 	return CELL_FS_SUCCEEDED;
 }
 
@@ -440,9 +433,9 @@ static int file_concat(const char *file1, char *file2)
 	{
 		u64 size = buf.st_size;
 
-		sys_addr_t sysmem = 0; u64 chunk_size = _64KB_;
+		u64 chunk_size = _64KB_; sys_addr_t sysmem = sys_mem_allocate(_64KB_);
 
-		if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+		if(sysmem)
 		{
 			// append
 			if(cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_RDWR | CELL_FS_O_APPEND, &fd2, 0, 0) == CELL_FS_SUCCEEDED)

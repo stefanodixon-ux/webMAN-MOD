@@ -25,7 +25,7 @@ STR_DELETE		[Elimina]
 
 STR_SCAN1		[Scansiona unità]
 STR_SCAN2		[Cerca contenuti]
-STR_PSPL		[]
+STR_PSPL		[Mostra PSP Launcher]
 STR_PS2L		[Mostra PS2 Classic Launcher]
 STR_RXVID		[Mostra sottocartella Video]
 STR_VIDLG		[Video]

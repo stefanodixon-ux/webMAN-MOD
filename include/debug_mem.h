@@ -99,8 +99,8 @@ static int ps3mapi_get_memory(u32 pid, u32 address, char *mem, u32 size)
 
 static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u32 size)
 {
-	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	sys_addr_t sysmem = sys_mem_allocate(_64KB_);
+	if(sysmem)
 	{
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 

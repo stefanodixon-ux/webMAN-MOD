@@ -61,8 +61,8 @@
 				if(pos)
 				{
 					// write or insert data at line number
-					sys_addr_t sysmem = NULL;
-					if(sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+					sys_addr_t sysmem = sys_mem_allocate(_128KB_);
+					if(sysmem)
 					{
 						*pos = NULL, pos += 6;
 

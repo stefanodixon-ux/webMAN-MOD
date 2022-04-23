@@ -113,12 +113,12 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 	{
 		CD_SECTOR_SIZE_2352 = default_cd_sector_size(res.file_size);
 
-		sys_addr_t sysmem = NULL; u64 chunk_size = _64KB_;
-		if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+		sys_addr_t sysmem = sys_mem_allocate(_64KB_);
+		if(sysmem)
 		{
 			char *chunk = (char*)sysmem;
 
-			int bytes_read = read_remote_file(s, (char*)chunk, 0, chunk_size, abort_connection);
+			int bytes_read = read_remote_file(s, (char*)chunk, 0, _64KB_, abort_connection);
 			if(bytes_read)
 			{
 				CD_SECTOR_SIZE_2352 = detect_cd_sector_size(chunk);
@@ -223,9 +223,8 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 
 	if(file_size > 0)
 	{
-		sys_addr_t sysmem = NULL; u32 chunk_size = _64KB_;
-
-		if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+		u32 chunk_size = _64KB_; sys_addr_t sysmem = sys_mem_allocate(chunk_size);
+		if(sysmem)
 		{
 			char *chunk = (char*)sysmem; int fdw;
 
@@ -435,8 +434,7 @@ static int read_remote_dir(int s, sys_addr_t *data /*netiso_read_dir_result_data
 
 			if(webman_config->vsh_mc)
 			{
-				sys_memory_container_t vsh_mc = get_vsh_memory_container();
-				if(vsh_mc) sys_memory_allocate_from_container(_3MB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_1M, &sysmem);
+				sysmem = sys_mem_allocate(_3MB_);
 			}
 
 			if(sysmem || sys_memory_allocate(len2, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)

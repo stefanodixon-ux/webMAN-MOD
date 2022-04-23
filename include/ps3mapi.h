@@ -592,8 +592,8 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 	int retval = NONE;
 	found_offset = fallback;
 
-	u32 chunk_size = _64KB_; sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	u32 chunk_size = _64KB_; sys_addr_t sysmem = sys_mem_allocate(chunk_size);
+	if(sysmem)
 	{
 		mem = (char*)sysmem;
 	}

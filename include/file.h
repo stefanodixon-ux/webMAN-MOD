@@ -6,7 +6,6 @@
 #define create_file(file)	save_file(file, NULL, SAVE_ALL)
 
 //////////////////////////////////////////////////////////////
-
 #include "file_ntfs.h"
 #include "file_devs.h"
 #include "file_size.h"
@@ -241,7 +240,7 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 #ifdef USE_NTFS
 	if(is_ntfs_path(file))
 	{
-		if(mountCount == NTFS_UNMOUNTED) mount_all_ntfs_volumes();
+		if(mountCount <= NTFS_UNMOUNTED) mount_all_ntfs_volumes();
 		fd = ps3ntfs_open(ntfs_path(file), O_RDONLY, 0);
 		if(fd >= 0)
 		{
@@ -279,7 +278,7 @@ static int write_file(const char *file, int flags, const char *data, u64 offset,
 		if(flags & CELL_FS_O_APPEND) nflags |= O_APPEND;
 		if(flags & CELL_FS_O_TRUNC)  nflags |= O_TRUNC;
 
-		if(mountCount == NTFS_UNMOUNTED) mount_all_ntfs_volumes();
+		if(mountCount <= NTFS_UNMOUNTED) mount_all_ntfs_volumes();
 		fd = ps3ntfs_open(ntfs_path(file), nflags, MODE);
 		if(fd >= 0)
 		{
@@ -327,14 +326,14 @@ int save_file(const char *file, const char *mem, s64 size)
 	return write_file(file, flags, mem, 0, (int)size, crlf);
 }
 
-/*
+#if 0
 static void addlog(const char *msg1, const char *msg2, int i)
 {
 	char msg[200];
 	snprintf(msg, 199, "%i %s %s", i, msg1, msg2);
 	save_file("/dev_hdd0/wmm.log", msg, APPEND_TEXT);
 }
-*/
+#endif
 
 //////////////////////////////////////////////////////////////
 

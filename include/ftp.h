@@ -132,15 +132,10 @@ static void send_reply(int conn_s_ftp, int err)
 
 static sys_addr_t allocate_ftp_buffer(sys_addr_t sysmem)
 {
-	if(!sysmem && (ftp_active > 1) && IS_ON_XMB)
-	{
-		sys_memory_container_t vsh_mc = get_vsh_memory_container();
-		if(vsh_mc)	sys_memory_allocate_from_container(BUFFER_SIZE_FTP, vsh_mc, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
-	}
+	if(!sysmem) {sysmem = sys_mem_allocate(BUFFER_SIZE_FTP);}
+	if(!sysmem) {BUFFER_SIZE_FTP = _64KB_; sysmem = sys_mem_allocate(BUFFER_SIZE_FTP);}
 
-	if(sysmem || (!sysmem && sys_memory_allocate(BUFFER_SIZE_FTP, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)) return sysmem;
-
-	return NULL;
+	return sysmem;
 }
 
 #define is_remote_ip (conn_info.local_adr.s_addr != conn_info.remote_adr.s_addr)
@@ -164,7 +159,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	}
 
 #ifdef USE_NTFS
-	//if(!ftp_active && (mountCount == NTFS_UNMOUNTED) && !refreshing_xml && root_check) check_ntfs_volumes();
+	//if(!ftp_active && (mountCount <= NTFS_UNMOUNTED) && !refreshing_xml && root_check) check_ntfs_volumes();
 #endif
 
 	setPluginActive();

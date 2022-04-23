@@ -28,8 +28,8 @@ if(ntfs_ext)
 		{
 			cellFsChmod(_path, MODE);
 
-			sys_addr_t addr = 0;
-			if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) == CELL_OK)
+			sys_addr_t addr = sys_mem_allocate(_64KB_);
+			if(addr)
 			{
 				char *rawseciso_data = (char *)addr;
 				u64 msiz = read_file(_path, rawseciso_data, _64KB_, 0);
@@ -51,8 +51,8 @@ if(ntfs_ext)
 	}
 
 #ifdef USE_INTERNAL_NTFS_PLUGIN
-	sys_addr_t addr = 0;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr) == CELL_OK)
+	sys_addr_t addr  = sys_mem_allocate(_64KB_);
+	if(addr)
 	{
 		char *rawseciso_data = (char*)addr;
 		if(read_file(_path, rawseciso_data, _64KB_, 0) > sizeof(rawseciso_args))

@@ -113,8 +113,8 @@ static int process_open_cmd(u8 index, netiso_open_cmd *cmd)
 
 			if((result.file_size > _64KB_) && (result.file_size <= 0x35000000UL))
 			{
-				sys_addr_t sysmem = NULL; const u64 chunk_size = _64KB_;
-				if(sys_memory_allocate(chunk_size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+				const u64 chunk_size = _64KB_; sys_addr_t sysmem = sys_mem_allocate(chunk_size);
+				if(sysmem)
 				{
 					char *chunk = (char*)sysmem; u64 read_e;
 					cellFsRead(fd, chunk, _64KB_, &read_e);

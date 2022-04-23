@@ -16,7 +16,7 @@
 	#ifdef USE_NTFS
 	if(is_ntfs)
 	{
-		if(mountCount == NTFS_UNMOUNTED) mount_all_ntfs_volumes();
+		if(mountCount <= NTFS_UNMOUNTED) mount_all_ntfs_volumes();
 
 		char *sort = strstr(param, "?sort=");
 		if(sort) {sort_by = sort[6]; if(strstr(sort, "desc")) sort_order = -1; *sort = NULL;}

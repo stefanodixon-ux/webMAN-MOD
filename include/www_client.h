@@ -575,7 +575,7 @@ parse_request:
 				#include "cmd/unlocksave.h"
 			}
 			#ifdef COPY_PS3
-			if(islike(param, "/copy")) {if(!copy_in_progress) dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same files
+			if(islike(param, "/copy")) {if(!copy_in_progress) dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same file size
 			else
 			#endif // #ifdef COPY_PS3
 #endif // #ifndef LITE_EDITION

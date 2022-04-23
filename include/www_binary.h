@@ -16,7 +16,6 @@
 		for(u8 n = npages; n > 0; n--)
 			if(sys_memory_allocate(n * _64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK) {buffer_size = n * _64KB_; sys_ppu_thread_usleep(5000); break;}
 
-		//if(!sysmem && sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK)
 		if(buffer_size < _64KB_)
 		{
 			keep_alive = http_response(conn_s, header, param, CODE_SERVER_BUSY, STR_ERROR);

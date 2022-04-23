@@ -684,13 +684,11 @@ static int process_read_cd_2352_cmd_iso(u8 *buf, u32 sector, u32 remaining)
 
 	if(!cd_cache)
 	{
-		sys_addr_t addr;
-
-		int ret = sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr); // 128KB to cache 48 sectors of up to 2448 bytes [48*2448 = 117,504 bytes]
-		if(ret /*!= CELL_OK*/)
+		sys_addr_t addr = sys_mem_allocate(_128KB_); // 128KB to cache 48 sectors of up to 2448 bytes [48*2448 = 117,504 bytes]
+		if(!addr)
 		{
 			//DPRINTF("sys_memory_allocate failed: %x\n", ret);
-			return ret;
+			return FAILED;
 		}
 
 		cd_cache = (u8 *)addr;
@@ -915,8 +913,8 @@ static sys_ppu_thread_t thread_id_ntfs = SYS_PPU_THREAD_NONE;
 
 static void rawseciso_thread(u64 arg)
 {
-	sys_addr_t sysmem = 0;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) /*!= CELL_OK*/) {sys_ppu_thread_exit(0); return;}
+	sys_addr_t sysmem = sys_mem_allocate(_64KB_);
+	if(!sysmem) {sys_ppu_thread_exit(0); return;}
 
 	u64 *argp = (u64*)(u32)arg;
 	u64 *addr = (u64*)sysmem;
@@ -1042,9 +1040,8 @@ static void rawseciso_thread(u64 arg)
 
 		is_cd2352 = 1;
 
-		sys_addr_t addr_cache;
-
-		if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr_cache) == CELL_OK)
+		sys_addr_t addr_cache = sys_mem_allocate(_64KB_);
+		if(addr_cache)
 		{
 			cd_cache = (u8 *)addr_cache; ntfs_running = 1;
 

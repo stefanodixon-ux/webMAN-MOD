@@ -87,7 +87,7 @@ STR_LOADGAMES	[Ładuj gry webMANem]
 STR_FIXING		[Patchowanie]
 
 STR_WMSETUP		[Funkcje webMANa]
-STR_WMSETUP2	[]
+STR_WMSETUP2	[ ]
 
 STR_EJECTDISC	[Wysuń Dysk]
 STR_UNMOUNTGAME	[Odmontuj obecną grę]

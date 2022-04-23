@@ -126,8 +126,8 @@ static void apply_remaps(void)
 
 static void make_fb_xml(void)
 {
-	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	sys_addr_t sysmem = sys_mem_allocate(_64KB_);
+	if(sysmem)
 	{
 		cellFsUnlink(_FB_XML);
 
@@ -662,10 +662,12 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		return false;  //leave if cannot allocate memory
 	}
 	#else
-	if(webman_config->vsh_mc)
 	{
-		sys_memory_container_t vsh_mc = get_vsh_memory_container();
-		if(vsh_mc && sys_memory_allocate_from_container(_3MB_, vsh_mc, SYS_MEMORY_PAGE_SIZE_1M, &sysmem) == CELL_OK) set_buffer_sizes(USE_MC);
+		sysmem = sys_mem_allocate(_3MB_); // using MC by default
+		if(sysmem)
+			set_buffer_sizes(USE_3MB);
+		else
+			{sysmem = sys_mem_allocate(_2MB_); set_buffer_sizes(USE_2MB);}
 	}
 
 	if(!sysmem)

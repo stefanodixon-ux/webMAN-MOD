@@ -134,13 +134,11 @@ static int process_read_cd_2352_cmd(u8 *buf, u32 sector, u32 remaining)
 
 	if(!cd_cache)
 	{
-		sys_addr_t addr = NULL;
-
-		int ret = sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &addr);
-		if(ret != CELL_OK)
+		sys_addr_t addr = sys_mem_allocate(_128KB_);
+		if(!addr)
 		{
 			//DPRINTF("sys_memory_allocate failed: %x\n", ret);
-			return ret;
+			return FAILED;
 		}
 
 		cd_cache = (u8 *)addr;

@@ -40,6 +40,17 @@ static sys_memory_container_t get_vsh_memory_container(void)
 	return vsh_memory_container_by_id(webman_config->vsh_mc);
 }
 
+static sys_addr_t sys_mem_allocate(u32 bytes)
+{
+	sys_addr_t sysmem = NULL;
+	sys_memory_container_t vsh_mc = get_vsh_memory_container();
+	u32 flags = (bytes & _3MB_) ? SYS_MEMORY_PAGE_SIZE_1M : SYS_MEMORY_PAGE_SIZE_64K;
+	if(!vsh_mc) vsh_mc = vsh_memory_container_by_id(4);
+	if( vsh_mc) sys_memory_allocate_from_container(bytes, vsh_mc, flags, &sysmem);
+	if(!sysmem) sys_memory_allocate(bytes, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
+	return sysmem;
+}
+
 static explore_plugin_interface *get_explore_interface(void)
 {
 	int view = View_Find("explore_plugin");
@@ -253,8 +264,8 @@ static bool is_app_home_onxmb(void)
 {
 	if(has_app_home >= 0) return (bool)has_app_home;
 
-	sys_addr_t sysmem = NULL; has_app_home = false;
-	if(sys_memory_allocate(_64KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) == CELL_OK)
+	sys_addr_t sysmem = sys_mem_allocate(_64KB_); has_app_home = false;
+	if(sysmem)
 	{
 		char *buffer = (char*)sysmem;
 		size_t read_e = read_file(CATEGORY_GAME_XML, buffer, _8KB_, 0);
