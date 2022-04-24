@@ -1057,7 +1057,7 @@ scan_roms:
 							{
 								// create game folder in /dev_hdd0/game and copy PARAM.SFO to prevent deletion of XMB icon when gameDATA is disabled
 								char *param_sfo = tempstr;
-								sprintf(param_sfo, "%s/%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name);
+								sprintf(param_sfo, "%s%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name);
 								if(not_exists(param_sfo))
 								{
 									char *_param_sfo = templn; // GAMEI

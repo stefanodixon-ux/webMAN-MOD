@@ -8,7 +8,7 @@
 		check_path_alias(cp_path);
 		if(not_exists(cp_path)) cp_mode = CP_MODE_NONE;
 
-		strcpy(param, cp_path); remove_filename(param);
+		copy_path(param, cp_path);
 
 		is_binary = FOLDER_LISTING;
 		goto html_response;

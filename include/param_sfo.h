@@ -317,7 +317,7 @@ static void get_local_app_ver(char *app_ver, char *title_id, char *param_sfo)
 {
 	if(*title_id)
 	{
-		sprintf(param_sfo, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+		sprintf(param_sfo, "%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
 		if(not_exists(param_sfo)) return;
 
 		char app_ver2[8]; *app_ver2 = NULL;

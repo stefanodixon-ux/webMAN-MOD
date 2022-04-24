@@ -57,6 +57,13 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		slen = sprintf(header,  HTML_RESPONSE_FMT,
 								CODE_HTTP_OK, url, msg, "", "");
 	}
+	#ifdef VIEW_PARAM_SFO
+	else if(code == CODE_HTTP_NOCSS)
+	{
+		header = (char*)msg;
+		slen = strlen(msg);
+	}
+	#endif
 	else
 	{
 		char body[_2KB_];
@@ -125,18 +132,13 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 		//if(ISDIGIT(*msg) && ( (code == CODE_SERVER_BUSY || code == CODE_BAD_REQUEST) )) show_msg(body + 4);
 
-		if(code == CODE_HTTP_NOCSS)
-			code = CODE_HTTP_OK;
-		else
+		if(css_exists)
 		{
-			if(css_exists)
-			{
-				sprintf(header, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); strcat(body, header);
-			}
-			if(common_js_exists)
-			{
-				sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); strcat(body, header);
-			}
+			sprintf(header, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); strcat(body, header);
+		}
+		if(common_js_exists)
+		{
+			sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); strcat(body, header);
 		}
 
 		sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",

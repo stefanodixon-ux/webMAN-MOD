@@ -65,12 +65,12 @@
 			else
 				rename_file(source, dest);
 
-			strcpy(param, dest); remove_filename(param);
+			copy_path(param, dest);
 			if(do_restart) goto reboot;
 		}
 		else
 		{
-			strcpy(param, source); remove_filename(param);
+			copy_path(param, source);
 			if(!isDir(param)) sprintf(param, "/");
 		}
 

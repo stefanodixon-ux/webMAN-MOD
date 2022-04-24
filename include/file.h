@@ -79,6 +79,14 @@ static char *remove_filename(const char *path)
 	return p;
 }
 
+#ifndef LITE_EDITION
+static char *copy_path(char *path, const char *full_path)
+{
+	strcpy(path, full_path);
+	return remove_filename(path);
+}
+#endif
+
 #ifdef COBRA_ONLY
 static bool change_ext(char *filename, int num_ext, const char *file_ext[])
 {
