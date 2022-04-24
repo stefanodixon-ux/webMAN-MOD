@@ -178,24 +178,24 @@ static u64 getLE(unsigned char *mem, u8 bits)
 {
 	u64 value = 0;
 	for(u8 b = 0; b < bits; b += 8, mem++)
-		value += *mem<<b;
+		value += *mem<<b; // LE to BE
 	return value;
 }
 
 static void setLE(unsigned char *mem, u64 value, u8 bytes)
 {
 	for(u8 b = 0; b < bytes; b++, mem++, value >>= 8)
-		*mem = (unsigned char)value;
+		*mem = (unsigned char)value; // BE to LE
 }
 #endif
 
-static void get_param_sfo(unsigned char *mem, const char *field, char *value, u16 sfo_size)
+static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value, u16 sfo_size)
 {
 	READ_SFO_HEADER()
 
 	#ifdef VIEW_PARAM_SFO
 	bool view = (!field); u16 len;
-	char *html_table = value, *new_value = NULL; if(field) new_value = strchr(field, '=');
+	char *html_table = ret_value, *new_value = NULL; if(field) new_value = strchr(field, '=');
 	if(new_value)
 	{
 		*new_value++ = NULL; // split field & new_value
@@ -214,7 +214,7 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *value, u1
 		#ifdef VIEW_PARAM_SFO
 		if(view)
 		{
-			len += 30; if(len + siz >= 5500) break;
+			len += 30; if(len + siz >= _6KB_) break;
 
 			// show field name
 			concat(html_table, "<tr><td align=top>");
@@ -232,13 +232,11 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *value, u1
 			}
 
 			// show field value
-			if(typ==4)
+			if(typ == 4)
 			{
 				char tmp[20];
-				if(siz==8)
-					{len += sprintf(tmp, "0x%016llX", getLE(FIELD_VALUE, 64)); concat(html_table, tmp);}
-				else
-					{len += sprintf(tmp, "0x%08llX", getLE(FIELD_VALUE, 32)); concat(html_table, tmp);}
+				sprintf(tmp, "0x%016llX", getLE(FIELD_VALUE, siz * 8));
+				len += concat(html_table, tmp + ((siz == 8) ? 0 : 8));
 			}
 			else
 				len += concat(html_table, FIELD_VALUE_);
@@ -249,7 +247,7 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *value, u1
 		#endif
 		if(!memcmp(FIELD_NAME, field, len))
 		{
-			strncpy(value, FIELD_VALUE_, siz);
+			strncpy(ret_value, FIELD_VALUE_, siz);
 			break;
 		}
 
@@ -259,7 +257,7 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *value, u1
 	if(view)
 	{
 		concat(html_table, "</table>");
-		char tmp[KB]; add_html('t', 0, html_table, tmp);
+		char tmp[KB]; add_html('t', 0, html_table, tmp); // add links using javascript
 	}
 	#endif
 }

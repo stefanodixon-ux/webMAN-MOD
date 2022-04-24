@@ -768,13 +768,18 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					mlen = sprintf(tempstr, "<hr><a href=\"/play.ps3\"><img src=\"%s\" onerror=\"this.src='%s';\" border=0></a>"
 											"<hr><a href=\"/dev_bdvd\">%s</a>", enc_dir_name, wm_icons[strstr(param,"BDISO") ? iBDVD : iDVD], mounted ? STR_MOVIELOADED : STR_ERROR);
 				}
-				else if(is_BIN_ENC(param))
+				else if(is_BIN_ENC(param) || islike(param, "/mount.ps2") || islike(param, "/mount_ps2"))
 				{
 					#ifndef ENGLISH_ONLY
 					char *STR_PS2LOADED = buf; //[240]; //	= "Game loaded successfully. Start the game using <b>PS2 Classic Launcher</b>.<hr>";
 					sprintf(STR_PS2LOADED,   "Game %s%s%s</b>.<hr>",
 											 "loaded successfully. Start the ", "game using <b>", "PS2 Classic Launcher");
 					language("STR_PS2LOADED", STR_PS2LOADED, STR_PS2LOADED);
+
+					if(!is_BIN_ENC(param))
+					{
+						char *pos = strchr(STR_PS2LOADED, '.'); if(pos) sprintf(pos, ": " HTML_URL, "/dev_ps2disc", "/dev_ps2disc");
+					}
 					#endif
 
 					mlen = sprintf(tempstr, "<hr><img src=\"%s\" onerror=\"this.src='%s';\" height=%i>"

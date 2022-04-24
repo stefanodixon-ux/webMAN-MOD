@@ -19,7 +19,13 @@ static bool mount_ps2disc(char *path)
  #ifdef COBRA_ONLY
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
+	cobra_send_fake_disc_eject_event();
+	sys_timer_usleep(20000);
+
+	mount_device("/dev_ps2disc", NULL, NULL);
 	sys_map_path("/dev_ps2disc", path);
+
+	cobra_send_fake_disc_insert_event();
 
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
  #else
