@@ -632,11 +632,11 @@ static int ps3mapi_patch_process(u32 pid, u32 address, const char *new_value, in
 {
 	if(pid == LV1)
 	{
-		poke_chunk_lv1(address, size, (u8*)new_value);
+		poke_chunk_lv1(address, size, (u8*)new_value, 0);
 	}
 	else if(pid == LV2)
 	{
-		poke_chunk_lv2(address, size, (u8*)new_value);
+		poke_chunk_lv2(address, size, (u8*)new_value, 0);
 	}
 	else
 	{

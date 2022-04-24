@@ -1818,7 +1818,7 @@ mounting_done:
 finish:
 	disable_progress();
 
-	#ifdef COBRA_NONLITE
+	#ifdef COBRA_NON_LITE
 	if(!ret)
 		patch_gameboot(0); // None
 	#endif // #ifdef COBRA_ONLY

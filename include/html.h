@@ -727,3 +727,26 @@ static void replace_char(char *text, char c, char r)
 		*pos = r; pos = strchr(pos, c);
 	}
 }
+
+#ifndef LITE_EDITION
+static u8 get_operator(char *equal_pos, bool nullfy)
+{
+	char *prev = (equal_pos - 1);
+	const char c = nullfy ? '\0' : *prev;
+	if(*prev == '^') {*prev = c; return'^';} // field^=value
+	if(*prev == '|') {*prev = c; return'|';} // field|=value
+	if(*prev == '&') {*prev = c; return'&';} // field&=value
+	return 0;
+}
+
+static u64 update_value(u64 old_valuen, u64 new_valuen, u8 oper)
+{
+	if(oper == '|')
+		new_valuen |= old_valuen;
+	if(oper == '&')
+		new_valuen &= old_valuen;
+	if(oper == '^')
+		new_valuen ^= old_valuen;
+	return new_valuen;
+}
+#endif

@@ -194,11 +194,15 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value
 	READ_SFO_HEADER()
 
 	#ifdef VIEW_PARAM_SFO
-	bool view = (!field); u16 len;
-	char *html_table = ret_value, *new_value = NULL; if(field) new_value = strchr(field, '=');
-	if(new_value)
+	bool view = (!field); u16 len, oper = 0;
+	char *html_table = ret_value, *new_value = NULL;
+	if(field) new_value = strchr(field, '=');
+	if(new_value > field)
 	{
+		oper = get_operator(new_value, true);
+
 		*new_value++ = NULL; // split field & new_value
+
 		view = true;
 	}
 	if(view)
@@ -224,11 +228,21 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value
 			// patch field value
 			if(new_value && _IS(FIELD_NAME, field))
 			{
-				memset(FIELD_VALUE, 0, siz);
-				if(typ==4)
-					setLE(FIELD_VALUE, val(new_value), siz);
+				if(typ == 4)
+				{
+					u64 new_valuen = convertH(new_value);
+					if(oper)
+					{
+						u64 old_valuen  = getLE(FIELD_VALUE, siz * 8);
+						new_valuen = update_value(old_valuen, new_valuen, oper);
+					}
+					setLE(FIELD_VALUE, new_valuen, siz);
+				}
 				else
+				{
+					memset(FIELD_VALUE, 0, siz);
 					strncpy(FIELD_VALUE_, new_value, siz);
+				}
 			}
 
 			// show field value
@@ -236,7 +250,7 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value
 			{
 				char tmp[20];
 				sprintf(tmp, "0x%016llX", getLE(FIELD_VALUE, siz * 8));
-				len += concat(html_table, tmp + ((siz == 8) ? 0 : 8));
+				len += concat(html_table, tmp + ((siz == 8) ? 0 : 10));
 			}
 			else
 				len += concat(html_table, FIELD_VALUE_);

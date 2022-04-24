@@ -11,18 +11,34 @@
 #define LV1_UPPER_MEMORY	0x8000000010000000ULL
 #define LV2_UPPER_MEMORY	0x8000000000800000ULL
 
-static void poke_chunk_lv1(u64 start, int size, u8 *buffer)
+static void poke_chunk_lv1(u64 start, int size, u8 *buffer, u8 oper)
 {
-	start |= 0x8000000000000000ULL;
+	start |= 0x8000000000000000ULL; u64 old_value, new_value;
 	for(int offset = 0; offset < size; offset += 8)
-		poke_lv1(start + offset, *((u64*)(buffer + offset)));
+	{
+		new_value = *((u64*)(buffer + offset));
+		if(oper)
+		{
+			old_value = peek_lv1(start + offset);
+			new_value = update_value(old_value, new_value, oper);
+		}
+		poke_lv1(start + offset, new_value);
+	}
 }
 
-static void poke_chunk_lv2(u64 start, int size, u8 *buffer)
+static void poke_chunk_lv2(u64 start, int size, u8 *buffer, u8 oper)
 {
-	start |= 0x8000000000000000ULL;
+	start |= 0x8000000000000000ULL; u64 old_value, new_value;
 	for(int offset = 0; offset < size; offset += 8)
-		pokeq(start + offset, *((u64*)(buffer + offset)));
+	{
+		new_value = *((u64*)(buffer + offset));
+		if(oper)
+		{
+			old_value = peekq(start + offset);
+			new_value = update_value(old_value, new_value, oper);
+		}
+		pokeq(start + offset, new_value);
+	}
 }
 
 static void peek_chunk_lv1(u64 start, u64 size, u64 *buffer) // read from lv1
@@ -171,7 +187,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
 	u64 address = 0, addr, byte_addr, value = 0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
-	u8 byte = 0, p = 0, lv1 = 0, rep = 1;
+	u8 byte = 0, p = 0, lv1 = 0, rep = 1, oper = 0;
 	bool found = false, not_found = false;
 	int flen = 0, hilite;
 	char *v;
@@ -234,6 +250,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	v = strchr(param + 10, '=');
 	if(v)
 	{
+		oper = get_operator(v, false);
 		flen = strlen(v + 1);
 		for(p = 1; p <= flen; p++) if(!memcmp(v + p, " ", 1)) byte++; //ignore spaces
 		flen -= byte; byte = p = 0;
@@ -323,9 +340,9 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			memcpy64(templn, value, flen);
 
 		if(lv1)
-			poke_chunk_lv1(address, flen, (u8 *)templn);
+			poke_chunk_lv1(address, flen, (u8 *)templn, oper);
 		else
-			poke_chunk_lv2(address, flen, (u8 *)templn);
+			poke_chunk_lv2(address, flen, (u8 *)templn, oper);
 
 		found_address = address; found = true;
 	}
