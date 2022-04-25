@@ -628,18 +628,27 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 	return found_offset;
 }
 
-static int ps3mapi_patch_process(u32 pid, u32 address, const char *new_value, int size)
+static int ps3mapi_patch_process(u32 pid, u32 address, const char *new_value, int size, u8 oper)
 {
 	if(pid == LV1)
 	{
-		poke_chunk_lv1(address, size, (u8*)new_value, 0);
+		poke_chunk_lv1(address, size, (u8*)new_value, oper);
 	}
 	else if(pid == LV2)
 	{
-		poke_chunk_lv2(address, size, (u8*)new_value, 0);
+		poke_chunk_lv2(address, size, (u8*)new_value, oper);
 	}
 	else
 	{
+		#ifndef LITE_EDITION
+		if(oper)
+		{
+			int len = (size & 0xFFFF8) + 8; char old_value[len];
+			system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)old_value, (u64)len);
+			u64 *nv = (u64*)new_value, *ov = (u64*)old_value;
+			for(u8 i = 0; i < (len/8); i++, ov++, nv++) *nv = update_value(*ov, *nv, oper);
+		}
+		#endif
 		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, (u64)pid, (u64)address, (u64)(u32)new_value, (u64)size);
 		return (int)p1;
 	}
@@ -742,19 +751,23 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 				if(size >= _64KB_) ps3mapi_dump_process(dump_file, pid, address, size);
 			}
 
-			if(strstr(param, "&val="))
+			char *val_param = strstr(param, "&val");
+			if(val_param)
 			{
 				char value[BINDATA_SIZE + 1];
 				char val_tmp[HEXDATA_SIZE + 1];
 				char *new_value = val_tmp;
 
+				u8 oper = get_operator(val_param, false); // val=, val|=, val&=, val^=
+				if(!oper && get_param("oper=", addr_tmp, param, 4)) oper = (u8)val(addr_tmp);
+
 				ps3mapi_get_memory(pid, address, value, BINDATA_SIZE);
 
-				hilite = length = get_param("val=", new_value, param, HEXDATA_SIZE);
+				hilite = length = get_param("=", new_value, val_param, HEXDATA_SIZE);
 				if(isHEX(val_tmp))
 					{hilite = length = Hex2Bin(val_tmp, value); new_value = (char*)value;}
 
-				if(length) {ps3mapi_patch_process(pid, address, new_value, length);}
+				if(length) {ps3mapi_patch_process(pid, address, new_value, length, oper);}
 				length = BINDATA_SIZE;
 			}
 		}
@@ -889,11 +902,12 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
 
+	u8 oper = 0; // replace value
 	u32 pid = 0;
 	u32 address = found_offset;
 	int length = 0;
-	char value[BINDATA_SIZE + 1];
-	char val_tmp[HEXDATA_SIZE + 1];
+	char value[BINDATA_SIZE + 1]; _memset(value, BINDATA_SIZE + 1);
+	char val_tmp[HEXDATA_SIZE + 1]; _memset(val_tmp, HEXDATA_SIZE + 1);
 
 	if(strstr(param, ".ps3mapi?"))
 	{
@@ -902,12 +916,19 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 		{
 			address = (u32)convertH(addr_tmp);
 
-			if(get_param("val=", val_tmp, param, HEXDATA_SIZE))
+			char *val_param = strstr(param, "&val");
+			if(val_param)
 			{
-				if(isHEX(val_tmp))
-					length = Hex2Bin(val_tmp, value);
-				else
-					length = sprintf(value, "%s", val_tmp);
+				oper = get_operator(val_param, false); // val=, val|=, val&=, val^=
+				if(!oper && get_param("oper=", addr_tmp, param, 4)) oper = (u8)val(addr_tmp);
+
+				if(get_param("=", val_tmp, val_param, HEXDATA_SIZE))
+				{
+					if(isHEX(val_tmp))
+						length = Hex2Bin(val_tmp, value);
+					else
+						length = sprintf(value, "%s", val_tmp);
+				}
 			}
 		}
 		else
@@ -919,6 +940,8 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 	if(found_offset) address = found_offset; found_offset = 0;
 
 	if(!is_ps3mapi_home && islike(param, "/setmem.ps3mapi")) ps3mapi_getmem(buffer, templn, param);
+
+	if((pid >= FLASH) && (pid < PID)) return; // read-only
 
 	if(!is_ps3mapi_home)
 		sprintf(templn, "<b>%s%s</b>"
@@ -933,20 +956,20 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 
 	//add_proc_list(buffer, templn, &pid, 2);
 
-	//if(*val_tmp == 0) sprintf(val_tmp, "00");
+	sprintf(templn, "<b><u>%s:</u></b> "  HTML_INPUT("addr", "%X", "16", "18"), "Address", address); concat(buffer, templn);
 
-	sprintf(templn, "<b><u>%s:</u></b> "  HTML_INPUT("addr", "%X", "16", "18")
-					"<br><br><b><u>%s:</u></b><br>"
-					"<table width=\"800\">"
+	add_html('o', oper, buffer, templn);
+
+	sprintf(templn, "<br><table width=\"800\">"
 					"<tr><td class=\"la\">"
 					"<textarea accesskey=\"v\" id=\"val\" name=\"val\" cols=\"103\" rows=\"5\" maxlength=\"" HEXDATA_LEN "\">%s</textarea></tr>"
 					"<tr><td class=\"ra\"><br>"
-					"<input class=\"bs\" type=\"submit\" accesskey=\"s\" value=\" %s \"/>%s", "Address", address, "Value", val_tmp, "Set", "</tr></table></form>");
+					"<input class=\"bs\" type=\"submit\" accesskey=\"s\" value=\" %s \"/>%s", val_tmp, "Set", "</tr></table></form>");
 	concat(buffer, templn);
 
-	if((pid != 0) && (length > 0))
+	if(pid && length && oper)
 	{
-		int retval = ps3mapi_patch_process(pid, address, value, length);
+		int retval = ps3mapi_patch_process(pid, address, value, length, oper);
 		if(retval < 0)
 			sprintf(templn, "<br><b><u>%s: %i</u></b>", "Error", retval);
 		else

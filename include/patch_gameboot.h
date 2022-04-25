@@ -39,7 +39,7 @@ static void patch_gameboot(u8 boot_type)
 			if(address > BASE_PATCH_ADDRESS)
 			{
 				len = sprintf(value, "%s_", id); // patch "xxx__gameboot"
-				ps3mapi_patch_process(pid, address, value, len); patched_address1 = address;
+				ps3mapi_patch_process(pid, address, value, len, 0); patched_address1 = address;
 
 				len = sprintf(value, "%slogo", "ps3"); // find ps3logo
 				address = ps3mapi_find_offset(pid, patched_address1, 0x1800000, 4, value, len, value, patched_address2);
@@ -47,7 +47,7 @@ static void patch_gameboot(u8 boot_type)
 				if(address > patched_address1)
 				{
 					len = sprintf(value, "%slogo", (boot_type == 3) ? "psx" : id); // patch xxxlogo
-					ps3mapi_patch_process(pid, address, value, len); patched_address2 = address;
+					ps3mapi_patch_process(pid, address, value, len, 0); patched_address2 = address;
 				}
 
 				bool is_bdv_dvd = (boot_type == 5) || (boot_type == 6);
@@ -59,7 +59,7 @@ static void patch_gameboot(u8 boot_type)
 				if(address > patched_address1)
 				{
 					len = sprintf(value, "%s__%sboot", id, anim); // patch xxx__otherboot / xxx__gameboot
-					ps3mapi_patch_process(pid, address, value, len + 1); patched_address3 = address;
+					ps3mapi_patch_process(pid, address, value, len + 1, 0); patched_address3 = address;
 				}
 
 				len = sprintf(value, "%s_%sboot", "anim", "other"); // find anim_otherboot for dvd/bdv
@@ -68,7 +68,7 @@ static void patch_gameboot(u8 boot_type)
 				if(address > patched_address1)
 				{
 					len = sprintf(value, "%s__%sboot", id, anim); // patch xxx__otherboot / xxx__gameboot
-					ps3mapi_patch_process(pid, address, value, len + 1); patched_address4 = address;
+					ps3mapi_patch_process(pid, address, value, len + 1, 0); patched_address4 = address;
 				}
 			}
 

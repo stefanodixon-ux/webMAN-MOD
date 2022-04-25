@@ -405,7 +405,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 										{
 											if((read_e = (u32)recv(data_s, buffer2, BUFFER_SIZE_PS3MAPI, MSG_WAITALL)) > 0)
 											{
-												ps3mapi_patch_process(attached_pid, offset, buffer2, read_e);
+												ps3mapi_patch_process(attached_pid, offset, buffer2, read_e, 0);
 												offset += read_e;
 											}
 											else

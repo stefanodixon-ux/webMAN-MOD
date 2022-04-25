@@ -731,6 +731,10 @@ static void replace_char(char *text, char c, char r)
 #ifndef LITE_EDITION
 static u8 get_operator(char *equal_pos, bool nullfy)
 {
+	if(!equal_pos) return 0;
+	if(*equal_pos != '=') equal_pos = strchr(equal_pos, '=');
+	if(!equal_pos) return 0;
+
 	char *prev = (equal_pos - 1);
 	const char c = nullfy ? '\0' : *prev;
 	if(*prev == '^') {*prev = c; return'^';} // field^=value

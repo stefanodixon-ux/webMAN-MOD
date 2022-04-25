@@ -194,12 +194,12 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value
 	READ_SFO_HEADER()
 
 	#ifdef VIEW_PARAM_SFO
-	bool view = (!field); u16 len, oper = 0;
+	bool view = (!field); u16 len, oper = 0; // replace value
 	char *html_table = ret_value, *new_value = NULL;
 	if(field) new_value = strchr(field, '=');
 	if(new_value > field)
 	{
-		oper = get_operator(new_value, true);
+		oper = get_operator(new_value, true); // =, |=, &=, ^=
 
 		*new_value++ = NULL; // split field & new_value
 

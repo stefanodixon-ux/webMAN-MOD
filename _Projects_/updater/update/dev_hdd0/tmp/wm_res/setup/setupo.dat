@@ -1,0 +1,7 @@
+<select name="oper" id="oper">
+<option value=0>Set
+<option value=38>And
+<option value=124>Or
+<option value=94>Xor
+</select><script>$("oper").value=1*"    "</script>
+<br><br><b><u>Value:</u></b>

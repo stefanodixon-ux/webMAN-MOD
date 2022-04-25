@@ -187,7 +187,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
 	u64 address = 0, addr, byte_addr, value = 0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
-	u8 byte = 0, p = 0, lv1 = 0, rep = 1, oper = 0;
+	u8 byte = 0, p = 0, lv1 = 0, rep = 1, oper = 0; // replace value
 	bool found = false, not_found = false;
 	int flen = 0, hilite;
 	char *v;
@@ -250,7 +250,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	v = strchr(param + 10, '=');
 	if(v)
 	{
-		oper = get_operator(v, false);
+		oper = get_operator(v, false); // =, |=, &=, ^= (poke.lv1 / poke.lv2)
 		flen = strlen(v + 1);
 		for(p = 1; p <= flen; p++) if(!memcmp(v + p, " ", 1)) byte++; //ignore spaces
 		flen -= byte; byte = p = 0;
