@@ -94,9 +94,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 	if(data[v3_entry].is_directory == false)
 	{
-		int flen = strlen(data[v3_entry].name); if(flen < 4) return FAILED;
-
-		char *ext = data[v3_entry].name + flen - 4; if(ext[1] == '.') ++ext;
+		char *ext = get_ext(data[v3_entry].name);
 		#ifdef MOUNT_ROMS
 		if(IS_ROMS_FOLDER)
 		{
@@ -365,31 +363,30 @@ static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *templn)
 static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 {
 #if defined(COBRA_ONLY) || defined(MOUNT_ROMS)
-	char *ext = entry_name + flen - 4; if(ext[1] == '.') ++ext;
+	int n = MAX(flen - 6, 0);
+	const char *ext = get_ext(entry_name + n);
 #endif
 #ifdef MOUNT_ROMS
 	if(IS_ROMS_FOLDER)
 	{
-		return (flen > 4) && (*ext == '.') && strcasestr(ROMS_EXTENSIONS, ext);
+		return strcasestr(ROMS_EXTENSIONS, ext);
 	}
 	else
 #endif
 #ifdef COBRA_ONLY
 	if(IS_NTFS)
-		return (flen > 13) && strstr(entry_name + flen - 13, ".ntfs[");
+		return islike(ext, ".ntfs[");
 	else
 	{
 		if(IS_ISO_FOLDER && (_IS(ext, ".zip") || _IS(ext, ".7z"))) return true;
 
-		return ((IS_ISO_FOLDER || IS_VIDEO_FOLDER)  && (flen > 4) && (
-				(              _IS(ext, ".iso")) ||
-				((flen > 6) && _IS(entry_name + flen - 6, ".iso.0")) ||
-				((IS_PS2ISO) && strcasestr(".bin|.img|.mdf|.enc", ext)) ||
-				((IS_PSXISO || IS_DVDISO || IS_BDISO) && strcasestr(ISO_EXTENSIONS + 14, ext))
+		return ((IS_ISO_FOLDER || IS_VIDEO_FOLDER)  && (
+				(_IS(ext, ".iso") || _IS(entry_name + n, ".iso.0"))  ||
+				((IS_PS2ISO || IS_PSXISO || IS_DVDISO || IS_BDISO) && strcasestr(ISO_EXTENSIONS + 14, ext))
 				));
 	}
 #else
-	return (IS_PS2ISO && flen > 8 && IS(entry_name + flen - 8, ".BIN.ENC"));
+	return (IS_PS2ISO && IS(entry_name + MAX(flen - 8, 0), ".BIN.ENC"));
 #endif
 }
 

@@ -14,10 +14,12 @@ extern int stdc_3D85D6F8(const char *str1, const char *str2);							// strcmp()
 int strcmp(const char *str1, const char *str2) {if(!str1 || !str2) return -1; return stdc_3D85D6F8(str1, str2);}
 
 extern size_t stdc_2F45D39C(const char *str);											// strlen()
-size_t strlen(const char *str) {if(!str) return 0; return stdc_2F45D39C(str);}
+#define __strlen	stdc_2F45D39C
+size_t strlen(const char *str) {if(!str) return 0; return __strlen(str);}
 
 extern void *stdc_5909E3C4(void *str, int c, size_t n);									// memset()
-void* memset(void *str, int c, size_t n) {if(!str || !n) return NULL; return stdc_5909E3C4(str, c, n);}
+#define __memset	stdc_5909E3C4
+void* memset(void *str, int c, size_t n) {if(!str || !n) return NULL; return __memset(str, c, n);}
 
 extern void *stdc_831D70A5(void *dest, const void *src, size_t num);					// memcpy()
 void* memcpy(void *dest, const void *src, size_t num) {if(!dest || !src || !num) return NULL; return stdc_831D70A5(dest, src, num);}
@@ -65,38 +67,41 @@ extern size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max);				// m
 size_t mbstowcs(wchar_t *dest, const char *src, size_t max) {if(!dest || !src) return 0; return stdc_FCAC2E8E(dest, src, max);}
 
 extern size_t stdc_12A55FB7(wchar_t *restrict pwc, const char *restrict s, size_t n, mbstate_t *restrict ps); // mbrtowc
+#define mbrtowc  stdc_12A55FB7
 int mbtowc(wchar_t * restrict pwc, const char * restrict s, size_t n)
 {
 	static mbstate_t mbs;
 	size_t rval;
 
 	if (s == NULL) {
-		stdc_5909E3C4(&mbs, 0, sizeof(mbs));											//memset
+		__memset(&mbs, 0, sizeof(mbs));											//memset
 		return (0);
 	}
-	rval = stdc_12A55FB7(pwc, s, n, &mbs);												//mbrtowc
+	rval = mbrtowc(pwc, s, n, &mbs);												//mbrtowc
 	if (rval == (size_t)-1 || rval == (size_t)-2)
 		return (-1);
 	return ((int)rval);
 }
 
 extern size_t stdc_B2702E15(char *pmb, wchar_t wc, mbstate_t *ps);						// wcrtomb()
+#define wcrtomb  stdc_B2702E15
 int wctomb(char *s, wchar_t wchar)
 {
 	static mbstate_t mbs;
 	size_t rval;
 
 	if (s == NULL) {
-		stdc_5909E3C4(&mbs, 0, sizeof(mbs));											//memset
+		__memset(&mbs, 0, sizeof(mbs));											//memset
 		return (0);
 	}
-	if ((rval = stdc_B2702E15(s, wchar, &mbs)) == (size_t)-1)							//wcrtomb
+	if ((rval = wcrtomb(s, wchar, &mbs)) == (size_t)-1)							//wcrtomb
 		return (-1);
 	return ((int)rval);
 }
 
 extern int stdc_C3E14CBE(const void *ptr1, const void *ptr2, size_t num);				// memcmp()
-int memcmp(const void *ptr1, const void *ptr2, size_t num) {if(!ptr1 || !ptr1 || !num) return -1; return stdc_C3E14CBE(ptr1, ptr2, num);}
+#define __memcmp	stdc_C3E14CBE
+int memcmp(const void *ptr1, const void *ptr2, size_t num) {if(!ptr1 || !ptr1 || !num) return -1; return __memcmp(ptr1, ptr2, num);}
 
 char *stdc_DEBEE2AF(const char *str, int c);										// strchr()
 char* strchr(const char *str, int c) {if(!str) return NULL; return stdc_DEBEE2AF(str, c);}
@@ -114,7 +119,8 @@ extern char *stdc_AA9635D7(char *dest, const char *src);								// strcat()
 char* strcat(char *dest, const char *src) {if(!dest || !src) return NULL; return stdc_AA9635D7(dest, src);}
 
 extern int stdc_B6257E3D(const char *s1, const char *s2, size_t n);						// strncasecmp()
-int strncasecmp(const char *s1, const char *s2, size_t n) {if(!s2 || !s2) return -1; return stdc_B6257E3D(s1, s2, n);}
+#define __strncasecmp	stdc_B6257E3D
+int strncasecmp(const char *s1, const char *s2, size_t n) {if(!s2 || !s2) return -1; return __strncasecmp(s1, s2, n);}
 
 extern int stdc_B6D92AC3(const char *s1, const char *s2);								// strcasecmp()
 int strcasecmp(const char *s1, const char *s2) {if(!s2 || !s2) return -1; return stdc_B6D92AC3(s1, s2);}
@@ -246,10 +252,10 @@ char *strcasestr(const char *s1, const char *s2)
 {
 	if(!s1 || !s2) return 0;
 
-	size_t n = stdc_2F45D39C(s2); if(n == 0) return 0;
+	size_t n = __strlen(s2); if(n == 0) return 0;
 
 	while(*s1)
-		if(!stdc_B6257E3D(s1++, s2, n))
+		if(!__strncasecmp(s1++, s2, n))
 			return (char*)(s1 - 1);
 
 	return 0;
@@ -349,17 +355,17 @@ int extcasecmp(const char *s1, const char *s2, size_t n);
 int extcasecmp(const char *s1, const char *s2, size_t n)
 {
 	if(!s1 || !s2) return -1;
-	int s = stdc_2F45D39C(s1) - n;
+	int s = __strlen(s1) - n;
 	if(s < 0) return -1;
-	return stdc_B6257E3D(s1 + s, s2, n);
+	return __strncasecmp(s1 + s, s2, n);
 }
 
 int extcmp(const char *s1, const char *s2, size_t n);
 int extcmp(const char *s1, const char *s2, size_t n)
 {
 	if(!s1 || !s2) return -1;
-	int s = stdc_2F45D39C(s1) - n;
+	int s = __strlen(s1) - n;
 	if(s < 0) return -1;
-	if(n == 8 && !stdc_C3E14CBE(s2, ".BIN.ENC", n)) return stdc_B6257E3D(s1 + s, s2, n);
-	return stdc_C3E14CBE(s1 + s, s2, n);
+	if(n == 8 && !__memcmp(s2, ".BIN.ENC", n)) return __strncasecmp(s1 + s, s2, n);
+	return __memcmp(s1 + s, s2, n);
 }

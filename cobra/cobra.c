@@ -13,7 +13,7 @@
 #define _COBRA_C
 
 #include "cobra.h"
-#include "storage.h"
+#include "storage_ext.h"
 #include "psp.h"
 // #include "syscall8.h"
 // #include "scsi.h"
@@ -118,57 +118,6 @@ int save_file(const char *file, const char *mem, int64_t size);
 int file_copy(const char *file1, char *file2);
 int wait_for(const char *path, uint8_t timeout);
 
-
-// storage.h inline functions merged
-static int sys_storage_ext_get_emu_state(sys_emu_state_t *state)
-{
-	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_EMU_STATE, (uint64_t)(uint32_t)state);
-	return (int)p1;
-}
-
-static int sys_ss_disc_auth(uint64_t func, uint64_t param)
-{
-	system_call_2(864, func, param);
-	return (int)p1;
-}
-
-static int sys_storage_ext_mount_ps3_discfile(unsigned int filescount, char *files[])
-{
-	system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_PS3_DISCFILE, filescount, (uint64_t)(uint32_t)files);
-	return (int)p1;
-}
-
-static int sys_storage_ext_mount_dvd_discfile(unsigned int filescount, char *files[])
-{
-	system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_DVD_DISCFILE, filescount, (uint64_t)(uint32_t)files);
-	return (int)p1;
-}
-
-static int sys_storage_ext_mount_bd_discfile(unsigned int filescount, char *files[])
-{
-	system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_BD_DISCFILE, filescount, (uint64_t)(uint32_t)files);
-	return (int)p1;
-}
-
-static int sys_storage_ext_mount_psx_discfile(char *file, unsigned int trackscount, ScsiTrackDescriptor *tracks)
-{
-	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_PSX_DISCFILE, (uint64_t)(uint32_t)file, trackscount, (uint64_t)(uint32_t)tracks);
-	return (int)p1;
-}
-
-static int sys_storage_ext_mount_ps2_discfile(unsigned int filescount, char *files[], unsigned int trackscount, ScsiTrackDescriptor *tracks)
-{
-	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_PS2_DISCFILE, filescount, (uint64_t)(uint32_t)files, trackscount, (uint64_t)(uint32_t)tracks);
-	return (int)p1;
-}
-
-/*
-static int sys_storage_ext_mount_encrypted_image(char *image, char *mount_point, char *filesystem, uint64_t nonce)
-{
-	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_ENCRYPTED_IMAGE, (uint64_t)(uint32_t)image, (uint64_t)(uint32_t)mount_point, (uint64_t)(uint32_t)filesystem, nonce);
-	return (int)p1;
-}
-*/
 /*
 #define N_TITLE_IDS	102
 #define N_TITLE_NAMES	24
@@ -1747,7 +1696,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 						if (psp_extra_keys[i].tag == header[0xD0/4])
 						{
 							tag  = psp_extra_keys[i].tag;
-							code = psp_extra_keys[i].code;
+							code = 0x5D; //psp_extra_keys[i].code;
 							keys = psp_extra_keys[i].keys;
 							break;
 						}

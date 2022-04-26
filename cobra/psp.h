@@ -7,7 +7,7 @@
 typedef struct
 {
 	uint32_t tag;
-	uint8_t code;
+//	uint8_t code;
 	uint8_t *keys;
 } PSPKey;
 
@@ -54,31 +54,31 @@ static uint8_t key_D91690F0[] = {0x42, 0x61, 0xE2, 0x57, 0x94, 0x49, 0x42, 0xB5,
 /* 0x5D Game EBOOT.BIN keys */
 static const PSPKey psp_extra_keys[] =
 {
-	{ 0xF00816D9, 0x5D, key_D91608F0 }, // tag 03 3.10
-	{ 0xF00916D9, 0x5D, key_D91609F0 }, // tag 04 5.00
-	{ 0xF01116D9, 0x5D, key_D91611F0 }, // tag 08 6.00
-	{ 0xF01216D9, 0x5D, key_D91612F0 }, // tag 09
-	{ 0xF01316D9, 0x5D, key_D91613F0 }, // tag 10
-	{ 0xF01416D9, 0x5D, key_D91614F0 }, // tag 11
-	{ 0xF01516D9, 0x5D, key_D91615F0 }, // tag 12
-	{ 0xF01616D9, 0x5D, key_D91616F0 }, // tag 13
-	{ 0xF01716D9, 0x5D, key_D91617F0 }, // tag 14
-	{ 0xF01816D9, 0x5D, key_D91618F0 }, // tag 15
-	{ 0xF01916D9, 0x5D, key_D91619F0 }, // tag 16
-	{ 0xF01A16D9, 0x5D, key_D9161AF0 }, // tag 17
-	{ 0xF02016D9, 0x5D, key_D91620F0 }, // tag 19
-	{ 0xF02116D9, 0x5D, key_D91621F0 }, // tag 20
-	{ 0xF02216D9, 0x5D, key_D91622F0 }, // tag 21
-	{ 0xF02316D9, 0x5D, key_D91623F0 }, // tag 22
-	{ 0xF02416D9, 0x5D, key_D91624F0 }, // tag 23
-	{ 0xF02816D9, 0x5D, key_D91628F0 }, // tag 24 5.70 PSPgo
-	{ 0xF08016D9, 0x5D, key_D91680F0 }, // tag 25 6.30
-	{ 0xF08116D9, 0x5D, key_D91681F0 }, // tag 26 6.50
+	{ 0xF00816D9, /* 0x5D, */ key_D91608F0 }, // tag 03 3.10
+	{ 0xF00916D9, /* 0x5D, */ key_D91609F0 }, // tag 04 5.00
+	{ 0xF01116D9, /* 0x5D, */ key_D91611F0 }, // tag 08 6.00
+	{ 0xF01216D9, /* 0x5D, */ key_D91612F0 }, // tag 09
+	{ 0xF01316D9, /* 0x5D, */ key_D91613F0 }, // tag 10
+	{ 0xF01416D9, /* 0x5D, */ key_D91614F0 }, // tag 11
+	{ 0xF01516D9, /* 0x5D, */ key_D91615F0 }, // tag 12
+	{ 0xF01616D9, /* 0x5D, */ key_D91616F0 }, // tag 13
+	{ 0xF01716D9, /* 0x5D, */ key_D91617F0 }, // tag 14
+	{ 0xF01816D9, /* 0x5D, */ key_D91618F0 }, // tag 15
+	{ 0xF01916D9, /* 0x5D, */ key_D91619F0 }, // tag 16
+	{ 0xF01A16D9, /* 0x5D, */ key_D9161AF0 }, // tag 17
+	{ 0xF02016D9, /* 0x5D, */ key_D91620F0 }, // tag 19
+	{ 0xF02116D9, /* 0x5D, */ key_D91621F0 }, // tag 20
+	{ 0xF02216D9, /* 0x5D, */ key_D91622F0 }, // tag 21
+	{ 0xF02316D9, /* 0x5D, */ key_D91623F0 }, // tag 22
+	{ 0xF02416D9, /* 0x5D, */ key_D91624F0 }, // tag 23
+	{ 0xF02816D9, /* 0x5D, */ key_D91628F0 }, // tag 24 5.70 PSPgo
+	{ 0xF08016D9, /* 0x5D, */ key_D91680F0 }, // tag 25 6.30
+	{ 0xF08116D9, /* 0x5D, */ key_D91681F0 }, // tag 26 6.50
 
 	// Missing Keys (av 20190711)
-	{ 0xF01016D9, 0x5D, key_D91610F0 }, // tag 07 3.60
-	{ 0xF01E16D9, 0x5D, key_D9161EF0 }, // tag 18 5.00 PSP-3000
-	{ 0xF09016D9, 0x5D, key_D91690F0 }, // tag 27 6.60
+	{ 0xF01016D9, /* 0x5D, */ key_D91610F0 }, // tag 07 3.60
+	{ 0xF01E16D9, /* 0x5D, */ key_D9161EF0 }, // tag 18 5.00 PSP-3000
+	{ 0xF09016D9, /* 0x5D, */ key_D91690F0 }, // tag 27 6.60
 };
 
 

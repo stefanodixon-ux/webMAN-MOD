@@ -55,9 +55,9 @@
 
 			if(!accept)
 			{
-				int ext_pos = strlen(param) - 4; if(ext_pos < 0) ext_pos = 0; sys_admin = 0;
-				char *ext = param + ext_pos;
-				if(!accept && (islike(param, "/net") || file_exists(param)) && (_IS(ext, ".jpg") || _IS(ext, ".png") || IS(ext, ".css") || strstr(ext, ".js") || IS(ext, "html")) ) accept = true;
+				sys_admin = 0;
+				const char *ext = get_ext(param);
+				if(!accept && (islike(param, "/net") || file_exists(param)) && (_IS(ext, ".jpg") || _IS(ext, ".png") || _IS(ext, ".css") || _IS(ext, ".js") || _IS(ext, "html")) ) accept = true;
 			}
 		}
 

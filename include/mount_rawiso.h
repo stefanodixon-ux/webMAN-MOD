@@ -112,7 +112,7 @@ mounted_ntfs:
 
 				if(is_psp)
 				{
-					*ntfs_ext = 0;
+					*ntfs_ext = '\0';
 					strcpy(templn, _path);
 					*ntfs_ext = '.';
 				}

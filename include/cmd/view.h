@@ -3,9 +3,10 @@
 			{
 				char *filename = param + 9;
 				char *sfo = strstr(filename, ".SFO");
-				char *patch = NULL; if(sfo) {if((patch = strchr(sfo, '?'))) *patch++ = NULL;}
-				if(is_ext(filename, ".SFO"))
+				if(sfo)
 				{
+					char *patch = strchr(sfo, '?'); if(patch) *patch++ = NULL;
+
 					char param_sfo[_4KB_], out[_8KB_], *tmp = header;
 					u16 sfo_size = read_sfo(filename, param_sfo);
 

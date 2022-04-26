@@ -56,13 +56,13 @@ static bool is_iso_0(const char *filename)
 
 static char *get_ext(const char *path)
 {
-	if(!path) return NULL;
+	if(!path || !(*path)) return (char*)path;
 
-	int plen = strlen(path) - 4;
-	if(plen < 0) plen = 0;
-	else if(path[plen + 1] == '.') plen++;
-	else if(path[plen + 2] == '.') plen+=2;
-	return (char *)(path + plen);
+	const char *ext = path + strlen(path) - 1;
+	const char *end = ext - ((*ext == ']') ? 13 : 6); // search limit 6 or 13 chars
+	while(--ext > path)
+		if((*ext == '.') || (ext <= end)) break;
+	return (char*)ext;
 }
 
 static char *get_filename(const char *path)

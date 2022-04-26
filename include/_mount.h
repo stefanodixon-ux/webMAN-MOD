@@ -1216,7 +1216,7 @@ static void cache_icon0_and_param_sfo(char *destpath)
 	wait_for("/dev_bdvd", 15);
 
 	char *ext = destpath + strlen(destpath);
-	strcpy(ext, ".SFO");
+	strcpy(ext, ".SFO"); // append .SFO
 	dont_copy_same_size = false;
 
 	// cache PARAM.SFO
@@ -1250,22 +1250,22 @@ static void cache_icon0_and_param_sfo(char *destpath)
 static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_parts, int emu_type)
 {
 	bool ret = false;
-	int flen = strlen(_path) - 4; bool mount_iso = false;
+
+	const char *ext = get_ext(_path);
+	bool mount_iso = false;
 	s32 cue_offset = 0;
 
-	if(flen < 0) ;
-
+	if(_IS(ext, ".cue") || _IS(ext, ".ccd"))
+	{
+		change_cue2iso(cobra_iso_list[0]);
+	}
 	#ifdef MOUNT_PNG
-	else if(is_ext(_path, ".png"))
+	else if(_IS(ext, ".png"))
 	{
 		cue_offset = 0xE000UL;
 	}
 	#endif
-	else if(is_ext(_path, ".cue") || is_ext(_path, ".ccd"))
-	{
-		change_cue2iso(cobra_iso_list[0]);
-	}
-	else if(_path[flen] == '.')
+	else if(*ext == '.')
 	{
 		change_ext(_path, 4, cue_ext);
 		if(not_exists(_path)) strcpy(_path, cobra_iso_list[0]);
@@ -1282,7 +1282,7 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 		if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 	}
 
-	if(is_ext(_path, ".cue") || is_ext(_path, ".ccd") || (cue_offset == 0xE000UL))
+	if(_IS(ext, ".cue") || _IS(ext, ".ccd") || (cue_offset == 0xE000UL))
 	{
 		sys_addr_t sysmem = sys_mem_allocate(_64KB_);
 		if(sysmem)

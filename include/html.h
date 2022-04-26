@@ -421,8 +421,9 @@ static size_t _add_checkbox(const char *name, const char *label, bool checked, c
 
 static size_t add_option_item(int value, const char *label, bool selected, char *buffer)
 {
-	char templn[MAX_LINE_LEN];
-	sprintf(templn, "<option value=\"%i\"%s/>%s", value, selected ? ITEM_SELECTED : "", label);
+	char templn[MAX_LINE_LEN], svalue[20];
+	if(value >= 0x1000) sprintf(svalue, "0x%x", value); else sprintf(svalue, "%i", value);
+	sprintf(templn, "<option value=\"%s\"%s/>%s", svalue, selected ? ITEM_SELECTED : "", label);
 	return concat(buffer, templn);
 }
 
@@ -452,17 +453,15 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 	// get mime type
 	if(is_binary == BINARY_FILE)
 	{
-		int flen = strlen(param);
-
-		const char *ext = (char*)param + MAX(flen - 4, 0), *ext5 = (char*)param + MAX(flen - 5, 0);
+		const char *ext = get_ext(param);
 
 		if(_IS(ext, ".png"))
 			_concat2(&header, "image/", "png");
 		else
-		if(_IS(ext, ".jpg") || _IS(ext5, ".jpeg") || IS(ext, ".STH"))
+		if(_IS(ext, ".jpg") || _IS(ext, ".jpeg") || IS(ext, ".STH"))
 			_concat2(&header, "image/", "jpeg");
 		else
-		if(_IS(ext, ".htm") || _IS(ext5, ".html") || _IS(ext5, ".shtm"))
+		if(_IS(ext, ".htm") || _IS(ext, ".html") || _IS(ext, ".shtm"))
 			{_concat2(&header, "text/", "html;charset=UTF-8"); set_base_path = true;}
 		else
 		if(_IS(ext + 1, ".js"))
@@ -496,7 +495,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		if(_IS(ext, ".mkv"))
 			_concat2(&header, "video/", "x-matroska");
 		else
-		if(_IS(ext, ".mpg") || _IS(ext, ".mp2") || strcasestr(ext5, ".mpe"))
+		if(_IS(ext, ".mpg") || _IS(ext, ".mp2") || strcasestr(ext, ".mpe"))
 			_concat2(&header, "video/", "mpeg");
 		else
 		if(_IS(ext, ".vob"))
@@ -511,7 +510,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		if(_IS(ext, ".mov"))
 			_concat2(&header, "video/", "quicktime");
 		else
-		if(_IS(ext5, ".webm"))
+		if(_IS(ext, ".webm"))
 			_concat2(&header, "video/", "webm");
 		else
 		if(_IS(ext, ".mp3"))
@@ -538,13 +537,13 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		if(_IS(ext, ".doc"))
 			_concat2(&header, "application/", "msword");
 		else
-		if(_IS(ext5, ".docx"))
+		if(_IS(ext, ".docx"))
 			_concat2(&header, "application/", "vnd.openxmlformats-officedocument.wordprocessingml.document");
 		else
 		if(_IS(ext, ".xls"))
 			_concat2(&header, "application/", "vnd.ms-excel");
 		else
-		if(_IS(ext5, ".xlsx"))
+		if(_IS(ext, ".xlsx"))
 			_concat2(&header, "application/", "vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		else
 		if(_IS(ext, ".ppt") || _IS(ext, ".pps"))

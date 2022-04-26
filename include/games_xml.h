@@ -351,7 +351,7 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 		if(f1 == 0) add_tag(tags, 0x96B2); else // GAMES
 		if(f1 == 1) add_tag(tags, 0x97B2); else // GAMEZ
 		{
-			char *ext = get_ext(filename);
+			const char *ext = get_ext(filename);
 			if(_IS(ext, ".bin")) add_tag(tags, 0x91BE); else // BIN
 			if(_IS(ext, ".iso")) add_tag(tags, 0x9288); else // ISO
 			if(_IS(ext, ".img")) add_tag(tags, 0x9287); else // IMG

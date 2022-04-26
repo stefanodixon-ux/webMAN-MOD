@@ -336,9 +336,14 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 
 			sprintf(templn, " <a href=\"%s%s\">%s %s</a> &nbsp; ", search_url, _game_Title, _game_Title, app_ver); buffer += concat(buffer, templn);
 
+			#ifdef PS3MAPI
 			sprintf(templn, "<a href=\"%s\"><img src=\"%s/ICON0.PNG\" height=\"60\" border=0%s></a> "
-							"<a href=\"/%s.ps3mapi?proc=%i\"><small>pid=%08x</small></a>",
+							"<a href=\"/%s.ps3mapi?proc=0x%x\"><small>pid=%08x</small></a>",
 					path, path, " style=\"position:relative;top:20px;\"", (is_cpursx < 3) ? "gameplugin" : "getmem",  GetGameProcessID(), GetGameProcessID()); buffer += concat(buffer, templn);
+			#else
+			sprintf(templn, "<a href=\"%s\"><img src=\"%s/ICON0.PNG\" height=\"60\" border=0%s></a> ",
+					path, path, " style=\"position:relative;top:20px;\""); buffer += concat(buffer, templn);
+			#endif
 
 			buffer += concat(buffer, "</H2></span>");
 		}

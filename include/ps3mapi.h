@@ -549,7 +549,7 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 		if(src == 1)
 		{
 			add_option_item(FLASH, "Flash", (pid == FLASH), buffer);
-			add_option_item(HDD0,  drives[0], (pid == HDD0), buffer);
+			add_option_item(HDD0, drives[0], (pid == HDD0), buffer);
 			add_option_item(USB0, drives[1], (pid == USB0), buffer);
 			add_option_item(USB1, drives[2], (pid == USB0 + 1), buffer);
 		}
@@ -575,8 +575,7 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 		concat(buffer, templn);
 	}
 
-	sprintf(templn, "<input name=\"proc\" type=\"hidden\" value=\"%u\"><br><br>", pid);
-	concat(buffer, templn);
+	concat(buffer, "<br><br>");
 
 	add_game_info(buffer, templn, src);
 
@@ -799,8 +798,8 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		sprintf(templn, "<br><b><u>%s:</u></b>", "Output");
 		concat(buffer, templn);
 
-		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&lt;Back</a>", pid, address - 0x2000, pid, address - BINDATA_SIZE); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=%u&addr=%x\">&gt;&gt;</a>", pid, address + BINDATA_SIZE, pid, address + 0x2000); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">&lt;Back</a>", pid, address - 0x2000, pid, address - BINDATA_SIZE); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">&gt;&gt;</a>", pid, address + BINDATA_SIZE, pid, address + 0x2000); buffer += concat(buffer, templn);
 
 		if(file_exists(dump_file)) {add_breadcrumb_trail2(buffer, " [", dump_file); concat(buffer, " ]");}
 
@@ -1377,10 +1376,10 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 				sprintf(templn, ""
 						 "<td width=\"100\" class=\"ra\">"
 						  HTML_FORM_METHOD_FMT("/gameplugin")
-						  "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
-						  "<input name=\"unload_slot\" type=\"hidden\" value=\"%i\">"
+						  "<input name=\"proc\" type=\"hidden\" value=\"0x%x\">"
+						  "<input name=\"unload_slot\" type=\"hidden\" value=\"0x%x\">"
 						  "<input name=\"sys\" type=\"hidden\" value=\"%u\">"
-						  "<input type=\"submit\" value=\" Unload \" title=\"id=%i\">"
+						  "<input type=\"submit\" value=\" Unload \" title=\"id=0x%x\">"
 						  "</form>"
 						 ""
 						"</tr>", HTML_FORM_METHOD, pid, mod_list[slot], islike(tmp_filename, "/dev_flash") | IS(tmp_name, "WWWD")<<1, mod_list[slot]);
@@ -1396,7 +1395,7 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 						 "<td width=\"100\" class=\"ra\">"
 						  HTML_FORM_METHOD_FMT("/gameplugin")
 						   "<td width=\"500\" class=\"la\">"
-							 "<input name=\"proc\" type=\"hidden\" value=\"%u\">"
+							 "<input name=\"proc\" type=\"hidden\" value=\"0x%x\">"
 							 HTML_INPUT("prx\" list=\"plugins", "", "128", "75")
 							 "<input name=\"load_slot\" type=\"hidden\" value=\"%i\">"
 							 "<input type=\"submit\" value=\" Load \">"

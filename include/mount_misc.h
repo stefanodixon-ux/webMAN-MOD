@@ -50,7 +50,7 @@
 	// mount NPDRM game
 	// ------------------
  #ifdef PKG_LAUNCHER
-	char *ext = get_ext(_path);
+	const char *ext = get_ext(_path);
 
 	if(isDir(PKGLAUNCH_DIR) && !islike(_path, "/net"))
 	{
@@ -110,7 +110,7 @@
 	{
 		if(islike(_path, "/net")) ; else // mount ROMS in /net module
 
-		if(strstr(_path, "/ROMS") || strcasestr(_path, ".SELF") || strcasestr(ROMS_EXTENSIONS + 20, ext))
+		if(strstr(_path, "/ROMS") || _IS(ext, ".SELF") || strcasestr(ROMS_EXTENSIONS + 20, ext))
 		{
 			do_umount(false);
 

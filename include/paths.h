@@ -148,7 +148,7 @@
 #endif
 
 #define MAX_ISO_PARTS				(16)
-#define ISO_EXTENSIONS				".cue.ccd.iso.0.bin.img.mdf"
+#define ISO_EXTENSIONS				".cue.ccd.iso.0.bin.img.mdf.enc"
 #define ARCHIVE_EXTENSIONS			".zip.rar.bz2.tgz.tar.7z.gz"
 
 static const char *smonth[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
