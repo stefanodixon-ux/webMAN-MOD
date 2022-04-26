@@ -55,7 +55,7 @@
 	if(isDir(PKGLAUNCH_DIR) && !islike(_path, "/net"))
 	{
 		if( !extcasecmp(_path, ".self", 5) ||
-			(strcasestr(ARCHIVE_EXTENSIONS + 4, ext) != NULL) ||
+			strcasestr(ARCHIVE_EXTENSIONS + 4, ext) ||
 			(!strstr(_path, "/ROMS") && _IS(ext, ".zip"))
 		)
 		{

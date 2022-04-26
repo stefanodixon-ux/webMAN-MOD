@@ -1,0 +1,8 @@
+<div id="mg">
+<script>
+var i,v=document.cookie.split(';');
+for(i=0;i<v.length;i++)if(v[i]>0)break;
+css=document.styleSheets[0]; z=parseInt(v[i]);
+css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);
+$('sz').value=z;$('mg').style.zoom=z/100;
+</script>

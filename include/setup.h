@@ -1000,11 +1000,11 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef COBRA_NON_LITE
-	add_checkbox("pdc", STR_DISCOBRA,  " : <b>L3+L2+&#8710;</b>", !(webman_config->combo & DISACOBRA),  buffer);
 	#ifdef NET_SUPPORT
 	add_checkbox("pn0", "NET0",        " : <b>SELECT+R2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET0), buffer);
 	add_checkbox("pn1", "NET1",        " : <b>SELECT+L2+&#9633;</b><br>", !(webman_config->combo2 & MOUNTNET1), buffer);
 	#endif
+	add_checkbox("pdc", STR_DISCOBRA,  " : <b>L3+L2+&#8710;</b><br>", !(webman_config->combo & DISACOBRA),  buffer);
 #endif
 
 #ifdef REX_ONLY

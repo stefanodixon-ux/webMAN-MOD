@@ -104,7 +104,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		}
 		else
 		#endif
-		if(IS_PSPISO && (strstr(data[v3_entry].name, ".EBOOT.") != NULL)) return FAILED;
+		if(IS_PSPISO && strstr(data[v3_entry].name, ".EBOOT.")) return FAILED;
 		else
 			if(!strcasestr(ISO_EXTENSIONS + 8, ext)) return FAILED;
 	}
@@ -370,13 +370,13 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 #ifdef MOUNT_ROMS
 	if(IS_ROMS_FOLDER)
 	{
-		return (flen > 4) && (*ext == '.') && (strcasestr(ROMS_EXTENSIONS, ext) != NULL);
+		return (flen > 4) && (*ext == '.') && strcasestr(ROMS_EXTENSIONS, ext);
 	}
 	else
 #endif
 #ifdef COBRA_ONLY
 	if(IS_NTFS)
-		return (flen > 13) && (strstr(entry_name + flen - 13, ".ntfs[") != NULL);
+		return (flen > 13) && strstr(entry_name + flen - 13, ".ntfs[");
 	else
 	{
 		if(IS_ISO_FOLDER && (_IS(ext, ".zip") || _IS(ext, ".7z"))) return true;
@@ -563,7 +563,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		#ifdef NET_SUPPORT
 			if(!b0 && strstr(param, "net" ))  {filter0 = NET, b0 = 3;}
 		#endif
-			if(strchr(param, '?') != NULL && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && (strstr(param, "?html") == NULL) && strstr(param, "mobile") == NULL) strcpy(filter_name, strrchr(param, '?') + 1);
+			if(strchr(param, '?') && ((!b0 && !b1) || (strrchr(param, '?') > strchr(param, '?'))) && !strstr(param, "?html") && !strstr(param, "mobile")) strcpy(filter_name, strrchr(param, '?') + 1);
 		}
 
 		int ns = NONE; u8 uprofile, all_profiles = (profile >= 5); enum icon_type default_icon;
@@ -647,7 +647,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 					do
 					{
 						flen = sprintf(tempstr + HTML_KEY_LEN, "%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s\">%s",
-										param, idx, icon, onerror_prefix, ((*onerror_prefix != NULL) && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, templn);
+										param, idx, icon, onerror_prefix, (*onerror_prefix && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, templn);
 
 						slen -= 4; if(slen < 32) break;
 						templn[slen] = '\0';
@@ -800,7 +800,7 @@ list_games:
 						else
 							flen = sprintf(tempstr + HTML_KEY_LEN, "%s%s/%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s%s/%s\">%s",
 											neth, param, enc_dir_name, idx,
-											icon, onerror_prefix, ((*onerror_prefix != NULL) && default_icon) ? wm_icons[default_icon] : "", onerror_suffix,
+											icon, onerror_prefix, (*onerror_prefix  && default_icon) ? wm_icons[default_icon] : "", onerror_suffix,
 											neth, param, enc_dir_name, templn);
 
 						v3_entry++;
@@ -916,7 +916,7 @@ next_html_entry:
 								do
 								{
 									flen = sprintf(tempstr + HTML_KEY_LEN, "%s%s/%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s%s/%s\">%s",
-													param, "", enc_dir_name, idx, icon, onerror_prefix, ((*onerror_prefix != NULL) && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, "", enc_dir_name, templn);
+													param, "", enc_dir_name, idx, icon, onerror_prefix, (*onerror_prefix && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, "", enc_dir_name, templn);
 
 									slen -= 4; if(slen < 32) break;
 									templn[slen] = '\0';
@@ -1005,18 +1005,17 @@ next_html_entry:
 			sprintf(templn, // wait dialog div
 							"<div id=\"wmsg\"><H1>. . .</H1></div>"
 							// show games count + find icon
-							"<a href=\"javascript:var s=prompt('Search:','');if(s){$('rhtm').style.display='block';self.location='/index.ps3?'+escape(s)}\"> &nbsp; %'i %s &#x1F50D;</a></font>"
+							"<a href=\"javascript:_find();\"> &nbsp; %'i %s &#x1F50D;</a></font>"
 							// separator
-							"<HR><span style=\"white-space:normal;\">", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
+							"<HR><span style=\"white-space:normal;\">", idx, strstr(param, "DI") ? STR_FILES : STR_GAMES); _concat(&sout, templn);
 
 			#ifndef LITE_EDITION
 			sortable = file_exists(JQUERY_LIB_JS) && file_exists(JQUERY_UI_LIB_JS);
 			if(sortable)
 			{	// add external jquery libraries
-				sprintf(templn, SCRIPT_SRC_FMT
-								SCRIPT_SRC_FMT
-								"<script>$(function(){$(\"#mg\").sortable();});</script>",
-								JQUERY_LIB_JS, JQUERY_UI_LIB_JS); _concat(&sout, templn);
+				sprintf(templn, SCRIPT_SRC_FMT, JQUERY_LIB_JS); _concat(&sout, templn);
+				sprintf(templn, SCRIPT_SRC_FMT, JQUERY_UI_LIB_JS); _concat(&sout, templn);
+				_concat(&sout, "<script>$(function(){$(\"#mg\").sortable();});</script>");
 			}
 			#endif
 		}
@@ -1027,8 +1026,7 @@ next_html_entry:
 			{
 				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, templn);
 			}
-			_concat(&sout, "<div id=\"mg\">"
-							"<script>var i,d=document,v=d.cookie.split(';');for(i=0;i<v.length;i++)if(v[i]>0)break;z=parseInt(v[i]);css=d.styleSheets[0];css.insertRule('.gc{zoom:'+z+'%%}',css.cssRules.length);d.getElementById('sz').value=z;$('mg').style.zoom=z/100;</script>");
+			add_html('g', 0, sout.str, templn);
 		}
 
 		tlen = buf_len;
@@ -1073,10 +1071,10 @@ next_html_entry:
 		#endif
 		if(auto_mount && idx == 1)
 		{
-			char  *p = strstr(line_entry[0].path + HTML_KEY_LEN, "?random=");
-			if(!p) p = strstr(line_entry[0].path + HTML_KEY_LEN, "\">");
-			if(p) *p = NULL;
-			sprintf(buffer, "/mount.ps3%s", line_entry[0].path + HTML_KEY_LEN);
+			char *mount_path = line_entry[0].path + HTML_KEY_LEN;
+			get_flag(mount_path, "?random=");
+			get_flag(mount_path, "\">");
+			sprintf(buffer, "%s%s", "/mount.ps3", mount_path);
 		}
 		else if(mobile_mode)
 		{

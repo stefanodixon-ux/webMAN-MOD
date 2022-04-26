@@ -74,7 +74,7 @@
 		if(buf.st_mode & S_IFDIR) is_binary = FOLDER_LISTING; // folder listing
 	}
 	#ifdef COPY_PS3
-	else if(allow_retry_response && islike(param, "/dev_") && (strchr(param, '*') != NULL))
+	else if(allow_retry_response && islike(param, "/dev_") && strchr(param, '*'))
 	{
 		bool reply_html = !strstr(param, "//");
 		char *FILE_LIST = reply_html ? (char*)FILE_LIST_HTM : (char*)FILE_LIST_TXT;

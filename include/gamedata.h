@@ -5,17 +5,14 @@ static u8 get_default_usb_drive(const char *folder)
 	for(n = 1; n < MAX_DRIVES; n++)
 	{
 		if(n == NET) n = NTFS + 1;
-		sprintf(usb_path, "%s%s", drives[n], folder ? folder : ""); if(isDir(usb_path)) break;
+		sprintf(usb_path, "%s%s", drives[n], folder); if(isDir(usb_path)) return n; // 1-6 / 13-15
 	}
 
 	if(folder)
 	{
-		if(n < MAX_DRIVES) return n;
 		if(isDir("/dev_bdvd/GAMEI")) return 0;
 		return n; // MAX_DRIVES = not found
 	}
-
-	if(n < MAX_DRIVES) return n; // 1-6 / 13-15
 
 	return 1; // 1 = usb000
 }

@@ -79,7 +79,7 @@
 				#endif
 				{
 					strcpy(header, params);
-					sprintf(param, "/mount.ps3%s", header);
+					sprintf(param, "%s%s", "/mount.ps3", header);
 
 					if(is_ext(header, ".bat") || is_ext(header, ".txt"))
 						ap_param = 0; // do not auto_play
@@ -114,7 +114,7 @@
 				patch_gameboot(0); // None
 				launch_app_home_icon(true);
 			}
-			else if((*params != NULL) && isDir(path))
+			else if(*params && isDir(path))
 			{
 				patch_gameboot(3); // PS3
 

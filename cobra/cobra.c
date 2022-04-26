@@ -617,7 +617,7 @@ static int parse_param_sfo(char *file, const char *field, char *title_name)
 	FILE *fp;
 
 	fp = fopen(file, "rb");
-	if (fp != NULL) {
+	if (fp) {
 		unsigned len, pos, str;
 		unsigned char *mem = NULL;
 
@@ -1600,8 +1600,8 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 		int ext = strlen(root) - 4; if(ext < 0) ext = 0;
 
-		uint8_t is_iso = (strstr(root + ext, ".iso") != NULL) ||
-						 (strstr(root + ext, ".ISO") != NULL);
+		uint8_t is_iso = strstr(root + ext, ".iso") ||
+						 strstr(root + ext, ".ISO");
 
 		if(is_iso)
 		{

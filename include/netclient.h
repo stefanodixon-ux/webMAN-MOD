@@ -274,7 +274,7 @@ static bool is_netsrv_enabled(u8 server_id)
 	if(!net_enabled) return false;
 
 	return( (webman_config->netd[server_id] == 1) && // is enabled
-			(webman_config->neth[server_id][0] != NULL) && // has host
+			(webman_config->neth[server_id][0])  && // has host
 			(webman_config->netp[server_id] > 0) && // has port
 			!islike(webman_config->neth[server_id], "127.") && !islike(webman_config->neth[server_id], "localhost") // not a loopback
 		);

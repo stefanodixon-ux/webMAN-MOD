@@ -170,7 +170,7 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 		}
 	}
 	#ifdef FPS_OVERLAY
-	if(!find_free_slot && (strstr(plugin_path, "/VshFpsCounter") != NULL)) {overlay_enabled = prx_found, overlay_info = overlay = 0;}
+	if(!find_free_slot && strstr(plugin_path, "/VshFpsCounter")) {overlay_enabled = prx_found, overlay_info = overlay = 0;}
 	#endif
 	return slot;
 }

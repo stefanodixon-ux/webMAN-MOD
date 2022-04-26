@@ -637,7 +637,7 @@ fmtstr(char *str, size_t *len, size_t size, const char *value, int width,
 	int noprecision = (precision == -1);
 
 	if (value == NULL)	/* We're forgiving. */
-		value = "(null)";
+		value = ""; //"(null)";
 
 	/* If a precision was specified, don't read the string past it. */
 	for (strln = 0; value[strln] != '\0' &&

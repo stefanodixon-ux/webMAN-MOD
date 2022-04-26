@@ -270,7 +270,7 @@ static int download_file(const char *param, char *msg)
 		}
 
 		sprintf(msg_dpath, "To: %s", pdpath);
-		if(IS(pdpath, DEFAULT_PKG_PATH) && (strstr(pdurl, ".pkg") != NULL))
+		if(IS(pdpath, DEFAULT_PKG_PATH) && strstr(pdurl, ".pkg"))
 		{
 			len = sprintf(pdpath, TEMP_DOWNLOAD_PATH); pkg_dcount++;
 		}

@@ -141,7 +141,7 @@ int64_t file_copy(const char *file1, char *file2)
 			}
 		}
 
-		if(buf.st_size > get_free_space("/dev_hdd0")) return FAILED;
+		if(buf.st_size > get_free_space(drives[0])) return FAILED;
 	}
 
 	if(allow_sc36 && islike(file1, "/dev_bdvd"))

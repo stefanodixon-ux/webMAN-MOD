@@ -11,7 +11,7 @@
 
 		Check_Overlay();
 
-		mobile_mode |= ((strstr(param, "?mob") != NULL) || (strstr(param, "&mob") != NULL));
+		mobile_mode |= (strstr(param, "?mob") || strstr(param, "&mob"));
 		#ifdef LAUNCHPAD
 		if(get_flag(param, "?launchpad")) {mobile_mode = LAUNCHPAD_MODE, auto_mount = false; sprintf(templn, "%s LaunchPad: %s", STR_REFRESH, STR_SCAN2); show_msg(templn);}
 		#endif

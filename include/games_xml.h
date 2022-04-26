@@ -991,13 +991,13 @@ scan_roms:
 					#ifdef NET_SUPPORT
 					if(is_net)
 					{
-						if(ignore_files && (strstr(ignore_files, data[v3_entry].name) != NULL)) continue;
+						if(ignore_files && strstr(ignore_files, data[v3_entry].name)) continue;
 
 						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0')) ls = true; // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 0) == FAILED) {v3_entry++; continue;}
 
-						if(ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) {v3_entry++; continue;}
+						if(ignore_files && HAS_TITLE_ID && strstr(ignore_files, title_id)) {v3_entry++; continue;}
 
 						#ifdef SLAUNCH_FILE
 						if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
@@ -1025,7 +1025,7 @@ scan_roms:
 					{
 						if((entry.entry_name.d_name[0] == '.') || strchr(entry.entry_name.d_name, '<')) continue;
 
-						if(ignore_files && (strstr(ignore_files, entry.entry_name.d_name) != NULL)) continue;
+						if(ignore_files && strstr(ignore_files, entry.entry_name.d_name)) continue;
 
 						//////////////////////////////
 						subfolder = 0;
@@ -1107,7 +1107,7 @@ scan_roms:
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
-							if(ignore_files && HAS_TITLE_ID && (strstr(ignore_files, title_id) != NULL)) continue;
+							if(ignore_files && HAS_TITLE_ID && strstr(ignore_files, title_id)) continue;
 
 							#ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);

@@ -32,7 +32,7 @@ if(!cobra_version) {ret = false; goto finish;}
 			}
 			else if(extgd) set_gamedata_status(0, false);
 		}
-		else if((strstr(_path, "PS3ISO") != NULL) && (strstr(_path, "[gd]") != NULL))
+		else if(strstr(_path, "PS3ISO") && strstr(_path, "[gd]"))
 		{
 			if(extgd == 0) set_gamedata_status(1, false);
 		}
@@ -246,7 +246,7 @@ mount_again:
 
 			else if(strstr(_path, "/PS2ISO") || (mount_unk == EMU_PS2_DVD))
 			{
-				if(!islike(_path, "/dev_hdd0"))
+				if(!islike(_path, drives[0]))
 				{
 copy_ps2iso_to_hdd0:
 					cache_file_to_hdd(_path, iso_list[0], "/PS2ISO", templn);

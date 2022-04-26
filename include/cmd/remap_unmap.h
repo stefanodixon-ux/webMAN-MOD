@@ -63,7 +63,7 @@
 				sys_map_path(NULL, NULL);
 				apply_remaps();
 			}
-			else if(*path1 && (path1[1] != NULL) && (nocheck || file_exists(isremap ? path2 : path1)))
+			else if(*path1 && path1[1] && (nocheck || file_exists(isremap ? path2 : path1)))
 			{
 				if(use_sc35)
 					sys_map_path2(path1, path2);
@@ -72,7 +72,7 @@
 
 				htmlenc(url, path2, 1); urlenc(url, path1); htmlenc(title, path1, 0);
 
-				if(isremap && (*path2 != NULL))
+				if(isremap && *path2)
 				{
 					htmlenc(path1, path2, 0);
 					sprintf(param,  "Remap: " HTML_URL "<br>"

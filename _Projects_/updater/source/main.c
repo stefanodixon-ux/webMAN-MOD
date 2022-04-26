@@ -620,6 +620,7 @@ int main()
 	file_copy(APP_USRDIR "/icons/ps3.png"     , ICONS_DIR "/ps3.png");
 	file_copy(APP_USRDIR "/icons/psp.png"     , ICONS_DIR "/psp.png");
 	file_copy(APP_USRDIR "/icons/dvd.png"     , ICONS_DIR "/dvd.png");
+	file_copy(APP_USRDIR "/icons/pkg.png"     , ICONS_DIR "/pkg.png");
 	file_copy(APP_USRDIR "/icons/retro.png"   , ICONS_DIR "/retro.png");
 	file_copy(APP_USRDIR "/icons/video.png"   , ICONS_DIR "/video.png");
 	file_copy(APP_USRDIR "/icons/photo.png"   , ICONS_DIR "/photo.png");
@@ -666,6 +667,7 @@ int main()
 	file_copy(APP_USRDIR "/setup/setupv.dat", SETUP_DIR "/setupv.dat");
 	file_copy(APP_USRDIR "/setup/setupd.dat", SETUP_DIR "/setupd.dat");
 	file_copy(APP_USRDIR "/setup/setupc.dat", SETUP_DIR "/setupc.dat");
+	file_copy(APP_USRDIR "/setup/setupg.dat", SETUP_DIR "/setupg.dat");
 	file_copy(APP_USRDIR "/setup/setupi.dat", SETUP_DIR "/setupi.dat");
 	file_copy(APP_USRDIR "/setup/setupj.dat", SETUP_DIR "/setupj.dat");
 	file_copy(APP_USRDIR "/setup/setupk.dat", SETUP_DIR "/setupk.dat");

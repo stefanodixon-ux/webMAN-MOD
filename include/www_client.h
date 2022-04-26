@@ -26,7 +26,7 @@ static u8 check_password(char *param)
 {
 	u8 ret = 0;
 
-	if((pwd_tries < 3) && (webman_config->ftp_password[0] != NULL))
+	if((pwd_tries < 3) && webman_config->ftp_password[0])
 	{
 		char *pos = strstr(param, "pwd=");
 		if(pos)
@@ -195,7 +195,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 			}
 		}
 
-		if(param[1] != NULL && !strstr(param, ".ps3")) {_concat(&sbuffer,  "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
+		if(param[1] && !strstr(param, ".ps3")) {_concat(&sbuffer,  "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
 
 		return sbuffer.size;
 	}
@@ -226,7 +226,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 		sprintf(templn, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); _concat(&sbuffer, templn);
 	}
 
-	if(param[1] != NULL && !strstr(param, ".ps3")) {_concat(&sbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
+	if(param[1] && !strstr(param, ".ps3")) {_concat(&sbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
 
 	if(is_ps3_http == 1)
 		{sprintf(templn, "<style>%s</style>", ".gi{height:210px;width:267px"); _concat(&sbuffer, templn);}
@@ -287,7 +287,7 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 	char *file_query = param + HTML_RECV_LAST; *file_query = NULL;
 
  #ifdef WM_REQUEST
-	struct CellFsStat buf; u8 wm_request = (wm_url != NULL) || (cellFsStat(WM_REQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
+	struct CellFsStat buf; u8 wm_request = wm_url || (cellFsStat(WM_REQUEST_FILE, &buf) == CELL_FS_SUCCEEDED);
 
 	if(!wm_request)
  #endif
@@ -501,7 +501,7 @@ parse_request:
 
 			if(!is_setup)
 			{
-				if(!mc && (strstr(param, ";/") != NULL))
+				if(!mc && strstr(param, ";/"))
 				{
 					mc_param = malloc(strlen(param) + 1);
 					if(mc_param) strcpy(mc_param, param); // backup original multi-command param

@@ -41,7 +41,7 @@ static void patch_ps2_demo(const char *iso_file)
 				{
 					memcpy(title_id, exe_name, 0xD); // S**S_000.00
 					sprintf(game_id, "%.4s-%.3s%.2s", title_id, title_id + 5, title_id + 9); // S**S-00000
-					if(((title_id[0] == 'S') && (title_id[3] == 'D') && (title_id[4] == '_') & (title_id[8] == '.')) || (strstr(GAME_EXT_BLACKLISTED, game_id) != NULL)) // S**D_###.##;1
+					if(((title_id[0] == 'S') && (title_id[3] == 'D') && (title_id[4] == '_') & (title_id[8] == '.')) || strstr(GAME_EXT_BLACKLISTED, game_id)) // S**D_###.##;1
 					{
 						exe_name[3] = 'X'; // patch SYSTEM.CNF
 

@@ -525,18 +525,21 @@
 						// SELECT+O = unmount
 						// SELECT+TRIANGLE = RESERVED
 
-						if( !(webman_config->combo2 & (EXTGAMDAT | MOUNTNET0 | MOUNTNET1)) &&       // Toggle External Game Data
-							(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_SQUARE)) // SELECT+SQUARE
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_SQUARE) // SELECT+SQUARE
 						{
 							#ifdef COBRA_NON_LITE
 							if(!(webman_config->combo2 & MOUNTNET0) &&
 								(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_SQUARE | CELL_PAD_CTRL_R2)))
-							{if(is_netsrv_enabled(0)) mount_game("/net0", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+R2 / SELECT+R2+SQUARE
+								{if(is_netsrv_enabled(0)) mount_game("/net0", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+R2 / SELECT+R2+SQUARE
 							else
 							if(!(webman_config->combo2 & MOUNTNET1) &&
 								(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_SQUARE | CELL_PAD_CTRL_L2)))
-							{if(is_netsrv_enabled(1)) mount_game("/net1", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+L2 / SELECT+L2+SQUARE
-							else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_SQUARE)
+								{if(is_netsrv_enabled(1)) mount_game("/net1", EXPLORE_CLOSE_ALL);} // SELECT+SQUARE+L2 / SELECT+L2+SQUARE
+							else
+							if(!(webman_config->combo2 & EXTGAMDAT) &&       // Toggle External Game Data
+								(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_SQUARE))
+							#else
+							if(!(webman_config->combo2 & EXTGAMDAT))         // Toggle External Game Data
 							#endif
 							{
 								#ifdef WM_CUSTOM_COMBO

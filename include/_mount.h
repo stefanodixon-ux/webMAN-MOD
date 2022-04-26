@@ -65,7 +65,7 @@ static u8 usb = 1; // first connected usb drive [used by /copy.ps3 & in the tool
 static void auto_play(char *param, u8 force_autoplay)
 {
 #ifdef OFFLINE_INGAME
-	if((strstr(param, OFFLINE_TAG) != NULL)) net_status = 0;
+	if(strstr(param, OFFLINE_TAG)) net_status = 0;
 #endif
 	u8 autoplay = (webman_config->autoplay) || force_autoplay;
 
@@ -105,7 +105,7 @@ static void auto_play(char *param, u8 force_autoplay)
 		}
 		else
  #ifdef COBRA_ONLY
-		if(!l2 && ((strstr(param, "/PSPISO") != NULL) || (strstr(param, ".ntfs[PSPISO]") != NULL)))
+		if(!l2 && (strstr(param, "/PSPISO") || strstr(param, ".ntfs[PSPISO]")))
 		{
 			if(mount_ps3 && XMB_GROUPS && webman_config->pspl && (isDir(PSP_LAUNCHER_MINIS) || isDir(PSP_LAUNCHER_REMASTERS)))
 			{
@@ -140,7 +140,7 @@ static void auto_play(char *param, u8 force_autoplay)
 		else
  #endif
 		{
-			bool atag = (strcasestr(param, AUTOPLAY_TAG) != NULL) || (autoplay);
+			bool atag = strcasestr(param, AUTOPLAY_TAG) || (autoplay);
 
 			if(!(webman_config->combo2 & PLAY_DISC) || atag) {sys_ppu_thread_sleep(1); launch_disc((atag && !l2) || (!atag && l2));}		// L2 + X
 
@@ -304,7 +304,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			{
 				// prevent auto focus before execute PKGLAUNCH
 				char *ext = get_ext(source);
-				if(mount_ps3 && (!strstr(source, "/ROMS")) && (strcasestr(ARCHIVE_EXTENSIONS, ext) != NULL))
+				if(mount_ps3 && (!strstr(source, "/ROMS")) && strcasestr(ARCHIVE_EXTENSIONS, ext))
 					param[6] = '.';
 			}
 
@@ -347,7 +347,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// -------------------
 		if(mount_ps3)
 		{
-			if(mounted && islike(source, "/net") && (strstr(source, "/ROMS") != NULL)) launch_app_home_icon(webman_config->autoplay);
+			if(mounted && islike(source, "/net") && strstr(source, "/ROMS")) launch_app_home_icon(webman_config->autoplay);
 
 			is_busy = false;
 			return mounted;
@@ -422,7 +422,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			#ifdef COPY_PS3
 			if(plen == COPY_CMD)
 			{
-				bool is_copying_from_hdd = islike(source, "/dev_hdd0");
+				bool is_copying_from_hdd = islike(source, drives[0]);
 
 				usb = get_default_usb_drive(0);
 
@@ -534,7 +534,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/PICTURE", drives[usb]);
 						else
-							sprintf(target, "%s/PICTURE", "/dev_hdd0");
+							sprintf(target, "%s/PICTURE", drives[0]);
 
 						strcat(target, filename);
 					}
@@ -545,7 +545,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						else if(strstr(source, "BL") || strstr(param, "BC") || strstr(source, "NP"))
 							sprintf(target, "/dev_hdd0/GAMES/covers");
 						else
-							sprintf(target, "%s/PICTURE", "/dev_hdd0");
+							sprintf(target, "%s/PICTURE", drives[0]);
 
 						strcat(target, filename);
 					}
@@ -570,7 +570,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/MUSIC", drives[usb]);
 						else
-							sprintf(target, "%s/MUSIC", "/dev_hdd0");
+							sprintf(target, "%s/MUSIC", drives[0]);
 
 						strcat(target, filename);
 					}
@@ -655,9 +655,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					else if(is_copying_from_hdd)
 						sprintf(target, "%s%s", drives[usb], source + 9);
 					else if(islike(source, "/dev_usb"))
-						sprintf(target, "%s%s", "/dev_hdd0", source + 11);
+						sprintf(target, "%s%s", drives[0], source + 11);
 					else if(islike(source, "/net"))
-						sprintf(target, "%s%s", "/dev_hdd0", source + 5);
+						sprintf(target, "%s%s", drives[0], source + 5);
 					else
 					{
 						if(islike(source, "/dev_bdvd"))
@@ -697,7 +697,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							}
 						}
 						else
-							strcpy(target, "/dev_hdd0");
+							strcpy(target, drives[0]);
 
 						char *p = strchr(source + 9, '/');
 						if(p) strcat(target, p);
@@ -872,7 +872,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					{
 						if((entry_name[0] == '.')) continue;
 
-						if(is_iso || strstr(entry_name, "[PS2") != NULL)
+						if(is_iso || strstr(entry_name, "[PS2"))
 						{
 							if(pcount == 0) strcat(buffer, "<br><HR>");
 							urlenc(enc_dir_name, entry_name);
@@ -1429,7 +1429,7 @@ static void mount_autoboot(void)
 	// prevent auto-mount on startup if L2+R2 is pressed
 	if(is_pressed(CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) { if(!webman_config->nobeep) BEEP2; return;}
 
-	if(from_reboot && *path && (strstr(path, "/PS2") != NULL)) return; //avoid re-launch PS2 returning to XMB
+	if(from_reboot && *path && strstr(path, "/PS2")) return; //avoid re-launch PS2 returning to XMB
 
 	// wait few seconds until path becomes ready
 #ifdef COBRA_ONLY
@@ -1450,7 +1450,7 @@ static void mount_autoboot(void)
 	{   // add some delay
 		if(webman_config->delay) {sys_ppu_thread_sleep(3); wait_for(path, 2 * (webman_config->boots + webman_config->bootd));}
 		#ifndef COBRA_ONLY
-		if(islike(path, "/net") || (strstr(path, ".ntfs[") != NULL)) return;
+		if(islike(path, "/net") || strstr(path, ".ntfs[")) return;
 		#endif
 		#ifdef COBRA_NON_LITE
 		if(islike(path, "/net") && !is_netsrv_enabled(path[4])) return;
@@ -1693,7 +1693,7 @@ exit_mount:
 
 	if(ret && !is_BIN_ENC(_path))
 	{
-		wait_for("/dev_bdvd", (islike(_path, "/dev_hdd0") ? 6 : netid ? 20 : 15));
+		wait_for("/dev_bdvd", (islike(_path, drives[0]) ? 6 : netid ? 20 : 15));
 		if(!isDir("/dev_bdvd")) ret = false;
 	}
 

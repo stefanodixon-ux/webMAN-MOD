@@ -30,7 +30,7 @@ if(netid >= '0' && netid <= '4')
 	size_t len = sprintf(netiso_args.path, "%s", netpath);
 
 	char *ext = strrchr(netpath, '.');
-	bool is_iso = ext && (strcasestr(ISO_EXTENSIONS, ext) != NULL);
+	bool is_iso = ext && strcasestr(ISO_EXTENSIONS, ext);
 
 	// allow mount any file type on ROMS
 	if(islike(netpath, "/ROMS")) ; else
@@ -128,7 +128,7 @@ if(netid >= '0' && netid <= '4')
 			scsi_tracks[t].track_start_addr = tracks[t].lba;
 		}
 	}
-	else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && (strchr(netpath + 5, '/') != NULL))
+	else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && strchr(netpath + 5, '/'))
 	{
 		mount_unk = netiso_args.emu_mode = EMU_PS3;
 		if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);
@@ -253,7 +253,7 @@ retry_net:
 			goto exit_mount;
 		}
 #ifdef PKG_HANDLER
-		else if(!(webman_config->auto_install_pkg) && (pkg_slash != NULL))
+		else if(!(webman_config->auto_install_pkg) && pkg_slash)
 		{
 			installPKG_all("/dev_bdvd", false);
 		}

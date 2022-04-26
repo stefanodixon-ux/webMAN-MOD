@@ -117,13 +117,13 @@ static void uninstall(char *param)
 	sprintf(param, "plugins/");
 	for(u8 i = 0; i < 2; i++)
 	{
-		unlink_file("/dev_hdd0", param, "webftp_server.sprx");
-		unlink_file("/dev_hdd0", param, "webftp_server_lite.sprx");
-		unlink_file("/dev_hdd0", param, "webftp_server_ps3mapi.sprx");
-		unlink_file("/dev_hdd0", param, "webftp_server_noncobra.sprx");
-		unlink_file("/dev_hdd0", param, "wm_vsh_menu.sprx");
-		unlink_file("/dev_hdd0", param, "slaunch.sprx");
-		unlink_file("/dev_hdd0", param, "raw_iso.sprx");
+		unlink_file(drives[0], param, "webftp_server.sprx");
+		unlink_file(drives[0], param, "webftp_server_lite.sprx");
+		unlink_file(drives[0], param, "webftp_server_ps3mapi.sprx");
+		unlink_file(drives[0], param, "webftp_server_noncobra.sprx");
+		unlink_file(drives[0], param, "wm_vsh_menu.sprx");
+		unlink_file(drives[0], param, "slaunch.sprx");
+		unlink_file(drives[0], param, "raw_iso.sprx");
 		*param = NULL;
 	}
 
@@ -178,8 +178,8 @@ static void delete_history(bool delete_folders)
 		cellFsClosedir(fd);
 	}
 
-	unlink_file("/dev_hdd0", "vsh/pushlist/", "game.dat");
-	unlink_file("/dev_hdd0", "vsh/pushlist/", "patch.dat");
+	unlink_file(drives[0], "vsh/pushlist/", "game.dat");
+	unlink_file(drives[0], "vsh/pushlist/", "patch.dat");
 
 	if(!delete_folders || !working) return;
 
