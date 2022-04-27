@@ -40,9 +40,9 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 
 	if(*path == '/')
 	{
-		u16 len = sprintf(absPath_s, "%s", path);
+		sprintf(absPath_s, "%s", path);
 
-		if(absPath_s[len - 1] != '/') strcat(absPath_s + len, "/");
+		normalize_path(absPath_s, true);
 
 		if(islike(path, "/dev_blind")) {mount_device("/dev_blind", NULL, NULL); filepath_check(absPath_s); return 1;}
 		if(islike(path, "/dev_hdd1") )  mount_device("/dev_hdd1",  NULL, NULL);
@@ -51,7 +51,7 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 	{
 		u16 len = sprintf(absPath_s, "%s", cwd);
 
-		if(absPath_s[len - 1] != '/') strcat(absPath_s + len, "/");
+		normalize_path(absPath_s, true);
 
 		strcat(absPath_s + len, path);
 	}
@@ -65,6 +65,8 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 		{
 			strcpy(absPath_s, path); check_path_alias(absPath_s); filepath_check(absPath_s);
 			if(file_exists(absPath_s)) return 0;
+
+			normalize_path((char*)cwd, false);
 			sprintf(absPath_s, "%s/%s", cwd, path);
 		}
 
@@ -106,7 +108,7 @@ static int ssplit(const char* str, char* left, int lmaxlen, char* right, int rma
 }
 
 
-static void send_reply(int conn_s_ftp, int err)
+static void send_reply(int conn_s_ftp, int err, const char *filename, char *buffer)
 {
 	if(err == CELL_FS_OK)
 	{
@@ -114,7 +116,8 @@ static void send_reply(int conn_s_ftp, int err)
 	}
 	else if(err == FTP_FILE_UNAVAILABLE)
 	{
-		ssend(conn_s_ftp, FTP_ERROR_550);	// Requested action not taken. File unavailable (e.g., file not found, no access).
+		sprintf(buffer, "550 File Error \"%s\"\r\n", filename);
+		ssend(conn_s_ftp, buffer);	// Requested action not taken. File unavailable (e.g., file not found, no access).
 	}
 	else if(err == FTP_DEVICE_IS_FULL)
 	{
@@ -329,7 +332,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							else
 								err = FTP_OUT_OF_MEMORY;
 
-							send_reply(conn_s_ftp, err);
+							send_reply(conn_s_ftp, err, filename, buffer);
 						}
 						else
 						{
@@ -464,7 +467,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							}
 							else
 							{
-								send_reply(conn_s_ftp, err);
+								send_reply(conn_s_ftp, err, filename, buffer);
 							}
 						}
 						else
@@ -511,7 +514,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						}
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							//ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, filename, buffer);
 						}
 					}
 					else
@@ -525,6 +529,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					if(split)
 					{
 						absPath(filename, param, cwd);
+
 						#ifdef USE_NTFS
 						if(is_ntfs_path(filename))
 						{
@@ -537,7 +542,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						}
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							//ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, filename, buffer);
 						}
 					}
 					else
@@ -587,7 +593,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						}
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							//ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, filename, buffer);
 						}
 					}
 					else
@@ -617,7 +624,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						}
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_550);	// Requested action not taken. File unavailable (e.g., file not found, no access).
+							//ssend(conn_s_ftp, FTP_ERROR_550);	// Requested action not taken. File unavailable (e.g., file not found, no access).
+							send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, filename, buffer);
 						}
 					}
 					else
@@ -873,7 +881,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						}
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_550);	// Requested action not taken. File unavailable (e.g., file not found, no access).
+							//ssend(conn_s_ftp, FTP_ERROR_550);	// Requested action not taken. File unavailable (e.g., file not found, no access).
+							send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, d_path, buffer);
 						}
 					}
 					else
@@ -885,6 +894,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				if(_IS(cmd, "CWD") || _IS(cmd, "XCWD"))
 				{
 					if(sysmem) {sys_memory_free(sysmem); sysmem = NULL;} // release allocated buffer on directory change
+
+					normalize_path(param, false);
 
 					if(split)
 					{
@@ -903,7 +914,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 					}
 					else
 					{
-						ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+						//ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+						send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, tempcwd, buffer);
 					}
 				}
 				else
@@ -925,11 +937,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							cwd[i] = '\0';
 						}
 					}
+					normalize_path(cwd, false);
 					ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 				}
 				else
 				if(_IS(cmd, "PWD") || _IS(cmd, "XPWD"))
 				{
+					normalize_path(cwd, false);
 					sprintf(buffer, "257 \"%s\"\r\n", cwd);
 					ssend(conn_s_ftp, buffer);
 				}
@@ -954,7 +968,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						}
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							//ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, filename, buffer);
 						}
 					}
 					else
@@ -979,7 +994,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						}
 						else
 						{
-							ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							//ssend(conn_s_ftp, FTP_ERROR_550); // Requested action not taken. File unavailable (e.g., file not found, no access).
+							send_reply(conn_s_ftp, FTP_FILE_UNAVAILABLE, filename, buffer);
 						}
 					}
 					else

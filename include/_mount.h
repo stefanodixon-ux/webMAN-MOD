@@ -914,7 +914,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				check_path_tags(target);
 
-				if(isDir(source) && (strlen(target) > 3) && target[strlen(target)-1] != '/') strcat(target, "/");
+				if(isDir(source)) normalize_path(target, true);
 
 				// make target dir tree
 				mkdir_tree(target);
@@ -1585,6 +1585,8 @@ static void mount_thread(u64 action)
 	// -----------------
 	// remove /PS3_GAME
 	// -----------------
+
+	normalize_path(_path0, false);
 
 	strcpy(_path, _path0);
 

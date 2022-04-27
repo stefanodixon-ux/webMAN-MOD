@@ -569,6 +569,8 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		return true;
 	}
 
+	normalize_path(param, false);
+
 	absPath(templn, param, "/"); // auto mount /dev_blind & /dev_hdd1
 
 	u8 is_net = (param[1] == 'n'), skip_cmd = 0;
@@ -685,11 +687,14 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 			if(ns >= 0)
 			{
-				strcat(param, "/");
-				if(open_remote_dir(ns, param + 5, &abort_connection, false) >= 0)
+				char *netpath = param + 5;
+
+				normalize_path(netpath, true);
+
+				if(open_remote_dir(ns, netpath, &abort_connection, false) >= 0)
 				{
-					strcpy(templn, param); while(templn[plen] == '/') templn[plen--] = '\0'; plen++;
-					remove_filename(templn); if(strlen(templn) < 6 && strlen(param) < 8) {templn[0] = '/', templn[1] = '\0';}
+					strcpy(templn, param); normalize_path(templn, false); remove_filename(templn);
+					if(strlen(templn) < 5) strcpy(templn, "/");
 
 					urlenc(swap, templn);
 					flen = sprintf(line_entry[idx].path,  "!         " // <-- size should be = FILE_MGR_KEY_LEN
@@ -697,7 +702,11 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 														  "<td> " HTML_URL "%s"
 														, swap, swap, HTML_DIR, HTML_ENTRY_DATE);
 
-					if(flen >= _MAX_LINE_LEN) return false; //path is too long
+					if(flen >= _MAX_LINE_LEN) //path is too long
+					{
+						sclose(&ns);
+						return false;
+					}
 
 					idx++, dirs++;
 					tlen += flen;
@@ -724,7 +733,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 							else
 								flen = sprintf(templn, "%s%s", param, dir_items[n].name);
 
-							while(flen && (templn[flen - 1] == '/')) templn[flen--] = '\0';
+							 normalize_path(templn, false);
 
 							cellRtcSetTime_t(&rDate, dir_items[n].mtime);
 
@@ -745,32 +754,30 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 				}
 				else //may be a file
 				{
-					if(param[plen] == '/') param[plen] = '\0';
-
 					int is_directory = 0;
 					s64 file_size;
 					u64 mtime, ctime, atime;
-					if(remote_stat(ns, param + 5, &is_directory, &file_size, &mtime, &ctime, &atime, &abort_connection) == 0)
+					if(remote_stat(ns, netpath, &is_directory, &file_size, &mtime, &ctime, &atime, &abort_connection) == CELL_OK)
 					{
 						if(file_size && !is_directory)
 						{
-							if(open_remote_file(ns, param + 5, &abort_connection) > 0)
+							if(open_remote_file(ns, netpath, &abort_connection) > 0)
 							{
 								size_t header_len = prepare_header(header, param, 1);
 								header_len += sprintf(header + header_len, "Content-Length: %llu\r\n\r\n", (unsigned long long)file_size);
 
 								send(conn_s, header, header_len, 0);
 
-								u32 bytes_read; s64 boff = 0;
-								while(boff < file_size)
+								u32 bytes_read; s64 offset = 0;
+								while(offset < file_size)
 								{
-									bytes_read = read_remote_file(ns, (char*)buffer, boff, _64KB_, &abort_connection);
+									bytes_read = read_remote_file(ns, (char*)buffer, offset, _64KB_, &abort_connection);
 									if(bytes_read)
 									{
 										if(send(conn_s, buffer, bytes_read, 0) < 0) break;
 									}
-									boff+=bytes_read;
-									if(bytes_read < _64KB_ || boff >= file_size) break;
+									offset += bytes_read;
+									if(bytes_read < _64KB_ || offset >= file_size) break;
 								}
 								open_remote_file(ns, "/CLOSEFILE", &abort_connection);
 								sclose(&ns);

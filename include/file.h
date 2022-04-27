@@ -73,6 +73,13 @@ static char *get_filename(const char *path)
 	return filename; // return with slash
 }
 
+static void normalize_path(char *path, bool slash)
+{
+	u32 flen = strlen(path);
+	while((flen > 1) && (path[--flen] == '/')) path[flen] = '\0';
+	if(!(*path) || (slash && (flen > 1) && (path[flen] != '/'))) strcat(path + flen, "/");
+}
+
 static char *remove_filename(const char *path)
 {
 	char *p = get_filename(path); if(p) *p = NULL; else p = (char*)path;
