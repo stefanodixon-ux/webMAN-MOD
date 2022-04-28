@@ -89,9 +89,14 @@ static void parse_script(const char *script_file)
 
 				if(exec_mode)
 				{
-					dest = strstr(line, "=/");
-					if(!dest) dest = strstr(line, ",/");
-					if(!dest) dest = strstr(line, ", /");
+					if(IS_WEB_COMMAND(line))
+						dest = NULL;
+					else
+					{
+						dest = strstr(line, "=/");
+						if(!dest) dest = strstr(line, ",/");
+						if(!dest) dest = strstr(line, ", /");
+					}
 					if(enable_db && (strstr(line, "/dev_blind"))) {enable_dev_blind(NO_MSG); enable_db = false;}
 				}
 				if(dest)

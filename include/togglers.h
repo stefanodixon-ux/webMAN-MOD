@@ -1,3 +1,71 @@
+#ifdef SWAP_KERNEL
+static void swap_kernel(const char *source, char *target, char *tempstr)
+{
+	u64 size = file_size(source);
+
+	if(size)
+	{
+		enable_dev_blind(source);
+
+		// for cobra req: /dev_flash/sys/stage2.bin & /dev_flash/sys/lv2_self
+		strcpy(target, SYS_COBRA_PATH "stage2.bin");
+		if(isDir("/dev_flash/rebug/cobra"))
+		{
+			char *ext = get_ext(source);
+			if(IS(ext, ".dex"))
+				sprintf(target, "%s/stage2.dex", "/dev_flash/rebug/cobra");
+			else if(IS(ext, ".cex"))
+				sprintf(target, "%s/stage2.cex", "/dev_flash/rebug/cobra");
+		}
+
+		if(not_exists(target))
+		{
+			strcpy(tempstr, source);
+			strcpy(get_filename(tempstr), "/stage2.bin");
+			if(file_exists(tempstr)) force_copy(tempstr, target);
+		}
+
+		// copy: /dev_flash/sys/lv2_self
+		sprintf(target, "/dev_blind/sys/lv2_self");
+		if(file_size(target) != size)
+			force_copy(source, target);
+
+		if(file_size(target) == size)
+		{
+			#define FLH_OS		0x2F666C682F6F732FULL
+			#define OS_LV2		0x2F6F732F6C76325FULL
+
+			#define LOCAL_S		0x2F6C6F63616C5F73ULL
+			#define YS0_SYS		0x7973302F7379732FULL
+			#define LV2_SELF	0x6C76325F73656C66ULL
+
+			u64 lv2_offset = 0x15DE78; // 4.xx CFW LV1 memory location for: /flh/os/lv2_kernel.self
+			if(peek_lv1(lv2_offset) != FLH_OS)
+				for(u64 addr = 0x100000ULL; addr < 0xFFFFF8ULL; addr += 4) // Find in 16MB
+					if(peek_lv1(addr) == OS_LV2)      // /os/lv2_
+					{
+						lv2_offset = addr - 4; break; // 0x12A2C0 on 3.55
+					}
+
+			if(peek_lv1(lv2_offset) == FLH_OS)  // Original: /flh/os/lv2_kernel.self
+			{
+				poke_lv1(lv2_offset + 0x00, LOCAL_S); // replace -> /local_sys0/sys/lv2_self
+				poke_lv1(lv2_offset + 0x08, YS0_SYS);
+				poke_lv1(lv2_offset + 0x10, LV2_SELF);
+
+				working = 0;
+				del_turnoff(0); // no beep
+				create_file(WM_NOSCAN_FILE);
+				{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);} /*load LPAR id 1*/
+				sys_ppu_thread_exit(0);
+			}
+		}
+	}
+	else
+		strcpy(target, STR_ERROR);
+}
+#endif
+
 #ifdef COBRA_NON_LITE
 static void swap_file(const char *path, const char *curfile, const char *rento, const char *newfile)
 {

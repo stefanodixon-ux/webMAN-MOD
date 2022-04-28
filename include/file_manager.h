@@ -69,7 +69,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 	char is_param_sfo = '>';
 
-#ifndef LITE_EDITION
+	#ifndef LITE_EDITION
 	//////////////////////////////////////////
 	// show title & title ID from PARAM.SFO //
 	//////////////////////////////////////////
@@ -111,7 +111,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		if(has_updates_dir) snprintf(fsize, maxlen, "<a href=\"%s%s%s\">%'llu %s</a>%s", "/fixgame.ps3", HDD0_GAME_DIR, titleid, sz, sf, tempstr);
 		#endif
 	}
-#endif
+	#endif
 
 	/////////////////////////
 	// encode url for html //
@@ -133,8 +133,6 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		dclass = 'd'; // dir class
 		sbytes = 0;
 
-		if(flen == 9 && IS(templn, "/host_root")) strcpy(templn, "/dev_hdd0/packages"); // replace host_root with a shortcut to /dev_hdd0/packages
-
 		if(*name == '.')
 		{
 			snprintf(fsize, maxlen, HTML_URL2, "/stat.ps3", param, HTML_DIR);
@@ -143,35 +141,44 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		{
 			bool show_play = ((flen == 8) && IS(templn, "/dev_bdvd") && IS_ON_XMB);
 
-			if(show_play && isDir("/dev_bdvd/PS3_GAME"))
+			if(show_play)
 			{
-				sprintf(fsize, HTML_URL, "/play.ps3", "&lt;Play>");
 				ft = " ps3";
-			}
-			else if(show_play && file_exists("/dev_bdvd/SYSTEM.CNF"))
-			{
-				if(wm_icons_exists)
+
+				if(isDir("/dev_bdvd/PS3_GAME"))
 				{
-					get_last_game(fsize);
-					ft = strcasestr(fsize, "/PSX") ? " psx" : " ps2";
+					sprintf(fsize, HTML_URL, "/play.ps3", "&lt;Play>");
 				}
-				sprintf(fsize, HTML_URL, "/play.ps3", "&lt;Play>");
+				if(file_exists("/dev_bdvd/SYSTEM.CNF"))
+				{
+					if(wm_icons_exists)
+					{
+						get_last_game(fsize);
+						ft = strcasestr(fsize, "/PSX") ? " psx" : " ps2";
+					}
+					sprintf(fsize, HTML_URL, "/play.ps3", "&lt;Play>");
+				}
+				else if(isDir("/dev_bdvd/BDMV"))
+				{
+					sprintf(fsize, HTML_URL, "/play.ps3", "&lt;BDV>");
+				}
+				else if(isDir("/dev_bdvd/VIDEO_TS"))
+				{
+					sprintf(fsize, HTML_URL, "/play.ps3", "&lt;DVD>");
+					ft = " dvd";
+				}
+				else if(isDir("/dev_bdvd/AVCHD"))
+				{
+					sprintf(fsize, HTML_URL, "/play.ps3", "&lt;AVCHD>");
+				}
 			}
-			else if(show_play && isDir("/dev_bdvd/BDMV"))
+			else if(IS(templn, "/host_root"))
 			{
-				sprintf(fsize, HTML_URL, "/play.ps3", "&lt;BDV>");
-				ft = " ps3";
+				strcpy(templn, "/dev_hdd0/packages"); // replace host_root with a shortcut to /dev_hdd0/packages
 			}
-			else if(show_play && isDir("/dev_bdvd/VIDEO_TS"))
-			{
-				sprintf(fsize, HTML_URL, "/play.ps3", "&lt;DVD>");
-				ft = " dvd";
-			}
-			else if(show_play && isDir("/dev_bdvd/AVCHD"))
-			{
-				sprintf(fsize, HTML_URL, "/play.ps3", "&lt;AVCHD>");
-				ft = " ps3";
-			}
+
+			if(*fsize) ;
+
 			else if(IS(templn, "/app_home"))
 			{
 				sprintf(tempstr, "%s/%08i", HDD0_HOME_DIR, xusers()->GetCurrentUserNumber()); snprintf(fsize, maxlen, HTML_URL, tempstr, HTML_DIR);
@@ -181,7 +188,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				ft = " ps2";
 			}
 			else
-#ifdef LITE_EDITION
+			#ifdef LITE_EDITION
 			{
 				if(sys_admin && IS(templn, "/dev_flash"))
 					sprintf(fsize, HTML_URL2, "/dev_blind", "?1", HTML_DIR);
@@ -190,7 +197,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				else
 					snprintf(fsize, maxlen, "<a href=\"/mount.ps3%s\">%s</a>", templn, HTML_DIR);
 			}
-#else
+			#else
 			{
 				u64 freeSize = 0, devSize = 0;
 				#ifdef USE_NTFS
@@ -239,15 +246,15 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				else
 					snprintf(fsize, maxlen, "<a href=\"%s\">%s</a>", templn, HTML_DIR);
 			}
-#endif // #ifdef LITE_EDITION
+			#endif // #ifdef LITE_EDITION
 			if(strstr(fsize, "&lt;")) strcat(fsize, " &nbsp; ");
 		}
-#ifdef COPY_PS3
+		#ifdef COPY_PS3
 		else if(!is_net && ( IS(name, "VIDEO") || _IS(name, "music") || _IS(name, "covers") || islike(param, HDD0_HOME_DIR) ))
 		{
 			snprintf(fsize, maxlen, "<a href=\"/copy.ps3%s\" title=\"copy to %s\">%s</a>", islike(templn, param) ? templn + plen : templn, islike(templn, drives[0]) ? drives[usb] : drives[0], HTML_DIR);
 		}
-#endif
+		#endif
 		#ifdef FIX_GAME
 		else if(islike(templn, HDD0_GAME_DIR) || strstr(templn + 10, "/PS3_GAME" ))
 		{
@@ -285,15 +292,15 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "%'llu %s", sz, sf);
 
 	#ifndef LITE_EDITION
-	else if( !is_net && (sbytes <= MAX_TEXT_LEN) && ( strcasestr(".txt.ini.log.sfx.xml.cfg.cnf.his.hip.bup.js.css.html.bat|conf|name", ext) || islike(name, "wm_custom_") ) )
+	else if( !is_net && (sbytes <= MAX_TEXT_LEN) && ( strcasestr(".txt.ini.log.sfx.xml.cfg.cnf.his.hip.bup.js.css.html.bat|conf", ext) || islike(name, "wm_custom_") || strstr(name, "name") ) )
 	{
 		snprintf(fsize, maxlen, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		ft = " cfg";
 	}
 	#endif
 
-#ifdef COBRA_ONLY
-	else if( (!is_net && strstr(ext, ".ntfs[")) || (strcasestr(ISO_EXTENSIONS, ext) && !islike(templn, HDD0_GAME_DIR)) )
+	#ifdef COBRA_ONLY
+	else if( (!is_net && strstr(ext, ".ntfs[")) || (strcasestr(ISO_EXTENSIONS, ext) && !islike(templn, HDD0_GAME_DIR) && !islike(templn, HDD0_HOME_DIR)) )
 	{
 		if( strcasestr(name, ".iso.") && !is_iso_0(name) && ( !strstr(ext, ".ntfs[") ))
 			sprintf(fsize, "<label title=\"%'llu %s\"> %'llu %s</label>", sbytes, STR_BYTE, sz, sf);
@@ -302,9 +309,9 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 
 		ft = set_file_type(param, ext);
 	}
-#endif
+	#endif
 
-#ifdef PKG_HANDLER
+	#ifdef PKG_HANDLER
 	else if( _IS(ext, ".pkg") || IS(ext, ".p3t"))
 	{
 		sprintf(fsize, "<a href=\"/install.ps3%s\">%'llu %s</a>", templn, sz, sf);
@@ -315,17 +322,17 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		ft = " cfg";
 	}
-#endif
+	#endif
 
-#ifdef MOUNT_ROMS
-	else if( strstr(templn, "/ROMS") || strcasestr(ROMS_EXTENSIONS, ext) )
+	#ifdef MOUNT_ROMS
+	else if( strstr(templn, "/ROMS") || (!islike(templn, HDD0_HOME_DIR) && strcasestr(ROMS_EXTENSIONS, ext)) )
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		ft = show_img ? " pic" : " rom";
 	}
-#endif
+	#endif
 
-#ifdef COPY_PS3
+	#ifdef COPY_PS3
 	else if( IS(ext, ".bak") )
 		sprintf(fsize, "<a href=\"/rename.ps3%s|\">%'llu %s</a>", templn, sz, sf);
 	else if( show_img || _IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi") || _IS(ext, ".bik") || _IS(ext, ".mp3") || _IS(ext, ".ac3") || IS(ext, ".AT3") || IS(ext, ".PAM") )
@@ -340,35 +347,37 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			ft = " vid";
 	}
 	else if( IS(ext, ".edat")
-	#ifndef PKG_HANDLER
+			#ifndef PKG_HANDLER
 			|| IS(ext,  ".pkg") ||  IS(ext, ".p3t")  || IS(ext, ".PUP")
-	#endif
+			#endif
 			|| IS(ext,  ".rco") ||  IS(ext, ".qrc")
 			|| !memcmp(name, "webftp_server", 13) || !memcmp(name, "coldboot", 8)
-	#ifdef SWAP_KERNEL
+			#ifdef SWAP_KERNEL
 			|| !memcmp(name, "lv2_kernel", 10)
-	#endif
+			#endif
 			)
 	{
 		sprintf(fsize, "<a href=\"%s%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", action, islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, islike(templn, drives[0]) ? drives[usb] : drives[0], sz, sf);
 		ft = " pkg";
 	}
-#endif //#ifdef COPY_PS3
+	#endif //#ifdef COPY_PS3
 
-#ifdef VIEW_PARAM_SFO
+	#ifdef VIEW_PARAM_SFO
 	else if( IS(ext, ".SFO") )
 	{
 		sprintf(fsize, "<a href=\"/view.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		ft = " cfg";
 	}
-#endif
-#ifdef LOAD_PRX
+	#endif
+
+	#ifdef LOAD_PRX
 	else if(!is_net && ( IS(ext, ".sprx")))
 	{
 		snprintf(fsize, maxlen, "<a href=\"/loadprx.ps3?slot=6&prx=%s\">%'llu %s</a>", templn, sz, sf);
 		ft = " pkg";
 	}
-#endif
+	#endif
+
 	else if(sbytes < 10240)
 		sprintf(fsize, "%'llu %s", sz, sf);
 	else
@@ -418,9 +427,9 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
 							 "%c%s\" href=\"%s\"%s%c%s</a>",
 							 dclass, ft, templn,
-			#ifndef LITE_EDITION
+							#ifndef LITE_EDITION
 							 show_img ? " onmouseover=\"s(this,0);\"" : (is_dir && show_icon0) ? " onmouseover=\"s(this,1);\"" :
-			#endif
+							#endif
 							"" , is_param_sfo, name);
 
 	// -- size column
@@ -1051,12 +1060,16 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 
 			if(read_file(LAST_GAMES_BIN, (char*)&lastgames, sizeof(_lastgames), 0))
 			{
-				u8 n, m;
+				u8 n, m; char *lastgame;
+
+				// verify that last games exist
 				for(n = 0; n < MAX_LAST_GAMES; n++)
 				{
-					if((lastgames.game[n].path[1] != 'n') && not_exists(lastgames.game[n].path)) *lastgames.game[n].path = NULL;
+					lastgame = lastgames.game[n].path;
+					if(!islike(lastgame, "/net") && not_exists(lastgame)) *lastgame = NULL;
 				}
 
+				// sort last games
 				t_path_entries swap;
 				for(n = 0; n < (MAX_LAST_GAMES - 1); n++)
 					for(m = (n + 1); m < MAX_LAST_GAMES; m++)
@@ -1067,16 +1080,19 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 							lastgames.game[m] = swap;
 						}
 
+				// show last games
 				const char *ft;
 				for(n = 0; n < MAX_LAST_GAMES; n++)
 				{
-					if(*lastgames.game[n].path)
+					lastgame = lastgames.game[n].path;
+					if(*lastgame)
 					{
-						const char *name = get_filename(lastgames.game[n].path); if(!name) name = lastgames.game[n].path; else name++;
+						const char *name = get_filename(lastgame); if(!name) name = lastgame; else name++;
 
-						ft = set_file_type(lastgames.game[n].path, name);
+						ft = set_file_type(lastgame, name);
 
-						sprintf(tempstr, "<a class=\"%c%s\" href=\"/mount.ps3%s\">%s</a><br>", (isDir(lastgames.game[n].path) || strstr(lastgames.game[n].path, "/GAME")) ? 'd' : 'w', ft, lastgames.game[n].path, name);
+						sprintf(tempstr, "<a class=\"%c%s\" href=\"/mount.ps3%s\">%s</a><br>",
+								(isDir(lastgame) || strstr(lastgame, "/GAME")) ? 'd' : 'w', ft, lastgame, name);
 						_concat(&sout, tempstr);
 					}
 				}

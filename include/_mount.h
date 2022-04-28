@@ -441,73 +441,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(*target) {if(!isDir(source) && isDir(target)) strcat(target, filename);} // &to=<destination>
 				else
 				{
-					char *ext4 = source + slen - 4;
+					char *ext = get_ext(source);
 					#ifdef SWAP_KERNEL
 					if(strstr(source, "/lv2_kernel"))
 					{
-						struct CellFsStat buf;
-						if(cellFsStat(source, &buf) != CELL_FS_SUCCEEDED)
-							strcpy(target, STR_ERROR);
-						else
-						{
-							u64 size = buf.st_size;
-
-							enable_dev_blind(source);
-
-							// for cobra req: /dev_flash/sys/stage2.bin & /dev_flash/sys/lv2_self
-							strcpy(target, SYS_COBRA_PATH "stage2.bin");
-							if(isDir("/dev_flash/rebug/cobra"))
-							{
-								if(IS(ext4, ".dex"))
-									sprintf(target, "%s/stage2.dex", "/dev_flash/rebug/cobra");
-								else if(IS(ext4, ".cex"))
-									sprintf(target, "%s/stage2.cex", "/dev_flash/rebug/cobra");
-							}
-
-							if(not_exists(target))
-							{
-								strcpy(tempstr, source);
-								strcpy(get_filename(tempstr), "/stage2.bin");
-								if(file_exists(tempstr)) force_copy(tempstr, target);
-							}
-
-							// copy: /dev_flash/sys/lv2_self
-							sprintf(target, "/dev_blind/sys/lv2_self");
-							if((cellFsStat(target, &buf) != CELL_FS_SUCCEEDED) || (buf.st_size != size))
-								force_copy(source, target);
-
-							if((cellFsStat(target, &buf) == CELL_FS_SUCCEEDED) && (buf.st_size == size))
-							{
-								#define FLH_OS		0x2F666C682F6F732FULL
-								#define OS_LV2		0x2F6F732F6C76325FULL
-
-								#define LOCAL_S		0x2F6C6F63616C5F73ULL
-								#define YS0_SYS		0x7973302F7379732FULL
-								#define LV2_SELF	0x6C76325F73656C66ULL
-
-								u64 lv2_offset = 0x15DE78; // 4.xx CFW LV1 memory location for: /flh/os/lv2_kernel.self
-								if(peek_lv1(lv2_offset) != FLH_OS)
-									for(u64 addr = 0x100000ULL; addr < 0xFFFFF8ULL; addr += 4) // Find in 16MB
-										if(peek_lv1(addr) == OS_LV2)      // /os/lv2_
-										{
-											lv2_offset = addr - 4; break; // 0x12A2C0 on 3.55
-										}
-
-								if(peek_lv1(lv2_offset) == FLH_OS)  // Original: /flh/os/lv2_kernel.self
-								{
-									poke_lv1(lv2_offset + 0x00, LOCAL_S); // replace -> /local_sys0/sys/lv2_self
-									poke_lv1(lv2_offset + 0x08, YS0_SYS);
-									poke_lv1(lv2_offset + 0x10, LV2_SELF);
-
-									working = 0;
-									del_turnoff(0); // no beep
-									create_file(WM_NOSCAN_FILE);
-									{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);} /*load LPAR id 1*/
-									sys_ppu_thread_exit(0);
-								}
-							}
-						}
-						plen = 0; //do not copy
+						swap_kernel(source, target, tempstr);
+						plen = 0; //do not copy if don't reboot
 					}
 					else
 					#endif // #ifdef SWAP_KERNEL
@@ -520,7 +459,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					{
 						sprintf(target, "/dev_hdd0/DVDISO%s.iso", filename); // /copy.ps3/net0/***DVD***/folder  -> /dev_hdd0/DVDISO/folder.iso
 					}
-					else if(IS(ext4, ".pkg"))
+					else if(IS(ext, ".pkg"))
 					{
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/Packages", drives[usb]);
@@ -529,7 +468,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 						strcat(target, filename);
 					}
-					else if(_IS(ext4, ".bmp") || _IS(ext4, ".gif"))
+					else if(_IS(ext, ".bmp") || _IS(ext, ".gif"))
 					{
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/PICTURE", drives[usb]);
@@ -538,7 +477,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 						strcat(target, filename);
 					}
-					else if(_IS(ext4, ".jpg") || _IS(ext4, ".png"))
+					else if(_IS(ext, ".jpg") || _IS(ext, ".png"))
 					{
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/PICTURE", drives[usb]);
@@ -556,7 +495,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						else
 							sprintf(target, "/dev_hdd0/GAMES/covers");
 					}
-					else if(_IS(ext4, ".mp4") || _IS(ext4, ".mkv") || _IS(ext4, ".avi"))
+					else if(_IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi"))
 					{
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/VIDEO", drives[usb]);
@@ -565,7 +504,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 						strcat(target, filename);
 					}
-					else if(_IS(ext4, ".mp3"))
+					else if(_IS(ext, ".mp3"))
 					{
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/MUSIC", drives[usb]);
@@ -574,7 +513,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 						strcat(target, filename);
 					}
-					else if(IS(ext4, ".p3t"))
+					else if(IS(ext, ".p3t"))
 					{
 						if(is_copying_from_hdd)
 							sprintf(target, "%s/PS3/THEME", drives[usb]);
@@ -592,17 +531,17 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 						strcat(target, filename);
 					}
-					else if(IS(ext4, ".rco") || strstr(source, "/coldboot"))
+					else if(IS(ext, ".rco") || strstr(source, "/coldboot"))
 					{
 						enable_dev_blind(NO_MSG);
 						sprintf(target, "/dev_blind/vsh/resource");
 
-						if(IS(ext4, ".raf"))
+						if(IS(ext, ".raf"))
 							strcat(target, "/coldboot.raf");
 						else
 							strcat(target, filename);
 					}
-					else if(IS(ext4, ".qrc"))
+					else if(IS(ext, ".qrc"))
 					{
 						enable_dev_blind(NO_MSG);
 						sprintf(target, "%s/qgl", "/dev_blind/vsh/resource");
@@ -676,14 +615,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 								char title_id[TITLEID_LEN];
 								getTitleID(title, title_id, GET_TITLE_AND_ID);
 
-								u8 n = 0; unsigned char c;
-								for(u8 i = 0; title[i]; i++)
-								{
-									c = (unsigned char)title[i];
-									if((c < 0x20) || (c > 0x7F)) continue;
-									if(!strchr("\\\"/<|>:*?", title[i])) title[n++] = title[i];
-								}
-								title[n] = '\0';
+								filepath_check(title); // remove "<|>:*?
+								replace_char(title, '/', ' '); // replace /
+								for(u8 c = 1; c < 31; c++)
+									replace_char(title, c, ' ');
 
 								if(*title_id && (title_id[8] >= '0'))
 								{
@@ -699,7 +634,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						else
 							strcpy(target, drives[0]);
 
-						char *p = strchr(source + 9, '/');
+						char *p = strchr(source + 1, '/');
 						if(p) strcat(target, p);
 					}
 				}

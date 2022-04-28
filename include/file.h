@@ -179,7 +179,7 @@ static void check_path_alias(char *param)
 			} // try hdd0, usb0, usb1, etc.
 			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", "/dev_hdd0/tmp", path);} // try hdd0
 			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", HDD0_HOME_DIR, path);} // try /dev_hdd0/home
-			if(wildcard) {*wildcard = '*'; strcat(param, wildcard);}
+			if(wildcard) {*wildcard = '*'; strcat(param, wildcard);} else if(not_exists(param)) strcpy(param, path);
 		}
 	}
 }
