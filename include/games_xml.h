@@ -583,8 +583,8 @@ static bool add_xmb_entry(u8 f0, u8 f1, const char *tempstr, char *templn, char 
 
 	if( !scanning_roms && XMB_GROUPS )
 	{
-		const char *ext = get_ext(entry_name);
 	#ifdef COBRA_ONLY
+		const char *ext = get_ext(entry_name);
 		if(((IS_PS3_TYPE) || ((IS_NTFS) && IS(ext, ".ntfs[PS3ISO]"))) && (myxml_ps3->size < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3))))
 		{_concat(myxml_ps3, tempstr); *skey=PS3_, ++item_count[gPS3];}
 		else

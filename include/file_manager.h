@@ -243,11 +243,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			if(strstr(fsize, "&lt;")) strcat(fsize, " &nbsp; ");
 		}
 #ifdef COPY_PS3
-		#ifdef USE_NTFS
-		else if(is_ntfs || (!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) )))
-		#else
-		else if(!is_net && ( (flen == 5 && (_IS(name, "VIDEO") || strcasestr(name, "music"))) || (flen == 6 && _IS(name, "covers")) || islike(param, HDD0_HOME_DIR) ))
-		#endif
+		else if(!is_net && ( IS(name, "VIDEO") || _IS(name, "music") || _IS(name, "covers") || islike(param, HDD0_HOME_DIR) ))
 		{
 			snprintf(fsize, maxlen, "<a href=\"/copy.ps3%s\" title=\"copy to %s\">%s</a>", islike(templn, param) ? templn + plen : templn, islike(templn, drives[0]) ? drives[usb] : drives[0], HTML_DIR);
 		}
@@ -289,7 +285,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "%'llu %s", sz, sf);
 
 	#ifndef LITE_EDITION
-	else if( (sbytes <= MAX_TEXT_LEN) && ( strcasestr(".txt.ini.log.sfx.xml.cfg.cnf.his.hip.bup.js.css.html.bat|conf|name", ext) || islike(name, "wm_custom_") ) && !is_net )
+	else if( !is_net && (sbytes <= MAX_TEXT_LEN) && ( strcasestr(".txt.ini.log.sfx.xml.cfg.cnf.his.hip.bup.js.css.html.bat|conf|name", ext) || islike(name, "wm_custom_") ) )
 	{
 		snprintf(fsize, maxlen, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		ft = " cfg";
@@ -297,15 +293,6 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	#endif
 
 #ifdef COBRA_ONLY
-	#ifdef USE_NTFS
-	else if(is_ntfs)
-	{
-		if(strcasestr(ISO_EXTENSIONS, ext))
-			snprintf(fsize, maxlen, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
-		else
-			snprintf(fsize, maxlen, "<a href=\"/copy.ps3%s\" title=\"%'llu %s copy to %s\">%'llu %s</a>", islike(templn, param) ? templn + plen : templn, sbytes, STR_BYTE, drives[0], sz, sf);
-	}
-	#endif
 	else if( (!is_net && strstr(ext, ".ntfs[")) || (strcasestr(ISO_EXTENSIONS, ext) && !islike(templn, HDD0_GAME_DIR)) )
 	{
 		if( strcasestr(name, ".iso.") && !is_iso_0(name) && ( !strstr(ext, ".ntfs[") ))
@@ -313,7 +300,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		else
 			snprintf(fsize, maxlen, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 
-		ft = set_file_type(param, templn + plen);
+		ft = set_file_type(param, ext);
 	}
 #endif
 

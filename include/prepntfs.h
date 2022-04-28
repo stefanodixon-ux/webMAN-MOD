@@ -1,18 +1,6 @@
 #ifdef USE_NTFS
 #define MAX_SECTIONS	(int)((_64KB_-sizeof(rawseciso_args))/8)
 
-//static char paths [13][10] = {"GAMES", "GAMEZ", "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO", "ISO", "video", "GAMEI", "ROMS"};
-
-enum ntfs_folders
-{
-	mPS3 = 2,
-	mBLU = 3,
-	mDVD = 4,
-	mPS2 = 5,
-	mPSX = 6,
-	mMAX = 7,
-};
-
 static u64 device_id;
 static u8  ntfs_m;
 
@@ -91,10 +79,10 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		num_tracks = 1;
 		struct stat bufn; int cd_sector_size = 0, cd_sector_size_param = 0;
 
-			 if(ntfs_m == mPS3) emu_mode = EMU_PS3;
-		else if(ntfs_m == mBLU) emu_mode = EMU_BD;
-		else if(ntfs_m == mDVD) emu_mode = EMU_DVD;
-		else if(ntfs_m == mPSX)
+			 if(ntfs_m == id_PS3ISO) emu_mode = EMU_PS3;
+		else if(ntfs_m == id_BDISO ) emu_mode = EMU_BD;
+		else if(ntfs_m == id_DVDISO) emu_mode = EMU_DVD;
+		else if(ntfs_m == id_PSXISO)
 		{
 			emu_mode = EMU_PSX;
 
@@ -151,12 +139,12 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		}
 
 		int slen = strlen(filename) - extlen;
-		filename[slen] = '\0';
+		filename[slen] = '\0'; // truncate file extension
 
 		snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
 		if(not_exists(tmp_path)) {filename[slen] = '.', slen += extlen, extlen = 0;} // create file with .iso extension
 
-		if(ntfs_subdir && (strncmp(ntfs_subdir, filename, slen) != 0))
+		if(ntfs_subdir && strncmp(ntfs_subdir, filename, slen))
 		{
 			sprintf(tmp_path, "[%s] %s", ntfs_subdir, filename);
 			strcpy(filename, tmp_path);
@@ -166,21 +154,23 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 
 		save_file(tmp_path, (char*)plugin_args, (sizeof(rawseciso_args) + (2 * array_len) + (num_tracks * sizeof(ScsiTrackDescriptor)))); ntfs_count++;
 
-		if(ntfs_m == mPS3)
+		if(ntfs_m == id_PS3ISO)
 		{
 			snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
 			if(not_exists(tmp_path) && (file_size(iso_path) > _128KB_))
 			{
-				// extract PARAM.SFO from ISO
 				char *sector = (char*)sysmem_p;
 
+				// Read root directory of ISO
 				read_file(iso_path, sector, 0x800, 0x10000); // get root sector 20
-				u64 offset = extract_iso_file(iso_path, "PS3_GAME", 8, NULL, sector);
+				u64 offset = extract_iso_file(iso_path, "PS3_GAME", 8, NULL, sector); // find offset
 				if(offset)
 				{
+					// extract PARAM.SFO from ISO
 					read_file(iso_path, sector, 0x800, offset); // get PS3_GAME sector
 					extract_iso_file(iso_path, "PARAM.SFO;1", 11, tmp_path, sector);
 
+					// extract ICON0.PNG from ISO
 					snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.PNG", WMTMP, filename, SUFIX2(profile));
 					extract_iso_file(iso_path, "ICON0.PNG;1", 11, tmp_path, sector);
 
@@ -197,35 +187,6 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 
 		// copy external image to WMTMP
 		force_copy(img_path, tmp_path);
-
-/*
-		for_sfo:
-		if(ntfs_m == mPS3) // mount PS3ISO
-		{
-			strcpy(path + plen - 3, "SFO");
-			if(not_exists(path))
-			{
-				if(isDir("/dev_bdvd")) do_umount(false);
-
-				sys_ppu_thread_create(&thread_id_ntfs, rawseciso_thread, (u64)plugin_args, THREAD_PRIO, THREAD_STACK_SIZE_NTFS_ISO, SYS_PPU_THREAD_CREATE_NORMAL, THREAD_NAME_NTFS);
-
-				wait_for("/dev_bdvd/PS3_GAME/PARAM.SFO", 2);
-
-				if(file_exists("/dev_bdvd/PS3_GAME/PARAM.SFO"))
-				{
-					file_copy("/dev_bdvd/PS3_GAME/PARAM.SFO", path);
-
-					strcpy(path + plen - 3, "PNG");
-					if(not_exists(path))
-						file_copy("/dev_bdvd/PS3_GAME/ICON0.PNG", path);
-				}
-
-				sys_ppu_thread_t t;
-				sys_ppu_thread_create(&t, rawseciso_stop_thread, 0, 0, THREAD_STACK_SIZE_STOP_THREAD, SYS_PPU_THREAD_CREATE_NORMAL, STOP_THREAD_NAME);
-				while(rawseciso_loaded) {sys_ppu_thread_usleep(50000);}
-			}
-		}
-*/
 	}
 }
 
@@ -297,37 +258,12 @@ static int prepNTFS(u8 clear)
 	cellFsMkdir(WMTMP, DMODE);
 	cellFsChmod(WMTMP, DMODE);
 	cellFsUnlink(WMTMP "/games.html");
-	int fd = NONE;
 	char path[STD_PATH_LEN];
-	bool retry;
 
 	// remove ntfs files from WMTMP
-	do
-	{
-		retry = false;
-		if(cellFsOpendir(WMTMP, &fd) == CELL_FS_SUCCEEDED)
-		{
-			u16 dlen = sprintf(path, "%s/", WMTMP);
-			char *ext, *ntfs_file = path + dlen;
-
-			CellFsDirectoryEntry dir; u32 read_f;
-			char *entry_name = dir.entry_name.d_name;
-
-			while(!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_f) && read_f)
-			{
-				ext = strstr(entry_name, ".ntfs[");
-				if(ext && (clear || (mountCount <= 0) ||
-				  (!IS(ext, ".ntfs[BDFILE]") && !IS(ext, ".ntfs[PS2ISO]") && !IS(ext, ".ntfs[PSPISO]")))
-				)
-				{
-					sprintf(ntfs_file, "%s", entry_name);
-					cellFsUnlink(path); retry = true;
-				}
-			}
-			cellFsClosedir(fd);
-		}
-	}
-	while (retry);
+	const char *cache_ext[4] = { ".ntfs[PS3ISO]", ".ntfs[PSXISO]", ".ntfs[DVDISO]", ".ntfs[BDISO]" };
+	for(u8 n = 0; n < 4; n++)
+		scan(WMTMP, false, cache_ext[n], SCAN_DELETE, NULL);
 
 	sys_addr_t sysmem = NULL;
 
@@ -356,9 +292,9 @@ static int prepNTFS(u8 clear)
 		{
 			for(u8 profile = 0; profile < 5; profile++)
 			{
-				for(u8 m = mPS3; m < mMAX; m++)
+				for(u8 m = id_PS3ISO; m <= id_PSXISO; m++)
 				{
-					if(m == mPS2) continue;
+					if(m == id_PS2ISO) continue;
 
 					ntfs_m = m;
 					ntfs_subdir = NULL;
