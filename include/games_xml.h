@@ -575,7 +575,7 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml, u16 *i
  #endif
 }
 
-static bool add_xmb_entry(u8 f0, u8 f1, int plen, const char *tempstr, char *templn, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u16 *item_count, u8 subfolder)
+static bool add_xmb_entry(u8 f0, u8 f1, const char *tempstr, char *templn, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u16 *item_count, u8 subfolder)
 {
 	set_sort_key(skey, templn, key, subfolder, f1);
 
@@ -583,20 +583,21 @@ static bool add_xmb_entry(u8 f0, u8 f1, int plen, const char *tempstr, char *tem
 
 	if( !scanning_roms && XMB_GROUPS )
 	{
+		const char *ext = get_ext(entry_name);
 	#ifdef COBRA_ONLY
-		if(((IS_PS3_TYPE) || ((IS_NTFS) && !extcmp(entry_name + plen, ".ntfs[PS3ISO]", 13))) && myxml_ps3->size < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3)))
+		if(((IS_PS3_TYPE) || ((IS_NTFS) && IS(ext, ".ntfs[PS3ISO]"))) && (myxml_ps3->size < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3))))
 		{_concat(myxml_ps3, tempstr); *skey=PS3_, ++item_count[gPS3];}
 		else
-		if(((IS_PS2ISO) || ((IS_NTFS) && !extcmp(entry_name + plen, ".ntfs[PS2ISO]", 13))) && myxml_ps2->size < (BUFFER_SIZE_PS2 - ITEMS_BUFFER(gPS2)))
+		if(((IS_PS2ISO) || ((IS_NTFS) && IS(ext, ".ntfs[PS2ISO]"))) && (myxml_ps2->size < (BUFFER_SIZE_PS2 - ITEMS_BUFFER(gPS2))))
 		{_concat(myxml_ps2, tempstr); *skey=PS2, ++item_count[gPS2];}
 		else
-		if(((IS_PSXISO) || ((IS_NTFS) && !extcmp(entry_name + plen, ".ntfs[PSXISO]", 13))) && myxml_psx->size < (BUFFER_SIZE_PSX - ITEMS_BUFFER(gPSX)))
+		if(((IS_PSXISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSXISO]"))) && (myxml_psx->size < (BUFFER_SIZE_PSX - ITEMS_BUFFER(gPSX))))
 		{_concat(myxml_psx, tempstr); *skey=PS1, ++item_count[gPSX];}
 		else
-		if(((IS_PSPISO) || ((IS_NTFS) && !extcmp(entry_name + plen, ".ntfs[PSPISO]", 13))) && myxml_psp->size < (BUFFER_SIZE_PSP - ITEMS_BUFFER(gPSP)))
+		if(((IS_PSPISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSPISO]"))) && (myxml_psp->size < (BUFFER_SIZE_PSP - ITEMS_BUFFER(gPSP))))
 		{_concat(myxml_psp, tempstr); *skey=PSP, ++item_count[gPSP];}
 		else
-		if(((IS_BDISO) || (IS_DVDISO) || ((IS_NTFS) && (!extcmp(entry_name + plen, ".ntfs[DVDISO]", 13) || !extcmp(entry_name + plen, ".ntfs[BDISO]", 12) || !extcmp(entry_name + plen, ".ntfs[BDFILE]", 13)))) && myxml_dvd->size < (BUFFER_SIZE_DVD - ITEMS_BUFFER(gDVD)))
+		if(((IS_BDISO) || (IS_DVDISO) || ((IS_NTFS) && (IS(ext, ".ntfs[DVDISO]") || IS(ext, ".ntfs[BDISO]") || IS(ext, ".ntfs[BDFILE]")))) && (myxml_dvd->size < (BUFFER_SIZE_DVD - ITEMS_BUFFER(gDVD))))
 		{_concat(myxml_dvd, tempstr); *skey=BLU, ++item_count[gDVD];}
 	#else
 		if((IS_PS3_TYPE) && myxml_ps3->size < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3)))
@@ -1016,7 +1017,7 @@ scan_roms:
 
 						add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 1);
 
-						if(add_xmb_entry(f0, f1, plen + 6, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, item_count, 0)) key++;
+						if(add_xmb_entry(f0, f1, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, item_count, 0)) key++;
 
 						v3_entry++;
 					}
@@ -1153,7 +1154,7 @@ scan_roms:
 
 							add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, is_game_dir ? id_NPDRM : f1, 5);
 
-							if(add_xmb_entry(f0, f1, plen + flen - 13, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, item_count, subfolder)) key++;
+							if(add_xmb_entry(f0, f1, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, item_count, subfolder)) key++;
 						}
 						//////////////////////////////
 						if(subfolder) goto next_xml_entry;

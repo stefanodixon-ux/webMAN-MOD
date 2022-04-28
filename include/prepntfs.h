@@ -102,28 +102,20 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 			cd_sector_size = default_cd_sector_size(bufn.st_size);
 
 			// detect CD sector size
-			if(!sysmem_p) sysmem_p = sys_mem_allocate(_64KB_);
-			if( sysmem_p)
-			{
-				char *buffer = (char*)sysmem_p;
-				read_file(iso_path, buffer + _32KB_, _8KB_, 0);
-				cd_sector_size = detect_cd_sector_size(buffer);
-			}
+			char *buffer = (char*)sysmem_p;
+			read_file(iso_path, buffer + _32KB_, _8KB_, 0);
+			cd_sector_size = detect_cd_sector_size(buffer);
 
 			if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
 			else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 
 			if(change_ext(iso_path, 4, cue_ext))
 			{
-				if(!sysmem_p) sysmem_p = sys_mem_allocate(_64KB_);
-				if( sysmem_p)
-				{
-					char *cue_file = iso_path;
-					char *cue_buf = (char*)sysmem_p;
-					int cue_size = read_file(cue_file, cue_buf, _8KB_, 0);
+				char *cue_file = iso_path;
+				char *cue_buf = (char*)sysmem_p;
+				int cue_size = read_file(cue_file, cue_buf, _8KB_, 0);
 
-					num_tracks = parse_cue(cue_file, cue_buf, cue_size, tracks);
-				}
+				num_tracks = parse_cue(cue_file, cue_buf, cue_size, tracks);
 			}
 		}
 
@@ -177,26 +169,22 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		if(ntfs_m == mPS3)
 		{
 			snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
-			if(not_exists(tmp_path) && file_size(iso_path) > _128KB_)
+			if(not_exists(tmp_path) && (file_size(iso_path) > _128KB_))
 			{
 				// extract PARAM.SFO from ISO
-				if(!sysmem_p) sysmem_p = sys_mem_allocate(_64KB_);
-				if( sysmem_p)
+				char *sector = (char*)sysmem_p;
+
+				read_file(iso_path, sector, 0x800, 0x10000); // get root sector 20
+				u64 offset = extract_iso_file(iso_path, "PS3_GAME", 8, NULL, sector);
+				if(offset)
 				{
-					char *sector = (char*)sysmem_p;
+					read_file(iso_path, sector, 0x800, offset); // get PS3_GAME sector
+					extract_iso_file(iso_path, "PARAM.SFO;1", 11, tmp_path, sector);
 
-					read_file(iso_path, sector, 0x800, 0x10000); // get root sector 20
-					u64 offset = extract_iso_file(iso_path, "PS3_GAME", 8, NULL, sector);
-					if(offset)
-					{
-						read_file(iso_path, sector, 0x800, offset); // get PS3_GAME sector
-						extract_iso_file(iso_path, "PARAM.SFO;1", 11, tmp_path, sector);
+					snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.PNG", WMTMP, filename, SUFIX2(profile));
+					extract_iso_file(iso_path, "ICON0.PNG;1", 11, tmp_path, sector);
 
-						snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.PNG", WMTMP, filename, SUFIX2(profile));
-						extract_iso_file(iso_path, "ICON0.PNG;1", 11, tmp_path, sector);
-
-						if(file_exists(tmp_path)) return;
-					}
+					if(file_exists(tmp_path)) return;
 				}
 			}
 		}
@@ -349,6 +337,9 @@ static int prepNTFS(u8 clear)
 
 	sysmem = sys_mem_allocate(_64KB_);
 	if(!sysmem) goto exit_prepntfs;
+
+	sysmem_p = sys_mem_allocate(_64KB_);
+	if(!sysmem_p) goto exit_prepntfs;
 
 	plugin_args    = (u8 *)(sysmem);
 	sectionsP      = (u32*)(sysmem + sizeof(rawseciso_args));

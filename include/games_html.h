@@ -363,8 +363,7 @@ static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *templn)
 static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 {
 #if defined(COBRA_ONLY) || defined(MOUNT_ROMS)
-	int n = MAX(flen - 6, 0);
-	const char *ext = get_ext(entry_name + n);
+	const char *ext = get_ext(entry_name + MAX(flen - 13, 0));
 #endif
 #ifdef MOUNT_ROMS
 	if(IS_ROMS_FOLDER)
@@ -381,7 +380,7 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 		if(IS_ISO_FOLDER && (_IS(ext, ".zip") || _IS(ext, ".7z"))) return true;
 
 		return ((IS_ISO_FOLDER || IS_VIDEO_FOLDER)  && (
-				(_IS(ext, ".iso") || _IS(entry_name + n, ".iso.0"))  ||
+				(_IS(ext, ".iso") || _IS(entry_name + MAX(flen - 6, 0), ".iso.0"))  ||
 				((IS_PS2ISO || IS_PSXISO || IS_DVDISO || IS_BDISO) && strcasestr(ISO_EXTENSIONS + 14, ext))
 				));
 	}

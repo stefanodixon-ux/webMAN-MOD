@@ -44,12 +44,12 @@
 			goto exit_mount;
 		}
 	}
-	#endif
+	#endif // #ifdef MOUNT_GAMEI
 
 	// ------------------
 	// mount NPDRM game
 	// ------------------
- #ifdef PKG_LAUNCHER
+	#ifdef PKG_LAUNCHER
 	const char *ext = get_ext(_path);
 
 	if(isDir(PKGLAUNCH_DIR) && !islike(_path, "/net"))
@@ -72,7 +72,8 @@
 			goto mounting_done; //goto exit_mount;
 		}
 	}
- #endif
+	#endif // #ifdef PKG_LAUNCHER
+
 	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
 		ret = isDir(_path);
@@ -105,7 +106,7 @@
 	// ------------------
 	// mount ROMS game
 	// ------------------
- #ifdef MOUNT_ROMS
+	#ifdef MOUNT_ROMS
 	if(isDir(PKGLAUNCH_DIR))
 	{
 		if(islike(_path, "/net")) ; else // mount ROMS in /net module
@@ -159,7 +160,7 @@
 			goto mounting_done; //goto exit_mount;
 		}
 	}
- #endif // #ifdef MOUNT_ROMS
+	#endif // #ifdef MOUNT_ROMS
 
 #endif // #ifdef COBRA_ONLY
 
@@ -168,19 +169,28 @@
 	// ------------------
 	if(is_BIN_ENC(_path))
 	{
-		char temp[STD_PATH_LEN + 16];
+		char temp[STD_PATH_LEN + 48]; ret = false;
+
+		#ifdef DEX_SUPPORT
+		if(!IS_CEX && !(webman_config->minfo & 1))
+		{
+			sprintf(temp, "Rebug DEX only supports PS2 games encrypted with CEX keys");
+			vshNotify_WithIcon(ICON_EXCLAMATION, temp);
+		}
+		#endif
 
 		if(isDir(PS2_CLASSIC_PLACEHOLDER))
 		{
 			copy_in_progress = true, copied_count = 0;
 
- #ifndef LITE_EDITION
+			#ifndef LITE_EDITION
 			if(c_firmware >= 4.65f)
 			{   // Auto create "classic_ps2 flag" for PS2 Classic (.BIN.ENC) on rebug 4.65.2
 				do_umount(false);
 				enable_classic_ps2_mode();
 			}
- #endif
+			#endif
+
 			cellFsUnlink(PS2_CLASSIC_ISO_CONFIG);
 			cellFsUnlink(PS2_CLASSIC_ISO_PATH);
 
@@ -195,29 +205,34 @@
 				if(webman_config->fanc) {restore_fan(SET_PS2_MODE); ps2_classic_mounted = true;} //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
-				create_file(WM_NOSCAN_FILE); ret = true;
+				create_file(WM_NOSCAN_FILE);
 
-				sprintf(temp, "\"%s\" %s", get_filename(_path) + 1, STR_LOADED2);
+				sprintf(temp, "\"%s\" %s", get_filename(_path) + 1, STR_LOADED2); ret = true;
 			}
 			else
-				{sprintf(temp, "PS2 Classic\n%s", STR_ERROR); ret = false;}
+				sprintf(temp, "%s %s", _path, STR_NOTFOUND);
 
 			copy_in_progress = false;
 		}
 		else
 		{
 			sprintf(temp, "PS2 Classic Placeholder %s", STR_NOTFOUND);
-			ret = false;
 		}
 
-		if(!(webman_config->minfo & 2)) show_msg(temp);
+		if(!(webman_config->minfo & 2))
+		{
+			if(ret)
+				show_msg(temp);
+			else
+				show_status(STR_ERROR, temp);
+		}
 
 		goto exit_mount;
 	}
 
- #ifndef LITE_EDITION
-	if((c_firmware >= 4.65f) && strstr(_path, "/PS2ISO")!=NULL)
+	#ifndef LITE_EDITION
+	if((c_firmware >= 4.65f) && strstr(_path, "/PS2ISO"))
 	{   // Auto remove "classic_ps2" flag for PS2 ISOs on rebug 4.65.2
 		disable_classic_ps2_mode();
 	}
- #endif
+	#endif

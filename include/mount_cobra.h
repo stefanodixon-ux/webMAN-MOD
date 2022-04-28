@@ -249,7 +249,14 @@ mount_again:
 				if(!islike(_path, drives[0]))
 				{
 copy_ps2iso_to_hdd0:
-					cache_file_to_hdd(_path, iso_list[0], "/PS2ISO", templn);
+					if(!payload_ps3hen)
+						cache_file_to_hdd(_path, iso_list[0], "/PS2ISO", templn);
+				}
+
+				if(payload_ps3hen)
+				{
+					show_status(STR_ERROR, "HEN does not support PS2 ISO\nUse encrypted game.");
+					ret = false; goto exit_mount;
 				}
 
 				webman_config->ps2emu = pad_select_netemu(_path, webman_config->ps2emu);

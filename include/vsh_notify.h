@@ -256,7 +256,7 @@ static void show_msg(const char *text)
 static void show_status(const char *label, const char *status)
 {
 	char msg[200];
-	snprintf(msg, 200, "%s %s", label, status);
+	snprintf(msg, sizeof(msg), "%s %s", label, status);
 	if(IS(label, STR_ERROR))
 		vshNotify_WithIcon(ICON_ERROR, msg);
 	else
