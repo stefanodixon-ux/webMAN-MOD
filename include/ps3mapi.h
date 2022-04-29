@@ -584,7 +584,7 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 	return is_vsh;
 }
 
-static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const char *sfind, u8 len, const char *mask, u32 fallback)
+static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const char *sfind, u8 len, char *mask, u32 fallback)
 {
 	char label[20], buffer[0x200], *mem;
 
@@ -603,6 +603,7 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 
 	Check_Overlay();
 
+	u64 faster = faster_find(sfind, len, mask);
 	const u32 m = chunk_size - len, gap = (len + 0x10) - (len % 0x10);
 	for(; address < stop; address += chunk_size - gap)
 	{
@@ -613,6 +614,8 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 
 		for(u32 offset = 0; offset < m; offset += step)
 		{
+			if(faster && (*(u64*)(mem + offset) != faster)) continue;
+
 			if( !bcompare(mem + offset, sfind, len, mask) )
 			{
 				found_offset = (address + offset);
@@ -695,7 +698,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		{
 			find = strstr(param, "find=") + 5;
 			char sfind[0x60], *mask = addr_tmp;
-			u8 len = snprintf(sfind, 0x60, "%s", addr_tmp);
+			u8 len = snprintf(sfind, sizeof(sfind), "%s", addr_tmp);
 
 			// search hex: 0xAABBCC112233
 			if(isHEX(addr_tmp))

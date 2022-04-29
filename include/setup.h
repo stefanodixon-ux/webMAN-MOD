@@ -766,9 +766,9 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef PHOTO_GUI
 	if(file_exists(LAUNCHPAD_FILE_XML))
-		_add_checkbox("lx", "LaunchPad.xml | PhotoGUI (USB0/PICTURE)", !(webman_config->launchpad_xml), buffer);
+		_add_checkbox("lx", "LaunchPad.xml | PhotoGUI (USB0/PICTURE) | Poll wm_request", !(webman_config->launchpad_xml), buffer);
 	else if(payload_ps3hen || cobra_version >= 0x0820)
-		_add_checkbox("lx", "PhotoGUI (USB0/PICTURE)", !(webman_config->launchpad_xml), buffer);
+		_add_checkbox("lx", "PhotoGUI (USB0/PICTURE) | Poll wm_request", !(webman_config->launchpad_xml), buffer);
 #endif
 
 	//game mounting

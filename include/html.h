@@ -115,10 +115,41 @@ static bool _IS(const char *a, const char *b)
 	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
 }
 
+static void replace_char(char *text, char c, char r)
+{
+	if(!text) return;
+
+	char *pos = strchr(text, c);
+	while (pos)
+	{
+		*pos = r; pos = strchr(pos, c);
+	}
+}
+
 #if defined(PS3MAPI) || defined(DEBUG_MEM)
+static u64 faster_find(const char *find, int len, char *mask)
+{
+	if(!mask || !find) return 0;
+
+	u64 faster = *(u64*)find;
+
+	replace_char(mask, '*', '?'); // use single type of wildcard
+
+	if(len < 8)
+		faster = 0; // do not fast find if len < 8
+	else
+	{
+		char s = mask[8]; mask[8] = '\0'; // truncate to search only first 8 characters
+		if(strchr(mask, '?')) faster = 0; // do not fast find if using mask
+		mask[8] = s; // restore mask
+	}
+
+	return faster;
+}
+
 static bool bcompare(const char *a, const char *b, u8 len, const char *mask)
 {
-	while(len && ((*a == *b) || (*mask == '*') || (*mask == '?'))) {a++,b++,mask++,len--;}
+	while(len && ((*a++ == *b++) || (*mask == '?'))) {mask++,len--;}
 	return len;
 }
 #endif
@@ -715,17 +746,6 @@ static u8 parse_tags(char *text)
 	return op;
 }
 #endif
-
-static void replace_char(char *text, char c, char r)
-{
-	if(!text) return;
-
-	char *pos = strchr(text, c);
-	while (pos)
-	{
-		*pos = r; pos = strchr(pos, c);
-	}
-}
 
 #ifndef LITE_EDITION
 static u8 get_operator(char *equal_pos, bool nullfy)

@@ -16,7 +16,7 @@ static void poke_chunk_lv1(u64 start, int size, u8 *buffer, u8 oper)
 	start |= 0x8000000000000000ULL; u64 old_value, new_value;
 	for(int offset = 0; offset < size; offset += 8)
 	{
-		new_value = *((u64*)(buffer + offset));
+		new_value = *(u64*)(buffer + offset);
 		if(oper)
 		{
 			old_value = peek_lv1(start + offset);
@@ -31,7 +31,7 @@ static void poke_chunk_lv2(u64 start, int size, u8 *buffer, u8 oper)
 	start |= 0x8000000000000000ULL; u64 old_value, new_value;
 	for(int offset = 0; offset < size; offset += 8)
 	{
-		new_value = *((u64*)(buffer + offset));
+		new_value = *(u64*)(buffer + offset);
 		if(oper)
 		{
 			old_value = peekq(start + offset);
@@ -186,7 +186,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 
 static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
-	u64 address = 0, addr, byte_addr, value = 0, upper_memory = LV1_UPPER_MEMORY, found_address=0, step = 1;
+	u64 address = 0, addr, byte_addr, upper_memory = LV1_UPPER_MEMORY, found_address = 0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0, rep = 1, oper = 0; // replace value
 	bool found = false, not_found = false;
 	int flen = 0, hilite;
@@ -215,13 +215,27 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			if(isHEX(sfind))
 				{strcpy(templn, sfind); flen = Hex2Bin(templn, sfind);}
 
-			int i, n = (0x400 - flen); u64 addr = address;
-			while(read_file(fname, templn, 0x400, addr))
+			sys_addr_t sysmem = sys_mem_allocate(_64KB_);
+			if(sysmem)
 			{
-				for(i = 0; i < n; i++) if(!bcompare(templn + i, sfind, flen, sfind) && !(--rep)) break;
-				addr += i; if(i < n) {address = found_address = addr; found = true; break;}
+				char *mem = (char*)sysmem, *mask = sfind;
+				s32 i, n; u64 addr = address;
+				u64 faster = faster_find(sfind, flen, mask);
+				while((n = read_file(fname, mem, _64KB_, addr)))
+				{
+					n -= flen; if(n <= 0) break;
+					for(i = 0; i < n; i++)
+					{
+						if(faster && (*(u64*)(mem + i) != faster)) continue;
+						if(!bcompare(mem + i, sfind, flen, mask) && !(--rep)) break;
+					}
+					addr += i; if(i < n) {address = found_address = addr; found = true; break;}
+				}
+				sys_memory_free(sysmem);
+				if(rep) not_found = true;
 			}
-			if(rep) not_found = true;
+			else
+				not_found = true;
 		}
 
 		if(pos)
@@ -300,12 +314,14 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		Check_Overlay();
 
 		u64 _upper_memory = (upper_memory - flen + 8) & 0x8FFFFFFFFFFFFFF0ULL;
+		u64 faster = faster_find(sfind, flen, sfind);
 		for(addr = address; addr < _upper_memory; addr += step)
 		{
-			value = peek_mem(addr); memcpy(tfind, (char*)&value, 8);
-			if(flen >  8) {value = peek_mem(addr +  8); memcpy(tfind +  8, (char*)&value, 8);}
-			if(flen > 16) {value = peek_mem(addr + 16); memcpy(tfind + 16, (char*)&value, 8);}
-			if(flen > 24) {value = peek_mem(addr + 24); memcpy(tfind + 24, (char*)&value, 8);}
+			if(faster && (peek_mem(addr) != faster)) continue;
+
+			for(u8 n = 0; n < flen; n += 8)
+				*(u64*)(tfind + n) = peek_mem(addr +  n);
+
 			if(!bcompare(tfind, sfind, flen, sfind) && !(--rep)) {address = found_address = addr; found = true; break;}
 
 			if((addr & 0xF00) == 0) {sprintf(label, "0x%llx", address + addr); show_progress(label, OV_FIND);}
