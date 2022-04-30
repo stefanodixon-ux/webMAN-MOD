@@ -131,7 +131,7 @@ static u64 faster_find(const char *find, int len, char *mask)
 {
 	if(!mask || !find) return 0;
 
-	u64 faster = *(u64*)find;
+	u64 faster = *(u64*)find; // first 64bits
 
 	replace_char(mask, '*', '?'); // use single type of wildcard
 

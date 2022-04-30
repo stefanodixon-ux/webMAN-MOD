@@ -48,7 +48,10 @@
 			}
 
 			if(prx_found)
-				sprintf(param, "slot: %i<br>load prx: %s", slot, sprx_path);
+			{
+				sprintf(param, "slot: %i<br>load prx: ", slot);
+				add_breadcrumb_trail(param, sprx_path);
+			}
 			else
 				sprintf(param, "unload slot: %i", slot);
 

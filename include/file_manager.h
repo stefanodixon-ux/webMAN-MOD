@@ -373,7 +373,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	#ifdef LOAD_PRX
 	else if(!is_net && ( IS(ext, ".sprx")))
 	{
-		snprintf(fsize, maxlen, "<a href=\"/loadprx.ps3?slot=6&prx=%s\">%'llu %s</a>", templn, sz, sf);
+		snprintf(fsize, maxlen, "<a href=\"/loadprx.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		ft = " pkg";
 	}
 	#endif
@@ -504,10 +504,9 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 	else if((param[1] != 'n') && not_exists(param)) slen = sprintf(swap, "%s", get_filename(param) + 1);
 	else
 	{
-		tlen = strlen(param) - 4; if(tlen < 0) tlen = 0;
-
 		char label[_MAX_PATH_LEN];
 		urlenc(url, param); if(islike(param, "/net")) htmlenc(label, templn, 0); else strcpy(label, templn);
+		char *ext = get_ext(param);
 
 		#ifdef USE_NTFS
 		if(is_ntfs_path(param)) slen = sprintf(swap, HTML_URL, WMTMP, label);
@@ -523,11 +522,14 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 						islike(param, HDD0_GAME_DIR) ? "/fixgame.ps3" :
 		#endif
 		#ifdef PKG_HANDLER
-						is_ext(param + tlen, ".pkg") ? "/install.ps3" :
+						_IS(ext, ".pkg") ? "/install.ps3" :
+		#endif
+		#ifdef LOAD_PRX
+						_IS(ext, ".sprx") ? "/loadprx.ps3" :
 		#endif
 						islike(param + 15, "/covers") ? "" : // /dev_hdd0/GAMES/covers
 						((isDir(param) ||
-						 strcasestr(ISO_EXTENSIONS, param + tlen)) ||
+						 strcasestr(ISO_EXTENSIONS, ext)) ||
 						 strstr(param, "/GAME")  ||
 						 strstr(param, ".ntfs[") ||
 						 islike(param, "/net") ) ? "/mount.ps3" : "", url, label);
