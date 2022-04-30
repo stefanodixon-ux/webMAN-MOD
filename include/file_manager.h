@@ -300,7 +300,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	#endif
 
 	#ifdef COBRA_ONLY
-	else if( (!is_net && strstr(ext, ".ntfs[")) || (strcasestr(ISO_EXTENSIONS, ext) && !islike(templn, HDD0_GAME_DIR) && !islike(templn, HDD0_HOME_DIR)) )
+	else if( (!is_net && strstr(ext, ".ntfs[")) || ((show_icon0 <= 1) && strcasestr(ISO_EXTENSIONS, ext)) )
 	{
 		if( strcasestr(name, ".iso.") && !is_iso_0(name) && ( !strstr(ext, ".ntfs[") ))
 			sprintf(fsize, "<label title=\"%'llu %s\"> %'llu %s</label>", sbytes, STR_BYTE, sz, sf);
@@ -325,7 +325,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	#endif
 
 	#ifdef MOUNT_ROMS
-	else if( strstr(templn, "/ROMS") || (!islike(templn, HDD0_HOME_DIR) && strcasestr(ROMS_EXTENSIONS, ext)) )
+	else if( strstr(templn, "/ROMS") || (!show_icon0 && strcasestr(ROMS_EXTENSIONS, ext)) )
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		ft = show_img ? " pic" : " rom";
@@ -628,7 +628,9 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 		BUFFER_SIZE_HTML -= _4KB_;
 
 		u8 jb_games = (strstr(param, "/GAMES") || strstr(param, "/GAMEZ"));
-		u8 show_icon0 = jb_games || (islike(param, "/dev_hdd0/game") || islike(param, HDD0_HOME_DIR));
+		u8 show_icon0 = jb_games ? 1 :
+						islike(param, "/dev_hdd0/game") ? 2 :
+						islike(param, HDD0_HOME_DIR)    ? 3 : 0;
 
 		char *action = (char*)"/copy.ps3";
 

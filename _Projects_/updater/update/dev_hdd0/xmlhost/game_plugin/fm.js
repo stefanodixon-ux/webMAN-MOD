@@ -89,8 +89,8 @@ window.addEventListener('contextmenu',function(e){
 		mz.style.display=(c=='d')?b:(exts.exec(p)?b:n);
 		md.href=((c=='d')?'/stat.ps3':'/md5.ps3')+p;
 		md.text=((c=='d')?'Folder Size':'MD5 Hash');
-		dm.href=((c=='d')?'/chmod.ps3':'/trunc.ps3')+p;
-		dm.text=((c=='d')?'Fix Permissions':'Truncate');
+		dm.href=((c=='d')&&!p.includes('/USRDIR/')?'/chmod.ps3':'/trunc.ps3')+p;
+		dm.text=((c=='d')&&!p.includes('/USRDIR/')?'Fix Permissions':'Truncate');
 		ms.href='http://google.com/search?q='+t.text;ms.style.display=(t.parentNode.className=='gn')?b:n;
 		y=p.indexOf('.ps3');if(y>0)p=p.substring(y+4);url=window.location.href;
 		ml.href=p.substring(0,p.lastIndexOf("/"));if(url.indexOf('?sort=')<0)ml.href+='?sort=name&desc';

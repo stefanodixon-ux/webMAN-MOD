@@ -147,6 +147,8 @@
 			{
 				Check_Overlay();
 				scan(filename, true, NULL, SCAN_TRUNCATE, NULL);
+				strcpy(header, filename); strcpy(param, filename);
+				goto redirect_url;
 			}
 			else
 				create_file(filename);

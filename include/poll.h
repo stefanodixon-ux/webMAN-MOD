@@ -141,11 +141,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		if(!working) break;
 
 		// detect aprox. time when a game is launched & set network connect status
-		#ifdef OFFLINE_INGAME
-		if(webman_config->spp & 4) poll_start_play_time();
-		#else
 		poll_start_play_time();
-		#endif
 
 		#ifdef FPS_OVERLAY
 		if(overlay_info)
