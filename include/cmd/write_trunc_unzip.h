@@ -142,16 +142,20 @@
 				Check_Overlay();
 				wildcard = strrchr(filename, '/'); *wildcard++ = NULL;
 				scan(filename, true, wildcard, SCAN_TRUNCATE, NULL);
+				strcpy(param, filename);
 			}
 			else if(isDir(filename))
 			{
 				Check_Overlay();
 				scan(filename, true, NULL, SCAN_TRUNCATE, NULL);
-				strcpy(header, filename); strcpy(param, filename);
-				goto redirect_url;
+				strcpy(param, filename);
 			}
 			else
+			{
 				create_file(filename);
+				copy_path(param, filename);
+			}
+			goto redirect_url;
 		}
 		#ifdef COBRA_ONLY
 		else if(islike(param, "/dozip.ps3") || islike(param, "/unzip.ps3"))
