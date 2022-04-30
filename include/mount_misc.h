@@ -181,8 +181,6 @@
 
 		if(isDir(PS2_CLASSIC_PLACEHOLDER))
 		{
-			copy_in_progress = true, copied_count = 0;
-
 			#ifndef LITE_EDITION
 			if(c_firmware >= 4.65f)
 			{   // Auto create "classic_ps2 flag" for PS2 Classic (.BIN.ENC) on rebug 4.65.2
@@ -211,8 +209,6 @@
 			}
 			else
 				sprintf(temp, "%s %s", _path, STR_NOTFOUND);
-
-			copy_in_progress = false;
 		}
 		else
 		{

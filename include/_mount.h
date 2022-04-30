@@ -843,7 +843,6 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				// show msg begin
 				sprintf(templn, "%s %s\n%s %s", STR_COPYING, source, STR_CPYDEST, target);
 				show_msg(templn);
-				copy_in_progress = true, copied_count = 0;
 
 				if(islike(target, "/dev_blind")) enable_dev_blind(NO_MSG);
 
@@ -865,8 +864,6 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					folder_copy(source, target);
 				else
 					file_copy(source, target);
-
-				copy_in_progress = false;
 
 				// show msg end
 				if(copy_aborted)
@@ -1127,9 +1124,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 			show_progress(msg, OV_COPY);
 
 			dont_copy_same_size = true;
-			copy_in_progress = true, copied_count = 1;
 			file_copy(source, target);
-			copy_in_progress = false;
 
 			if(copy_aborted)
 			{

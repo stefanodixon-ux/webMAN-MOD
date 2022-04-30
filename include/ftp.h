@@ -1234,9 +1234,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						if(_IS(cmd, "PASTE"))
 						{
 							absPath(param, filename, cwd);
-							if((!copy_in_progress) && (*source) && (!IS(source, param)) && file_exists(source))
+							if((*source) && (!IS(source, param)) && file_exists(source))
 							{
-								copy_in_progress = true; copied_count = 0;
 								ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 
 								sprintf(buffer, "%s %s\n%s %s", STR_COPYING, source, STR_CPYDEST, param);
@@ -1248,7 +1247,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 									file_copy(source, param);
 
 								show_msg(STR_CPYFINISH);
-								copy_in_progress = false;
 							}
 							else
 							{

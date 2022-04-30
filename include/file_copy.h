@@ -1,11 +1,12 @@
+static bool g_free = false;
 static u32 g_chunk_size = 0;
 static sys_addr_t g_sysmem = NULL;
 
-static bool copy_in_progress = false;
+static u32 copied_count = 0;
+static u16 copy_in_progress = 0;
+
 static bool dont_copy_same_size = true; // skip copy the file if it already exists in the destination folder with the same file size
 static bool allow_sc36 = true; // used to skip decrypt dev_bdvd files in file_copy function if it's called from folder_copy
-
-static u32 copied_count = 0;
 
 #define COPY_WHOLE_FILE		0
 
@@ -91,9 +92,13 @@ int64_t file_copy(const char *file1, char *file2)
 		#ifdef COBRA_NON_LITE
 		if(islike(file1, "/net"))
 		{
+			++copy_in_progress;
+
 			int ns = connect_to_remote_server((file1[4] & 0x0F));
 			copy_net_file(file2, file1 + 5, ns);
 			if(ns >= 0) sclose(&ns);
+
+			--copy_in_progress; copied_count++;
 
 			if(file_exists(file2)) return 0;
 		}
@@ -169,7 +174,7 @@ int64_t file_copy(const char *file1, char *file2)
 	u8 merge_part = 0;
 	u32 chunk_size; sys_addr_t sysmem = NULL;
 
-	if(g_sysmem) {chunk_size = g_chunk_size, sysmem = g_sysmem;} else
+	if(g_free) {chunk_size = g_chunk_size, sysmem = g_sysmem, g_free = false;} else
 	{
 		chunk_size = is_ntfs1 || (buf.st_size <= _64KB_) ? _64KB_ : _128KB_;
 		sysmem = sys_mem_allocate(chunk_size);
@@ -178,6 +183,7 @@ int64_t file_copy(const char *file1, char *file2)
 
 	if(sysmem)
 	{
+		++copy_in_progress;
 merge_next:
 		if(is_ntfs1 || (cellFsOpen(file1, CELL_FS_O_RDONLY, &fd1, NULL, 0) == CELL_FS_SUCCEEDED))
 		{
@@ -291,10 +297,13 @@ next_part:
 			#endif
 			cellFsClose(fd1);
 		}
+		--copy_in_progress;
 	}
 
-	if(!g_sysmem)
-		{if(sysmem) sys_memory_free(sysmem);}
+	if(g_sysmem && !g_free)
+		g_free = true;
+	else if(sysmem)
+		sys_memory_free(sysmem);
 
 	return ret;
 }
@@ -312,7 +321,7 @@ static void force_copy(const char *file1, char *file2)
 static void mkdir_tree(char *path);
 static void normalize_path(char *path, bool slash);
 
-static int __folder_copy(const char *path1, char *path2)
+static int recursive_folder_copy(const char *path1, char *path2)
 {
 	filepath_check(path2);
 
@@ -355,7 +364,7 @@ static int __folder_copy(const char *path1, char *path2)
 		u16 plen1 = sprintf(source, "%s", path1);
 		u16 plen2 = sprintf(target, "%s", path2);
 
-		while(g_sysmem && working)
+		while(working)
 		{
 			#ifdef USE_NTFS
 			if(is_ntfs)
@@ -378,7 +387,7 @@ static int __folder_copy(const char *path1, char *path2)
 			if(isDir(source))
 			{
 				if(IS(source, "/dev_bdvd/PS3_UPDATE")) {cellFsMkdir(target, DMODE); continue;} // just create /PS3_UPDATE without its content
-				__folder_copy(source, target);
+				recursive_folder_copy(source, target);
 			}
 			else
 				file_copy(source, target);
@@ -400,18 +409,21 @@ static int folder_copy(const char *path1, char *path2)
 	if(!g_sysmem) {g_chunk_size = _256KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
 	if(!g_sysmem) {g_chunk_size = _128KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
 	if(!g_sysmem) {g_chunk_size =  _64KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
+	if( g_sysmem) g_free = true;
 
-	int ret = FAILED;
+	if(!copy_in_progress) copied_count = 0;
 
-	if(g_sysmem)
-	{
-		ret = __folder_copy(path1, path2);
-		sys_memory_free(g_sysmem); g_sysmem = NULL;
-	}
+	++copy_in_progress;
+
+	int ret = recursive_folder_copy(path1, path2);
+
+	--copy_in_progress;
+
+	if(g_sysmem && g_free) {sys_memory_free(g_sysmem); g_sysmem = NULL, g_free = false;}
 	return ret;
 }
 
-static void _folder_copy(char *file1, char *file2)
+static void force_folder_copy(char *file1, char *file2)
 {
 	dont_copy_same_size = false; // force copy file with the same size than existing file
 	folder_copy(file1, file2);
