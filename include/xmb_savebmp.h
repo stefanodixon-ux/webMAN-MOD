@@ -71,13 +71,20 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 		cellRtcGetCurrentClockLocalTime(&t);
 
 		// build file path
-		sprintf(path, "/dev_hdd0/screenshot_%02d_%02d_%02d_%02d_%02d_%02d.bmp", t.year, t.month, t.day, t.hour, t.minute, t.second);
+		if(*path != '/')
+			strcpy(path, drives[0]);
+		else if(!islike(path, "/dev_"))
+		{
+			prepend(path, drives[0], 9);
+		}
+
+		sprintf(path + strlen(path), "/screenshot_%02d_%02d_%02d_%02d_%02d_%02d.bmp", t.year, t.month, t.day, t.hour, t.minute, t.second);
 	}
 
 	filepath_check(path);
 
 	// create bmp file
-	int fd;
+	int fd; mkdir_tree(path);
 	if(IS_INGAME || cellFsOpen(path, CELL_FS_O_WRONLY|CELL_FS_O_CREAT|CELL_FS_O_TRUNC, &fd, NULL, 0) != CELL_FS_SUCCEEDED) { BEEP3 ; return;}
 
 	// max frame line size = 1920 pixel * 4(byte per pixel) = 7680 byte = 8 KB

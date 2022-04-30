@@ -78,10 +78,9 @@
 				else
 				#endif
 				{
-					strcpy(header, params);
-					sprintf(param, "%s%s", "/mount.ps3", header);
+					prepend(param, "/mount.ps3", 1);
 
-					if(is_ext(header, ".bat") || is_ext(header, ".txt"))
+					if(is_ext(param, ".bat") || is_ext(param, ".txt"))
 						ap_param = 0; // do not auto_play
 					else
 						ap_param = 2; // force auto_play

@@ -748,6 +748,17 @@ static u8 parse_tags(char *text)
 #endif
 
 #ifndef LITE_EDITION
+static char *prepend(char *a, const char *b, int len)
+{
+	int i = strlen(a);
+	int n = strlen(b);
+	if(len <= 0) len = n;
+	for(; i >= 0; i--)
+		a[i + len] = a[i];
+	memcpy(a, b, n);
+	return a;
+}
+
 static u8 get_operator(char *equal_pos, bool nullfy)
 {
 	if(!equal_pos) return 0;

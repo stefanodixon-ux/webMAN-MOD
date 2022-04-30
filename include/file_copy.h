@@ -309,7 +309,10 @@ static void force_copy(const char *file1, char *file2)
 }
 
 #ifdef COPY_PS3
-static int folder_copy(const char *path1, char *path2)
+static void mkdir_tree(char *path);
+static void normalize_path(char *path, bool slash);
+
+static int __folder_copy(const char *path1, char *path2)
 {
 	filepath_check(path2);
 
@@ -339,12 +342,8 @@ static int folder_copy(const char *path1, char *path2)
 		if(islike(path1, "/dev_bdvd"))
 			{allow_sc36 = false; sysLv2FsBdDecrypt();} // decrypt dev_bdvd files
 
-		#ifdef USE_NTFS
-		if(is_ntfs_path(path2))
-			ps3ntfs_mkdir(ntfs_path(path2), DMODE);
-		else
-		#endif
-			cellFsMkdir(path2, DMODE);
+		normalize_path(path2, true);
+		mkdir_tree(path2);
 
 		CellFsDirent dir; u64 read_e;
 		CellFsDirectoryEntry entry; u32 read_f;
@@ -352,13 +351,6 @@ static int folder_copy(const char *path1, char *path2)
 
 		char source[STD_PATH_LEN];
 		char target[STD_PATH_LEN];
-
-		if(!g_sysmem)
-		{
-			if(!g_sysmem) {g_chunk_size = _256KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
-			if(!g_sysmem) {g_chunk_size = _128KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
-			if(!g_sysmem) {g_chunk_size =  _64KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
-		}
 
 		u16 plen1 = sprintf(source, "%s", path1);
 		u16 plen2 = sprintf(target, "%s", path2);
@@ -386,13 +378,11 @@ static int folder_copy(const char *path1, char *path2)
 			if(isDir(source))
 			{
 				if(IS(source, "/dev_bdvd/PS3_UPDATE")) {cellFsMkdir(target, DMODE); continue;} // just create /PS3_UPDATE without its content
-				folder_copy(source, target);
+				__folder_copy(source, target);
 			}
 			else
 				file_copy(source, target);
 		}
-
-		if(g_sysmem) {sys_memory_free(g_sysmem); g_sysmem = NULL;}
 
 		#ifdef USE_NTFS
 		if(is_ntfs) ps3ntfs_dirclose(pdir);
@@ -403,6 +393,22 @@ static int folder_copy(const char *path1, char *path2)
 		if(copy_aborted) return FAILED;
 	}
 	return CELL_FS_SUCCEEDED;
+}
+
+static int folder_copy(const char *path1, char *path2)
+{
+	if(!g_sysmem) {g_chunk_size = _256KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
+	if(!g_sysmem) {g_chunk_size = _128KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
+	if(!g_sysmem) {g_chunk_size =  _64KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
+
+	int ret = FAILED;
+
+	if(g_sysmem)
+	{
+		ret = __folder_copy(path1, path2);
+		sys_memory_free(g_sysmem); g_sysmem = NULL;
+	}
+	return ret;
 }
 
 static void _folder_copy(char *file1, char *file2)

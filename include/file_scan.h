@@ -12,7 +12,6 @@ enum scan_operations
 	SCAN_TRUNCATE  = 9
 };
 
-static void mkdir_tree(char *path);
 static void rename_file(char *source, char *dest);
 
 static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, char *dest)

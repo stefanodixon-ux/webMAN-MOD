@@ -42,6 +42,6 @@
 					goto exit_handleclient_www;
 				}
 				else
-					{strcpy(header, filename); sprintf(param, "%s%s", "/hexview.ps3", header);}
+					prepend(param, "/hexview.ps3", 3);
 			}
 #endif
