@@ -115,7 +115,7 @@ static sys_ppu_thread_t thread_id_eject = SYS_PPU_THREAD_NONE;
 static int discfd = NONE;
 #endif
 
-volatile u8 eject_running = 0;
+static vu8 eject_running = 0;
 
 static u32 real_disctype;
 static ScsiTrackDescriptor tracks[MAX_TRACKS];
@@ -124,7 +124,7 @@ static sys_event_port_t result_port;
 
 static u8 rawseciso_loaded = 0;
 
-static volatile u8 do_run = 0;
+static vu8 do_run = 0;
 
 // mode_file: 0 = ISO raw sectors, 1 = ISO file(s), 2 (>1) = fake ISO (ISO raw sector[0] + file sectors)
 static int mode_file = 0, cd_sector_size_param = 0;

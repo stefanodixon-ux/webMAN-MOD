@@ -112,7 +112,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		p_args->emu_mode = emu_mode;
 		p_args->num_sections = parts;
 
-		uint32_t array_len = parts * sizeof(uint32_t);
+		u32 array_len = parts * sizeof(u32);
 
 		memcpy64(plugin_args + sizeof(rawseciso_args) + array_len, sections_sizeP, array_len);
 

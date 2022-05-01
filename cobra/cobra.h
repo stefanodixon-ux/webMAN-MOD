@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "../types.h"
+
 enum DiscEmu
 {
 	EMU_OFF = 0,
@@ -102,7 +104,7 @@ enum PSPEmu
 */
 typedef struct
 {
-	uint32_t lba;
+	u32 lba;
 	int is_audio;
 } TrackDef;
 
@@ -110,54 +112,54 @@ typedef struct
 // This structure represents the Disc structure format 0 as defined in MMC-6 document
 typedef struct
 {
-	uint8_t disc_category : 4; // one of BookType
-	uint8_t part_version : 4;
-	uint8_t disc_size : 4; // 0 -> 120 mm, 1 -> 80 mm
-	uint8_t max_rate : 4;
-	uint8_t reserved0 : 1;
-	uint8_t num_layers : 2; // 0 -> 1 layer, 1 -> 2 layers
-	uint8_t track_path : 1; // 0 -> PTP, 1 -> OTP
-	uint8_t layer_type : 4;
-	uint8_t linear_density : 4;
-	uint8_t track_density : 4;
-	uint8_t zero0;
-	uint8_t start_phys_sector[3];
-	uint8_t zero1;
-	uint8_t end_phys_sector[3];
-	uint8_t zero2;
-	uint8_t end_phys_sector_layer0[3];
-	uint8_t bca_present : 1;
-	uint8_t reserved1 : 7;
+	u8 disc_category : 4; // one of BookType
+	u8 part_version : 4;
+	u8 disc_size : 4; // 0 -> 120 mm, 1 -> 80 mm
+	u8 max_rate : 4;
+	u8 reserved0 : 1;
+	u8 num_layers : 2; // 0 -> 1 layer, 1 -> 2 layers
+	u8 track_path : 1; // 0 -> PTP, 1 -> OTP
+	u8 layer_type : 4;
+	u8 linear_density : 4;
+	u8 track_density : 4;
+	u8 zero0;
+	u8 start_phys_sector[3];
+	u8 zero1;
+	u8 end_phys_sector[3];
+	u8 zero2;
+	u8 end_phys_sector_layer0[3];
+	u8 bca_present : 1;
+	u8 reserved1 : 7;
 } __attribute__((packed)) DiscPhysInfo;
 */
 
 typedef struct
 {
-	uint16_t size;
-	uint16_t checksum;
-	uint8_t bd_video_region;
-	uint8_t dvd_video_region;
-	uint8_t ps2softemu;
-	uint32_t spoof_version;
-	uint32_t spoof_revision;
+	u16 size;
+	u16 checksum;
+	u8 bd_video_region;
+	u8 dvd_video_region;
+	u8 ps2softemu;
+	u32 spoof_version;
+	u32 spoof_revision;
 } __attribute__((packed)) CobraConfig_Old;
 
 typedef struct
 {
-	uint16_t size;				// size of structure, this will be set automatically by the library
-	uint16_t checksum;			// Only for core, don't mess with this
-	uint8_t bd_video_region;	// One of BDRegion, or 0 for default
-	uint8_t dvd_video_region;	// One of DVDRegion or 0 for default
-	uint8_t ps2softemu;			// Non-zero to show ps2 discs in non bc consoles
-	uint32_t spoof_version;		// version in BCD, eg. 0x0484, Max value: 0x0999 // feature is unavailable (use SEN Enabler for version spoofer)
-	uint32_t spoof_revision;	// revision number (decimal), MAx value: 99999 // feature is unavailable (use SEN Enabler for version spoofer)
-	uint8_t fan_speed;			// 0 = Disabled | 1 = SYSCON | Dynamic Fan Controller (2 = Max 60°C | 3 = Max 65°C | 4 = Max 70°C | 5 = Max 75°C) | 0x33 to 0xFF = Manual
-	uint8_t ps2_speed;			// 0 = Disabled | 1 = SYSCON | 0x60 | 0x65 | 0x70 | 0x75 | 0x80 | 0x85 | 0x90
-	uint8_t allow_restore_sc;	// 0 = Does not allow to restore CFW syscalls | 1 = Allow to restore CFW syscalls
-	uint8_t skip_existing_rif;	// 0 = Does not skip if .rif already exists | 1 = Skip if .rif already exists
-	uint8_t photo_gui;			// 1 = Allow Photo GUI               | 0 = Does not allow Photo GUI
-	uint8_t auto_earth;			// deprecated
-	uint8_t auto_dev_blind;		// 1 = Allow auto-mount /dev_blind   | 0 = Does not allow auto-mount /dev_blind
+	u16 size;				// size of structure, this will be set automatically by the library
+	u16 checksum;			// Only for core, don't mess with this
+	u8 bd_video_region;	// One of BDRegion, or 0 for default
+	u8 dvd_video_region;	// One of DVDRegion or 0 for default
+	u8 ps2softemu;			// Non-zero to show ps2 discs in non bc consoles
+	u32 spoof_version;		// version in BCD, eg. 0x0484, Max value: 0x0999 // feature is unavailable (use SEN Enabler for version spoofer)
+	u32 spoof_revision;	// revision number (decimal), MAx value: 99999 // feature is unavailable (use SEN Enabler for version spoofer)
+	u8 fan_speed;			// 0 = Disabled | 1 = SYSCON | Dynamic Fan Controller (2 = Max 60°C | 3 = Max 65°C | 4 = Max 70°C | 5 = Max 75°C) | 0x33 to 0xFF = Manual
+	u8 ps2_speed;			// 0 = Disabled | 1 = SYSCON | 0x60 | 0x65 | 0x70 | 0x75 | 0x80 | 0x85 | 0x90
+	u8 allow_restore_sc;	// 0 = Does not allow to restore CFW syscalls | 1 = Allow to restore CFW syscalls
+	u8 skip_existing_rif;	// 0 = Does not skip if .rif already exists | 1 = Skip if .rif already exists
+	u8 photo_gui;			// 1 = Allow Photo GUI               | 0 = Does not allow Photo GUI
+	u8 auto_earth;			// deprecated
+	u8 auto_dev_blind;		// 1 = Allow auto-mount /dev_blind   | 0 = Does not allow auto-mount /dev_blind
 } __attribute__((packed)) CobraConfig;
 
 
@@ -424,7 +426,7 @@ int cobra_umount_disc_image(void);
  * Additional info: this function requires that the ps3 disc filesystem is mounted in /dev_bdvd
  * If the disc is not authentificated, encrypted sectors will remain encrypted.
  */
-//int cobra_read_ps3_disc(void *buf, uint64_t sector, uint32_t count);
+//int cobra_read_ps3_disc(void *buf, u64 sector, u32 count);
 
 
 /*
@@ -439,7 +441,7 @@ int cobra_umount_disc_image(void);
  * EINVAL -> invalid params
  * Other -> An error from the kernel
  */
-//int cobra_get_disc_phys_info(uint32_t handle, uint8_t layer, DiscPhysInfo *info);
+//int cobra_get_disc_phys_info(u32 handle, u8 layer, DiscPhysInfo *info);
 
 
 /*
@@ -457,7 +459,7 @@ int cobra_umount_disc_image(void);
  * ENOTSUP -> the track info returned by the driver is odd and cannot be processed.
  * Other -> An error from the kernel
  */
-//int cobra_get_cd_td(uint32_t handle, TrackDef *tracks, unsigned int max_tracks, unsigned int *num_tracks, uint32_t *lba_end);
+//int cobra_get_cd_td(u32 handle, TrackDef *tracks, unsigned int max_tracks, unsigned int *num_tracks, u32 *lba_end);
 
 
 /*
@@ -483,7 +485,7 @@ int cobra_umount_disc_image(void);
  * Cobra USB manager currently continues dumping the disc despite of that. It would be probably a better solution to report at the end the total number of errors.
  * Apprently, a small number of errors is something normal.
  */
-//int cobra_cd_read(uint32_t handle, void *buf, uint32_t sector, uint32_t count, int is_audio, int *num_errors);
+//int cobra_cd_read(u32 handle, void *buf, u32 sector, u32 count, int is_audio, int *num_errors);
 
 
 /*
@@ -507,7 +509,7 @@ int cobra_umount_disc_image(void);
  *
  * Additional info: if the cue file contained wav files paths for audio tracks, the function may succeed, but those tracks won't be parsed.
  */
-//int cobra_parse_cue(void *cue, uint32_t size, TrackDef *tracks, unsigned int max_tracks, unsigned int *num_tracks, char *filename, unsigned int fn_size);
+//int cobra_parse_cue(void *cue, u32 size, TrackDef *tracks, unsigned int max_tracks, unsigned int *num_tracks, char *filename, unsigned int fn_size);
 
 
 /*
@@ -539,7 +541,7 @@ int cobra_umount_disc_image(void);
  * EINVAL -> invalid parameter
  * Other -> error from the kernel
 */
-//int cobra_create_mds(char *path, uint64_t size_in_sectors, DiscPhysInfo *layer0, DiscPhysInfo *layer1);
+//int cobra_create_mds(char *path, u64 size_in_sectors, DiscPhysInfo *layer0, DiscPhysInfo *layer1);
 
 
 /*
@@ -658,7 +660,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path);
  * Upon success, the file in icon_save_path will have the psp icon and the icon of psp launcher is mapped to it.
  * This function allocates temporally a 512 KB buffer, so at least that memory should be available
  */
-//int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_t options);
+//int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, u64 options);
 
 
 /*
@@ -708,8 +710,8 @@ int cobra_get_ps2_emu_type(void);
  * 0 -> success
  * ENOSYS -> not in cobra
  */
-//int cobra_get_version(uint16_t *cobra_version, uint16_t *ps3_version);
-int sys_get_version2(uint16_t *version);
+//int cobra_get_version(u16 *cobra_version, u16 *ps3_version);
+int sys_get_version2(u16 *version);
 
 /*
  * Reads the cobra configuration from RAM cache.
@@ -768,7 +770,7 @@ int cobra_write_config(CobraConfig *cfg);
  * 0 -> success
  * EINVAL -> invalid param(s)
  */
-//int cobra_build_netiso_params(void *param_buf, char *server, uint16_t port, char *remote_path, int emu_mode, int num_tracks, TrackDef *tracks);
+//int cobra_build_netiso_params(void *param_buf, char *server, u16 port, char *remote_path, int emu_mode, int num_tracks, TrackDef *tracks);
 
 /*
  * Loads a module in the vsh process.
@@ -785,7 +787,7 @@ int cobra_write_config(CobraConfig *cfg);
  * EKRESOURCE -> a module is already loaded at that slot
  * Other -> error from kernel (invalid prx, etc)
  */
-int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, uint32_t arg_size);
+int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 arg_size);
 
 
 /*

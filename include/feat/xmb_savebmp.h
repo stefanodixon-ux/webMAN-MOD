@@ -8,7 +8,7 @@
 #if defined(PS3_BROWSER) || defined(XMB_SCREENSHOT)
 static s32 rsx_fifo_pause(u8 pause)
 {
-	// lv2 sys_rsx_context_attribute(uint32_t rsx_ctx_id, uint64_t arg_2, uint64_t arg_3); // syscall 674
+	// lv2 sys_rsx_context_attribute(u32 rsx_ctx_id, u64 arg_2, u64 arg_3); // syscall 674
 	system_call_6(0x2A2, 0x55555555ULL, (u64)(pause ? 2 : 3), 0, 0, 0, 0);
 
 	return (s32)p1;
@@ -16,8 +16,6 @@ static s32 rsx_fifo_pause(u8 pause)
 #endif
 
 #ifdef XMB_SCREENSHOT
-
-#include "../vsh/vsh.h"
 
 // canvas constants
 #define BASE          0xC0000000UL     // local memory base ea
@@ -35,20 +33,6 @@ static u32 offset = 0, pitch = 0;
 static u32 h = 0, w = 0;
 
 //static DrawCtx ctx;                                 // drawing context
-
-#ifndef __PAF_H__
-
-extern u32 paf_F476E8AA(void);  //  u32 get_display_width
-#define getDisplayWidth paf_F476E8AA
-
-extern u32 paf_AC984A12(void);  // u32 get_display_height
-#define getDisplayHeight paf_AC984A12
-
-extern s32 paf_FFE0FBC9(u32 *pitch, u32 *unk1);  // unk1 = 0x12 color bit depth? ret 0
-#define getDisplayPitch paf_FFE0FBC9
-
-#endif // __PAF_H__
-
 
 /***********************************************************************
 *

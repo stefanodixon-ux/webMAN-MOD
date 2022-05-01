@@ -102,21 +102,21 @@ typedef struct
 {
 	char server[0x40];
 	char path[0x420];
-	uint32_t emu_mode;
-	uint32_t numtracks;
-	uint16_t port;
-	uint8_t pad[6];
+	u32 emu_mode;
+	u32 numtracks;
+	u16 port;
+	u8 pad[6];
 	ScsiTrackDescriptor tracks[32];
 } __attribute__((packed)) netiso_args;
 */
 
 void _memset(void *m, size_t n);
 
-size_t read_file(const char *file, char *data, size_t size, int32_t offset);
-int save_file(const char *file, const char *mem, int64_t size);
+size_t read_file(const char *file, char *data, const size_t size, s32 offset);
+int save_file(const char *file, const char *mem, s64 size);
 
 int file_copy(const char *file1, char *file2);
-int wait_for(const char *path, uint8_t timeout);
+int wait_for(const char *path, u8 timeout);
 
 /*
 #define N_TITLE_IDS	102
@@ -297,7 +297,7 @@ static KeyValue emu_by_title_name[N_TITLE_NAMES] =
 	{ "Warhammer 40,000: Squad Command", EMU_400 },
 };
 
-static uint8_t lambda_md5[16] =
+static u8 lambda_md5[16] =
 {
 	0xE1, 0x99, 0xCA, 0x7D, 0x48, 0x3B, 0xC0, 0x7B, 0x4D, 0xC6, 0xE7, 0x4A, 0xE5, 0x53, 0x76, 0xCE
 };
@@ -332,7 +332,7 @@ static char *get_blank_iso_path(void)
 }
 */
 
-static void build_iso_record(uint8_t *buf, uint32_t offset)
+static void build_iso_record(u8 *buf, u32 offset)
 {
 	buf[offset] = 0x28;
 	buf[offset + 2] = buf[offset + 9] = 0x18;
@@ -351,7 +351,7 @@ static void build_blank_iso(const char *title_id)
 {
 	sys_addr_t sysmem = NULL;
 	if(sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) /*!= CELL_OK*/) return;
-	uint8_t *buf = (uint8_t*)sysmem;
+	u8 *buf = (u8*)sysmem;
 
 /*
 	// build task.dat from external template file
@@ -458,11 +458,11 @@ static int copy_file(char *src, char *dst)
 		ret = cellFsOpen(dst, CELL_FS_O_WRONLY | CELL_FS_O_CREAT | CELL_FS_O_TRUNC, &fd_d, NULL, 0);
 		if(ret == 0)
 		{
-			const uint32_t buf_size = _16KB_;
-			uint8_t *buf = (uint8_t *)malloc(buf_size);
+			const u32 buf_size = _16KB_;
+			u8 *buf = (u8 *)malloc(buf_size);
 			while(1)
 			{
-				uint64_t nread, nwritten;
+				u64 nread, nwritten;
 
 				ret = cellFsRead(fd_s, buf, buf_size, &nread);
 				if (ret != CELL_FS_SUCCEEDED || nread == 0) break;
@@ -499,33 +499,33 @@ static int copy_file(char *src, char *dst)
 	return ret;
 }
 */
-static int sys_get_hw_config(uint8_t *ret, uint8_t *config)
+static int sys_get_hw_config(u8 *ret, u8 *config)
 {
-	system_call_2(393, (uint64_t)(uint32_t)ret, (uint64_t)(uint32_t)config);
+	system_call_2(393, (u64)(u32)ret, (u64)(u32)config);
 	return (int)p1;
 }
 /*
-static int sys_get_version(uint32_t *version)
+static int sys_get_version(u32 *version)
 {
-	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION, (uint64_t)(uint32_t)version);
+	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION, (u64)(u32)version);
 	return (int)p1;
 }
 
-static int sys_get_version2(uint16_t *version)
+static int sys_get_version2(u16 *version)
 {
-	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION2, (uint64_t)(uint32_t)version);
+	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION2, (u64)(u32)version);
 	return (int)p1;
 }
 */
 static int sys_read_cobra_config(CobraConfig *cfg)
 {
-	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_READ_COBRA_CONFIG, (uint64_t)(uint32_t)cfg);
+	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_READ_COBRA_CONFIG, (u64)(u32)cfg);
 	return (int)p1;
 }
 
 static int sys_write_cobra_config(CobraConfig *cfg)
 {
-	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_WRITE_COBRA_CONFIG, (uint64_t)(uint32_t)cfg);
+	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_WRITE_COBRA_CONFIG, (u64)(u32)cfg);
 	return (int)p1;
 }
 
@@ -533,8 +533,8 @@ static int sys_write_cobra_config(CobraConfig *cfg)
 static char *trim(char *str)
 {
 	int len = strlen(str);
-	uint8_t *temp = (uint8_t *)strdup(str);
-	uint8_t *p = temp;
+	u8 *temp = (u8 *)strdup(str);
+	u8 *p = temp;
 	int i;
 
 	for (i = 0; i < len; i++)
@@ -625,9 +625,9 @@ static int sys_permissions_remove_access(void)
 	return (int)p1;
 }
 
-static int cobra_usb_command(uint8_t command, int requestType, uint32_t addr, void *buf, uint16_t size)
+static int cobra_usb_command(u8 command, int requestType, u32 addr, void *buf, u16 size)
 {
-	system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_COBRA_USB_COMMAND, command, requestType, addr, (uint64_t)(uint32_t)buf, size);
+	system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_COBRA_USB_COMMAND, command, requestType, addr, (u64)(u32)buf, size);
 	return (int)p1;
 }
 
@@ -728,9 +728,9 @@ int cobra_disc_auth(void)
 
 	if (real_disctype == DEVICE_TYPE_PS3_BD || real_disctype == DEVICE_TYPE_PS3_DVD)
 	{
-		static uint8_t buf[1024]; _memset(buf, sizeof(buf));
+		static u8 buf[1024]; _memset(buf, sizeof(buf));
 
-		sys_ss_disc_auth(0x5007, (uint64_t)(uint32_t)buf);
+		sys_ss_disc_auth(0x5007, (u64)(u32)buf);
 	}
 	else
 	{
@@ -752,7 +752,7 @@ int cobra_send_fake_disc_eject_event(void)
 
 int cobra_send_fake_disc_insert_event(void)
 {
-	uint64_t param;
+	u64 param;
 	unsigned int real_disctype, effective_disctype, iso_disctype;
 
 	cobra_get_disc_type(&real_disctype, &effective_disctype, &iso_disctype);
@@ -763,7 +763,7 @@ int cobra_send_fake_disc_insert_event(void)
 		return EABORT;
 	}
 
-	param = (uint64_t)(ejected_realdisc) << 32ULL;
+	param = (u64)(ejected_realdisc) << 32ULL;
 	sys_storage_ext_get_disc_type(&ejected_realdisc, NULL, NULL);
 	sys_storage_ext_fake_storage_event(7, 0, BDVD_DRIVE);
 	return sys_storage_ext_fake_storage_event(3, param, BDVD_DRIVE);
@@ -838,16 +838,16 @@ int cobra_umount_disc_image(void)
 }
 
 /*
-int cobra_read_ps3_disc(void *buf, uint64_t sector, uint32_t count)
+int cobra_read_ps3_disc(void *buf, u64 sector, u32 count)
 {
 	return sys_storage_ext_read_ps3_disc(buf, sector, count);
 }
 
-int cobra_get_disc_phys_info(uint32_t handle, uint8_t layer, DiscPhysInfo *info)
+int cobra_get_disc_phys_info(u32 handle, u8 layer, DiscPhysInfo *info)
 {
 	ScsiReadDiscStructureFormat0Response *response;
-	uint8_t scsi_cmd[56];
-	static uint8_t output[64] __attribute__((aligned(64)));
+	u8 scsi_cmd[56];
+	static u8 output[64] __attribute__((aligned(64)));
 	int ret;
 
 	if (!info)
@@ -875,10 +875,10 @@ int cobra_get_disc_phys_info(uint32_t handle, uint8_t layer, DiscPhysInfo *info)
 }
 
 
-int cobra_get_cd_td(uint32_t handle, TrackDef *td, unsigned int max_tracks, unsigned int *num_tracks, uint32_t *lba_end)
+int cobra_get_cd_td(u32 handle, TrackDef *td, unsigned int max_tracks, unsigned int *num_tracks, u32 *lba_end)
 {
-	uint32_t cd_num_tracks, cd_total_tracks;
-	uint8_t scsi_cmd[56];
+	u32 cd_num_tracks, cd_total_tracks;
+	u8 scsi_cmd[56];
 	int ret;
 	int i, j;
 
@@ -901,7 +901,7 @@ int cobra_get_cd_td(uint32_t handle, TrackDef *td, unsigned int max_tracks, unsi
 		return ret;
 
 	cd_num_tracks = toc_info.last_track;
-	uint8_t *response = (uint8_t *) malloc(toc_info.toc_length+2);
+	u8 *response = (u8 *) malloc(toc_info.toc_length+2);
 	cmd->alloc_length = toc_info.toc_length+2;
 	data->outlen = cmd->alloc_length;
 
@@ -992,9 +992,9 @@ int cobra_get_cd_td(uint32_t handle, TrackDef *td, unsigned int max_tracks, unsi
 }
 
 
-int cobra_cd_read(uint32_t handle, void *buf, uint32_t sector, uint32_t count, int is_audio, int *num_errors)
+int cobra_cd_read(u32 handle, void *buf, u32 sector, u32 count, int is_audio, int *num_errors)
 {
-	uint8_t scsi_cmd[56];
+	u8 scsi_cmd[56];
 	ScsiCmdReadCd *cmd = (ScsiCmdReadCd *)scsi_cmd;
 	StorageCmdScsiData *data = (StorageCmdScsiData *)(scsi_cmd+32);
 	int nerrors = 0;
@@ -1002,11 +1002,11 @@ int cobra_cd_read(uint32_t handle, void *buf, uint32_t sector, uint32_t count, i
 	if (!buf)
 		return EINVAL;
 
-	uint8_t *read_buf = (uint8_t *)buf;
+	u8 *read_buf = (u8 *)buf;
 
 	DPRINTF("Function begin, sector=%08X, count=%d, audio=%d\n", sector, count, is_audio);
 
-	for (uint32_t i = 0; i < count; i++)
+	for (u32 i = 0; i < count; i++)
 	{
 		_memset(scsi_cmd, sizeof(scsi_cmd));
 		cmd->opcode = SCSI_CMD_READ_CD;
@@ -1057,7 +1057,7 @@ int cobra_cd_read(uint32_t handle, void *buf, uint32_t sector, uint32_t count, i
 	return (nerrors > 0) ? EIO : 0;
 }
 
-int cobra_parse_cue(void *cue, uint32_t size, TrackDef *tracks, unsigned int max_tracks, unsigned int *num_tracks, char *filename, unsigned int fn_size)
+int cobra_parse_cue(void *cue, u32 size, TrackDef *tracks, unsigned int max_tracks, unsigned int *num_tracks, char *filename, unsigned int fn_size)
 {
 #define skip_spaces() \
 	while (*p <= ' ' && *p >= 0) \
@@ -1075,8 +1075,8 @@ int cobra_parse_cue(void *cue, uint32_t size, TrackDef *tracks, unsigned int max
 	char *p;
 	char *bin_file;
 	int read_index;
-	uint32_t ntracks;
-	uint32_t tracks_lba[max_tracks];
+	u32 ntracks;
+	u32 tracks_lba[max_tracks];
 	int ret = EABORT;
 
 	if (!cue)
@@ -1225,7 +1225,7 @@ continue_loop:
 //						//DPRINTF("Bad frames format\n");
 //					}
 
-					uint32_t lba = msf_to_lba(minutes, seconds, frames);
+					u32 lba = msf_to_lba(minutes, seconds, frames);
 
 					if (ntracks == 0)
 					{
@@ -1300,8 +1300,8 @@ int cobra_create_cue(char *path, char *filename, TrackDef *tracks, unsigned int 
 
 	for (int i = 0; i < num_tracks; i++)
 	{
-		uint32_t lba;
-		uint8_t m, s, f;
+		u32 lba;
+		u8 m, s, f;
 
 		lba = tracks[i].lba-tracks[0].lba;
 
@@ -1314,9 +1314,9 @@ int cobra_create_cue(char *path, char *filename, TrackDef *tracks, unsigned int 
 	return 0;
 }
 
-int cobra_create_mds(char *path, uint64_t size_in_sectors, DiscPhysInfo *layer0, DiscPhysInfo *layer1)
+int cobra_create_mds(char *path, u64 size_in_sectors, DiscPhysInfo *layer0, DiscPhysInfo *layer1)
 {
-	uint32_t size = size_in_sectors;
+	u32 size = size_in_sectors;
 
 	if (!path || !layer0 || !layer1)
 		return EINVAL;
@@ -1324,7 +1324,7 @@ int cobra_create_mds(char *path, uint64_t size_in_sectors, DiscPhysInfo *layer0,
 	FILE *mds = fopen(path, "wb");
 	if (mds)
 	{
-		*(uint32_t *)&base_mds[0x5C] = *(uint32_t *)&base_mds[0x7C] = SWAP32(size);
+		*(u32 *)&base_mds[0x5C] = *(u32 *)&base_mds[0x7C] = SWAP32(size);
 		memcpy(base_mds+0x8C4, layer0, 17);
 		memcpy(base_mds+0x18c8, layer1, 17);
 
@@ -1340,7 +1340,7 @@ int cobra_create_mds(char *path, uint64_t size_in_sectors, DiscPhysInfo *layer0,
 }
 */
 
-static uint8_t gm = 01;
+static u8 gm = 01;
 
 int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 {
@@ -1489,17 +1489,17 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 	//memcpy(title_id, sector + 0x373, 10); title_id[10] = '\0';
 
-	uint8_t is_dir = 1;
-	uint8_t do_mount = 0;
-	uint8_t do_eject = 0;
-	uint8_t prometheus = 0;
-	uint8_t has_header = 0;
+	u8 is_dir = 1;
+	u8 do_mount = 0;
+	u8 do_eject = 0;
+	u8 prometheus = 0;
+	u8 has_header = 0;
 
-	uint8_t pspl1 = (cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED);
-	uint8_t pspl2 = (cellFsStat(PSPL_PATH2, &stat) == CELL_FS_SUCCEEDED);
+	u8 pspl1 = (cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED);
+	u8 pspl2 = (cellFsStat(PSPL_PATH2, &stat) == CELL_FS_SUCCEEDED);
 
 	char umd_file[256];
-	uint32_t header[0xD4/4];
+	u32 header[0xD4/4];
 
 	char *root = umd_root;
 
@@ -1549,7 +1549,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 		int ext = strlen(root) - 4; if(ext < 0) ext = 0;
 
-		uint8_t is_iso = strstr(root + ext, ".iso") ||
+		u8 is_iso = strstr(root + ext, ".iso") ||
 						 strstr(root + ext, ".ISO");
 
 		if(is_iso)
@@ -1568,13 +1568,13 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 			if(!do_mount)
 			{
-				const uint32_t buf_size = 4096;
+				const u32 buf_size = 4096;
 				char *buf = (char *)malloc(buf_size);
 				if(buf)
 				{
 					if (read_file(root, (char*)buf, buf_size, 0xC000) == buf_size)
 					{
-						uint32_t pos;
+						u32 pos;
 						for(pos = 0x80; pos < buf_size; pos++)
 							if(!strncmp(&buf[pos], "EBOOT.OLD", 9)) break; // find offset of directory entry
 						if(pos >= buf_size)
@@ -1583,7 +1583,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 						if(pos < buf_size)
 						{
 							pos -= 0x1B; // get lba offset
-							uint32_t lba = (buf[pos] << 24) + (buf[pos + 1] << 16) + (buf[pos + 2] << 8) + buf[pos + 3];
+							u32 lba = (buf[pos] << 24) + (buf[pos + 1] << 16) + (buf[pos + 2] << 8) + buf[pos + 3];
 							pos = (2048UL * lba); // sector size * lba
 							do_mount = has_header = (read_file(root, (char*)&header, sizeof(header), pos) == sizeof(header));
 						}
@@ -1632,11 +1632,11 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 	if(do_mount)
 	{
-		uint8_t decrypt_patch = 1;
+		u8 decrypt_patch = 1;
 
-		uint32_t tag  = 0;
-		uint8_t *keys = NULL;
-		uint8_t  code = 0;
+		u32 tag  = 0;
+		u8 *keys = NULL;
+		u8  code = 0;
 
 		if(is_dir)
 		{
@@ -1734,9 +1734,9 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	int ret;
 
 	int decrypt_patch = 1;
-	uint32_t tag = 0;
-	uint8_t *keys = NULL;
-	uint8_t code = 0;
+	u32 tag = 0;
+	u8 *keys = NULL;
+	u8 code = 0;
 
 	if (!path || !icon_save_path)
 		return EINVAL;
@@ -1746,11 +1746,11 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 		return EABORT;
 	}
 
-	int fd; uint8_t sector[2048]; _memset(sector, sizeof(sector));
+	int fd; u8 sector[2048]; _memset(sector, sizeof(sector));
 
 	if (cellFsOpen(path, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
-		uint64_t pos;
+		u64 pos;
 
 		if (cellFsLseek(fd, 0x8000, CELL_FS_SEEK_SET, &pos) == CELL_FS_SUCCEEDED)
 		{
@@ -1840,8 +1840,8 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 			if (cellFsOpen(umd_file, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 			{
-				uint32_t header[0xD4/4];
-				uint64_t read;
+				u32 header[0xD4/4];
+				u64 read;
 
 				cellFsRead(fd, header, sizeof(header), &read);
 				if (read == sizeof(header))
@@ -1941,7 +1941,7 @@ static int get_emu(char *title_id, char *title_name)
 
 static int check_lambda(void)
 {
-	uint8_t *buf = malloc(512*KB);
+	u8 *buf = malloc(512*KB);
 	int fd;
 	int ret;
 
@@ -1949,13 +1949,13 @@ static int check_lambda(void)
 	if (ret == 0)
 	{
 		CellMd5WorkArea workarea;
-		uint8_t md5[16];
+		u8 md5[16];
 
 		cellMd5BlockInit(&workarea);
 
 		while (1)
 		{
-			uint64_t nread;
+			u64 nread;
 
 			cellFsRead(fd, buf, 512*KB, &nread);
 
@@ -1978,7 +1978,7 @@ static int check_lambda(void)
 	return ret;
 }
 
-int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_t options)
+int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, u64 options)
 {
 	int ret;
 
@@ -1997,13 +1997,13 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 		return ESYSVER;
 	}
 
-	//uint8_t sector[2048]; _memset(sector, sizeof(sector));
-	uint8_t *sector = (uint8_t*)malloc(1024);
+	//u8 sector[2048]; _memset(sector, sizeof(sector));
+	u8 *sector = (u8*)malloc(1024);
 
 	int fd;
 	if (cellFsOpen(path, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
-		uint64_t pos;
+		u64 pos;
 
 		if (cellFsLseek(fd, 0x8000, CELL_FS_SEEK_SET, &pos) == CELL_FS_SUCCEEDED)
 		{
@@ -2075,9 +2075,9 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 	int prometheus = 0;
 	int decrypt_patch = 1;
 
-	uint32_t tag = 0;
-	uint8_t *keys = NULL;
-	uint8_t code = 0;
+	u32 tag = 0;
+	u8 *keys = NULL;
+	u8 code = 0;
 
 	char umd_file[256];
 
@@ -2101,8 +2101,8 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 
 		if (cellFsOpen(umd_file, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
-			uint32_t header[0xD4/4];
-			uint64_t read;
+			u32 header[0xD4/4];
+			u64 read;
 
 			cellFsRead(fd, header, sizeof(header), &read);
 			if (read == sizeof(header))
@@ -2198,7 +2198,7 @@ int cobra_set_psp_umd2(char *path, char *umd_root, char *icon_save_path, uint64_
 int cobra_get_usb_device_name(char *mount_point, char *dev_name)
 {
 	int ret;
-	uint64_t i, size, device;
+	u64 i, size, device;
 	CellFsMountInfo *info;
 	sys_device_handle_t handle;
 
@@ -2238,7 +2238,7 @@ int cobra_get_usb_device_name(char *mount_point, char *dev_name)
 	ret = sys_storage_open(device, 0, &handle, 0);
 	if (ret == 0)
 	{
-		uint8_t cmd[64];
+		u8 cmd[64];
 		_memset(cmd, sizeof(cmd));
 
 		UfiCmdInquiry *inquiry_cmd = (UfiCmdInquiry *)(cmd+4);
@@ -2271,10 +2271,10 @@ int cobra_get_usb_device_name(char *mount_point, char *dev_name)
 	return ret;
 }
 
-int cobra_get_version(uint16_t *cobra_version, uint16_t *ps3_version)
+int cobra_get_version(u16 *cobra_version, u16 *ps3_version)
 {
-	uint32_t version1;
-	uint16_t version2;
+	u32 version1;
+	u16 version2;
 	int ret;
 
 	ret = sys_get_version(&version1);
@@ -2341,7 +2341,7 @@ int cobra_led_control(unsigned int led)
 	return cobra_usb_command(CMD_LED_CONTROL, TYPE_HOST2DEV, led, NULL, 0);
 }
 
-int cobra_build_netiso_params(void *param_buf, char *server, uint16_t port, char *remote_path, int emu_mode, int num_tracks, TrackDef *tracks)
+int cobra_build_netiso_params(void *param_buf, char *server, u16 port, char *remote_path, int emu_mode, int num_tracks, TrackDef *tracks)
 {
 	netiso_args *args = (netiso_args *)param_buf;
 	ScsiTrackDescriptor *scsi_tracks = (ScsiTrackDescriptor *)&args->tracks[0];
@@ -2378,7 +2378,7 @@ int cobra_build_netiso_params(void *param_buf, char *server, uint16_t port, char
 int cobra_get_ps2_emu_type(void)
 {
 	int ret;
-	uint8_t hw_config[8], ret2;
+	u8 hw_config[8], ret2;
 
 	ret = sys_get_hw_config(&ret2, hw_config);
 	if (ret)
@@ -2406,9 +2406,9 @@ int cobra_read_config(CobraConfig *cfg)
 {
 	if(!cfg) return EINVAL;
 
-	_memset((uint8_t*)cfg, sizeof(CobraConfig));
+	_memset((u8*)cfg, sizeof(CobraConfig));
 
-	uint16_t cobra_version;
+	u16 cobra_version;
 	sys_get_version2(&cobra_version);
 
 	if(cobra_version <= 0x0820)
@@ -2423,7 +2423,7 @@ int cobra_write_config(CobraConfig *cfg)
 {
 	if(!cfg) return EINVAL;
 
-	uint16_t cobra_version;
+	u16 cobra_version;
 	sys_get_version2(&cobra_version);
 
 	if(cobra_version <= 0x0820)
@@ -2434,15 +2434,15 @@ int cobra_write_config(CobraConfig *cfg)
 	return sys_write_cobra_config(cfg);
 }
 
-int sys_get_version2(uint16_t *version)
+int sys_get_version2(u16 *version)
 {
-	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION2, (uint64_t)(uint32_t)version);
+	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION2, (u64)(u32)version);
 	return (int)p1;
 }
 
-int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, uint32_t arg_size)
+int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 arg_size)
 {
-	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, slot, (uint64_t)(uint32_t)path, (uint64_t)(uint32_t)arg, arg_size);
+	system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, slot, (u64)(u32)path, (u64)(u32)arg, arg_size);
 	return (int)p1;
 }
 

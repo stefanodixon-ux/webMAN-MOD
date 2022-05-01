@@ -1,7 +1,7 @@
 /*
 //////////// Toggle DLNA /////////////
-static uint8_t* (*paf_AF58E756)(void);
-static int (*paf_350B4536)(void *job, int(*handler1)(void), void * param1, int r6, int r7, uint8_t(*handler2)(void));
+static u8* (*paf_AF58E756)(void);
+static int (*paf_350B4536)(void *job, int(*handler1)(void), void * param1, int r6, int r7, u8(*handler2)(void));
 
 static int handler1_enabled(void)
 {
@@ -11,11 +11,11 @@ static int handler1_disabled(void)
 {
 	return vshmain_74A54CBF(0xC);
 }
-static uint8_t handler2(void)
+static u8 handler2(void)
 {
 	return paf_AF58E756()[0x3C];
 }
-static int Job_start(void *job, int(*handler1)(void), void * param1, int r6, int r7, uint8_t(*handler2)(void))
+static int Job_start(void *job, int(*handler1)(void), void * param1, int r6, int r7, u8(*handler2)(void))
 {
 	paf_AF58E756 = getNIDfunc("paf", 0xAF58E756, 0);
 	paf_350B4536 = getNIDfunc("paf", 0x350B4536, 0);

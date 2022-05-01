@@ -1,4 +1,4 @@
-#include "../vsh/xregistry.h"
+#include "../../vsh/xregistry.h"
 
 #ifndef LITE_EDITION
 

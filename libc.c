@@ -63,6 +63,9 @@ inline double ceil(double x) {return stdc_21E6D304(x);}
 extern time_t stdc_89F6F026(time_t *timer);												// time()
 inline time_t time(time_t *timer) {return stdc_89F6F026(timer);}
 
+//extern wchar_t *stdc_F06EED36(wchar_t *ptr, wchar_t wc, size_t num);                  // wmemset()
+//inline wchar_t *wmemset(wchar_t *ptr, wchar_t wc, size_t num) {if(!ptr) return NULL; return stdc_F06EED36(ptr, wc, num);}
+
 extern size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max);				// mbstowcs()
 size_t mbstowcs(wchar_t *dest, const char *src, size_t max) {if(!dest || !src) return 0; return stdc_FCAC2E8E(dest, src, max);}
 

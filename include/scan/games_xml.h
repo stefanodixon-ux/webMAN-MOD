@@ -52,6 +52,9 @@
 									"xcb://0/query?cond=AGL+Game:Game.titleId " PSP_LAUNCHER_REMASTERS_ID \
 																			" " PSP_LAUNCHER_MINIS_ID)
 
+static u16 item_count[6];
+static u16 games_found;
+
 typedef struct
 {
 	char value[1 + XML_KEY_LEN + 4];
@@ -82,9 +85,9 @@ static void sys_map_path2(const char *path1, const char *path2)
 	if(is_syscall_disabled(35))
 		sys_map_path(path1, path2);
 	else
-		{system_call_2(35, (uint64_t)(uint32_t)path1, (uint64_t)(uint32_t)path2);}
+		{system_call_2(35, (u64)(u32)path1, (u64)(u32)path2);}
 	#else
-	{system_call_2(35, (uint64_t)(uint32_t)path1, (uint64_t)(uint32_t)path2);}
+	{system_call_2(35, (u64)(u32)path1, (u64)(u32)path2);}
 	#endif
 }
 
@@ -496,7 +499,7 @@ static bool add_custom_xml(char *query_xmb)
 	return false;
 }
 
-static void add_group_tables(char *buffer, char *templn, t_string *myxml, u16 *item_count)
+static void add_group_tables(char *buffer, char *templn, t_string *myxml)
 {
 	#ifndef ENGLISH_ONLY
 	char *STR_PS3FORMAT = buffer; //[40];//	= "PS3 format games";
@@ -575,7 +578,7 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml, u16 *i
  #endif
 }
 
-static bool add_xmb_entry(u8 f0, u8 f1, const char *tempstr, char *templn, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u16 *item_count, u8 subfolder)
+static bool add_xmb_entry(u8 f0, u8 f1, const char *tempstr, char *templn, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u8 subfolder)
 {
 	set_sort_key(skey, templn, key, subfolder, f1);
 
@@ -617,7 +620,7 @@ static bool add_xmb_entry(u8 f0, u8 f1, const char *tempstr, char *templn, char 
 			return (false);
 	}
 
-	return (true);
+	++games_found; return (true);
 }
 
 static bool scan_mygames_xml(u64 conn_s_p)
@@ -673,10 +676,9 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	if(!sysmem)
 	{
-		_meminfo meminfo;
 		set_buffer_sizes(webman_config->foot);
 
-		{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
+		get_meminfo();
 		if( meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) set_buffer_sizes(3); //MIN+
 		if( meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) set_buffer_sizes(1); //MIN
 		if((meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) || sys_memory_allocate((BUFFER_SIZE_ALL), SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK)
@@ -734,7 +736,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	}
 	#endif
 
-	u16 key;
+	u16 key; games_found = 0;
 	int fdxml; char *xml_file = (char*)MY_GAMES_XML;
 
 	if(!is_app_home_onxmb()) webman_config->gamei = 0; // do not scan GAMEI if app_home/PS3_GAME icon is not on XMB
@@ -765,7 +767,6 @@ scan_roms:
 #endif
 	fdxml = key = 0;
 
-	u16 item_count[6];
 	for(u8 i = 0; i < 6; i++) item_count[i] = 0;
 
 	t_string myxml_ps3; _alloc(&myxml_ps3, (char*)sysmem);
@@ -873,6 +874,8 @@ scan_roms:
 		#ifdef NET_SUPPORT
 		if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 		#endif
+
+		if(IS_NTFS) drives[NTFS][10] = 0;
 
 		ns = NONE;
 		for(u8 f1 = 0; f1 < f1_len; f1++) // paths: 0="GAMES", 1="GAMEZ", 2="PS3ISO", 3="BDISO", 4="DVDISO", 5="PS2ISO", 6="PSXISO", 7="PSXGAMES", 8="PSPISO", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
@@ -1017,7 +1020,7 @@ scan_roms:
 
 						add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 1);
 
-						if(add_xmb_entry(f0, f1, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, item_count, 0)) key++;
+						if(add_xmb_entry(f0, f1, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, 0)) key++;
 
 						v3_entry++;
 					}
@@ -1154,7 +1157,7 @@ scan_roms:
 
 							add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, is_game_dir ? id_NPDRM : f1, 5);
 
-							if(add_xmb_entry(f0, f1, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, item_count, subfolder)) key++;
+							if(add_xmb_entry(f0, f1, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, subfolder)) key++;
 						}
 						//////////////////////////////
 						if(subfolder) goto next_xml_entry;
@@ -1184,6 +1187,8 @@ scan_roms:
 		if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 		#endif
 	}
+
+	drives[NTFS][10] = ':';
 
 	if( !scanning_roms && XMB_GROUPS )
 	{
@@ -1341,7 +1346,7 @@ scan_roms:
 	// --- Add Groups attribute tables
 	if( XMB_GROUPS )
 	{
-		add_group_tables(buffer, templn, &myxml, item_count);
+		add_group_tables(buffer, templn, &myxml);
 
 		if(add_custom_xml(templn))
 		{
@@ -1533,7 +1538,10 @@ static void refresh_xml(char *msg)
 {
 	if(refreshing_xml) return;
 
-	refreshing_xml = 1;
+	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
+	vshNotify_WithIcon(ICON_NOTIFY, msg);
+
+	refreshing_xml = 1; games_found = 0;
 
 #ifdef USE_NTFS
 	root_check = true;
@@ -1544,9 +1552,6 @@ static void refresh_xml(char *msg)
 #ifndef LITE_EDITION
 	webman_config->profile = profile; save_settings();
 #endif
-
-	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
-	vshNotify_WithIcon(ICON_NOTIFY, msg);
 
 	// refresh XML
 	sys_ppu_thread_t t_id;
@@ -1566,9 +1571,19 @@ static void refresh_xml(char *msg)
 	#endif
 
 	// wait until complete
-	while(refreshing_xml && working) sys_ppu_thread_sleep(1);
+	while(refreshing_xml && working)
+	{
+		sys_ppu_thread_sleep(2);
 
-	sprintf(msg, "%s XML%s: OK", STR_REFRESH, SUFIX2(profile));
+		pad_data = pad_read();
+		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3))
+		{
+			snprintf(msg, 200, "%s:\n %'i %s", STR_SCAN2, games_found, STR_GAMES);
+			vshNotify_WithIcon(ICON_WAIT, msg);
+		}
+	}
+
+	sprintf(msg, "%s XML%s: OK\n%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
 	vshNotify_WithIcon(ICON_GAME, msg);
 
 	setPluginInactive();

@@ -29,11 +29,19 @@
 
 		dir_count = file_count = 0;
 		u64 dir_size = folder_size(path);
+		u32 size_mb  = (10 * dir_size) >> 20;
+		const char *bytes = STR_MEGABYTE;
+
+		if(size_mb >= 10240) {bytes = STR_GIGABYTE, size_mb>>=10;}
+
+		++size_mb; // increase decimal for better approximation
 
 		sprintf(param, "%s<p>"
-						"Size: %llu (%i.%i MB)<br>"
-						"Dir(s): %llu<br>"
-						"File(s): %llu", buffer, dir_size, dir_size>>20, ((10 * (((u32)dir_size) % _1MB_)) + _512KB_) / _1MB_, dir_count, file_count);
+						"Size: %'i.%i %s (%'llu bytes)<br>"
+						"Dir(s): %'u<br>"
+						"File(s): %'u", buffer,
+						(int)(size_mb / 10), (int)(size_mb % 10), bytes, dir_size,
+						dir_count, file_count);
 
 		keep_alive = http_response(conn_s, header, "/stat.ps3", CODE_HTTP_OK, param);
 

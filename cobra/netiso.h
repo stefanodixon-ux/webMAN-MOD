@@ -13,10 +13,10 @@ typedef struct
 {
 	char server[0x40];
 	char path[0x420];
-	uint32_t emu_mode;
-	uint32_t numtracks;
-	uint16_t port;
-	uint8_t pad[6];
+	u32 emu_mode;
+	u32 numtracks;
+	u16 port;
+	u8 pad[6];
 	ScsiTrackDescriptor tracks[32];
 } __attribute__((packed)) netiso_args;
 */
@@ -63,154 +63,154 @@ enum NETISO_CMD
 
 typedef struct _netiso_cmd
 {
-	uint16_t opcode;
-	uint8_t data[14];
+	u16 opcode;
+	u8 data[14];
 } __attribute__((packed)) netiso_cmd;
 
 typedef struct _netiso_stat_cmd
 {
-	uint16_t opcode;
-	uint16_t fp_len;
-	uint8_t pad[12];
+	u16 opcode;
+	u16 fp_len;
+	u8 pad[12];
 } __attribute__((packed)) netiso_stat_cmd;
 
 typedef struct _netiso_stat_result
 {
-	int64_t file_size; // Files: file size, directories: 0, error: -1
-	uint64_t mtime;
-	uint64_t ctime;
-	uint64_t atime;
-	int8_t is_directory; // Files: 0, directory: 1, error: shouldn't be read.
+	s64 file_size; // Files: file size, directories: 0, error: -1
+	u64 mtime;
+	u64 ctime;
+	u64 atime;
+	s8 is_directory; // Files: 0, directory: 1, error: shouldn't be read.
 } __attribute__((packed)) netiso_stat_result;
 
 typedef struct _netiso_read_file_cmd
 {
-	uint16_t opcode;
-	uint16_t pad;
-	uint32_t num_bytes;
-	uint64_t offset;
+	u16 opcode;
+	u16 pad;
+	u32 num_bytes;
+	u64 offset;
 } __attribute__((packed)) netiso_read_file_cmd;
 
 typedef struct _netiso_read_file_result
 {
-	int32_t bytes_read;
+	s32 bytes_read;
 } __attribute__((packed)) netiso_read_file_result;
 
 typedef struct _netiso_open_cmd
 {
-	uint16_t opcode;
-	uint16_t fp_len;
-	uint8_t pad[12];
+	u16 opcode;
+	u16 fp_len;
+	u8 pad[12];
 } __attribute__((packed)) netiso_open_cmd;
 
 typedef struct _netiso_open_result
 {
-	int64_t file_size; // -1 on error
-	uint64_t mtime;
+	s64 file_size; // -1 on error
+	u64 mtime;
 } __attribute__((packed)) netiso_open_result;
 
 typedef struct _netiso_open_dir_cmd
 {
-	uint16_t opcode;
-	uint16_t dp_len;
-	uint8_t pad[12];
+	u16 opcode;
+	u16 dp_len;
+	u8 pad[12];
 } __attribute__((packed)) netiso_open_dir_cmd;
 
 typedef struct _netiso_open_dir_result
 {
-	int32_t open_result; // 0 success, -1 error
+	s32 open_result; // 0 success, -1 error
 } __attribute__((packed)) netiso_open_dir_result;
 
 typedef struct _netiso_read_dir_entry_cmd
 {
-	uint16_t opcode;
-	uint8_t pad[14];
+	u16 opcode;
+	u8 pad[14];
 } __attribute__((packed)) netiso_read_dir_entry_cmd;
 
 typedef struct _netiso_read_dir_entry_result
 {
-	int64_t file_size; // Files: file size, directories: 0, error or no more entries: -1
-	uint16_t fn_len;
-	int8_t is_directory; // Files: 0, directory: 1, error: shouldn't be read.
+	s64 file_size; // Files: file size, directories: 0, error or no more entries: -1
+	u16 fn_len;
+	s8 is_directory; // Files: 0, directory: 1, error: shouldn't be read.
 } __attribute__((packed)) netiso_read_dir_entry_result;
 
 typedef struct _netiso_read_dir_result
 {
-	int64_t dir_size;
+	s64 dir_size;
 } __attribute__((packed)) netiso_read_dir_result;
 
 typedef struct _netiso_read_dir_result_data
 {
-	int64_t file_size;
-	uint64_t mtime;
-	int8_t is_directory;
+	s64 file_size;
+	u64 mtime;
+	s8 is_directory;
 	char name[512];
 } __attribute__((packed)) netiso_read_dir_result_data;
 
 typedef struct _netiso_read_file_critical_cmd
 {
-	uint16_t opcode;
-	uint16_t pad;
-	uint32_t num_bytes;
-	uint64_t offset;
+	u16 opcode;
+	u16 pad;
+	u32 num_bytes;
+	u64 offset;
 } __attribute__((packed)) netiso_read_file_critical_cmd;
 
 typedef struct _netiso_read_cd_2048_critical_cmd
 {
-	uint16_t opcode;
-	uint16_t pad;
-	uint32_t start_sector;
-	uint32_t sector_count;
-	uint32_t pad2;
+	u16 opcode;
+	u16 pad;
+	u32 start_sector;
+	u32 sector_count;
+	u32 pad2;
 } __attribute__((packed)) netiso_read_cd_2048_critical_cmd;
 
 #ifdef __BIG_ENDIAN__
 
-static inline uint16_t BE16(uint16_t x)
+static inline u16 BE16(u16 x)
 {
 	return x;
 }
 
-static inline uint32_t BE32(uint32_t x)
+static inline u32 BE32(u32 x)
 {
 	return x;
 }
 
-static inline uint64_t BE64(uint64_t x)
+static inline u64 BE64(u64 x)
 {
 	return x;
 }
 
 #else
 
-static inline uint16_t BE16(uint16_t x)
+static inline u16 BE16(u16 x)
 {
-	uint16_t ret  = ((x<<8)&0xFF00);
-			 ret |= ((x>>8)&0xFF);
+	u16 ret  = ((x<<8)&0xFF00);
+		ret |= ((x>>8)&0xFF);
 
 	return ret;
 }
 
-static inline uint32_t BE32(uint32_t x)
+static inline u32 BE32(u32 x)
 {
-	uint32_t ret  = (((x) & 0xff) << 24);
-			 ret |= (((x) & 0xff00) << 8);
-			 ret |= (((x) & 0xff0000) >> 8);
-			 ret |= (((x) >> 24) & 0xff);
+	u32 ret  = (((x) & 0xff) << 24);
+		ret |= (((x) & 0xff00) << 8);
+		ret |= (((x) & 0xff0000) >> 8);
+		ret |= (((x) >> 24) & 0xff);
 
 	return ret;
 }
 
-static inline uint64_t BE64(uint64_t x)
+static inline u64 BE64(u64 x)
 {
-	uint64_t ret  = ((x << 56) & 0xff00000000000000ULL);
-			 ret |= ((x << 40) & 0x00ff000000000000ULL);
-			 ret |= ((x << 24) & 0x0000ff0000000000ULL);
-			 ret |= ((x <<  8) & 0x000000ff00000000ULL);
-			 ret |= ((x >>  8) & 0x00000000ff000000ULL);
-			 ret |= ((x >> 24) & 0x0000000000ff0000ULL);
-			 ret |= ((x >> 40) & 0x000000000000ff00ULL);
-			 ret |= ((x >> 56) & 0x00000000000000ffULL);
+	u64 ret  = ((x << 56) & 0xff00000000000000ULL);
+		ret |= ((x << 40) & 0x00ff000000000000ULL);
+		ret |= ((x << 24) & 0x0000ff0000000000ULL);
+		ret |= ((x <<  8) & 0x000000ff00000000ULL);
+		ret |= ((x >>  8) & 0x00000000ff000000ULL);
+		ret |= ((x >> 24) & 0x0000000000ff0000ULL);
+		ret |= ((x >> 40) & 0x000000000000ff00ULL);
+		ret |= ((x >> 56) & 0x00000000000000ffULL);
 
 	return ret;
 }
@@ -222,4 +222,3 @@ static inline uint64_t BE64(uint64_t x)
 #endif
 
 #endif
-

@@ -41,7 +41,7 @@
 			remove_filename(params);
 		}
 		else
-			{delete_history(true); sprintf(param, drives[0]);}
+			{delete_history(true); strcpy(param, drives[0]);}
 
 		is_binary = FOLDER_LISTING;
 		goto html_response;

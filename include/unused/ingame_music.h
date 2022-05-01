@@ -18,11 +18,11 @@ static int16_t volumeValue[10] = { 0.0f /* off */, 0.39811f/* -8db */, 0.50119f,
 /***********************************************************************
 * playback callback
 ***********************************************************************/
-static void cb_musicutil(uint32_t cb_event, void *cb_param, void *cb_userData)
+static void cb_musicutil(u32 cb_event, void *cb_param, void *cb_userData)
 {
 	if (cb_event == CELL_MUSIC2_EVENT_SELECT_CONTENTS_RESULT)
 	{
-		if( (uint32_t)cb_param == CELL_MUSIC2_OK )
+		if( (u32)cb_param == CELL_MUSIC2_OK )
 		{
 			// play track immediately after selection
 			cellMusicSetPlaybackCommand2(CELL_MUSIC2_PB_CMD_PLAY, NULL);
@@ -31,14 +31,14 @@ static void cb_musicutil(uint32_t cb_event, void *cb_param, void *cb_userData)
 	}
 	else if (cb_event == CELL_MUSIC2_EVENT_SET_PLAYBACK_COMMAND_RESULT)
 	{
-		if ((int32_t)cb_param == CELL_MUSIC2_OK) getTrackInfo();
+		if ((s32)cb_param == CELL_MUSIC2_OK) getTrackInfo();
 	}
 }
 
 /***********************************************************************
 * track search callback
 ***********************************************************************/
-static void cb_searchutil(CellSearchEvent cb_event, int32_t cb_result, const void *cb_param, void *cb_userdata)
+static void cb_searchutil(CellSearchEvent cb_event, s32 cb_result, const void *cb_param, void *cb_userdata)
 {
 	// do nothing
 }
@@ -46,9 +46,9 @@ static void cb_searchutil(CellSearchEvent cb_event, int32_t cb_result, const voi
 /***********************************************************************
 * load system modules
 ***********************************************************************/
-static int32_t load_modules(void)
+static s32 load_modules(void)
 {
-	int32_t ret;
+	s32 ret;
 
 	// modules for in game music
 	ret = cellSysmoduleLoadModule(CELL_SYSMODULE_SYSUTIL_SEARCH);
@@ -70,9 +70,9 @@ static int32_t load_modules(void)
 /***********************************************************************
 * unload system modules
 ***********************************************************************/
-static int32_t unload_modules(void)
+static s32 unload_modules(void)
 {
-	int32_t ret;
+	s32 ret;
 
 	ret = cellSysmoduleUnloadModule(CELL_SYSMODULE_SYSUTIL_MUSIC2);
 	if (ret != CELL_OK ) return(ret);
@@ -86,13 +86,13 @@ static int32_t unload_modules(void)
 /***********************************************************************
 * get track title
 ***********************************************************************/
-static int32_t getTrackInfo(void)
+static s32 getTrackInfo(void)
 {
 	CellSearchContentId contents_id;
 	CellSearchContentType content_type;
 
 	cellMusicGetContentsId2(&contents_id);
-	uint8_t *infoBuffer = (uint8_t *)malloc(CELL_SEARCH_CONTENT_BUFFER_SIZE_MAX);
+	u8 *infoBuffer = (u8 *)malloc(CELL_SEARCH_CONTENT_BUFFER_SIZE_MAX);
 	if (!infoBuffer) return FAILED;
 
 	cellSearchGetContentInfoByContentId(&contents_id, infoBuffer, &content_type);
@@ -104,7 +104,7 @@ static int32_t getTrackInfo(void)
 	return CELL_OK;
 }
 
-static void music_action(uint8_t action)
+static void music_action(u8 action)
 {
 	switch(action)
 	{

@@ -95,7 +95,7 @@ static void get_net_info(char *net_type, char *ip)
 static void poll_start_play_time(void);
 static void get_sys_info(char *msg, u8 op, bool nolabel)
 {
-	int32_t arg_1, total_time_in_sec, power_on_ctr, power_off_ctr;
+	s32 arg_1, total_time_in_sec, power_on_ctr, power_off_ctr;
 	u8 t1 = 0, t2 = 0, ndx = 0; bool R2 = (op % 20) == 1 || (op == 23);
 
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
@@ -109,8 +109,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
 	}
 
-	_meminfo meminfo;
-	{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
+	get_meminfo();
 
 	// detect aprox. time when a game is launched
 	poll_start_play_time();
@@ -361,8 +360,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	t1f = FAHRENHEIT(t1);
 	t2f = FAHRENHEIT(t2);
 
-	_meminfo meminfo;
-	{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
+	get_meminfo();
 
 	if((webman_config->fanc == DISABLED) && (get_fan_policy_offset > 0))
 	{

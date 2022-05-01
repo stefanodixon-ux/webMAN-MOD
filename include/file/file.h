@@ -5,12 +5,17 @@
 
 #define create_file(file)	save_file(file, NULL, SAVE_ALL)
 
+#include "md5.h"
+#include "hdd_unlock_space.h"
+
 //////////////////////////////////////////////////////////////
 #include "file_ntfs.h"
 #include "file_devs.h"
 #include "file_size.h"
 #include "file_copy.h"
 #include "file_delete.h"
+
+#include "togglers.h"
 
 static bool isDir(const char *path)
 {

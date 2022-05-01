@@ -19,10 +19,8 @@
 
 #include <cell/http.h>
 
-#include "../vsh/xmb_plugin.h"
-#include "../vsh/game_ext_plugin.h"
-#include "../vsh/download_plugin.h"
-#include "../vsh/stdc.h"
+extern wchar_t *stdc_F06EED36(wchar_t *ptr, wchar_t wc, size_t num);                  // wmemset()
+#define wmemset stdc_F06EED36
 
 #define MAX_URL_LEN    360
 #define MAX_DLPATH_LEN 240

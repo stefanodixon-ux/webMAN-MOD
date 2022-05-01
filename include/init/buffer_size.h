@@ -1,6 +1,4 @@
-#define SC_GET_FREE_MEM 	(352)
-
-#define KB			     1024UL
+#define     KB		     1024UL
 #define   _2KB_		     2048UL
 #define   _4KB_		     4096UL
 #define   _6KB_		     6144UL
@@ -27,6 +25,24 @@
 #define USE_3MB		99
 #define MIN_MEM		_192KB_
 
+#define MAX_PAGES   ((BUFFER_SIZE_ALL / (_64KB_ * MAX_WWW_THREADS)) + 1)
+
+#define SC_GET_FREE_MEM 	(352)
+
+typedef struct {
+	u32 total;
+	u32 avail;
+} _meminfo;
+
+static _meminfo meminfo;
+
+static void get_meminfo(void)
+{
+	{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
+}
+
+//////////////////////////////////////////////////////////
+
 #define PS3 (1<<0)
 #define PS2 (1<<1)
 #define PS1 (1<<2)
@@ -47,13 +63,6 @@ static u32 BUFFER_SIZE_ALL;
 #ifdef MOUNT_ROMS
 static const u32 BUFFER_SIZE_IGN = _4KB_;
 #endif
-
-#define MAX_PAGES   ((BUFFER_SIZE_ALL / (_64KB_ * MAX_WWW_THREADS)) + 1)
-
-typedef struct {
-	u32 total;
-	u32 avail;
-} _meminfo;
 
 static u32 get_buffer_size(u8 footprint)
 {

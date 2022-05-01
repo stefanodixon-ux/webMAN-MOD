@@ -13,8 +13,6 @@
 
 #define CFW_SYSCALLS_REMOVED(a)			((lv2_peek_hen(a) & 0xFFFFFFFFFF000000) != 0x8000000000000000)
 
-void _memset(void *m, size_t n);
-
 /////////////////// LV1 PEEK //////////////////////
 static u64 lv1_peek_cfw(u64 addr)
 {
@@ -254,94 +252,3 @@ static u16 string_to_lv2(const char *path, u64 addr)
 	return len * 8;
 }
 #endif
-
-static u64 convertH(const char *val)
-{
-	if(!val || (*val == 0)) return 0;
-
-	u64 ret = 0; char c; u8 n = 0;
-
-	if(islike(val, "0x")) n = 2;
-
-	for(u8 buff, i = n; i < 16 + n; i++)
-	{
-		if(val[i]==' ') {n++; continue;}
-
-		c = (val[i] | 0x20);
-		if(c >= '0' && c <= '9') buff = (c - '0'); else
-		if(c >= 'a' && c <= 'f') buff = (c - 'W'); else // <= c - 'a' + 10
-		return ret;
-
-		ret = (ret << 4) | buff;
-	}
-
-	return ret;
-}
-
-#ifndef LITE_EDITION
-static bool isHEX(const char *value)
-{
-	char c;
-	if(islike(value, "0x")) value += 2;
-	for(; *value; ++value)
-	{
-		c = (*value | 0x20);
-		if(!(ISDIGIT(c) || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '*'))) return false;
-	}
-	return true;
-}
-
-static u16 Hex2Bin(const char *src, char *out)
-{
-	char *target = out;
-	char value[3]; value[2] = '\0';
-	if(islike(src, "0x")) src += 2;
-	while(*src && src[1])
-	{
-		if(*src <= ' ') {++src; continue;} // ignore spaces & line breaks
-		if((*src == '*') || (*src == '?'))
-			{*(target++) = '*'; src += 2; continue;} // convert mask ** / ?? to binary *
-
-		value[0] = src[0], value[1] = src[1];
-		*(target++) = (u8)convertH(value);
-		src += 2;
-	}
-	return (target - out);
-}
-#endif
-
-#if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT) || defined(USE_NTFS) || defined(DEBUG_MEM)
-static void memcpy64(void *dst, void *src, int n)
-{
-	if(!dst || !src || !n) return;
-	uint8_t p = n & 7; // remaining bytes (same as n % 8)
-
-	n >>= 3; // same as n /= 8;
-	uint64_t *d = (uint64_t *) dst;
-	uint64_t *s = (uint64_t *) src;
-	while (n--) *d++ = *s++; // 64bit memcpy
-
-	if(p)
-	{
-		char *m = (char *) d;
-		char *c = (char *) s;
-		while (p--) *m++ = *c++; // memcpy(d, s, p);
-	}
-}
-#endif
-
-void _memset(void *m, size_t n)
-{
-	if(!m || !n) return;
-	uint8_t p = n & 7; // remaining bytes (same as n % 8)
-
-	n >>= 3; // same as n /= 8;
-	uint64_t *s = (uint64_t *) m;
-	while (n--) *s++ = 0LL; // 64bit memset
-
-	if(p)
-	{
-		char *c = (char *) s;
-		while (p--) *c++ = '\0'; // memset(s, 0, p);
-	}
-}

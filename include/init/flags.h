@@ -1,4 +1,4 @@
-#include "../flags.h"
+#include "../../flags.h"
 
 #ifdef REX_ONLY
  #ifndef DEX_SUPPORT

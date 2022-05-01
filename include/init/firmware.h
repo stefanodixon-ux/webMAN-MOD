@@ -1027,7 +1027,7 @@ static bool disable_map_path(bool toggle_patch) // based on haxxxen's patch post
 #ifndef LITE_EDITION
 static u32 GetApplicableVersion(void * data)
 {
-	system_call_8(863, 0x6011, 1, (uint32_t)data, 0, 0, 0, 0, 0);
+	system_call_8(863, 0x6011, 1, (u32)data, 0, 0, 0, 0, 0);
 	return_to_user_prog(u32);
 }
 #endif

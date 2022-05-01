@@ -33,31 +33,30 @@
 #include <sys/stat.h>
 
 #include "types.h"
-#include "include/flags.h"
+#include "include/init/flags.h"
 
 #define IS_ON_XMB		(GetCurrentRunningMode() == 0)
 #define IS_INGAME		(GetCurrentRunningMode() != 0)
 
-static volatile u8 wm_unload_combo = 0;
-static volatile u8 working = 1;
+static vu8 wm_unload_combo = 0;
+static vu8 working = 1;
 
 #include "common.h"
 
 #include "cobra/cobra.h"
 #include "cobra/storage.h"
+#include "vsh/download_plugin.h"
+#include "vsh/explore_plugin.h"
+#include "vsh/game_ext_plugin.h"
 #include "vsh/game_plugin.h"
 #include "vsh/netctl_main.h"
-#include "vsh/vsh.h"
-#include "vsh/vshnet.h"
-#include "vsh/vshmain.h"
-#include "vsh/vshcommon.h"
-#include "vsh/vshtask.h"
-#include "vsh/explore_plugin.h"
 #include "vsh/paf.h"
-
-#include "include/timer.h"
-#include "include/thread.h"
-#include "include/paths.h"
+#include "vsh/vsh.h"
+#include "vsh/vshcommon.h"
+#include "vsh/vshmain.h"
+#include "vsh/vshnet.h"
+#include "vsh/vshtask.h"
+#include "vsh/xmb_plugin.h"
 
 static char _game_TitleID[16]; //#define _game_TitleID  _game_info+0x04
 static char _game_Title  [64]; //#define _game_Title    _game_info+0x14
@@ -110,9 +109,15 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.40 MOD"
+#define WM_VERSION			"1.47.41 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
+
+#include "include/init/timer.h"
+#include "include/init/thread.h"
+#include "include/init/paths.h"
+#include "include/init/string.h"
+#include "include/init/wm_config.h"
 
 ///////////// PS3MAPI BEGIN //////////////
 #ifdef COBRA_ONLY
@@ -197,8 +202,8 @@ static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IX
 
 static u8 profile = 0; // 0 = default, 1-4 = user profiles, 5 = all profiles
 
-static volatile u8 loading_html = 0;
-static volatile u8 refreshing_xml = 0;
+static vu8 loading_html = 0;
+static vu8 refreshing_xml = 0;
 
 #ifdef SYS_BGM
 static u8 system_bgm = 0;
@@ -331,21 +336,25 @@ int wait_for(const char *path, u8 timeout);
 //static int (*View_Find)(const char *) = NULL;
 //static int (*plugin_GetInterface)(int,int) = NULL;
 
-#include "include/string.h"
-#include "include/wm_config.h"
-#include "include/html.h"
-#include "include/syscall.h"
-#include "include/peek_poke.h"
-#include "include/xregistry.h"
-#include "include/hdd_unlock_space.h"
-#include "include/idps.h"
-#include "include/led.h"
-#include "include/vpad.h"
-#include "include/socket.h"
-#include "include/language.h"
-#include "include/fancontrol.h"
-#include "include/firmware.h"
-#include "include/ntfs.h"
+#include "include/init/ntfs.h"
+#include "include/init/compare.h"
+#include "include/init/eval.h"
+#include "include/ps3mapi/peek_poke.h"
+#include "include/init/socket.h"
+
+#include "include/feat/syscall.h"
+#include "include/feat/xregistry.h"
+#include "include/feat/idps.h"
+#include "include/feat/vpad.h"
+
+#include "include/init/html.h"
+#include "include/init/language.h"
+#include "include/poll/fancontrol.h"
+#include "include/init/firmware.h"
+
+#include "include/notify/led.h"
+#include "include/notify/vsh_notify.h"
+#include "include/notify/show_msg2.h"
 
 #ifdef USE_NTFS
 
@@ -396,65 +405,67 @@ static bool wm_reload = false;
 static bool is_busy = false;
 static u8 mount_unk = EMU_OFF;
 
-#include "include/process.h"
-#include "include/buffer_size.h"
-#include "include/eject_insert.h"
-#include "include/vsh_notify.h"
-#include "include/vsh.h"
+#include "include/init/process.h"
+#include "include/init/buffer_size.h"
+#include "include/init/vsh.h"
 
 #ifdef COBRA_ONLY
-#include "include/cue_file.h"
-#include "include/psxemu.h"
-#include "include/netclient.h"
-#include "include/netserver.h"
-#include "include/netiso.h"
-#include "include/rawseciso.h"
+#include "include/mount/cue_file.h"
+#include "include/mount/psxemu.h"
+#include "include/mount/netclient.h"
+#include "include/mount/netserver.h"
+#include "include/mount/netiso.h"
+#include "include/mount/rawseciso.h"
 #endif
 
-#include "include/webchat.h"
-#include "include/file.h"
-#include "include/vsh_random_res.h"
-#include "include/ps2_disc.h"
-#include "include/ps2_classic.h"
-#include "include/xmb_savebmp.h"
-#include "include/ingame_screenshot.h"
-#include "include/ingame_music.h"
-#include "include/singstar.h"
-#include "include/autopoweroff.h"
+#include "include/file/file.h"
+#include "include/mount/ps2_disc.h"
+#include "include/mount/ps2_classic.h"
+#include "include/mount/fix_game.h" // + param_sfo.h
 
-#include "include/gamedata.h"
+#include "include/unused/webchat.h"
+#include "include/unused/toggle_dlna.h"
+#include "include/unused/ingame_music.h"
+#include "include/unused/secure_file_id.h"
 
-#include "include/script.h"
-#include "include/debug_mem.h"
-#include "include/fix_game.h"
+#include "include/feat/script.h"
+#include "include/feat/video_rec.h"
+#include "include/feat/xmb_savebmp.h"
+#include "include/feat/ingame_screenshot.h"
+#include "include/feat/vsh_random_res.h"
+
+#include "include/init/singstar.h"
+#include "include/init/autopoweroff.h"
+
+#include "include/mount/eject_insert.h"
+#include "include/mount/gamedata.h"
+
 #include "include/ftp.h"
-#include "include/ps3mapi.h"
-#include "include/ps3mapi_server.h"
-#include "include/stealth.h"
-#include "include/video_rec.h"
-#include "include/secure_file_id.h"
 
-#include "include/snd0.h"
-#include "include/games_html.h"
-#include "include/games_xml.h"
-#include "include/prepntfs.h"
+#include "include/ps3mapi/debug_mem.h"
+#include "include/ps3mapi/ps3mapi.h"
+#include "include/ps3mapi/ps3mapi_server.h"
+#include "include/ps3mapi/stealth.h"
+
+#include "include/scan/snd0.h"
+#include "include/scan/games_html.h"
+#include "include/scan/games_xml.h"
+#include "include/scan/prepntfs.h"
 
 #include "include/setup.h"
 #include "include/cpursx.h"
-#include "include/togglers.h"
 
-#include "include/patch_gameboot.h"
-#include "include/patch_ps2demo.h"
-#include "include/_mount.h"
+#include "include/mount/patch_gameboot.h"
+#include "include/mount/patch_ps2demo.h"
+#include "include/mount/mount.h"
+
 #include "include/file_manager.h"
 
-#include "include/pkg_handler.h"
-#include "include/poll.h"
-#include "include/md5.h"
-#include "include/show_msg2.h"
+#include "include/feat/pkg_handler.h"
+#include "include/poll/poll.h"
 
-#include "include/www_client.h"
-#include "include/www_start.h"
+#include "include/www/www_client.h"
+#include "include/www/www_start.h"
 
 static void wwwd_thread(u64 arg)
 {
@@ -483,7 +494,7 @@ static void wwwd_thread(u64 arg)
 
 	#ifdef MOUNT_ROMS
 	size_t fsize = file_ssize(WM_ROMS_EXTENSIONS);
-	if((fsize > 0) && (fsize <= 1024))
+	if(fsize && (fsize <= 1024))
 	{
 		ROMS_EXTENSIONS = malloc(fsize);
 		read_file(WM_ROMS_EXTENSIONS, ROMS_EXTENSIONS, fsize, 0);

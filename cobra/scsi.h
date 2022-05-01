@@ -67,9 +67,9 @@ enum DvdBookType
 /*
 typedef struct _ScsiCmdTestUnitReady
 {
-	uint8_t opcode;
-	uint8_t reserved[4];
-	uint8_t control;
+	u8 opcode;
+	u8 reserved[4];
+	u8 control;
 } __attribute__((packed)) ScsiCmdTestUnitReady;
 
 enum
@@ -84,152 +84,152 @@ enum
 
 typedef struct _ScsiCmdReadTocPmaAtip
 {
-	uint8_t opcode;
-	uint8_t rv_msf;
-	uint8_t rv_format;
-	uint8_t reserved[3];
-	uint8_t track_session_num;
-	uint16_t alloc_length;
-	uint8_t control;
+	u8 opcode;
+	u8 rv_msf;
+	u8 rv_format;
+	u8 reserved[3];
+	u8 track_session_num;
+	u16 alloc_length;
+	u8 control;
 } __attribute__((packed)) ScsiCmdReadTocPmaAtip;
 
 typedef struct _ScsiTocResponse
 {
-	uint16_t toc_length;
-	uint8_t first_track;
-	uint8_t last_track;
+	u16 toc_length;
+	u8 first_track;
+	u8 last_track;
 } __attribute__((packed)) ScsiTocResponse;
 */
 typedef struct _ScsiTrackDescriptor
 {
-	uint8_t reserved;
-	uint8_t adr_control;
-	uint8_t track_number;
-	uint8_t reserved2;
-	uint32_t track_start_addr;
+	u8 reserved;
+	u8 adr_control;
+	u8 track_number;
+	u8 reserved2;
+	u32 track_start_addr;
 } __attribute__((packed)) ScsiTrackDescriptor;
 /*
 typedef struct _ScsiFullTrackDescriptor
 {
-	uint8_t session_number;
-	uint8_t adr_control;
-	uint8_t tno;
-	uint8_t point;
-	uint8_t min;
-	uint8_t sec;
-	uint8_t frame;
-	uint8_t zero;
-	uint8_t pmin;
-	uint8_t psec;
-	uint8_t pframe;
+	u8 session_number;
+	u8 adr_control;
+	u8 tno;
+	u8 point;
+	u8 min;
+	u8 sec;
+	u8 frame;
+	u8 zero;
+	u8 pmin;
+	u8 psec;
+	u8 pframe;
 } __attribute__((packed)) ScsiFullTrackDescriptor;
 
 typedef struct _ScsiCmdGetConfiguration
 {
-	uint8_t opcode;
-	uint8_t rv_rt;
-	uint16_t starting_feature_number;
-	uint8_t reserved[3];
-	uint16_t alloc_length;
-	uint8_t control;
+	u8 opcode;
+	u8 rv_rt;
+	u16 starting_feature_number;
+	u8 reserved[3];
+	u16 alloc_length;
+	u8 control;
 } __attribute__((packed)) ScsiCmdGetConfiguration;
 
 typedef struct _ScsiCmdReadCd
 {
-	uint8_t opcode;
-	uint8_t rv_est_raddr;
-	uint32_t lba;
-	uint8_t length[3];
-	uint8_t misc;
-	uint8_t rv_scsb;
-	uint8_t control;
+	u8 opcode;
+	u8 rv_est_raddr;
+	u32 lba;
+	u8 length[3];
+	u8 misc;
+	u8 rv_scsb;
+	u8 control;
 } __attribute__((packed)) ScsiCmdReadCd;
 
 typedef struct _SubChannelQ
 {
-	uint8_t control_adr;
-	uint8_t track_number;
-	uint8_t index_number;
-	uint8_t min;
-	uint8_t sec;
-	uint8_t frame;
-	uint8_t zero;
-	uint8_t amin;
-	uint8_t asec;
-	uint8_t aframe;
-	uint16_t crc;
-	uint8_t pad[3];
-	uint8_t p;
+	u8 control_adr;
+	u8 track_number;
+	u8 index_number;
+	u8 min;
+	u8 sec;
+	u8 frame;
+	u8 zero;
+	u8 amin;
+	u8 asec;
+	u8 aframe;
+	u16 crc;
+	u8 pad[3];
+	u8 p;
 } __attribute__((packed)) SubChannelQ;
 
 typedef struct _ScsiCmdReadDiscInformation
 {
-	uint8_t opcode;
-	uint8_t reserved[6];
-	uint16_t alloc_length;
-	uint8_t control;
+	u8 opcode;
+	u8 reserved[6];
+	u16 alloc_length;
+	u8 control;
 } __attribute__((packed)) ScsiCmdReadDiscInformation;
 
 typedef struct _ScsiReadDiscInformationResponse
 {
-	uint16_t length;
-	uint8_t  misc;
-	uint8_t first_track;
-	uint8_t num_sessions_lb;
-	uint8_t first_track_lastsession_lb;
-	uint8_t last_track_lastsession_lb;
-	uint8_t misc2;
-	uint8_t disctype;
-	uint8_t num_sessions_mb;
-	uint8_t first_track_lastsession_mb;
-	uint8_t last_track_lastsession_mb;
-	uint32_t disc_identification;
-	uint32_t last_session_leadin;
-	uint32_t last_session_leadout;
-	uint8_t barcode[8];
-	uint8_t reserved;
-	uint8_t num_opc;
+	u16 length;
+	u8  misc;
+	u8 first_track;
+	u8 num_sessions_lb;
+	u8 first_track_lastsession_lb;
+	u8 last_track_lastsession_lb;
+	u8 misc2;
+	u8 disctype;
+	u8 num_sessions_mb;
+	u8 first_track_lastsession_mb;
+	u8 last_track_lastsession_mb;
+	u32 disc_identification;
+	u32 last_session_leadin;
+	u32 last_session_leadout;
+	u8 barcode[8];
+	u8 reserved;
+	u8 num_opc;
 } __attribute__((packed)) ScsiReadDiscInformationResponse;
 
 typedef struct _ScsiCmdReadDiscStructure
 {
-	uint8_t opcode;
-	uint8_t rv_mediatype;
-	uint32_t address;
-	uint8_t layer_num;
-	uint8_t format;
-	uint16_t alloc_length;
-	uint8_t reserved;
-	uint8_t control;
+	u8 opcode;
+	u8 rv_mediatype;
+	u32 address;
+	u8 layer_num;
+	u8 format;
+	u16 alloc_length;
+	u8 reserved;
+	u8 control;
 } __attribute__((packed)) ScsiCmdReadDiscStructure;
 
 typedef struct _ScsiReadDiscStructureFormat0Response
 {
-	uint16_t length;
-	uint8_t reserved[2];
-	uint8_t disccategory_partversion;
-	uint8_t discsize_maximumrate;
-	uint8_t misc;
-	uint8_t density;
-	uint8_t zero;
-	uint8_t start_sector[3];
-	uint8_t zero2;
-	uint8_t end_sector[3];
-	uint8_t zero3;
-	uint8_t sector_num_layer0[3];
-	uint8_t reserved2;
+	u16 length;
+	u8 reserved[2];
+	u8 disccategory_partversion;
+	u8 discsize_maximumrate;
+	u8 misc;
+	u8 density;
+	u8 zero;
+	u8 start_sector[3];
+	u8 zero2;
+	u8 end_sector[3];
+	u8 zero3;
+	u8 sector_num_layer0[3];
+	u8 reserved2;
 } __attribute__((packed)) ScsiReadDiscStructureFormat0Response;
 
-static inline void lba_to_msf(uint64_t lba, uint8_t *m, uint8_t *s, uint8_t *f)
+static inline void lba_to_msf(u64 lba, u8 *m, u8 *s, u8 *f)
 {
 	*m = lba/(75*60);
 	*s = (lba /75) % 60;
 	*f = lba % 75;
 }
 
-static inline uint64_t msf_to_lba(uint8_t m, uint8_t s, uint8_t f)
+static inline u64 msf_to_lba(u8 m, u8 s, u8 f)
 {
-	uint64_t lba = m;
+	u64 lba = m;
 	lba = (lba*60)+s;
 	lba = (lba*75)+f;
 	return lba;
@@ -238,9 +238,9 @@ static inline uint64_t msf_to_lba(uint8_t m, uint8_t s, uint8_t f)
 
 #ifdef DEBUG
 
-static const char *get_scsi_cmd_name(uint8_t cmd) __attribute__((unused));
+static const char *get_scsi_cmd_name(u8 cmd) __attribute__((unused));
 
-static const char *get_scsi_cmd_name(uint8_t cmd)
+static const char *get_scsi_cmd_name(u8 cmd)
 {
 	static const char *cmd_str[0x100] =
 	{

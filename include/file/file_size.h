@@ -48,10 +48,6 @@ static u32 dir_count = 0;
 static u32 file_count = 0;
 static char *stitle_id = NULL;
 
-#ifdef CALC_MD5
-static void calc_md5(const char *filename, char *md5);
-#endif
-
 static size_t size_link(const char *source)
 {
 	size_t size = file_size(source);

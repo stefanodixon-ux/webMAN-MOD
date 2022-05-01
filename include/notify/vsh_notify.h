@@ -119,7 +119,7 @@ enum rco_icons
 
 #define MAX_RCO_IMAGES	51
 
-static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
+static s32 vshNotify_WithIcon(u8 icon_id, const char *msg)
 {
 	const char *rco_images[MAX_RCO_IMAGES] = {
 								// system_plugin icons
@@ -178,8 +178,8 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 							};
 
 	if(icon_id >= MAX_RCO_IMAGES) icon_id = 0;
-	char *plugin = (char*)"explore_plugin";
-	char *tex = (char*)rco_images[icon_id];
+	const char *plugin = "explore_plugin";
+	const char *tex = rco_images[icon_id];
 
 	// custom textures
 	char rco[24], texture[64];
@@ -190,7 +190,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 
 		if(icon_id || pos[6] == '0')
 		{
-			tex = (char*)rco_images[icon_id];
+			tex = rco_images[icon_id];
 		}
 		else if(get_param("&icon=", texture, pos, 63))
 		{
@@ -198,20 +198,20 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 
 			if(get_param("&rco=", rco, pos, 23))
 			{
-				plugin = (char*)rco;
+				plugin = rco;
 			}
 			else if(islike(texture, "tex_notification"))
-				plugin = (char*)"system_plugin";
+				plugin = "system_plugin";
 		}
 		*pos = NULL;
 	}
 
-	if(icon_id < 18) plugin = (char*)"system_plugin";
+	if(icon_id < 18) plugin = "system_plugin";
 
 	if(IS_INGAME || webman_config->msg_icon)
 		return vshtask_notify(msg);
 
-	uint32_t _plugin = View_Find(plugin);
+	u32 _plugin = View_Find(plugin);
 	if (_plugin <= 0)
 		return FAILED;
 
@@ -219,7 +219,7 @@ static int32_t vshNotify_WithIcon(u8 icon_id, const char *msg)
 
 	wchar_t message[len + 2];
 
-	mbstowcs((wchar_t *)message, (const char *)msg, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
+	mbstowcs(message, msg, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
 	int teximg, dummy = 0;
 	LoadRCOTexture(&teximg, _plugin, tex);

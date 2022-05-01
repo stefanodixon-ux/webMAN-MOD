@@ -410,6 +410,7 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 			if(li == LANG_CUSTOM) sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
 		}
 	}
+
 	show_progress(param, OV_SCAN);
 }
 

@@ -22,7 +22,7 @@
 		if(sc == 200 || sc == 904)
 		{	// ccapi_get_process_mem || dex_get_process_mem
 			if(sp[2] > MAX_LINE_LEN) sp[2] = MAX_LINE_LEN; _memset(header, sp[2]);
-			{system_call_4(sc, sp[0], sp[1], sp[2], (uint64_t)(uint32_t)header); ret = p1;}
+			{system_call_4(sc, sp[0], sp[1], sp[2], (u64)(u32)header); ret = p1;}
 
 			for(int i = 0; i < (u16)sp[2]; i++) sprintf(param + (2 * i), "%02X", (u8)header[i]);
 		}
@@ -32,10 +32,10 @@
 
 			if(is_plain)
 			{
-				sprintf(param, "0x%x", ret); if(!ret) param[1] = 0;
+				sprintf(param, "0x%llx", ret); if(!ret) param[1] = 0;
 			}
 			else
-				sprintf(param, "syscall%i(%i) => 0x%x", n, sc, ret);
+				sprintf(param, "syscall%i(%i) => 0x%llx", n, sc, ret);
 		}
 
 		keep_alive = http_response(conn_s, header, "/syscall.ps3", is_plain ? CODE_PLAIN_TEXT : CODE_HTTP_OK, param);

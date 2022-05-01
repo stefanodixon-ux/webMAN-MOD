@@ -10,8 +10,7 @@
 				{
 					BUFFER_SIZE_HTML = get_buffer_size(webman_config->foot);
 
-					_meminfo meminfo;
-					{system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo);}
+					get_meminfo();
 
 					if(meminfo.avail < (BUFFER_SIZE_HTML + MIN_MEM)) BUFFER_SIZE_HTML = get_buffer_size(3); //MIN+
 					if(meminfo.avail < (BUFFER_SIZE_HTML + MIN_MEM)) BUFFER_SIZE_HTML = get_buffer_size(1); //MIN

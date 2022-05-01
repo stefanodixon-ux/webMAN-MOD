@@ -31,8 +31,8 @@ extern "C" {
 #define USB_MASS_STORAGE_1(n)	(0x10300000000000AULL+n) /* For 0-5 */
 #define USB_MASS_STORAGE_2(n)	(0x10300000000001FULL+(n-6)) /* For 6-127 */
 
-#define	HDD_PARTITION(n)	(ATA_HDD | ((uint64_t)n<<32))
-#define FLASH_PARTITION(n)	(BUILTIN_FLASH | ((uint64_t)n<<32))
+#define	HDD_PARTITION(n)	(ATA_HDD | ((u64)n<<32))
+#define FLASH_PARTITION(n)	(BUILTIN_FLASH | ((u64)n<<32))
 
 #define DEVICE_TYPE_PS3_DVD	0xFF70
 #define DEVICE_TYPE_PS3_BD	0xFF71
@@ -50,27 +50,27 @@ extern "C" {
 #define STORAGE_COMMAND_GET_DEVICE_SIZE	0x10
 #define STORAGE_COMMAND_GET_DEVICE_TYPE	0x11
 
-typedef uint32_t sys_device_handle_t;
+typedef u32 sys_device_handle_t;
 
 typedef struct
 {
 	char label[32];
-	uint32_t unk_08;
-	uint32_t unk_0C;
-	uint64_t sector_count;
-	uint32_t sector_size;
-	uint32_t unk_30;
-	uint8_t unk_40[8];
+	u32 unk_08;
+	u32 unk_0C;
+	u64 sector_count;
+	u32 sector_size;
+	u32 unk_30;
+	u8 unk_40[8];
 } __attribute__((packed)) sys_device_info_t;
 
 /*
 typedef struct
 {
-	uint32_t inlen;
-	uint32_t unk1;
-	uint32_t outlen;
-	uint32_t unk2;
-	uint32_t unk3;
+	u32 inlen;
+	u32 unk1;
+	u32 outlen;
+	u32 unk2;
+	u32 unk3;
 } __attribute__((packed)) StorageCmdScsiData;
 */
 
@@ -83,14 +83,14 @@ typedef struct
 	char firstfile_path[MAX_PATH];
 } __attribute__((packed)) sys_emu_state_t;
 
-int sys_storage_open(uint64_t device_id, uint64_t unk, sys_device_handle_t *device_handle, uint64_t unk2);
-int sys_storage_read(sys_device_handle_t device_handle, uint64_t mode, uint64_t start_sector, uint32_t sector_count, void *buf, uint32_t *nread, uint64_t flags);
+int sys_storage_open(u64 device_id, u64 unk, sys_device_handle_t *device_handle, u64 unk2);
+int sys_storage_read(sys_device_handle_t device_handle, u64 mode, u64 start_sector, u32 sector_count, void *buf, u32 *nread, u64 flags);
 int sys_storage_close(sys_device_handle_t device_handle);
 
 #ifdef COBRA_ONLY
 
-int sys_storage_get_device_info(uint64_t device_id, sys_device_info_t *device_info);
-int sys_storage_ext_fake_storage_event(uint64_t event, uint64_t param, uint64_t device);
+int sys_storage_get_device_info(u64 device_id, sys_device_info_t *device_info);
+int sys_storage_ext_fake_storage_event(u64 event, u64 param, u64 device);
 int sys_storage_ext_get_disc_type(unsigned int *real_disctype, unsigned int *effective_disctype, unsigned int *fake_disctype);
 int sys_storage_ext_umount_discfile(void);
 int sys_map_path(const char *oldpath, const char *newpath);

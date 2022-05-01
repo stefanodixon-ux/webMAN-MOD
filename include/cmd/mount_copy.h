@@ -75,7 +75,7 @@
 			char *dev_path = (param + 18); // /mount.ps3/unmount<dev_path>
 			if(*dev_path == '/')
 			{
-				if(isDir(dev_path)) {system_call_3(SC_FS_UMOUNT, (uint32_t)dev_path, 0, 1);}
+				if(isDir(dev_path)) {system_call_3(SC_FS_UMOUNT, (u32)dev_path, 0, 1);}
 				sprintf(param, "/"); is_binary = FOLDER_LISTING; mount_app_home = is_busy = false;
 				goto html_response;
 			}

@@ -381,7 +381,7 @@ view_file:
 
 		// file navigation
 		size_t size = file_size(param);
-		u64 max = size < HEXVIEW_SIZE ? 0 : size - HEXVIEW_SIZE;
+		u64 max = (size < HEXVIEW_SIZE) ? 0 : (size - HEXVIEW_SIZE);
 		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=0x%llx\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
 		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=0x%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=0x%llx\">&gt;&gt;</a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
 		buffer += concat(buffer, templn);

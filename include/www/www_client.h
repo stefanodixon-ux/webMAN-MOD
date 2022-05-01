@@ -318,7 +318,7 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 		u8 retries = 0;
 
 again3:
-		{ system_call_1(SC_GET_FREE_MEM, (u64)(u32) &meminfo); }
+		get_meminfo();
 
 		if((meminfo.avail) < ( _64KB_ + MIN_MEM )) //leave if less than min memory
 		{
@@ -495,7 +495,7 @@ parse_request:
 
 			char *param_original = header; // used in /download.ps3
 
-			#include "cmd/refresh_ps3.h"
+			#include "../cmd/refresh_ps3.h"
 
 			bool is_setup = islike(param, "/setup.ps3?");
 
@@ -530,51 +530,51 @@ parse_request:
 				if(islike(param, "/setup.ps3")) goto html_response;
 			}
 
-			#include "cmd/pad_combo_play.h"
-			#include "cmd/cpursx_tempc.h"
-			#include "cmd/admin.h"
+			#include "../cmd/pad_combo_play.h"
+			#include "../cmd/cpursx_tempc.h"
+			#include "../cmd/admin.h"
 
 			if(get_flag(param, "?restart.ps3")) do_restart = sys_admin;
 
-			#include "cmd/dev_blind.h"
-			#include "cmd/download.h"
-			#include "cmd/install.h"
-			#include "cmd/reloadxmb.h"
-			#include "cmd/xmb_browser.h"
-			#include "cmd/games.h"
-			#include "cmd/popup.h"
-			#include "cmd/restart.h"
-			#include "cmd/shutdown.h"
-			#include "cmd/quit.h"
+			#include "../cmd/dev_blind.h"
+			#include "../cmd/download.h"
+			#include "../cmd/install.h"
+			#include "../cmd/reloadxmb.h"
+			#include "../cmd/xmb_browser.h"
+			#include "../cmd/games.h"
+			#include "../cmd/popup.h"
+			#include "../cmd/restart.h"
+			#include "../cmd/shutdown.h"
+			#include "../cmd/quit.h"
 
 #ifndef LITE_EDITION
-			#include "cmd/abort.h"
-			#include "cmd/wait.h"
-			#include "cmd/edit.h"
-			#include "cmd/view.h"
-			#include "cmd/chat.h"
-			#include "cmd/mount_search.h"
+			#include "../cmd/abort.h"
+			#include "../cmd/wait.h"
+			#include "../cmd/edit.h"
+			#include "../cmd/view.h"
+			#include "../cmd/chat.h"
+			#include "../cmd/mount_search.h"
 			if(sys_admin)
 			{
-				#include "cmd/remap_unmap.h"
-				#include "cmd/rename_swap_move.h"
-				#include "cmd/write_trunc_unzip.h"
-				#include "cmd/cpy_cut_paste.h"
-				#include "cmd/mkdir_rmdir.h"
-				#include "cmd/randomizers.h" // /gameboot.ps3, /wallpaper.ps3, etc.
-				#include "cmd/stat_chmod.h"
-				#include "cmd/md5.h"
-				#include "cmd/minver.h"
-				#include "cmd/recovery.h"
-				#include "cmd/rebuild.h"
-				#include "cmd/netstatus.h"
-				#include "cmd/syscall.h"
-				#include "cmd/consoleid.h"
-				#include "cmd/secureid.h"
-				#include "cmd/klic.h"
-				#include "cmd/fixgame.h"
-				#include "cmd/unlockhdd.h"
-				#include "cmd/unlocksave.h"
+				#include "../cmd/remap_unmap.h"
+				#include "../cmd/rename_swap_move.h"
+				#include "../cmd/write_trunc_unzip.h"
+				#include "../cmd/cpy_cut_paste.h"
+				#include "../cmd/mkdir_rmdir.h"
+				#include "../cmd/randomizers.h" // /gameboot.ps3, /wallpaper.ps3, etc.
+				#include "../cmd/stat_chmod.h"
+				#include "../cmd/md5.h"
+				#include "../cmd/minver.h"
+				#include "../cmd/recovery.h"
+				#include "../cmd/rebuild.h"
+				#include "../cmd/netstatus.h"
+				#include "../cmd/syscall.h"
+				#include "../cmd/consoleid.h"
+				#include "../cmd/secureid.h"
+				#include "../cmd/klic.h"
+				#include "../cmd/fixgame.h"
+				#include "../cmd/unlockhdd.h"
+				#include "../cmd/unlocksave.h"
 			}
 			#ifdef COPY_PS3
 			if(islike(param, "/copy")) {dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same file size
@@ -649,7 +649,7 @@ parse_request:
 #ifdef LITE_EDITION
 continue_rendering:
 #endif
-				#include "cmd/edit_chat_popup.h"
+				#include "../cmd/edit_chat_popup.h"
 
 				////////////////////////////////////
 
@@ -670,22 +670,22 @@ continue_rendering:
 					#endif
 					is_busy = true;
 
-					#include "cmd/refresh.h"
-					#include "cmd/setup.h"
-					#include "cmd/insert_eject.h"
-					#include "cmd/delete.h"
+					#include "../cmd/refresh.h"
+					#include "../cmd/setup.h"
+					#include "../cmd/insert_eject.h"
+					#include "../cmd/delete.h"
 #ifndef LITE_EDITION
-					#include "cmd/ps3mapi.h"
-					#include "cmd/install_list.h"
-					#include "cmd/loadprx_unloadprx.h"
-					#include "cmd/videorec.h"
-					#include "cmd/sysbgm.h"
-					#include "cmd/extgd.h"
-					#include "cmd/nobd.h"
-					#include "cmd/debug_mem.h" // /hexview.ps3, /find.lv2, /peek.lv1, etc.
+					#include "../cmd/ps3mapi.h"
+					#include "../cmd/install_list.h"
+					#include "../cmd/loadprx_unloadprx.h"
+					#include "../cmd/videorec.h"
+					#include "../cmd/sysbgm.h"
+					#include "../cmd/extgd.h"
+					#include "../cmd/nobd.h"
+					#include "../cmd/debug_mem.h" // /hexview.ps3, /find.lv2, /peek.lv1, etc.
 #endif
-					#include "cmd/mount_copy.h"
-					#include "cmd/index.h"
+					#include "../cmd/mount_copy.h"
+					#include "../cmd/index.h"
 
 					{ PS3MAPI_RESTORE_SC8_DISABLE_STATUS }
 					{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }

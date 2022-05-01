@@ -24,11 +24,11 @@
 
 static void show_msg2(char* msg)
 {
-	uint32_t system_plugin_handle = View_Find("system_plugin");
+	u32 system_plugin_handle = View_Find("system_plugin");
 	if (system_plugin_handle == 0)
 		return;
 
-	uint32_t widget = FindWidget(system_plugin_handle, "page_autooff_guide");
+	u32 widget = FindWidget(system_plugin_handle, "page_autooff_guide");
 	if (widget == 0)
 		return;
 
