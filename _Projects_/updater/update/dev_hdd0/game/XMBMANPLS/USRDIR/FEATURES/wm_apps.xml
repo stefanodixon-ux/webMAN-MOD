@@ -1,0 +1,299 @@
+<X version="1.0">
+
+	<V id="seg_apps_items">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+			<T key="app001" include="inc">
+				<P key="title"><>prepISO 1.30</></P>
+				<P key="info"><>0.9 MB</></P>
+			</T>
+			<T key="app002" include="inc">
+				<P key="title"><>PS2 CONFIG Database</></P>
+				<P key="info"><>74 MB</></P>
+			</T>
+			<T key="app003" include="inc">
+				<P key="title"><>PS2 Classics Launcher</></P>
+				<P key="info"><>17.7 MB</></P>
+			</T>
+			<T key="app004" include="inc">
+				<P key="title"><>PSP Minis Launcher</></P>
+				<P key="info"><>0.4 MB</></P>
+			</T>
+			<T key="app005" include="inc">
+				<P key="title"><>PSP Remasters Launcher</></P>
+				<P key="info"><>0.4 MB</></P>
+			</T>
+			<T key="app006" include="inc">
+				<P key="title"><>PS3 Covers Pack</></P>
+				<P key="info"><>392 MB</></P>
+			</T>
+			<T key="app007" include="inc">
+				<P key="title"><>PSX & PS2 Covers Pack</></P>
+				<P key="info"><>388 MB</></P>
+			</T>
+			<T key="app008" include="inc">
+				<P key="title"><>RetroArch Community Edition</></P>
+				<P key="info"><>584 MB</></P>
+			</T>
+			<T key="app009" include="inc">
+				<P key="title"><>multiMAN</></P>
+				<P key="info"><>35 MB</></P>
+			</T>
+			<T key="app010" include="inc">
+				<P key="title"><>IRISMAN</></P>
+				<P key="info"><>28 MB</></P>
+			</T>
+			<T key="app011" include="inc">
+				<P key="title"><>Movian</></P>
+				<P key="info"><>9.5 MB</></P>
+			</T>
+			<T key="app012" include="inc">
+				<P key="title"><>Apollo Save Tool</></P>
+				<P key="info"><>6.7 MB</></P>
+			</T>
+			<T key="app013" include="inc">
+				<P key="title"><>webMAN MOD Installer</></P>
+				<P key="info"><>13.5 MB</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="app001" attr="app001" src="#app001_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app002" attr="app002" src="#app002_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app003" attr="app003" src="#app003_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app004" attr="app004" src="#app004_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app005" attr="app005" src="#app005_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app006" attr="app006" src="#app006_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app007" attr="app007" src="#app007_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app008" attr="app008" src="#app008_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app009" attr="app009" src="#app009_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app010" attr="app010" src="#app010_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/>
+		</I>
+	</V>
+
+	<!-- prepISO -->
+	<V id="app001_item">
+		<A>
+			<T key="app001_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/prepISO_1.30.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/prepISO_1.30.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-BLES80616_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app001_link" attr="app001_link"/>
+		</I>
+	</V>
+
+	<!-- PS2 CONFIG Database -->
+	<V id="app002_item">
+		<A>
+			<T key="app002_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PS2CONFIG_20220423.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PS2CONFIG_20220423.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-PS2CONFIG_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app002_link" attr="app002_link"/>
+		</I>
+	</V>
+
+	<!-- PS2 Classics Launcher -->
+	<V id="app003_item">
+		<A>
+			<T key="app003_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PS2_Classics_Launcher.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PS2_Classics_Launcher.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>2P0001-PS2U10000_00-0000111122223333</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app002_link" attr="app002_link"/>
+		</I>
+	</V>
+
+	<!-- PSP Minis Launcher -->
+	<V id="app004_item">
+		<A>
+			<T key="app004_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PSP_Minis_Launcher.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PSP_Minis_Launcher.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-PSPM66820_00-0000111122223333</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app004_link" attr="app004_link"/>
+		</I>
+	</V>
+
+	<!-- PSP Remasters Launcher -->
+	<V id="app005_item">
+		<A>
+			<T key="app005_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PSP_Remasters_Launcher.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/PSP_Remasters_Launcher.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-PSPC66820_00-0000111122223333</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app005_link" attr="app005_link"/>
+		</I>
+	</V>
+
+	<!-- PS3 Covers Pack -->
+	<V id="app006_item">
+		<A>
+			<T key="app006_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS0000000000.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS0000000000.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>EP0001-BLES80608_00-COVERS0000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app006_link" attr="app006_link"/>
+		</I>
+	</V>
+
+	<!-- PSX & PS2 Covers Pack -->
+	<V id="app007_item">
+		<A>
+			<T key="app007_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS00000RETRO.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS00000RETRO.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>EP0001-BLES80608_00-COVERS00000RETRO</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app007_link" attr="app007_link"/>
+		</I>
+	</V>
+
+	<!-- RetroArch CE -->
+	<V id="app008_item">
+		<A>
+			<T key="app008_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_Psx-Place_Community_Edition_unofficial_beta-20220315.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_Psx-Place_Community_Edition_unofficial_beta-20220315.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>RETROA-RETROARCH_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app008_link" attr="app008_link"/>
+		</I>
+	</V>
+
+	<!-- multiMAN -->
+	<V id="app009_item">
+		<A>
+			<T key="app009_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>http://multiman.deanbg.com/multiman/4/multiMAN_421c.bin</></P>
+				<P key="pkg_src_qa"><>http://multiman.deanbg.com/multiman/4/multiMAN_421c.bin</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>MM4PS3-BLES80608_00-MULTIMANAGER0485</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app009_link" attr="app009_link"/>
+		</I>
+	</V>
+
+	<!-- IRISMAN -->
+	<V id="app010_item">
+		<A>
+			<T key="app010_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/IRISMAN/releases/download/4.88/IRISMAN_4.88.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/IRISMAN/releases/download/4.88/IRISMAN_4.88.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-IRISMAN00_00-VER4880000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app010_link" attr="app010_link"/>
+		</I>
+	</V>
+
+	<!-- Movian -->
+	<V id="app011_item">
+		<A>
+			<T key="app011_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>http://multiman.deanbg.com/multiman/feed/app/movian-5.0.723-deank-playstation3.pkg</></P>
+				<P key="pkg_src_qa"><>http://multiman.deanbg.com/multiman/feed/app/movian-5.0.723-deank-playstation3.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-HTSS00003_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app011_link" attr="app011_link"/>
+		</I>
+	</V>
+
+	<!-- Apollo Save Tool -->
+	<V id="app012_item">
+		<A>
+			<T key="app012_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/bucanero/apollo-ps3/releases/download/v1.7.0/apollo-ps3.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/bucanero/apollo-ps3/releases/download/v1.7.0/apollo-ps3.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-NP0APOLLO_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app012_link" attr="app012_link"/>
+		</I>
+	</V>
+
+	<!-- webMAN MOD Installer -->
+	<V id="app013_item">
+		<A>
+			<T key="app013_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/webMAN_MOD_1.47.41_Installer.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/webMAN_MOD_1.47.41_Installer.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>EP0001-UPDWEBMOD_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app013_link" attr="app013_link"/>
+		</I>
+	</V>
+
+</X>

@@ -842,6 +842,7 @@ int main()
 	file_copy(APP_USRDIR "/xmbm/gamesbrowser.png", XMBMANPLS_IMAGES_DIR "/gamesbrowser.png");
 	file_copy(APP_USRDIR "/xmbm/multiman.png"	, XMBMANPLS_IMAGES_DIR "/multiman.png");
 	file_copy(APP_USRDIR "/xmbm/network.png"	, XMBMANPLS_IMAGES_DIR "/network.png");
+	file_copy(APP_USRDIR "/xmbm/package.png"	, XMBMANPLS_IMAGES_DIR "/package.png");
 	file_copy(APP_USRDIR "/xmbm/pkgmanager.png"	, XMBMANPLS_IMAGES_DIR "/pkgmanager.png");
 	file_copy(APP_USRDIR "/xmbm/refreshhtml.png", XMBMANPLS_IMAGES_DIR "/refreshhtml.png");
 	file_copy(APP_USRDIR "/xmbm/refreshxml.png"	, XMBMANPLS_IMAGES_DIR "/refreshxml.png");

@@ -1432,6 +1432,6 @@ relisten:
 end:
 	sclose(&list_s);
 
-	thread_id_ftpd = SYS_PPU_THREAD_NONE;
+	//thread_id_ftpd = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }

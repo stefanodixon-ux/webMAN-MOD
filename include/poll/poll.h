@@ -184,6 +184,6 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		#endif
 	}
 
-	thread_id_poll = SYS_PPU_THREAD_NONE;
+	//thread_id_poll = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);
 }
