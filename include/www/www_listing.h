@@ -1,6 +1,6 @@
 	if(islike(param, "/dev_hdd1")) mount_device("/dev_hdd1", NULL, NULL); // auto-mount /dev_hdd1
 
-	struct CellFsStat buf; bool is_net = false;
+	struct CellFsStat buf; bool is_net = false; char *wildcard = strchr(param, '*');
 
 	#ifdef USE_NTFS
 	is_ntfs = is_ntfs_path(param);
@@ -18,14 +18,13 @@
 	{
 		if(mountCount <= NTFS_UNMOUNTED) mount_all_ntfs_volumes();
 
-		char *sort = strstr(param, "?sort=");
-		if(sort) {sort_by = sort[6]; if(strstr(sort, "desc")) sort_order = -1; *sort = NULL;}
+		get_sort_param(param, &sort_by, &sort_order);
 
 		char *npath = (char*)ntfs_path(param); // ntfs0:/
 		if(npath[6] != '/') {npath[6] = '/', npath[7] = 0;}
 
 		struct stat bufn;
-		if(ps3ntfs_stat(ntfs_path(param), &bufn) < 0)
+		if(!wildcard && (ps3ntfs_stat(ntfs_path(param), &bufn) < 0))
 		{
 			keep_alive = http_response(conn_s, header, param, CODE_PATH_NOT_FOUND, "404 Path not found");
 			goto exit_handleclient_www;
@@ -34,20 +33,19 @@
 		buf.st_size = bufn.st_size;
 		buf.st_mode = bufn.st_mode;
 
-		if(bufn.st_mode & S_IFDIR) is_binary = FOLDER_LISTING;
+		if(wildcard || (bufn.st_mode & S_IFDIR)) is_binary = FOLDER_LISTING;
 	}
 	else
 	#endif
 		is_binary = (*param == '/') && (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED);
 
-	if(is_binary == BINARY_FILE) ;
+	if(is_binary == BINARY_FILE);
 
 	else if(*param == '/')
 	{
-		char *sort = strstr(param, "?sort=");
-		if(sort) {sort_by = sort[6]; if(strstr(sort, "desc")) sort_order = -1; *sort = NULL;}
+		get_sort_param(param, &sort_by, &sort_order);
 
-		sort = strchr(param, '?');
+		char *sort = strchr(param, '?');
 		if(sort)
 		{
 			file_query = sort + 1;
@@ -68,13 +66,13 @@
 		is_binary = is_ntfs || (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED); allow_retry_response = true;
 	}
 
-	if(is_binary)
+	if(is_binary && !wildcard)
 	{
 		c_len = buf.st_size;
 		if(buf.st_mode & S_IFDIR) is_binary = FOLDER_LISTING; // folder listing
 	}
 	#ifdef COPY_PS3
-	else if(allow_retry_response && islike(param, "/dev_") && strchr(param, '*'))
+	else if(allow_retry_response && islike(param, "/dev_") && wildcard)
 	{
 		bool reply_html = !strstr(param, "//");
 		char *FILE_LIST = reply_html ? (char*)FILE_LIST_HTM : (char*)FILE_LIST_TXT;
@@ -89,11 +87,8 @@
 
 		Check_Overlay();
 
-		char *wildcard = strchr(param, '*');
-		if(wildcard)
-		{
-			wildcard = strrchr(param, '/'); *wildcard++ = NULL;
-		}
+		wildcard = strrchr(param, '/'); *wildcard++ = NULL;
+
 		scan(param, true, wildcard, (reply_html ? SCAN_LIST_SIZE : SCAN_LIST), FILE_LIST);
 
 		strcpy(param, FILE_LIST);

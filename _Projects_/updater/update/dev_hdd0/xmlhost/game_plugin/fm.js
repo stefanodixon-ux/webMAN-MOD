@@ -71,10 +71,11 @@ window.addEventListener('contextmenu',function(e){
 		e.preventDefault();
 		s.color='#fff',b='block',n='none';
 		m.display=b;
-		m.left=(e.clientX+12)+'px';
-		y=(p.toLowerCase().indexOf('.pkg')>0);w=(p.toLowerCase().indexOf('.iso')>0);
+		m.left=(e.clientX+12)+'px';pp=p.toLowerCase();
+		y=(pp.indexOf('.pkg')>0);w=(pp.indexOf('.iso')>0);
+		img=(pp.indexOf('.png')>0)||(pp.indexOf('.jpg')>0)||(pp.indexOf('.gif')>0);
 		m0.href='/install.ps3'+p;m0.style.display=y?b:n;
-		m1.href='/mount.ps3'+p;m1.style.display=!y&&(w||c=='d'||p.indexOf('/GAME')>0||p.indexOf('ISO/')>0)?b:n;
+		m1.href='/mount.ps3'+p;m1.style.display=!img&&!y&&(w||c=='d'||p.indexOf('/GAME')>0||p.indexOf('ISO/')>0||p.indexOf('ISO_')>0||p.indexOf('/ROMS')>0)?b:n;
 		m2.href=p;m2.text=(w||c=='w')?'Download':'Open';
 		v2.href='/view.ps3'+p;v2.style.display=(c!='d')?b:n;
 		m3.href='/delete.ps3'+p;
@@ -101,4 +102,4 @@ window.addEventListener('contextmenu',function(e){
 },false);
 
 // Clear menu
-window.onclick=function(e){wmsg.style.display='none';if(m)m.display='none';t=e.target;if(t.id.indexOf('im')==0||(typeof(t.href)=='string'&&t.href.indexOf('.ps3')>0&&t.href.indexOf('view.ps3')<0&&t.href.indexOf('.png')<0&&t.href.indexOf('.jpg')<0&&t.href.indexOf('prompt')<0&&t.href.indexOf('#Top')<0))wmsg.style.display='block';}
+window.onclick=function(e){if(m)m.display='none';wmsg.style.display='none';t=e.target;if(t.id.indexOf('im')==0||(typeof(t.href)=='string'&&t.href.indexOf('.ps3')>0&&t.href.indexOf('view.ps3')<0&&t.href.indexOf('.png')<0&&t.href.indexOf('.jpg')<0&&t.href.indexOf('prompt')<0&&t.href.indexOf('#Top')<0))wmsg.style.display='block';}

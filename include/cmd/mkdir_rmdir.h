@@ -13,6 +13,11 @@
 			filepath_check(param);
 
 			mkdir_tree(param);
+			#ifdef USE_NTFS
+			if(is_ntfs_path(param))
+				ps3ntfs_mkdir(ntfs_path(param), DMODE);
+			else
+			#endif
 			cellFsMkdir(param, DMODE);
 		}
 		else

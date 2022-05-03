@@ -35,6 +35,10 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if((fop == SCAN_DELETE || fop == SCAN_TRUNCATE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
+	bool use_dest = ((fop >= 2) && (fop <= 6)); // fop: 2 = copy, 3 = force copy, 4 = move, 5 = rename/move in same fs, 6 = copy bk
+
+	if(use_dest) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;}
+
 	char *wildcard1 = NULL, *wildcard2 = NULL;
 	char *(*instr)(const char *, const char *) = &strstr; bool wfound1 = true, wfound2 = true;
 	if(wildcard)
@@ -81,10 +85,6 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 		bool p_slash = (path_len > 1) && (path[path_len - 1] == '/');
 		char *pentry = entry + path_len;
 
-		bool use_dest = ((fop >= 2) && (fop <= 6)); // fop: 2 = copy, 3 = force copy, 4 = move, 5 = rename/move in same fs, 6 = copy bk
-
-		if(use_dest) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;}
-
 		u16 dest_len = sprintf(dest_entry, "%s", dest);
 		char *pdest = dest_entry + dest_len;
 
@@ -120,7 +120,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 				if(!dest || *dest != '/') break;
 
 				// add size column if fop == SCAN_LIST_SIZE
-				if(fop) {sprintf(entry_name, "\t%'llu", file_size(entry)); strcat(entry, entry_name);}
+				if(fop) {sprintf(entry_name, "\t%'llu", file_size(entry)); strcat(pentry, entry_name);}
 
 				save_file(dest, entry, APPEND_TEXT);
 			}

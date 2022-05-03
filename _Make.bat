@@ -1,8 +1,13 @@
 @echo off
+cls
 
-set CYGWIN=C:\cygwin\bin
+set PS3SDK=/c/PSDK3v2
+set PS3DEV=/c/PSDK3v2/ps3dev2
+set WIN_PS3SDK=C:/PSDK3v2
+set PATH=%WIN_PS3SDK%/mingw/msys/1.0/bin;%WIN_PS3SDK%/mingw/bin;%PS3DEV%/ppu/bin;
 
-if not exist %CYGWIN%\bash.exe set CYGWIN=C:\msys\1.0\bin
+REM make clean
 
-set CHERE_INVOKING=1
-%CYGWIN%\bash --login -i -c 'make; rm webftp_server.prx; rm webftp_server.sym; exec bash'
+make all
+
+pause

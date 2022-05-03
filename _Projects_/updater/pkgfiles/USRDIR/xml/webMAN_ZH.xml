@@ -489,7 +489,7 @@
 		<A>
 			<T key="webman_refresh_xml">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshxml.png</></P>
-				<P key="title"><>重新整理 "我的遊戲" </></P>
+				<P key="title"><>重新整理 "我的遊戲"</></P>
 				<P key="info"><>下次載入 XMB 時將顯示遊戲列表</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -604,7 +604,7 @@
 		<A>
 			<T key="webman_devblind">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</></P>
-				<P key="title"><>激活/dev_blind </></P>
+				<P key="title"><>激活/dev_blind</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/popup.ps3?/dev_blind+开启;/dev_blind</></P>
@@ -812,7 +812,7 @@
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_update_sublink" src="#seg_webman_update_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="seg_install_addons" src="#seg_install_addons"/>
-			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items" />
+			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items"/>
 		</I>
 	</V>
 

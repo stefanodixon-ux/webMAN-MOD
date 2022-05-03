@@ -550,6 +550,12 @@ static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *p
 	return add_breadcrumb_trail(pbuffer, param);
 }
 
+static void get_sort_param(const char *param, s8 *sort_by, s8 *sort_order)
+{
+	char *sort = strstr(param, "?sort=");
+	if(sort) {*sort_by = sort[6]; if(strstr(sort, "desc")) *sort_order = -1; *sort = NULL;}
+}
+
 static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, char *param, int conn_s, char *tempstr, char *header, u8 is_ps3_http, s8 sort_by, s8 sort_order, char *file_query)
 {
 	int fd; t_string sout; _set(&sout, buffer, strlen(buffer));

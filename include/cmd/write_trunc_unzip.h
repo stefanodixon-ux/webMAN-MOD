@@ -1,4 +1,4 @@
-	if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3") ||
+		if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3") ||
 	   islike(param, "/dozip.ps3") || islike(param, "/unzip.ps3"))
 	{
 		// /write.ps3<path>&t=<text> use | for line break (create text file)
@@ -61,15 +61,18 @@
 				if(pos)
 				{
 					// write or insert data at line number
-					sys_addr_t sysmem = sys_mem_allocate(_128KB_);
+					u32 buffer_size = (file_size(filename) < _64KB_) ? _64KB_ : _128KB_;
+					sys_addr_t sysmem = sys_mem_allocate(buffer_size);
+
 					if(sysmem)
 					{
 						*pos = NULL, pos += 6;
 
 						strcat(data, "\n");
 						u16 len = strlen(data);
+
 						char *buffer = (char*)sysmem;
-						size = read_file(filename, buffer, _128KB_, 0);
+						size = read_file(filename, buffer, buffer_size, 0);
 
 						u16 line = (u16)val(pos);
 
@@ -82,8 +85,7 @@
 								if(pos) // if the text is found
 								{
 									// insert data at found offset (pos)
-									for(int i = strlen(pos); i >= 0; i--) pos[i + len] = pos[i];
-									memcpy64(pos, data, len);
+									prepend(pos, data, len);
 
 									// save file
 									save_file(filename, buffer, SAVE_ALL);
@@ -101,7 +103,7 @@
 							write_file(filename, CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY, buffer, len + 1, size, false);
 							//save_file(filename, buffer, -size);  // append rest of file
 						}
-						else if(size + len < _64KB_)
+						else if(size + len < buffer_size)
 						{
 							u32 i, c = 0, w = 0; --line;
 							// find offset of line to write
@@ -113,13 +115,9 @@
 								for(w = i; w < size; w++) if(buffer[w] == '\n') {w++; break;}
 								// remove current line
 								for(c = i; c < size; c++, w++) buffer[c] = buffer[w];
-								size -= (w - c);
+								size -= (w - c); buffer[size] = 0;
 							}
-							// move forward rest of file
-							for(c = size; c >= i; c--) buffer[c + len] = buffer[c];
-							// set line data
-							for(c = 0; c < len; c++) buffer[i + c] = data[c];
-							// write file data
+							prepend(buffer + i, data, len);
 							save_file(filename, buffer, SAVE_ALL);
 						}
 						sys_memory_free(sysmem);

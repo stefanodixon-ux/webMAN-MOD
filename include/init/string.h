@@ -62,7 +62,7 @@ static size_t concat(char *dest, const char *src)
 }
 
 #if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT) || defined(USE_NTFS) || defined(DEBUG_MEM)
-static void memcpy64(void *dst, void *src, int n)
+static void memcpy64(void *dst, const void *src, int n)
 {
 	if(!dst || !src || !n) return;
 	u8 p = n & 7; // remaining bytes (same as n % 8)
@@ -124,7 +124,7 @@ static char *prepend(char *a, const char *b, int len)
 	if(len <= 0) len = n;
 	for(; i >= 0; i--)
 		a[i + len] = a[i];
-	memcpy(a, b, n);
+	memcpy64(a, b, n);
 	return a;
 }
 #endif

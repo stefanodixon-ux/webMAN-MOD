@@ -164,7 +164,7 @@
 			<T key="nethost0_links">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
-				<P key="title"><>Net0 Folders </></P>
+				<P key="title"><>Net0 Folders</></P>
 				<P key="info"><>Mount /net0 folders as local /dev_bdvd</></P>
 			</T>
 		</A>
@@ -807,7 +807,7 @@
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_update_sublink" src="#seg_webman_update_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="seg_install_addons" src="#seg_install_addons"/>
-			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items" />
+			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items"/>
 		</I>
 	</V>
 
