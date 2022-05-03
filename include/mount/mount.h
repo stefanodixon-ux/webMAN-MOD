@@ -434,6 +434,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(cp_mode)
 				{
 					dont_copy_same_size = false; // force copy
+					normalize_path(source, false);
 					sprintf(target, "%s%s", source, get_filename(cp_path));
 					strcpy(source, cp_path);
 				}
@@ -851,6 +852,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(isDir(source)) normalize_path(target, true);
 
 				// make target dir tree
+				bool fast_move = (cp_mode == CP_MODE_MOVE) && is_same_dev(source, target);
 				mkdir_tree(target);
 
 				// copy folder to target
@@ -860,6 +862,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				}
 				else if(wildcard)
 					scan(source, true, wildcard, SCAN_COPY, target);
+				else if(fast_move)
+					{rename_file(source, target); cp_mode = CP_MODE_COPY;}
 				else if(isDir(source))
 					folder_copy(source, target);
 				else

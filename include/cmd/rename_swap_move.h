@@ -44,7 +44,11 @@
 			}
 			else if(islike(param, "/move.ps3"))
 			{
-				if(isDir(source))
+				if(is_same_dev(source, dest))
+				{
+					rename_file(source, dest);
+				}
+				else if(isDir(source))
 				{
 					if(folder_copy(source, dest) >= CELL_OK) del(source, true);
 				}

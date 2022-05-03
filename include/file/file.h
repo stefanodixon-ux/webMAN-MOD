@@ -4,6 +4,7 @@
 #define RECURSIVE_DELETE	2 // don't check for ADMIN/USER
 
 #define create_file(file)	save_file(file, NULL, SAVE_ALL)
+#define is_same_dev(a, b)	(!strncmp(a, b, 12) || ((a[9] == '/') && !strncmp(a, b, 10)))
 
 #include "md5.h"
 #include "hdd_unlock_space.h"
@@ -238,14 +239,21 @@ static void mkdirs(char *param)
 #ifndef LITE_EDITION
 static void rename_file(char *source, char *dest)
 {
+	normalize_path(source, false);
+	normalize_path(dest, false);
+
 #ifdef USE_NTFS
 	if(is_ntfs_path(source) || is_ntfs_path(dest))
 	{
+		ps3ntfs_unlink(ntfs_path(dest));
 		ps3ntfs_rename(ntfs_path(source), ntfs_path(dest));
 	}
 	else
 #endif
+	{
+		cellFsRmdir(dest);
 		cellFsRename(source, dest);
+	}
 }
 #endif
 

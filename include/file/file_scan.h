@@ -154,15 +154,27 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			{
 				char *ntfs_entry = (char*)ntfs_path(entry);
 				if(fop == SCAN_DELETE) {ps3ntfs_unlink(ntfs_entry);} else
-				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry) >= CELL_OK) ps3ntfs_unlink(ntfs_entry);} else
-				if(fop == SCAN_RENAME) {ps3ntfs_rename(ntfs_entry, dest_entry);}
+				if(fop == SCAN_RENAME) {ps3ntfs_rename(ntfs_entry, dest_entry);} else
+				if(fop == SCAN_MOVE  )
+				{
+					if(is_same_dev(entry, dest_entry))
+						rename_file(entry, dest_entry);
+					else if(file_copy(entry, dest_entry) >= CELL_OK)
+						ps3ntfs_unlink(ntfs_entry);
+				}
 			}
 			#endif
 			else
 			{
 				if(fop == SCAN_DELETE) {cellFsUnlink(entry);} else
-				if(fop == SCAN_MOVE  ) {if(file_copy(entry, dest_entry) >= CELL_OK) cellFsUnlink(entry);} else
-				if(fop == SCAN_RENAME) {cellFsRename(entry, dest_entry);}
+				if(fop == SCAN_RENAME) {cellFsRename(entry, dest_entry);} else
+				if(fop == SCAN_MOVE  )
+				{
+					if(is_same_dev(entry, dest_entry))
+						rename_file(entry, dest_entry);
+					else if(file_copy(entry, dest_entry) >= CELL_OK)
+						cellFsUnlink(entry);
+				}
 			}
 		}
 
