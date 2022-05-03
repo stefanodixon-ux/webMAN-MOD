@@ -121,7 +121,7 @@ static void urldec(char *url, char *original)
 				url[pos] = 0; u8 n = 2; if(url[i+1]=='u') {i++, n+=2;}
 				while(n--)
 				{
-					url[pos] <<= 4, c = (url[++i] | 0x20);
+					url[pos] <<= 4, c = LCASE(url[++i]);
 					if(c >= '0' && c <= '9') url[pos] += (c - '0'); else
 					if(c >= 'a' && c <= 'f') url[pos] += (c - 'W'); // <= c - 'a' + 10
 				}

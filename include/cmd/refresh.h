@@ -19,7 +19,7 @@
 			{
 				bool clear_ntfs = (strstr(params, "ntfs(0)") != NULL);
 				ngames = prepNTFS(clear_ntfs);
-				sprintf(header, " • <a href=\"%s\">%i</a> <a href=\"/index.ps3?ntfs\">%s</a>", WMTMP, ngames, STR_GAMES);
+				sprintf(header, " â€¢ <a href=\"%s\">%i</a> <a href=\"/index.ps3?ntfs\">%s</a>", WMTMP, ngames, STR_GAMES);
 			}
 
 			sprintf(param, "NTFS VOLUMES: %i%s", mountCount, header); is_busy = false;
@@ -36,7 +36,8 @@
 		#ifndef ENGLISH_ONLY
 		char *STR_XMLRF = (char *)templn;
 
-		sprintf(STR_XMLRF, "Game list refreshed (<a href=\"%s\">mygames.xml</a>).%s", MY_GAMES_XML, "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
+		sprintf(STR_XMLRF, "Game list refreshed (<a href=\"%s\">mygames.xml</a>).%s",
+				MY_GAMES_XML, "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATIONÂ®3 system.");
 
 		language("STR_XMLRF", STR_XMLRF, STR_XMLRF);
 		close_language();

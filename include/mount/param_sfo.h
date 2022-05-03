@@ -240,7 +240,7 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value
 				}
 				else
 				{
-					memset(FIELD_VALUE, 0, siz);
+					_memset(FIELD_VALUE, siz);
 					strncpy(FIELD_VALUE_, new_value, siz);
 				}
 			}

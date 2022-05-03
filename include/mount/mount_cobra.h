@@ -299,7 +299,7 @@ copy_ps2iso_to_hdd0:
 
 								while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 								{
-									if( ((entry_name[0] | 0x20) == 's') && (dir.entry_name.d_namlen == 11) ) // SLUS_123.45
+									if( (LCASE(*entry_name) == 's') && (dir.entry_name.d_namlen == 11) ) // SLUS_123.45
 									{
 										if(copy_ps2config_iso(entry_name, templn)) break;
 									}

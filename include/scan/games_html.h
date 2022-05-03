@@ -41,6 +41,14 @@ enum paths_ids
 #define IS_NTFS          (f0 == NTFS)
 #define IS_NET           (f0 >= NET && f0 < NTFS)
 
+#define INFO_PATH		0x00
+#define INFO_PATH_ID	0x01
+#define INFO_ID			0x02
+#define INFO_NONE		0x03
+#define INFO_TAGS		0x10
+#define INFO_TAGS_ONLY	0x13
+#define INFO_VER		0x20
+
 #define TYPE_ALL 0
 #define TYPE_PS1 1
 #define TYPE_PS2 2
@@ -143,7 +151,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			copy_net_file(templn, enc_dir_name, ns);
 		}
 
-		if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
+		if(webman_config->info & INFO_VER) getTitleID(templn, app_ver, GET_VERSION);
 
 		get_title_and_id_from_sfo(templn, title_id, data[v3_entry].name, icon, tempstr, 0);
 

@@ -273,7 +273,7 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 	char tags[20]; *tags = '\0'; u8 info = webman_config->info & 0xF;
 
 	#ifndef LITE_EDITION
-	if(use_imgfont && (webman_config->info & 0x10))
+	if(use_imgfont && (webman_config->info & INFO_TAGS))
 	{
 		// TAG#1
 		if(IS_HDD0)  add_tag(tags, 0x918F); else // HDD
@@ -375,19 +375,19 @@ static void add_info(char *tempstr, char *folder_name, u8 roms_index, char *file
 	#endif
 
 	// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none, 0x10 = tags, 0x20 = version
-	if(info <= 1)
+	if(info <= INFO_PATH_ID)
 	{
-		if((info == 1) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
+		if((info == INFO_PATH_ID) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
 		sprintf(tempstr, XML_PAIR("info","%s/%s%s%s"), drives[f0] + s, (f1 == id_NPDRM) ? "game" : paths[f1], folder_name, tags);
 	}
-	else if(info == 2)
+	else if(info == INFO_ID)
 	{
 		if(HAS_TITLE_ID)
 			sprintf(tempstr, XML_PAIR("info","%s%s"), title_id, tags);
 		else
 			sprintf(tempstr, XML_PAIR("info","%s"), tags);
 	}
-	else if(webman_config->info & 0x13)
+	else if(webman_config->info & INFO_TAGS_ONLY)
 	{
 		sprintf(tempstr, XML_PAIR("info","%s"), tags);
 	}
@@ -1096,12 +1096,12 @@ scan_roms:
 							if(!is_iso)
 							{
 								if(is_game_dir) sprintf(templn + read_e - 17, "/PARAM.SFO");
-								if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
+								if(webman_config->info & INFO_VER) getTitleID(templn, app_ver, GET_VERSION);
 								get_title_and_id_from_sfo(templn, title_id, entry.entry_name.d_name, icon, tempstr, 0);
 							}
 							else
 							{
-								if(webman_config->info & 0x20) getTitleID(templn, app_ver, GET_VERSION);
+								if(webman_config->info & INFO_VER) getTitleID(templn, app_ver, GET_VERSION);
 							#ifdef COBRA_ONLY
 								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) continue;
 							#else
@@ -1143,7 +1143,7 @@ scan_roms:
 							else
 								*folder_name = NULL;
 
-							if(webman_config->info & 0x20) get_local_app_ver(app_ver, title_id, tempstr);
+							if(webman_config->info & INFO_VER) get_local_app_ver(app_ver, title_id, tempstr);
 
 							read_e = sprintf(tempstr, "<T key=\"%04i\" include=\"inc\">"
 											 XML_PAIR("icon","%s")

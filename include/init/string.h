@@ -1,3 +1,5 @@
+#define LCASE(a)	(a | 0x20)
+
 char *strcasestr(const char *s1, const char *s2);
 
 typedef struct {
@@ -73,11 +75,7 @@ static void memcpy64(void *dst, const void *src, int n)
 	while (n--) *d++ = *s++; // 64bit memcpy
 
 	if(p)
-	{
-		char *m = (char *) d;
-		char *c = (char *) s;
-		while (p--) *m++ = *c++; // memcpy(d, s, p);
-	}
+		memcpy(d, s, p);
 }
 #endif
 
@@ -92,21 +90,19 @@ void _memset(void *m, size_t n)
 	while (n--) *s++ = 0LL; // 64bit memset
 
 	if(p)
-	{
-		char *c = (char *) s;
-		while (p--) *c++ = '\0'; // memset(s, 0, p);
-	}
+		memset(s, 0, p);
 }
 
 static void replace_char(char *text, char c, char r)
 {
 	if(!text) return;
 
-	char *pos = strchr(text, c);
-	while (pos)
+	do
 	{
-		*pos = r; pos = strchr(pos, c);
+		text = strchr(text, c);
+		if(text) *text = r;
 	}
+	while (text);
 }
 
 static char *to_upper(char *text)
@@ -119,11 +115,9 @@ static char *to_upper(char *text)
 #ifndef LITE_EDITION
 static char *prepend(char *a, const char *b, int len)
 {
-	int i = strlen(a);
 	int n = strlen(b);
 	if(len <= 0) len = n;
-	for(; i >= 0; i--)
-		a[i + len] = a[i];
+	memmove(a + len, a, strlen(a) + 1);
 	memcpy64(a, b, n);
 	return a;
 }

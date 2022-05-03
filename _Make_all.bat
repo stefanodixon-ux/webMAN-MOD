@@ -1,9 +1,10 @@
 @echo off
 mode con: cols=132 lines=45
 
-set CYGWIN=C:\cygwin\bin
-
-if not exist %CYGWIN%\bash.exe set CYGWIN=C:\msys\1.0\bin
+set PS3SDK=/c/PSDK3v2
+set PS3DEV=/c/PSDK3v2/ps3dev2
+set WIN_PS3SDK=C:/PSDK3v2
+set PATH=%WIN_PS3SDK%/mingw/msys/1.0/bin;%WIN_PS3SDK%/mingw/bin;%PS3DEV%/ppu/bin;
 
 set CHERE_INVOKING=1
 
@@ -28,7 +29,7 @@ rd objs>nul
 cls
 title [1/4] Building webftp_server_full.sprx...
 copy .\flags\flags_full.h .\flags.h >nul
-%CYGWIN%\bash --login -i -c 'make' >nul
+make>nul
 if exist webftp_server.sprx ren webftp_server.sprx webftp_server_full.sprx
 
 del /q webftp_server.elf>nul
@@ -45,7 +46,7 @@ rd objs>nul
 cls
 title [2/4] Building webftp_server_rebug_cobra_ps3mapi.sprx...
 copy .\flags\flags_rebug_cobra_ps3mapi.h .\flags.h >nul
-%CYGWIN%\bash --login -i -c 'make' >nul
+make>nul
 if exist webftp_server.sprx ren webftp_server.sprx webftp_server_rebug_cobra_ps3mapi.sprx
 
 del /q webftp_server.elf>nul
@@ -58,7 +59,7 @@ del /q objs\*.o>nul
 cls
 title [3/4] Building webftp_server_lite.sprx...
 copy .\flags\flags_lite.h .\flags.h >nul
-%CYGWIN%\bash --login -i -c 'make' >nul
+make>nul
 if exist webftp_server.sprx ren webftp_server.sprx webftp_server_lite.sprx
 
 del /q webftp_server.elf>nul
@@ -71,7 +72,7 @@ del /q objs\*.o>nul
 cls
 title [4/4] Building webftp_server_noncobra.sprx...
 copy .\flags\flags_noncobra.h .\flags.h >nul
-%CYGWIN%\bash --login -i -c 'make' >nul
+make>nul
 if exist webftp_server.sprx ren webftp_server.sprx webftp_server_noncobra.sprx
 
 del /q webftp_server.elf>nul

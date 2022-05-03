@@ -62,7 +62,7 @@ static bool wm_icons_exists = false;
 
 static bool HAS(char *icon)
 {
-	return ((*icon == 'h') || ((*icon == '/') && file_exists(icon) && (icon[strlen(icon) - 1] | 0x20) == 'g' ));
+	return ((*icon == 'h') || ((*icon == '/') && file_exists(icon) && LCASE(icon[strlen(icon) - 1]) == 'g' ));
 }
 
 static void check_cover_folders(char *buffer)
