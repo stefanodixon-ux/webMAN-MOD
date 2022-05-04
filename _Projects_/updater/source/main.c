@@ -836,10 +836,12 @@ int main()
 	file_copy(APP_USRDIR "/xmbm/bd.png"			, XMBMANPLS_IMAGES_DIR "/bd.png");
 	file_copy(APP_USRDIR "/xmbm/blockpsn.png"	, XMBMANPLS_IMAGES_DIR "/blockpsn.png");
 	file_copy(APP_USRDIR "/xmbm/cachefiles.png"	, XMBMANPLS_IMAGES_DIR "/cachefiles.png");
+	file_copy(APP_USRDIR "/xmbm/dev_blind.png"	, XMBMANPLS_IMAGES_DIR "/dev_blind.png");
 	file_copy(APP_USRDIR "/xmbm/filemanager.png", XMBMANPLS_IMAGES_DIR "/filemanager.png");
 	file_copy(APP_USRDIR "/xmbm/gamedata.png"	, XMBMANPLS_IMAGES_DIR "/gamedata.png");
 	file_copy(APP_USRDIR "/xmbm/gamefix.png"	, XMBMANPLS_IMAGES_DIR "/gamefix.png");
 	file_copy(APP_USRDIR "/xmbm/gamesbrowser.png", XMBMANPLS_IMAGES_DIR "/gamesbrowser.png");
+	file_copy(APP_USRDIR "/xmbm/icon_help.png"	, XMBMANPLS_IMAGES_DIR "/icon_help.png");
 	file_copy(APP_USRDIR "/xmbm/multiman.png"	, XMBMANPLS_IMAGES_DIR "/multiman.png");
 	file_copy(APP_USRDIR "/xmbm/network.png"	, XMBMANPLS_IMAGES_DIR "/network.png");
 	file_copy(APP_USRDIR "/xmbm/package.png"	, XMBMANPLS_IMAGES_DIR "/package.png");

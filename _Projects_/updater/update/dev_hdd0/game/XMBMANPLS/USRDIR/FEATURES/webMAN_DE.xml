@@ -165,7 +165,7 @@
 			<T key="nethost0_links">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
-				<P key="title"><>Net0 Ordner </></P>
+				<P key="title"><>Net0 Ordner</></P>
 				<P key="info"><>Mounte /net0 Ordner als /dev_bdvd</></P>
 				<P key="child"><>segment</></P>
 			</T>
@@ -490,7 +490,7 @@
 		<A>
 			<T key="webman_refresh_xml">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshxml.png</></P>
-				<P key="title"><>Aktualisiere meine Spiele (XML) </></P>
+				<P key="title"><>Aktualisiere meine Spiele (XML)</></P>
 				<P key="info"><>Aktualisiere die Spieleliste im XMB</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -505,7 +505,7 @@
 		<A>
 			<T key="webman_refresh_html">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshhtml.png</></P>
-				<P key="title"><>Aktualisiere meine Spiele (HTML) </></P>
+				<P key="title"><>Aktualisiere meine Spiele (HTML)</></P>
 				<P key="info"><>Aktualisiere die Spieleliste im Browser Mode</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/index.ps3?html</></P>
@@ -604,7 +604,7 @@
 	<V id="seg_webman_devblind">
 		<A>
 			<T key="webman_devblind">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/dev_blind.png</></P>
 				<P key="title"><>Aktivieren von /dev_blind</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -675,7 +675,7 @@
 	<V id="seg_webman_uninstall">
 		<A>
 			<T key="webman_uninstall_links">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>PS3 webMAN MOD [Deinstallieren]</></P>
 				<P key="child"><>segment</></P>
@@ -695,7 +695,7 @@
 	<V id="seg_webman_uninstall_sublinks">
 		<A>
 			<T key="webman_cancel">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="title"><>Zurück zum webMAN MOD</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -790,7 +790,7 @@
 	<V id="seg_webman_update">
 		<A>
 			<T key="webman_help">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/icon_help.png</></P>
 				<P key="title"><>PS3 webMAN MOD [Hilfe]</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/help.html</></P>
@@ -813,7 +813,7 @@
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_update_sublink" src="#seg_webman_update_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="seg_install_addons" src="#seg_install_addons"/>
-			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items" />
+			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items"/>
 		</I>
 	</V>
 

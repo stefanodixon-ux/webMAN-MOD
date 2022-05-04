@@ -165,7 +165,7 @@
 			<T key="nethost0_links">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/network.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
-				<P key="title"><>Cartelle su Net0 </></P>
+				<P key="title"><>Cartelle su Net0</></P>
 				<P key="info"><>Monta le cartelle /net0 come /dev_bdvd</></P>
 				<P key="child"><>segment</></P>
 			</T>
@@ -505,7 +505,7 @@
 		<A>
 			<T key="webman_refresh_html">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshhtml.png</></P>
-				<P key="title"><>Aggiorna la lista dei giochi Web </></P>
+				<P key="title"><>Aggiorna la lista dei giochi Web</></P>
 				<P key="info"><>La lista dei giochi in HTML verrà aggiornata per il Web Browser</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/index.ps3?html</></P>
@@ -520,7 +520,7 @@
 			<T key="webman_cpursx">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/sysinfo.png</></P>
 				<P key="title"><>PS3 webMAN [Temperatura]</></P>
-				<P key="info"><>Monitora la temperatura della PS3 (CPU/RSX) nel Web Browser </></P>
+				<P key="info"><>Monitora la temperatura della PS3 (CPU/RSX) nel Web Browser</></P>
 				<P key="module_name"><>webbrowser_plugin</></P>
 				<P key="module_action"><>http://0/cpursx.ps3</></P>
 			</T>
@@ -534,7 +534,7 @@
 			<T key="webman_games">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamesbrowser.png</></P>
 				<P key="title"><>PS3 webMAN [Giochi]</></P>
-				<P key="info"><>Visualizza la lista dei giochi nel Web Browser </></P>
+				<P key="info"><>Visualizza la lista dei giochi nel Web Browser</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/index.ps3</></P>
 			</T>
@@ -618,7 +618,7 @@
 	<V id="seg_webman_devblind">
 		<A>
 			<T key="webman_devblind">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/dev_blind.png</></P>
 				<P key="title"><>Attivare /dev_blind</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -648,7 +648,7 @@
 		<A>
 			<T key="webman_gamefix">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamefix.png</></P>
-				<P key="title"><>Fix del gioco montato </></P>
+				<P key="title"><>Fix del gioco montato</></P>
 				<P key="info"><>Cambia il requisito minimo del firmware di sistema al 4.20 (solo giochi in cartella JB & hdd0)</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/fixgame.ps3/dev_bdvd</></P>
@@ -689,7 +689,7 @@
 	<V id="seg_webman_uninstall">
 		<A>
 			<T key="webman_uninstall_links">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>Disinstallare webMAN MOD</></P>
 				<P key="child"><>segment</></P>
@@ -709,7 +709,7 @@
 	<V id="seg_webman_uninstall_sublinks">
 		<A>
 			<T key="webman_cancel">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="title"><>Torna a webMAN MOD</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -804,7 +804,7 @@
 	<V id="seg_webman_update">
 		<A>
 			<T key="webman_help">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/icon_help.png</></P>
 				<P key="title"><>PS3 webMAN MOD [Help]</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/help.html</></P>
@@ -827,7 +827,7 @@
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="webman_update_sublink" src="#seg_webman_update_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="seg_install_addons" src="#seg_install_addons"/>
-			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items" />
+			<Q class="type:x-xmb/folder-pixmap" key="wm_apps_link" src="xmb://localhost/dev_hdd0/game/XMBMANPLS/USRDIR/FEATURES/wm_apps.xml#seg_apps_items"/>
 		</I>
 	</V>
 

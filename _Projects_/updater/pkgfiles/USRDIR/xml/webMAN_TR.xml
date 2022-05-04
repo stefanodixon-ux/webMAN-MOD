@@ -598,7 +598,7 @@
 	<V id="seg_webman_devblind">
 		<A>
 			<T key="webman_devblind">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/gamedata.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/dev_blind.png</></P>
 				<P key="title"><>Etkinleştir /dev_blind</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -669,7 +669,7 @@
 	<V id="seg_webman_uninstall">
 		<A>
 			<T key="webman_uninstall_links">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="icon_notation"><>WNT_XmbItemBrowser</></P>
 				<P key="title"><>webMAN MOD'u Kaldır</></P>
 				<P key="child"><>segment</></P>
@@ -689,7 +689,7 @@
 	<V id="seg_webman_uninstall_sublinks">
 		<A>
 			<T key="webman_cancel">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/multiman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
 				<P key="title"><>webMAN MOD'a dön</></P>
 				<P key="module_name"><>idle_plugin</></P>
 				<P key="bar_action"><>none</></P>
@@ -784,7 +784,7 @@
 	<V id="seg_webman_update">
 		<A>
 			<T key="webman_help">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/icon_help.png</></P>
 				<P key="title"><>PS3 webMAN MOD [Yardım]</></P>
 				<P key="module_name"><>webrender_plugin</></P>
 				<P key="module_action"><>http://0/help.html</></P>
