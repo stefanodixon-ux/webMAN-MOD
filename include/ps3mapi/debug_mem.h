@@ -170,8 +170,8 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 			if(start >= LV1_UPPER_MEMORY - ((u64)(size * _1MB_))) start = LV1_UPPER_MEMORY - ((u64)(size * _1MB_));
 		}
 
-		char *pos = strstr(param, "&size=");  if(pos) size  = val(pos + 6);
-			  pos = strstr(param, "&start="); if(pos) start = val(pos + 7);
+		const char *pos = strstr(param, "&size=");  if(pos) size  = val(pos + 6);
+					pos = strstr(param, "&start="); if(pos) start = val(pos + 7);
 
 		if(start <= 0x100) start *= _1MB_;
 
@@ -386,7 +386,7 @@ view_file:
 		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=0x%llx\">Next&gt;</a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=0x%llx\">&gt;&gt;</a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
 		buffer += concat(buffer, templn);
 
-		char *pos = strstr(param, "&find="); if(pos) *pos = 0;
+		char *pos = strstr(param, "&find="); if(pos) *pos = NULL;
 		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&offset=0x%llx&data='+prompt('%s').toString());\">%s</a>]", param - 12, address, "Write", "Write");
 		buffer += concat(buffer, templn);
 

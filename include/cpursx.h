@@ -147,8 +147,8 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 	get_temperature(0, &t1); // CPU
 	get_temperature(1, &t2); // RSX
 
-	char *RSX = (char*)" RSX:";
-	if(webman_config->lang == 99) RSX = (char*)"/";
+	const char *RSX = " RSX:";
+	if(webman_config->lang == 99) RSX = "/";
 
 	char days[6]; *days = NULL;
 	if(dd) sprintf(days, "%id ", dd);
@@ -411,7 +411,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 	if(strchr(param, '?'))
 	{
-		char *pos = strstr(param, "fan=");  // 0 = SYSCON, 1 = DYNAMIC, 2 = FAN_AUTO2
+		const char *pos = strstr(param, "fan=");  // 0 = SYSCON, 1 = DYNAMIC, 2 = FAN_AUTO2
 		if(pos)
 		{
 			u32 new_speed = get_valuen(param, "fan=", 0, webman_config->maxfan); max_temp = 0;

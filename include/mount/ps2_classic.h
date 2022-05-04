@@ -87,8 +87,8 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 
 	if(!_path) {*title_id = NULL; return;}
 
-	char *path = (char*)_path; if(*_path == '/') get_filename(_path);
-	char *game_id = strstr(_path, " [S"); // title id enclosed in square brackets
+	const char *path = _path; if(*_path == '/') get_filename(_path);
+	const char *game_id = strstr(_path, " [S"); // title id enclosed in square brackets
 
 	if(game_id)
 		path = game_id + 2;
@@ -138,7 +138,7 @@ static void get_ps_titleid_from_path(char *title_id, const char *_path)
 #ifdef COBRA_NON_LITE
 static bool copy_ps2config_iso(char *entry_name, char *_path)
 {
-	char *tempID = to_upper(entry_name);
+	const char *tempID = to_upper(entry_name);
 	if (
 		(tempID[1] == 'L' || tempID[1] == 'C') &&
 		(tempID[2] == 'U' || tempID[2] == 'E' || tempID[2] == 'P' || tempID[2] == 'A' || tempID[2] == 'H' || tempID[2] == 'J' || tempID[2] == 'K') &&

@@ -75,7 +75,7 @@
 	else if(allow_retry_response && islike(param, "/dev_") && wildcard)
 	{
 		bool reply_html = !strstr(param, "//");
-		char *FILE_LIST = reply_html ? (char*)FILE_LIST_HTM : (char*)FILE_LIST_TXT;
+		const char *FILE_LIST = reply_html ? (char*)FILE_LIST_HTM : (char*)FILE_LIST_TXT;
 		cellFsUnlink(FILE_LIST);
 		if(reply_html)
 		{

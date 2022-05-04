@@ -72,6 +72,8 @@ static s32 unregister_ldd_controller(void)
 	return(CELL_PAD_OK);
 }
 
+static void press_cancel_button(bool do_enter);
+
 static u8 parse_pad_command(const char *param, u8 is_combo)
 {
 	register_ldd_controller();
@@ -125,8 +127,8 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 
 		if(strcasestr(param, "cross"   )) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] |= CELL_PAD_CTRL_CROSS;	data.button[CELL_PAD_BTN_OFFSET_PRESS_CROSS]	= 0xFF;}
 		if(strcasestr(param, "square"  )) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] |= CELL_PAD_CTRL_SQUARE;	data.button[CELL_PAD_BTN_OFFSET_PRESS_SQUARE]	= 0xFF;}
-		if(strcasestr(param, "circle"  )) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] |= CELL_PAD_CTRL_CIRCLE;	data.button[CELL_PAD_BTN_OFFSET_PRESS_CIRCLE]	= 0xFF;}
 		if(strcasestr(param, "triangle")) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] |= CELL_PAD_CTRL_TRIANGLE;	data.button[CELL_PAD_BTN_OFFSET_PRESS_TRIANGLE]	= 0xFF;}
+		if(strcasestr(param, "circle"  )) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] |= CELL_PAD_CTRL_CIRCLE;	data.button[CELL_PAD_BTN_OFFSET_PRESS_CIRCLE]	= 0xFF;}
 
 		if(strcasestr(param, "l1")) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] |= CELL_PAD_CTRL_L1; data.button[CELL_PAD_BTN_OFFSET_PRESS_L1] = 0xFF;}
 		if(strcasestr(param, "l2")) {data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] |= CELL_PAD_CTRL_L2; data.button[CELL_PAD_BTN_OFFSET_PRESS_L2] = 0xFF;}
@@ -173,16 +175,20 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 			// send pad data to virtual pad
 			cellPadLddDataInsert(vpad_handle, &data);
 		}
+
+		if(strcasestr(param, "accept")  ) press_cancel_button(1);
+		if(strcasestr(param, "cancel")  ) press_cancel_button(0);
 	}
 
 	return CELL_OK;
 }
 
-#ifdef PKG_HANDLER
-static void press_cancel_button(void)
+static void press_cancel_button(bool do_enter)
 {
 	int enter_button = 1;
 	xsettings()->GetEnterButtonAssign(&enter_button);
+
+	if(do_enter) enter_button ^= 1;
 
 	if(enter_button)
 		parse_pad_command("circle", 0);
@@ -191,7 +197,6 @@ static void press_cancel_button(void)
 
 	unregister_ldd_controller();
 }
-#endif
 
 #endif // #ifdef VIRTUAL_PAD
 

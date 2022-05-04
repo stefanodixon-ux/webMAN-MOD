@@ -29,7 +29,7 @@ if(netid >= '0' && netid <= '4')
 
 	size_t len = sprintf(netiso_args.path, "%s", netpath);
 
-	char *ext = strrchr(netpath, '.');
+	const char *ext = strrchr(netpath, '.');
 	bool is_iso = ext && strcasestr(ISO_EXTENSIONS, ext);
 
 	// allow mount any file type on ROMS

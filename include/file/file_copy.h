@@ -318,7 +318,7 @@ static void force_copy(const char *file1, char *file2)
 }
 
 #ifdef COPY_PS3
-static void mkdir_tree(char *path);
+static void mkdir_tree(const char *full_path);
 static void normalize_path(char *path, bool slash);
 
 static int recursive_folder_copy(const char *path1, char *path2)

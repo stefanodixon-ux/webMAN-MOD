@@ -23,7 +23,7 @@
 		// /netstatus.ps3?reset-netsrv   restart net server
 		// /netstatus.ps3?reset-ps3mapi  restart ps3mapi server
 
-		s32 status = 0; char *label = NULL, *params = param + 15; xnet()->GetSettingNet_enable(&status);
+		s32 status = 0; const char *label = NULL, *params = param + 15; xnet()->GetSettingNet_enable(&status);
 
 		if(*params == 'f') {label = params, status = ftp_working;} else //ftp
 		#ifdef PS3NET_SERVER
@@ -36,7 +36,7 @@
 		{
 			if(params[2] == 'o' || *params == 'r')
 			{
-				char *service = params[4] == '-' ? params + 5 : NULL; // stop-***
+				const char *service = params[4] == '-' ? params + 5 : NULL; // stop-***
 				if( !params[4] || (*service == 'f')) {label = service, ftp_working = status = 0;} //ftp
 				#ifdef PS3NET_SERVER
 				if( !params[4] || (*service == 'n')) {label = service, net_working = status = 0;} //netsrv
@@ -48,7 +48,7 @@
 			}
 			if(params[2] == 'a' || *params == 'r')
 			{
-				char *service = params[5] == '-' ? params + 6 : NULL; // start-***
+				const char *service = params[5] == '-' ? params + 6 : NULL; // start-***
 				if(!ftp_working && (*service == 'f'))
 					{label = service, status = 1; sys_ppu_thread_create(&thread_id_ftpd, ftpd_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_FTP_SERVER, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_FTP);} // start ftp daemon immediately
 				#ifdef PS3NET_SERVER
@@ -90,7 +90,7 @@
 			xnet()->GetSettingNet_enable(&status);
 		}
 
-		sprintf(param, "%s : %s", label ? to_upper(label) : "Network", status ? STR_ENABLED : STR_DISABLED);
+		sprintf(param, "%s : %s", label ? to_upper((char*)label) : "Network", status ? STR_ENABLED : STR_DISABLED);
 
 		#ifdef WM_REQUEST
 		if(!wm_request)

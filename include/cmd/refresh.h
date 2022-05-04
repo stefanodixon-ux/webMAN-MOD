@@ -7,7 +7,7 @@
 		// /refresh.ps3?prepntfs      refresh NTFS volumes & scan ntfs ISOs (clear cached .ntfs[PS*ISO] files in /dev_hdd0/tmp/wmtmp)
 		// /refresh.ps3?prepntfs(0)   refresh NTFS volumes & scan ntfs ISOs (keep cached files)
 
-		char *params = (char *)param + 12;
+		const char *params = (char *)param + 12;
 
 		#ifdef USE_NTFS
 		if(islike(params, "?ntfs") || islike(params, "?prepntfs"))

@@ -14,7 +14,7 @@ enum scan_operations
 
 static void rename_file(char *source, char *dest);
 
-static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, char *dest)
+static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_operations fop, const char *dest)
 {
 	// fop: 0 = scan to file, 1 = del, 2 = copy, 3 = force copy, 4 = move, 5 = rename/move in same fs, 6 = copy bak
 
@@ -191,7 +191,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if((recursive > 0) && (fop == SCAN_DELETE))
 	{
-		char *pname = strrchr(path, '/');
+		const char *pname = strrchr(path, '/');
 		if(pname)
 		{
 			++pname;

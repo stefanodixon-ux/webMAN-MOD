@@ -134,11 +134,11 @@ static void make_fb_xml(void)
 	{
 		cellFsUnlink(_FB_XML);
 
-		char *fb_xml = (char *)FB_XML;
+		const char *fb_xml = FB_XML;
 		#ifdef COBRA_ONLY
 		//if(payload_ps3hen)
 		{
-			fb_xml = (char *)FB_HEN_XML;
+			fb_xml = FB_HEN_XML;
 			sys_map_path(FB_XML, fb_xml);
 		}
 		#endif
@@ -473,7 +473,7 @@ static char *custom_table(char *buffer, char *table_xml)
 	char *STR_CUSTOMXML = buffer;
 	language("STR_CUSTOMXML", STR_CUSTOMXML, "XML");
 	#else
-	char *STR_CUSTOMXML = (char*)"XML";
+	const char *STR_CUSTOMXML = "XML";
 	#endif
 
 	sprintf(table_xml, "<T key=\"wm_custom\">"
@@ -781,7 +781,7 @@ scan_roms:
 	char *tempstr, *folder_name; tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB);
 
 	char localhost[2]; sprintf(localhost, "0"); //sprintf(localhost, "http://%s", local_ip); // "0" = localhost
-	char *proxy_include = (char*)WEB_LINK_INC;
+	const char *proxy_include = (char*)WEB_LINK_INC;
 	#ifdef WM_PROXY_SPRX
 	if((cobra_version > 0) && file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_include = (char*)XAI_LINK_INC, *localhost = NULL;}
 	#endif

@@ -74,18 +74,18 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 		if(*filename == '/')
 		{
-			char *cmd = filename + 1;
+			const char *cmd = filename + 1;
 			sprintf(body, "%s : OK", cmd);
 			if(code == CODE_BREADCRUMB_TRAIL || code == CODE_PREVIEW_FILE)
 			{
-				char *p = strchr(filename, '/');
+				const char *p = strchr(filename, '/');
 				if(p) {body[p - filename] = '\0'; add_breadcrumb_trail2(body, label, p);}
 			}
 			else if(!(webman_config->minfo & 2)) show_msg(body);
 
 			if(code == CODE_PREVIEW_FILE)
 			{
-				char *p = strrchr(filename, '.'); //if(islike(filename, "/dev_hdd0/tmp/gameboot")) p = strrchr(filename, '/');
+				const char *p = strrchr(filename, '.'); //if(islike(filename, "/dev_hdd0/tmp/gameboot")) p = strrchr(filename, '/');
 				if(p) get_image_file(filename, p - filename); else strcat(filename, "/PS3_GAME/ICON0.PNG");
 				if(file_exists(filename))
 				{
@@ -233,7 +233,7 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 
 	_concat2(&sbuffer, "</head>", HTML_BODY);
 
-	char *coverflow = NULL; if(file_exists(MOBILE_HTML)) coverflow = (char*)" [<a href=\"/games.ps3\">Coverflow</a>]";
+	const char *coverflow = NULL; if(file_exists(MOBILE_HTML)) coverflow = (char*)" [<a href=\"/games.ps3\">Coverflow</a>]";
 
 	size_t tlen = sprintf(templn, "<b>" WM_APP_VERSION "<br><font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
 

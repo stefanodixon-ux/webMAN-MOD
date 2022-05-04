@@ -36,7 +36,7 @@ static const char *set_file_type(const char *path, const char *filename)
 		return " ps3";
 }
 
-static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, char *ename, char *templn, char *name, char *fsize, CellRtcDateTime rDate, unsigned long long sz, char *sf, u8 is_net, u8 show_icon0, u8 is_ps3_http, u8 skip_cmd, u8 sort_by, char *action, bool is_ntfs)
+static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, char *ename, char *templn, char *name, char *fsize, CellRtcDateTime rDate, unsigned long long sz, char *sf, u8 is_net, u8 show_icon0, u8 is_ps3_http, u8 skip_cmd, u8 sort_by, const char *action, bool is_ntfs)
 {
 	bool is_root = (plen < 4);
 	if(is_root) sz = 0, is_dir = true; // force folders in root -> fix: host_root, app_home
@@ -506,7 +506,7 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 	{
 		char label[_MAX_PATH_LEN];
 		urlenc(url, param); if(islike(param, "/net")) htmlenc(label, templn, 0); else strcpy(label, templn);
-		char *ext = get_ext(param);
+		const char *ext = get_ext(param);
 
 		#ifdef USE_NTFS
 		if(is_ntfs_path(param)) slen = sprintf(swap, HTML_URL, WMTMP, label);
@@ -640,14 +640,14 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 						islike(param, "/dev_hdd0/game") ? 2 :
 						islike(param, HDD0_HOME_DIR)    ? 3 : 0;
 
-		char *action = (char*)"/copy.ps3";
+		const char *action = "/copy.ps3";
 
 		#ifdef VISUALIZERS
-		if(islike(param, "/dev_hdd0/tmp/wallpaper")) action = (char*)"/wallpaper.ps3";
-		if(islike(param, "/dev_hdd0/tmp/earth"    )) action = (char*)"/earth.ps3";
-		if(islike(param, "/dev_hdd0/tmp/canyon"   )) action = (char*)"/canyon.ps3";
-		if(islike(param, "/dev_hdd0/tmp/lines"    )) action = (char*)"/lines.ps3";
-		if(islike(param, "/dev_hdd0/tmp/coldboot" )) action = (char*)"/coldboot.ps3";
+		if(islike(param, "/dev_hdd0/tmp/wallpaper")) action = "/wallpaper.ps3";
+		if(islike(param, "/dev_hdd0/tmp/earth"    )) action = "/earth.ps3";
+		if(islike(param, "/dev_hdd0/tmp/canyon"   )) action = "/canyon.ps3";
+		if(islike(param, "/dev_hdd0/tmp/lines"    )) action = "/lines.ps3";
+		if(islike(param, "/dev_hdd0/tmp/coldboot" )) action = "/coldboot.ps3";
 		#endif
 
 		#ifndef LITE_EDITION

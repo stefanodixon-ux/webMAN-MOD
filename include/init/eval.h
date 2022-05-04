@@ -197,8 +197,8 @@ static u8 parse_tags(char *text)
 {
 	if(!text) return 0;
 
-	char *pos; u8 op = 0;
-	pos = strstr(text, "@info");
+	u8 op = 0;
+	char *pos = strstr(text, "@info");
 	if(pos)
 	{
 		op = val(pos + 5) + 10;

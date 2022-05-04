@@ -666,7 +666,7 @@ static void setup_form(char *buffer, char *templn)
 
 #ifdef NOBD_PATCH
 	u8 noBD = ALLOW_NOBD;
-	char *SEP = noBD ? (char*)" • " : (char*)"<br>";
+	const char *SEP = noBD ? " • " : "<br>";
 	add_checkbox( "bl", STR_DEVBL, SEP, (webman_config->blind),  buffer);
 	if(noBD) _add_checkbox("bd", "noBD patch", (webman_config->noBD),   buffer);
 #else

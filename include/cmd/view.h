@@ -1,8 +1,8 @@
 #ifdef VIEW_PARAM_SFO
 			if(islike(param, "/view.ps3"))
 			{
-				char *filename = param + 9;
-				char *sfo = strstr(filename, ".SFO");
+				const char *filename = param + 9;
+				const char *sfo = strstr(filename, ".SFO");
 				if(sfo)
 				{
 					char *patch = strchr(sfo, '?'); if(patch) *patch++ = NULL;

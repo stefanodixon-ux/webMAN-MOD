@@ -180,8 +180,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	// ---------------------
 	// unmount current game
 	// ---------------------
-	char *uparam = param + 7;
-	char *params = param + MOUNT_CMD;
+	const char *uparam = param + 7;
+	const char *params = param + MOUNT_CMD;
 
 	if(islike(param, "/mount") && (islike(uparam, "ps3/unmount") || islike(params, "/dev_bdvd") || islike(params, "/app_home")))
 	{
@@ -303,7 +303,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 			{
 				// prevent auto focus before execute PKGLAUNCH
-				char *ext = get_ext(source);
+				const char *ext = get_ext(source);
 				if(mount_ps3 && (!strstr(source, "/ROMS")) && strcasestr(ARCHIVE_EXTENSIONS, ext))
 					param[6] = '.';
 			}
@@ -442,7 +442,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(*target) {if(!isDir(source) && isDir(target)) strcat(target, filename);} // &to=<destination>
 				else
 				{
-					char *ext = get_ext(source);
+					const char *ext = get_ext(source);
 					#ifdef SWAP_KERNEL
 					if(strstr(source, "/lv2_kernel"))
 					{
@@ -635,7 +635,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						else
 							strcpy(target, drives[0]);
 
-						char *p = strchr(source + 1, '/');
+						const char *p = strchr(source + 1, '/');
 						if(p) strcat(target, p);
 					}
 				}
@@ -1564,7 +1564,7 @@ static void mount_thread(u64 action)
 	///////////////////////
 	set_mount_type(_path);
 
-	char *ps = strstr(_path, "/ROMS"); // check is not like /ROMS*/PS*
+	const char *ps = strstr(_path, "/ROMS"); // check is not like /ROMS*/PS*
 	if(!(ps && (ps[5] && ps[6] && ps[7] && (islike(ps + 5, "/PS") || islike(ps + 7, "/PS")))))
 	{
 		#include "mount_misc.h" // mount GAMEI, NPDRM, ROMS, PS2 Classic

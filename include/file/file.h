@@ -60,15 +60,15 @@ static bool is_iso_0(const char *filename)
 }
 #endif
 
-static char *get_ext(const char *path)
+static const char *get_ext(const char *path)
 {
-	if(!path || !(*path)) return (char*)path;
+	if(!path || !(*path)) return path;
 
 	const char *ext = path + strlen(path) - 1;
 	const char *end = ext - ((*ext == ']') ? 13 : 6); // search limit 6 or 13 chars
 	while(--ext > path)
 		if((*ext == '.') || (ext <= end)) break;
-	return (char*)ext;
+	return ext;
 }
 
 static char *get_filename(const char *path)
@@ -105,7 +105,7 @@ static bool change_ext(char *filename, int num_ext, const char *file_ext[])
 {
 	if(!filename || !file_ext) return false;
 
-	char *ext = get_ext(filename);
+	char *ext = (char*)get_ext(filename);
 	for(u8 e = 0; e < num_ext; e++)
 	{
 		strcpy(ext, file_ext[e]);
@@ -191,8 +191,9 @@ static void check_path_alias(char *param)
 }
 
 #if defined(COPY_PS3) || defined(PKG_HANDLER) || defined(MOUNT_GAMEI)
-static void mkdir_tree(char *path)
+static void mkdir_tree(const char *full_path)
 {
+	char *path = (char *)full_path;
 	size_t path_len = strlen(path);
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))

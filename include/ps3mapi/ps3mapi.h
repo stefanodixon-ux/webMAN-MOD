@@ -311,7 +311,7 @@ static void ps3mapi_notify(char *buffer, char *templn, const char *param)
 
 	u8 icon_id = (u8)get_valuen32(param, "&icon=");
 
-	char *snd = strstr(param, "&snd=");
+	const char *snd = strstr(param, "&snd=");
 
 	if(snd && ISDIGIT(snd[5])) play_sound_id(snd[5]);
 
@@ -674,7 +674,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 	bool is_ps3mapi_home = (*param == ' ');
 	bool not_found = false;
 
-	char *find = (char*)"";
+	const char *find = "";
 	const char *dump_file = (char*)"/dev_hdd0/mem_dump.bin";
 	const char *dump_size = (char*)"&dump=400000";
 
@@ -712,7 +712,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			if(address == 0) address = 4;
 
 			u32 addr = address;
-			u32 stop = 0; char *pos = strstr(param, "&stop=");
+			u32 stop = 0; const char *pos = strstr(param, "&stop=");
 			if(pos) stop = convertH(pos + 6); if(stop < address) stop = (address + 0x1000000ULL);
 			u8  step = get_valuen(param, "step=", 0, 0xE0); if(step < 1) step = 4;
 			u8  rep  = get_valuen(param, "rep=", 1, 0xFF);
@@ -1076,7 +1076,7 @@ static void add_plugins_list(char *buffer, char *templn, u8 is_vsh)
 		if(cellFsOpendir(PLUGINS_PATH, &fd) == CELL_FS_SUCCEEDED)
 		{
 			CellFsDirectoryEntry dir; u32 read_e;
-			char *entry_name = dir.entry_name.d_name;
+			const char *entry_name = dir.entry_name.d_name;
 
 			u16 plen = sprintf(templn, "<option>%s/", PLUGINS_PATH);
 
@@ -1105,7 +1105,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 	{
 		unsigned int uslot = 99;
 
-		char *pos = strstr(param + 18, "?s=");
+		const char *pos = strstr(param + 18, "?s=");
 		if(pos)
 		{
 			u8 boot_mode = get_valuen(pos, "?s=", 0, 4);

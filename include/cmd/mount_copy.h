@@ -93,7 +93,7 @@
 			check_path_alias(params);
 
 			// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
-			char *dev_path = templn;
+			const char *dev_path = templn;
 			char *dev_name = strstr(dev_path, "&name="); if(dev_name) {*dev_name = 0, dev_name += 6;}
 			char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 3;} else fs = (char*)"CELL_FS_FAT";
 

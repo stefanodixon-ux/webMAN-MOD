@@ -13,7 +13,7 @@
 
 		u8 ret = 0, is_combo = (param[2] == 'a') ? 0 : (param[1] == 'c') ? 2 : 1; // 0 = /pad.ps3   1 = /play.ps3   2 = /combo.ps3
 
-		char *buttons = param + 9 + is_combo;
+		const char *buttons = param + 9 + is_combo;
 
 		if(is_combo != 1) {if(!webman_config->nopad) ret = parse_pad_command(buttons, is_combo);} // do /pad.ps3 || /combo.ps3
 		else // do /play.ps3

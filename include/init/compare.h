@@ -1,5 +1,5 @@
-int extcmp(const char *s1, const char *s2, size_t n);
-int extcasecmp(const char *s1, const char *s2, size_t n);
+extern int extcmp(const char *s1, const char *s2, size_t n);
+extern int extcasecmp(const char *s1, const char *s2, size_t n);
 
 static bool IS(const char *a, const char *b)
 {

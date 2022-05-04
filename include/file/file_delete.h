@@ -166,7 +166,7 @@ static void delete_history(bool delete_folders)
 	if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
 	{
 		CellFsDirectoryEntry dir; u32 read_e;
-		char *entry_name = dir.entry_name.d_name;
+		const char *entry_name = dir.entry_name.d_name;
 
 		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{

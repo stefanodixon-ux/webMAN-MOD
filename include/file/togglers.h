@@ -11,7 +11,7 @@ static void swap_kernel(const char *source, char *target, char *tempstr)
 		strcpy(target, SYS_COBRA_PATH "stage2.bin");
 		if(isDir("/dev_flash/rebug/cobra"))
 		{
-			char *ext = get_ext(source);
+			const char *ext = get_ext(source);
 			if(IS(ext, ".dex"))
 				sprintf(target, "%s/stage2.dex", "/dev_flash/rebug/cobra");
 			else if(IS(ext, ".cex"))

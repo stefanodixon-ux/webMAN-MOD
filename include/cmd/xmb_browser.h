@@ -181,9 +181,10 @@
 			char *pos = strstr(params, ")="); // save
 			if(pos)
 			{
+				pos += 2;
 				if(size >= 0x80)
 				{
-					pos += 2, len = strlen(pos);
+					len = strlen(pos);
 					if(size > 0x80)
 						xusers()->SetRegistryString(xusers()->GetCurrentUserNumber(), id, pos, len);
 					else
@@ -191,7 +192,7 @@
 				}
 				else
 				{
-					value = val(pos + 2);
+					value = val(pos);
 					if(size)
 						xusers()->SetRegistryValue(xusers()->GetCurrentUserNumber(), id, value);
 					else
@@ -204,7 +205,7 @@
 			if(size >= 0x80)
 			{
 				_memset(header, sizeof(header));
-				char *pos2 = strchr(params, ','); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
+				const char *pos2 = strchr(params, ','); if(pos2) size = val(pos2 + 1); if(size <= 0) size = 0x80;
 				if(size > 0x80)
 					xusers()->GetRegistryString(xusers()->GetCurrentUserNumber(), id, header, size);
 				else

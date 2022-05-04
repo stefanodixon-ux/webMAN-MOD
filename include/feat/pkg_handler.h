@@ -102,7 +102,7 @@ static void wait_for_xml_download(char *filename, char *param)
 		cellFsRename(param, filename);
 
 #ifdef VIRTUAL_PAD
-		if(IS_DOWNLOADING) press_cancel_button();
+		if(IS_DOWNLOADING) press_cancel_button(0);
 #endif
 	}
 }
@@ -177,7 +177,7 @@ static void unload_plugin_modules(bool all)
 #ifdef VIRTUAL_PAD
 	if(IS_ON_XMB)
 	{
-		press_cancel_button();
+		press_cancel_button(0);
 	}
 #endif
 

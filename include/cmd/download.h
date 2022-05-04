@@ -16,7 +16,7 @@
 		{
 			*dlpath = NULL; // limit string to url in "Downloading http://blah..."
 
-			char *dlfile = get_filename(msg);
+			const char *dlfile = get_filename(msg);
 			if(dlfile) snprintf(filename, STD_PATH_LEN, "%s%s", dlpath + 5, dlfile);
 
 			*dlpath = '\n'; // restore line break

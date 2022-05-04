@@ -1,6 +1,6 @@
 #define LCASE(a)	(a | 0x20)
 
-char *strcasestr(const char *s1, const char *s2);
+extern char *strcasestr(const char *s1, const char *s2);
 
 typedef struct {
 	u32  size;
@@ -71,7 +71,7 @@ static void memcpy64(void *dst, const void *src, int n)
 
 	n >>= 3; // same as n /= 8;
 	u64 *d = (u64 *) dst;
-	u64 *s = (u64 *) src;
+	const u64 *s = (u64 *) src;
 	while (n--) *d++ = *s++; // 64bit memcpy
 
 	if(p)

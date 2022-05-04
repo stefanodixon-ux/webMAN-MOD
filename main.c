@@ -316,7 +316,7 @@ static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_si
 #endif
 static bool isDir(const char* path);
 static bool file_exists(const char* path);
-static char *get_ext(const char *path);
+static const char *get_ext(const char *path);
 static bool is_app_dir(const char *path, const char *app_name);
 static void force_copy(const char *file1, char *file2);
 static int add_breadcrumb_trail(char *pbuffer, const char *param);

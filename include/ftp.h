@@ -1108,7 +1108,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						{
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 
-							bool rw_flash = isDir("/dev_blind"); char *status = to_upper(filename);
+							bool rw_flash = isDir("/dev_blind"); const char *status = to_upper(filename);
 
 							if(*status == NULL) ; else
 							if(_IS(status, "ON" )) {if( rw_flash) continue;} else
@@ -1182,7 +1182,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						{
 							ssend(conn_s_ftp, FTP_OK_250); // Requested file action okay, completed.
 
-							char *src_path = filename;
+							const char *src_path = filename;
 
 							if(isDir(src_path))
 							{

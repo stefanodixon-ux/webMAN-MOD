@@ -102,7 +102,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 	if(data[v3_entry].is_directory == false)
 	{
-		char *ext = get_ext(data[v3_entry].name);
+		const char *ext = get_ext(data[v3_entry].name);
 		#ifdef MOUNT_ROMS
 		if(IS_ROMS_FOLDER)
 		{
@@ -593,8 +593,8 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
 				char *templn = slaunch.name;
-				char *path = slaunch.name + slaunch.path_pos;
-				char *param = path + 10; // remove /mount_ps3
+				const char *path = slaunch.name + slaunch.path_pos;
+				const char *param = path + 10; // remove /mount_ps3
 				char *icon = slaunch.name + slaunch.icon_pos;
 
 				if(*filter_name >= ' '  && !strcasestr(templn, filter_name)

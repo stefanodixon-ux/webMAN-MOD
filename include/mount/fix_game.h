@@ -80,7 +80,7 @@ static void fix_game_folder(char *path)
 		struct CellFsStat s;
 
 		CellFsDirectoryEntry dir; u32 read_e;
-		char *entry_name = dir.entry_name.d_name;
+		const char *entry_name = dir.entry_name.d_name;
 
 		u16 plen = sprintf(path, "%s/", path);
 		char *filename  = path + plen;

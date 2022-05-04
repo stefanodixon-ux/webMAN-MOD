@@ -279,7 +279,7 @@ copy_ps2iso_to_hdd0:
 						sys_ppu_thread_usleep(2500);
 						cobra_send_fake_disc_insert_event();
 
-						char *id = strstr(iso_list[0], " ["); if(!id) id = strstr(iso_list[0], " (");
+						const char *id = strstr(iso_list[0], " ["); if(!id) id = strstr(iso_list[0], " (");
 						if(id)
 						{
 							char title_id[12], game_id[12];

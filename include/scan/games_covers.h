@@ -162,7 +162,7 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 		// remove prepend [PSPISO] or [PS2ISO]
 		if((filename[pos] == '[') && (filename[pos + 7] == ']'))
 		{
-			char *prefix = (char*)filename + pos + 1;
+			const char *prefix = filename + pos + 1;
 			if(islike(prefix, paths[id_PSPISO])) pos += 9;
 			if(islike(prefix, paths[id_PS2ISO])) pos += 9;
 		}
@@ -310,7 +310,7 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id) //
 		strncpy(title_id, name, TITLEID_LEN); // TITLEID-[NAME]
 	else
 	{
-		char *pos;
+		const char *pos;
 		// search for BLES/UCES/SLES/BCUS/UCUS/SLUS/etc.
 		for(pos = (char*)name; *pos; pos++)
 			if((*pos == '[' || *pos == '(') && (pos[2] == 'L' || pos[2] == 'C') && ISDIGIT(pos[6]) && ISDIGIT(pos[7]))
@@ -645,9 +645,9 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 
 	if(IS_NTFS)
 	{   // ntfs
-		char *ntfs_sufix = NULL;
+		const char *ntfs_sufix = NULL;
 
-		if(flen > 17) ntfs_sufix = strstr((char*)entry_name + flen - 14, ").ntfs[");
+		if(flen > 17) ntfs_sufix = strstr(entry_name + flen - 14, ").ntfs[");
 
 		if(ntfs_sufix)
 		{
@@ -667,7 +667,7 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 
 		flen-=13; if(flen < 0) return FAILED;
 
-		char *ntfs_ext = (char*)entry_name + flen;
+		const char *ntfs_ext = entry_name + flen;
 		if(IS_PS3ISO && !IS(ntfs_ext, ".ntfs[PS3ISO]")) return FAILED;
 		if(IS_PS2ISO && !IS(ntfs_ext, ".ntfs[PS2ISO]")) return FAILED;
 		if(IS_PSXISO && !IS(ntfs_ext, ".ntfs[PSXISO]")) return FAILED;

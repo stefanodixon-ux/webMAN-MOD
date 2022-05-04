@@ -238,7 +238,7 @@ static bool rec_start(const char *param)
 
 	get_game_info();
 
-	char *vidfile = strstr(param, INT_HDD_ROOT_PATH);
+	const char *vidfile = strstr(param, INT_HDD_ROOT_PATH);
 
 	if(vidfile == param)
 	{

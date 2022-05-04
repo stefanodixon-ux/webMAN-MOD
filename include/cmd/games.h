@@ -5,7 +5,7 @@
 		// /dev_hdd0/xmlhost/game_plugin/mobile.html
 
  mobile_response:
-		mobile_mode = true; char *params = param + 10;
+		mobile_mode = true; const char *params = param + 10;
 
 		if(not_exists(MOBILE_HTML))
 			{sprintf(param, "/index.ps3%s", params); mobile_mode = false;}

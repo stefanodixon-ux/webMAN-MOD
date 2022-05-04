@@ -37,7 +37,7 @@ static void no_singstar_icon(void)
 						char xmlpath[96]; to_upper(country_id);
 
 						CellFsDirectoryEntry dir2;
-						char *entry_name = dir2.entry_name.d_name;
+						const char *entry_name = dir2.entry_name.d_name;
 
 						while(working && (!cellFsGetDirectoryEntries(fd2, &dir2, sizeof(dir2), &read_e) && read_e))
 						{
