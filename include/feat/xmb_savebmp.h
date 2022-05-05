@@ -43,7 +43,7 @@ static void init_graphic(void)
 	h = getDisplayHeight();                     // display height
 	w = getDisplayWidth();                      // display width
 	getDisplayPitch(&pitch, &offset); pitch /= 4; // framebuffer pitch size
-	offset = BASE + *(u32*)0x60201104;          // start offset of current framebuffer
+	offset = BASE + INT32(0x60201104);          // start offset of current framebuffer
 }
 
 static void saveBMP(char *path, bool notify_bmp, bool small)

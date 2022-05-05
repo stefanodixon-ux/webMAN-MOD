@@ -30,8 +30,8 @@ static u32 getLBA(const char *chunk, u16 chunk_size, const char *filename, u16 f
 	{
 		if((chunk[n] == flen) && (memcmp(&chunk[n + 1], filename, flen) == 0))
 		{
-			u32 lba = *((u32*)(chunk + n - 0x1A));
-			*size   = *((u32*)(chunk + n - 0x12));
+			u32 lba = INT32(chunk + n - 0x1A);
+			*size   = INT32(chunk + n - 0x12);
 			*start  = n + (flen + 1); fixed_count++;
 			return lba;
 		}

@@ -7,7 +7,7 @@ static void patch_ps2_demo(const char *iso_file)
 	char title_id[0x10]; _memset(title_id, sizeof(title_id));
 
 	read_file(iso_file, data, 0x3C, 0x80A0);
-	root = offset = *((u32*)(data + 2)) * 0x800; // 0x105 * 800
+	root = offset = INT32(data + 2) * 0x800; // 0x105 * 800
 
 	#define GAME_EXT_BLACKLISTED "SCUS-97275SCUS-97474SCUS-97545SCUS-97340SCUS-97341SCUS-97342SCUS-97442"
 
@@ -29,7 +29,7 @@ static void patch_ps2_demo(const char *iso_file)
 			}
 			else if(!memcmp(entry_name, "SYSTEM.CNF;1", 0xC))
 			{
-				u32 offset2 = *((u32*)(data + 0x6)) * 0x800;
+				u32 offset2 = INT32(data + 0x6) * 0x800;
 				read_file(iso_file, data, 0x40, offset2);
 
 				// parse SYSTEM.CNF

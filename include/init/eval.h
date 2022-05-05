@@ -4,6 +4,7 @@
 #define RANGE(a, b, c)	((a) <= (b) ? (b) : (a) >= (c) ? (c) : (a))
 #define ISDIGIT(a)		('0' <= (unsigned char)(a) && (unsigned char)(a) <= '9')
 #define ISSPACE(a)		( 0  <  (unsigned char)(a) && (unsigned char)(a) <= ' ')
+#define	INT32(a)		(*((u32*)(a)))
 
 static u64 convertH(const char *val)
 {

@@ -292,7 +292,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		sprintf(fsize, "%'llu %s", sz, sf);
 
 	#ifndef LITE_EDITION
-	else if( !is_net && (sbytes <= MAX_TEXT_LEN) && ( strcasestr(".txt.ini.log.sfx.xml.cfg.cnf.his.hip.bup.js.css.html.bat|conf", ext) || islike(name, "wm_custom_") || strstr(name, "name") ) )
+	else if( !is_net && (sbytes <= MAX_TEXT_LEN) && ( strcasestr(".txt.ini.log.ncl.sfx.xml.cfg.cnf.his.hip.bup.js.css.html.bat|conf", ext) || islike(name, "wm_custom_") || strstr(name, "name") ) )
 	{
 		snprintf(fsize, maxlen, "<a href=\"/edit.ps3%s\">%'llu %s</a>", templn, sz, sf);
 		ft = " cfg";
