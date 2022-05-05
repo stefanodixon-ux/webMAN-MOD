@@ -222,9 +222,17 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		if(op == 33) // home
 			sprintf(msg, "%s: %s/%08i", STR_HOME, HDD0_HOME_DIR, xusers()->GetCurrentUserNumber());
 		#endif
+		if(op == 34) // wm version
+			sprintf(msg, "%s MO: %.7s %s", WM_APPNAME, WM_VERSION, EDITION);
+
 		if(op >= 18)
 		{
-			if(nolabel) sprintf(msg, "%s", strchr(msg, ':') + 2);
+			if(nolabel)
+			{
+				char *sep = strchr(msg, ':');
+				if(sep) sprintf(msg, "%s", sep + 2);
+			}
+			else if(op == 34) replace_char(msg, ':', 'D');
 			return;
 		}
 		// op: 10=hdd0, 11=usb0, 12=usb1, 13=usb2, 14=usb3, 15=ntfs0
