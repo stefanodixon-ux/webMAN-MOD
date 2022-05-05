@@ -3,8 +3,9 @@ typedef struct
 {
 	u16 version; // 0x1337
 
-	u8 padding0[13];
+	u8 padding0[12];
 
+	u8 artemis;  // 0=disabled, 1=enabled on game
 	u8 wm_proxy; // 0=use wm_proxy, 1=use webbrowser_plugin
 	u8 lang;     // 0=EN, 1=FR, 2=IT, 3=ES, 4=DE, 5=NL, 6=PT, 7=RU, 8=HU, 9=PL, 10=GR, 11=HR, 12=BG, 13=IN, 14=TR, 15=AR, 16=CN, 17=KR, 18=JP, 19=ZH, 20=DK, 21=CZ, 22=SK, 99=XX
 

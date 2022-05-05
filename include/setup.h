@@ -82,6 +82,9 @@ static void setup_parse_settings(char *param)
 #ifdef UNLOCK_SAVEDATA
 	webman_config->unlock_savedata = IS_MARKED("up=1");
 #endif
+#ifdef ARTEMIS_PRX
+	webman_config->artemis = IS_MARKED("ar=1");
+#endif
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
@@ -797,8 +800,10 @@ static void setup_form(char *buffer, char *templn)
 #else
 	_add_checkbox("apd", STR_AUTO_PLAY, (webman_config->autoplay), buffer);
 #endif
-
 	_add_checkbox("sm\"  accesskey=\"G", "sMAN GUI", (webman_config->sman), buffer);
+	#ifdef ARTEMIS_PRX
+	_add_checkbox("ar", "Artemis", (webman_config->artemis), buffer);
+	#endif
 
 	//general settings
 #ifdef SPOOF_CONSOLEID

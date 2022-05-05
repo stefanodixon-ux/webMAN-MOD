@@ -462,6 +462,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/file_manager.h"
 
 #include "include/feat/pkg_handler.h"
+#include "include/feat/artemis.h"
 #include "include/poll/poll.h"
 
 #include "include/www/www_client.h"
@@ -716,6 +717,10 @@ static void wwwd_stop_thread(u64 arg)
 
 	#ifdef PS3MAPI
 	thread_join(thread_id_ps3mapi);
+	#endif
+
+	#ifdef ARTEMIS_PRX
+	thread_join(thread_id_art);
 	#endif
 
 	if(!wm_unload_combo)

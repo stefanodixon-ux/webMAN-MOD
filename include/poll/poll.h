@@ -95,6 +95,11 @@ static void poll_start_play_time(void)
 		}
 		#endif
 		start_event(EVENT_INGAME);
+
+		#ifdef ARTEMIS_PRX
+		if(webman_config->artemis && (thread_id_art == SYS_PPU_THREAD_NONE))
+			sys_ppu_thread_create(&thread_id_art, art_thread, NULL, -0x1d8, 0x8000, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_ART);
+		#endif
 	}
 }
 

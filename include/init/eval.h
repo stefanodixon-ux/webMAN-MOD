@@ -3,6 +3,7 @@
 #define ABS(a)			(((a) < 0) ? -(a) : (a))
 #define RANGE(a, b, c)	((a) <= (b) ? (b) : (a) >= (c) ? (c) : (a))
 #define ISDIGIT(a)		('0' <= (unsigned char)(a) && (unsigned char)(a) <= '9')
+#define ISSPACE(a)		( 0  <  (unsigned char)(a) && (unsigned char)(a) <= ' ')
 
 static u64 convertH(const char *val)
 {
