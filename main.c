@@ -311,9 +311,6 @@ static void show_status(const char *label, const char *status);
 static void sys_get_cobra_version(void);
 static void get_sys_info(char *msg, u8 op, bool nolabel);
 
-#ifdef UNLOCK_SAVEDATA
-static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size);
-#endif
 static bool isDir(const char* path);
 static bool file_exists(const char* path);
 static const char *get_ext(const char *path);
@@ -326,6 +323,9 @@ static int save_settings(void);
 
 #ifdef PATCH_GAMEBOOT
 static void patch_gameboot(u8 boot_type);
+#endif
+#ifdef UNLOCK_SAVEDATA
+static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_size);
 #endif
 
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
@@ -446,6 +446,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/ps3mapi/ps3mapi.h"
 #include "include/ps3mapi/ps3mapi_server.h"
 #include "include/ps3mapi/stealth.h"
+#include "include/ps3mapi/artemis.h"
 
 #include "include/scan/snd0.h"
 #include "include/scan/games_html.h"
@@ -462,7 +463,6 @@ static u8 mount_unk = EMU_OFF;
 #include "include/file_manager.h"
 
 #include "include/feat/pkg_handler.h"
-#include "include/feat/artemis.h"
 #include "include/poll/poll.h"
 
 #include "include/www/www_client.h"

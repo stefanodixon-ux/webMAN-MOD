@@ -1697,6 +1697,13 @@ mounting_done:
 #ifdef COBRA_ONLY
 
 	// ------------------------------------------------------------------
+	// copy .ncl to /dev_hdd0/tmp/art.txt
+	// ------------------------------------------------------------------
+	#ifdef ARTEMIS_PRX
+	init_codelist(_path);
+	#endif
+
+	// ------------------------------------------------------------------
 	// auto-enable gamedata on bdvd if game folder or ISO contains GAMEI
 	// ------------------------------------------------------------------
 

@@ -7,6 +7,8 @@
 
 #define ISVALID_CHAR(c)	(ISDIGIT(c) || (c >= 'A' && c <= 'F') || (c == ' ') || (c == '\r') || (c == '\n'))
 
+static vu8 artemis_working = 0;
+
 static sys_addr_t sysmem_art = NULL;
 static sys_addr_t typeA_Copy = NULL;
 
@@ -693,9 +695,27 @@ static void art_process(int forceWrite)
 	doForceWrite = 0;
 }
 
+static void init_codelist(char *last_path)
+{
+	if(*last_path == '/')
+	{
+		char *ext = strrchr(last_path, '.');
+		if(ext)
+			strcpy(ext, ".ncl"); // replace file extension
+		else
+			strcat(last_path, ".ncl"); // append file extension
+
+		size_t size = file_size(last_path);
+		if(size && (size < _1MB_))
+			force_copy(last_path, (char*)ARTEMIS_CODES_FILE);
+	}
+}
+
 // Read user input and calls art_process()
 static void art_thread(u64 arg)
 {
+	artemis_working = 1;
+
 	int GameProcessID = 0, lastGameProcessID = 0;
 
 	sys_timer_sleep(10);
@@ -704,7 +724,7 @@ static void art_thread(u64 arg)
 	CellPadData data;
 	CellPadInfo2 info;
 
-	while (working)
+	while (working && artemis_working)
 	{
 		GameProcessID = GetGameProcessID();
 
@@ -767,10 +787,9 @@ static void art_thread(u64 arg)
 		sys_ppu_thread_yield();
 	}
 
-	if(working)
-		thread_id_art = SYS_PPU_THREAD_NONE; // allow restart artemis
 
 	release_art();
+	artemis_working = 0;
 	sys_ppu_thread_exit(0);
 }
 

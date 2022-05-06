@@ -99,19 +99,7 @@ static void poll_start_play_time(void)
 		#ifdef ARTEMIS_PRX
 		if(webman_config->artemis)
 		{
-			char last_path[MAX_PATH_LEN];
-			get_last_game(last_path);
-
-			char *ext = strrchr(last_path, '.');
-			if(ext)
-				strcpy(ext, ".ncl"); // replace file extension
-			else
-				strcat(ext, ".ncl"); // append file extension
-
-			if(file_size(last_path) < _1MB_)
-				force_copy(last_path, (char*)ARTEMIS_CODES_FILE);
-
-			if(thread_id_art == SYS_PPU_THREAD_NONE)
+			if(!artemis_working)
 				sys_ppu_thread_create(&thread_id_art, art_thread, NULL, -0x1d8, 0x8000, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_ART);
 		}
 		#endif
