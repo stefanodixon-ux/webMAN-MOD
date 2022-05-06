@@ -70,8 +70,8 @@
 					{label = service, status = 1; sys_ppu_thread_create(&thread_id_ps3mapi, ps3mapi_thread, NULL, THREAD_PRIO, THREAD_STACK_SIZE_PS3MAPI_SVR, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_PS3MAPI);}
 				#endif
 				#ifdef ARTEMIS_PRX
-				if((!artemis_working) && (*service == 'a'))
-					{label = service, status = 1; sys_ppu_thread_create(&thread_id_art, art_thread, NULL, -0x1d8, 0x8000, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_ART);}
+				if(*service == 'a')
+					{label = service, status = 1; start_artemis();}
 				#endif
 			}
 		}

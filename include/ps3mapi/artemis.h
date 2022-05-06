@@ -264,7 +264,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 
 	char cType = lines[start];
 	int lineLen = 0, arg2Len = 0, arg1Off = 0, totalLenRead, arg0 = 0;
-	int startPos, arg0_2 = 0, buf0Len;
+	int startPos, arg0_2 = 0;
 
 	for (lineLen = start; lineLen < linesLen; lineLen++)
 	{
@@ -285,7 +285,10 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 		while (lines[start + arg1Off] != ' ')
 			arg1Off++;
 
-		char addrBuf[4]; memset(addrBuf, 0, 4);
+		if (arg2Len < 0)
+			return linesLen;
+
+		char addrBuf[4]; _memset(addrBuf, 4);
 
 		ReadHexPartial(lines, start + 1, (arg1Off - 1), addrBuf, (arg1Off - 1)/2);
 		arg0 = (int)(INT32(addrBuf));
@@ -298,9 +301,9 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 			ptrAddr = 0;
 		}
 
-		buf0Len = arg2Len / 2;
-		char buf0[buf0Len];
-		char arg2Temp[arg2Len - 1];
+		char buf0[arg2Len];
+		const int buf0size = arg2Len - 1;
+		const int buf0Len  = arg2Len / 2;
 
 		if (arg0 < 0)
 			arg0 = 0;
@@ -344,7 +347,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 		switch (cType)
 		{
 			case '0': ; //Write bytes (1=OR,2=AND,3=XOR,rest=write)
-				ReadHex(lines, startPos, arg2Len - 1, buf0, 4);
+				ReadHex(lines, startPos, buf0size, buf0, 4);
 				//Get source bytes
 				if(arg0) get_process_mem(pid, addr, buf1, buf0Len);
 				switch (arg0)
@@ -372,14 +375,14 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 					arg1Off++;
 
 				arg2Len = lineLen - arg1Off;
-				strncpy(buf0, lines + startPos, arg2Len - 1);
-				buf0[arg2Len-1] = '\0';
-				WriteMem(pid, addr, buf0, arg2Len - 1);
+				strncpy(buf0, lines + startPos, buf0size);
+				buf0[buf0size] = '\0';
+				WriteMem(pid, addr, buf0, buf0size);
 				break;
 			case '2': //Write float
-				strncpy(buf0, lines + startPos, arg2Len - 1);
+				strncpy(buf0, lines + startPos, buf0size);
 				float buf2Flt = (float)tofloat(buf0);
-				WriteMem(pid, addr, (char*)&buf2Flt, arg2Len - 1);
+				WriteMem(pid, addr, (char*)&buf2Flt, buf0size);
 				break;
 			case '4': ; //Write condensed
 				//Get count
@@ -389,7 +392,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 				u64 inc = (u64)(INT32(buf0_2));
 
 				//Get write
-				ReadHex(lines, startPos, arg2Len - 1, buf0, buf0Len);
+				ReadHex(lines, startPos, buf0size, buf0, buf0Len);
 
 				for (uint cnt4 = 0; cnt4 < count; cnt4++)
 				{
@@ -403,7 +406,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 			case '6': //Write pointer
 
 				//Get offset
-				ReadHexPartial(lines, startPos, arg2Len - 1, buf0, (arg2Len - 1)/2);
+				ReadHexPartial(lines, startPos, buf0size, buf0, buf0Len);
 				u64 offset = (u64)(INT32(buf0));
 
 				//Get address at pointer
@@ -419,7 +422,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 				{
 					case 1:
 						//Get count
-						ReadHexPartial(lines, startPos, arg2Len - 1, buf0, (arg2Len - 1)/2);
+						ReadHexPartial(lines, startPos, buf0size, buf0, buf0Len);
 						uint count = (uint)(INT32(buf0));
 
 						if(count > _64KB_) {typeA_Size = 0; break;} // disable paste if copy is too large
@@ -431,8 +434,6 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 						{
 							typeA_Size = count;
 							get_process_mem(pid, addr, (char *)typeA_Copy, 4);
-
-							memcpy64(arg2Temp, lines + (startPos), arg2Len - 1);
 						}
 						else
 						{
@@ -457,7 +458,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 					break;
 
 				//Get end addr
-				ReadHex(lines, startPos, arg2Len - 1, addrBuf, 4);
+				ReadHex(lines, startPos, buf0size, addrBuf, 4);
 				u64 endAddr = (u64)(INT32(addrBuf));
 
 				//new (COP) length
@@ -508,7 +509,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 				skip[0]++;
 				break;
 			case 'D': //Write conditional
-				ReadHex(lines, startPos, arg2Len - 1, buf0, 4);
+				ReadHex(lines, startPos, buf0size, buf0, 4);
 				int DisCond = CompareMemory(pid, addr, buf0, buf0Len);
 
 				if (!DisCond)
@@ -518,7 +519,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 
 				break;
 			case 'E': //Write conditional (bitwise)
-				ReadHex(lines, startPos, arg2Len - 1, buf0, 4);
+				ReadHex(lines, startPos, buf0size, buf0, 4);
 				int EisCond = CompareMemoryAnd(pid, addr, buf0, buf0Len);
 
 				if (!EisCond)
@@ -530,7 +531,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 			case 'F': //Copy bytes
 
 				//Get destination
-				ReadHex(lines, startPos, arg2Len - 1, buf0, 4);
+				ReadHex(lines, startPos, buf0size, buf0, 4);
 				u64 dest = (u64)(INT32(buf0));
 
 				//Get source bytes
@@ -577,7 +578,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 						if (userCodes[n] == '\n' || userCodes[n] == '\r')
 							break;
 					}
-					n -= i;
+					n -= i; // line length
 					if(n > 100) n = 100;
 					memcpy64(lineBuf, userCodes + i, n);
 					lineBuf[n] = 0;
@@ -591,11 +592,11 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 						else
 						{
 							if (lineCharInd == 0)
-								isConstantWrite = userCodes[i] == '1' || userCodes[i] == 'T';
+								isConstantWrite = (userCodes[i] == '1' || userCodes[i] == 'T');
 
 							if (!isConstantWrite && !doForceWrite) //skip this code if not constant or force write
 							{
-								while (userCodes[i] != '#' && i < totalLen)
+								while ((i < totalLen) && (userCodes[i] != '#'))
 									i++;
 								i--;
 							}
@@ -617,7 +618,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 			}
 			lineCharInd++;
 		}
-		else
+		else // skip # comment line
 		{
 			lineNum = -1;
 			isConstantWrite = 0;
@@ -793,4 +794,9 @@ static void art_thread(u64 arg)
 	sys_ppu_thread_exit(0);
 }
 
+static void start_artemis(void)
+{
+	if(!artemis_working)
+		sys_ppu_thread_create(&thread_id_art, art_thread, NULL, THREAD_PRIO_ARTEMIS, THREAD_STACK_SIZE_ARTEMIS, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_ART);
+}
 #endif // #ifdef ARTEMIS_PRX

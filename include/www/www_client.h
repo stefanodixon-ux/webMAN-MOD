@@ -551,6 +551,7 @@ parse_request:
 			#include "../cmd/abort.h"
 			#include "../cmd/wait.h"
 			#include "../cmd/edit.h"
+			#include "../cmd/artemis.h"
 			#include "../cmd/view.h"
 			#include "../cmd/chat.h"
 			#include "../cmd/mount_search.h"

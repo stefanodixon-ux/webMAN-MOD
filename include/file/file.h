@@ -253,6 +253,7 @@ static void rename_file(char *source, char *dest)
 #endif
 	{
 		cellFsRmdir(dest);
+		cellFsUnlink(dest);
 		cellFsRename(source, dest);
 	}
 }
