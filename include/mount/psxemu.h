@@ -1,10 +1,9 @@
-#ifdef COBRA_ONLY
-
 #define CD_SECTOR_SIZE_2048     2048
 
 #ifndef LITE_EDITION
 #define PLAYSTATION      "PLAYSTATION "
 
+#ifdef COBRA_ONLY
 static u32 detect_cd_sector_size(const char *buffer)
 {
 	if(!buffer) return 2352;
@@ -18,7 +17,9 @@ static u32 detect_cd_sector_size(const char *buffer)
 
 	return 2352;
 }
+#endif
 
+#ifdef USE_INTERNAL_NTFS_PLUGIN
 static u32 default_cd_sector_size(size_t discsize)
 {
 	if(!(discsize % 0x930)) return 2352;
@@ -29,6 +30,7 @@ static u32 default_cd_sector_size(size_t discsize)
 
 	return 2352;
 }
+#endif
 #endif
 
 static void select_ps1emu(const char *path)
@@ -50,4 +52,3 @@ static void select_ps1emu(const char *path)
 		if(pad_data.len > 0) show_status("ps1_emu.self", STR_ENABLED);
 	}
 }
-#endif

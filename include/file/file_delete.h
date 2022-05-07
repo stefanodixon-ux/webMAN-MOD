@@ -208,6 +208,12 @@ static void del_turnoff(u8 beeps)
 	#ifdef WEB_CHAT
 	cellFsUnlink(WMCHATFILE);
 	#endif
+	#ifdef USE_NTFS
+	unmount_all_ntfs_volumes();
+	#endif
+	#ifdef MOUNT_ROMS
+	if(ROMS_EXTENSIONS) {free(ROMS_EXTENSIONS); ROMS_EXTENSIONS = NULL;}
+	#endif
 
 	if(!webman_config->nobeep)
 	{

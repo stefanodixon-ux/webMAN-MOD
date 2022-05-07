@@ -427,7 +427,7 @@ static void ps3mapi_syscall(char *buffer, char *templn, const char *param)
 #ifdef REMOVE_SYSCALLS
 	concat(buffer, "<br>");
 	if(sc_count)  add_checkbox("sce\" onclick=\"b.value=(this.checked)?' Enable ':'Disable';", "Re-Enable Syscalls & Unlock syscall 8", _BR_, false, buffer);
-	else		 _add_checkbox("scd", "Disable Syscalls & Lock syscall 8", false, buffer);
+	else	 add_checkbox_line("scd", "Disable Syscalls & Lock syscall 8", false, buffer);
 #endif
 
 	sprintf(templn, "</tr><tr><td class=\"ra\"><br><input class=\"bs\" id=\"%c\" type=\"submit\" value=\" %s \"/></tr></table></form><br>", 'b', "Disable");
@@ -891,8 +891,12 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 
 #ifdef DEBUG_MEM
 	concat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?flash\">Flash</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
-	sprintf(templn, " [<a href=\"/dump.ps3?%x\">LV1 Dump 0x%x</a>] [<a href=\"/peek.lv1?%x\">LV1 Peek</a>] [<a href=\"/peek.lv2?%x\">LV2 Peek</a>]", address, address, address, address); concat(buffer, templn);
+	sprintf(templn, " [<a href=\"/dump.ps3?%x\">LV1 Dump 0x%x</a>] [<a href=\"/peek.lv1?%x\">LV1 Peek</a>] [<a href=\"/peek.lv2?%x\">LV2 Peek</a>]", address, address, address, address); concat(buffer, templn + (address ? 0 : 41));
 #endif
+#ifdef ARTEMIS_PRX
+	concat(buffer, " [<a href=\"/artemis.ps3\">Artemis</a>]");
+#endif
+
 	concat(buffer, "<p>");
 
 	if(is_read_only) return;

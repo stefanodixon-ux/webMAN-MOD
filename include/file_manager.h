@@ -325,7 +325,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	#endif
 
 	#ifdef MOUNT_ROMS
-	else if( strstr(templn, "/ROMS") || (!show_icon0 && strcasestr(ROMS_EXTENSIONS, ext)) )
+	else if( strstr(templn, "/ROMS") || (!show_icon0 && ROMS_EXTENSIONS && strcasestr(ROMS_EXTENSIONS, ext)) )
 	{
 		sprintf(fsize, "<a href=\"/mount.ps3%s\" title=\"%'llu %s\">%'llu %s</a>", templn, sbytes, STR_BYTE, sz, sf);
 		ft = show_img ? " pic" : " rom";

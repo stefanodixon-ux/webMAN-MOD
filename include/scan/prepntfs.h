@@ -28,7 +28,7 @@ static u64 extract_iso_file(const char *iso_path, const char *file, u8 len, cons
 		lba *= 0x800ULL; if(lba > (file_size(iso_path) - size)) return 0; // is offset larger than iso?
 		if(!out_path) return lba; // return offset
 
-		char *buffer = (char*)sector + 0x800; // (0-62KB)
+		char *buffer = (char*)(sector + 0x800); // (0-62KB)
 		read_file(iso_path, buffer, size, lba);
 		save_file(out_path, buffer, size);
 	}
@@ -39,7 +39,9 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 {
 	if(!plugin_args || !sectionsP || !sections_sizeP) return;
 
-	int parts = ps3ntfs_file_to_sectors(iso_path, sectionsP, sections_sizeP, MAX_SECTIONS, 1);
+	const int max_sections = MAX_SECTIONS;
+
+	int parts = ps3ntfs_file_to_sectors(iso_path, sectionsP, sections_sizeP, max_sections, 1);
 
 	if(parts <= 0) return;
 
@@ -48,7 +50,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 	TrackDef tracks[MAX_TRACKS];
 	ScsiTrackDescriptor *scsi_tracks;
 
-	size_t extlen = 4;
+	u8 extlen = 4, sfo_found = 0;
 	char tmp_path[MAX_PATH_LEN];
 
 	rawseciso_args *p_args;
@@ -57,27 +59,30 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 	if(is_iso_0(filename))
 	{
 		size_t nlen = sprintf(tmp_path, "%s", iso_path);
-		extlen = 6, --nlen;
+		extlen = 6, --nlen; int nparts;
 
 		for(u8 o = 1; o < 64; o++)
 		{
-			if(parts >= MAX_SECTIONS) break;
+			if(parts >= max_sections) return;
 
 			sprintf(tmp_path + nlen, "%i", o);
 			if(not_exists(tmp_path)) break;
 
-			parts += ps3ntfs_file_to_sectors(tmp_path, sectionsP + (parts * sizeof(u32)), sections_sizeP + (parts * sizeof(u32)), MAX_SECTIONS - parts, 1);
+			nparts = ps3ntfs_file_to_sectors(tmp_path, sectionsP + (parts * sizeof(u32)), sections_sizeP + (parts * sizeof(u32)), max_sections - parts, 1);
+			if(nparts <= 0) return;
+
+			parts += nparts;
 		}
 	}
 
-	if(parts >= MAX_SECTIONS)
+	if(parts >= max_sections)
 	{
 		return;
 	}
 	else if(parts > 0)
 	{
 		num_tracks = 1;
-		struct stat bufn; int cd_sector_size = 0, cd_sector_size_param = 0;
+		int cd_sector_size_param = 0;
 
 			 if(ntfs_m == id_PS3ISO) emu_mode = EMU_PS3;
 		else if(ntfs_m == id_BDISO ) emu_mode = EMU_BD;
@@ -86,17 +91,19 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		{
 			emu_mode = EMU_PSX;
 
+			struct stat bufn;
 			if(ps3ntfs_stat(iso_path, &bufn) < 0) return;
-			cd_sector_size = default_cd_sector_size(bufn.st_size);
 
 			// detect CD sector size
 			char *buffer = (char*)sysmem_p;
 			read_file(iso_path, buffer + _32KB_, _8KB_, 0);
-			cd_sector_size = detect_cd_sector_size(buffer);
+			int cd_sector_size = detect_cd_sector_size(buffer);
 
+			// set CD sector size parameter for non 2352 sectors
 			if(cd_sector_size & 0xf) cd_sector_size_param = cd_sector_size<<8;
 			else if(cd_sector_size != 2352) cd_sector_size_param = cd_sector_size<<4;
 
+			// read LBA for tracks from cue file
 			if(change_ext(iso_path, 4, cue_ext))
 			{
 				char *cue_file = iso_path;
@@ -116,7 +123,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 
 		memcpy64(plugin_args + sizeof(rawseciso_args) + array_len, sections_sizeP, array_len);
 
-		int max = MAX_SECTIONS - ((num_tracks * sizeof(ScsiTrackDescriptor)) / 8);
+		int max = max_sections - ((num_tracks * sizeof(ScsiTrackDescriptor)) / 8);
 
 		if(parts >= max)
 		{
@@ -142,18 +149,21 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		filename[slen] = '\0'; // truncate file extension
 
 		snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
-		if(not_exists(tmp_path)) {filename[slen] = '.', slen += extlen, extlen = 0;} // create file with .iso extension
+		sfo_found = not_exists(tmp_path); if(!sfo_found) {filename[slen] = '.', slen += extlen;} // create file with .iso extension
 
+		// add sub-directory to file name
 		if(ntfs_subdir && strncmp(ntfs_subdir, filename, slen))
 		{
 			sprintf(tmp_path, "[%s] %s", ntfs_subdir, filename);
 			strcpy(filename, tmp_path);
 		}
 
+		// create .ntfs[] file
 		snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.ntfs[%s]", WMTMP, filename, SUFIX2(profile), paths[ntfs_m]);
 
 		save_file(tmp_path, (char*)plugin_args, (sizeof(rawseciso_args) + (2 * array_len) + (num_tracks * sizeof(ScsiTrackDescriptor)))); ntfs_count++;
 
+		// extract PNG and SFO from ISO
 		if(ntfs_m == id_PS3ISO)
 		{
 			snprintf(tmp_path, sizeof(tmp_path), "%s/%s%s.SFO", WMTMP, filename, SUFIX2(profile));
@@ -179,11 +189,25 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 			}
 		}
 
-		char *img_path = iso_path;
-		if(!get_image_file(img_path, plen - extlen)) return; // not found image in NTFS
+		// copy .PNG and .SFO from NTFS drive
+		int tlen = sprintf(tmp_path, "%s/%s", WMTMP, filename);
 
-		plen = sprintf(tmp_path, "%s/%s", WMTMP, filename);
-		if( get_image_file(tmp_path, plen - extlen)) return; // found image in WMTMP
+		// copy external .SFO to WMTMP if exists
+		if((ntfs_m == id_PS3ISO) && !sfo_found)
+		{
+			char *sfo_path = iso_path;
+			strcpy(sfo_path + plen, ".SFO");
+			if(not_exists(sfo_path))
+				strcpy(sfo_path + plen - extlen, ".SFO");
+			strcpy(tmp_path + tlen, ".SFO");
+			force_copy(sfo_path, tmp_path);
+		}
+
+		// copy external image to WMTMP if exists
+		char *img_path = iso_path;
+		if(!get_image_file(img_path, plen)) // image not found in NTFS
+		if(!get_image_file(img_path, plen - extlen)) return; // check without .iso extension
+		if( get_image_file(tmp_path, tlen)) return; // found image in WMTMP
 
 		// copy external image to WMTMP
 		force_copy(img_path, tmp_path);

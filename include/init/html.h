@@ -343,14 +343,14 @@ static size_t add_check_box(const char *name, bool disabled, const char *label, 
 {
 	if(!buffer || !label) return 0;
 
-	char templn[MAX_LINE_LEN], clabel[MAX_LINE_LEN];
-	strcpy(clabel, label);
-	char *p = strstr(clabel, AUTOBOOT_PATH);
-	if(p)
+	char templn[MAX_LINE_LEN];
+	const char *pos = strstr(label, AUTOBOOT_PATH), *clabel = label;
+	if(pos)
 	{
-		u8 pos = p - clabel;
-		sprintf(p, HTML_INPUT("autop", "%s", "255", "40"), webman_config->autoboot_path);
-		strcat(p, label + pos + strlen(AUTOBOOT_PATH));
+		char *autob = templn + 100; clabel = autob;
+		int n = (pos - label); strcpy(autob, label); // prefix
+		const char *on_startup = pos + strlen(AUTOBOOT_PATH); // sufix
+		sprintf(autob + n, HTML_INPUT("autop", "%s", "255", "40") "%s", webman_config->autoboot_path, on_startup);
 	}
 	sprintf(templn, "<label><input type=\"checkbox\" name=\"%s\" value=\"1\" %s%s/> %s</label>%s", name, disabled ? HTML_DISABLED_CHECKBOX : "", checked ? ITEM_CHECKED : "", clabel, (!sufix) ? "<br>" : sufix);
 	return concat(buffer, templn);
@@ -361,7 +361,7 @@ static size_t add_checkbox(const char *name, const char *label, const char *sufi
 	return add_check_box(name, false, label, sufix, checked, buffer);
 }
 
-static size_t _add_checkbox(const char *name, const char *label, bool checked, char *buffer)
+static size_t add_checkbox_line(const char *name, const char *label, bool checked, char *buffer)
 {
 	return add_checkbox(name, label, _BR_, checked, buffer);
 }

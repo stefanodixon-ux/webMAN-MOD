@@ -263,7 +263,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 		return linesLen;
 
 	char cType = lines[start];
-	int lineLen = 0, arg2Len = 0, arg1Off = 0, totalLenRead, arg0 = 0;
+	int lineLen, totalLenRead, arg2Len = 0, arg1Off = 0, arg0 = 0;
 	int startPos, arg0_2 = 0;
 
 	for (lineLen = start; lineLen < linesLen; lineLen++)

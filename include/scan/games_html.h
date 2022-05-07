@@ -106,7 +106,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		#ifdef MOUNT_ROMS
 		if(IS_ROMS_FOLDER)
 		{
-			if(!strcasestr(ROMS_EXTENSIONS, ext)) return FAILED;
+			if(ROMS_EXTENSIONS && !strcasestr(ROMS_EXTENSIONS, ext)) return FAILED;
 		}
 		else
 		#endif
@@ -376,7 +376,7 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 #ifdef MOUNT_ROMS
 	if(IS_ROMS_FOLDER)
 	{
-		return strcasestr(ROMS_EXTENSIONS, ext);
+		return ROMS_EXTENSIONS && strcasestr(ROMS_EXTENSIONS, ext);
 	}
 	else
 #endif
