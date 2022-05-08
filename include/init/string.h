@@ -92,7 +92,32 @@ void _memset(void *m, size_t n)
 	if(p)
 		memset(s, 0, p);
 }
+/*
+static char *replace(char *text, const char *rep, const char *with, int count)
+{
+	if (!text || !rep || !with || !rep[0])
+		return text;
 
+	const int len_with = strlen(with);
+	const int gap = len_with - strlen(rep);
+
+	char *pos = strstr(text, rep);
+	while (pos)
+	{
+		if(--count == -1) return text; // replace all if count < 0
+
+		if(gap > 0)
+			memmove(pos + gap, pos, strlen(pos) + 1);
+		if(gap >= 0)
+			memcpy(pos, with, len_with);
+		else
+			sprintf(pos, "%s%s", with, pos + len_with - gap);
+
+		pos = strstr(pos + len_with, rep);
+	}
+	return text;
+}
+*/
 static void replace_char(char *text, char c, char r)
 {
 	if(!text) return;

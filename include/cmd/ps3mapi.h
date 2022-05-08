@@ -57,6 +57,11 @@
 		ps3mapi_vshplugin(pbuffer, templn, param);
 	}
 	else
+	if(islike(param, "/kernelplugin.ps3mapi"))
+	{
+		ps3mapi_kernelplugin(pbuffer, templn, param);
+	}
+	else
 	if(islike(param, "/gameplugin.ps3mapi"))
 	{
 		ps3mapi_gameplugin(pbuffer, templn, param);

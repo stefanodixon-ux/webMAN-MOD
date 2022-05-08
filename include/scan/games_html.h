@@ -622,7 +622,13 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 					if(check_content_type(f1)) continue;
 
 				default_icon =  get_default_icon_by_type(f1);
-				if(custom_icon && *param == '/') {char *pos = get_filename(param); *pos = *icon = NULL; get_default_icon(icon, param, (pos + 1), isDir(param), slaunch.id, 0, 0, f1); *pos = '/';}
+
+				if(custom_icon && *param == '/')
+				{
+					char *pos = get_filename(param); *pos = *icon = NULL;
+					get_default_icon(icon, param, (pos + 1), isDir(param), slaunch.id, 0, 0, f1);
+					*pos = '/';
+				}
 
 				set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, 0, f1); // sort key
 

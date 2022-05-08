@@ -12,8 +12,6 @@
 
 		sprintf(param, "%s%s", "/edit.ps3", ARTEMIS_CODES_FILE);
 
-		strcpy(header, param);
-
 		start_artemis();
 
 		is_popup = 1;

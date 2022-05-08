@@ -67,20 +67,21 @@ static bool HAS(char *icon)
 
 static void check_cover_folders(char *buffer)
 {
-		#ifndef ENGLISH_ONLY
-													covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
-		#endif
-		u8 p;
-		for(p = 0; p < 3; p++)
-		{
-			sprintf(buffer, "%s/covers_retro/psx", cpath[p]); covers_retro_exist[p] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
-		}
-		for(p = 0; p < 6; p++)
-		{
-			sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
-		}
-													covers_exist[6] = isDir(WMTMP_COVERS);
-													covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
+	if(!buffer) return; // sanity check
+
+	#ifndef ENGLISH_ONLY
+												covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
+	#endif
+	for(u8 p = 0; p < 3; p++)
+	{
+		sprintf(buffer, "%s/covers_retro/psx", cpath[p]); covers_retro_exist[p] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
+	}
+	for(u8 p = 0; p < 6; p++)
+	{
+		sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
+	}
+												covers_exist[6] = isDir(WMTMP_COVERS);
+												covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
 
 	#ifndef ENGLISH_ONLY
 	if(!covers_exist[0]) {use_custom_icon_path = strstr(COVERS_PATH, "%s"); use_icon_region = strstr(COVERS_PATH, "%s/%s");} else {use_icon_region = use_custom_icon_path = false;}
@@ -118,7 +119,8 @@ static void swap_ex(u8 e)
 
 static bool get_image_file(char *icon, int flen)
 {
-	if(!icon || (flen <= 0)) return false;
+	if(!icon || (flen <= 0)) return false; // sanity check
+
 	for(u8 e = 0; e < 4; e++)
 	{
 		strcpy(icon + flen, ext[ex[e]]);
@@ -133,6 +135,8 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	// name:
 	//   returns file name without extension & without title id (cache == 0 -> file name keeps path, cache == 2 -> remove path first)
 	//   returns file name with WMTMP path                      (cache == 1 -> remove path first)
+
+	if(!name || !filename) return 0; // sanity check
 
 	int flen, pos = 0;
 	if(cache) {pos = strlen(filename); while((pos > 0) && filename[pos - 1] != '/') pos--;}
@@ -194,6 +198,7 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 	if(name[4] == '_' && name[8] == '.' && (*name == 'B' || *name == 'N' || *name == 'S' || *name == 'U') && ISDIGIT(name[9]) && ISDIGIT(name[10])) {flen = sprintf(name, "%s", &name[12]);}// SLES_000.00-Name
 	if(name[9] == '-' && name[10]== '[') {flen = sprintf(name, "%s", name + 11) - 1; name[flen] = '\0';} // BLES00000-[Name]
 	if(name[10]== '-' && name[11]== '[') {flen = sprintf(name, "%s", name + 12) - 1; name[flen] = '\0';} // BLES-00000-[Name]
+
 	if(!webman_config->tid) // Name [BLES-00000]
 	{
 		char *p = strstr(name, " [");
@@ -206,7 +211,7 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 
 static bool get_cover_by_titleid(char *icon, const char *title_id)
 {
-	if(!icon || !title_id) return false;
+	if(!icon || !title_id) return false; // sanity check
 
 	if(!HAS_TITLE_ID) return false;
 
@@ -288,6 +293,8 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 
 static bool get_cover_from_name(char *icon, const char *name, char *title_id) // get icon & title_id from name
 {
+	if(!icon || !name || !title_id) return false; // sanity check
+
 	if(HAS(icon)) return true;
 
 	// get cover from title_id in PARAM.SFO
@@ -343,7 +350,7 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id) //
 
 	if(title_id[4] == '-') strncpy(&title_id[4], &title_id[5], 5); title_id[TITLE_ID_LEN] = '\0';
 
-	// get cover using titleID obtained from file name
+	// get cover using title_id obtained from file name
 	if(get_cover_by_titleid(icon, title_id)) return true;
 
 	return false;
@@ -351,7 +358,7 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id) //
 
 static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *param, const char *entry_name, char *title_id, u8 f0)
 {
-	//this function is called only from get_default_icon
+	//this function is called only from get_default_icon()
 
 	if(SHOW_COVERS_OR_ICON0)
 	{
@@ -435,9 +442,9 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 	}
 }
 
-static void get_default_icon_for_iso(char *icon, const char *param, char *file, int isdir, int ns)
+static void get_default_icon_for_iso(char *icon, const char *param, const char *file, int isdir, int ns)
 {
-	//this function is called only from get_default_icon
+	//this function is called only from get_default_icon()
 
 	int flen;
 
@@ -531,14 +538,16 @@ static enum icon_type get_default_icon_by_type(u8 f1)
 
 static enum icon_type get_default_icon(char *icon, const char *param, char *file, int is_dir, char *title_id, int ns, u8 f0, u8 f1)
 {
+	enum icon_type default_icon = get_default_icon_by_type(f1);
+
+	if(!icon || !param || !file || !title_id) return default_icon; // sanity check
+
 	char filename[STD_PATH_LEN];
 
 	if(ns == FROM_MOUNT)
 		snprintf(filename, STD_PATH_LEN, "%s", file);
 	else
-		*filename = NULL;
-
-	enum icon_type default_icon = get_default_icon_by_type(f1);
+		*filename = '\0';
 
 	if(webman_config->nocov == SHOW_DISC) {if(get_cover_from_name(icon, file, title_id)) return default_icon; goto no_icon0;}
 
@@ -642,6 +651,8 @@ static int get_title_and_id_from_sfo(char *param_sfo, char *title_id, const char
 static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, const char *param, const char *entry_name, u8 f0, u8 f1, u8 uprofile, int flen, char *tempstr)
 {
 	// check entry path & returns file name without extension or path of sfo (for /PS3ISO) in param_sfo
+
+	if(!param_sfo || !title_id || !icon || !param || !entry_name || !tempstr) return FAILED; // sanity check
 
 	if(IS_NTFS)
 	{   // ntfs

@@ -20,7 +20,7 @@
 
 static bool isDir(const char *path)
 {
-	if(!path) return false;
+	if(!path) return false;  // sanity check
 
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))
@@ -73,7 +73,7 @@ static const char *get_ext(const char *path)
 
 static char *get_filename(const char *path)
 {
-	if(!path) return NULL;
+	if(!path) return NULL; // sanity check
 
 	char *filename = strrchr(path, '/'); if(!filename) return (char *)path;
 	return filename; // return with slash
@@ -81,6 +81,8 @@ static char *get_filename(const char *path)
 
 static void normalize_path(char *path, bool slash)
 {
+	if(!path) return; // sanity check
+
 	u32 flen = strlen(path);
 	while((flen > 1) && (path[--flen] == '/')) path[flen] = '\0';
 	if(!(*path) || (slash && (flen > 1) && (path[flen] != '/'))) strcat(path + flen, "/");
@@ -95,6 +97,8 @@ static char *remove_filename(const char *path)
 #ifndef LITE_EDITION
 static char *copy_path(char *path, const char *full_path)
 {
+	if(!path || !full_path) return NULL;  // sanity check
+
 	strcpy(path, full_path);
 	return remove_filename(path);
 }
@@ -103,7 +107,7 @@ static char *copy_path(char *path, const char *full_path)
 #ifdef COBRA_ONLY
 static bool change_ext(char *filename, int num_ext, const char *file_ext[])
 {
-	if(!filename || !file_ext) return false;
+	if(!filename || !file_ext) return false;  // sanity check
 
 	char *ext = (char*)get_ext(filename);
 	for(u8 e = 0; e < num_ext; e++)
@@ -116,6 +120,8 @@ static bool change_ext(char *filename, int num_ext, const char *file_ext[])
 
 static void change_cue2iso(char *cue_file)
 {
+	if(!cue_file) return; // sanity check
+
 	if(is_ext(cue_file, ".cue") || is_ext(cue_file, ".ccd"))
 	{
 		change_ext(cue_file, 11, iso_ext);
@@ -126,7 +132,7 @@ static void change_cue2iso(char *cue_file)
 #else
 static void check_ps3_game(char *path)
 {
-	if(!path) return;
+	if(!path) return; // sanity check
 
 	char *p = strstr(path, "/PS3_GAME");
 	if(p)
@@ -140,7 +146,7 @@ static void check_ps3_game(char *path)
 
 static void check_path_alias(char *param)
 {
-	if(!param) return;
+	if(!param) return; // sanity check
 
 	if(islike(param, "/dev_blind")) enable_dev_blind(NULL);
 
@@ -161,7 +167,7 @@ static void check_path_alias(char *param)
 			char *wildcard = strchr(path, '*'); if(wildcard) *wildcard = 0;
 			if((len == 4) && path[3] == '/') path[3] = 0; // normalize path
 			if(IS(path, "pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
-			if(IS(path, "xml")) {*path = 0;} else
+			if(IS(path, "xml")) {*path = 0;} else // use HTML_BASE_PATH
 			if(IS(path, "xmb")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
 			if(IS(path, "res")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource");} else
 			if(IS(path, "mod")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/module");} else
@@ -193,6 +199,8 @@ static void check_path_alias(char *param)
 #if defined(COPY_PS3) || defined(PKG_HANDLER) || defined(MOUNT_GAMEI)
 static void mkdir_tree(const char *full_path)
 {
+	if(!full_path) return; // sanity check
+
 	char *path = (char *)full_path;
 	size_t path_len = strlen(path);
 #ifdef USE_NTFS
@@ -212,6 +220,8 @@ static void mkdir_tree(const char *full_path)
 
 static void mkdirs(char *param)
 {
+	if(!param) return; // sanity check
+
 	cellFsMkdir(TMP_DIR, DMODE);
 	cellFsMkdir(WMTMP, DMODE);
 	cellFsMkdir("/dev_hdd0/packages", DMODE);
@@ -240,6 +250,8 @@ static void mkdirs(char *param)
 #ifndef LITE_EDITION
 static void rename_file(char *source, char *dest)
 {
+	if(!source || !dest) return; // sanity check
+
 	normalize_path(source, false);
 	normalize_path(dest, false);
 
@@ -261,7 +273,7 @@ static void rename_file(char *source, char *dest)
 
 size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 {
-	if(!file || !data) return 0;
+	if(!file || !data) return 0; // sanity check
 
 	int fd = 0; u64 read_e = 0;
 
@@ -299,7 +311,9 @@ static u16 read_sfo(const char *file, char *data)
 
 static int write_file(const char *file, int flags, const char *data, u64 offset, int size, bool crlf)
 {
-	if(!file) return FAILED; int fd = 0;
+	if(!file || !data) return FAILED; // sanity check
+
+	int fd = 0;
 
 #ifdef USE_NTFS
 	if(is_ntfs_path(file))
@@ -348,6 +362,8 @@ static int patch_file(const char *file, const char *data, u64 offset, int size)
 
 int save_file(const char *file, const char *mem, s64 size)
 {
+	if(!file || !mem) return FAILED; // sanity check
+
 	bool crlf = (size == APPEND_TEXT); // auto add new line
 
 	int flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;

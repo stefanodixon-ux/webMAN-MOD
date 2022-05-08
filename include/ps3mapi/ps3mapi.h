@@ -77,6 +77,9 @@ static void disable_signin_dialog(void);
 static void enable_signin_dialog(void);
 #endif
 
+static bool kplugin_loaded = false;
+static u64 residence = 0x80000000007F0000ULL;
+
 static u32 get_current_pid(void)
 {
 	if(IS_INGAME)
@@ -1074,25 +1077,27 @@ static void add_plugins_list(char *buffer, char *templn, u8 is_vsh)
 
 		#define PLUGINS_PATH	is_vsh ? vsh_modules[i] : (i < 3) ? drives[i] : paths[i - 3]
 
-		u8 count = is_vsh ? 3 : 8;
+		const char *ext = ".sprx"; u8 count = is_vsh ? 3 : 8, ext_len = 5;
+
+		if(is_vsh == 99) {count = 1, vsh_modules[0] = "/dev_hdd0/plugins/kernel", ext = ".bin", ext_len = 4;}
 
 		for(u8 i = 0; i < count; i++)
-		if(cellFsOpendir(PLUGINS_PATH, &fd) == CELL_FS_SUCCEEDED)
-		{
-			CellFsDirectoryEntry dir; u32 read_e;
-			const char *entry_name = dir.entry_name.d_name;
-
-			u16 plen = sprintf(templn, "<option>%s/", PLUGINS_PATH);
-
-			while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
+			if(cellFsOpendir(PLUGINS_PATH, &fd) == CELL_FS_SUCCEEDED)
 			{
-				if(!extcmp(entry_name, ".sprx", 5))
+				CellFsDirectoryEntry dir; u32 read_e;
+				const char *entry_name = dir.entry_name.d_name;
+
+				u16 plen = sprintf(templn, "<option>%s/", PLUGINS_PATH);
+
+				while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 				{
-					sprintf(templn + plen, "%s", entry_name); buffer += concat(buffer, templn); if(++cnt > 450) break;
+					if(!extcmp(entry_name, ext, ext_len))
+					{
+						sprintf(templn + plen, "%s", entry_name); buffer += concat(buffer, templn); if(++cnt > 450) break;
+					}
 				}
+				cellFsClosedir(fd);
 			}
-			cellFsClosedir(fd);
-		}
 
 		concat(buffer, "</datalist></div>");
 	}
@@ -1113,13 +1118,13 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 		if(pos)
 		{
 			u8 boot_mode = get_valuen(pos, "?s=", 0, 4);
-			sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt"); if(IS_DEX) sprintf(tmp_filename + 22, "_dex.txt");
+			sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt"); if(dex_mode) sprintf(tmp_filename + 22, "_dex.txt");
 			switch (boot_mode)
 			{
 				case 1: sprintf(tmp_filename + 10, "mamba_plugins.txt"); break;
 				case 2: sprintf(tmp_filename + 10, "prx_plugins.txt");   break;
 				case 3: sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/plugins.txt"); break;
-				case 4: sprintf(tmp_filename + 22, "_nocobra.txt"); if(IS_DEX) sprintf(tmp_filename + 30, "_dex.txt"); break;
+				case 4: sprintf(tmp_filename + 22, "_nocobra.txt"); if(dex_mode) sprintf(tmp_filename + 30, "_dex.txt"); break;
 			}
 
 			sprintf(templn, "<p><a href=\"%s\" style=\"padding:8px;background:#900;border-radius:8px;\">%s</a><p>", tmp_filename, tmp_filename); concat(buffer, templn);
@@ -1150,12 +1155,12 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 			}
 			else
 			{
-				char prx_path[STD_PATH_LEN];
+				char *prx_path = tmp_filename;
 				if(get_param("prx=", prx_path, param, STD_PATH_LEN))
 				{
 					check_path_alias(prx_path);
 					if (!uslot ) uslot = get_free_slot(); // find free slot if slot == 0
-					if ( uslot ) {{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)prx_path, NULL, 0);}}
+					if ( uslot ) {system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)prx_path, NULL, 0);}
 					#ifdef FPS_OVERLAY
 					if(strstr(prx_path, "/VshFpsCounter")) {overlay_enabled = 1, overlay_info = overlay = 0;}
 					#endif
@@ -1187,11 +1192,10 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 
 			buffer += add_breadcrumb_trail(buffer, tmp_filename);
 
-			sprintf(templn, ""
-							"<td width=\"100\" class=\"ra\">"
+			sprintf(templn, "<td width=\"100\" class=\"ra\">"
 							HTML_FORM_METHOD_FMT("/vshplugin")
-							"<input name=\"unload_slot\" type=\"hidden\" value=\"%i\"><input type=\"submit\" %s/></form></tr>",
-							HTML_FORM_METHOD, slot, (slot) ? "value=\" Unload \"" : "value=\" Reserved \" disabled" );
+							"<input name=\"unload_slot\" type=\"hidden\" value=\"%i\">",
+							HTML_FORM_METHOD, slot);
 		}
 		else
  		{
@@ -1199,12 +1203,17 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 							"<td width=\"120\" class=\"la\">%s"
 							HTML_FORM_METHOD_FMT("/vshplugin")
 							"<td width=\"500\" class=\"la\">"
-							HTML_INPUT("prx\" style=\"width:555px\" list=\"plugins", "", "128", "75") "<input name=\"load_slot\" type=\"hidden\" value=\"%i\">"
-							"<td width=\"100\" class=\"ra\"><input type=\"submit\" %s/></form></tr>",
-							slot, "NULL",
-							HTML_FORM_METHOD, slot, (slot) ? "value=\" Load \"" : "value=\" Reserved \" disabled" );
+							HTML_INPUT("prx\" style=\"width:555px\" list=\"plugins", "", "128", "75")
+							"<input name=\"load_slot\" type=\"hidden\" value=\"%i\">"
+							"<td width=\"100\" class=\"ra\">",
+							slot, "NULL", HTML_FORM_METHOD, slot);
 		}
-			buffer += concat(buffer, templn);
+		buffer += concat(buffer, templn);
+		if(*tmp_filename)
+			sprintf(templn, "<input type=\"submit\" value=%s/></form></tr>", (slot) ? "\" Unload \"" : "\" Reserved \" disabled");
+		else
+			sprintf(templn, "<input type=\"submit\" value=%s/></form></tr>", (slot) ? "\" Load \"" : "\" Reserved \" disabled");
+		buffer += concat(buffer, templn);
 	}
 
 	sprintf(templn, "<tr><td colspan=4><p>%s > "	HTML_BUTTON_FMT
@@ -1212,9 +1221,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 													HTML_BUTTON_FMT
 													HTML_BUTTON_FMT
 													HTML_BUTTON_FMT "</tr>", STR_SAVE,
-		HTML_BUTTON, dex_mode ?
-					"boot_plugins_dex.txt" :
-					"boot_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
+		HTML_BUTTON, "boot_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
 		HTML_BUTTON, dex_mode ?
 					"boot_plugins_nocobra_dex.txt" :
 					"boot_plugins_nocobra.txt",		HTML_ONCLICK, "/vshplugin.ps3mapi?s=4",
@@ -1223,6 +1230,138 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 		HTML_BUTTON, "plugins.txt",					HTML_ONCLICK, "/vshplugin.ps3mapi?s=3"); concat(buffer, templn);
 
 	add_plugins_list(buffer, templn, 0);
+
+	sprintf(templn, "</table><br>");
+
+	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR);
+	concat(buffer, templn);
+}
+
+static void ps3mapi_kernelplugin(char *buffer, char *templn, const char *param)
+{
+	bool is_ps3mapi_home = (*param == ' ');
+
+	char tmp_name[48];
+	char tmp_filename[STD_PATH_LEN];
+
+	if(islike(param, "/kernelplugin.ps3mapi") && param[21] == '?')
+	{
+		unsigned int uslot = 0;
+
+		const char *pos = strstr(param + 18, "?s=");
+		if(pos)
+		{
+			u8 boot_mode = get_valuen(pos, "?s=", 0, 4);
+			sprintf(tmp_name, "/dev_hdd0/boot_plugins_kernel.txt");
+			if(boot_mode)
+			{
+				sprintf(tmp_name + 29, dex_mode ? "_nocobra_dex.txt" : "_nocobra.txt");
+			}
+
+			sprintf(templn, WMTMP "/kernel%i.txt", uslot);
+			read_file(templn, tmp_filename, STD_PATH_LEN, 0);
+			save_file(tmp_name, tmp_filename, SAVE_ALL);
+
+			sprintf(templn, "<p><a href=\"%s\" style=\"padding:8px;background:#900;border-radius:8px;\">%s</a><p>", tmp_name, tmp_name); concat(buffer, templn);
+		}
+		else
+		{
+			uslot = get_valuen(param, "load_slot=", 0, 1);
+
+			char addr_tmp[20];
+			if(get_param("addr=", addr_tmp, param, 0x10))
+			{
+				residence = convertH(addr_tmp);
+				if(!residence) residence = 0x80000000007F0000ULL;
+			}
+			residence |= 0x8000000000000000ULL;
+
+			if(strstr(param, "unload_slot="))
+			{
+				if ( uslot )
+					{system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_PAYLOAD_DYNAMIC, (u64)uslot); kplugin_loaded = false;}
+			}
+			else
+			{
+				char *prx_path = tmp_filename;
+				if(get_param("prx=", prx_path, param, STD_PATH_LEN))
+				{
+					check_path_alias(prx_path);
+					size_t size = file_size(prx_path);
+
+					if(size < 4) {BEEP3}
+
+					else if(uslot)
+						{BEEP2; system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD_DYNAMIC, (u64)(u32)prx_path, size, residence); kplugin_loaded = true;}
+					else
+						{BEEP1; system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD, (u64)(u32)prx_path, size);}
+				}
+				sprintf(tmp_name, WMTMP "/kernel%i.txt", uslot);
+				save_file(tmp_name, prx_path, SAVE_ALL);
+			}
+		}
+	}
+
+	sprintf(templn, "<b>%s%s</b>"
+					HTML_BLU_SEPARATOR "<br>"
+					"<table>"
+					"<tr><td width=\"75\" class=\"la\">%s"
+					"<td width=\"120\" class=\"la\">%s"
+					"<td width=\"500\" class=\"la\">%s"
+					"<td width=\"125\" class=\"ra\"> </tr>",
+					is_ps3mapi_home ? "" : HOME_PS3MAPI, "Kernel Plugins", "Slot", "Name", "File name");
+
+	buffer += concat(buffer, templn);
+	for (unsigned int slot = 0; slot < 2; slot++)
+	{
+		if(!slot)
+		{
+			if(!cobra_version)
+				sprintf(templn, dex_mode ?  "boot_plugins_kernel_nocobra_dex.txt" :
+											"boot_plugins_kernel_nocobra.txt");
+			else
+				sprintf(templn, "boot_plugins_kernel.txt");
+			read_file(templn, tmp_filename, STD_PATH_LEN, 0);
+			if(*tmp_filename == 0)
+				sprintf(templn, WMTMP "/kernel%i.txt", slot);
+		}
+		else
+			sprintf(templn, WMTMP "/kernel%i.txt", slot);
+		read_file(templn, tmp_filename, STD_PATH_LEN, 0);
+
+		strcpy(tmp_name, slot ? "DYNAMIC" : "FIXED");
+
+		sprintf(templn, "<tr><td width=\"75\" class=\"la\">%i"
+						"<td width=\"120\" class=\"la\">%s"
+						HTML_FORM_METHOD_FMT("/kernelplugin")
+						"<td width=\"500\" class=\"la\">"
+						HTML_INPUT("prx\" style=\"width:555px\" list=\"plugins", "%s", "128", "75")
+						"<input name=\"load_slot\" type=\"hidden\" value=\"%i\">"
+						"<td width=\"100\" class=\"ra\">",
+						slot, tmp_name, HTML_FORM_METHOD, tmp_filename, slot);
+		buffer += concat(buffer, templn);
+
+		if(slot)
+		{
+			sprintf(templn, " &nbsp; " HTML_INPUT("addr", "%08x", "8", "8") "<br>", (u32)residence);
+			buffer += concat(buffer, templn);
+		}
+
+		if(kplugin_loaded && slot)
+			sprintf(templn, "<input type=\"submit\" value=%s/></form></tr>", "\" Unload \"");
+		else
+			sprintf(templn, "<input type=\"submit\" value=%s/></form></tr>", "\" Load \"");
+		buffer += concat(buffer, templn);
+	}
+
+	sprintf(templn, "<tr><td colspan=4><p>%s > "	HTML_BUTTON_FMT
+													HTML_BUTTON_FMT "</tr>", STR_SAVE,
+		HTML_BUTTON, "boot_plugins_kernel.txt",		HTML_ONCLICK, "/kernelplugin.ps3mapi?s=0",
+		HTML_BUTTON, dex_mode ?
+					"boot_plugins_kernel_nocobra_dex.txt" :
+					"boot_plugins_kernel_nocobra.txt", HTML_ONCLICK, "/kernelplugin.ps3mapi?s=1"); concat(buffer, templn);
+
+	add_plugins_list(buffer, templn, 99);
 
 	sprintf(templn, "</table><br>");
 
@@ -1474,6 +1613,11 @@ static void ps3mapi_home(char *buffer, char *templn)
 		//VSH Plugin
 		//---------------------------------------------
 		ps3mapi_vshplugin(buffer, templn, " ");
+
+		//---------------------------------------------
+		//Kernel Plugin
+		//---------------------------------------------
+		ps3mapi_kernelplugin(buffer, templn, " ");
 
 		//---------------------------------------------
 		//IDPS/PSID

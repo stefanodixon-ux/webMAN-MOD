@@ -28,6 +28,7 @@
 					|| islike(param, "/syscall8.ps3mapi")
 					|| islike(param, "/setidps.ps3mapi")
 					|| islike(param, "/vshplugin.ps3mapi")
+					|| islike(param, "/kernelplugin.ps3mapi")
 					|| islike(param, "/gameplugin.ps3mapi")
  #endif
 
