@@ -15,8 +15,9 @@ static sys_addr_t typeA_Copy = NULL;
 #define	PAD_SELECT			(1<<0)
 #define	PAD_START			(1<<3)
 
-static int doForceWrite = 0;
-static int isConstantWrite = 0;
+static vu8 art_cmd = 0;
+static u8 doForceWrite = 0;
+static u8 isConstantWrite = 0;
 static process_id_t attachedPID = 0;
 
 #define get_process_mem		ps3mapi_get_process_mem
@@ -750,9 +751,9 @@ static void art_thread(u64 arg)
 					art_process(0);
 				}
 
-				if (pad & PAD_START)
+				if ((pad & PAD_START) || (art_cmd == 1))
 				{
-					attachedPID = GameProcessID;
+					attachedPID = GameProcessID; art_cmd = 0;
 
 					if (attachedPID)
 					{
@@ -772,9 +773,11 @@ static void art_thread(u64 arg)
 						sys_ppu_thread_sleep(1);
 					}
 				}
-				else if ((pad & PAD_SELECT) && attachedPID)
+				if ((pad & PAD_START) || (art_cmd == 2))
 				{
-					show_msg("Artemis PS3\nDetached");
+					art_cmd = 0;
+					if (attachedPID)
+						show_msg("Artemis PS3\nDetached");
 					release_art();
 				}
 			}

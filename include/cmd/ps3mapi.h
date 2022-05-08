@@ -19,6 +19,11 @@
 		ps3mapi_notify(pbuffer, templn, param);
 	}
 	else
+	if(islike(param, "/mappath.ps3mapi"))
+	{
+		ps3mapi_mappath(pbuffer, templn, param);
+	}
+	else
 	if(islike(param, "/syscall.ps3mapi"))
 	{
 		ps3mapi_syscall(pbuffer, templn, param);

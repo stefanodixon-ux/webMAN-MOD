@@ -29,8 +29,10 @@
  RESTART      : L3+R2+O (lpar restart)
  RESTART   *2 : L3+R1+O (vsh restart)  <- alternative restart method
 
- FAN CNTRL    : L3+R2+START  (enable/disable fancontrol)
- SHOW TEMP    : SELECT+START (SELECT+START+R2 will show only copy progress) / SELECT+R3 (if rec video flag is disabled)
+ FAN CNTRL    : L3+R2+START    (enable/disable fancontrol)
+ FAN CNTRL    : L3+L2+START    (enable auto #2)
+ FAN CNTRL    : L3+L2+R2+START (enable ps2 fan mode)
+ SHOW TEMP    : SELECT+START   (SELECT+START+R2 will show only copy progress) / SELECT+R3 (if rec video flag is disabled)
 
  DYNAMIC TEMP : SELECT+LEFT/RIGHT               *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_left
                                                 *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_right
@@ -719,10 +721,10 @@
 						sys_ppu_thread_exit(0);
 					}
 				}
-				else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2 )) // L3+R2+START (enable/disable fancontrol)
+				else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2) )) // L3+R2+L2+START (set PS2 fan mode)
 				{
-					// L3+R2+START = Enable/disable fancontrol
-					enable_fan_control(TOGGLE_MODE);
+					// L3+L2+R2+START = Enable ps2 fan control mode
+					restore_fan(SET_PS2_MODE);
 
 					break_and_wait;
 				}
@@ -730,6 +732,13 @@
 				{
 					// L3+L2+START = Enable Auto #2
 					enable_fan_control(ENABLE_AUTO2);
+
+					break_and_wait;
+				}
+				else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2 )) // L3+R2+START (enable/disable fancontrol)
+				{
+					// L3+R2+START = Enable/disable fancontrol
+					enable_fan_control(TOGGLE_MODE);
 
 					break_and_wait;
 				}

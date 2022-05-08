@@ -24,6 +24,7 @@
 					|| islike(param, "/led.ps3mapi")
 					|| islike(param, "/buzzer.ps3mapi") || islike(param, "/beep.ps3")
 					|| islike(param, "/notify.ps3mapi")
+					|| islike(param, "/mappath.ps3mapi")
 					|| islike(param, "/syscall.ps3mapi")
 					|| islike(param, "/syscall8.ps3mapi")
 					|| islike(param, "/setidps.ps3mapi")

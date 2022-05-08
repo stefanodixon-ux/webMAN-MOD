@@ -77,8 +77,6 @@ static void disable_signin_dialog(void);
 static void enable_signin_dialog(void);
 #endif
 
-static bool kplugin_loaded = false;
-static u64 residence = 0x80000000007F0000ULL;
 
 static u32 get_current_pid(void)
 {
@@ -199,6 +197,9 @@ static void start_vsh_gui(bool vsh_menu)
 
 static void ps3mapi_syscall8(char *buffer, char *templn, const char *param);
 static void ps3mapi_setmem(char *buffer, char *templn, const char *param);
+
+static bool kplugin_loaded = false;
+static u64 residence = 0x80000000007F0000ULL;
 
 static u32 found_offset = 0;
 static u8 ps3mapi_working = 0;
@@ -351,6 +352,48 @@ static void ps3mapi_notify(char *buffer, char *templn, const char *param)
 					"Send", "</tr></table></form>");
 
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "");
+	concat(buffer, templn);
+}
+
+static void ps3mapi_mappath(char *buffer, char *templn, const char *param)
+{
+	bool is_ps3mapi_home = (*param == ' ');
+
+	sprintf(templn, "<b>%s%s</b>"
+					HTML_BLU_SEPARATOR,
+					HOME_PS3MAPI, "Map Path");
+	concat(buffer, templn);
+
+	char src[STD_PATH_LEN]; _memset(src, STD_PATH_LEN);
+	char dst[STD_PATH_LEN]; _memset(dst, STD_PATH_LEN);
+
+	if(get_param("?src=", src, param, STD_PATH_LEN))
+	{
+		char *label = templn + 400;
+		get_param("&to=", dst, param, STD_PATH_LEN);
+		if(*dst == '/')
+			{sys_map_path(src, dst); sprintf(label, "%s: %s => %s", "Remap", src, dst);}
+		else
+			{sys_map_path(src, NULL); sprintf(label, "%s: %s", "Unmap", src);}
+
+		sprintf(templn, "<p><a href=\"%s\" style=\"padding:8px;background:#900;border-radius:8px;\">%s</a><p>", src, label); concat(buffer, templn);
+	}
+
+	sprintf(templn, HTML_FORM_METHOD_FMT("/mappath")
+					"<table width=\"800\">"
+					"<tr><td class=\"la\">"
+					HTML_INPUT("src\" style=\"width:400px", "%s", "260", "200") " => "
+					HTML_INPUT( "to\" style=\"width:400px", "%s", "260", "200"),
+					HTML_FORM_METHOD, src, dst);
+	concat(buffer, templn);
+
+	sprintf(templn, "</tr>"
+					"<tr><td class=\"ra\">"
+					"<input class=\"bs\" type=\"submit\" value=\" %s \"/>%s",
+					"Remap", " <button class=\"bs\" onclick=\"to.value='';\"> Unmap </button>");
+	strcat(templn, "</tr></table></form>");
+
+	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "<br>");
 	concat(buffer, templn);
 }
 
@@ -1279,7 +1322,7 @@ static void ps3mapi_kernelplugin(char *buffer, char *templn, const char *param)
 			if(strstr(param, "unload_slot="))
 			{
 				if ( uslot )
-					{system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_PAYLOAD_DYNAMIC, (u64)uslot); kplugin_loaded = false;}
+					{system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_PAYLOAD_DYNAMIC, residence); kplugin_loaded = false;}
 			}
 			else
 			{
@@ -1289,12 +1332,23 @@ static void ps3mapi_kernelplugin(char *buffer, char *templn, const char *param)
 					check_path_alias(prx_path);
 					size_t size = file_size(prx_path);
 
-					if(size < 4) {BEEP3}
+					sys_addr_t payload = sys_mem_allocate(_64KB_ + (int)((size - 1) / _64KB_));
+					if (read_file(prx_path,	(char*)payload, size, 0))
+					{
+						if (size < 4) { BEEP3 }
+						else if (uslot)
+						{
+							BEEP2; system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD_DYNAMIC, (u64)(u32)payload, size, (u64)&residence); kplugin_loaded = true;
+						}
+						else
+						{
+							BEEP1; system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD, (u64)(u32)payload,	size);
+						}
+					}
 
-					else if(uslot)
-						{BEEP2; system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD_DYNAMIC, (u64)(u32)prx_path, size, residence); kplugin_loaded = true;}
-					else
-						{BEEP1; system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD, (u64)(u32)prx_path, size);}
+					if (payload)
+						sys_memory_free(payload);
+
 				}
 				sprintf(tmp_name, WMTMP "/kernel%i.txt", uslot);
 				save_file(tmp_name, prx_path, SAVE_ALL);
@@ -1592,6 +1646,9 @@ static void ps3mapi_home(char *buffer, char *templn)
 
 	//Notify
 	ps3mapi_notify(buffer, templn, " ");
+
+	//Map path
+	ps3mapi_mappath(buffer, templn, " ");
 
 	if (syscall8_state >= 0 && syscall8_state < 3)
 	{
