@@ -338,7 +338,8 @@ static void ps3mapi_notify(char *buffer, char *templn, const char *param)
 
 	sprintf(templn, HTML_FORM_METHOD_FMT("/notify")
 					"<table width=\"800\">"
-					"<tr><td class=\"la\"><textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea>"
+					"<tr><td class=\"la\">"
+					"<textarea name=\"msg\" cols=\"111\" rows=\"2\" maxlength=\"199\">%s</textarea>"
 					"<br>Icon (0-50): " HTML_NUMBER("icon", "%i", "0", "50")
 					" Sound: <select name=\"snd\"><option value=''>No Sound", HTML_FORM_METHOD, msg, icon_id);
 	concat(buffer, templn);
@@ -360,7 +361,7 @@ static void ps3mapi_mappath(char *buffer, char *templn, const char *param)
 
 	sprintf(templn, "<b>%s%s</b>"
 					HTML_BLU_SEPARATOR,
-					HOME_PS3MAPI, "Map Path");
+					is_ps3mapi_home ? "" : HOME_PS3MAPI, "Map Path");
 	concat(buffer, templn);
 
 	char src[STD_PATH_LEN]; _memset(src, STD_PATH_LEN);
@@ -1078,9 +1079,11 @@ static void ps3mapi_setidps(char *buffer, char *templn, const char *param)
 					HTML_FORM_METHOD_FMT("/setidps")
 					"<table id='ht' width=\"800\">"
 					"<tr><td width=\"400\" class=\"la\">"
-					"<br><b><u>%s:</u></b><br>" HTML_INPUT("idps1", "%016llX", "16", "18") HTML_INPUT("idps2", "%016llX", "16", "18") ""
+					"<br><b><u>%s:</u></b><br>"
+					HTML_INPUT("idps1", "%016llX", "16", "18") HTML_INPUT("idps2", "%016llX", "16", "18")
 					"<td class=\"la\">"
-					"<br><b><u>%s:</u></b><br>" HTML_INPUT("psid1", "%016llX", "16", "18") HTML_INPUT("psid2", "%016llX", "16", "18") "</tr>"
+					"<br><b><u>%s:</u></b><br>"
+					HTML_INPUT("psid1", "%016llX", "16", "18") HTML_INPUT("psid2", "%016llX", "16", "18") "</tr>"
 					"<tr><td class=\"ra\"><br><button class=\"bs\">%s</button>",
 					is_ps3mapi_home ? "" : HOME_PS3MAPI, "Set IDPS/PSID",
 					HTML_FORM_METHOD, "IDPS", _new_IDPS[0], _new_IDPS[1], "PSID", _new_PSID[0], _new_PSID[1], "Set");
@@ -1403,8 +1406,9 @@ static void ps3mapi_kernelplugin(char *buffer, char *templn, const char *param)
 													HTML_BUTTON_FMT "</tr>", STR_SAVE,
 		HTML_BUTTON, "boot_plugins_kernel.txt",		HTML_ONCLICK, "/kernelplugin.ps3mapi?s=0",
 		HTML_BUTTON, dex_mode ?
-					"boot_plugins_kernel_nocobra_dex.txt" :
-					"boot_plugins_kernel_nocobra.txt", HTML_ONCLICK, "/kernelplugin.ps3mapi?s=1"); concat(buffer, templn);
+				"boot_plugins_kernel_nocobra_dex.txt" :
+				"boot_plugins_kernel_nocobra.txt",  HTML_ONCLICK, "/kernelplugin.ps3mapi?s=1");
+	concat(buffer, templn);
 
 	add_plugins_list(buffer, templn, 99);
 
@@ -1536,12 +1540,11 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 					 "</tr>",
 					"Slot", "Name", "File name"); buffer += concat(buffer, templn);
 
-		#define MAX_SLOTS	61
-
 		char tmp_name[32];
 		char tmp_filename[STD_PATH_LEN];
-		u32 mod_list[MAX_SLOTS];
-		_memset(mod_list, sizeof(mod_list));
+
+		#define MAX_SLOTS	61
+		u32 mod_list[MAX_SLOTS]; _memset(mod_list, sizeof(mod_list));
 		{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_MODULE_PID, (u64)pid, (u64)(u32)mod_list);}
 
 		for(unsigned int slot = 0; slot < MAX_SLOTS; slot++)
@@ -1638,11 +1641,13 @@ static void ps3mapi_home(char *buffer, char *templn)
 	//Notify
 	ps3mapi_notify(buffer, templn, " ");
 
-	//Map path
-	ps3mapi_mappath(buffer, templn, " ");
-
 	if (syscall8_state >= 0 && syscall8_state < 3)
 	{
+		//---------------------------------------------
+		//Map path
+		//---------------------------------------------
+		ps3mapi_mappath(buffer, templn, " ");
+
 		//---------------------------------------------
 		//Process Commands
 		//---------------------------------------------
