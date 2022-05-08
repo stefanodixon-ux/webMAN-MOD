@@ -198,8 +198,7 @@ static void start_vsh_gui(bool vsh_menu)
 static void ps3mapi_syscall8(char *buffer, char *templn, const char *param);
 static void ps3mapi_setmem(char *buffer, char *templn, const char *param);
 
-static bool kplugin_loaded = false;
-static u64 residence = 0x80000000007F0000ULL;
+static u64 residence = 0;
 
 static u32 found_offset = 0;
 static u8 ps3mapi_working = 0;
@@ -1311,18 +1310,10 @@ static void ps3mapi_kernelplugin(char *buffer, char *templn, const char *param)
 		{
 			uslot = get_valuen(param, "load_slot=", 0, 1);
 
-			char addr_tmp[20];
-			if(get_param("addr=", addr_tmp, param, 0x10))
-			{
-				residence = convertH(addr_tmp);
-				if(!residence) residence = 0x80000000007F0000ULL;
-			}
-			residence |= 0x8000000000000000ULL;
-
 			if(strstr(param, "unload_slot="))
 			{
 				if ( uslot )
-					{system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_PAYLOAD_DYNAMIC, residence); kplugin_loaded = false;}
+					{system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_PAYLOAD_DYNAMIC, (u64)residence); residence = 0;}
 			}
 			else
 			{
@@ -1333,12 +1324,12 @@ static void ps3mapi_kernelplugin(char *buffer, char *templn, const char *param)
 					size_t size = file_size(prx_path);
 
 					sys_addr_t payload = sys_mem_allocate(_64KB_ + (int)((size - 1) / _64KB_));
-					if (read_file(prx_path,	(char*)payload, size, 0))
+					if (read_file(prx_path, (char*)payload, size, 0))
 					{
 						if (size < 4) { BEEP3 }
 						else if (uslot)
 						{
-							BEEP2; system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD_DYNAMIC, (u64)(u32)payload, size, (u64)&residence); kplugin_loaded = true;
+							BEEP2; system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_RUN_PAYLOAD_DYNAMIC, (u64)(u32)payload, size, (u64)&residence);
 						}
 						else
 						{
@@ -1390,18 +1381,18 @@ static void ps3mapi_kernelplugin(char *buffer, char *templn, const char *param)
 						HTML_FORM_METHOD_FMT("/kernelplugin")
 						"<td width=\"500\" class=\"la\">"
 						HTML_INPUT("prx\" style=\"width:555px\" list=\"plugins", "%s", "128", "75")
-						"<input name=\"load_slot\" type=\"hidden\" value=\"%i\">"
+						"<input name=\"%s_slot\" type=\"hidden\" value=\"%i\">"
 						"<td width=\"100\" class=\"ra\">",
-						slot, tmp_name, HTML_FORM_METHOD, tmp_filename, slot);
+						slot, tmp_name, HTML_FORM_METHOD, tmp_filename, residence ? "unload" : "load", slot);
 		buffer += concat(buffer, templn);
 
 		if(slot)
 		{
-			sprintf(templn, " &nbsp; " HTML_INPUT("addr", "%08x", "8", "8") "<br>", (u32)residence);
+			sprintf(templn, " &nbsp; " HTML_INPUT("addr", "%08x", "8", "8\" disabled=\"disabled") "<br>", (u32)residence);
 			buffer += concat(buffer, templn);
 		}
 
-		if(kplugin_loaded && slot)
+		if(residence && slot)
 			sprintf(templn, "<input type=\"submit\" value=%s/></form></tr>", "\" Unload \"");
 		else
 			sprintf(templn, "<input type=\"submit\" value=%s/></form></tr>", "\" Load \"");
