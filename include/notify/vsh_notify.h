@@ -54,8 +54,8 @@ static void show_progress(const char *path, u8 oper)
 
 	u8 len = strlen(data); _memset(data + len, sizeof(data) - len);
 
-	u64 addr = OVERLAY_ADDR;
-	for(u8 n = 0; n < 0x10; n++, addr += 8)
+	u64 addr = OVERLAY_ADDR; len = (oper == OV_CLEAR) ? 0xF : len / 8;
+	for(u8 n = 0; n <= len; n++, addr += 8)
 	{
 		pokeq(addr, data2[n]);
 	}
