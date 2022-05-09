@@ -21,15 +21,17 @@
 					force_copy("/dev_hdd0/cpursx.html", (char*)(CPU_RSX_CHART)); // copy the chart template
 				else
 				{
-					sprintf(msg, "%s15\">%s"
-								 "<div class='canvas'>",
-								"<style>"
-								 ".canvas{background-color:gray;width:50%;text-align:left;padding:15px;font:12px arial;}"
-								 ".cpu{background-color:blue;text-align:right;}"
-								 ".rsx{background-color:cyan;text-align:right;}"
-								 ".fan{background-color:#fc0;text-align:right;}"
-								 "</style>", HTML_REFRESH);
-					save_file(CPU_RSX_CHART, msg, SAVE_ALL); chart_init = 250;
+					char title[40]; get_sys_info(title, 30, false);
+					sprintf(msg, "%s15\"><h2>%s</h2>"
+								 "<div class='canvas'>", HTML_REFRESH, title);
+					save_file(CPU_RSX_CHART, msg, SAVE_ALL);
+					save_file(CPU_RSX_CHART, "<style>"
+											 ".canvas{background-color:gray;width:50%;text-align:left;padding:15px;font:12px arial;}"
+											 ".cpu{background-color:blue;text-align:right;}"
+											 ".rsx{background-color:cyan;text-align:right;}"
+											 ".fan{background-color:#fc0;text-align:right;}"
+											 "</style>", APPEND_TEXT);
+					chart_init = 250;
 				}
 			}
 			else
