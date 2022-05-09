@@ -43,6 +43,17 @@
 							"<input accesskey=\"S\" class=\"bs\" type=\"submit\" value=\" %s \">",
 							filename, MAX_TEXT_LEN, txt, STR_SAVE); _concat(&sbuffer, tempstr);
 
+			#ifdef ARTEMIS_PRX
+			if(islike(filename, ARTEMIS_CODES_FILE))
+			{
+				_concat(&sbuffer, " [<a href=\"/artemis.ps3?attach\">Attach</a>]"
+								  " [<a href=\"/artemis.ps3?detach\">Detach</a>]");
+				strcpy(filename, "/dev_hdd0/tmp/art.log");
+				if(!artemis_working) _concat(&sbuffer, " NOT");
+									 _concat(&sbuffer, " RUNNING");
+			}
+			#endif
+
 			// show filename link
 			char *p = get_filename(filename);
 			if(p)
@@ -53,11 +64,6 @@
 				#endif
 				)
 					{sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
-				#ifdef ARTEMIS_PRX
-				if(islike(filename, ARTEMIS_CODES_FILE))
-					_concat(&sbuffer, " [<a href=\"/artemis.ps3?attach\">Attach</a>]"
-									  " [<a href=\"/artemis.ps3?detach\">Detach</a>]");
-				#endif
 				strcpy(txt, p); *p = NULL; sprintf(tempstr," &nbsp; " HTML_URL HTML_URL2 "</form>", filename, filename, filename, txt, txt); _concat(&sbuffer, tempstr);
 			}
 		}

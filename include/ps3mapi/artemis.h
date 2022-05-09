@@ -4,6 +4,8 @@
 #define uint			unsigned int
 #define process_id_t	u32
 #define sys_prx_id_t	int32_t
+#define init_log(a)		save_file(ARTEMIS_CODES_LOG, a, SAVE_ALL)
+#define add_log(a)		save_file(ARTEMIS_CODES_LOG, a, APPEND_TEXT)
 
 #define ISVALID_CHAR(c)	(ISDIGIT(c) || (c >= 'A' && c <= 'F') || (c == ' ') || (c == '\r') || (c == '\n'))
 
@@ -29,7 +31,7 @@ static char *userCodes = NULL;
 static u8 h2b(char hex)
 {
 	char c = hex | 0x20;
-	if(c >= 0 && c <= 9)
+	if(c >= '0' && c <= '9')
 		c -= '0';
 	else if(c >= 'a' && c <= 'f')
 		c -= 'W';
@@ -147,6 +149,10 @@ static int WriteMem(process_id_t pid, u64 addr, char *buf, int size)
 {
 	if (addr)
 	{
+		char line[100];
+		sprintf(line, "Write at 0x%llx => %x (%i bytes)", addr, INT32(buf), size);
+		add_log(line);
+
 		return set_process_mem(pid, addr, buf, size);
 	}
 	return 0;
@@ -264,10 +270,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 	if (pid == NULL)
 		return userCodesLen;
 
-	char cType = lines[start];
-	int lineLen, arg2Len = 0, arg1Off = 0, arg0 = 0;
-	int startPos, arg0_2 = 0;
-
+	int lineLen;
 	for (lineLen = start; lineLen < userCodesLen; lineLen++)
 	{
 		if (lines[lineLen] == '\n' || lines[lineLen] == '\r')
@@ -275,14 +278,17 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 	}
 	lineLen -= start; if(lineLen <= 0) return start;
 
-	int arg3Off = start + lineLen, arg4Off = arg3Off + 1, arg4Len = arg4Off;
+	const int lineEnd = (start + lineLen);
 
 	if (skip[0] <= 0)
 	{
 		skip[0] = 0;
 
+		int arg2Len = 0, arg1Off = 0, arg0, arg0_2 = 0;
+		int arg3Off = lineEnd, arg4Off = arg3Off + 1, arg4Len = arg4Off;
+
 		//Parse first line
-		while (lines[(start + lineLen) - arg2Len] != ' ')
+		while (lines[(lineEnd) - arg2Len] != ' ')
 			arg2Len++;
 		while (lines[start + arg1Off] != ' ')
 			arg1Off++;
@@ -303,16 +309,16 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 			ptrAddr = 0;
 		}
 
-		char buf0[arg2Len];
+		char buf0[arg2Len]; _memset(buf0, arg2Len);
 		const int buf0size = arg2Len - 1;
 		const int buf0Len  = arg2Len / 2;
 
 		if (arg0 < 0)
 			arg0 = 0;
-		char buf1[arg0];
+		char buf1[arg0]; _memset(buf1, arg0);
 
 		//Check if theres a second line
-		if ((start + lineLen + 1) < userCodesLen)
+		if ((lineEnd + 1) < userCodesLen)
 		{
 			//Parse second line vars (for codes that need the second line
 			//Get next code arguments
@@ -335,7 +341,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 		if (arg4Len)
 		{
 			//Get args for second line
-			ReadHexPartial(lines, start + lineLen + 2, (arg3Off) - (start + lineLen + 2), addrBuf, ((arg3Off) - (start + lineLen + 2))/2);
+			ReadHexPartial(lines, lineEnd + 2, (arg3Off) - (lineEnd + 2), addrBuf, ((arg3Off) - (lineEnd + 2))/2);
 			arg0_2 = (uint)(INT32(addrBuf));
 
 			//Get address for second line
@@ -345,13 +351,21 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 			ReadHexPartial(lines, arg4Off + 1, arg4Len - 1, buf1_2, (arg4Len - 1)/2);
 		}
 
-		startPos = (start + lineLen) - arg2Len + 1;
+		int startPos = lineEnd - arg2Len + 1;
+
+		lines[lineEnd] = '\0';
+		add_log(lines + start); // write line to log file
+		lines[lineEnd] = '\n';
+
+		char cType = lines[start];
 		switch (cType)
 		{
 			case '0': ; //Write bytes (1=OR,2=AND,3=XOR,rest=write)
 				ReadHex(lines, startPos, buf0size, buf0, 4);
+
 				//Get source bytes
 				if(arg0) get_process_mem(pid, addr, buf1, buf0Len);
+
 				switch (arg0)
 				{
 					case 1: //OR
@@ -367,6 +381,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 							buf0[cnt0] ^= buf1[cnt0];
 						break;
 				}
+
 				//Write bytes to dest
 				WriteMem(pid, addr, buf0, buf0Len);
 				break;
@@ -548,7 +563,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 	else
 		skip[0]--;
 
-	return start + lineLen;
+	return lineEnd;
 }
 
 // Loops through each line of the code list, interprets the codes & writes to process id
@@ -558,6 +573,9 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 
 	int lineNum = 0, codeNum = 0, lineCharInd = 0;
 	int skip[1]; skip[0] = 0;
+
+	if(file_size(ARTEMIS_CODES_LOG) >= _2MB_)
+		create_file(ARTEMIS_CODES_LOG); // truncate log file larger than 2MB
 
 	for (int i = 0; i < userCodesLen; i++)
 	{
@@ -721,6 +739,8 @@ static void art_thread(u64 arg)
 {
 	artemis_working = 1;
 
+	init_log("Artemis started\n");
+
 	int GameProcessID = 0, lastGameProcessID = 0;
 
 	sys_timer_sleep(10);
@@ -763,6 +783,10 @@ static void art_thread(u64 arg)
 
 					if (attachedPID)
 					{
+						char line[32];
+						sprintf(line, "Attached PID=0x%x\n", attachedPID);
+						init_log(line);
+
 						art_process(1);
 					}
 					else
@@ -784,6 +808,7 @@ static void art_thread(u64 arg)
 					if (attachedPID)
 						show_msg("Artemis PS3\nDetached");
 
+					add_log("Detached PID");
 					release_art(1);
 				}
 			}

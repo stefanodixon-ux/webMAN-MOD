@@ -61,6 +61,7 @@
 
 #define SC_LOG_FILE			TMP_DIR "/log.txt"
 #define ARTEMIS_CODES_FILE	TMP_DIR "/art.txt"
+#define ARTEMIS_CODES_LOG	TMP_DIR "/art.log"
 
 #define WM_ONLINE_IDS_FILE	WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
 #define WM_OFFLINE_IDS_FILE	WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
