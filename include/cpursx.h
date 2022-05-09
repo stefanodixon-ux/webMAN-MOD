@@ -323,6 +323,9 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 			#ifdef VIDEO_REC
 				buffer += concat(buffer, " [<a href=\"/videorec.ps3\">REC</a>]");
 			#endif
+			#ifdef ARTEMIS_PRX
+				if(webman_config->artemis) buffer += concat(buffer, " [<a href=\"/artemis.ps3\">Artemis</a>]");
+			#endif
 				buffer += concat(buffer, " [<a href=\"/xmb.ps3$reloadgame\">Reload</a>]");
 			}
 			buffer += concat(buffer, " [<a href=\"/xmb.ps3$exit\">Exit</a>]");

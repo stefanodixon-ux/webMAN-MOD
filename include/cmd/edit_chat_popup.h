@@ -53,6 +53,11 @@
 				#endif
 				)
 					{sprintf(tempstr," [<a href=\"/play.ps3%s\">EXEC</a>]", filename); _concat(&sbuffer, tempstr);}
+				#ifdef ARTEMIS_PRX
+				if(islike(filename, ARTEMIS_CODES_FILE))
+					_concat(&sbuffer, " [<a href=\"/artemis.ps3?attach\">Attach</a>]"
+									  " [<a href=\"/artemis.ps3?detach\">Detach</a>]");
+				#endif
 				strcpy(txt, p); *p = NULL; sprintf(tempstr," &nbsp; " HTML_URL HTML_URL2 "</form>", filename, filename, filename, txt, txt); _concat(&sbuffer, tempstr);
 			}
 		}

@@ -7,6 +7,7 @@
 
 #define ISVALID_CHAR(c)	(ISDIGIT(c) || (c >= 'A' && c <= 'F') || (c == ' ') || (c == '\r') || (c == '\n'))
 
+static vu8 art_cmd = 0;
 static vu8 artemis_working = 0;
 
 static sys_addr_t sysmem_art = NULL;
@@ -15,10 +16,10 @@ static sys_addr_t typeA_Copy = NULL;
 #define	PAD_SELECT			(1<<0)
 #define	PAD_START			(1<<3)
 
-static vu8 art_cmd = 0;
 static u8 doForceWrite = 0;
 static u8 isConstantWrite = 0;
 static process_id_t attachedPID = 0;
+static int userCodesLen = 0;
 
 #define get_process_mem		ps3mapi_get_process_mem
 #define set_process_mem		ps3mapi_set_process_mem
@@ -258,24 +259,24 @@ static bool isCodeLineValid(char *line)
 // Artemis PS3 Engine
 static u64 ptrAddr = 0;
 static uint typeA_Size = 0;
-static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int *skip, int doForceWrite)
+static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int doForceWrite)
 {
 	if (pid == NULL)
-		return linesLen;
+		return userCodesLen;
 
 	char cType = lines[start];
-	int lineLen, totalLenRead, arg2Len = 0, arg1Off = 0, arg0 = 0;
+	int lineLen, arg2Len = 0, arg1Off = 0, arg0 = 0;
 	int startPos, arg0_2 = 0;
 
-	for (lineLen = start; lineLen < linesLen; lineLen++)
+	for (lineLen = start; lineLen < userCodesLen; lineLen++)
 	{
 		if (lines[lineLen] == '\n' || lines[lineLen] == '\r')
 			break;
 	}
-	lineLen -= start;
+	lineLen -= start; if(lineLen <= 0) return start;
+
 	int arg3Off = start + lineLen, arg4Off = arg3Off + 1, arg4Len = arg4Off;
 
-	totalLenRead = lineLen;
 	if (skip[0] <= 0)
 	{
 		skip[0] = 0;
@@ -287,7 +288,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 			arg1Off++;
 
 		if (arg2Len < 0)
-			return linesLen;
+			return userCodesLen;
 
 		char addrBuf[4]; _memset(addrBuf, 4);
 
@@ -311,17 +312,17 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 		char buf1[arg0];
 
 		//Check if theres a second line
-		if ((start + lineLen + 1) < linesLen)
+		if ((start + lineLen + 1) < userCodesLen)
 		{
 			//Parse second line vars (for codes that need the second line
 			//Get next code arguments
-			while (arg3Off < linesLen && lines[arg3Off] != ' ')
+			while (arg3Off < userCodesLen && lines[arg3Off] != ' ')
 				arg3Off++;
 			arg4Off = arg3Off + 1;
-			while (arg4Off < linesLen && lines[arg4Off] != ' ')
+			while (arg4Off < userCodesLen && lines[arg4Off] != ' ')
 				arg4Off++;
 			arg4Len = arg4Off + 1;
-			while (arg4Len < linesLen && lines[arg4Len] != '\r' && lines[arg4Len] != '\n')
+			while (arg4Len < userCodesLen && lines[arg4Len] != '\r' && lines[arg4Len] != '\n')
 				arg4Len++;
 			arg4Len -= arg4Off;
 		}
@@ -547,7 +548,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int linesLen, int
 	else
 		skip[0]--;
 
-	return start + totalLenRead;
+	return start + lineLen;
 }
 
 // Loops through each line of the code list, interprets the codes & writes to process id
@@ -555,12 +556,10 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 {
 	char lineBuf[100];
 
-	int totalLen = strlen(userCodes);
-
 	int lineNum = 0, codeNum = 0, lineCharInd = 0;
 	int skip[1]; skip[0] = 0;
 
-	for (int i = 0; i < totalLen; i++)
+	for (int i = 0; i < userCodesLen; i++)
 	{
 		if (userCodes[i] != '#')
 		{
@@ -574,7 +573,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 				if (lineCharInd == 0)
 				{
 					int n;
-					for (n = i; n < totalLen; n++)
+					for (n = i; n < userCodesLen; n++)
 					{
 						if (userCodes[n] == '\n' || userCodes[n] == '\r')
 							break;
@@ -597,7 +596,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 
 							if (!isConstantWrite && !doForceWrite) //skip this code if not constant or force write
 							{
-								while ((i < totalLen) && (userCodes[i] != '#'))
+								while ((i < userCodesLen) && (userCodes[i] != '#'))
 									i++;
 								i--;
 							}
@@ -612,7 +611,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 						{
 							if(!(isConstantWrite || doForceWrite))
 								skip[0]++;
-							i = ParseLine(pid, userCodes, i, totalLen, skip, doForceWrite);
+							i = ParseLine(pid, userCodes, i, skip, doForceWrite);
 						}
 						break;
 				}
@@ -627,21 +626,23 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 			codeNum++;
 			lineCharInd = 0;
 
-			while ((userCodes[i] == '\n') && i < totalLen)
+			while ((userCodes[i] == '\n') && i < userCodesLen)
 				i++;
 		}
 	}
 }
 
 // Release memory buffers, reset codelist & attached PID
-static void release_art(void)
+static void release_art(bool init)
 {
+	if(init)
+		userCodesLen = attachedPID = 0;
 	if(sysmem_art)
 		{sys_memory_free(sysmem_art); sysmem_art = NULL;}
 	if(typeA_Copy)
 		{sys_memory_free(typeA_Copy); typeA_Copy = NULL;}
-	attachedPID = 0;
 	userCodes = NULL;
+	art_cmd = 0;
 }
 
 // Processes an entire codelist once
@@ -653,16 +654,17 @@ static void art_process(int forceWrite)
 
 		if (!userCodes || forceWrite)
 		{
-			release_art();
+			release_art(0);
 
-			size_t mem_size = _64KB_;
-			size_t fileSize = file_size(ARTEMIS_CODES_FILE);
+			int mem_size = _64KB_;
 
-			if(fileSize)
+			userCodesLen = file_size(ARTEMIS_CODES_FILE);
+
+			if(userCodesLen)
 			{
-				mem_size = _64KB_ + (int)(fileSize / _64KB_) * _64KB_;
+				mem_size = _64KB_ + (int)(userCodesLen / _64KB_) * _64KB_;
 
-				if((fileSize + 1) < mem_size)
+				if((userCodesLen + 1) < mem_size)
 					sysmem_art = sys_mem_allocate(mem_size);
 			}
 
@@ -671,19 +673,20 @@ static void art_process(int forceWrite)
 				show_msg("Artemis PS3\nAttached");
 
 				userCodes = (char *)sysmem_art;
-				if(read_file(ARTEMIS_CODES_FILE, userCodes, mem_size, 0))
+				userCodesLen = read_file(ARTEMIS_CODES_FILE, userCodes, mem_size, 0);
+				if(userCodesLen)
 				{
-					userCodes[fileSize] = '\n';
-					userCodes[fileSize+1] = '\0';
+					userCodes[userCodesLen] = '\n'; // append line break
+					userCodes[++userCodesLen] = '\0';
 				}
 				else
-					release_art();
+					release_art(1);
 			}
 
 			if(!sysmem_art)
 			{
 				show_status(STR_ERROR, "Artemis PS3\nFailed to Attach");
-				release_art();
+				release_art(1);
 			}
 		}
 
@@ -746,6 +749,7 @@ static void art_thread(u64 arg)
 			if (info.port_status[0] && (cellPadGetData(0, &data) | 1) && data.len > 0)
 			{
 				u32 pad = data.button[2] | (data.button[3] << 8);
+
 				if (attachedPID) // Run codes
 				{
 					art_process(0);
@@ -753,7 +757,9 @@ static void art_thread(u64 arg)
 
 				if ((pad & PAD_START) || (art_cmd == 1))
 				{
-					attachedPID = GameProcessID; art_cmd = 0;
+					release_art(0);
+
+					attachedPID = GameProcessID;
 
 					if (attachedPID)
 					{
@@ -773,12 +779,12 @@ static void art_thread(u64 arg)
 						sys_ppu_thread_sleep(1);
 					}
 				}
-				if ((pad & PAD_START) || (art_cmd == 2))
+				if ((pad & PAD_SELECT) || (art_cmd == 2))
 				{
-					art_cmd = 0;
 					if (attachedPID)
 						show_msg("Artemis PS3\nDetached");
-					release_art();
+
+					release_art(1);
 				}
 			}
 
@@ -792,7 +798,7 @@ static void art_thread(u64 arg)
 	}
 
 
-	release_art();
+	release_art(1);
 	artemis_working = 0;
 	sys_ppu_thread_exit(0);
 }
