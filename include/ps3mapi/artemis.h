@@ -830,7 +830,7 @@ static void art_thread(u64 arg)
 
 static void start_artemis(void)
 {
-	if(!artemis_working)
+	if(!artemis_working && IS_INGAME)
 		sys_ppu_thread_create(&thread_id_art, art_thread, NULL, THREAD_PRIO_ARTEMIS, THREAD_STACK_SIZE_ARTEMIS, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_ART);
 }
 #endif // #ifdef ARTEMIS_PRX

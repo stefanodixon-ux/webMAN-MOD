@@ -75,6 +75,7 @@
 				game_interface = (game_plugin_interface *)plugin_GetInterface(is_ingame, 1);
 				game_interface->ReloadGame();
 			}
+			sprintf(url, HTML_REDIRECT_TO_URL, "javascript:history.back()", 0);
 		}
 		else
 		#ifdef COBRA_NON_LITE
@@ -84,6 +85,7 @@
 				fake_eject_event(USB_MASS_STORAGE((u8)val(params + 14)));
 			else
 				cobra_send_fake_disc_eject_event();
+			sprintf(url, HTML_REDIRECT_TO_URL, "javascript:history.back()", 0);
 		}
 		else
 		if(islike(params, "$insert"))
@@ -95,6 +97,7 @@
 				cobra_send_fake_disc_insert_event();
 				cobra_disc_auth();
 			}
+			sprintf(url, HTML_REDIRECT_TO_URL, "javascript:history.back()", 0);
 		}
 		else
 		#endif

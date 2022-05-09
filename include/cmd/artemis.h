@@ -17,7 +17,7 @@
 
 		sprintf(param, "%s%s", "/edit.ps3", ARTEMIS_CODES_FILE);
 
-		start_artemis();
+		start_artemis(); sys_ppu_thread_sleep(1);
 
 		is_popup = 1;
 		goto html_response;

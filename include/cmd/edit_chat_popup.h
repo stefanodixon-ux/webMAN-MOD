@@ -36,6 +36,13 @@
 				read_file(filename, txt, MAX_TEXT_LEN, 0);
 			}
 
+			#ifdef ARTEMIS_PRX
+			if(islike(filename, ARTEMIS_CODES_FILE))
+			{
+				add_game_info(buffer, tempstr, 0);
+			}
+			#endif
+
 			// show text box
 			sprintf(tempstr,"<form action=\"/edit.ps3\">"
 							"<input type=hidden name=\"f\" value=\"%s\">"
@@ -48,9 +55,10 @@
 			{
 				_concat(&sbuffer, " [<a href=\"/artemis.ps3?attach\">Attach</a>]"
 								  " [<a href=\"/artemis.ps3?detach\">Detach</a>]");
-				strcpy(filename, "/dev_hdd0/tmp/art.log");
 				if(!artemis_working) _concat(&sbuffer, " NOT");
 									 _concat(&sbuffer, " RUNNING");
+				if(attachedPID) {sprintf(filename, " • ATTACHED"); _concat(&sbuffer, filename);}
+				strcpy(filename, "/dev_hdd0/tmp/art.log");
 			}
 			#endif
 
