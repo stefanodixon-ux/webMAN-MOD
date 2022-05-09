@@ -126,7 +126,7 @@ static void wait_for_pkg_install(void)
 
 static int get_xmm0_interface(void)
 {
-	if(xmm0_interface == 0) // getting xmb_plugin xmm0 interface for loading plugin sprx
+	//if(xmm0_interface == 0) // getting xmb_plugin xmm0 interface for loading plugin sprx
 	{
 		xmm0_interface = (xmb_plugin_xmm0 *)plugin_GetInterface(View_Find("xmb_plugin"), XMM0);
 		if(xmm0_interface == 0) return FAILED;
@@ -189,7 +189,7 @@ static void unload_plugin_modules(bool all)
 
 static void downloadPKG_thread(void)
 {
-	if(download_interface == 0) // test if download_interface is loaded for interface access
+	//if(download_interface == 0) // test if download_interface is loaded for interface access
 	{
 		download_interface = (download_plugin_interface *)plugin_GetInterface(View_Find("download_plugin"), 1);
 		if(download_interface == 0) return;
@@ -297,7 +297,7 @@ end_download_process:
 
 static void installPKG_thread(void)
 {
-	if(game_ext_interface == 0) // test if game_ext_plugin is loaded for interface access
+	//if(game_ext_interface == 0) // test if game_ext_plugin is loaded for interface access
 	{
 		game_ext_interface = (game_ext_plugin_interface *)plugin_GetInterface(View_Find("game_ext_plugin"), 1);
 		if(game_ext_interface == 0) return;

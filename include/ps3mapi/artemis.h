@@ -792,6 +792,7 @@ static void art_thread(u64 arg)
 					else
 					{
 						show_status(STR_ERROR, "Artemis PS3\nFailed to Attach");
+						release_art(1);
 					}
 
 					// wait for release START button
@@ -810,6 +811,7 @@ static void art_thread(u64 arg)
 
 					add_log("Detached PID");
 					release_art(1);
+					sys_ppu_thread_sleep(1);
 				}
 			}
 

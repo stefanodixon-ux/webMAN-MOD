@@ -99,6 +99,12 @@ static void poll_start_play_time(void)
 		#ifdef ARTEMIS_PRX
 		if(webman_config->artemis)
 		{
+			char codelist[40];
+			snprintf(codelist, sizeof(codelist), "%s%s/%s.ncl", TMP_DIR, "artemis", _game_TitleID);
+			if(not_exists(codelist))
+				snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis.ncl");
+			force_copy(codelist, (char*)ARTEMIS_CODES_FILE);
+
 			start_artemis();
 		}
 		#endif
