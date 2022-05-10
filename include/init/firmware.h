@@ -1,4 +1,4 @@
-#define LATEST_CFW	4.88f
+#define LATEST_CFW	4.89f
 
 #ifndef COBRA_ONLY
 static u64 base_addr = 0;
@@ -35,6 +35,7 @@ static u64 sc_142 = 0;
 #define FW486	0x323032302F30312FULL // 2020/01/
 #define FW487	0x323032302F30372FULL // 2020/07/
 #define FW488	0x323032312F30342FULL // 2021/04/
+#define FW489	0x323032322F30322FULL // 2022/02/
 
 #define SC_GET_PLATFORM_INFO		(387)
 #define SC_GET_CONSOLE_TYPE			(985)
@@ -108,7 +109,8 @@ static void detect_firmware(void)
 		if(SYSCALL_TABLE) break;
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
 
-		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW488) ? 4.88f :
+		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW489) ? 4.89f :
+																					(peek(0x2FCB68) == FW488) ? 4.88f :
 #ifndef LITE_EDITION
 																					(peek(0x2FCB68) == FW487) ? 4.87f :
 																					(peek(0x2FCB68) == FW486) ? 4.86f :
@@ -146,6 +148,7 @@ static void detect_firmware(void)
 #ifdef DEX_SUPPORT
 		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW484) ? 4.84f :
  #ifndef LAST_FIRMWARE_ONLY
+																					(peek(0x31F028) == FW489) ? 4.89f :
 																					(peek(0x31F028) == FW488) ? 4.88f :
 																					(peek(0x31F028) == FW487) ? 4.87f :
 																					(peek(0x31F028) == FW486) ? 4.86f :
@@ -182,6 +185,7 @@ static void detect_firmware(void)
  #endif // #ifndef LAST_FIRMWARE_ONLY
 		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW484) ? 4.84f :
  #ifndef LAST_FIRMWARE_ONLY
+																					(peek(0x344B70) == FW489) ? 4.89f :
 																					(peek(0x344B70) == FW488) ? 4.88f :
 																					(peek(0x344B70) == FW487) ? 4.87f :
 																					(peek(0x344B70) == FW486) ? 4.86f :
