@@ -137,6 +137,7 @@ static void uninstall(char *param)
 	cellFsUnlink(WM_NETDISABLED);
 	cellFsUnlink(WM_ONLINE_IDS_FILE);
 	cellFsUnlink(WM_OFFLINE_IDS_FILE);
+	cellFsUnlink(ARTEMIS_CODES_LOG);
 
 	#ifdef COPY_PS3
 	for(u8 i = 0; i < 4; i++)

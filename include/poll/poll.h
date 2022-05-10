@@ -100,12 +100,13 @@ static void poll_start_play_time(void)
 		if(webman_config->artemis)
 		{
 			char codelist[40];
-			snprintf(codelist, sizeof(codelist), "%s%s/%s.ncl", TMP_DIR, "artemis", _game_TitleID);
+			snprintf(codelist, sizeof(codelist), "%s%s/%s", TMP_DIR, "artemis", _game_TitleID);
 			if(not_exists(codelist))
-				snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis.ncl");
-			force_copy(codelist, (char*)ARTEMIS_CODES_FILE);
+				snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis");
+			init_codelist(codelist);
 
-			start_artemis();
+			if(file_exists(ARTEMIS_CODES_FILE))
+				start_artemis();
 		}
 		#endif
 	}

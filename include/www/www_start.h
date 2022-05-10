@@ -174,6 +174,13 @@ static void start_www(u64 conn_s_p)
 
 			start_event(EVENT_ON_XMB);
 
+			#ifdef ARTEMIS_PRX
+			if(webman_config->artemis)
+			{
+				cellFsUnlink(ARTEMIS_CODES_LOG);
+				cellFsUnlink(ARTEMIS_CODES_FILE);
+			}
+
 			#ifdef PLAY_MUSIC
 			if(wait_for_abort(1)) sys_ppu_thread_exit(0);
 			if(webman_config->music)

@@ -622,6 +622,13 @@
 							#else
 								do_umount(true);
 							#endif
+							#ifdef ARTEMIS_PRX
+							if(webman_config->artemis)
+							{
+								cellFsUnlink(ARTEMIS_CODES_LOG);
+								cellFsUnlink(ARTEMIS_CODES_FILE);
+							}
+							#endif
 							break_and_wait;
 						}
 						#ifdef WM_CUSTOM_COMBO
@@ -789,8 +796,7 @@
 						{
 							sys_admin ^= 1, pwd_tries = 0;
 
-							sprintf(msg, "ADMIN %s", sys_admin ? STR_ENABLED : STR_DISABLED);
-							show_msg(msg);
+							show_status("ADMIN", sys_admin ? STR_ENABLED : STR_DISABLED);
 
 							if(sys_admin) { BEEP1 } else { BEEP2 }
 						}
@@ -866,6 +872,8 @@
 
 								get_game_version(path, title, title_id, app_ver);
 								get_last_game(path);
+								if(not_exists(path))
+									sprintf(path, "%s%s", HDD0_GAME_DIR, title_id);
 
 								sprintf(msg, "ID: %s - v%s\n%s\n\n%s", title_id, app_ver, title, path);
 								show_msg(msg);
@@ -884,6 +892,14 @@
 
 							#ifdef SPOOF_CONSOLEID
 							show_idps(msg);
+							#endif
+
+							#ifdef ARTEMIS_PRX
+							if(webman_config->artemis && IS_INGAME)
+							{
+								show_status("Artemis",	attachedPID ? "Attached" :
+														artemis_working ? STR_ENABLED : STR_DISABLED);
+							}
 							#endif
 
 							// backup / restore act.bak -> act.dat
