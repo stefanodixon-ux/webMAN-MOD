@@ -679,7 +679,10 @@
 					#else
 					if(!webman_config->nobeep) BEEP1;
 					#endif
-					toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounter.sprx");
+					if(isCobraDebug)
+						toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounterM.sprx");
+					else
+						toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounter.sprx");
 					sys_ppu_thread_sleep(3);
 					break_and_wait;
 				}

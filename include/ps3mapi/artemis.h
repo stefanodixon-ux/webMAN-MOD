@@ -7,7 +7,7 @@
 #define init_log(a)		save_file(ARTEMIS_CODES_LOG, a, SAVE_ALL)
 #define add_log(a)		save_file(ARTEMIS_CODES_LOG, a, APPEND_TEXT)
 
-#define ISVALID_CHAR(c)	(ISDIGIT(c) || (c >= 'A' && c <= 'F') || (c == ' ') || (c == '\r') || (c == '\n'))
+#define ISVALID_CHAR(c)	(ISDIGIT(c) || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '\r') || (c == '\n'))
 
 static vu8 art_cmd = 0;
 static vu8 artemis_working = 0;
@@ -30,7 +30,7 @@ static char *userCodes = NULL;
 
 static u8 h2b(char hex)
 {
-	char c = hex | 0x20;
+	char c = LCASE(hex);
 	if(c >= '0' && c <= '9')
 		c -= '0';
 	else if(c >= 'a' && c <= 'f')
@@ -41,49 +41,42 @@ static u8 h2b(char hex)
 static double tofloat(const char *s)
 {
 	double d, ret = 0.0, sign = 1.0;
-	int e = 0, esign = 1, flags = 0, i;
+	int e = 0;
 
 	/* remove leading white spaces. */
 	for (; ISSPACE(*s); ) ++s;
 	if (*s == '-') {
 		/* negative value. */
-		sign = -1.0;
-		++s;
+		++s; sign = -1.0;
 	}
 	else if (*s == '+') ++s;
 	for (; ISDIGIT(*s); ++s) {
 		/* process digits before decimal point. */
-		flags |= 1;
 		ret *= 10.0;
 		ret += (double)(int)(*s - '0');
 	}
 	if (*s == '.') {
 		for (d = 0.1, ++s; ISDIGIT(*s); ++s) {
 			/* process digits after decimal point. */
-			flags |= 2;
 			ret += (d * (double)(int)(*s - '0'));
 			d *= 0.1;
 		}
 	}
-	if (flags) {
+	if (ret) {
 		/* test for exponent token. */
 		if ((*s == 'e') || (*s == 'E')) {
-			++s;
+			++s; d = 10.0; // default positive exponent
 			if (*s == '-') {
 				/* negative exponent. */
-				esign = -1;
-				++s;
+				++s; d = 0.1;
 			}
 			else if (*s == '+') ++s;
-			if (ISDIGIT(*s)) {
-				for (; ISDIGIT(*s); ++s) {
-					/* process exponent digits. */
-					e *= 10;
-					e += (int)(*s - '0');
-				}
-				if (esign >= 0) for (i = 0; i < e; ++i) ret *= 10.0;
-				else for (i = 0; i < e; ++i) ret *= 0.1;
+			for (; ISDIGIT(*s); ++s) {
+				/* process exponent digits. */
+				e *= 10;
+				e += (int)(*s - '0');
 			}
+			for (; e; --e) ret *= d;
 		}
 	}
 
@@ -233,13 +226,7 @@ static bool isCodeLineValid(char *line)
 				return true;
 		}
 	}
-	else if (mode == 2)
-	{
-		//Check number of spaces
-		if (spaceCnt != 2)
-			return false;
-	}
-	else
+	else // isFloat || isHex
 	{
 		//Check number of spaces
 		if (spaceCnt != 2)
@@ -249,9 +236,7 @@ static bool isCodeLineValid(char *line)
 	//Check hex
 	for (int i = 0; i < lineLen; i++)
 	{
-		char c = line[i];
-		if (c >= 'a')
-			c -= 0x20;
+		char c = LCASE(line[i]);
 
 		if(!ISVALID_CHAR(c))
 		{
@@ -288,7 +273,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 		int arg3Off = lineEnd, arg4Off = arg3Off + 1, arg4Len = arg4Off;
 
 		//Parse first line
-		while (lines[(lineEnd) - arg2Len] != ' ')
+		while (lines[lineEnd - arg2Len] != ' ')
 			arg2Len++;
 		while (lines[start + arg1Off] != ' ')
 			arg1Off++;
