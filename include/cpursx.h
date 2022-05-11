@@ -32,7 +32,7 @@ static void sys_get_cobra_version(void)
 
 static void get_cobra_version(char *cfw_info)
 {
-	// returns cfw_info[22]
+	// returns cfw_info[32]
 
 #ifdef COBRA_ONLY
 	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
@@ -72,6 +72,10 @@ static void get_cobra_version(char *cfw_info)
 	// noBD LV1 4.75 - 4.88
 	if(isNOBD)  // ori: 0x78630020409E0018ULL
 		strcat(cfw_info, " noBD");
+#ifdef COBRA_ONLY
+	else if(isCobraDebug)
+		strcat(cfw_info, "D");
+#endif
 }
 
 static void get_net_info(char *net_type, char *ip)
@@ -129,7 +133,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 	char net_type[8] = "", ip[ip_size] = "-";
 	get_net_info(net_type, ip);
 
-	char cfw_info[24];
+	char cfw_info[32];
 	get_cobra_version(cfw_info);
 
 	char fan_mode[24];
@@ -665,7 +669,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 
 static void show_wm_version(char *param)
 {
-	char cfw_info[24];
+	char cfw_info[32];
 	get_cobra_version(cfw_info);
 
 	if(payload_ps3hen)

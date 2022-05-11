@@ -253,6 +253,7 @@ static void rename_file(char *source, char *dest)
 	if(!source || !dest) return; // sanity check
 
 	normalize_path(source, false);
+	if(not_exists(source)) return;
 	normalize_path(dest, false);
 
 #ifdef USE_NTFS
