@@ -4,7 +4,7 @@
 //   if not exist <path>
 //   if L1
 //   if R1
-//   if cobra/nocobra/debug/mamba/hen/dex
+//   if cobra/nocobra/debug/mamba/ps3hen/dex
 //   abort if exist <path>
 //   abort if not exist <path>
 
@@ -158,14 +158,14 @@ static void parse_script(const char *script_file)
 
 						if(_islike(line, "exist /"))     {path +=  6; ret = file_exists(path);} else
 						if(_islike(line, "not exist /")) {path += 10; ret = not_exists(path);} else
-						if(_islike(line, "nocobra")) {ret = !cobra_version;} else
+						if(_islike(line, "noCobra")) {ret = !cobra_version;} else
 						#ifdef COBRA_ONLY
-						if(_islike(line, "cobra"))   {ret =  cobra_version;} else
-						if(_islike(line, "debug"))   {ret = isCobraDebug;} else
-						if(_islike(line, "mamba"))   {ret = is_mamba;} else
-						if(_islike(line, "hen"))     {ret = payload_ps3hen;} else
+						if(_islike(line, "Cobra"))   {ret =  cobra_version;} else
+						if(_islike(line, "Debug"))   {ret = isCobraDebug;} else
+						if(_islike(line, "Mamba"))   {ret = is_mamba;} else
+						if(_islike(line, "PS3HEN"))  {ret = payload_ps3hen;} else
 						#endif
-						if(_islike(line, "dex"))     {ret = dex_mode;} else
+						if(_islike(line, "DEX"))     {ret = dex_mode;} else
 						{
 							// check for hold L1 or R1 in script
 							if(_islike(line, "L1")) ret = is_pressed(CELL_PAD_CTRL_L1);

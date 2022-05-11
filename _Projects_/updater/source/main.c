@@ -936,6 +936,8 @@ int main()
 		file_copy(APP_USRDIR "/res/slaunch.sprx", RES_DIR "/slaunch.sprx");
 		file_copy(APP_USRDIR "/res/wm_vsh_menu.sprx", RES_DIR "/wm_vsh_menu.sprx");
 		file_copy(APP_USRDIR "/res/VshFpsCounter.sprx", RES_DIR "/VshFpsCounter.sprx");
+		file_copy(APP_USRDIR "/res/VshFpsCounter.yaml", RES_DIR "/VshFpsCounter.yaml");
+		file_copy(APP_USRDIR "/res/VshFpsCounterM.sprx",RES_DIR "/VshFpsCounterM.sprx");
 	}
 
 	// skip update custom language file
