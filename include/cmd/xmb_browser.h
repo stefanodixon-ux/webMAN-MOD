@@ -50,7 +50,7 @@
 		}
 		else
 		#endif
-		if(islike(params, "$exit"))
+		if(islike(param, "/xmb.ps3$exit"))
 		{
 			int is_ingame = View_Find("game_plugin");
 
@@ -66,7 +66,7 @@
 				goto html_response;
 			}
 		}
-		else if(islike(params, "$reloadgame"))
+		else if(islike(param, "/xmb.ps3$reloadgame"))
 		{
 			int is_ingame = View_Find("game_plugin");
 
@@ -117,8 +117,8 @@
 		if(islike(params, "$rsx"))
 		{
 			static u8 rsx = 1;
-			if(strstr(params, "pause")) rsx = 1;
-			if(strstr(params, "cont"))  rsx = 0;
+			if(islike(param, "/xmb.ps3$rsx_pause")) rsx = 1;
+			if(islike(param, "/xmb.ps3$rsx_continue"))  rsx = 0;
 			rsx_fifo_pause(rsx); // rsx_pause / rsx_continue
 			rsx ^= 1;
 		}

@@ -171,7 +171,7 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 		}
 	}
 	#ifdef FPS_OVERLAY
-	if(!find_free_slot && strstr(plugin_path, "/VshFpsCounter")) {overlay_enabled = prx_found, overlay_info = overlay = 0;}
+	if(!find_free_slot && strstr(plugin_path, "/VshFpsCounter")) {overlay_enabled = prx_found, overlay_info = 0;}
 	#endif
 	return slot;
 }
@@ -612,6 +612,11 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 
 			sprintf(templn, HTML_BUTTON_FMT2, HTML_BUTTON, "Reload", HTML_ONCLICK2, "/xmb.ps3$reloadgame", HTML_SEND_CMD);
 			concat(buffer, templn);
+
+			#ifdef ARTEMIS_PRX
+			sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "Artemis", HTML_ONCLICK, "/artemis.ps3");
+			concat(buffer, templn);
+			#endif
 		}
 
 		sprintf(templn, HTML_BUTTON_FMT2, HTML_BUTTON, "Pause", HTML_ONCLICK2, "/xmb.ps3$rsx_pause", HTML_SEND_CMD);
@@ -619,8 +624,12 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 
 		sprintf(templn, HTML_BUTTON_FMT2, HTML_BUTTON, "Continue", HTML_ONCLICK2, "/xmb.ps3$rsx_continue", HTML_SEND_CMD);
 		concat(buffer, templn);
-	}
 
+		char *link = templn + 0x200;
+		sprintf(link, "%s?proc=0x%x", (src == 3) ? "/getmem.ps3mapi" : "/gameplugin.ps3mapi", pid);
+		sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, (src == 3) ? "Process" : "Plugins", HTML_ONCLICK, link);
+		concat(buffer, templn);
+	}
 	concat(buffer, "<br><br>");
 
 	add_game_info(buffer, templn, src);
@@ -646,8 +655,6 @@ static u32 ps3mapi_find_offset(u32 pid, u32 address, u32 stop, u8 step, const ch
 	{
 		mem = buffer, chunk_size = sizeof(buffer);
 	}
-
-	Check_Overlay();
 
 	u64 faster = faster_find(sfind, len, mask);
 	const u32 m = chunk_size - len, gap = (len + 0x10) - (len % 0x10);
@@ -1207,7 +1214,7 @@ static void ps3mapi_vshplugin(char *buffer, char *templn, const char *param)
 					if (!uslot ) uslot = get_free_slot(); // find free slot if slot == 0
 					if ( uslot ) {system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)prx_path, NULL, 0);}
 					#ifdef FPS_OVERLAY
-					if(strstr(prx_path, "/VshFpsCounter")) {overlay_enabled = 1, overlay_info = overlay = 0;}
+					if(strstr(prx_path, "/VshFpsCounter")) {overlay_enabled = 1, overlay_info = 0;}
 					#endif
 				}
 			}

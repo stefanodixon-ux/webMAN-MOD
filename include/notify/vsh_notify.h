@@ -1,8 +1,6 @@
 #ifdef FPS_OVERLAY
-#define Check_Overlay()		overlay = (peekq(OVERLAY_ADDR) == 0)
 #define OVERLAY_ADDR		0x8000000000700000ULL
 
-static u8 overlay = 0;
 static u8 overlay_enabled = 0;
 static u8 overlay_info = 0;
 
@@ -21,13 +19,13 @@ enum show_progress_options
 static void show_progress(const char *path, u8 oper)
 {
 	if(!overlay_enabled) return;
-	if(!overlay || syscalls_removed || CFW_SYSCALLS_REMOVED(TOC)) return;
+	if(syscalls_removed || CFW_SYSCALLS_REMOVED(TOC)) return;
 
 	char data[0x80];
 	u64 *data2 = (u64 *)data;
 
 	if(oper == OV_CLEAR)
-		{_memset(data, sizeof(data)); overlay_info = overlay = 0;}
+		{_memset(data, sizeof(data)); overlay_info = 0;}
 	else if(oper == OV_SCAN)
 		snprintf(data, sizeof(data), "\n%s:\n%s", STR_SCAN2, path);
 	else if(oper == OV_COPY)
@@ -63,11 +61,9 @@ static void show_progress(const char *path, u8 oper)
 
 static void disable_progress(void)
 {
-	overlay = 1; // force update if FPS counter is enabled
 	show_progress("", OV_CLEAR);
 }
 #else
-#define Check_Overlay()
 #define show_progress(path, oper)
 #define disable_progress()
 #endif // FPS_OVERLAY

@@ -9,8 +9,6 @@
 		// /index.ps3?<query>&mobile   search game by device name, path or name of game in coverflow mode
 		// /index.ps3?cover=<mode>     refresh game list in HTML using cover type (icon0, mm, disc, online)
 
-		Check_Overlay();
-
 		mobile_mode |= (strstr(param, "?mob") || strstr(param, "&mob"));
 		#ifdef LAUNCHPAD
 		if(get_flag(param, "?launchpad")) {mobile_mode = LAUNCHPAD_MODE, auto_mount = false; sprintf(templn, "%s LaunchPad: %s", STR_REFRESH, STR_SCAN2); show_msg(templn);}

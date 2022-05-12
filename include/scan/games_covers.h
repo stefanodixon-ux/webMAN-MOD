@@ -119,7 +119,7 @@ static void swap_ex(u8 e)
 
 static bool get_image_file(char *icon, int flen)
 {
-	if(!icon || (flen <= 0)) return false; // sanity check
+	if(!icon || (flen <= 0) || (*icon != '/')) return false; // sanity check
 
 	for(u8 e = 0; e < 4; e++)
 	{
@@ -174,25 +174,18 @@ static size_t get_name(char *name, const char *filename, u8 cache)
 		flen = sprintf(name, "%s", filename + pos);
 	}
 
-	if(is_BIN_ENC(name)) {flen -= 8; name[flen] = '\0';}
-
-	if((flen > 2) && name[flen - 2] == '.' ) {flen -= 2; name[flen] = '\0';} // remove file extension (split iso)
-	if((flen > 3) && name[flen - 3] == '.' ) {flen -= 3; name[flen] = '\0';} // remove file extension for roms (.gb .gg .vb)
-	if((flen > 4) && name[flen - 4] == '.' ) {flen -= 4; name[flen] = '\0';} // remove file extension
-	else if(strstr(filename + pos, ".ntfs["))
+	flen = remove_ext(name);
+	if(cache != GET_WMTMP)
 	{
-		while(name[flen] != '.') flen--; name[flen] = '\0';
-		if(cache != GET_WMTMP)
+		if(strstr(filename + pos, ".ntfs["))
 		{
-			pos = flen - 4;
-			if((pos > 0) && name[pos] == '.' && (strcasestr(ISO_EXTENSIONS, &name[pos])))
-				{flen = pos; name[flen] = '\0';}
-			else
-				if(is_BIN_ENC(name)) {flen -= 8; name[flen] = '\0';}
+			const char *ext = get_ext(name);
+			if(ext && (*ext == '.') && strcasestr(ISO_EXTENSIONS, ext))
+				flen = remove_ext(name);
 		}
 	}
 
-	if(cache) return (size_t) flen;
+	if(cache || (flen <= 12)) return (size_t) flen;
 
 	// remove title id from file name
 	if(name[4] == '_' && name[8] == '.' && (*name == 'B' || *name == 'N' || *name == 'S' || *name == 'U') && ISDIGIT(name[9]) && ISDIGIT(name[10])) {flen = sprintf(name, "%s", &name[12]);}// SLES_000.00-Name
@@ -371,26 +364,10 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 			}
 
 			// get path/name and remove file extension
-			int flen = sprintf(icon, "%s/%s", param, entry_name);
+			sprintf(icon, "%s/%s", param, entry_name);
 
-			#ifdef COBRA_ONLY
-			if(f0 == NTFS)
-			{
-				if(flen > 13 && icon[flen-13] == '.' && (!extcmp(icon, ".ntfs[PS3ISO]", 13) || !extcmp(icon, ".ntfs[PS2ISO]", 13)  || !extcmp(icon, ".ntfs[PSPISO]", 13) || !extcmp(icon, ".ntfs[DVDISO]", 13) || !extcmp(icon, ".ntfs[PSXISO]", 13) || !extcmp(icon, ".ntfs[BDFILE]", 13))) flen -= 13; else
-				if(flen > 12 && icon[flen-12] == '.' &&  !extcmp(icon, ".ntfs[BDISO]" , 12)) flen -= 12;
-				if(get_image_file(icon, flen)) return;
-			}
-			#endif
-			if(flen > 2 && icon[flen - 2] == '.') flen -= 2; // remove file extension (split iso)
-			if(flen > 4 && icon[flen - 4] == '.') flen -= 4; // remove file extension
-			else
-			if(flen > 3 && icon[flen - 3] == '.') flen -= 3; // remove file extension for roms (.gb .gg .vb)
-
-			// get covers from iso folder
-			if((f0 < 7 || f0 > NTFS) || (f0 == NTFS && (webman_config->nocov == SHOW_ICON0)))
-			{
-				if(get_image_file(icon, flen)) return;
-			}
+			int flen = remove_ext(icon);
+			if((webman_config->nocov == SHOW_ICON0) && get_image_file(icon, flen)) return;
 
 			if(HAS_TITLE_ID && SHOW_COVERS) {get_cover_by_titleid(icon, title_id); if(HAS(icon)) return;}
 
@@ -468,16 +445,10 @@ static void get_default_icon_for_iso(char *icon, const char *param, const char *
 		flen = get_name(icon, file, GET_WMTMP); //wmtmp
 	}
 
-	if(!isdir && (flen > 13))
+	if(!isdir)
 	{
-		char *p = strstr(icon + flen - 13, ".ntfs[");
-		if(p) {flen -= strlen(p), *p = NULL;}
+		flen = remove_ext(icon);
 	}
-
-	if((flen > 2) && icon[flen - 2] == '.' ) {flen -= 2, icon[flen] = '\0';} // remove file extension (split iso)
-	if((flen > 4) && icon[flen - 4] == '.' ) {flen -= 4, icon[flen] = '\0';} // remove file extension
-	else
-	if((flen > 3) && icon[flen - 3] == '.' ) {flen -= 3, icon[flen] = '\0';} // remove file extension
 
 	//file name + ext
 	if(get_image_file(icon, flen)) return;
@@ -613,6 +584,8 @@ static int get_title_and_id_from_sfo(char *param_sfo, char *title_id, const char
 {
 	int ret = FAILED;
 
+	if(!param_sfo || !title_id || !data) return ret; // sanity check
+
 	bool use_filename = webman_config->use_filename;
 
 	// read param.sfo
@@ -631,6 +604,8 @@ static int get_title_and_id_from_sfo(char *param_sfo, char *title_id, const char
 
 		ret = CELL_FS_SUCCEEDED;
 	}
+
+	if(!entry_name || !icon) return ret; // sanity check
 
 	if(use_filename)
 	{

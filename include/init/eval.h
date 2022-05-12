@@ -6,24 +6,43 @@
 #define ISSPACE(a)		( 0  <  (unsigned char)(a) && (unsigned char)(a) <= ' ')
 #define	INT32(a)		(*((u32*)(a)))
 
-static u64 convertH(const char *val)
+static char h2a(const char hex) // hex byte to ascii char
+{
+	char c = hex;
+	if(c >= 0 && c <= 9)
+		c += '0'; //'0'-'9'
+	else if(c >= 0xA && c <= 0xF)
+		c += 55;  //'A'-'F'
+	return c;
+}
+
+static u8 h2b(const char hex) // hex char to byte
+{
+	u8 c = LCASE(hex);
+	if(c >= '0' && c <= '9')
+		c -= '0'; // 0-9
+	else if(c >= 'a' && c <= 'f')
+		c -= 'W'; // 10-15
+	return c;
+}
+
+static u64 convertH(const char *val) // convert hex string to unsigned integer 64bit
 {
 	if(!val || (*val == 0)) return 0;
 
-	u64 ret = 0; char c; u8 n = 0;
+	u64 ret = 0; u8 n = 0, c;
 
 	if(islike(val, "0x")) n = 2;
 
-	for(u8 buff, i = n; i < 16 + n; i++)
+	for(u8 i = n; i < 16 + n; i++)
 	{
 		if(val[i]==' ') {n++; continue;}
 
-		c = LCASE(val[i]);
-		if(c >= '0' && c <= '9') buff = (c - '0'); else
-		if(c >= 'a' && c <= 'f') buff = (c - 'W'); else // <= c - 'a' + 10
-		return ret;
+		c = h2b(val[i]);
+		if(c > 0xF)
+			return ret;
 
-		ret = (ret << 4) | buff;
+		ret = (ret << 4) | c;
 	}
 
 	return ret;
@@ -45,7 +64,6 @@ static bool isHEX(const char *value)
 static u16 Hex2Bin(const char *src, char *out)
 {
 	char *target = out;
-	char value[3]; value[2] = '\0';
 	if(islike(src, "0x")) src += 2;
 	while(*src && src[1])
 	{
@@ -53,8 +71,7 @@ static u16 Hex2Bin(const char *src, char *out)
 		if((*src == '*') || (*src == '?'))
 			{*(target++) = '*'; src += 2; continue;} // convert mask ** / ?? to binary *
 
-		value[0] = src[0], value[1] = src[1];
-		*(target++) = (u8)convertH(value);
+		*(target++) = (src[0] << 4) | src[1];
 		src += 2;
 	}
 	return (target - out);
@@ -84,34 +101,25 @@ static s64 val(const char *c)
 		return convertH((char*)c);
 	}
 
-	s64 previous_result = 0, result = 0;
-	s64 multiplier = 1;
+	s64 result = 0;
+	s64 sign = 1;
 
 	if(c && *c == '-')
 	{
-		multiplier = -1;
+		sign = -1;
 		c++;
 	}
 
 	while(*c)
 	{
-		if(!ISDIGIT(*c)) return result * multiplier;
+		if(!ISDIGIT(*c)) break;
 
 		result *= 10;
-		if(result < previous_result)
-			return(0); // overflow
-		else
-			previous_result = result;
-
 		result += (*c & 0x0F);
-		if(result < previous_result)
-			return(0); // overflow
-		else
-			previous_result = result;
 
 		c++;
 	}
-	return(result * multiplier);
+	return(result * sign);
 }
 
 static u16 get_value(char *value, const char *url, u16 max_size)

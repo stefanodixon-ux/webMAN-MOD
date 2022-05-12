@@ -100,7 +100,6 @@
 			{
 				if(op >= 10) overlay_info = op; // set persistent show
 
-				overlay = 1; // force update if FPS counter is enabled
 				if(*msg)
 					show_progress(msg, OV_SHOW);
 				else

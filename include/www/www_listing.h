@@ -85,8 +85,6 @@
 			save_file(FILE_LIST, "<body onload='try{t2lnks()}finally{}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
 		}
 
-		Check_Overlay();
-
 		wildcard = strrchr(param, '/'); *wildcard++ = NULL;
 
 		scan(param, true, wildcard, (reply_html ? SCAN_LIST_SIZE : SCAN_LIST), FILE_LIST);

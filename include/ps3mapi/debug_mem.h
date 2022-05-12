@@ -125,8 +125,6 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 
 		vshNotify_WithIcon(ICON_WAIT, "Dumping...");
 
-		Check_Overlay();
-
 		if(cellFsOpen(dump_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
 			char label[20];
@@ -310,8 +308,6 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 			flen = sprintf(sfind, "%s", v + 1);
 
 		u64 (*peek_mem)(u64) = lv1 ? peek_lv1 : peekq;
-
-		Check_Overlay();
 
 		u64 _upper_memory = (upper_memory - flen + 8) & 0x8FFFFFFFFFFFFFF0ULL;
 		u64 faster = faster_find(sfind, flen, sfind);

@@ -99,6 +99,8 @@ static size_t size_link(const char *source)
 
 static u64 folder_size(const char *path)
 {
+	if(!path) return 0; // sanity check
+
 	if(!isDir(path))
 	{
 		if(do_chmod) cellFsChmod(path, new_mode);

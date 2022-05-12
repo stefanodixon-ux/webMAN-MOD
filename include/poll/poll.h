@@ -161,7 +161,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		if(overlay_info)
 		{
 			get_sys_info(msg, overlay_info % 100, (overlay_info >= 100));
-			overlay = 1; show_progress(msg, OV_SHOW);
+			show_progress(msg, OV_SHOW);
 		}
 		#endif
 

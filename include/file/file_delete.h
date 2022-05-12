@@ -3,7 +3,6 @@
 
 static int del(const char *path, u8 recursive)
 {
-	Check_Overlay();
 	return scan(path, recursive, NULL, SCAN_DELETE, NULL);
 }
 /*

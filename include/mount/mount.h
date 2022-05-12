@@ -24,6 +24,7 @@ static int8_t check_multipsx = NONE;
 
 static u8 force_ap = 0;
 static u8 mount_app_home = false; // force mount JB folder in /app_home [false = use webman_config->app_home]
+static u8 silent_mode = false;
 
 #ifdef MOUNT_GAMEI
 static char map_title_id[TITLEID_LEN];
@@ -842,8 +843,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				setPluginActive();
 
 				// show msg begin
-				sprintf(templn, "%s %s\n%s %s", STR_COPYING, source, STR_CPYDEST, target);
-				show_msg(templn);
+				if(!silent_mode)
+				{
+					sprintf(templn, "%s %s\n%s %s", STR_COPYING, source, STR_CPYDEST, target);
+					show_msg(templn);
+				}
 
 				if(islike(target, "/dev_blind")) enable_dev_blind(NO_MSG);
 
@@ -1122,9 +1126,9 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 		{
 			sprintf(msg, "%s %s\n"
 						 "%s %s", STR_COPYING, source, STR_CPYDEST, basepath);
+
 			show_msg(msg);
 
-			Check_Overlay();
 			show_progress(msg, OV_COPY);
 
 			dont_copy_same_size = true;
@@ -1574,13 +1578,21 @@ static void mount_thread(u64 action)
 
 exit_mount:
 
+	// ---------------
+	// delete history
+	// ---------------
+
+	delete_history(false);
+
 	// -------------------------------
 	// show 2nd message: "xxx" loaded
 	// -------------------------------
 
 	if(action == MOUNT_SILENT) goto mounting_done;
 
-	if(ret && *_path == '/')
+	if(webman_config->minfo & 2) ;
+
+	else if(ret && *_path == '/')
 	{
 		char msg[STD_PATH_LEN + 48], *pos;
 
@@ -1589,37 +1601,26 @@ exit_mount:
 		sprintf(msg, "\"%s", pos + 1);
 
 		// remove file extension
-		if(!get_flag(msg, ".ntfs["))
-		{
-			pos = strrchr(msg, '.'); if(pos) *pos = NULL;
-		}
+		remove_ext(msg);
 		if(msg[1] == NULL) sprintf(msg, "\"%s", _path);
 
 		// show loaded path
 		strcat(msg, "\" "); strcat(msg, STR_LOADED2);
-		if(!(webman_config->minfo & 2))
+
+		if(mount_unk == EMU_PSP)
+			vshNotify_WithIcon(ICON_PSP_UMD, "Use PSP Launcher to play the game");
+		else if((mount_unk == EMU_PS2_CD) || (mount_unk == EMU_PS2_DVD))
 		{
-			if(mount_unk == EMU_PSP)
-				vshNotify_WithIcon(ICON_PSP_UMD, "Use PSP Launcher to play the game");
-			else if((mount_unk == EMU_PS2_CD) || (mount_unk == EMU_PS2_DVD))
-			{
-				if(is_BIN_ENC(msg))
-					vshNotify_WithIcon(ICON_PS2_DISC, "Use PS2 Launcher to play the game");
-				else
-					vshNotify_WithIcon(ICON_PS2_DISC, msg);
-			}
-			else if((mount_unk >= EMU_PS3) && (mount_unk < EMU_PSP))
-				vshNotify_WithIcon(40 + mount_unk, msg);
+			if(is_BIN_ENC(msg))
+				vshNotify_WithIcon(ICON_PS2_DISC, "Use PS2 Launcher to play the game");
 			else
-				show_msg(msg);
+				vshNotify_WithIcon(ICON_PS2_DISC, msg);
 		}
+		else if((mount_unk >= EMU_PS3) && (mount_unk < EMU_PSP))
+			vshNotify_WithIcon(40 + mount_unk, msg);
+		else
+			show_msg(msg);
 	}
-
-	// ---------------
-	// delete history
-	// ---------------
-
-	delete_history(false);
 
 	if(mount_unk >= EMU_MAX) goto mounting_done;
 

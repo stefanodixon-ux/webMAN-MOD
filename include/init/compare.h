@@ -3,15 +3,14 @@ extern int extcasecmp(const char *s1, const char *s2, size_t n);
 
 static bool IS(const char *a, const char *b)
 {
-	if(!a || !*a) return false;
-	while(*a && (*a == *b)) a++,b++;
-	return !(*a-*b); // compare two strings. returns true if they are identical
+	if(!a || !b ||!*a) return false;
+	return !strcmp(a, b); // compare two strings. returns true if they are identical
 }
 
 static bool _IS(const char *a, const char *b)
 {
-	if(!a || !*a) return false;
-	return (strcasecmp(a, b) == 0);	// compare two strings. returns true if they are identical (case insensitive)
+	if(!a || !b || !*a) return false;
+	return !strcasecmp(a, b);	// compare two strings. returns true if they are identical (case insensitive)
 }
 
 #ifndef LITE_EDITION

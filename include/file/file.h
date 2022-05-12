@@ -64,10 +64,13 @@ static const char *get_ext(const char *path)
 {
 	if(!path || !(*path)) return path;
 
-	const char *ext = path + strlen(path) - 1;
+	const int len = strlen(path);
+	const char *ext = path + len - 1;
 	const char *end = ext - ((*ext == ']') ? 13 : 6); // search limit 6 or 13 chars
+	if(*ext == '0') ext--;
 	while(--ext > path)
 		if((*ext == '.') || (ext <= end)) break;
+	if(*ext != '.') ext = path + len;
 	return ext;
 }
 
@@ -92,6 +95,19 @@ static char *remove_filename(const char *path)
 {
 	char *p = get_filename(path); if(p) *p = NULL; else p = (char*)path;
 	return p;
+}
+
+static int remove_ext(const char *path)
+{
+	char *p = (char*)get_ext(path);
+	if(p)
+	{
+		bool is_enc = IS(p, ".ENC");
+		if (*p == '.')
+			*p = '\0';
+		if(is_enc) remove_ext(path);
+	}
+	return strlen(path);
 }
 
 #ifndef LITE_EDITION

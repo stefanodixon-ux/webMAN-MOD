@@ -20,7 +20,6 @@
 ////////////////////////////////
 static bool css_exists = false;
 static bool common_js_exists = false;
-static bool silent_mode = false;
 
 #ifdef SYS_ADMIN_MODE
 static u8 check_password(char *param)

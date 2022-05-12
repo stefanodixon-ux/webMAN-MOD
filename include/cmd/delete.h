@@ -36,8 +36,6 @@
 		{
 			if(islike(params, "/dev_hdd1")) mount_device(params, NULL, NULL); // auto-mount device
 
-			Check_Overlay();
-
 			char *wildcard = strrchr(params, '*');
 			if(wildcard)
 			{

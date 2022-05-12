@@ -59,7 +59,6 @@
 		char *params = param + 10;
 
 		keep_alive = 0;
-		Check_Overlay();
 
 		#ifdef COBRA_ONLY
 		if(islike(param, "/mount.ps3"))

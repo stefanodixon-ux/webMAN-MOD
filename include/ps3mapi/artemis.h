@@ -28,16 +28,6 @@ static int userCodesLen = 0;
 
 static char *userCodes = NULL;
 
-static u8 h2b(char hex)
-{
-	char c = LCASE(hex);
-	if(c >= '0' && c <= '9')
-		c -= '0';
-	else if(c >= 'a' && c <= 'f')
-		c -= 'W';
-	return c;
-}
-
 static double tofloat(const char *s)
 {
 	double d, ret = 0.0, sign = 1.0;

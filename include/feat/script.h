@@ -69,7 +69,6 @@ static void parse_script(const char *script_file)
 		if(*buffer && !strchr(buffer, '\n')) strcat(buffer, "\n");
 
 		script_running = true;
-		Check_Overlay();
 
 		while(*buffer)
 		{

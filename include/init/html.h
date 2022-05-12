@@ -92,16 +92,6 @@ static void open_browser(char *url, int mode)
 	}
 }
 
-static char h2a(const char hex)
-{
-	char c = hex;
-	if(c >= 0 && c <= 9)
-		c += '0';
-	else if(c >= 10 && c <= 15)
-		c += 55; //A-F
-	return c;
-}
-
 static void urldec(char *url, char *original)
 {
 	if(!url) return;
@@ -109,7 +99,7 @@ static void urldec(char *url, char *original)
 	{
 		if(original) strcpy(original, url); // return original url
 
-		u16 pos = 0; char c;
+		u16 pos = 0;
 		for(u16 i = 0; url[i] >= ' '; i++, pos++)
 		{
 			if(url[i] == '+')
@@ -121,9 +111,7 @@ static void urldec(char *url, char *original)
 				url[pos] = 0; u8 n = 2; if(url[i+1]=='u') {i++, n+=2;}
 				while(n--)
 				{
-					url[pos] <<= 4, c = LCASE(url[++i]);
-					if(c >= '0' && c <= '9') url[pos] += (c - '0'); else
-					if(c >= 'a' && c <= 'f') url[pos] += (c - 'W'); // <= c - 'a' + 10
+					url[pos] <<= 4, url[pos] += h2b(url[++i]);
 				}
 			}
 		}
