@@ -20,6 +20,7 @@
 ////////////////////////////////
 static bool css_exists = false;
 static bool common_js_exists = false;
+static bool silent_mode = false;
 
 #ifdef SYS_ADMIN_MODE
 static u8 check_password(char *param)
@@ -81,6 +82,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 				const char *p = strchr(filename, '/');
 				if(p) {body[p - filename] = '\0'; add_breadcrumb_trail2(body, label, p);}
 			}
+			else if(silent_mode) ;
 			else if(!(webman_config->minfo & 2)) show_msg(body);
 
 			if(code == CODE_PREVIEW_FILE)
@@ -278,7 +280,7 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 	u8 keep_alive = 0, use_keep_alive = 0;
 	u8 ap_param = 0; force_ap = 0; // 0 = do nothing, 1 = use webman_config->autoplay, 2 = force auto_play
 
-	fast_concat.str = NULL;
+	fast_concat.str = NULL; silent_mode = false;
 
 	char cmd[16], header[HTML_RECV_SIZE];
 	char *mc = NULL, *mc_param = NULL;
@@ -469,10 +471,10 @@ parse_request:
 			}
 			#endif // #ifdef WM_REQUEST
 		}
-		else
+		else if(mc_param)
 		{
-			if(mc_param) strcpy(param, mc_param); // restore original multi-command param
-			sprintf(header, "GET %s", mc + 1);
+			sprintf(header, "GET %s", mc_param); // next multi-command param
+			free(mc_param); mc_param = NULL;
 		}
 
 		mc = NULL;
@@ -501,12 +503,14 @@ parse_request:
 
 			if(!is_setup)
 			{
-				if(!mc && strstr(param, ";/"))
+				mc = strstr(param, ";/");
+				if(mc)
 				{
-					mc_param = malloc(strlen(param) + 1);
-					if(mc_param) strcpy(mc_param, param); // backup original multi-command param
+					mc_param = malloc(strlen(mc));
+					if(mc_param) strcpy(mc_param, mc + 1); // store next multi-command param
+					*mc = NULL; strcpy(header, param); // process first command
+					silent_mode = true;
 				}
-				mc = strstr(param, ";/"); if(mc) {*mc = NULL; strcpy(header, param);}
 			}
 
 			bool allow_retry_response = true; u8 mobile_mode = false;
