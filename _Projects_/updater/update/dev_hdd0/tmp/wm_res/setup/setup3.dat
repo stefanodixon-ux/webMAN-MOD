@@ -11,4 +11,4 @@ Info <select id="xi" name="xi">
 <option value="0x11">Path + ID + Tags
 <option value="0x21">Path + ID + Version
 <option value="0x31">Path + ID + Version + Tags
-</select><script>$("xi").value="0x"+("0"+(1*"    ").toString(16)).slice(-2);</script>
+</select><script>document.getElementById("xi").value="0x"+("0"+(1*"    ").toString(16)).slice(-2);</script>

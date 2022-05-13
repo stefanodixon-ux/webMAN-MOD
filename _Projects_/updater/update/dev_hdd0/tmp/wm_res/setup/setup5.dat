@@ -8,5 +8,5 @@
 <option value=6>Max BLU+ ( 368K PS3 + 768K BLU)
 <option value=7>Max PSP+ ( 368K PS3 + 768K PSP)
 <option value=8>Max PS2+ ( 368K PS3 + 768K PS2)
-</select><script>$("fp").value=    </script>
+</select><script>document.getElementById("fp").value=    </script>
  3072KB [MC]: <select id="mc" name="mc">

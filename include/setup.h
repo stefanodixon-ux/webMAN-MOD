@@ -931,7 +931,7 @@ static void setup_form(char *buffer, char *templn)
 
 	//combos
 	sprintf(templn, "</div>%scmb);\"> %s </a></b><br><div id=\"cmb\">"
-					"<button onclick=\"var cb=$('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
+					"<button onclick=\"var cb=document.getElementById('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
 					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", HTML_TOGGLER, STR_COMBOS2, STR_COMBOS); concat(buffer, templn);
 
 	#ifdef COBRA_ONLY

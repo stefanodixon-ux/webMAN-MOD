@@ -4,4 +4,4 @@
 <label><input type="radio" name="s" value="10" id="s_10"/> 10 sec<br></label>
 <label><input type="radio" name="s" value="15" id="s_15"/> 15 sec<br></label>
 </div>
-<script>id=1*"    ";$("s_"+id).checked=true;</script>
+<script>id=1*"    ";document.getElementById("s_"+id).checked=true;</script>

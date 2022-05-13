@@ -3,4 +3,4 @@
 <option value=1>ICON0.PNG
 <option value=2>DISC ICONS
 <option value=3>ONLINE COVERS
-</select><script>$("ic").value=    </script>
+</select><script>document.getElementById("ic").value=    </script>

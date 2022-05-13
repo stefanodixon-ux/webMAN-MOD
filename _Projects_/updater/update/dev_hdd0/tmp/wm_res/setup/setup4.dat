@@ -3,4 +3,4 @@
 <option value=2>Info 1
 <option value=1>Info 2
 <option value=0>Info 1 + 2
-</select><br><script>$("mi").value=    </script>
+</select><br><script>document.getElementById("mi").value=    </script>

@@ -1,5 +1,5 @@
 <option value=1>A- America
 <option value=2>B- Europe
 <option value=4>C- Asia
-</select><script>$("bdr").value=    </script>
+</select><script>document.getElementById("bdr").value=    </script>
  • DVD Region: <select id="dvr" name="dvr">

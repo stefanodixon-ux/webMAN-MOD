@@ -8,4 +8,4 @@
 <option value="3270">M4HD 368p
 <option value="4660">M4HD 720p
 <option value="3670">MJPEG 720p
-</select><script>$("vif").value="    "</script>
+</select><script>document.getElementById("vif").value="    "</script>

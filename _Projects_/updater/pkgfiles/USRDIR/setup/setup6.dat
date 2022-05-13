@@ -2,4 +2,4 @@
 <option value=3>3 - fg
 <option value=2>2 - debug
 <option value=1>1 - app
-</select><br><script>$("mc").value=    </script>
+</select><br><script>document.getElementById("mc").value=    </script>

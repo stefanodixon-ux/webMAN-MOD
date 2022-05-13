@@ -23,4 +23,4 @@
 <option value=18>&#26085;&#26412;&#35486;
 <option value=19>&#32321;&#39636;&#20013;&#25991;
 <option value=99>Custom
-</select><script>$("l").value=1*"    "</script>
+</select><script>document.getElementById("l").value=1*"    "</script>

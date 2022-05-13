@@ -1009,7 +1009,7 @@ next_html_entry:
 			_concat(&sout, "slides = [");
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
-			sprintf(templn, "<script>$('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
+			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
 		}
 		else
 		{

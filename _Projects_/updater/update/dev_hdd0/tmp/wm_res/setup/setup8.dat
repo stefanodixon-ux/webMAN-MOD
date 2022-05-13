@@ -5,4 +5,4 @@
 <option value=16>5- Asia
 <option value=32>6- China
 </select>
-<script>$("dvr").value=1*"    "</script>
+<script>document.getElementById("dvr").value=1*"    "</script>
