@@ -52,7 +52,7 @@
 											 kl, (char*)KLIC_CONTENT_ID, (char*)KLIC_PATH);
 		}
 		else
-			{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; vshNotify_WithIcon(ICON_EXCLAMATION, "KLIC: Not in-game!");}
+			{sprintf(buffer, "ERROR: <a style=\"%s\" href=\"play.ps3\">%s</a><p>", HTML_URL_STYLE, "KLIC: Not in-game!"); klic_polling = KL_OFF; show_msg_with_icon(ICON_EXCLAMATION, "KLIC: Not in-game!");}
 
 
 		strcpy(prev, (klic_polling_status) ? (klic_polling ? "Auto-Log: Running" : "Auto-Log: Stopped") :

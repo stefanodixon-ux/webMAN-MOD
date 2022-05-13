@@ -123,7 +123,7 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 		int fd;
 		char *mem_buf = (char*)sysmem;
 
-		vshNotify_WithIcon(ICON_WAIT, "Dumping...");
+		show_msg_with_icon(ICON_WAIT, "Dumping...");
 
 		if(cellFsOpen(dump_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{

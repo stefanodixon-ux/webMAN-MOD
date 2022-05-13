@@ -55,7 +55,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	ssend(conn_s_ps3mapi, PS3MAPI_OK_230);
 
-	sprintf(buffer, PS3MAPI_CONNECT_NOTIF, inet_ntoa(conn_info.remote_adr)); vshNotify_WithIcon(ICON_NETWORK, buffer);
+	sprintf(buffer, PS3MAPI_CONNECT_NOTIF, inet_ntoa(conn_info.remote_adr)); show_msg_with_icon(ICON_NETWORK, buffer);
 
 	while(connactive == 1 && working)
 	{
@@ -684,7 +684,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 	}
 
 	sprintf(buffer, PS3MAPI_DISCONNECT_NOTIF, inet_ntoa(conn_info.remote_adr));
-	vshNotify_WithIcon(ICON_NETWORK, buffer);
+	show_msg_with_icon(ICON_NETWORK, buffer);
 
 	if(pasv_s >= 0) sclose(&pasv_s);
 	sclose(&conn_s_ps3mapi);
@@ -741,7 +741,7 @@ static void ps3mapi_thread(__attribute__((unused)) u64 arg)
 end:
 		sclose(&list_s);
 	}
-	else vshNotify_WithIcon(ICON_EXCLAMATION, (char *)"PS3MAPI Server not loaded!");
+	else show_msg_with_icon(ICON_EXCLAMATION, (char *)"PS3MAPI Server not loaded!");
 
 	//thread_id_ps3mapi = SYS_PPU_THREAD_NONE;
 	sys_ppu_thread_exit(0);

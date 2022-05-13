@@ -324,7 +324,7 @@ static void ps3mapi_notify(char *buffer, char *templn, const char *param)
 		if(icon_id) webman_config->msg_icon = 0; // enable icons
 
 		parse_tags(msg);
-		vshNotify_WithIcon(icon_id, msg);
+		show_msg_with_icon(icon_id, msg);
 	}
 
 	if(!is_ps3mapi_home)

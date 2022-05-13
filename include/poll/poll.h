@@ -37,7 +37,7 @@ static void poll_start_play_time(void)
 		{
 			xnet()->GetSettingNet_enable(&status);
 			xnet()->SetSettingNet_enable(net_status);
-			net_status = NONE; if(net_status && !status) vshNotify_WithIcon(ICON_NETWORK, ONLINE_TAG);
+			net_status = NONE; if(net_status && !status) show_msg_with_icon(ICON_NETWORK, ONLINE_TAG);
 			cellFsUnlink(WM_NETDISABLED);
 		}
 		#endif
@@ -85,7 +85,7 @@ static void poll_start_play_time(void)
 				{
 					xnet()->GetSettingNet_enable(&status);
 					xnet()->SetSettingNet_enable(net_status < 0 ? 0 : net_status);
-					if(status && (net_status <= 0)) {create_file(WM_NETDISABLED); vshNotify_WithIcon(ICON_NETWORK, OFFLINE_TAG);}
+					if(status && (net_status <= 0)) {create_file(WM_NETDISABLED); show_msg_with_icon(ICON_NETWORK, OFFLINE_TAG);}
 					net_status = status;
 				}
 			}

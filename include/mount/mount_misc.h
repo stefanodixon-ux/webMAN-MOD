@@ -175,7 +175,7 @@
 		if(!IS_CEX && !(webman_config->minfo & 1))
 		{
 			sprintf(temp, "Rebug DEX only supports PS2 games encrypted with CEX keys");
-			vshNotify_WithIcon(ICON_EXCLAMATION, temp);
+			show_msg_with_icon(ICON_EXCLAMATION, temp);
 		}
 		#endif
 

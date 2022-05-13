@@ -29,7 +29,7 @@
 		else
 			fix_game(game_path, titleID, FIX_GAME_FORCED); // fix game folder
 
-		vshNotify_WithIcon(ICON_GAME, "Fixed");
+		show_msg_with_icon(ICON_GAME, "Fixed");
 		goto exit_handleclient_www;
 	}
 #endif

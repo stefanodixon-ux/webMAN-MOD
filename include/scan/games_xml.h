@@ -1541,7 +1541,7 @@ static void refresh_xml(char *msg)
 	if(refreshing_xml) return;
 
 	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
-	vshNotify_WithIcon(ICON_NOTIFY, msg);
+	show_msg_with_icon(ICON_NOTIFY, msg);
 
 	refreshing_xml = 1, games_found = 0;
 
@@ -1581,12 +1581,12 @@ static void refresh_xml(char *msg)
 		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3) || show_persistent_popup)
 		{
 			snprintf(msg, 200, "%s:\n %'i %s", STR_SCAN2, games_found, STR_GAMES);
-			vshNotify_WithIcon(ICON_WAIT, msg);
+			show_msg_with_icon(ICON_WAIT, msg);
 		}
 	}
 
 	sprintf(msg, "%s XML%s: OK\n%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
-	vshNotify_WithIcon(ICON_GAME, msg);
+	show_msg_with_icon(ICON_GAME, msg);
 
 	setPluginInactive(); games_found = 0;
 }

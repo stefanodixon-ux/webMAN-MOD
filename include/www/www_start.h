@@ -191,7 +191,7 @@ static void start_www(u64 conn_s_p)
 								"Press O to abort",
 								is_video ? "video" : "music"); templn[9] -= 0x20;
 
-				vshNotify_WithIcon(is_video ? ICON_VIDEO : ICON_MUSIC, templn);
+				show_msg_with_icon(is_video ? ICON_VIDEO : ICON_MUSIC, templn);
 
 				if(!wait_for_abort(8 + webman_config->boots))
 					start_xmb_player(is_video ? "video" : "music");

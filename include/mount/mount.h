@@ -667,7 +667,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				if(g_sysmem) {sys_memory_free(g_sysmem); g_sysmem = NULL;}
 
-				if(is_error) {vshNotify_WithIcon(ICON_EXCLAMATION, STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
+				if(is_error) {show_msg_with_icon(ICON_EXCLAMATION, STR_CPYABORT); cp_mode = CP_MODE_NONE; return false;}
 			}
 			else
 			#endif // #ifdef COPY_PS3
@@ -875,10 +875,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 				// show msg end
 				if(copy_aborted)
-					vshNotify_WithIcon(ICON_EXCLAMATION, STR_CPYABORT);
+					show_msg_with_icon(ICON_EXCLAMATION, STR_CPYABORT);
 				else
 				{
-					vshNotify_WithIcon(ICON_CHECK, STR_CPYFINISH);
+					if(!silent_mode)
+						show_msg_with_icon(ICON_CHECK, STR_CPYFINISH);
 					if(do_restart) { del_turnoff(2); vsh_reboot();}
 				}
 
@@ -1137,7 +1138,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 			if(copy_aborted)
 			{
 				cellFsUnlink(target);
-				vshNotify_WithIcon(ICON_EXCLAMATION, STR_CPYABORT);
+				show_msg_with_icon(ICON_EXCLAMATION, STR_CPYABORT);
 			}
 			else if(webman_config->deliso)
 			{
@@ -1438,12 +1439,12 @@ static void mount_thread(u64 action)
 
 		int ret_val = NONE; { system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PCHECK_SYSCALL8); ret_val = (int)p1;}
 
-		if(ret_val < 0) { vshNotify_WithIcon(ICON_EXCLAMATION, STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
+		if(ret_val < 0) { show_msg_with_icon(ICON_EXCLAMATION, STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
 		if(ret_val > 1) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 1); }
 	}
 	#else
 
-	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE) { vshNotify_WithIcon(ICON_EXCLAMATION, STR_CFWSYSALRD); goto finish; }
+	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE) { show_msg_with_icon(ICON_EXCLAMATION, STR_CFWSYSALRD); goto finish; }
 
 	#endif
 
@@ -1561,7 +1562,7 @@ static void mount_thread(u64 action)
 		goto finish;
 	}
 
-	if(action && !(webman_config->minfo & 1)) vshNotify_WithIcon(ICON_MOUNT, _path);
+	if(action && !(webman_config->minfo & 1)) show_msg_with_icon(ICON_MOUNT, _path);
 
 	///////////////////////
 	// MOUNT ISO OR PATH //
@@ -1608,16 +1609,16 @@ exit_mount:
 		strcat(msg, "\" "); strcat(msg, STR_LOADED2);
 
 		if(mount_unk == EMU_PSP)
-			vshNotify_WithIcon(ICON_PSP_UMD, "Use PSP Launcher to play the game");
+			show_msg_with_icon(ICON_PSP_UMD, "Use PSP Launcher to play the game");
 		else if((mount_unk == EMU_PS2_CD) || (mount_unk == EMU_PS2_DVD))
 		{
 			if(is_BIN_ENC(msg))
-				vshNotify_WithIcon(ICON_PS2_DISC, "Use PS2 Launcher to play the game");
+				show_msg_with_icon(ICON_PS2_DISC, "Use PS2 Launcher to play the game");
 			else
-				vshNotify_WithIcon(ICON_PS2_DISC, msg);
+				show_msg_with_icon(ICON_PS2_DISC, msg);
 		}
 		else if((mount_unk >= EMU_PS3) && (mount_unk < EMU_PSP))
-			vshNotify_WithIcon(40 + mount_unk, msg);
+			show_msg_with_icon(40 + mount_unk, msg);
 		else
 			show_msg(msg);
 	}

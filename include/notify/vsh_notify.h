@@ -115,7 +115,7 @@ enum rco_icons
 
 #define MAX_RCO_IMAGES	51
 
-static s32 vshNotify_WithIcon(u8 icon_id, const char *msg)
+static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 {
 	const char *rco_images[MAX_RCO_IMAGES] = {
 								// system_plugin icons
@@ -244,7 +244,7 @@ static void show_msg(const char *text)
 	}
 
 	if(strstr(msg, "&icon="))
-		vshNotify_WithIcon(0, msg);
+		show_msg_with_icon(0, msg);
 	else
 		vshtask_notify(msg);
 }
@@ -254,7 +254,7 @@ static void show_status(const char *label, const char *status)
 	char msg[200];
 	snprintf(msg, sizeof(msg), "%s %s", label, status);
 	if(IS(label, STR_ERROR))
-		vshNotify_WithIcon(ICON_ERROR, msg);
+		show_msg_with_icon(ICON_ERROR, msg);
 	else
 		vshtask_notify(msg);
 }
