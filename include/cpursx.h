@@ -415,6 +415,10 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 						View_Find("download_plugin") ? "Downloading file" : "",
 						View_Find("game_plugin")     ? "Installing PKG"   : "");
 	}
+	else if( games_found )
+	{
+		sprintf(templn, "<hr><font size=2>%s%s: %'i %s</font>", STR_SCAN2, SUFIX2(profile), games_found, STR_GAMES);
+	}
 	/*else
 	{
 		unsigned int real_disctype, effective_disctype, iso_disctype;

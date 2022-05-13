@@ -1,3 +1,6 @@
+// combos.h
+static u8 show_persistent_popup = 0;
+
 #define AVG_ITEM_SIZE			360
 
 // XML Tags:
@@ -53,7 +56,7 @@
 																			" " PSP_LAUNCHER_MINIS_ID)
 
 static u16 item_count[6];
-static u16 games_found;
+static vu16 games_found = 0;
 
 typedef struct
 {
@@ -736,7 +739,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	}
 	#endif
 
-	u16 key; games_found = 0;
+	u16 key;
 	int fdxml; char *xml_file = (char*)MY_GAMES_XML;
 
 	if(!is_app_home_onxmb()) webman_config->gamei = 0; // do not scan GAMEI if app_home/PS3_GAME icon is not on XMB
@@ -990,7 +993,6 @@ scan_roms:
 					)
 				{
 					if(key >= max_xmb_items) break;
-					if(is_game_dir && !islike(entry.entry_name.d_name, "NP")) continue;
 
 					#ifdef NET_SUPPORT
 					if(is_net)
@@ -1028,6 +1030,8 @@ scan_roms:
 					#endif // #ifdef NET_SUPPORT
 					{
 						if((entry.entry_name.d_name[0] == '.') || strchr(entry.entry_name.d_name, '<')) continue;
+
+						if(is_game_dir && !islike(entry.entry_name.d_name, "NP")) continue;
 
 						if(ignore_files && strstr(ignore_files, entry.entry_name.d_name)) continue;
 
@@ -1539,7 +1543,7 @@ static void refresh_xml(char *msg)
 	sprintf(msg, "%s XML%s: %s", STR_REFRESH, SUFIX2(profile), STR_SCAN2);
 	vshNotify_WithIcon(ICON_NOTIFY, msg);
 
-	refreshing_xml = 1; games_found = 0;
+	refreshing_xml = 1, games_found = 0;
 
 #ifdef USE_NTFS
 	root_check = true;
@@ -1571,10 +1575,10 @@ static void refresh_xml(char *msg)
 	// wait until complete
 	while(refreshing_xml && working)
 	{
-		sys_ppu_thread_sleep(2);
+		sys_ppu_thread_sleep(3);
 
 		pad_data = pad_read();
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3))
+		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3) || show_persistent_popup)
 		{
 			snprintf(msg, 200, "%s:\n %'i %s", STR_SCAN2, games_found, STR_GAMES);
 			vshNotify_WithIcon(ICON_WAIT, msg);
@@ -1584,5 +1588,5 @@ static void refresh_xml(char *msg)
 	sprintf(msg, "%s XML%s: OK\n%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
 	vshNotify_WithIcon(ICON_GAME, msg);
 
-	setPluginInactive();
+	setPluginInactive(); games_found = 0;
 }

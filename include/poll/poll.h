@@ -1,9 +1,6 @@
 #define _IS_ON_XMB_		((sec & 1) && (gTick.tick == rTick.tick))
 #define _IS_IN_GAME_	((sec & 1) && (gTick.tick >  rTick.tick))
 
-// combos.h
-static u8 show_persistent_popup = 0;
-
 static bool toggle_snd0 = false;
 
 static void poll_start_play_time(void)
