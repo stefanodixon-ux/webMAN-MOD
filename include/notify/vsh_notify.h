@@ -230,7 +230,7 @@ static void show_msg(const char *text)
 	//if(!vshtask_notify) return;
 
 	char msg[240];
-	snprintf(msg, 240, "%s", text);
+	snprintf(msg, sizeof(msg), "%s", text);
 
 	char *snd = strstr(msg, "&snd=");
 	if(snd)
@@ -249,13 +249,21 @@ static void show_msg(const char *text)
 		vshtask_notify(msg);
 }
 
-static void show_status(const char *label, const char *status)
+static void show_msg2(const char *text1, const char *text2)
 {
 	char msg[200];
-	snprintf(msg, sizeof(msg), "%s %s", label, status);
-	if(IS(label, STR_ERROR))
-		show_msg_with_icon(ICON_ERROR, msg);
-	else
-		vshtask_notify(msg);
+	snprintf(msg, sizeof(msg), "%s %s", text1, text2);
+	vshtask_notify(msg);
 }
 
+static void show_status(const char *label, u8 status)
+{
+	show_msg2(label, status ? STR_DISABLED : STR_ENABLED);
+}
+
+static void show_error(const char *text)
+{
+	char msg[200];
+	snprintf(msg, sizeof(msg), "%s %s", STR_ERROR, text);
+	show_msg_with_icon(ICON_ERROR, msg);
+}

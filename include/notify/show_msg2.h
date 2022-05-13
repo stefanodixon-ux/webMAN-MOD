@@ -22,7 +22,7 @@
 // ~C = L"\uF893" = Dualshock L2 buttonD-Pad LEFT Button-Combo
 // ~D = L"\uF894" = Dualshock R2 buttonD-Pad RIGHT Button-Combo
 
-static void show_msg2(char* msg)
+static void show_navigation_msg(char* msg)
 {
 	u32 system_plugin_handle = View_Find("system_plugin");
 	if (system_plugin_handle == 0)
@@ -43,7 +43,7 @@ static void show_msg2(char* msg)
 }
 
 /*
-static void show_msg2(char* msg)
+static void show_navigation_msg(char* msg)
 {
 	int view = View_Find("xmb_plugin");
 	if(view)

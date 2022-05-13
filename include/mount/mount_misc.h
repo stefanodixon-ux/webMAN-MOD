@@ -220,7 +220,7 @@
 			if(ret)
 				show_msg(temp);
 			else
-				show_status(STR_ERROR, temp);
+				show_error(temp);
 		}
 
 		goto exit_mount;

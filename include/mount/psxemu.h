@@ -45,10 +45,10 @@ static void select_ps1emu(const char *path)
 		sys_map_path("/dev_flash/ps1emu/ps1_netemu.self", "///dev_flash/ps1emu/ps1_emu.self");
 		sys_map_path("/dev_flash/ps1emu/ps1_emu.self"   , "///dev_flash/ps1emu/ps1_netemu.self");
 
-		if(pad_data.len > 0) show_status("ps1_netemu.self", STR_ENABLED);
+		if(pad_data.len > 0) show_msg2("ps1_netemu.self", STR_ENABLED);
 	}
 	else
 	{
-		if(pad_data.len > 0) show_status("ps1_emu.self", STR_ENABLED);
+		if(pad_data.len > 0) show_msg2("ps1_emu.self", STR_ENABLED);
 	}
 }

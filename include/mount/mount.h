@@ -698,7 +698,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					#ifndef ENGLISH_ONLY
 					char *STR_MOVIELOADED = buf; //[272];//= "Movie loaded successfully. Start the movie from the disc icon<br>under the Video column.</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the movie.";
 					sprintf(STR_MOVIELOADED, "Movie %s%s%smovie.",
-											 "loaded successfully. Start the ", "movie from the disc icon<br>under the Video column"                , ".</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the ");
+											 "loaded successfully. Start the ", "movie from the disc icon<br>under the Video column", ".</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the ");
 					language("STR_MOVIELOADED", STR_MOVIELOADED, STR_MOVIELOADED);
 					#endif
 
@@ -738,7 +738,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				{
 					#ifndef ENGLISH_ONLY
 					char *STR_GAMELOADED = buf; //[288];//	= "Game loaded successfully. Start the game from the disc icon<br>or from <b>/app_home</b>&nbsp;XMB entry.</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the game.";
-					sprintf(STR_GAMELOADED,  "Game %s%s%sgame.",
+					sprintf(STR_GAMELOADED,  "Game %s%s%s",
 											 "loaded successfully. Start the ", "game from the disc icon<br>or from <b>/app_home</b>&nbsp;XMB entry", ".</a><hr>Click <a href=\"/mount.ps3/unmount\">here</a> to unmount the ");
 					language("STR_GAMELOADED", STR_GAMELOADED, STR_GAMELOADED);
 					#endif
@@ -1556,7 +1556,7 @@ static void mount_thread(u64 action)
 	// check that path exists
 	if(islike(_path, "/dev_") && not_exists(_path))
 	{
-		if(action) show_status(STR_ERROR, _path);
+		if(action) show_error(_path);
 		do_umount(false); ret = false;
 		patch_gameboot(0); // None
 		goto finish;
@@ -1678,7 +1678,7 @@ exit_mount:
 	// show error if bdvd was not mounted
 	// -----------------------------------
 
-	if(!ret && !isDir("/dev_bdvd")) show_status(STR_ERROR, _path);
+	if(!ret && !isDir("/dev_bdvd")) show_error(_path);
 
 	// -------------------------------------------------------------------------------------
 	// remove syscalls hodling R2 (or prevent remove syscall if path contains [online] tag)

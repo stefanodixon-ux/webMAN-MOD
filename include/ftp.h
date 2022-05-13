@@ -1225,7 +1225,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						else
 						if(_IS(cmd, "COPY"))
 						{
-							show_status(STR_COPYING, filename);
+							show_msg2(STR_COPYING, filename);
 
 							findPath(source, filename, cwd);
 							ssend(conn_s_ftp, FTP_OK_200); // The requested action has been successfully completed.

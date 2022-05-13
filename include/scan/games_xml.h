@@ -686,7 +686,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		if( meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) set_buffer_sizes(1); //MIN
 		if((meminfo.avail < (BUFFER_SIZE_ALL + MIN_MEM)) || sys_memory_allocate((BUFFER_SIZE_ALL), SYS_MEMORY_PAGE_SIZE_64K, &sysmem) != CELL_OK)
 		{
-			show_status(STR_ERROR, STR_SCAN2);
+			show_error(STR_SCAN2);
 			return false;  //leave if cannot allocate memory
 		}
 	}

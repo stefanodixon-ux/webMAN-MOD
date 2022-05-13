@@ -304,7 +304,7 @@
 			else
 				enable_classic_ps2_mode();
 
-			show_status("PS2 Classic", classic_ps2_enabled ? STR_DISABLED : STR_ENABLED);
+			show_status("PS2 Classic", classic_ps2_enabled);
 
 			sys_ppu_thread_sleep(3);
 		}

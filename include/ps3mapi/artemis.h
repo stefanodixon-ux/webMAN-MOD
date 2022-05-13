@@ -678,7 +678,7 @@ static void art_process(int forceWrite)
 
 			if(!sysmem_art)
 			{
-				show_status(STR_ERROR, "Artemis PS3\nFailed to Attach");
+				show_error("Artemis PS3\nFailed to Attach");
 				release_art(1);
 			}
 		}
@@ -766,7 +766,7 @@ static void art_thread(u64 arg)
 					}
 					else
 					{
-						show_status(STR_ERROR, "Artemis PS3\nFailed to Attach");
+						show_error("Artemis PS3\nFailed to Attach");
 						release_art(1);
 					}
 

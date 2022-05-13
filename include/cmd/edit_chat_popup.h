@@ -94,7 +94,7 @@
 			u8 op = parse_tags(msg);
 
 			if(mode == '*')
-				show_msg2(msg);
+				show_navigation_msg(msg);
 			#ifdef FPS_OVERLAY
 			else if(mode == '@')
 			{

@@ -149,7 +149,7 @@ static void enable_fan_control(u8 enable)
 
 	if(enable != PS2_MODE_OFF)
 	{
-		show_status(STR_FANCTRL3, (webman_config->fanc) ? STR_ENABLED : STR_DISABLED);
+		show_status(STR_FANCTRL3, (webman_config->fanc));
 	}
 
 	if(enable == ENABLE_SC8) { PS3MAPI_ENABLE_ACCESS_SYSCALL8 }

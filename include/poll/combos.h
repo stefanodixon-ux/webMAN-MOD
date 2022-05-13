@@ -257,7 +257,7 @@
 							enable_classic_ps2_mode();
 						}
 
-						show_status("PS2 Classic", classic_ps2_enabled ? STR_DISABLED : STR_ENABLED);
+						show_status("PS2 Classic", classic_ps2_enabled);
 
 						break_and_wait;
 					}
@@ -616,7 +616,7 @@
 
 								if(webman_config->app_home)
 								{
-									show_status("map_path", disable_map_path(map_path_enabled) ? STR_DISABLED : STR_ENABLED);
+									show_status("map_path", disable_map_path(map_path_enabled));
 								}
 							}
 							#else
@@ -673,7 +673,7 @@
 					else
 					{
 						unload_vsh_plugin("VshFpsCounter"); // unload any loaded VshFpsCounter
-						show_status("FPS", STR_ENABLED);
+						show_msg2("FPS", STR_ENABLED);
 						if(!webman_config->nobeep) play_sound_id(5); // trophy sound
 					}
 					#else
@@ -799,7 +799,7 @@
 						{
 							sys_admin ^= 1, pwd_tries = 0;
 
-							show_status("ADMIN", sys_admin ? STR_ENABLED : STR_DISABLED);
+							show_status("ADMIN", sys_admin);
 
 							if(sys_admin) { BEEP1 } else { BEEP2 }
 						}
@@ -900,8 +900,10 @@
 							#ifdef ARTEMIS_PRX
 							if(webman_config->artemis && IS_INGAME)
 							{
-								show_status("Artemis",	attachedPID ? "Attached" :
-														artemis_working ? STR_ENABLED : STR_DISABLED);
+								if(attachedPID)
+									show_msg2("Artemis", "Attached");
+								else
+									show_status("Artemis", artemis_working);
 							}
 							#endif
 

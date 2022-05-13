@@ -26,7 +26,7 @@ static void enable_ps2netemu_cobra(int emu)
 
 	if(pad_data.len > 0)
 	{
-		show_status(emu ? "ps2_netemu.self" : "ps2_emu.self", STR_ENABLED);
+		show_msg2(emu ? "ps2_netemu.self" : "ps2_emu.self", STR_ENABLED);
 	}
 }
 #endif

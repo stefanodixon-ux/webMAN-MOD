@@ -307,7 +307,7 @@ static char *ROMS_EXTENSIONS = NULL;
 #endif
 
 static void show_msg(const char *text);
-static void show_status(const char *label, const char *status);
+static void show_status(const char *label, u8 status);
 static void sys_get_cobra_version(void);
 static void get_sys_info(char *msg, u8 op, bool nolabel);
 

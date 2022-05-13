@@ -255,7 +255,7 @@ copy_ps2iso_to_hdd0:
 
 				if(payload_ps3hen)
 				{
-					show_status(STR_ERROR, "HEN does not support PS2 ISO\nUse encrypted game.");
+					show_error("HEN does not support PS2 ISO\nUse encrypted game.");
 					ret = false; goto exit_mount;
 				}
 
