@@ -8,6 +8,8 @@ with many features added.
 The application provides extended services for PS3 console like web server, ftp server, file manager,
 netiso, ntfs, gamepad emulation, ps3mapi, tasks automation, memory debugger and more.
 
+<img src="https://raw.githubusercontent.com/aldostools/webMAN-MOD/master/README.png" width="800">
+
 Our goal is to create an AIO plugin that includes many of the features available on the PS3 Scene
 in an easy and intuitive way. webMAN MOD is the result of the hard work of several users, developers
 and artists that collaborated with development, knowledge, resources, feedback & ideas.
@@ -44,8 +46,6 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Integrated prepNTFS (1.47)
 
 ### webMAN MOD additional & extended features
-
-<img src="https://raw.githubusercontent.com/aldostools/webMAN-MOD/master/README.png" width="600">
 
 #### Installer & GUIs
 - Easy installer/updater with 4 editions: full, lite, standard (rebug) & nonCobra.
