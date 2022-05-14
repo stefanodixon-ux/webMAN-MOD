@@ -17,13 +17,13 @@ and artists that collaborated with development, knowledge, resources, feedback &
 
 ## Current functionality
 ### General
-- Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.88 CEX, DEX & DECR)
+- Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.89 CEX, DEX & DECR)
 - Support on REBUG firmware with Cobra feature disabled (ver 4.84.2-4.86.1 CEX, DEX & DECR) 
 - Support on REBUG firmware with Mamba loaded via boot_plugins_nocobra_kernel.txt (ver 4.86.1 CEX & 4.84.2 DEX) 
-- Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.88 HFW
-- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.88 CEX, DEX & DECR)
-- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.88 CEX, DEX & DECR)
-- Support on classic custom firmware with PRXLoader (ver 3.41-4.88 CEX, DEX & DECR)
+- Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.89 HFW
+- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.89 CEX, DEX & DECR)
+- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.89 CEX, DEX & DECR)
+- Support on classic custom firmware with PRXLoader (ver 3.41-4.89 CEX, DEX & DECR)
 
 - All PS3 Models (including all fat, Slim 20xx, 21xx, 25xx, 3xxx & SuperSlims 4xxx) are supported via PS3HEN payload
 - All PS3 Models capable to downgrade to 3.56 or lower are supported via PS3Xploit Flash Writer (aka PS3Xploit 2.0)
@@ -44,6 +44,8 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Integrated prepNTFS (1.47)
 
 ### webMAN MOD additional & extended features
+
+<img src="https://raw.githubusercontent.com/aldostools/webMAN-MOD/master/README.png" width="600">
 
 #### Installer & GUIs
 - Easy installer/updater with 4 editions: full, lite, standard (rebug) & nonCobra.
@@ -178,6 +180,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Patch LV1, LV2, process memory or in binary files. Can be chained with search for text or binary strings and patterns.
 - Dump full RAM, LV1, LV2, VSH, RSX or a process memory range.
 - Support for remote view & update XRegistry settings
+- Artemis patch engine integrated with PS3MAPI and other modules
 - Remote syscalls
 
 #### Screen & video capture
@@ -204,7 +207,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - [PS2CONFIG](https://store.brewology.com/get/homebrew.php?id=310&fid=2178) : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games
 - [WM Themes](https://store.brewology.com/ahomebrew.php?brewid=310) : Set of packages that customize the look of the XMB icons used by webMAN MOD
 - [Reload XMB](https://store.brewology.com/get/homebrew.php?id=310&fid=2184) : PS3 application that forces the reload of XMB icons
-- [Boot MAMBA](https://github.com/aldostools/webMAN-MOD/releases) : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87/4.88 with Cobra disabled
+- [Boot MAMBA](https://github.com/aldostools/webMAN-MOD/releases) : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87/4.88/4.89 with Cobra disabled
 
 - [PS2 Classics Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2187) : PS3 application required to launch PS2 Classics games in .BIN.ENC format
 - [PSP Remasters Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2186) : PS3 application required to launch PSP Remaster games in ISO format
@@ -248,7 +251,8 @@ Requirements for GNU/Linux:
 - 3141card for unlock HDD, vsh stub-libs + header RE and for VSH Menu POC & Littlebalup for his enhancement/new features
 - jjolano (John Olano) for OpenFTP server
 - Berion & Brunolee for the graphics & icons
-- bucanero port of libraries for zip, rar, 7-zip, bz2, tgz, tar
+- bucanero port of libraries for zip, rar, 7-zip, bz2, tgz, tar, Artemis
+- DnaWrkshp for Artemis patch engine
 - lmirel port of libraries for exFAT
 - TheRouleteBoi for FPS counter plugin
 - LuanTeles for the help file (based on XMB offline documentation tool by xp3riments & DeViL303)
