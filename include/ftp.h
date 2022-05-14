@@ -85,26 +85,28 @@ static u8 absPath(char *absPath_s, const char *path, const char* cwd)
 	return parsePath(absPath_s, path, cwd, false);
 }
 
-static int ssplit(const char* str, char* left, int lmaxlen, char* right, int rmaxlen)
+static int ssplit(const char *str, char *left, u16 lmaxlen, char *right, u16 rmaxlen)
 {
-	int ios = strcspn(str, " ");
-	int ret = (ios < (int)strlen(str) - 1);
-	int lsize = MIN(ios, lmaxlen);
+	u16 lsize, rsize;
+	char *sep = strchr(str, ' ');
 
-	strncpy(left, str, lsize);
-	left[lsize] = '\0';
-
-	if(ret)
+	if(sep)
 	{
-		strncpy(right, str + ios + 1, rmaxlen);
-		right[rmaxlen] = '\0';
+		lsize = MIN(sep - str, lmaxlen);
+		rsize = MIN(strlen(sep + 1), rmaxlen);
+		memcpy64(right, sep + 1, rsize);
 	}
 	else
 	{
-		right[0] = '\0';
+		lsize = lmaxlen;
+		rsize = 0;
 	}
 
-	return ret;
+	memcpy64(left, str, lsize);
+	left[lsize] = '\0';
+	right[rsize] = '\0';
+
+	return (sep != NULL);
 }
 
 
@@ -228,7 +230,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 
 			is_ntfs = false;
 
-			int split = ssplit(buffer, cmd, 15, param, STD_PATH_LEN - 1);
+			int split = ssplit(buffer, cmd, 15, param, STD_PATH_LEN);
 
 			if(!working || _IS(cmd, "QUIT") || _IS(cmd, "BYE"))
 			{
@@ -1036,7 +1038,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				{
 					if(split)
 					{
-						split = ssplit(param, cmd, 10, filename, STD_PATH_LEN - 1);
+						split = ssplit(param, cmd, 10, filename, STD_PATH_LEN);
 
 						if(_IS(cmd, "HELP"))
 						{
@@ -1123,7 +1125,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 						if(_IS(cmd, "CHMOD"))
 						{
 							strcpy(param, filename);
-							split = ssplit(param, cmd, 10, filename, STD_PATH_LEN - 1);
+							split = ssplit(param, cmd, 10, filename, STD_PATH_LEN);
 
 							int mode = oct(cmd);
 

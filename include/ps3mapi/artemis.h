@@ -367,7 +367,7 @@ static int ParseLine(process_id_t pid, char *lines, int start, int *skip, int do
 					arg1Off++;
 
 				arg2Len = lineLen - arg1Off;
-				strncpy(buf0, lines + startPos, buf0size);
+				memcpy64(buf0, lines + startPos, buf0size);
 				buf0[buf0size] = '\0';
 				WriteMem(pid, addr, buf0, buf0size);
 				break;

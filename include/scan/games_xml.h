@@ -518,7 +518,7 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml)
 	if(webman_config->roms)
 	{
 		#ifndef ENGLISH_ONLY
-		char *pos = strstr(buffer, "PS3"); if(pos) strncpy(pos, "ROM", 3); else *buffer = NULL;
+		char *pos = strstr(buffer, "PS3"); if(pos) memcpy(pos, "ROM", 3); else *buffer = NULL;
 		#else
 		*buffer = NULL;
 		#endif

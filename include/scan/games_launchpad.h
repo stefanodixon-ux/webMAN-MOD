@@ -25,17 +25,17 @@ static int add_launchpad_entry(char *tempstr, char *templn, const char *url, cha
 	// fix &
 	if(strchr(templn, '&'))
 	{
-		size_t j = 0;
-		for(size_t i = 0; templn[i]; i++, j++)
+		size_t n = 0;
+		for(size_t i = 0; templn[i]; i++, n++)
 		{
-			tempstr[j] = templn[i];
+			tempstr[n] = templn[i];
 
-			if(templn[i] == '&')
+			if(templn[n] == '&')
 			{
-				sprintf(&tempstr[j], "&amp;"); j += 4;
+				sprintf(&tempstr[n], "&amp;"); n += 4;
 			}
 		}
-		strncpy(templn, tempstr, j);
+		memcpy64(templn, tempstr, n);
 	}
 
 	char *pos = strstr(icon + 22, "/icon_wm_");

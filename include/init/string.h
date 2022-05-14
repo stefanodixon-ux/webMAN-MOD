@@ -63,7 +63,6 @@ static size_t concat(char *dest, const char *src)
 	return _concat(&fast_concat, src) - dest;
 }
 
-#if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(NET_SUPPORT) || defined(USE_NTFS) || defined(DEBUG_MEM)
 static void memcpy64(void *dst, const void *src, int n)
 {
 	if(!dst || !src || !n) return;
@@ -77,7 +76,6 @@ static void memcpy64(void *dst, const void *src, int n)
 	if(p)
 		memcpy(d, s, p);
 }
-#endif
 
 void _memset(void *m, size_t n);
 void _memset(void *m, size_t n)
