@@ -110,21 +110,14 @@ mounted_ntfs:
 
 				if(entry.d_name[0] == '\0') goto exit_mount;
 
-				if(is_psp)
-				{
-					*ntfs_ext = '\0';
-					strcpy(templn, _path);
-					*ntfs_ext = '.';
-				}
-
 				sprintf(_path, "/dev_bdvd/%s", entry.d_name);
-
 				if(not_exists(_path)) goto exit_mount;
 
 				if(is_psp)
 				{
+					strcpy(templn, _path);
 					unlock_psp_launchers();
-					ret = (cobra_set_psp_umd(_path, (char*)templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+					ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 				}
 				else //if(is_ps2)
 					goto copy_ps2iso_to_hdd0;
