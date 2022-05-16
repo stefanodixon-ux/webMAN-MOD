@@ -66,7 +66,9 @@ if(netid >= '0' && netid <= '4')
 	if(strstr(netpath, "/PS2ISO") && is_iso) goto copy_ps2iso_to_hdd0;                   else
 	if(strstr(netpath, "/PSPISO") && is_iso)
 	{
-		sprintf(netiso_args.path, "/***DVD***%s", "/PSPISO");
+		snprintf(netiso_args.path, sizeof(netiso_args.path), "/***DVD***%s", netpath);
+		char *slash = strstr(netiso_args.path, "/PSPISO");
+		if(slash) { slash = strchr(slash + 1, '/'); if(slash) *slash = '\0'; }
 	}
 	else if(strstr(netpath, "/PSX") && is_iso)
 	{
@@ -192,6 +194,8 @@ retry_net:
 			}
 		}
 
+		const char *pspiso = strstr(netpath, "/PSPISO");
+
 		if(netiso_args.emu_mode == EMU_PS3)
 		{
 			wait_for("/dev_bdvd", 15);
@@ -204,17 +208,21 @@ retry_net:
 			#endif
 		}
 
-		else if(is_iso && islike(netpath, "/PSPISO"))
+		else if(is_iso && pspiso)
 		{
 			mount_unk = EMU_PSP;
 			unlock_psp_launchers();
 
-			sprintf(templn, "/dev_bdvd/%s", netpath + 8);
-			sprintf(_path,  "/dev_bdvd/%s", netpath + 8);
+			pspiso = strchr(pspiso + 1, '/');
+			if(pspiso)
+			{
+				sprintf(templn,  "%s%s", "/dev_bdvd", pspiso);
+				strcpy(_path, templn);
 
-			sys_ppu_thread_sleep(1);
+				sys_ppu_thread_sleep(1);
 
-			ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+				ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+			}
 		}
 
 		else if(islike(netpath, "/ROMS"))

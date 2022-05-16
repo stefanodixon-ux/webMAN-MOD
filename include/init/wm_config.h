@@ -120,7 +120,8 @@ typedef struct
 	u16  netp[5];     //port 0..65535
 	char neth[5][16]; //ip 255.255.255.255
 
-	u8 padding8[33];
+	u8 nsd;
+	u8 padding8[32];
 
 	// mount settings
 

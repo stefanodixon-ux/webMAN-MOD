@@ -23,8 +23,7 @@
 			{
 				// backup the original text file
 				sprintf(backup, "%s.bak", filename);
-				del(backup, 0); // delete previous backup
-				rename_file(filename, backup);
+				rename_file(filename, backup);  // replace previous backup
 
 				// save text file
 				strcpy(txt, pos + 3);

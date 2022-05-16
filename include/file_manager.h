@@ -695,11 +695,11 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			{
 				char *netpath = param + 5;
 
-				normalize_path(netpath, true);
+				normalize_path(netpath, false);
 
 				if(open_remote_dir(ns, netpath, &abort_connection, false) >= 0)
 				{
-					strcpy(templn, param); normalize_path(templn, false); remove_filename(templn);
+					strcpy(templn, param); remove_filename(templn);
 					if(strlen(templn) < 5) strcpy(templn, "/");
 
 					urlenc(swap, templn);
@@ -722,6 +722,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 					int v3_entries = read_remote_dir(ns, &data, &abort_connection);
 					if(data)
 					{
+						normalize_path(param, true);
 						dir_items = (netiso_read_dir_result_data*)data;
 
 						for(int n = 0; n < v3_entries; n++)
@@ -739,7 +740,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 							else
 								flen = sprintf(templn, "%s%s", param, dir_items[n].name);
 
-							 normalize_path(templn, false);
+							normalize_path(templn, false);
 
 							cellRtcSetTime_t(&rDate, dir_items[n].mtime);
 

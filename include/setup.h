@@ -373,6 +373,7 @@ static void setup_parse_settings(char *param)
 	}
 
 	get_param("aip=", webman_config->allow_ip, param, 16);
+	webman_config->nsd = IS_UNMARKED("nsd=1");
  #endif
 #endif
 
@@ -619,6 +620,7 @@ static void setup_form(char *buffer, char *templn)
 				_netp, webman_config->netp[id]); concat(buffer, templn);
 		++PS3NETSRV[21], ++PS3NETSRV[75];
 	}
+	add_checkbox_line("nsd", "Scan remote sub-directories", !(webman_config->nsd), buffer);
  #endif
 #endif
 

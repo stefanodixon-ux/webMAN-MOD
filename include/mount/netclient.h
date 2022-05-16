@@ -4,6 +4,8 @@
 	static const u8 netsrvs = 3;
 #endif
 
+static u16 normalized_len(const char *path);
+
 static u32 CD_SECTOR_SIZE_2352 = 2352;
 
 typedef struct
@@ -77,7 +79,7 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 	netiso_open_cmd cmd;
 	netiso_open_result res;
 
-	int len = strlen(path);
+	int len = normalized_len(path);
 	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = BE16(NETISO_CMD_OPEN_FILE);
 	cmd.fp_len = BE16(len);
@@ -146,7 +148,7 @@ static int remote_stat(int s, const char *path, int *is_directory, s64 *file_siz
 	netiso_stat_cmd cmd;
 	netiso_stat_result res;
 
-	int len = strlen(path);
+	int len = normalized_len(path);
 	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_STAT_FILE);
 	cmd.fp_len = (len);
@@ -358,16 +360,24 @@ static int open_remote_dir(int s, const char *path, int *abort_connection, bool 
 		return FAILED;
 	}
 
-	if(remote_is_dir(s, path) == false) return FAILED;
-
 	netiso_open_dir_cmd cmd;
 	netiso_open_dir_result res;
 
 	char *_path = (char *)path;
 
-	if(subdirs) strcat(_path, "//");
+	if(webman_config->nsd)
+		subdirs = false;
 
-	int len = strlen(path);
+	int len = normalized_len(path);
+
+	if(subdirs)
+		{strcat(_path, "//"); len += 2;}
+	else if(!*path || (len <= 1))
+		{_path = (char*)"/.", len = 2;}
+
+	if(remote_is_dir(s, _path) == false)
+		return FAILED;
+
 	_memset(&cmd, sizeof(cmd));
 	cmd.opcode = (NETISO_CMD_OPEN_DIR);
 	cmd.dp_len = (len);

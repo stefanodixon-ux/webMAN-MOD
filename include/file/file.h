@@ -82,12 +82,18 @@ static char *get_filename(const char *path)
 	return filename; // return with slash
 }
 
+static u16 normalized_len(const char *path)
+{
+	u16 flen = strlen(path);
+	while((flen > 1) && (path[flen - 1] == '/')) flen--;
+	return flen;
+}
+
 static void normalize_path(char *path, bool slash)
 {
 	if(!path) return; // sanity check
 
-	u32 flen = strlen(path);
-	while((flen > 1) && (path[--flen] == '/')) path[flen] = '\0';
+	u16 flen = normalized_len(path); path[flen] = '\0';
 	if(!(*path) || (slash && (flen > 1) && (path[flen] != '/'))) strcat(path + flen, "/");
 }
 
