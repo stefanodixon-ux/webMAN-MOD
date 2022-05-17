@@ -161,7 +161,7 @@ static void parse_script(const char *script_file)
 						if(_islike(line, "not exist /")) {path += 10; ret = not_exists(path);} else
 						if(_islike(line, "noCobra")) {ret = !cobra_version;} else
 						#if defined(PS3MAPI) || defined(DEBUG_MEM)
-						if(_islike(line, "titleid ")){path += 8; get_game_info(); ret = (strlen(_game_TitleID) >= strlen(path)) ? bcompare(_game_TitleID, path, strlen(path), path) : 0;} else
+						if(_islike(line, "titleid ")){path += 8; get_game_info(); ret = (_game_TitleID && (strlen(_game_TitleID) >= strlen(path))) ? bcompare(_game_TitleID, path, strlen(path), path) : 0;} else
 						#endif
 						#ifdef COBRA_ONLY
 						if(_islike(line, "Cobra"))   {ret =  cobra_version;} else
@@ -196,9 +196,13 @@ static void script_thread(u64 event_id)
 {
 	if(event_id == EVENT_PER_GAME)
 	{
-		char script_file[40]; get_game_info();
-		snprintf(script_file, sizeof(script_file), "%s/%s%s", WM_INGAME_PATH, _game_TitleID, ".bat");
-		parse_script(script_file);
+		get_game_info();
+		if(_game_TitleID && (strlen(_game_TitleID) >= 9))
+		{
+			char script_file[40];
+			snprintf(script_file, sizeof(script_file), "%s/%s%s", WM_INGAME_PATH, _game_TitleID, ".bat");
+			parse_script(script_file);
+		}
 	}
 	else
 		parse_script(script_events[event_id]);
