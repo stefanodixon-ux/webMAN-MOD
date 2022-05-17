@@ -70,9 +70,12 @@ static void disable_progress(void)
 
 static void play_rco_sound(const char *sound)
 {
-	char *system_plugin = (char*)"system_plugin";
+	const char *system_plugin = (char*)"system_plugin";
 	char *sep = strchr(sound, '|'); if(sep) {*sep = NULL, system_plugin = sep + 1;}
-	PlayRCOSound((View_Find(system_plugin)), sound, 1, 0);
+
+	u32 plugin = View_Find(system_plugin);
+	if(plugin)
+		PlayRCOSound(plugin, sound, 1, 0);
 }
 
 static void play_sound_id(u8 value)
@@ -192,6 +195,7 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 		{
 			tex = texture, icon_id = MAX_RCO_IMAGES;
 
+			// example: /popup.ps3?message&icon=item_tex_cam_facebook&rco=explore_plugin
 			if(get_param("&rco=", rco, pos, 23))
 			{
 				plugin = rco;
@@ -203,6 +207,22 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 	}
 
 	if(icon_id < 18) plugin = "system_plugin";
+
+	pos = strstr(msg, "&rco=");
+	if(pos)
+	{
+		// show notification with RCO text
+		int teximg, dummy = 0, rco_plugin = View_Find(plugin), tex_plugin = rco_plugin; *pos = NULL;
+
+		// example: /popup.ps3?msg_psn&rco=explore_plugin&icon=5
+		if(get_param("&rco=", rco, pos, 23))
+		{
+			rco_plugin = View_Find(rco);
+		}
+
+		LoadRCOTexture(&teximg, tex_plugin, tex);
+		return NotifyWithTexture(0, tex, 0, &teximg, &dummy, "", "", 0, LoadRCOText(rco_plugin, msg), 0, 0, 0);
+	}
 
 	if(IS_INGAME || webman_config->msg_icon)
 		return vshtask_notify(msg);
@@ -243,7 +263,7 @@ static void show_msg(const char *text)
 		*snd = NULL;
 	}
 
-	if(strstr(msg, "&icon="))
+	if(strstr(msg, "&icon=") || strstr(msg, "&rco="))
 		show_msg_with_icon(0, msg);
 	else
 		vshtask_notify(msg);
