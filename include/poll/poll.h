@@ -92,6 +92,7 @@ static void poll_start_play_time(void)
 		}
 		#endif
 		start_event(EVENT_INGAME);
+		start_event(EVENT_PER_GAME);
 
 		#ifdef ARTEMIS_PRX
 		if(webman_config->artemis)

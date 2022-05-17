@@ -51,6 +51,7 @@
 #define WM_LANG_PATH		TMP_DIR "/wm_lang"				// webMAN language folder
 #define WM_ICONS_PATH		TMP_DIR "/wm_icons"				// webMAN icons folder
 #define WM_COMBO_PATH		TMP_DIR "/wm_combo"				// webMAN custom combos folder
+#define WM_INGAME_PATH		TMP_DIR "/wm_ingame"			// webMAN ingame scripts
 
 #define WM_CONFIG_FILE		TMP_DIR "/wm_config.bin"		// webMAN config file
 #define WM_NOSCAN_FILE		TMP_DIR "/wm_noscan"			// webMAN config file to skip on boot
