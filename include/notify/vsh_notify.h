@@ -181,7 +181,7 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 	const char *tex = rco_images[icon_id];
 
 	// custom textures
-	char rco[24], texture[64];
+	char rco[64], texture[64];
 	char *pos = strstr(msg, "&icon=");
 	if(pos)
 	{
@@ -196,7 +196,7 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 			tex = texture, icon_id = MAX_RCO_IMAGES;
 
 			// example: /popup.ps3?message&icon=item_tex_cam_facebook&rco=explore_plugin
-			if(get_param("&rco=", rco, pos, 23))
+			if(get_param("&rco=", rco, pos, 63))
 			{
 				plugin = rco;
 			}
@@ -212,15 +212,15 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 	if(pos)
 	{
 		// show notification with RCO text
-		int teximg, dummy = 0, rco_plugin = View_Find(plugin), tex_plugin = rco_plugin; *pos = NULL;
+		int teximg, dummy = 0, rco_plugin = View_Find(plugin), tex_plugin = rco_plugin;
 
 		// example: /popup.ps3?msg_psn&rco=explore_plugin&icon=5
-		if(get_param("&rco=", rco, pos, 23))
+		if(get_param("&rco=", rco, pos, 63))
 		{
 			rco_plugin = View_Find(rco);
 		}
 
-		LoadRCOTexture(&teximg, tex_plugin, tex);
+		LoadRCOTexture(&teximg, tex_plugin, tex); *pos = NULL;
 		return NotifyWithTexture(0, tex, 0, &teximg, &dummy, "", "", 0, LoadRCOText(rco_plugin, msg), 0, 0, 0);
 	}
 
