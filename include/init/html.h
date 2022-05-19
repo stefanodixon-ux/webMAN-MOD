@@ -77,18 +77,18 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 #define HTML_SHOW_LAST_GAME		"<span style=\"position:absolute;right:8px\"><font size=2>"
 #define HTML_SHOW_LAST_GAME_END	"</font></span>"
 
-static void open_browser(char *url, int mode)
+static void open_browser(const char *url, int mode)
 {
 	int is_ingame = View_Find("game_plugin");
 
 	if(is_ingame)
 	{
 		game_interface = (game_plugin_interface *)plugin_GetInterface(is_ingame, 1);
-		game_interface->wakeupWithGameExit(url, 1);
+		game_interface->wakeupWithGameExit((char*)url, 1);
 	}
 	else
 	{
-		vshmain_AE35CF2D(url, mode); // xmb_plugin->Function 23
+		vshmain_AE35CF2D((char*)url, mode); // xmb_plugin->Function 23
 	}
 }
 

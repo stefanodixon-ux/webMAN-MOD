@@ -611,7 +611,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 			}
 			lineCharInd++;
 		}
-		else // skip # comment line
+		else // skip # line
 		{
 			lineNum = -1;
 			isConstantWrite = 0;
@@ -619,7 +619,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 			codeNum++;
 			lineCharInd = 0;
 
-			while ((userCodes[i] == '\n') && i < userCodesLen)
+			while ((i < userCodesLen) && (userCodes[i] == '\n'))
 				i++;
 		}
 	}

@@ -220,7 +220,7 @@ static void detect_firmware(void)
 		if(IS_CEX)
 		{
 			/*
-			if(c_firmware >= 4.75f && c_firmware <= LATEST_CFW) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80, 4.81, 4.82, 4.83, 4.84
+			if(c_firmware >= 4.75f && c_firmware <= LATEST_CFW) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80-4.89
 			#ifndef LAST_FIRMWARE_ONLY
 			if(c_firmware == 4.70f) SYSCALL_TABLE = SYSCALL_TABLE_470;
 			if(c_firmware >= 4.60f && c_firmware <= 4.66f) SYSCALL_TABLE = SYSCALL_TABLE_460; // same for 4.60, 4.65, 4.66
@@ -239,7 +239,7 @@ static void detect_firmware(void)
 		else if(IS_DEX)
 		{
 			/*
-			if(c_firmware >= 4.80f) SYSCALL_TABLE = SYSCALL_TABLE_480D; // same for 4.80-4.81
+			if(c_firmware >= 4.80f) SYSCALL_TABLE = SYSCALL_TABLE_480D; // same for 4.80-4.84
 			#ifndef LAST_FIRMWARE_ONLY
 			if(c_firmware >= 4.75f && c_firmware <= 4.78f) SYSCALL_TABLE = SYSCALL_TABLE_475D; // same for 4.75, 4.76, 4.78
 			if(c_firmware == 4.70f) SYSCALL_TABLE = SYSCALL_TABLE_470D;
@@ -336,7 +336,7 @@ static void detect_firmware(void)
 	{ // CEX
 		if(c_firmware >= 4.55f /*&& c_firmware <= LATEST_CFW*/)
 		{
-			get_fan_policy_offset = 0x8000000000009E38ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80/4.81/4.82/4.83/4.84
+			get_fan_policy_offset = 0x8000000000009E38ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80-4.89
 			set_fan_policy_offset = 0x800000000000A334ULL; // sys 389 set_fan_policy
 
 #ifdef SPOOF_CONSOLEID
@@ -392,7 +392,7 @@ static void detect_firmware(void)
 	{ // DEX & DEH
 		if(c_firmware >= 4.55f /*&& c_firmware <= LATEST_CFW*/)
 		{
-				get_fan_policy_offset = 0x8000000000009EB8ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80/4.81/4.82
+				get_fan_policy_offset = 0x8000000000009EB8ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80-4.89
 				set_fan_policy_offset = 0x800000000000A3B4ULL; // sys 389 set_fan_policy
 
  #ifdef SPOOF_CONSOLEID
@@ -476,7 +476,7 @@ static void detect_firmware(void)
 #ifdef NOBD_PATCH
 static void apply_noBD_patches(u8 noBD)
 {
-	// noBD LV1 4.75 - 4.88
+	// noBD LV1 4.75 - 4.89
 	if(ALLOW_NOBD)
 	{
 		//00712790  78 84 00 20 F8 01 00 70  F9 21 00 78 40 9E 00 0C

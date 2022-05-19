@@ -242,8 +242,7 @@
 					}
 					else
 					if( !(webman_config->combo2 & PS2TOGGLE)
-						&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
-						&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_TRIANGLE) // SELECT+L2+TRIANGLE
+						&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_TRIANGLE)) // SELECT+L2+TRIANGLE
 						&& (c_firmware >= 4.65f) )
 					{
 						bool classic_ps2_enabled = file_exists(PS2_CLASSIC_TOGGLER);
@@ -263,11 +262,10 @@
 					}
 					else
 					if( !(webman_config->combo2 & PS2SWITCH)
-						&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2) // Clone ps2emu habib's switcher
-						&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) // SELECT+L2+R2
+						&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // SELECT+L2+R2
 						&& (c_firmware>=4.53f) )
 					{
-							toggle_ps2emu();
+							toggle_ps2emu(); // Clone ps2emu habib's switcher
 					}
 					else
 					#endif // #ifdef COBRA_NON_LITE
@@ -653,51 +651,51 @@
 						#endif
 					}
 				} // SELECT
-				else if(!(webman_config->combo & UNLOAD_WM) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
-															&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)) //  R2+L3+R3 / L3+R3+R2 / L3+R2+R3 (Quit / Unload webMAN)
+				else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
 				{
-					// R2+L3+R3 / L3+R3+R2 / L3+R2+R3 = Quit / Unload webMAN
-					unload_me(2); // keep fan control running
-				}
-				#ifdef COBRA_ONLY
-				else if(!(webman_config->combo & C_FPSINFO) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
-															&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0)) //  L3+R3 = FPS Counter
-				{
- 					#ifdef WM_CUSTOM_COMBO
-					if(do_custom_combo("l3_r3")) break;
-	 				#endif
-					if(syscalls_removed || is_mounting || refreshing_xml) {BEEP3; continue;}
-					#ifdef FPS_OVERLAY
-					if(overlay_enabled)
-						disable_progress();
-					else
+					if(!(webman_config->combo & UNLOAD_WM) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2)) //  R2+L3+R3 / L3+R3+R2 / L3+R2+R3 (Quit / Unload webMAN)
 					{
-						unload_vsh_plugin("VshFpsCounter"); // unload any loaded VshFpsCounter
-						show_msg2("FPS", STR_ENABLED);
-						if(!webman_config->nobeep) play_sound_id(5); // trophy sound
+						// R2+L3+R3 / L3+R3+R2 / L3+R2+R3 = Quit / Unload webMAN
+						unload_me(2); // keep fan control running
 					}
-					#else
-					if(!webman_config->nobeep) BEEP1;
+					#ifdef COBRA_ONLY
+					else if(!(webman_config->combo & C_FPSINFO) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0)) //  L3+R3 = FPS Counter
+					{
+						#ifdef WM_CUSTOM_COMBO
+						if(do_custom_combo("l3_r3")) break;
+						#endif
+						if(syscalls_removed || is_mounting || refreshing_xml) {BEEP3; continue;}
+						#ifdef FPS_OVERLAY
+						if(overlay_enabled)
+							disable_progress();
+						else
+						{
+							unload_vsh_plugin("VshFpsCounter"); // unload any loaded VshFpsCounter
+							show_msg2("FPS", STR_ENABLED);
+							if(!webman_config->nobeep) play_sound_id(5); // trophy sound
+						}
+						#else
+						if(!webman_config->nobeep) BEEP1;
+						#endif
+						if(isCobraDebug)
+							toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounterM.sprx");
+						else
+							toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounter.sprx");
+						sys_ppu_thread_sleep(3);
+						break_and_wait;
+					}
 					#endif
-					if(isCobraDebug)
-						toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounterM.sprx");
-					else
-						toggle_vsh_plugin("/dev_hdd0/tmp/wm_res/VshFpsCounter.sprx");
-					sys_ppu_thread_sleep(3);
-					break_and_wait;
-				}
-				#endif
-				else if(!(webman_config->combo & GOTO_HOME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_R3))
-															&& (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) //  L2+L3+R3 / L3+R3+L2 / L3+L2+R3
-				{
-					// L3+R3+L2    = Go to webMAN Games
-					// L3+R3+L2+R2 = Go to webMAN Games + Reload Game column
-					bool reload_game = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) == CELL_PAD_CTRL_R2;
- 					#ifdef WM_CUSTOM_COMBO
-					if(do_custom_combo(reload_game ? "l3_r3_l2_r2" : "l3_r3_l2")) break;
-	 				#endif
-					goto_xmb_home(reload_game);
-					break_and_wait;
+					else if(!(webman_config->combo & GOTO_HOME) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)) //  L2+L3+R3 / L3+R3+L2 / L3+L2+R3
+					{
+						// L3+R3+L2    = Go to webMAN Games
+						// L3+R3+L2+R2 = Go to webMAN Games + Reload Game column
+						bool reload_game = (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) == CELL_PAD_CTRL_R2;
+						#ifdef WM_CUSTOM_COMBO
+						if(do_custom_combo(reload_game ? "l3_r3_l2_r2" : "l3_r3_l2")) break;
+						#endif
+						goto_xmb_home(reload_game);
+						break_and_wait;
+					}
 				}
 				else
 				if((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_L3) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2))
@@ -731,25 +729,23 @@
 						sys_ppu_thread_exit(0);
 					}
 				}
-				else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2) )) // L3+R2+L2+START (set PS2 fan mode)
+				else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)))
 				{
-					// L3+L2+R2+START = Enable ps2 fan control mode
-					restore_fan(SET_PS2_MODE);
-
-					break_and_wait;
-				}
-				else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2 )) // L3+L2+START (enable auto #2)
-				{
-					// L3+L2+START = Enable Auto #2
-					enable_fan_control(ENABLE_AUTO2);
-
-					break_and_wait;
-				}
-				else if(!(webman_config->combo & DISABLEFC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_L3 | CELL_PAD_CTRL_START)) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2 )) // L3+R2+START (enable/disable fancontrol)
-				{
-					// L3+R2+START = Enable/disable fancontrol
-					enable_fan_control(TOGGLE_MODE);
-
+					if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // L3+R2+L2+START (set PS2 fan mode)
+					{
+						// L3+L2+R2+START = Enable ps2 fan control mode
+						restore_fan(SET_PS2_MODE);
+					}
+					else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_L2) // L3+L2+START (enable auto #2)
+					{
+						// L3+L2+START = Enable Auto #2
+						enable_fan_control(ENABLE_AUTO2);
+					}
+					else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2) // L3+R2+START (enable/disable fancontrol)
+					{
+						// L3+R2+START = Enable/disable fancontrol
+						enable_fan_control(TOGGLE_MODE);
+					}
 					break_and_wait;
 				}
 				else
@@ -823,13 +819,13 @@
 							do_umount(false); // prevent system freeze on disc icon
 
 							if( pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2 | CELL_PAD_CIRCLE_BTN) )
-								{open_browser((char*)"http://127.0.0.1/setup.ps3", 0); show_msg(STR_WMSETUP);}     // L2+R2+L1+R1+O  ||  L2+R2+L1+R1+X (JAP)
+								{open_browser("http://127.0.0.1/setup.ps3", 0); show_msg(STR_WMSETUP);}     // L2+R2+L1+R1+O  ||  L2+R2+L1+R1+X (JAP)
 							else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R1)
-								{open_browser((char*)"http://127.0.0.1/index.ps3", 0); show_msg(STR_MYGAMES);}     // L2+R2+R1+O  ||  L2+R2+R1+X (JAP)
+								{open_browser("http://127.0.0.1/index.ps3", 0); show_msg(STR_MYGAMES);}     // L2+R2+R1+O  ||  L2+R2+R1+X (JAP)
 							else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L1)
-								{open_browser((char*)"http://127.0.0.1/cpursx.ps3", 0); show_msg(WM_APPNAME " Info");}  // L2+R2+L1+O || L2+R2+L1+X (JAP)
+								{open_browser("http://127.0.0.1/cpursx.ps3", 0); show_msg(WM_APPNAME " Info");}  // L2+R2+L1+O || L2+R2+L1+X (JAP)
 							else
-								{open_browser((char*)"http://127.0.0.1/", 0); show_msg(WM_APP_VERSION);}           // L2+R2+O || L2+R2+X (JAP)
+								{open_browser("http://127.0.0.1/", 0); show_msg(WM_APP_VERSION);}           // L2+R2+O || L2+R2+X (JAP)
 							#endif
 						}
 					}
