@@ -419,7 +419,7 @@ copy_ps2iso_to_hdd0:
 		}
 
 		// -- mount game folder
-		bool is_gameid = (*title_id >= 'A' && *title_id <= 'Z') && ISDIGIT(title_id[8]);
+		bool is_gameid = BETWEEN('A', *title_id, 'Z') && ISDIGIT(title_id[8]);
 		if (!is_gameid)
 			sprintf(title_id, "TEST00000");
 

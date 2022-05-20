@@ -101,7 +101,8 @@ static void poll_start_play_time(void)
 			snprintf(codelist, sizeof(codelist), "%s%s/%s", TMP_DIR, "artemis", _game_TitleID);
 			if(not_exists(codelist))
 				snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis");
-			init_codelist(codelist);
+
+			init_codelist(codelist); // copy codelist for PSN or hdd0/tmp/artemis
 
 			if(file_exists(ARTEMIS_CODES_FILE))
 				start_artemis();

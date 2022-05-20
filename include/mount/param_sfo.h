@@ -292,7 +292,9 @@ static bool getTitleID(char *filename, char *title_id, u8 opcode)
 	if(sfo_size)
 	{
 		// get titleid
-		if(opcode == GET_VERSION)
+		if(opcode == GET_TITLE_ID_ONLY)
+			get_param_sfo(mem, "TITLE_ID", title_id, sfo_size);
+		else if(opcode == GET_VERSION)
 		{
 			char *app_ver = title_id;
 			get_param_sfo(mem, "APP_VER", app_ver, sfo_size);   // get game version (app_ver)

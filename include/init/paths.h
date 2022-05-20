@@ -61,8 +61,11 @@
 #define WM_NETDISABLED		TMP_DIR "/wm_netdisabled"		// webMAN config file to re-enable network
 
 #define SC_LOG_FILE			TMP_DIR "/log.txt"
-#define ARTEMIS_CODES_FILE	TMP_DIR "/art.txt"
-#define ARTEMIS_CODES_LOG	TMP_DIR "/art.log"
+#define ARTEMIS_CODES		TMP_DIR "/art"
+#define ARTEMIS_CODES_FILE	ARTEMIS_CODES ".txt"
+#define ARTEMIS_CODES_L2	ARTEMIS_CODES "_l2.txt"
+#define ARTEMIS_CODES_R2	ARTEMIS_CODES "_r2.txt"
+#define ARTEMIS_CODES_LOG	ARTEMIS_CODES ".log"
 
 #define WM_ONLINE_IDS_FILE	WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
 #define WM_OFFLINE_IDS_FILE	WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)

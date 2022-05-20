@@ -7,15 +7,21 @@
 		// /artemis.ps3?attach                 start artermis & attach game process
 		// /artemis.ps3?detach                 start artermis & detach game process
 
-		if(param[12] == '/')
-		{
-			force_copy(param + 12, (char*)ARTEMIS_CODES_FILE);
-		}
-		if(param[12] == '?')
+		const char *code_list = param + 12;
+
+		if(*code_list == '?')
 			art_cmd = (param[13] == 'a') ? 1 :
 					  (param[13] == 'd') ? 2 :  0;
+		else if(*code_list == '/')
+		{
+			if(!islike(code_list, ARTEMIS_CODES))
+				init_codelist(param + 12);
+		}
 
-		sprintf(param, "%s%s", "/edit.ps3", ARTEMIS_CODES_FILE);
+		if((*code_list != '/') || strstr(code_list, ".ncl"))
+			code_list = ARTEMIS_CODES_FILE;
+
+		sprintf(param, "%s%s", "/edit.ps3", code_list);
 
 		start_artemis(); sys_ppu_thread_sleep(1);
 

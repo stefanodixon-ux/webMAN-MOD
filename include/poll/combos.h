@@ -621,11 +621,7 @@
 								do_umount(true);
 							#endif
 							#ifdef ARTEMIS_PRX
-							if(webman_config->artemis)
-							{
-								cellFsUnlink(ARTEMIS_CODES_LOG);
-								cellFsUnlink(ARTEMIS_CODES_FILE);
-							}
+							clear_codelist();
 							#endif
 							break_and_wait;
 						}

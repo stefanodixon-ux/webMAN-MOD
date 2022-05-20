@@ -36,7 +36,8 @@
 			}
 
 			#ifdef ARTEMIS_PRX
-			if(islike(filename, ARTEMIS_CODES_FILE))
+			bool is_art_txt = islike(filename, ARTEMIS_CODES);
+			if(is_art_txt)
 			{
 				add_game_info(buffer, tempstr, 0);
 			}
@@ -44,14 +45,20 @@
 
 			// show text box
 			sprintf(tempstr,"<form action=\"/edit.ps3\">"
-							"<input type=hidden name=\"f\" value=\"%s\">"
+							"<input type=hidden name=\"f\" id=\"f\" value=\"%s\">"
 							"<textarea name=\"t\" maxlength=%i style=\"width:800px;height:400px;\">%s</textarea><br>"
 							"<input accesskey=\"S\" class=\"bs\" type=\"submit\" value=\" %s \">",
 							filename, MAX_TEXT_LEN, txt, STR_SAVE); _concat(&sbuffer, tempstr);
 
 			#ifdef ARTEMIS_PRX
-			if(islike(filename, ARTEMIS_CODES_FILE))
+			if(is_art_txt)
 			{
+				sprintf(tempstr, " <button %s'/artemis.ps3%s';return false;\">%s</button>", HTML_ONCLICK, ARTEMIS_CODES_FILE, "art.txt");
+				_concat(&sbuffer, tempstr);
+				sprintf(tempstr, " <button %s'/artemis.ps3%s';return false;\">%s</button>", HTML_ONCLICK, ARTEMIS_CODES_L2, "L2");
+				_concat(&sbuffer, tempstr);
+				sprintf(tempstr, " <button %s'/artemis.ps3%s';return false;\">%s</button>", HTML_ONCLICK, ARTEMIS_CODES_R2, "R2");
+				_concat(&sbuffer, tempstr);
 				_concat(&sbuffer, " [<a href=\"/artemis.ps3?attach\">Attach</a>]"
 								  " [<a href=\"/artemis.ps3?detach\">Detach</a>]");
 				if(!artemis_working) _concat(&sbuffer, " NOT");

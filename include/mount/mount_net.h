@@ -4,7 +4,7 @@
 // mount /net ISO or path
 // -----------------------
 
-if(netid >= '0' && netid <= '4')
+if(BETWEEN('0', netid, '4'))
 {
 	netiso_svrid = (netid & 0x0F);
 	_memset((void*)&netiso_args, sizeof(_netiso_args));
@@ -251,8 +251,11 @@ retry_net:
 			sprintf(templn, "%s/PARAM.SFO", "/dev_bdvd");
 			getTitleID(templn, map_title_id, GET_TITLE_ID_ONLY);
 
-			sprintf(templn, "%s/%s", "/dev_hdd0/game", map_title_id);
-			sys_map_path(templn, "/dev_bdvd");
+			if(*map_title_id)
+			{
+				sprintf(templn, "%s/%s", "/dev_hdd0/game", map_title_id);
+				sys_map_path(templn, "/dev_bdvd");
+			}
 
 			sys_ppu_thread_sleep(1);
 			launch_app_home_icon(webman_config->autoplay);

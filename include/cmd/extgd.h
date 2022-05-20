@@ -16,8 +16,7 @@
 		if( param[10] == 0)   extgd ^= 1; else	//toggle
 		if( param[11] != 0 && param[11] != 's') //status
 		{
-			if( param[11] & 1) extgd = 1; else	//enable
-			if(~param[11] & 1) extgd = 0;		//disable
+			extgd = (param[11] & 1); // enable /disable
 		}
 
 		if((param[11] != 's') && set_gamedata_status(extgd, true))

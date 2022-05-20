@@ -71,8 +71,8 @@ skip_code2:
 
 		sprintf(templn,  "%s%s XML%s\" %s'%s';\"> "
 						 "%s%s HTML%s\" %s'%s';\">",
-						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/refresh.ps3';document.getElementById('rxml').style.display='block",
-						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/index.ps3?html';document.getElementById('rhtm').style.display='block");
+						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/refresh.ps3';$$('rxml').style.display='block",
+						 HTML_BUTTON, STR_REFRESH, SUFIX2(profile), HTML_ONCLICK, "/index.ps3?html';$$('rhtm').style.display='block");
 
 		_concat(&sbuffer, templn);
 

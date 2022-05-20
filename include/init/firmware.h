@@ -223,13 +223,13 @@ static void detect_firmware(void)
 			if(c_firmware >= 4.75f && c_firmware <= LATEST_CFW) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80-4.89
 			#ifndef LAST_FIRMWARE_ONLY
 			if(c_firmware == 4.70f) SYSCALL_TABLE = SYSCALL_TABLE_470;
-			if(c_firmware >= 4.60f && c_firmware <= 4.66f) SYSCALL_TABLE = SYSCALL_TABLE_460; // same for 4.60, 4.65, 4.66
+			if(BETWEEN(4.60f, c_firmware, 4.66f)) SYSCALL_TABLE = SYSCALL_TABLE_460; // same for 4.60, 4.65, 4.66
 			if(c_firmware == 4.55f) SYSCALL_TABLE = SYSCALL_TABLE_455;
 			if(c_firmware == 4.53f) SYSCALL_TABLE = SYSCALL_TABLE_453;
 			if(c_firmware == 4.50f) SYSCALL_TABLE = SYSCALL_TABLE_450;
 			if(c_firmware == 4.46f) SYSCALL_TABLE = SYSCALL_TABLE_446;
-			if(c_firmware >= 4.40f && c_firmware <= 4.41f) SYSCALL_TABLE = SYSCALL_TABLE_440; // same for 4.40, 4.41
-			if(c_firmware >= 4.30f && c_firmware <= 4.31f) SYSCALL_TABLE = SYSCALL_TABLE_430; // same for 4.30, 4.31
+			if(BETWEEN(4.40f, c_firmware, 4.41f)) SYSCALL_TABLE = SYSCALL_TABLE_440; // same for 4.40, 4.41
+			if(BETWEEN(4.30f, c_firmware, 4.31f)) SYSCALL_TABLE = SYSCALL_TABLE_430; // same for 4.30, 4.31
 			if(c_firmware == 4.21f) SYSCALL_TABLE = SYSCALL_TABLE_421;
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355;
 			#endif
@@ -241,15 +241,15 @@ static void detect_firmware(void)
 			/*
 			if(c_firmware >= 4.80f) SYSCALL_TABLE = SYSCALL_TABLE_480D; // same for 4.80-4.84
 			#ifndef LAST_FIRMWARE_ONLY
-			if(c_firmware >= 4.75f && c_firmware <= 4.78f) SYSCALL_TABLE = SYSCALL_TABLE_475D; // same for 4.75, 4.76, 4.78
+			if(BETWEEN(4.75f, c_firmware, 4.78f)) SYSCALL_TABLE = SYSCALL_TABLE_475D; // same for 4.75, 4.76, 4.78
 			if(c_firmware == 4.70f) SYSCALL_TABLE = SYSCALL_TABLE_470D;
-			if(c_firmware >= 4.60f && c_firmware <= 4.66f) SYSCALL_TABLE = SYSCALL_TABLE_460D; // same for 4.60, 4.65, 4.66
+			if(BETWEEN(4.60f, c_firmware, 4.66f)) SYSCALL_TABLE = SYSCALL_TABLE_460D; // same for 4.60, 4.65, 4.66
 			if(c_firmware == 4.55f) SYSCALL_TABLE = SYSCALL_TABLE_455D;
 			if(c_firmware == 4.53f) SYSCALL_TABLE = SYSCALL_TABLE_453D;
 			if(c_firmware == 4.50f) SYSCALL_TABLE = SYSCALL_TABLE_450D;
 			if(c_firmware == 4.46f) SYSCALL_TABLE = SYSCALL_TABLE_446D;
-			if(c_firmware >= 4.40f && c_firmware <= 4.41f) SYSCALL_TABLE = SYSCALL_TABLE_440D; // same for 4.40, 4.41
-			if(c_firmware >= 4.30f && c_firmware <= 4.31f) SYSCALL_TABLE = SYSCALL_TABLE_430D; // same for 4.30, 4.31
+			if(BETWEEN(4.40f, c_firmware, 4.41f)) SYSCALL_TABLE = SYSCALL_TABLE_440D; // same for 4.40, 4.41
+			if(BETWEEN(4.30f, c_firmware, 4.31f)) SYSCALL_TABLE = SYSCALL_TABLE_430D; // same for 4.30, 4.31
 			if(c_firmware == 4.21f) SYSCALL_TABLE = SYSCALL_TABLE_421D;
 			if(c_firmware == 3.55f) SYSCALL_TABLE = SYSCALL_TABLE_355D;
 			#endif
@@ -278,7 +278,7 @@ static void detect_firmware(void)
 		if(c_firmware == 4.53f) {base_addr = 0x2D4E48, open_hook = 0x29DEF8;} else
 		if(c_firmware == 4.55f) {base_addr = 0x2D7660, open_hook = 0x29F748;} else
 		if(c_firmware == 4.60f) {base_addr = 0x2D88D0, open_hook = 0x2A02BC;} else
-		if(c_firmware >= 4.65f && c_firmware <= 4.66f)
+		if(BETWEEN(4.65f, c_firmware, 4.66f))
 								{base_addr = 0x2D88E0, open_hook = 0x2A02C8;} else
 		if(c_firmware == 4.70f) {base_addr = 0x2D8A70, open_hook = 0x2975C0;} else
  #endif  // #ifndef LAST_FIRMWARE_ONLY
@@ -316,10 +316,10 @@ static void detect_firmware(void)
 		if(c_firmware == 4.53f) {base_addr = 0x2F5F88, open_hook = 0x2B83C0;} else
 		if(c_firmware == 4.55f) {base_addr = 0x2F8730, open_hook = 0x2B9C14;} else
 		if(c_firmware == 4.60f) {base_addr = 0x2FA220, open_hook = 0x2BB004;} else
-		if(c_firmware >= 4.65f && c_firmware <= 4.66f)
+		if(BETWEEN(4.65f, c_firmware, 4.66f))
 								{base_addr = 0x2FA230, open_hook = 0x2BB010;} else
 		if(c_firmware == 4.70f) {base_addr = 0x2FA540, open_hook = 0x2B2480;} else
-		if(c_firmware >= 4.75f && c_firmware <= 4.78f)
+		if(BETWEEN(4.75f, c_firmware, 4.78f))
 								{base_addr = 0x2FA5B0, open_hook = 0x2B24F8;} else
   #endif // #ifndef LAST_FIRMWARE_ONLY
 		if(c_firmware == 4.80f) {base_addr = 0x2FA680, open_hook = 0x2B25C4;} else
@@ -347,7 +347,7 @@ static void detect_firmware(void)
 				idps_offset1 = 0x80000000003E17B0ULL;
 				idps_offset2 = 0x8000000000474F1CULL;
 			}
-			else if(c_firmware >= 4.60f && c_firmware <= 4.66f)
+			else if(BETWEEN(4.60f, c_firmware, 4.66f))
 			{
 				idps_offset1 = 0x80000000003E2BB0ULL;
 				idps_offset2 = 0x8000000000474F1CULL;
@@ -367,7 +367,7 @@ static void detect_firmware(void)
 #endif //#ifdef SPOOF_CONSOLEID
 		}
 #ifndef LAST_FIRMWARE_ONLY
-		else if(c_firmware >= 4.21f && c_firmware <= 4.53f)
+		else if(BETWEEN(4.21f, c_firmware, 4.53f))
 		{
 			get_fan_policy_offset = 0x8000000000009E28ULL; // sys 409 get_fan_policy  4.21/4.30/4.31/4.40/4.41/4.46/4.50/4.53
 			set_fan_policy_offset = 0x800000000000A324ULL; // sys 389 set_fan_policy
@@ -401,7 +401,7 @@ static void detect_firmware(void)
 			if(IS_DEH)
 			{ // DEH
 		#ifndef LAST_FIRMWARE_ONLY
-				if(c_firmware >= 4.60f && c_firmware <= 4.66f)
+				if(BETWEEN(4.60f, c_firmware, 4.66f))
 				{
 					idps_offset1 = 0x8000000000432430ULL;
 					idps_offset2 = 0x80000000004C4F1CULL;
@@ -422,7 +422,7 @@ static void detect_firmware(void)
 				idps_offset1 = 0x8000000000407930ULL;
 				idps_offset2 = 0x8000000000494F1CULL;
 			}
-			else if(c_firmware >= 4.60f && c_firmware <= 4.66f)
+			else if(BETWEEN(4.60f, c_firmware, 4.66f))
 			{
 				idps_offset1 = 0x80000000004095B0ULL;
 				idps_offset2 = 0x800000000049CF1CULL;
@@ -434,7 +434,7 @@ static void detect_firmware(void)
 			}
 			else
   #endif //#ifndef LAST_FIRMWARE_ONLY
-			if(c_firmware >= 4.75f && c_firmware <= 4.78f)
+			if(BETWEEN(4.75f, c_firmware, 4.78f))
 			{
 				idps_offset1 = 0x8000000000409930ULL;
 				idps_offset2 = 0x800000000049CAF4ULL;
@@ -448,7 +448,7 @@ static void detect_firmware(void)
 		}
 
  #ifndef LAST_FIRMWARE_ONLY
-		else if(c_firmware >= 4.21f && c_firmware <= 4.53f)
+		else if(BETWEEN(4.21f, c_firmware, 4.53f))
 		{
 				get_fan_policy_offset = 0x8000000000009EA8ULL; // sys 409 get_fan_policy  4.21/4.30/4.31/4.40/4.41/4.46/4.50/4.53
 				set_fan_policy_offset = 0x800000000000A3A4ULL; // sys 389 set_fan_policy

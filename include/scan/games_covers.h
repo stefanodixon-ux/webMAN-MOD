@@ -38,7 +38,7 @@ enum icon_type
 	iROM  = 13,
 };
 
-#define HAS_TITLE_ID  ((*title_id >= 'A') && (*title_id <= 'Z'))
+#define HAS_TITLE_ID  BETWEEN('A', *title_id, 'Z')
 
 #define NO_ICON       (!*icon)
 

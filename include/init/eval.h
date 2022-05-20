@@ -1,17 +1,19 @@
-#define MAX(a, b)		((a) >= (b) ? (a) : (b))
-#define MIN(a, b)		((a) <= (b) ? (a) : (b))
-#define ABS(a)			(((a) < 0) ? -(a) : (a))
-#define RANGE(a, b, c)	((a) <= (b) ? (b) : (a) >= (c) ? (c) : (a))
-#define ISDIGIT(a)		('0' <= (unsigned char)(a) && (unsigned char)(a) <= '9')
-#define ISSPACE(a)		( 0  <  (unsigned char)(a) && (unsigned char)(a) <= ' ')
-#define	INT32(a)		(*((u32*)(a)))
+#define MAX(a, b)			((a) >= (b) ? (a) : (b))
+#define MIN(a, b)			((a) <= (b) ? (a) : (b))
+#define ABS(a)				(((a) < 0) ? -(a) : (a))
+#define RANGE(a, b, c)		((a) <= (b) ? (b) : (a) >= (c) ? (c) : (a))
+#define BETWEEN(a, b, c)	( ((a) <= (b)) && ((b) <= (c)) )
+#define ISDIGIT(a)			( ('0' <= (a)) && ((a) <= '9') )
+#define ISSPACE(a)			( ( 0  <= (a)) && ((a) <= ' ') )
+#define ISHEX(a)			(ISDIGIT(a) || BETWEEN('a', (unsigned char)(a), 'f'))
+#define	INT32(a)			(*((u32*)(a)))
 
 static char h2a(const char hex) // hex byte to ascii char
 {
 	char c = hex;
-	if(c >= 0 && c <= 9)
+	if(BETWEEN(0, c, 9))
 		c += '0'; //'0'-'9'
-	else if(c >= 0xA && c <= 0xF)
+	else if(BETWEEN(0xA, c, 0xF))
 		c += 55;  //'A'-'F'
 	return c;
 }
@@ -19,9 +21,9 @@ static char h2a(const char hex) // hex byte to ascii char
 static u8 h2b(const char hex) // hex char to byte
 {
 	u8 c = LCASE(hex);
-	if(c >= '0' && c <= '9')
+	if(BETWEEN('0', c, '9'))
 		c -= '0'; // 0-9
-	else if(c >= 'a' && c <= 'f')
+	else if(BETWEEN('a', c, 'f'))
 		c -= 'W'; // 10-15
 	return c;
 }
@@ -56,7 +58,7 @@ static bool isHEX(const char *value)
 	for(; *value; ++value)
 	{
 		c = LCASE(*value);
-		if(!(ISDIGIT(c) || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '*'))) return false;
+		if(!(ISHEX(c) || (c == ' ') || (c == '*'))) return false;
 	}
 	return true;
 }

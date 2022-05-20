@@ -5,7 +5,7 @@
 		check_path_alias(pkg_file);
 
 		add_url(buffer, "Install PKG: "
-						"<select autofocus onchange=\"document.getElementById('wmsg').style.display='block';"
+						"<select autofocus onchange=\"$$('wmsg').style.display='block';"
 						"window.location='/install.ps3", pkg_file, "/'+this.value;\">"
 						"<option>");
 

@@ -104,6 +104,9 @@ static void unlink_file(const char *drive, const char *path, const char *file)
 }
 
 #ifndef LITE_EDITION
+#ifdef ARTEMIS_PRX
+static void clear_codelist(void);
+#endif
 static void uninstall(char *param)
 {
 	if(get_explore_interface()) exec_xmb_command("close_all_list");
@@ -136,7 +139,11 @@ static void uninstall(char *param)
 	cellFsUnlink(WM_NETDISABLED);
 	cellFsUnlink(WM_ONLINE_IDS_FILE);
 	cellFsUnlink(WM_OFFLINE_IDS_FILE);
+	#ifdef ARTEMIS_PRX
+	clear_codelist();
+	#else
 	cellFsUnlink(ARTEMIS_CODES_LOG);
+	#endif
 
 	#ifdef COPY_PS3
 	for(u8 i = 0; i < 4; i++)

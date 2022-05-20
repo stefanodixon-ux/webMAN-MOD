@@ -7,7 +7,7 @@
 #define init_log(a)		save_file(ARTEMIS_CODES_LOG, a, SAVE_ALL)
 #define add_log(a)		save_file(ARTEMIS_CODES_LOG, a, APPEND_TEXT)
 
-#define ISVALID_CHAR(c)	(ISDIGIT(c) || (c >= 'a' && c <= 'f') || (c == ' ') || (c == '\r') || (c == '\n'))
+#define ISVALID_CHAR(c)	(ISHEX(c) || (c == ' ') || (c == '\r') || (c == '\n'))
 
 static vu8 art_cmd = 0;
 static vu8 artemis_working = 0;
@@ -15,8 +15,23 @@ static vu8 artemis_working = 0;
 static sys_addr_t sysmem_art = NULL;
 static sys_addr_t typeA_Copy = NULL;
 
-#define	PAD_SELECT			(1<<0)
-#define	PAD_START			(1<<3)
+// pad bit flags
+#define	PAD_SELECT		(1<<0)
+#define	PAD_L3			(1<<1)
+#define	PAD_R3			(1<<2)
+#define	PAD_START		(1<<3)
+#define	PAD_UP			(1<<4)
+#define	PAD_RIGHT		(1<<5)
+#define	PAD_DOWN		(1<<6)
+#define	PAD_LEFT		(1<<7)
+#define	PAD_L2			(1<<8)
+#define	PAD_R2			(1<<9)
+#define	PAD_L1			(1<<10)
+#define	PAD_R1			(1<<11)
+#define	PAD_TRIANGLE	(1<<12)
+#define	PAD_CIRCLE		(1<<13)
+#define	PAD_CROSS		(1<<14)
+#define	PAD_SQUARE		(1<<15)
 
 static u8 doForceWrite = 0;
 static u8 isConstantWrite = 0;
@@ -647,11 +662,16 @@ static void art_process(int forceWrite)
 
 		if (!userCodes || forceWrite)
 		{
+			const char *CODES_LIST[3] = { ARTEMIS_CODES_FILE, ARTEMIS_CODES_L2, ARTEMIS_CODES_R2 };
+			const char *CODES_FILE = BETWEEN(1, forceWrite, 3) ? CODES_LIST[forceWrite - 1] : ARTEMIS_CODES_FILE;
+
+			if(not_exists(CODES_FILE)) CODES_FILE = ARTEMIS_CODES_FILE;
+
 			release_art(0);
 
 			int mem_size = _64KB_;
 
-			userCodesLen = file_size(ARTEMIS_CODES_FILE);
+			userCodesLen = file_size(CODES_FILE);
 
 			if(userCodesLen)
 			{
@@ -663,10 +683,13 @@ static void art_process(int forceWrite)
 
 			if(sysmem_art)
 			{
-				show_msg("Artemis PS3\nAttached");
-
 				userCodes = (char *)sysmem_art;
-				userCodesLen = read_file(ARTEMIS_CODES_FILE, userCodes, mem_size, 0);
+
+				sprintf(userCodes, "Attached PID=0x%x\n%s\n", attachedPID, CODES_FILE);
+				show_msg(userCodes);
+				add_log(userCodes);
+
+				userCodesLen = read_file(CODES_FILE, userCodes, mem_size, 0);
 				if(userCodesLen)
 				{
 					userCodes[userCodesLen] = '\n'; // append line break
@@ -693,6 +716,17 @@ static void art_process(int forceWrite)
 	doForceWrite = 0;
 }
 
+static void clear_codelist(void)
+{
+	if(webman_config->artemis)
+	{
+		cellFsUnlink(ARTEMIS_CODES_FILE);
+	}
+	cellFsUnlink(ARTEMIS_CODES_LOG);
+	cellFsUnlink(ARTEMIS_CODES_L2);
+	cellFsUnlink(ARTEMIS_CODES_R2);
+}
+
 static void init_codelist(char *last_path)
 {
 	if(*last_path == '/')
@@ -705,7 +739,18 @@ static void init_codelist(char *last_path)
 
 		size_t size = file_size(last_path);
 		if(size && (size < _1MB_))
+		{
+			clear_codelist();
 			force_copy(last_path, (char*)ARTEMIS_CODES_FILE);
+		}
+
+		ext = strstr(last_path, ".ncl");
+		if(ext)
+		{
+			strcpy(ext, "_l2.ncl"); force_copy(last_path, (char*)ARTEMIS_CODES_L2);
+			strcpy(ext, "_r2.ncl"); force_copy(last_path, (char*)ARTEMIS_CODES_R2);
+			strcpy(ext,    ".ncl");
+		}
 	}
 }
 
@@ -762,7 +807,9 @@ static void art_thread(u64 arg)
 						sprintf(line, "Attached PID=0x%x\n", attachedPID);
 						init_log(line);
 
-						art_process(1);
+						if(pad & PAD_R2) art_process(3); else
+						if(pad & PAD_L2) art_process(2); else
+										 art_process(1);
 					}
 					else
 					{

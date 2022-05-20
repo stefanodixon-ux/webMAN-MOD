@@ -7,7 +7,7 @@
 	#endif
 
 	#ifdef COBRA_ONLY
-	if(islike(param, "/net") && (param[4] >= '0' && param[4] <= '4')) //net0/net1/net2/net3/net4
+	if(islike(param, "/net") && BETWEEN('0', param[4], '4')) //net0/net1/net2/net3/net4
 	{
 		is_binary = FOLDER_LISTING, is_net = true;
 	}
