@@ -118,6 +118,16 @@ int save_file(const char *file, const char *mem, s64 size);
 int file_copy(const char *file1, char *file2);
 int wait_for(const char *path, u8 timeout);
 
+void unmap_app_home(void);
+
+static u8 file_exists(const char *path)
+{
+	CellFsStat stat;
+	return (cellFsStat(path, &stat) == CELL_FS_SUCCEEDED);
+}
+
+#define not_exists(path)	(!file_exists(path))
+
 /*
 #define N_TITLE_IDS	102
 #define N_TITLE_NAMES	24
@@ -1367,21 +1377,34 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 
 	if(use_app_home)
 	{
+		unmap_app_home();
+
 		sys_map_path("/app_home", path);
 
-		char *mpath = (char *)malloc(strlen(path) + 12);
+		char *mpath = (char *)malloc(strlen(path) + 18);
 		if(mpath)
 		{
-			CellFsStat stat;
 			sprintf(mpath, "%s/PS3_GM%02i", path, gm);
-			if(cellFsStat(mpath, &stat))
+			if(not_exists(mpath))
 			{
 				gm = 01; sprintf(mpath, "%s/PS3_GM%02i", path, gm);
 			}
-			if(cellFsStat(mpath, &stat) == CELL_FS_SUCCEEDED)
+
+			if(file_exists(mpath))
 			{
 				sys_map_path("/app_home/PS3_GAME", mpath); gm++;
+				strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
 			}
+			else
+			{
+				sprintf(mpath, "%s/PS3_GAME", path);
+				if(file_exists(mpath))
+				{
+					sys_map_path("/app_home/PS3_GAME", mpath);
+					strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
+				}
+			}
+
 			free(mpath);
 		}
 	}
@@ -1419,9 +1442,7 @@ static void restore_bak(const char *filename)
 	char bak[64];
 	sprintf(bak, "/%s.bak", filename);
 
-	CellFsStat stat;
-
-	if(cellFsStat(bak, &stat) == CELL_FS_SUCCEEDED)
+	if(file_exists(bak))
 	{
 		cellFsUnlink(filename);
 		file_copy(bak, (char*)filename); // restore original edat from bak
@@ -1465,9 +1486,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	if (!path || !icon_save_path)
 		return EINVAL;
 
-	CellFsStat stat;
-
-	if( (cellFsStat(PSPL_ICON1, &stat) != CELL_FS_SUCCEEDED) && (cellFsStat(PSPL_ICON2, &stat) != CELL_FS_SUCCEEDED) )
+	if( not_exists(PSPL_ICON1) && not_exists(PSPL_ICON2) )
 	{
 		return EABORT;
 	}
@@ -1495,8 +1514,8 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 	u8 prometheus = 0;
 	u8 has_header = 0;
 
-	u8 pspl1 = (cellFsStat(PSPL_PATH1, &stat) == CELL_FS_SUCCEEDED);
-	u8 pspl2 = (cellFsStat(PSPL_PATH2, &stat) == CELL_FS_SUCCEEDED);
+	u8 pspl1 = file_exists(PSPL_PATH1);
+	u8 pspl2 = file_exists(PSPL_PATH2);
 
 	char umd_file[256];
 	u32 header[0xD4/4];
@@ -1556,14 +1575,14 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 		{
 			// check EBOOT exists before copy images
 			sprintf(umd_file, "%s.EBOOT.OLD", root);
-			if(cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED)
+			if(file_exists(umd_file))
 			{
 				do_mount = prometheus = 1;
 			}
 			else
 			{
 				sprintf(umd_file, "%s.EBOOT.BIN", root);
-				do_mount = (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED);
+				do_mount = (file_exists(umd_file));
 			}
 
 			if(!do_mount)
@@ -1594,23 +1613,23 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 			// copy images to psp launcher
 			if(do_mount)
 			{
-				sprintf(umd_file, "%s.PNG", root);  // game.iso.PNG
-				if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
+				char *icon = umd_file;
+				sprintf(icon, "%s.PNG", root);  // game.iso.PNG
+				if(not_exists(icon))
 				{
-					ext -= 4;
-					sprintf(umd_file, "%s.png", root);  // game.iso.png
-					if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
-						sprintf(umd_file + ext, "%s.png", root); // game.png
-					if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
-						sprintf(umd_file + ext, "%s.PNG", root); // game.PNG
-					if(cellFsStat(umd_file, &stat) != CELL_FS_SUCCEEDED)
-						sprintf(umd_file, "%s.ICON0.PNG", root); // game.ICON0.PNG
+					sprintf(icon, "%s.png", root);  // game.iso.png
+					if(not_exists(icon))
+						sprintf(icon + ext, ".png"); // game.png
+					if(not_exists(icon))
+						sprintf(icon + ext, ".PNG"); // game.PNG
+					if(not_exists(icon))
+						sprintf(icon + ext, ".ICON0.PNG"); // game.ICON0.PNG
 				}
 
-				if(cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED)
+				if(file_exists(icon))
 				{
-					if(pspl1) sys_map_path(PSPL_ICON1, umd_file);
-					if(pspl2) sys_map_path(PSPL_ICON2, umd_file);
+					if(pspl1) sys_map_path(PSPL_ICON1, icon);
+					if(pspl2) sys_map_path(PSPL_ICON2, icon);
 				}
 
 				// get EBOOT.OLD or EBOOT.BIN to find decryption keys
@@ -1644,7 +1663,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 			if(pspl2) sys_map_path(PSPL_ICON2, icon_save_path);
 
 			sprintf(umd_file, "%s/SYSDIR/EBOOT.OLD", root);
-			if (cellFsStat(umd_file, &stat) == CELL_FS_SUCCEEDED)
+			if (file_exists(umd_file))
 			{
 				prometheus = 1;
 			}

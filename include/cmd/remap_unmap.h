@@ -97,10 +97,19 @@
 		if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
 
 		char *path = param + 13; if(*path == '?') ++path;
-		check_path_alias(path);
-		set_app_home(path);
-		*header = NULL;
 
+		if(*path == '/')
+		{
+			check_path_alias(path);
+			set_app_home(path);
+		}
+		else
+		{
+			unmap_app_home();
+			strcpy(path, "/app_home");
+		}
+
+		sprintf(header, HTML_URL, "/app_home" , "/app_home"); strcat(header, " => ");
 		if(!mc) keep_alive = http_response(conn_s, header, path, CODE_PREVIEW_FILE, path);
 
 		goto exit_handleclient_www;

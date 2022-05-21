@@ -185,4 +185,4 @@ static const char *script_events[4] = {
 #define MAX_PATH_LEN	512 // do not change!
 #define MAX_TEXT_LEN	1300 // should not exceed HTML_RECV_SIZE (RECV buffer is unstable above 1400 bytes)
 
-#define not_exists(path)	!file_exists(path)
+#define not_exists(path)	(!file_exists(path))
