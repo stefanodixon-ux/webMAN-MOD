@@ -101,7 +101,7 @@ static void patch_gameboot(u8 boot_type)
 	}
 }
 
-static void patch_gameboot_by_type(const char *path)
+static void patch_gameboot_by_type(const char *path) // called only by set_mount_type
 {
 	// customize gameboot per console emulator using DeViL303's custom_render_plugin.rco
 	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= MIN_RCO_SIZE))
@@ -124,11 +124,11 @@ static void patch_gameboot_by_type(const char *path)
 
 			if(strcasestr(path, "SNES")) // MSNES, SNES, SNES9X, SNES9X2005, SNES9X2010, SNES9X_NEXT
 				patch_gameboot(8); // sns
-			else if(strstr(path, "NES") || strcasestr(path, "FCEUMM")) // NES, NESTOPIA, QNES, FCEUMM
+			else if(strstr(path, "NES") || strcasestr(path, "/NES/") || strcasestr(path, "FCEUMM")) // NES, NESTOPIA, QNES, FCEUMM
 				patch_gameboot(9); // nes
 			else if(strcasestr(path, "GBA") || strcasestr(path, "VBA") || strstr(path, "DS"))  // GBA, MGBA, VBA, DS
 				patch_gameboot(10); // gba
-			else if(strcasestr(path, "SEGA") || strstr(path, "GEN") || strcasestr(path, "GENESIS") || strcasestr(path, "MEGAD") || strcasestr(path, "MASTER") || strcasestr(path, "SG1000") || strcasestr(path, "PICO") || strcasestr(path, "GG") || strcasestr(path, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
+			else if(strcasestr(path, "SEGA") || strstr(path, "GEN") || strcasestr(path, "/GEN/") || strcasestr(path, "GENESIS") || strcasestr(path, "MEGAD") || strcasestr(path, "MASTER") || strcasestr(path, "SG1000") || strcasestr(path, "PICO") || strcasestr(path, "GG") || strcasestr(path, "GEARBOY")) // GEN, GENESIS, MEGADRIVE, GEARBOY, GG, PICO
 				patch_gameboot(11); // gen
 			else if(strcasestr(path, "NEO") || strcasestr(path, "NGP")) // NEOCD, FBNEO, NEO, NEOGEO, NGP
 				patch_gameboot(12); // neo
