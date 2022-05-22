@@ -68,7 +68,9 @@
 
 		pkg_delete_after_install = (install_ps3 == false);
 
-		int ret = installPKG(param + 12, msg);
+		check_path_alias(pkg_file);
+
+		int ret = installPKG(pkg_file, msg);
 
 		#ifdef WM_REQUEST
 		if(!wm_request)

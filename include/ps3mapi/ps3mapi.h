@@ -855,7 +855,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 		concat(buffer, templn);
 
 		sprintf(templn, " <a id=\"pblk\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">&lt;&lt;</a> <a id=\"back\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">&lt;Back</a>", pid, address - 0x2000, pid, address - BINDATA_SIZE); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">Next&gt;</a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">&gt;&gt;</a>", pid, address + BINDATA_SIZE, pid, address + 0x2000); buffer += concat(buffer, templn);
+		sprintf(templn, " <a id=\"next\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">Next></a> <a id=\"nblk\" href=\"/getmem.ps3mapi?proc=0x%x&addr=%x\">>></a>", pid, address + BINDATA_SIZE, pid, address + 0x2000); buffer += concat(buffer, templn);
 
 		if(file_exists(dump_file)) {add_breadcrumb_trail2(buffer, " [", dump_file); concat(buffer, " ]");}
 
@@ -910,7 +910,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 						if(byte==0x3C)
 							buffer += concat(buffer, "&lt;");
 						else if(byte==0x3E)
-							buffer += concat(buffer, "&gt;");
+							buffer += concat(buffer, ">");
 						else
 							{sprintf(templn,"%c", byte); buffer += concat(buffer, templn);}
 						if(hilite)

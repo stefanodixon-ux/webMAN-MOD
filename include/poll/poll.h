@@ -98,7 +98,7 @@ static void poll_start_play_time(void)
 		if(webman_config->artemis)
 		{
 			char codelist[40];
-			snprintf(codelist, sizeof(codelist), "%s%s/%s", TMP_DIR, "artemis", _game_TitleID);
+			snprintf(codelist, sizeof(codelist), "%s/%s/%s", TMP_DIR, "artemis", _game_TitleID);
 			if(not_exists(codelist))
 				snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis");
 
@@ -134,7 +134,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 	{
 		#ifdef REMOVE_SYSCALLS
 		// check if syscalls were restored
-		if(syscalls_removed != CFW_SYSCALLS_REMOVED(TOC))
+		if(_IS_ON_XMB_ && syscalls_removed != CFW_SYSCALLS_REMOVED(TOC))
 		{
 			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 			#ifdef PS3MAPI

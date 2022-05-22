@@ -41,6 +41,8 @@
 					keep_alive = http_response(conn_s, header, param, CODE_HTTP_NOCSS, out);
 					goto exit_handleclient_www;
 				}
+				else if(isDir(filename))
+					strcpy(param, filename);
 				else
 					prepend(param, "/hexview.ps3", 3);
 			}

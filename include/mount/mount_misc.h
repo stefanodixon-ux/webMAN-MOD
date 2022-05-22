@@ -97,6 +97,8 @@
 		do_umount(false);
 		set_app_home(_path);
 
+		sys_ppu_thread_sleep(1);
+
 		if(launch_app_home_icon(webman_config->autoplay | force_ap)) ret = true;
 
 		mount_unk = EMU_MAX;

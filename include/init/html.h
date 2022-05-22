@@ -20,7 +20,7 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 
 #define HTML_URL_STYLE			"color:#ccc;text-decoration:none;"
 
-#define HTML_DIR				"&lt;dir&gt;"
+#define HTML_DIR				"&lt;dir>"
 #define HTML_BUTTON_FMT			"%s%s\" %s'%s';\">"
 #define HTML_BUTTON_FMT2		"%s%s\" %s'%s%s';\">"
 #define HTML_BUTTON				" <input type=\"button\" value=\""
