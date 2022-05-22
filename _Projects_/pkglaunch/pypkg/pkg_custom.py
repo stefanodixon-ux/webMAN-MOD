@@ -22,7 +22,7 @@ TYPE_DIRECTORY = 0x4
 
 TYPE_OVERWRITE_ALLOWED = 0x80000000
 
-MaxCacheSize = 0x8000000
+MaxCacheSize = 0x800000
 
 debug = False
 

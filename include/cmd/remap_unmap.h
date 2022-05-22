@@ -55,6 +55,9 @@
 				get_param("to=", path2, param, MAX_PATH_LEN);
 			}
 
+			check_path_tags(path1);
+			check_path_tags(path2);
+
 			check_path_alias(path1);
 			check_path_alias(path2);
 
