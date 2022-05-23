@@ -10,9 +10,9 @@ static int parse_lba(const char *templn, int ret_value)
 	if((tcode_len != 8) || tcode[2]!=':' || tcode[5]!=':') return ret_value;
 
 	unsigned int tmin, tsec, tfrm;
-	tmin = val(tcode);     // (tcode[0] & 0x0F)*10 + (tcode[1] & 0x0F);
-	tsec = val(tcode + 3); // (tcode[3] & 0x0F)*10 + (tcode[4] & 0x0F);
-	tfrm = val(tcode + 6); // (tcode[6] & 0x0F)*10 + (tcode[7] & 0x0F);
+	tmin = val(tcode);     // (tcode[0] & 0x0F)*10 + (tcode[1] & 0x0F); // 0-98
+	tsec = val(tcode + 3); // (tcode[3] & 0x0F)*10 + (tcode[4] & 0x0F); // 0-59
+	tfrm = val(tcode + 6); // (tcode[6] & 0x0F)*10 + (tcode[7] & 0x0F); // 0-74
 
 	return ((((tmin * 60) + tsec) * 75) + tfrm); // msf_to_lba
 }

@@ -42,11 +42,11 @@ static void get_cobra_version(char *cfw_info)
 
 	char cobra_ver[12];
 	if((cobra_version & 0x0F) == 0)
-		sprintf(cobra_ver, "%X.%X", cobra_version>>8, (cobra_version & 0xFF) >> 4);
+		sprintf(cobra_ver, "%X.%X", cobra_version>>8, (cobra_version & 0xF0) >> 4);
 	else
 		sprintf(cobra_ver, "%X.%02X", cobra_version>>8, (cobra_version & 0xFF));
 
-	if(payload_ps3hen) {sprintf(cfw_info, "%s %s %s", dex_mode ? "DEX" : "CEX", "PS3HEN", cobra_ver); return;}
+	if(payload_ps3hen) {sprintf(cfw_info, "%s %s %.3s.%X", dex_mode ? "DEX" : "CEX", "PS3HEN", cobra_ver, cobra_version & 0xF); return;}
 
 	#if defined(DECR_SUPPORT)
 		sprintf(cfw_info, "%s %s %s", (dex_mode == 1) ? "DECR" : dex_mode ? "DEX" : "CEX", is_mamba ? "Mamba" : "Cobra", cobra_ver);
