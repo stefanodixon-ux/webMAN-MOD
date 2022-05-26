@@ -79,7 +79,7 @@ static void parse_script(const char *script_file)
 
 			while( *buffer && (*buffer <= ' ')) buffer++; // skip blank chars \n \r \t
 
-			if(*buffer == 0) break;
+			if(*buffer == '\0') break;
 
 			// process line
 			pos = strchr(line, '\n'); if(!pos) pos = (char*)line;

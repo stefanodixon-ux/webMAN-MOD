@@ -111,7 +111,7 @@ static s64 open_remote_file(int s, const char *path, int *abort_connection)
 	// detect CD sector size
 	#ifdef USE_INTERNAL_NET_PLUGIN
 	int emu_mode = *abort_connection; // called by netiso_thread()
-	if((emu_mode == EMU_PSX) && (res.file_size >= _64KB_) && (res.file_size <= 0x35000000UL))
+	if((emu_mode == EMU_PSX) && (BETWEEN(_64KB_, res.file_size, 870 * _1MB_))
 	{
 		CD_SECTOR_SIZE_2352 = default_cd_sector_size(res.file_size);
 

@@ -10,7 +10,7 @@
 
 static char h2a(const char hex) // hex byte to ascii char
 {
-	char c = hex;
+	char c = (unsigned char)hex;
 	if(BETWEEN(0, c, 9))
 		c += '0'; //'0'-'9'
 	else if(BETWEEN(0xA, c, 0xF))

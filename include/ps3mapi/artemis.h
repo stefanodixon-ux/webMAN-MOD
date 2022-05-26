@@ -11,6 +11,7 @@
 
 static vu8 art_cmd = 0;
 static vu8 artemis_working = 0;
+static u8 is_artemis_app = 0;
 
 static sys_addr_t sysmem_art = NULL;
 static sys_addr_t typeA_Copy = NULL;
@@ -587,7 +588,7 @@ static void ConvertCodes(process_id_t pid, char *userCodes)
 							break;
 					}
 					n -= i; // line length
-					if(n > 100) n = 100;
+					if(n > 100) n = sizeof(lineBuf);
 					memcpy64(lineBuf, userCodes + i, n);
 					lineBuf[n] = 0;
 				}
@@ -738,7 +739,7 @@ static void init_codelist(char *last_path)
 			strcat(last_path, ".ncl"); // append file extension
 
 		size_t size = file_size(last_path);
-		if(size && (size < _1MB_))
+		if(BETWEEN(1, size, _1MB_))
 		{
 			clear_codelist();
 			force_copy(last_path, (char*)ARTEMIS_CODES_FILE);

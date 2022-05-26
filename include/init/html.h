@@ -123,7 +123,7 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 {
 	if(!src || !dst) return false;
 
-	size_t i, j = 0, pos = 0;
+	u16 i, j = 0, pos = 0;
 
 	if(islike(src, "http") && (src[4] == ':' || src[5] == ':') && (src[6] == '/') && src[7]) { for(i = 8; src[i]; i++) if(src[i] == '/') {pos = i; break;} }
 
@@ -145,7 +145,7 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 		{
 			dst[j++] = '%';
 			dst[j++] = '3';
-			dst[j] = (src[i] & 0xf) + '7'; // A | F
+			dst[j] = h2a(src[i] & 0xf);
 		}
 		else if(src[i]==' ')
 			dst[j] = '+';
@@ -153,7 +153,7 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 		{
 			dst[j++] = '%';
 			dst[j++] = '2';
-			dst[j] = (src[i] == '+') ? 'B' : '0' + (src[i] & 0xf);
+			dst[j] = h2a(src[i] & 0xf);
 		}
 		else
 			dst[j] = src[i];
@@ -202,25 +202,19 @@ static size_t utf8enc(char *dst, char *src, u8 cpy2src)
 			dst[j++] = c;
 		else { if(c <= 0x07FF) {
 			dst[j++] = 0xC0 | (c>>06);
-		} else if(c <= 0xFFFF) {
+		} else { if(c <= 0xFFFF) {
 			dst[j++] = 0xE0 | (0x0F & (c>>12));
-			dst[j++] = 0x80 | (0x3F & (c>>06));
-		} else if(c <= 0x1FFFFF) {
+		} else { if(c <= 0x1FFFFF) {
 			dst[j++] = 0xF0 | (0x0F & (c>>18));
-			dst[j++] = 0x80 | (0x3F & (c>>12));
-			dst[j++] = 0x80 | (0x3F & (c>>06));
-		} else if(c <= 0x3FFFFFF) {
+		} else { if(c <= 0x3FFFFFF) {
 			dst[j++] = 0xF8 | (0x0F & (c>>24));
-			dst[j++] = 0x80 | (0x3F & (c>>18));
-			dst[j++] = 0x80 | (0x3F & (c>>12));
-			dst[j++] = 0x80 | (0x3F & (c>>06));
-		} else if(c <= 0x7FFFFFFF) {
+		} else { if(c <= 0x7FFFFFFF) {
 			dst[j++] = 0xFC | (0x0F & (c>>30));
-			dst[j++] = 0x80 | (0x3F & (c>>24));
-			dst[j++] = 0x80 | (0x3F & (c>>18));
-			dst[j++] = 0x80 | (0x3F & (c>>12));
-			dst[j++] = 0x80 | (0x3F & (c>>06));
-		}	dst[j++] = 0x80 | (0x3F & c); }
+			dst[j++] = 0x80 | (0x3F & (c>>24)); }
+		}	dst[j++] = 0x80 | (0x3F & (c>>18)); }
+			dst[j++] = 0x80 | (0x3F & (c>>12)); }
+			dst[j++] = 0x80 | (0x3F & (c>>06)); }
+			dst[j++] = 0x80 | (0x3F & c); }
 	}
 
 	j = MIN(j, MAX_LINE_LEN);

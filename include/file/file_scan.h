@@ -35,7 +35,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	if((fop == SCAN_DELETE || fop == SCAN_TRUNCATE) && (strlen(path) < 11 || islike(path, "/dev_bdvd") || islike(path, "/dev_flash") || islike(path, "/dev_blind"))) return FAILED;
 
-	bool use_dest = ((fop >= 2) && (fop <= 6)); // fop: 2 = copy, 3 = force copy, 4 = move, 5 = rename/move in same fs, 6 = copy bk
+	bool use_dest = BETWEEN(2, fop, 6); // fop: 2 = copy, 3 = force copy, 4 = move, 5 = rename/move in same fs, 6 = copy bk
 
 	if(use_dest) {mkdir_tree(dest); if(!isDir(dest)) return FAILED;}
 

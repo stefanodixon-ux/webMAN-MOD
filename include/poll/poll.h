@@ -27,6 +27,11 @@ static void poll_start_play_time(void)
 			#endif
 
 			start_event(EVENT_ON_XMB);
+
+			#ifdef ARTEMIS_PRX
+			if(!is_artemis_app)
+				clear_codelist();
+			#endif
 		}
 	 #endif
 	#endif
@@ -95,6 +100,7 @@ static void poll_start_play_time(void)
 		start_event(EVENT_PER_GAME);
 
 		#ifdef ARTEMIS_PRX
+		is_artemis_app = IS(_game_TitleID, "ARTPS3001");
 		if(webman_config->artemis)
 		{
 			char codelist[40];

@@ -111,7 +111,7 @@ static int process_open_cmd(u8 index, netiso_open_cmd *cmd)
 
 			/// detect sector size ///
 
-			if((result.file_size > _64KB_) && (result.file_size <= 0x35000000UL))
+			if(BETWEEN(_64KB_, result.file_size, 870 * _1MB_))
 			{
 				const u64 chunk_size = _64KB_; sys_addr_t sysmem = sys_mem_allocate(chunk_size);
 				if(sysmem)
