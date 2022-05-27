@@ -945,7 +945,7 @@ static void slaunch_thread(uint64_t arg)
 				init_delay = 0;
 
 				// prevent set favorite with start button
-				while(slaunch_running) {pad_read(); if(curpad == PAD_START) sys_timer_usleep(20000); else break;}
+				while(slaunch_running) {pad_read(); if(curpad & PAD_START) sys_timer_usleep(20000); else break;}
 
 				continue;
 			}
@@ -964,7 +964,9 @@ static void slaunch_thread(uint64_t arg)
 					init_delay = 0;
 
 					// prevent set favorite with start button
-					while(slaunch_running) {pad_read(); if(curpad == PAD_START) sys_timer_usleep(20000); else break;}
+					while(slaunch_running) {pad_read(); if(curpad & PAD_START) sys_timer_usleep(20000); else break;}
+
+					continue;
 				}
 			}
 		}

@@ -83,6 +83,16 @@ static int get_game_info(void)
 	return is_ingame;
 }
 
+static void wait_for_title_id(void)
+{
+	for(u8 retry = 0; retry < 10; retry++)
+	{
+		get_game_info();
+		if(*_game_TitleID) break;
+		sys_ppu_thread_sleep(1);
+	}
+}
+
 static bool abort_autoplay(void)
 {
 	pad_data = pad_read(); // abort auto-play holding L2 or pressing arrow keys

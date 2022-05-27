@@ -96,7 +96,9 @@ static void poll_start_play_time(void)
 			}
 		}
 		#endif
+
 		start_event(EVENT_INGAME);
+		wait_for_title_id();
 		start_event(EVENT_PER_GAME);
 
 		#ifdef ARTEMIS_PRX
@@ -133,7 +135,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 
 	char msg[0x100];
 
-	if(wm_reload) sys_ppu_thread_sleep(3);
+	check_reload();
 
 	old_fan = 0;
 	while(working)

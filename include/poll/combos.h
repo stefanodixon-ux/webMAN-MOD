@@ -120,17 +120,23 @@
 																((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == 0) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)))))   // L2+R2  = SLAUNCH MENU
 				||	((!(webman_config->combo2 & C_VSHMENU)) &&  ((pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_SELECT) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == 0))) )                   // SELECT = VSH MENU
 				{
+					// hold SELECT or START for 3-5 seconds
+					if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] && (++init_delay < 5)) {sys_ppu_thread_usleep(100000); continue;}
+
 					#ifdef WM_CUSTOM_COMBO
+					// call script override
 					if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L2 | CELL_PAD_CTRL_R2)) // L2+R2
 					{
 						if(do_custom_combo("l2_r2")) continue;
 					}
 					#endif
-					if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] && (++init_delay < 5)) {sys_ppu_thread_usleep(100000); continue;}
 
+					// START = sLaunch / SELECT = VSH Menu
 					start_vsh_gui(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_SELECT);
 
+					// wait until pad buttons are released
 					while(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] | pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2]) pad_data = pad_read();
+
 					break;
 				}
 				if(((webman_config->combo & UNLOAD_WM) == from_reboot) &&
@@ -152,6 +158,8 @@
 					if(!webman_config->nobeep) BEEP1;
 
 					create_file(WM_RELOAD_FILE); // create semaphore file
+
+					while(is_pressed(CELL_PAD_CTRL_TRIANGLE)) sys_ppu_thread_usleep(20000);
 
 					load_vsh_module(TOGGLE_PLUGIN);
 

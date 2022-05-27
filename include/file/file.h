@@ -440,3 +440,23 @@ static u8 wait_for_xmb(void)
 	while(working && (View_Find("explore_plugin") == 0)) {if(++t > MAX_WAIT) break; sys_ppu_thread_sleep(1);}
 	return (t > MAX_WAIT); // true = timeout
 }
+
+static void check_reload(void)
+{
+	from_reboot = file_exists(WM_NOSCAN_FILE);
+	cellFsUnlink(WM_NOSCAN_FILE); // delete wm_noscan file
+
+	if(!from_reboot) sys_ppu_thread_sleep(3); // wait for the unload of the previous plugin
+
+	char prx_id[20];
+	read_file(WM_RELOAD_FILE, prx_id, 20, 0); // read the prx_id of the other plugin
+	cellFsUnlink(WM_RELOAD_FILE); // delete semaphore file
+
+	sys_prx_id_t prx = val(prx_id);
+	if(prx)
+	{
+		wm_reload = from_reboot = true;
+		system_call_3(SC_UNLOAD_PRX_MODULE, prx, 0, NULL);
+		sys_ppu_thread_sleep(3);
+	}
+}
