@@ -217,6 +217,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - [MOVIAN](https://store.brewology.com/ahomebrew.php?brewid=196) : Required to play audio and videos in non-nantive formats like MKV
 - [multiMAN](https://store.brewology.com/ahomebrew.php?brewid=24) : Optional. Use for dump ISO, download covers, advanced file management
 - [IRISMAN](https://store.brewology.com/ahomebrew.php?brewid=250) : Optional. Use for dump ISO, download covers, advanced file management
+- [Artemis](https://store.brewology.com/ahomebrew.php?brewid=291) : Optional. Use for select cheats for the built-in Artemis patch engine.
 
 - webPAD : [http://pad.aldostools.org](http://pad.aldostools.org) - Online virtual game pad
 
