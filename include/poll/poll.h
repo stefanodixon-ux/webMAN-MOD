@@ -105,13 +105,15 @@ static void poll_start_play_time(void)
 		is_artemis_app = IS(_game_TitleID, "ARTPS3001");
 		if(webman_config->artemis)
 		{
-			char codelist[40];
-			snprintf(codelist, sizeof(codelist), "%s/%s/%s", TMP_DIR, "artemis", _game_TitleID);
-			if(not_exists(codelist))
-				snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis");
+			if(*_game_TitleID)
+			{
+				char codelist[40];
+				snprintf(codelist, sizeof(codelist), "%s/%s/%s", TMP_DIR, "artemis", _game_TitleID);
+				if(not_exists(codelist))
+					snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis");
 
-			init_codelist(codelist); // copy codelist for PSN or hdd0/tmp/artemis
-
+				init_codelist(codelist); // copy codelist for PSN or hdd0/tmp/artemis
+			}
 			if(file_exists(ARTEMIS_CODES_FILE))
 				start_artemis();
 		}

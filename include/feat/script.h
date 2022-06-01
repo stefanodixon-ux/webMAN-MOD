@@ -9,6 +9,8 @@
 //   abort if exist <path>
 //   abort if not exist <path>
 
+// :label
+// goto label
 // map <path>=<path>
 // unmap <path>
 // md <path>
@@ -26,7 +28,7 @@
 // logfile <pah>
 // log <text>
 // popup <text>
-// beep1 / beep2 / beep3
+// beep1 / beep2 / beep3 / ... beep9
 // mute coldboot
 
 // <webman_cmd> e.g. /mount.ps3<path>
@@ -63,14 +65,17 @@ static void parse_script(const char *script_file)
 		sys_addr_t sysmem  = sys_mem_allocate(max_size);
 		if(!sysmem) return;
 
-		char *buffer = (char*)sysmem, *pos, *dest = NULL; u16 l = 0;
-		u8 exec_mode = true, enable_db = true, do_else = true;
-		size_t buffer_size = read_file(script_file, buffer, max_size, 0); buffer[buffer_size] = 0;
-		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE);
+		char *buffer, *pos, *dest = NULL, label[24]; u16 l;
+		u8 exec_mode = true, enable_db = true, do_else = true; size_t buffer_size;
+		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE); *label = NULL;
 
+	reload_script:
+		buffer = (char*)sysmem; buffer_size = read_file(script_file, buffer, max_size, 0); buffer[buffer_size] = 0;
 		if(*buffer && !strchr(buffer, '\n')) strcat(buffer, "\n");
 
-		script_running = true;
+		l = 0, script_running = true;
+
+		if(*label) {pos = strcasestr(buffer, label); if(pos) buffer = pos; else *buffer = NULL; *label = NULL;}
 
 		while(*buffer)
 		{
@@ -82,7 +87,7 @@ static void parse_script(const char *script_file)
 			if(*buffer == '\0') break;
 
 			// process line
-			pos = strchr(line, '\n'); if(!pos) pos = (char*)line;
+			pos = strchr(line, '\n'); if(!pos) pos = line;
 
 			if(pos)
 			{
@@ -119,12 +124,13 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "list /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);} else
 					if(_islike(line, "cpbk /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}
 				}
-				else if(*line == '#' || *line == ';' || *line == '*') ; // remark
+				else if(*line == '#' || *line == ':' || *line == ';' || *line == '*') ; // remark
 				else if(_islike(line, "else") && do_else) {if(exec_mode) do_else = false; exec_mode ^= 1; line += 4; if(exec_mode && *line) goto parse_cmd;}
 				else if(_islike(line, "end")) {exec_mode = do_else = true;}
 				else if(exec_mode)
 				{
 					if(*line == '/')               {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
+					if(_islike(line, "goto "))     {snprintf(label, 24, ":%s", line + 5); goto reload_script;} else
 					if(_islike(line, "del /"))     {path += 4; char *wildcard = strchr(path, '*'); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
 					if(_islike(line, "md /"))      {path += 3; mkdir_tree(path);} else
 					if(_islike(line, "wait xmb"))  {wait_for_xmb();} else

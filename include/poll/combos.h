@@ -46,7 +46,7 @@
  REC VIDEO VAL: SELECT+R3+R2       Change value of video rec setting
  XMB SCRNSHOT : L2+R2+SELECT+START              *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_r2_select_start
 
- TOGGLE PLUGIN: R1+L1+TRIANGLE                  *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l1_r1_triangle
+ TOGGLE PLUGIN: L1+R1+TRIANGLE                  *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l1_r1_triangle
  USER/ADMIN   : L2+R2+TRIANGLE                  *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_l2_r2_triangle
 
  SYSCALLS     : R2+TRIANGLE                     *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_r2_triangle
@@ -141,7 +141,7 @@
 				}
 				if(((webman_config->combo & UNLOAD_WM) == from_reboot) &&
 						(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == 0) &&
-						(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_TRIANGLE))) //  R1+L1+TRIANGLE
+						(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_L1 | CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_TRIANGLE))) //  L1+R1+TRIANGLE
 				{
 					#ifdef WM_CUSTOM_COMBO
 					if(do_custom_combo("l1_r1_triangle")) continue;
