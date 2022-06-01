@@ -53,10 +53,14 @@
 				<P key="info"><>6.7 MB</></P>
 			</T>
 			<T key="app013" include="inc">
+				<P key="title"><>Artemis GUI [Cheats]</></P>
+				<P key="info"><>6.4 MB</></P>
+			</T>
+			<T key="app014" include="inc">
 				<P key="title"><>Ultimate Toolbox v2.03 FULL</></P>
 				<P key="info"><>482 MB</></P>
 			</T>
-			<T key="app014" include="inc">
+			<T key="app015" include="inc">
 				<P key="title"><>webMAN MOD Installer</></P>
 				<P key="info"><>13.5 MB</></P>
 			</T>
@@ -76,6 +80,7 @@
 			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/>
 		</I>
 	</V>
 
@@ -283,10 +288,27 @@
 		</I>
 	</V>
 
-	<!-- Apollo Save Tool -->
+	<!-- Artemis GUI [Cheats] -->
 	<V id="app013_item">
 		<A>
 			<T key="app013_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/ArtemisPS3-GUI.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/ArtemisPS3-GUI.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-ARTPS3001_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app013_link" attr="app013_link"/>
+		</I>
+	</V>
+
+	<!-- Ultimate Toolbox v2.03 FULL -->
+	<V id="app014_item">
+		<A>
+			<T key="app014_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_v2.03_FULL_version.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_v2.03_FULL_version.pkg</></P>
@@ -296,14 +318,14 @@
  			</T>
 		</A>
 		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app013_link" attr="app013_link"/>
+			<Item class="type:x-xmb/xmlnpsignup" key="app014_link" attr="app014_link"/>
 		</I>
 	</V>
 
 	<!-- webMAN MOD Installer -->
-	<V id="app014_item">
+	<V id="app015_item">
 		<A>
-			<T key="app014_link">
+			<T key="app015_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/webMAN_MOD_1.47.41_Installer.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.41/webMAN_MOD_1.47.41_Installer.pkg</></P>
@@ -313,7 +335,7 @@
  			</T>
 		</A>
 		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app014_link" attr="app014_link"/>
+			<Item class="type:x-xmb/xmlnpsignup" key="app015_link" attr="app015_link"/>
 		</I>
 	</V>
 </X>

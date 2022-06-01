@@ -696,6 +696,13 @@
 				<P key="bar_action"><>none</></P>
 				<P key="module_action"><>/xmb.ps3$close_all_list</></P>
 			</T>
+			<T key="webman_reset">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/restartps3.png</></P>
+				<P key="title"><>webMANMOD設定をリセットする</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+				<P key="module_action"><>/delete.ps3?wmreset?restart.ps3</></P>
+			</T>
 			<T key="webman_uninstall">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/sysfiles.png</></P>
 				<P key="title"><>webMAN MODをアンインストール</></P>
@@ -706,6 +713,7 @@
 		</A>
 		<I>
 			<I class="type:x-xmb/module-action" key="webman_cancel"    attr="webman_cancel"/>
+			<I class="type:x-xmb/module-action" key="webman_reset"     attr="webman_reset"/>
 			<I class="type:x-xmb/module-action" key="webman_uninstall" attr="webman_uninstall"/>
 		</I>
 	</V>
