@@ -764,7 +764,7 @@ static void art_thread(u64 arg)
 
 	int GameProcessID = 0, lastGameProcessID = 0;
 
-	sys_timer_sleep(10);
+	sys_ppu_thread_sleep(10);
 	sys_ppu_thread_yield();
 
 	CellPadData data;

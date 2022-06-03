@@ -36,6 +36,7 @@
 //#define USE_NTFS		// add NTFS support
 #define BACKUP_ACT_DAT	// backup/restore act.dat on HEN
 //#define PATCH_GAMEBOOT	// Patch gameboot to show custom animation per game type
+#define ARTEMIS_PRX
 
 //// EXTRA FEATURES ////
 //#define GET_KLICENSEE	// /klic.ps3
