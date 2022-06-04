@@ -39,6 +39,7 @@
 #define HDD0ROOT_DIR         "/dev_hdd0/"
 
 #define TMP_DIR              "/dev_hdd0/tmp"
+#define LSD_DIR              TMP_DIR "/lsd"
 #define LANG_DIR             TMP_DIR "/wm_lang"
 #define COMBO_DIR            TMP_DIR "/wm_combo"
 #define ICONS_DIR            TMP_DIR "/wm_icons"
@@ -680,6 +681,7 @@ int main()
 	file_copy(APP_USRDIR "/setup/setupz.dat", SETUP_DIR "/setupz.dat");
 
 	sysLv2FsRename(APP_USRDIR "/xmb/RELOADXMB", RELOADXMB_DIR);
+	sysLv2FsRename(APP_USRDIR "/lsd", LSD_DIR);
 
 	// fallback to manual copy
 	sysLv2FsMkdir(RELOADXMB_DIR, DMODE);
