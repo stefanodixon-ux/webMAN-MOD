@@ -1312,17 +1312,19 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 			unsigned int real_disctype, effective_disctype, iso_disctype;
 			cobra_get_disc_type(&real_disctype, &effective_disctype, &iso_disctype);
 
-#ifdef REMOVE_SYSCALLS
+			#ifdef REMOVE_SYSCALLS
 			if((iso_disctype == DISC_TYPE_NONE) && (real_disctype == DISC_TYPE_PS3_BD))
 			{
 				if(!syscalls_removed && webman_config->dsc) disable_cfw_syscalls(webman_config->keep_ccapi);
 			}
-#endif
+			#endif
 			if((effective_disctype == DISC_TYPE_PS2_DVD) || (effective_disctype == DISC_TYPE_PS2_CD)
 			|| (real_disctype      == DISC_TYPE_PS2_DVD) || (real_disctype      == DISC_TYPE_PS2_CD)
 			|| (iso_disctype       == DISC_TYPE_PS2_DVD) || (iso_disctype       == DISC_TYPE_PS2_CD))
 			{
 				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
+
+				fan_ps2_mode = ps2_classic_mounted = true;
 
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 				create_file(WM_NOSCAN_FILE);
