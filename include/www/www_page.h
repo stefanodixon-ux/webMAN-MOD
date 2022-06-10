@@ -100,7 +100,8 @@ continue_rendering:
 		#ifdef COPY_PS3
 		if(copy_in_progress)
 		{
-			sprintf(templn, "%s<a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)", "<div id=\"cps\"><font size=2>", "/copy.ps3", STR_COPYING, current_file, copied_count, STR_FILES);
+			get_copy_stats(templn + 100, "");
+			sprintf(templn, "%s<a href=\"%s$abort\">&#9746 %s</a> %s", "<div id=\"cps\"><font size=2>", "/copy.ps3", STR_COPYING, templn + 100);
 		}
 		else if(fix_in_progress)
 		{

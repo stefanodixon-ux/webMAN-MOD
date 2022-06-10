@@ -401,11 +401,13 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	else
 	if(copy_in_progress)
 	{
-		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/copy.ps3", STR_COPYING, current_file, copied_count + 1, STR_FILES);
+		get_copy_stats(templn + 100, "");
+		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s</font>", "/copy.ps3", STR_COPYING, templn + 100);
 	}
 	else if(fix_in_progress)
 	{
-		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s (%i %s)</font>", "/fixgame.ps3", STR_FIXING, current_file, fixed_count, STR_FILES);
+		sprintf(templn + 100, "%s (%i %s)", current_file, fixed_count, STR_FILES);
+		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s</font>", "/fixgame.ps3", STR_FIXING, templn + 100);
 	}
 	else
 #endif
@@ -651,7 +653,9 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	#ifdef COPY_PS3
 	if(copy_in_progress)
 	{
-		sprintf( templn, "<hr>%s %s (%i %s)", STR_COPYING, current_file, copied_count, STR_FILES); buffer += concat(buffer, templn);
+		buffer += concat(buffer, "<hr>");
+		get_copy_stats(templn, STR_COPYING);
+		buffer += concat(buffer, templn);
 	}
 	else
 	if(fix_in_progress)

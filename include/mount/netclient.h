@@ -1,3 +1,8 @@
+#ifdef NET_SUPPORT
+static int  g_socket = NONE;
+static u16 net_copy_in_progress = 0;
+#endif
+
 #ifdef NET3NET4
 	static const u8 netsrvs = 5;
 #else
@@ -221,7 +226,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 
 	s64 size = open_remote_file(ns, remote_file, &abort_connection);
 
-	u64 file_size = size;
+	u64 file_size = size; current_size = size;
 
 	if(file_size > 0)
 	{
@@ -328,6 +333,7 @@ static int connect_to_remote_server(u8 server_id)
 			if(ns >= 0) strcpy(webman_config->neth[0], webman_config->allow_ip);
 		}
 	}
+
 	return ns;
 }
 

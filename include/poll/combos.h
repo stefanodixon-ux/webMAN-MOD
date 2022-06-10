@@ -405,7 +405,7 @@
 									sprintf(msg, "%s %s", STR_FIXING, current_file);
 								else
 								#endif
-								sprintf(msg, "%s %s (%i %s)", STR_COPYING, current_file, copied_count, STR_FILES);
+									get_copy_stats(msg, STR_COPYING);
 
 								show_msg(msg);
 								sys_ppu_thread_sleep(2);

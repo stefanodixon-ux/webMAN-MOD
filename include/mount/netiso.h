@@ -1,7 +1,3 @@
-#ifdef NET_SUPPORT
-static int g_socket = NONE;
-#endif
-
 #ifdef USE_INTERNAL_NET_PLUGIN
 static int read_remote_file_critical(u64 offset, void *buf, u32 size)
 {
@@ -358,7 +354,6 @@ static void netiso_stop_thread(__attribute__((unused)) u64 arg)
 	if(g_socket >= 0)
 	{
 		sclose(&g_socket);
-		g_socket = NONE;
 	}
 
 	if(command_queue_net != SYS_EVENT_QUEUE_NONE)

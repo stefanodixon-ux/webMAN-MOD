@@ -6,7 +6,8 @@
 		cp_mode = islike(param, "/cut.ps3") ? CP_MODE_MOVE : CP_MODE_COPY;
 		snprintf(cp_path, STD_PATH_LEN, "%s", param + 8);
 		check_path_alias(cp_path);
-		if(not_exists(cp_path)) cp_mode = CP_MODE_NONE;
+		if(not_exists(cp_path) && !islike(cp_path, "/net"))
+			cp_mode = CP_MODE_NONE;
 
 		copy_path(param, cp_path);
 

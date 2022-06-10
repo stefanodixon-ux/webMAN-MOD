@@ -58,7 +58,17 @@
 			if(sort) *sort = NULL;
 		}
 
-		if(is_net) goto html_response;
+		if(is_net)
+		{
+			if(net_copy_in_progress)
+			{
+				get_copy_stats(param, STR_COPYING);
+				http_response(conn_s, header, "/net", CODE_SERVER_BUSY, param);
+				keep_alive = 0;
+				goto exit_handleclient_www;
+			}
+			goto html_response;
+		}
 
 		if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);}
 		else check_path_alias(param);

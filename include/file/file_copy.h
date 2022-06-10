@@ -57,6 +57,17 @@ static void filepath_check(char *file)
 	#endif
 }
 
+static void get_copy_stats(char *msg, const char *label)
+{
+	u64 cur_size = file_size(current_file);
+	if(cur_size && current_size > 0x40000000)
+		sprintf(msg, "%s %s\n(%'llu / %'llu %s, %i %s)", label, current_file, cur_size >> 30, current_size >> 30, STR_GIGABYTE, copied_count + 1, STR_FILES);
+	else if(cur_size && current_size)
+		sprintf(msg, "%s %s\n(%'llu / %'llu %s, %i %s)", label, current_file, cur_size >> 20, current_size >> 20, STR_MEGABYTE, copied_count + 1, STR_FILES);
+	else
+		sprintf(msg, "%s %s (%i %s)", label, current_file, copied_count + 1, STR_FILES);
+}
+
 int64_t file_copy(const char *file1, char *file2);
 int64_t file_copy(const char *file1, char *file2)
 {
@@ -92,13 +103,13 @@ int64_t file_copy(const char *file1, char *file2)
 		#ifdef COBRA_NON_LITE
 		if(islike(file1, "/net"))
 		{
-			++copy_in_progress;
+			++copy_in_progress, ++net_copy_in_progress;
 
 			int ns = connect_to_remote_server((file1[4] & 0x0F));
 			copy_net_file(file2, file1 + 5, ns);
 			if(ns >= 0) sclose(&ns);
 
-			--copy_in_progress; copied_count++;
+			--copy_in_progress, --net_copy_in_progress, copied_count++;
 
 			if(file_exists(file2)) return 0;
 		}
@@ -106,15 +117,17 @@ int64_t file_copy(const char *file1, char *file2)
 		return FAILED;
 	}
 
+	current_size = buf.st_size;
+
 	char *file1_666 = NULL;
 	bool check_666 = false;
 
 	show_progress(file1, OV_COPY);
 
 	#ifdef UNLOCK_SAVEDATA
-	if(webman_config->unlock_savedata && (buf.st_size < _4KB_))
+	if(webman_config->unlock_savedata && (current_size < _4KB_))
 	{
-		u16 size = (u16)buf.st_size;
+		u16 size = (u16)current_size;
 		unsigned char data[_4KB_]; *data = NULL;
 		if(unlock_param_sfo(file1, data, size))
 		{
@@ -146,7 +159,7 @@ int64_t file_copy(const char *file1, char *file2)
 			}
 		}
 
-		if(buf.st_size > get_free_space(drives[0])) return FAILED;
+		if(current_size > get_free_space(drives[0])) return FAILED;
 	}
 
 	if(allow_sc36 && islike(file1, "/dev_bdvd"))
@@ -163,10 +176,10 @@ int64_t file_copy(const char *file1, char *file2)
 	// skip if file already exists with same size
 	if(dont_copy_same_size)
 	{
-		if(file_ssize(file2) == (s64)buf.st_size)
+		if(file_ssize(file2) == (s64)current_size)
 		{
 			copied_count++;
-			return buf.st_size;
+			return current_size;
 		}
 	}
 
@@ -176,7 +189,7 @@ int64_t file_copy(const char *file1, char *file2)
 
 	if(g_free) {chunk_size = g_chunk_size, sysmem = g_sysmem, g_free = false;} else
 	{
-		chunk_size = is_ntfs1 || (buf.st_size <= _64KB_) ? _64KB_ : _128KB_;
+		chunk_size = is_ntfs1 || (current_size <= _64KB_) ? _64KB_ : _128KB_;
 		sysmem = sys_mem_allocate(chunk_size);
 		if(!sysmem) {chunk_size = _64KB_; sys_mem_allocate(chunk_size);}
 	}
@@ -187,7 +200,7 @@ int64_t file_copy(const char *file1, char *file2)
 merge_next:
 		if(is_ntfs1 || (cellFsOpen(file1, CELL_FS_O_RDONLY, &fd1, NULL, 0) == CELL_FS_SUCCEEDED))
 		{
-			u64 size = buf.st_size, part_size = buf.st_size; u8 part = 0;
+			u64 size = current_size, part_size = current_size; u8 part = 0;
 
 			if((part_size > 0xFFFFFFFFULL) && islike(file2, "/dev_usb"))
 			{
@@ -254,7 +267,8 @@ next_part:
 				{
 					sprintf(file1_666, ".666%02i", ++merge_part);
 
-					if(file_exists(file1))
+					current_size = file_size(file1);
+					if(current_size)
 					{
 						cellFsClose(fd1);
 						goto merge_next;
