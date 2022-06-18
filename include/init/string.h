@@ -120,12 +120,7 @@ static void replace_char(char *text, char c, char r)
 {
 	if(!text) return;
 
-	do
-	{
-		text = strchr(text, c);
-		if(text) *text = r;
-	}
-	while (text);
+	for( ; *text; text++) if(*text == c) *text = r;
 }
 
 static char *to_upper(char *text)

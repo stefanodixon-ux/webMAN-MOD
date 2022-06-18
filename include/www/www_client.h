@@ -406,7 +406,7 @@ parse_request:
 							buf.st_size = snprintf(header, HTML_RECV_SIZE, "%s", wm_url);
 					}
 
-					for(u16 n = 0; header[n]; n++) {if(header[n] == '\t') header[n] = ' ';}
+					replace_char(header, '\t', ' ');
 
 					#ifdef PHOTO_GUI
 					#define photo_path	header
@@ -459,7 +459,7 @@ parse_request:
 					if(*header == '/') {strcpy(param, header); buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", param);}
 
 					// make proper URL replacing spaces with +
-					for(size_t n = buf.st_size; n > 4; n--) if(header[n] == ' ') header[n] = '+';
+					replace_char(header + 4, ' ', '+');
 
 					// Retry for 30 seconds /play.ps3 command while IS_INGAME
 					if(islike(header + 4, "/play.ps3")) {if(IS_INGAME && (++retry < 30)) {sys_ppu_thread_sleep(1); served = 0; is_ps3_http = 1; continue;}}

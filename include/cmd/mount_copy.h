@@ -96,6 +96,10 @@
 			char *dev_name = strstr(dev_path, "&name="); if(dev_name) {*dev_name = 0, dev_name += 6;}
 			char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 3;} else fs = (char*)"CELL_FS_FAT";
 
+			get_flag(dev_path, "?emu=");
+			get_flag(dev_path, "?random=");
+			get_flag(dev_path, "?/sman.ps3");
+
 			if(islike(dev_path, "/dev_") && (not_exists(dev_path) || dev_name))
 			{
 				mount_device(dev_path, dev_name, fs);

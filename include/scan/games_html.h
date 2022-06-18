@@ -801,7 +801,7 @@ list_games:
 						{
 							if(!icon ||  strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore: cause syntax error in javascript: gamelist.js
 
-							for(size_t c = 0; templn[c]; c++) {if(templn[c] == '"' || templn[c] < ' ') templn[c] = ' ';} // replace invalid chars
+							for(char *c = templn; *c; c++) {if(*c == '"' || *c < ' ') *c = ' ';} // replace invalid chars
 
 							int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320; h = 176;} else if(strstr(icon, "icon_wm_")) {w = 320; h = 280;}
 

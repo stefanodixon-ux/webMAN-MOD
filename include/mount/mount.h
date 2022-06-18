@@ -825,7 +825,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			#endif // #ifdef PS2_DISC
 
 			// auto-focus Data Disc
-			if(mounted && (strstr(source, "DVDISO") || strstr(source, "BDISO"))) auto_play(param, false);
+			if(mounted && (strstr(source, "PSX") || strstr(source, "DVDISO") || strstr(source, "BDISO"))) auto_play(param, false);
 		}
 
 		// -------------

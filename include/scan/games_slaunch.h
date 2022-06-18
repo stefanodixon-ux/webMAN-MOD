@@ -89,10 +89,11 @@ static int find_slaunch_game(char *filename, u8 offset)
 	{
 		_slaunch slaunch; u64 read_e;
 		char *name = slaunch.name;
+		char filename2[MAX_PATH_LEN]; urlenc_ex(filename2, filename, false);
 		while(cellFsRead(fsl, &slaunch, sizeof(_slaunch), &read_e) == CELL_FS_SUCCEEDED && read_e > 0)
 		{
 			char *path = slaunch.name + slaunch.path_pos;
-			if((strcasestr(path, filename) == NULL) && (strcasestr(name, filename) == NULL)) continue;
+			if((strcasestr(path, filename2) == NULL) && (strcasestr(name, filename) == NULL)) continue;
 			ret = sprintf(filename, "%s", path + offset); break;
 		}
 		cellFsClose(fsl);

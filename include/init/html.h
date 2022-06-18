@@ -123,7 +123,7 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 {
 	if(!src || !dst) return false;
 
-	u16 i, j = 0, pos = 0;
+	u16 i, j = 0, pos = 0, max_len = gurl ? HTML_RECV_LAST : MAX_PATH_LEN;
 
 	if(islike(src, "http") && (src[4] == ':' || src[5] == ':') && (src[6] == '/') && src[7]) { for(i = 8; src[i]; i++) if(src[i] == '/') {pos = i; break;} }
 
@@ -133,7 +133,7 @@ static bool urlenc_ex(char *dst, const char *src, bool gurl)
 
 	for(i = 0; src[i]; i++, j++)
 	{
-		if(j >= HTML_RECV_LAST) {j = HTML_RECV_LAST; break;}
+		if(j >= max_len) {j = max_len; break;}
 
 		if((unsigned char)src[i] & 0x80)
 		{
