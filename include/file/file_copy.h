@@ -57,16 +57,19 @@ static void filepath_check(char *file)
 	#endif
 }
 
+#if defined(FIX_GAME) || defined(COPY_PS3)
 static void get_copy_stats(char *msg, const char *label)
 {
 	u64 cur_size = file_size(current_file);
-	if(cur_size && current_size > 0x40000000)
-		sprintf(msg, "%s %s\n(%'llu / %'llu %s, %i %s)", label, current_file, cur_size >> 30, current_size >> 30, STR_GIGABYTE, copied_count + 1, STR_FILES);
-	else if(cur_size && current_size)
+	//if(cur_size && current_size > 0x40000000)
+	//	sprintf(msg, "%s %s\n(%'llu / %'llu %s, %i %s)", label, current_file, cur_size >> 30, current_size >> 30, STR_GIGABYTE, copied_count + 1, STR_FILES);
+	//else
+	if(cur_size && current_size)
 		sprintf(msg, "%s %s\n(%'llu / %'llu %s, %i %s)", label, current_file, cur_size >> 20, current_size >> 20, STR_MEGABYTE, copied_count + 1, STR_FILES);
 	else
 		sprintf(msg, "%s %s (%i %s)", label, current_file, copied_count + 1, STR_FILES);
 }
+#endif
 
 int64_t file_copy(const char *file1, char *file2);
 int64_t file_copy(const char *file1, char *file2)

@@ -60,6 +60,7 @@
 
 		if(is_net)
 		{
+			#ifdef NET_SUPPORT
 			if(net_copy_in_progress)
 			{
 				get_copy_stats(param, STR_COPYING);
@@ -67,6 +68,7 @@
 				keep_alive = 0;
 				goto exit_handleclient_www;
 			}
+			#endif
 			goto html_response;
 		}
 

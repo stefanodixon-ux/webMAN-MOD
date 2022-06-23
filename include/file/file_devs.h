@@ -79,7 +79,7 @@ static u64 get_free_space(const char *dev_name)
 	if(!islike(dev_name, "/dev_")) return 0;
 
 	{system_call_3(SC_FS_DISK_FREE, (u64)(u32)(dev_name), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
-	if((freeSize>>30) > KB) freeSize = 0;
+	if((freeSize>>30) > _2MB_) freeSize = 0;
 	return freeSize;
 /*
 	u32 blockSize;

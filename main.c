@@ -286,9 +286,9 @@ static bool is_mounting = false;
 static bool copy_aborted = false;
 static u8 automount = 0;
 static u8 ftp_state = 0; //  1 = sending, 2 = receiving
+static u64  current_size = 0;
 
 #ifdef COPY_PS3
-static u64  current_size = 0;
 static char current_file[STD_PATH_LEN + 1];
 static char cp_path[STD_PATH_LEN + 1];  // cut/copy/paste buffer
 static u8 cp_mode = CP_MODE_NONE;       // 0 = none / 1 = copy / 2 = cut/move

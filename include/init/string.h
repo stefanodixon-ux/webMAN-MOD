@@ -123,6 +123,13 @@ static void replace_char(char *text, char c, char r)
 	for( ; *text; text++) if(*text == c) *text = r;
 }
 
+static void replace_invalid_chars(char *text)
+{
+	if(!text) return;
+
+	for(unsigned char *c = (unsigned char*)text; *c; c++) if((*c < ' ') || (*c == '"')) *c = ' ';
+}
+
 static char *to_upper(char *text)
 {
 	char *upper = text;

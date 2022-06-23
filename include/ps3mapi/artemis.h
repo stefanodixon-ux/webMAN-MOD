@@ -242,7 +242,7 @@ static bool isCodeLineValid(char *line)
 	//Check hex
 	for (int i = 0; i < lineLen; i++)
 	{
-		char c = LCASE(line[i]);
+		char c = line[i];
 
 		if(!ISVALID_CHAR(c))
 		{

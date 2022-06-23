@@ -5,7 +5,7 @@
 #define BETWEEN(a, b, c)	( ((a) <= (b)) && ((b) <= (c)) )
 #define ISDIGIT(a)			( ('0' <= (a)) && ((a) <= '9') )
 #define ISSPACE(a)			( ( 0  <= (a)) && ((a) <= ' ') )
-#define ISHEX(a)			(ISDIGIT(a) || BETWEEN('a', (unsigned char)(a), 'f'))
+#define ISHEX(a)			(ISDIGIT(a) || BETWEEN('a', LCASE(a), 'f'))
 #define	INT32(a)			(*((u32*)(a)))
 
 static char h2a(const char hex) // hex byte to ascii char
@@ -53,11 +53,10 @@ static u64 convertH(const char *val) // convert hex string to unsigned integer 6
 #ifndef LITE_EDITION
 static bool isHEX(const char *value)
 {
-	char c;
 	if(islike(value, "0x")) value += 2;
 	for(; *value; ++value)
 	{
-		c = LCASE(*value);
+		char c = *value;
 		if(!(ISHEX(c) || (c == ' ') || (c == '*'))) return false;
 	}
 	return true;
