@@ -107,10 +107,25 @@ static void poll_start_play_time(void)
 		{
 			if(*_game_TitleID)
 			{
-				char codelist[40];
-				snprintf(codelist, sizeof(codelist), "%s/%s/%s", TMP_DIR, "artemis", _game_TitleID);
+				char codelist[48], app_ver[12], *sfo, *version, *ext;
+				sfo = codelist, ext = app_ver, *app_ver = '_', version = app_ver + 1, *version = NULL;
+
+				strcpy(sfo, "/dev_bdvd/PS3_GAME/PARAM.SFO");
+				if(file_exists(sfo))
+					getTitleID(sfo, version, GET_VERSION);
+				get_local_app_ver(version, _game_TitleID, sfo); *sfo = NULL;
+
+				if(*version)
+				{
+					strcat(version, ".ncl");
+					snprintf(codelist, sizeof(codelist), "%s/%s/%s%s", TMP_DIR, "artemis", _game_TitleID, app_ver);
+				}
+
+				strcpy(ext, ".ncl");
 				if(not_exists(codelist))
-					snprintf(codelist, sizeof(codelist), "%s%s/%s", HDD0_GAME_DIR, _game_TitleID, "artemis");
+					snprintf(codelist, sizeof(codelist), "%s/%s/%s%s", TMP_DIR, "artemis", _game_TitleID, ext);
+				if(not_exists(codelist))
+					snprintf(codelist, sizeof(codelist), "%s%s/%s%s", HDD0_GAME_DIR, _game_TitleID, "artemis", ext);
 
 				init_codelist(codelist); // copy codelist for PSN or hdd0/tmp/artemis
 			}

@@ -327,7 +327,7 @@ static void set_param_sfo(char *path)
 	if(not_exists(path)) strcpy(path, "/app_home/PARAM.SFO");
 }
 
-static void get_local_app_ver(char *app_ver, char *title_id, char *param_sfo)
+static void get_local_app_ver(char *app_ver, const char *title_id, char *param_sfo)
 {
 	if(*title_id)
 	{
