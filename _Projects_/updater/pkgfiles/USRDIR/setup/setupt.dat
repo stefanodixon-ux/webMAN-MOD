@@ -1,5 +1,5 @@
 <script>
 var css='a:active,a:active:hover,a:visited:hover,a:link:hover{color:#FFF;}tr:hover{background-color:#333}img{position:fixed;top:125px;right:20px;z-index:-1}';
 var style = document.createElement("style");style.textContent=css;document.head.appendChild(style);
-var td=document.getElementsByTagName("td");for(i=1;i<td.length;i+=2){var a='<a onclick=\'var v=prompt("'+td[i-1].innerText+'","'+(td[i].innerText)+'");if(v)window.location="?'+td[i-1].innerText+'="+v;\'>';td[i-1].innerHTML=a+td[i-1].innerText+'</a>';td[i].innerHTML=a+td[i].innerText+'</a>'}
+var td=document.getElementsByTagName("td");for(i=1;i<td.length;i+=2){var a='<a onclick=\'var v=prompt("'+td[i-1].innerText+'","'+(td[i].innerText.replace(new RegExp("'", 'g'),"\\47"))+'");if(v)window.location="?'+td[i-1].innerText+'="+v;\'>';td[i-1].innerHTML=a+td[i-1].innerText+'</a>';td[i].innerHTML=a+td[i].innerText+'</a>'}
 </script>
