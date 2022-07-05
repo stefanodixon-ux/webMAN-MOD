@@ -63,7 +63,7 @@ void Overlay::DrawOverlay()
 
    if (g_Config.overlay.showCpuInfo)
    {
-       std::wstring tempTypeStr = tempType == TempType::Fahrenheit ? L"\u2109" : L"\u2103";
+       std::wstring tempTypeStr = m_TempType == TempType::Fahrenheit ? L"\u2109" : L"\u2103";
        overlayText += L"CPU: " + to_wstring(m_CPUTemp) + tempTypeStr;
 
        if (m_CpuClock != 0 && g_Config.overlay.showClockSpeeds)
@@ -75,7 +75,7 @@ void Overlay::DrawOverlay()
 
    if (g_Config.overlay.showGpuInfo)
    {
-       std::wstring tempTypeStr = tempType == TempType::Fahrenheit ? L"\u2109" : L"\u2103";
+       std::wstring tempTypeStr = m_TempType == TempType::Fahrenheit ? L"\u2109" : L"\u2103";
 
        if (g_Config.overlay.showCpuInfo && !g_Config.overlay.showClockSpeeds)
            overlayText += L" / ";
@@ -123,8 +123,10 @@ void Overlay::DrawOverlay()
            L"" : 
            to_wstring(m_PayloadVersion >> 8) 
            + L"."
-           + to_wstring((m_PayloadVersion & 0xF0) >> 4)
-           + to_wstring(m_PayloadVersion & 0xF);
+           + to_wstring((m_PayloadVersion & 0xF0) >> 4);
+
+       if (IsConsoleHen())
+           payloadVerStr += L"." + to_wstring(m_PayloadVersion & 0xF);
 
        overlayText += to_wstring(m_FirmwareVersion, 2) 
            + L" " + kernelName 
@@ -145,6 +147,45 @@ void Overlay::DrawOverlay()
        wchar_t appName[100]{};
        vsh::swprintf(appName, sizeof(appName), L"%s %c %s\n", gameTitleName, isTitleIdEmpty ? ' ' : '/', gameTitleId);
        overlayText += appName;
+   }
+
+   if (g_Config.overlay.showSystemTime)
+   {
+       std::wstring timeStr(&m_FormattedSystemTime[0], &m_FormattedSystemTime[80]);
+
+       overlayText += L"Time: " + timeStr + L"\n";
+   }
+
+   if (g_Config.overlay.showPlayTime)
+   {
+       uint64_t msec = 0;
+       if (gamePlugin) // check if we are in game
+           if (!msec)
+               msec = GetCurrentTick();
+           else
+               msec = 0;
+
+       if (msec)
+       {
+           uint32_t sec = ((msec + 500) / 1000); // milliseconds to seconds
+
+           uint32_t totalSeconds = sec;
+           //uint32_t days = totalSeconds / 86400;
+           totalSeconds = totalSeconds % 86400;
+
+           uint32_t hours = totalSeconds / 3600;
+           totalSeconds = totalSeconds % 3600;
+
+           uint32_t minutes = totalSeconds / 60;
+           totalSeconds = totalSeconds % 60;
+
+           uint32_t seconds = totalSeconds;
+
+           wchar_t playTimeStr[60]{};
+           vsh::swprintf(playTimeStr, sizeof(playTimeStr), L"Play Time: %02d:%02d:%02d\n", hours, minutes, seconds);
+
+           overlayText += playTimeStr;
+       }
    }
 
 
@@ -351,6 +392,13 @@ void Overlay::WaitAndQueueTextInLV2()
     }
 }
 
+void Overlay::FormatSystemTime()
+{
+    std::time_t now = vsh::time(0);
+    std::tm tstruct = *vsh::localtime(&now);
+    vsh::strftime(m_FormattedSystemTime, sizeof(m_FormattedSystemTime), "%m/%d %I:%M %p", &tstruct);
+}
+
 void Overlay::UpdateInfoThread(uint64_t arg)
 {
    g_Overlay.m_StateRunning = true;
@@ -382,37 +430,37 @@ void Overlay::UpdateInfoThread(uint64_t arg)
           {
               g_Overlay.m_CPUTemp = GetTemperatureFahrenheit(0);
               g_Overlay.m_GPUTemp = GetTemperatureFahrenheit(1);
-              g_Overlay.tempType = TempType::Fahrenheit;
+              g_Overlay.m_TempType = TempType::Fahrenheit;
           }
           else
           {
               g_Overlay.m_CPUTemp = GetTemperatureCelsius(0);
               g_Overlay.m_GPUTemp = GetTemperatureCelsius(1);
-              g_Overlay.tempType = TempType::Celsius;
+              g_Overlay.m_TempType = TempType::Celsius;
           }
           break;
       case Config::TemperatureType::CELSIUS:
           g_Overlay.m_CPUTemp = GetTemperatureCelsius(0);
           g_Overlay.m_GPUTemp = GetTemperatureCelsius(1);
-          g_Overlay.tempType = TempType::Celsius;
+          g_Overlay.m_TempType = TempType::Celsius;
           break;
       case Config::TemperatureType::FAHRENHEIT:
           g_Overlay.m_CPUTemp = GetTemperatureFahrenheit(0);
           g_Overlay.m_GPUTemp = GetTemperatureFahrenheit(1);
-          g_Overlay.tempType = TempType::Fahrenheit;
+          g_Overlay.m_TempType = TempType::Fahrenheit;
           break;
       default:
           if (g_Overlay.m_CycleTemperatureType)
           {
               g_Overlay.m_CPUTemp = GetTemperatureFahrenheit(0);
               g_Overlay.m_GPUTemp = GetTemperatureFahrenheit(1);
-              g_Overlay.tempType = TempType::Fahrenheit;
+              g_Overlay.m_TempType = TempType::Fahrenheit;
           }
           else
           {
               g_Overlay.m_CPUTemp = GetTemperatureCelsius(0);
               g_Overlay.m_GPUTemp = GetTemperatureCelsius(1);
-              g_Overlay.tempType = TempType::Celsius;
+              g_Overlay.m_TempType = TempType::Celsius;
           }
           break;
       }
@@ -437,6 +485,9 @@ void Overlay::UpdateInfoThread(uint64_t arg)
       g_Overlay.m_GpuGddr3RamClock = g_Overlay.GetGpuGddr3RamClockSpeed();
 
       g_Overlay.WaitAndQueueTextInLV2();
+
+      // this makes startup values delayed
+      //g_Overlay.FormatSystemTime();
    }
 
    sys_ppu_thread_exit(0);

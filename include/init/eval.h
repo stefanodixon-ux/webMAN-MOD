@@ -204,9 +204,13 @@ static u8 get_flag(const char *param, const char *label)
 }
 
 #ifndef LITE_EDITION
+static void check_path_tags(char *param);
+
 static u8 parse_tags(char *text)
 {
 	if(!text) return 0;
+
+	check_path_tags(text);
 
 	u8 op = 0;
 	char *pos = strstr(text, "@info");

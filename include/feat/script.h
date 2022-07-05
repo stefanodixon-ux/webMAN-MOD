@@ -112,17 +112,17 @@ static void parse_script(const char *script_file)
 					char *wildcard = strchr(line, '*');
 	#ifdef COBRA_ONLY
 					if(_islike(line, "map /"))  {line += 4;}
-					if(*line == '/') {if(IS_WEB_COMMAND(line)) handle_file_request(line); else if(IS(path, "/app_home")) set_app_home(path); else sys_map_path(path, dest);} else
+					if(*line == '/') {check_path_tags(path); if(IS_WEB_COMMAND(line)) handle_file_request(line); else if(IS(path, "/app_home")) set_app_home(path); else sys_map_path(path, dest);} else
 	#else
-					if(*line == '/') {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
+					if(*line == '/') {check_path_tags(path); if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
 	#endif
-					if(_islike(line, "ren /"))  {path += 4; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_RENAME, dest);} else rename_file(path, dest);} else
-					if(_islike(line, "copy /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_COPY, dest);}  else if(isDir(path)) folder_copy(path, dest); else file_copy(path, dest);} else
-					if(_islike(line, "fcopy /")){path += 6; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_FCOPY, dest);} else if(isDir(path)) force_folder_copy(path, dest); else force_copy(path, dest);} else
-					if(_islike(line, "swap /")) {path += 5; strcpy(cp_path, path); char *slash = get_filename(cp_path); sprintf(slash, "/~swap"); rename_file(path, cp_path); rename_file(dest, path); rename_file(cp_path, dest);} else
-					if(_islike(line, "move /")) {path += 5; if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_MOVE, dest);} else rename_file(path, dest);} else
-					if(_islike(line, "list /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);} else
-					if(_islike(line, "cpbk /")) {path += 5; if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}
+					if(_islike(line, "ren /"))  {path += 4; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_RENAME, dest);} else rename_file(path, dest);} else
+					if(_islike(line, "copy /")) {path += 5; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_COPY, dest);}  else if(isDir(path)) folder_copy(path, dest); else file_copy(path, dest);} else
+					if(_islike(line, "fcopy /")){path += 6; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_FCOPY, dest);} else if(isDir(path)) force_folder_copy(path, dest); else force_copy(path, dest);} else
+					if(_islike(line, "swap /")) {path += 5; check_path_tags(path); strcpy(cp_path, path); char *slash = get_filename(cp_path); sprintf(slash, "/~swap"); rename_file(path, cp_path); rename_file(dest, path); rename_file(cp_path, dest);} else
+					if(_islike(line, "move /")) {path += 5; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;  scan(path, true, wildcard, SCAN_MOVE, dest);} else rename_file(path, dest);} else
+					if(_islike(line, "list /")) {path += 5; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_LIST, dest);} else
+					if(_islike(line, "cpbk /")) {path += 5; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}
 				}
 				else if(*line == '#' || *line == ':' || *line == ';' || *line == '*') ; // remark
 				else if(_islike(line, "else") && do_else) {if(exec_mode) do_else = false; exec_mode ^= 1; line += 4; if(exec_mode && *line) goto parse_cmd;}
@@ -131,12 +131,12 @@ static void parse_script(const char *script_file)
 				{
 					if(*line == '/')               {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
 					if(_islike(line, "goto "))     {snprintf(label, 24, ":%s", line + 5); goto reload_script;} else
-					if(_islike(line, "del /"))     {path += 4; char *wildcard = strchr(path, '*'); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
-					if(_islike(line, "md /"))      {path += 3; mkdir_tree(path);} else
+					if(_islike(line, "del /"))     {path += 4; check_path_tags(path); char *wildcard = strchr(path, '*'); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
+					if(_islike(line, "md /"))      {path += 3; check_path_tags(path); mkdir_tree(path);} else
 					if(_islike(line, "wait xmb"))  {wait_for_xmb();} else
-					if(_islike(line, "wait /"))    {path += 5; wait_for(path, 5);} else
+					if(_islike(line, "wait /"))    {path += 5; check_path_tags(path); wait_for(path, 5);} else
 					if(_islike(line, "wait "))     {line += 5; sys_ppu_thread_sleep((u8)val(line));} else
-					if(_islike(line, "lwait /"))   {path += 6; wait_for(path, 10);} else
+					if(_islike(line, "lwait /"))   {path += 6; check_path_tags(path); wait_for(path, 10);} else
 					#ifdef PS3MAPI
 					if(_islike(line, "beep"))      {play_sound_id((u8)(line[4]));} else
 					#else
@@ -144,7 +144,7 @@ static void parse_script(const char *script_file)
 					#endif
 					if(_islike(line, "popup "))    {line += 6; parse_tags(line); show_msg(line);} else
 					if(_islike(line, "log "))      {line += 4; parse_tags(line); save_file(log_file, line, APPEND_TEXT);} else
-					if(_islike(line, "logfile /")) {path += 8; strcpy(log_file, path);} else
+					if(_islike(line, "logfile /")) {path += 8; check_path_tags(path); strcpy(log_file, path);} else
 	#ifdef UNLOCK_SAVEDATA
 					if(_islike(line, "unlock /"))  {path += 7; scan(path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);} else
 	#endif
@@ -163,8 +163,8 @@ static void parse_script(const char *script_file)
 
 						bool ret = false; u8 ifmode = (_islike(line, "if ")) ? 3 : ABORT_IF; line += ifmode; do_else = true;
 
-						if(_islike(line, "exist /"))     {path +=  6; ret = file_exists(path);} else
-						if(_islike(line, "not exist /")) {path += 10; ret = not_exists(path);} else
+						if(_islike(line, "exist /"))     {path +=  6; check_path_tags(path); ret = file_exists(path);} else
+						if(_islike(line, "not exist /")) {path += 10; check_path_tags(path); ret = not_exists(path);} else
 						if(_islike(line, "noCobra")) {ret = !cobra_version;} else
 						#if defined(PS3MAPI) || defined(DEBUG_MEM)
 						if(_islike(line, "titleid ")){path += 8; get_game_info(); ret = (strlen(_game_TitleID) >= strlen(path)) ? bcompare(_game_TitleID, path, strlen(path), path) : 0;} else
