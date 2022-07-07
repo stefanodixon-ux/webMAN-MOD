@@ -114,13 +114,13 @@ static void apply_remaps(void)
 	disable_map_path(false);
 
  #ifdef WM_PROXY_SPRX
-	sys_map_path2(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_RES_PATH "/wm_proxy.sprx") ? WM_RES_PATH "/wm_proxy.sprx" : NULL);
+	sys_map_path2(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_PROXY) ? WM_PROXY : NULL);
  #endif
 
 	//if(payload_ps3hen)
 	{
-		sys_map_path(FB_XML, (char *)FB_HEN_XML);
-	//	sys_map_path(HEN_HFW_SETTINGS, (char *)"/dev_hdd0/hen/xml/hfw_settings.xml");
+		sys_map_path(FB_XML, FB_HEN_XML);
+	//	sys_map_path(HEN_HFW_SETTINGS, "/dev_hdd0/hen/xml/hfw_settings.xml");
 	}
 
 	map_patched_modules();
@@ -786,7 +786,7 @@ scan_roms:
 	char localhost[2]; sprintf(localhost, "0"); //sprintf(localhost, "http://%s", local_ip); // "0" = localhost
 	const char *proxy_include = (char*)WEB_LINK_INC;
 	#ifdef WM_PROXY_SPRX
-	if((cobra_version > 0) && file_exists(WM_RES_PATH "/wm_proxy.sprx") && !(webman_config->wm_proxy)) {proxy_include = (char*)XAI_LINK_INC, *localhost = NULL;}
+	if((cobra_version > 0) && file_exists(WM_PROXY) && !(webman_config->wm_proxy)) {proxy_include = (char*)XAI_LINK_INC, *localhost = NULL;}
 	#endif
 
 	if( !scanning_roms && XMB_GROUPS )

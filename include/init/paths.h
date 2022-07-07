@@ -11,16 +11,16 @@
 #define IMAGEFONT_PATH		"/dev_flash/vsh/resource/imagefont.bin"
 
 #define ORG_LIBFS_PATH		"/dev_flash/sys/external/libfs.sprx"
-#define NEW_LIBFS_PATH		"/dev_hdd0/tmp/wm_res/libfs.sprx"
+#define NEW_LIBFS_PATH		"/./dev_hdd0/tmp/wm_res/libfs.sprx"
 
 #define ORG_GAME_EXT_PATH	"/dev_flash/vsh/module/game_ext_plugin.sprx"
-#define NEW_GAME_EXT_PATH	"/dev_hdd0/tmp/gameboot/game_ext_plugin.sprx"
+#define NEW_GAME_EXT_PATH	"/./dev_hdd0/tmp/gameboot/game_ext_plugin.sprx"
 
 #define ORG_LIBAUDIO_PATH	"/dev_flash/sys/external/libaudio.sprx"
-#define NEW_LIBAUDIO_PATH	"/dev_hdd0/tmp/libaudio.sprx"
+#define NEW_LIBAUDIO_PATH	"/./dev_hdd0/tmp/libaudio.sprx"
 
 #define NPSIGNIN_PLUGIN_RCO		"/dev_flash/vsh/resource/npsignin_plugin.rco"
-#define NPSIGNIN_PLUGIN_OFF		"/dev_hdd0/tmp/wm_res/npsignin_plugin.rco"
+#define NPSIGNIN_PLUGIN_OFF		"/./dev_hdd0/tmp/wm_res/npsignin_plugin.rco"
 
 #define XMB_DISC_ICON		"/dev_hdd0/tmp/game/ICON0.PNG"
 #define CATEGORY_GAME_XML	"/dev_flash/vsh/resource/explore/xmb/category_game.xml"
@@ -67,6 +67,8 @@
 #define ARTEMIS_CODES_R2	ARTEMIS_CODES "_r2.txt"
 #define ARTEMIS_CODES_LOG	ARTEMIS_CODES ".log"
 
+#define WM_PROXY			"/." WM_RES_PATH "/wm_proxy.sprx"
+
 #define WM_ONLINE_IDS_FILE	WM_RES_PATH "/wm_online_ids.txt"	// webMAN config file to skip disable network setting on these title ids
 #define WM_OFFLINE_IDS_FILE	WM_RES_PATH "/wm_offline_ids.txt"	// webMAN config file to disable network setting on specific title ids (overrides wm_online_ids.txt)
 
@@ -97,7 +99,7 @@
 #define RELOADXMB_ISO		WM_RES_PATH "/RELOAD_XMB.ISO"
 
 #define VSH_RESOURCE_DIR	"/dev_flash/vsh/resource/"
-#define SYSMAP_EMPTY_DIR	VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
+#define SYSMAP_EMPTY_DIR	"/." VSH_RESOURCE_DIR "AAA"		//redirect firmware update to empty folder (formerly redirected to "/dev_bdvd")
 
 #define PS2_CLASSIC_TOGGLER		"/dev_hdd0/classic_ps2"
 
@@ -121,7 +123,7 @@
 
 #define _FB_XML					HTML_BASE_PATH "//fb.xml"
 #define FB_XML					HTML_BASE_PATH "/fb.xml"
-#define FB_HEN_XML				HTML_BASE_PATH "/fb-hen.xml"
+#define FB_HEN_XML				"/." HTML_BASE_PATH "/fb-hen.xml"
 
 #ifdef COBRA_ONLY
 #define MY_GAMES_XML			HTML_BASE_PATH "/mygames.xml"
