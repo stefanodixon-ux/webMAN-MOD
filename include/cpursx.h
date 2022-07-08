@@ -629,7 +629,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		sprintf(templn, "<hr><h2>"
 						"<input type=button onclick=\"$$('ht').style.display='block';\" value='&#x25BC;'> "
 						"<a class=\"s\" href=\"/setup.ps3\">"
-						"%s<br>" // fw_info
+						"%s %s<br>" // fw_info
 						"%s<br>"
 						"<span id='ht' style='display:none;'>"
 		#ifdef SPOOF_CONSOLEID
@@ -639,7 +639,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		#endif
 						"%s - %s %s"
 						"</span></h2></a></b>",
-						fw_info,
+						IS_NAND ? "NAND" : "NOR", fw_info,
 						(syscalls_removed) ? STR_CFWSYSALRD : "",
 		#ifdef SPOOF_CONSOLEID
 						psid,

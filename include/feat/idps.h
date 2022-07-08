@@ -1,6 +1,6 @@
 #if defined(SPOOF_CONSOLEID) || defined(PS3MAPI)
-u64 IDPS[2] = {0, 0};
-u64 PSID[2] = {0, 0};
+static u64 IDPS[2] = {0, 0};
+static u64 PSID[2] = {0, 0};
 #endif
 
 #ifdef SPOOF_CONSOLEID
@@ -17,11 +17,12 @@ u64 PSID[2] = {0, 0};
 #define FLASH_DEVICE_NOR				0x0100000000000004ULL
 #define FLASH_FLAGS						0x22ULL
 
-u64 idps_offset1 = 0;
-u64 idps_offset2 = 0;
-u64 psid_offset  = 0;
+static u8  IS_NAND = 0;
+static u64 idps_offset1 = 0;
+static u64 idps_offset2 = 0;
+static u64 psid_offset  = 0;
 
-u64 eid0_idps[2] = {0, 0};
+static u64 eid0_idps[2] = {0, 0};
 
 /*
 static s32 sys_ss_appliance_info_manager(u32 packet_id, u64 arg)
@@ -133,12 +134,13 @@ static void get_eid0_idps(void)
 	if(eid0_idps[0]) return;
 
 	u64 buffer[0x40], start_sector = 0x178; // NOR
-	u32 read;
-	sys_device_handle_t dev_id;
+	u32 read; IS_NAND = 0;
+	sys_device_handle_t dev_id; 
 	if(sys_storage_open(FLASH_DEVICE_NOR, 0, &dev_id, 0) != CELL_OK)
 	{
 		sys_storage_open(FLASH_DEVICE_NAND, 0, &dev_id, 0);
 		start_sector = 0x204; // NAND
+		IS_NAND = 1;
 	}
 	sys_storage_read(dev_id, 0, start_sector, 1, buffer, &read, FLASH_FLAGS);
 	sys_storage_close(dev_id);

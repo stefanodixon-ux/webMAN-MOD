@@ -1273,14 +1273,16 @@ static bool mount_ps_disc_image(char *_path, char *cobra_iso_list[], u8 iso_part
 static void mount_on_insert_usb(bool on_xmb, char *msg)
 {
 	// Auto-mount x:\AUTOMOUNT.ISO or JB game found on root of USB devices (dev_usb00x, dev_sd, dev_ms, dev_cf)
-	if(is_mounting || ps2_classic_mounted) ;
+	if(is_mounting) return;
 
-	else if(on_xmb)
+	if(on_xmb)
 	{
 		if(webman_config->poll) ;
 
 		else if(!isDir("/dev_bdvd"))
 		{
+			if(fan_ps2_mode && !ps2_classic_mounted) enable_fan_control(PS2_MODE_OFF); 
+
 			if(webman_config->autob)
 				for(u8 f0 = 1; f0 < 16; f0++)
 				{
@@ -1304,7 +1306,7 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 				}
 			else
 			{
-				automount = 0; if(fan_ps2_mode) enable_fan_control(PS2_MODE_OFF);
+				automount = 0;
 			}
 		}
 		else if((automount == 0) && IS_ON_XMB)
@@ -1324,7 +1326,7 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 			{
 				if(webman_config->fanc) restore_fan(SET_PS2_MODE); //set_fan_speed( ((webman_config->ps2temp*255)/100), 0);
 
-				fan_ps2_mode = ps2_classic_mounted = true;
+				fan_ps2_mode = true;
 
 				// create "wm_noscan" to avoid re-scan of XML returning to XMB from PS2
 				create_file(WM_NOSCAN_FILE);

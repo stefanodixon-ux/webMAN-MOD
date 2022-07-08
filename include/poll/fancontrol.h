@@ -129,7 +129,7 @@ static u8 original_fanc = ENABLED;
 
 static void enable_fan_control(u8 enable)
 {
-	if(enable == PS2_MODE_OFF)	fan_ps2_mode = false; else
+	if(enable == PS2_MODE_OFF)	ps2_classic_mounted = fan_ps2_mode = false; else
 	if(enable == ENABLE_SC8)	webman_config->fanc = original_fanc;	else
 	if(enable == ENABLE_AUTO2)	webman_config->fanc = FAN_AUTO2;		else // 2 = AUTO2
 	if(enable <= ENABLED)		webman_config->fanc = enable;			else // 1 = ENABLED / 0 = SYSCON
