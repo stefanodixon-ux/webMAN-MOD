@@ -63,6 +63,9 @@ https://github.com/klahjn/macOSPS3NetServerGUI
 Java / Android:
 https://github.com/jhonathanc/ps3netsrv-android
 
+OpenWrt [arm cortex, mips_24kc & mipsel_24kc](https://github.com/jhonathanc/ps3netsrv-openwrt/actions/runs/2630399613):
+https://github.com/jhonathanc/ps3netsrv-openwrt
+
 Google Go:
 https://github.com/xakep666/ps3netsrv-go
 
