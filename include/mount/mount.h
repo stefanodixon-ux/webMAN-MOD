@@ -911,8 +911,9 @@ static void unlock_psp_launchers(void)
 	sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID, NULL);
 }
 
-void unmap_app_home(void);
-void unmap_app_home(void)
+static u8 gm = 01;
+
+static void unmap_app_home(void)
 {
 	// force remove "/app_home", "/app_home/PS3_GAME", "/app_home/USRDIR"
 	for(u8 retry = 0; retry < 3; retry++)
@@ -920,6 +921,40 @@ void unmap_app_home(void)
 		sys_map_path("/app_home", NULL);
 		sys_map_path(APP_HOME_DIR, NULL);
 		sys_map_path("/app_home/USRDIR", NULL);
+	}
+}
+
+void map_app_home(const char *path)
+{
+	unmap_app_home();
+
+	sys_map_path("/app_home", path);
+
+	char *mpath = (char *)malloc(strlen(path) + 18);
+	if(mpath)
+	{
+		sprintf(mpath, "%s/PS3_GM%02i", path, gm);
+		if(not_exists(mpath))
+		{
+			gm = 01; sprintf(mpath, "%s/PS3_GM%02i", path, gm);
+		}
+
+		if(file_exists(mpath))
+		{
+			sys_map_path("/app_home/PS3_GAME", mpath); gm++;
+			strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
+		}
+		else
+		{
+			sprintf(mpath, "%s/PS3_GAME", path);
+			if(file_exists(mpath))
+			{
+				sys_map_path("/app_home/PS3_GAME", mpath);
+				strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
+			}
+		}
+
+		free(mpath);
 	}
 }
 
@@ -1707,6 +1742,9 @@ exit_mount:
 mounting_done:
 
 #ifdef COBRA_ONLY
+
+	if((mount_unk == EMU_PS3) && (mount_app_home | !(webman_config->app_home)) && _path0 && strcasestr(_path0, ".iso"))
+		map_app_home("/dev_bdvd");
 
 	// ------------------------------------------------------------------
 	// copy .ncl to /dev_hdd0/tmp/art.txt

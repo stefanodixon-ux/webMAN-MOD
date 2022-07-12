@@ -118,15 +118,13 @@ int save_file(const char *file, const char *mem, s64 size);
 int file_copy(const char *file1, char *file2);
 int wait_for(const char *path, u8 timeout);
 
-void unmap_app_home(void);
+#define not_exists(path)	(!file_exists(path))
 
 static u8 file_exists(const char *path)
 {
 	CellFsStat stat;
 	return (cellFsStat(path, &stat) == CELL_FS_SUCCEEDED);
 }
-
-#define not_exists(path)	(!file_exists(path))
 
 /*
 #define N_TITLE_IDS	102
@@ -1350,8 +1348,6 @@ int cobra_create_mds(char *path, u64 size_in_sectors, DiscPhysInfo *layer0, Disc
 }
 */
 
-static u8 gm = 01;
-
 int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 {
 /*
@@ -1377,36 +1373,7 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 
 	if(use_app_home)
 	{
-		unmap_app_home();
-
-		sys_map_path("/app_home", path);
-
-		char *mpath = (char *)malloc(strlen(path) + 18);
-		if(mpath)
-		{
-			sprintf(mpath, "%s/PS3_GM%02i", path, gm);
-			if(not_exists(mpath))
-			{
-				gm = 01; sprintf(mpath, "%s/PS3_GM%02i", path, gm);
-			}
-
-			if(file_exists(mpath))
-			{
-				sys_map_path("/app_home/PS3_GAME", mpath); gm++;
-				strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
-			}
-			else
-			{
-				sprintf(mpath, "%s/PS3_GAME", path);
-				if(file_exists(mpath))
-				{
-					sys_map_path("/app_home/PS3_GAME", mpath);
-					strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
-				}
-			}
-
-			free(mpath);
-		}
+		map_app_home(path);
 	}
 
 	unsigned int real_disctype;
