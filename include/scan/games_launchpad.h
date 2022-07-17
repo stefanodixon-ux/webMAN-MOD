@@ -1,5 +1,5 @@
 #define LAUNCHPAD_MODE			2
-#define LAUNCHPAD_COVER_SVR		"http://devil303.com/wmlp/covers"
+#define LAUNCHPAD_COVER_SVR		"http://raw.githubusercontent.com/aldostools/resources/master/COV"
 
 #ifdef LAUNCHPAD
 

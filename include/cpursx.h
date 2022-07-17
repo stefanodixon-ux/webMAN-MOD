@@ -120,7 +120,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 
 	///// startup/play time /////
 	bool bb = (!R2 && gTick.tick > rTick.tick); // show play time
-	ss = (u32)((pTick.tick - (bb ? gTick.tick : rTick.tick)) / 1000000);
+	ss = (u32)((pTick.tick - (bb ? gTick.tick : rTick.tick)) / 1000000); if(ss > 864000) ss = 0;
 	if(op == 23)
 	{
 		// get runtime data by @3141card
@@ -246,7 +246,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 	if(R2 && (gTick.tick > rTick.tick))
 	{
 		////// play time //////
-		ss = (u32)((pTick.tick-gTick.tick)/1000000);
+		ss = (u32)((pTick.tick-gTick.tick)/1000000); if(ss > 864000) ss = 0;
 		dd = (u32)(ss / 86400); ss %= 86400; hh = (u32)(ss / 3600); ss %= 3600; mm = (u32)(ss / 60); ss %= 60;
 
 		if(dd < 100)

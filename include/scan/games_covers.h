@@ -53,7 +53,7 @@ static const char *cpath[6] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ,
 
 #ifndef ENGLISH_ONLY
 static bool use_custom_icon_path = false, use_icon_region = false;
-static bool is_devil303_server = false;
+static bool is_online_server = false;
 #endif
 
 static bool covers_exist[9];
@@ -93,7 +93,7 @@ static void check_cover_folders(char *buffer)
 		netctl_main_9A528B81(ip_size, ip);
 		if(*ip == NULL) use_custom_icon_path = false;
 
-		is_devil303_server = islike(COVERS_PATH, LAUNCHPAD_COVER_SVR);
+		is_online_server = islike(COVERS_PATH, LAUNCHPAD_COVER_SVR);
 	}
 	#endif
 
@@ -263,16 +263,21 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 		#ifdef ENGLISH_ONLY
 		if(webman_config->nocov == ONLINE_COVERS)
 		{
-			sprintf(icon, COVERS_PATH, title_id);
+			if(*title_id == 'S')
+				sprintf(icon, "http://raw.githubusercontent.com/aldostools/resources/master/PSX/%.4s_%.3s.%.2s_COV.JPG", title_id, title_id + 4, title_id + 7);
+			else
+				sprintf(icon, COVERS_PATH, title_id);
 			return true;
 		}
 		#else
 		if(use_custom_icon_path && (webman_config->nocov == ONLINE_COVERS) && (COVERS_PATH[0] == 'h'))
 		{
-			if(is_devil303_server && (*title_id != 'B' && *title_id != 'N')) {*icon = NULL; return false;}
+			if(is_online_server && (*title_id != 'B' && *title_id != 'N' && *title_id != 'S')) {*icon = NULL; return false;}
 
-			if(use_icon_region) sprintf(icon, COVERS_PATH,  (title_id[2] == 'U') ? "US" :
-															(title_id[2] == 'J') ? "JA" : "EN", title_id);
+			if(*title_id == 'S')
+				sprintf(icon, "http://raw.githubusercontent.com/aldostools/resources/master/PSX/%.4s_%.3s.%.2s_COV.JPG", title_id, title_id + 4, title_id + 7);
+			else if(use_icon_region) sprintf(icon, COVERS_PATH, (title_id[2] == 'U') ? "US" :
+																(title_id[2] == 'J') ? "JA" : "EN", title_id);
 			else
 								sprintf(icon, COVERS_PATH, title_id);
 			return true;

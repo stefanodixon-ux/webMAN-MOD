@@ -151,7 +151,7 @@ STR_OVERHEAT2	[ΤΟ ΣΥΣΤΗΜΑ ΥΠΕΡΘΕΡΜΕΝΕΤΑΙ!!!ΑΥΞΗΣΤΕ
 
 STR_NOTFOUND	[Δεν βρέθηκε!]
 
-COVERS_PATH		[http://devil303.com/wmlp/covers/%s.JPG]
+COVERS_PATH		[http://raw.githubusercontent.com/aldostools/resources/master/COV/%s.JPG]
 IP_ADDRESS		[127.0.0.1]
 SEARCH_URL		[http://google.com/search?q=]
 STR_CUSTOMXML	[XML]

@@ -35,6 +35,9 @@ static void poll_start_play_time(void)
 		}
 	 #endif
 	#endif
+		// fix startup time < 20220715
+		if(rTick.tick < 63793512657000000)
+			cellRtcGetCurrentTick(&rTick);
 		gTick = rTick;
 
 		#ifdef OFFLINE_INGAME
