@@ -79,7 +79,6 @@ static void parse_script(const char *script_file)
 
 		while(*buffer)
 		{
-			parse_cmd:
 			if(++l > 9999 || !working) break;
 
 			while( *buffer && (*buffer <= ' ')) buffer++; // skip blank chars \n \r \t
@@ -106,6 +105,7 @@ static void parse_script(const char *script_file)
 					}
 					if(enable_db && (strstr(line, "/dev_blind"))) {enable_dev_blind(NO_MSG); enable_db = false;}
 				}
+				parse_cmd:
 				if(dest)
 				{
 					*dest++ = NULL; while(*dest == ' ') dest++; //split parameters
@@ -170,7 +170,7 @@ static void parse_script(const char *script_file)
 						if(_islike(line, "titleid ")){path += 8; get_game_info(); ret = (strlen(_game_TitleID) >= strlen(path)) ? bcompare(_game_TitleID, path, strlen(path), path) : 0;} else
 						#endif
 						#ifdef COBRA_ONLY
-						if(_islike(line, "Cobra"))   {ret =  cobra_version;} else
+						if(_islike(line, "Cobra"))   {ret = cobra_version;} else
 						if(_islike(line, "Debug"))   {ret = isCobraDebug;} else
 						if(_islike(line, "Mamba"))   {ret = is_mamba;} else
 						if(_islike(line, "PS3HEN"))  {ret = payload_ps3hen;} else

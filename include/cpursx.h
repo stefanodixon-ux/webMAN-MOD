@@ -639,12 +639,15 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		#endif
 						"%s - %s %s"
 						"</span></h2></a></b>",
+		#ifdef SPOOF_CONSOLEID
 						IS_NAND ? "NAND" : "NOR", fw_info,
 						(syscalls_removed) ? STR_CFWSYSALRD : "",
-		#ifdef SPOOF_CONSOLEID
 						psid,
 						idps1,
 						idps2,
+		#else
+						"", fw_info,
+						(syscalls_removed) ? STR_CFWSYSALRD : "",
 		#endif
 						mac_address, ip, net_type); buffer += concat(buffer, templn);
 	}
