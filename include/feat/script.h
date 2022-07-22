@@ -4,7 +4,7 @@
 //   if not exist <path>
 //   if L1
 //   if R1
-//   if cobra/nocobra/debug/mamba/ps3hen/dex
+//   if cobra/nocobra/debug/mamba/ps3hen/dex/firmware x.xx
 //   if titleid <titleid/pattern>
 //   abort if exist <path>
 //   abort if not exist <path>
@@ -125,7 +125,7 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "cpbk /")) {path += 5; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}
 				}
 				else if(*line == '#' || *line == ':' || *line == ';' || *line == '*') ; // remark
-				else if(_islike(line, "else") && do_else) {if(exec_mode) do_else = false; exec_mode ^= 1; line += 4; if(exec_mode && *line) goto parse_cmd;}
+				else if(_islike(line, "else") && do_else) {if(exec_mode) do_else = false; exec_mode ^= 1; line += 4; while(*line == ' ') line++; if(exec_mode && *line) goto parse_cmd;}
 				else if(_islike(line, "end")) {exec_mode = do_else = true;}
 				else if(exec_mode)
 				{
@@ -165,6 +165,7 @@ static void parse_script(const char *script_file)
 
 						if(_islike(line, "exist /"))     {path +=  6; check_path_tags(path); ret = file_exists(path);} else
 						if(_islike(line, "not exist /")) {path += 10; check_path_tags(path); ret = not_exists(path);} else
+						if(_islike(line, "Firmware")) {line += 9; ret = IS(fw_version, line);} else
 						if(_islike(line, "noCobra")) {ret = !cobra_version;} else
 						#if defined(PS3MAPI) || defined(DEBUG_MEM)
 						if(_islike(line, "titleid ")){path += 8; get_game_info(); ret = (strlen(_game_TitleID) >= strlen(path)) ? bcompare(_game_TitleID, path, strlen(path), path) : 0;} else
