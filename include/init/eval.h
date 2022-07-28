@@ -72,7 +72,7 @@ static u16 Hex2Bin(const char *src, char *out)
 		if((*src == '*') || (*src == '?'))
 			{*(target++) = '*'; src += 2; continue;} // convert mask ** / ?? to binary *
 
-		*(target++) = (src[0] << 4) | src[1];
+		*(target++) = (h2b(src[0])<<4) | h2b(src[1]);
 		src += 2;
 	}
 	return (target - out);
