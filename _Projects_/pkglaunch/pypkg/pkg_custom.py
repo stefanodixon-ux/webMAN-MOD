@@ -22,7 +22,7 @@ TYPE_DIRECTORY = 0x4
 
 TYPE_OVERWRITE_ALLOWED = 0x80000000
 
-MaxCacheSize = 0x800000
+MaxCacheSize = 0x8000000
 
 debug = False
 
@@ -351,12 +351,17 @@ def unpack(filename):
 			chunkSize = MaxCacheSize
 			while fileSize > 0:
 				pkgData = fp.read(chunkSize)
+				chunkSize = len(pkgData)
+				if chunkSize <= 0:
+					break
+				print ".",
 				decFile.write(crypt(context, pkgData, chunkSize))
 				fileSize -= chunkSize
 				if fileSize < chunkSize:
 					chunkSize = fileSize
 			decFile.close()
 			fp.close()
+			print
 		else:
 			pkgData = fp.read(fileSize)
 			fileData = crypt(context, pkgData, len(pkgData))
@@ -724,7 +729,7 @@ def pack(folder, contentid, outname=None):
 	print header
 
 def usage():
-	print """usage: [based on revision 20200824]
+	print """usage: [based on revision 20220805]
 
     pkg_custom [package-file-to-extract]
 
@@ -744,7 +749,7 @@ def usage():
 	wait()
 
 def version():
-	print """pkg_custom 1.4.6"""
+	print """pkg_custom 1.4.9"""
 
 def main():
 	global debug

@@ -817,6 +817,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SCPS_150.16<td>Minna no Golf 3 / みんなのＧＯＬＦ３</tr>
 <tr><td>CUSTOM<td>SCPS_151.13<td>Minna no Tennis / みんなのテニス</tr>
 <tr><td>CUSTOM<td title="Skips shadow rendering at all times and enables pressure sensitive controls required for 'super perfect impact' shots">SCPS_150.59<td>Minna no Golf 4 / みんなのＧＯＬＦ４</tr>
+<tr><td>CUSTOM<td>SCUS_975.83<td>MLB '08: The Show</tr>
 <tr><td>CUSTOM<td>SLES_518.56<td>Monster Attack</tr>
 <tr><td>CUSTOM<td>SCAJ_200.37<td>Monster Farm 4</tr>
 <tr><td>CUSTOM<td>SLPS_734.23<td>Monster Farm 4 [PlayStation 2 The Best]</tr>
@@ -909,6 +910,10 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_210.37<td>Project: Snowblind</tr>
 <tr><td>CUSTOM<td>SCES_508.21<td>Project Zero</tr>
 <tr><td>CUSTOM<td>SLES_523.84<td>Project Zero 2: Crimson Butterfly</tr>
+<tr><td>CUSTOM<td>SLUS_206.88<td>Psi-Ops: The Mindgate Conspiracy</tr>
+<tr><td>CUSTOM<td>SLES_527.02<td>Psi-Ops: The Mindgate Conspiracy</tr>
+<tr><td>CUSTOM<td>SLES_527.03<td>Psi-Ops: The Mindgate Conspiracy</tr>
+<tr><td>CUSTOM<td>SLPM_660.20<td>Psi-Ops: The Mindgate Conspiracy</tr>
 <tr><td>CUSTOM<td>SLUS_201.67<td>Quake III: Revolution</tr>
 <tr><td>CUSTOM<td>SLES_501.26<td>Quake III: Revolution</tr>
 <tr><td>CUSTOM<td>SLES_501.27<td>Quake III: Revolution</tr>
@@ -3757,6 +3762,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SCPS_150.16<td>Minna no Golf 3 / みんなのＧＯＬＦ３</tr>
 <tr><td>ENC<td>SCPS_150.59<td>Minna no Golf 4 / みんなのＧＯＬＦ４</tr>
 <tr><td>ENC<td>SCPS_151.13<td>Minna no Tennis / みんなのテニス</tr>
+<tr><td>ENC<td>SCUS_975.83<td>MLB '08: The Show</tr>
 <tr><td>ENC<td>SLPM_625.55<td>Momotaro Densetsu</tr>
 <tr><td>ENC<td>SLES_518.56<td>Monster Attack</tr>
 <tr><td>ENC<td>SLPS_250.35<td>Monster Farm 3</tr>
@@ -3962,6 +3968,10 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_505.53<td>Project Eden</tr>
 <tr><td>ENC<td>SCES_508.21<td>Project Zero</tr>
 <tr><td>ENC<td>SLES_523.84<td>Project Zero 2: Crimson Butterfly</tr>
+<tr><td>ENC<td>SLUS_206.88<td>Psi-Ops: The Mindgate Conspiracy</tr>
+<tr><td>ENC<td>SLES_527.02<td>Psi-Ops: The Mindgate Conspiracy</tr>
+<tr><td>ENC<td>SLES_527.03<td>Psi-Ops: The Mindgate Conspiracy</tr>
+<tr><td>ENC<td>SLPM_660.20<td>Psi-Ops: The Mindgate Conspiracy</tr>
 <tr><td>ENC<td>SLUS_211.20<td>Psychonauts</tr>
 <tr><td>ENC<td>NPUD_211.20<td>Psychonauts</tr>
 <tr><td>ENC<td>SLES_541.73<td>På andra sidan häcken</tr>
@@ -4737,10 +4747,12 @@ function dlCONFIG(elem)
 	var cs = "padding:10px;max-width:360px;background-color:#111;display:block;z-index:999;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (event.clientX - 350) + ";top:"+ (event.clientY-25);
 
 	fetch(url)
-	  .then((res) => res.text())
+	  .then((res) => res.arrayBuffer())
 	  .then((data) => {
+		const decoder = new TextDecoder('iso-8859-1');
+		const text = decoder.decode(data);
 		code.style=cs;
-		code.innerHTML = "<font color=yellow face=arial><b>" + cols[1].innerText + " " + cols[2].innerText + "<BR><font color=#FFF>" + ToHex(data);
+		code.innerHTML = "<font color=yellow face=arial><b>" + cols[1].innerText + " " + cols[2].innerText + "<BR><font color=#FFF>" + ToHex(text);
 	  });
 }
 function dbLinks() {
