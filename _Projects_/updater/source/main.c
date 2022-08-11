@@ -835,6 +835,7 @@ int main()
 	file_copy(APP_USRDIR "/xml/webMAN_ZH.xml" , XMBMANPLS_FEATS_DIR "/webMAN_ZH.xml");
 	if(not_exists(XMBMANPLS_FEATS_DIR "/webMAN_XX.xml"))
 		file_copy(APP_USRDIR "/xml/webMAN_XX.xml" , XMBMANPLS_FEATS_DIR "/webMAN_XX.xml");
+	file_copy(APP_USRDIR "/xml/wm_apps.xml"   , XMBMANPLS_FEATS_DIR "/wm_apps.xml");
 
 	file_copy(APP_USRDIR "/xmbm/bd.png"			, XMBMANPLS_IMAGES_DIR "/bd.png");
 	file_copy(APP_USRDIR "/xmbm/blockpsn.png"	, XMBMANPLS_IMAGES_DIR "/blockpsn.png");

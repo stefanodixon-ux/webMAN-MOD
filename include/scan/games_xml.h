@@ -1063,16 +1063,20 @@ scan_roms:
 							#ifdef MOUNT_GAMEI
 							if(IS_GAMEI_FOLDER)
 							{
+								if(!webman_config->gamei) continue;
+
 								// create game folder in /dev_hdd0/game and copy PARAM.SFO to prevent deletion of XMB icon when gameDATA is disabled
 								char *param_sfo = tempstr;
 								sprintf(param_sfo, "%s%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name);
 								if(not_exists(param_sfo))
 								{
+									if((strlen(entry.entry_name.d_name) >= 16) && (entry.entry_name.d_name[6] == '-'))
+										sprintf(param_sfo, "%s%.9s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name + 7);
+
 									char *_param_sfo = templn; // GAMEI
 									sprintf(_param_sfo, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 									mkdir_tree(param_sfo); file_copy(_param_sfo, param_sfo);
 								}
-								if(!webman_config->gamei) continue;
 
 								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
 
