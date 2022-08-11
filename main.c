@@ -430,6 +430,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/unused/secure_file_id.h"
 
 #include "include/feat/script.h"
+#include "include/feat/rospatch.h"
 #include "include/feat/video_rec.h"
 #include "include/feat/xmb_savebmp.h"
 #include "include/feat/ingame_screenshot.h"

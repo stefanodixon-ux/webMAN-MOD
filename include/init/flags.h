@@ -19,6 +19,7 @@
   #define DEBUG_XREGISTRY
   #define FPS_OVERLAY
   #define MUTE_SND0
+//#define PATCH_ROS // WARNING: This has NOT been fully tested: do not enable if you don't have a hardware flasher to test it
  #else
   #undef VISUALIZERS
   #undef NET_SUPPORT

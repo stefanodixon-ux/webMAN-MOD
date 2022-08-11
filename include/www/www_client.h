@@ -45,7 +45,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 {
 	if(conn_s == (int)WM_FILE_REQUEST) return 0;
 
-	u16 slen;
+	u16 slen, done = true;
 
 	if(code == CODE_VIRTUALPAD || code == CODE_GOBACK || code == CODE_CLOSE_BROWSER)
 	{
@@ -71,6 +71,10 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		char *label = header; // used by CODE_PREVIEW_FILE
 
 		if(code != CODE_PREVIEW_FILE) *header = NULL;
+
+		#ifdef PATCH_ROS
+		done = IS(url, "/ros.ps3") ? false : true;
+		#endif
 
 		if(*filename == '/')
 		{
@@ -142,16 +146,29 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 			sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); strcat(body, header);
 		}
 
-		sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
-						HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); strcat(body, header);
+		#ifdef PATCH_ROS
+		if(done)
+		{
+			sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
+							HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); strcat(body, header);
+		}
+		else
+			strcat(body, "<hr></font>");
+		#else
+			sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
+							HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); strcat(body, header);
+		#endif
 
 		slen = sprintf(header,  HTML_RESPONSE_FMT,
 								(code == CODE_RETURN_TO_ROOT) ? CODE_HTTP_OK : code, url, HTML_BODY, HTML_RESPONSE_TITLE, body);
 	}
 
 	send(conn_s, header, slen, 0);
-	sclose(&conn_s);
-	if(loading_html) loading_html--;
+	if(done)
+	{
+		sclose(&conn_s);
+		if(loading_html) loading_html--;
+	}
 	return 0;
 }
 
@@ -569,6 +586,7 @@ parse_request:
 				#include "../cmd/stat_chmod.h"
 				#include "../cmd/md5.h"
 				#include "../cmd/minver.h"
+				#include "../cmd/ros.h"
 				#include "../cmd/recovery.h"
 				#include "../cmd/rebuild.h"
 				#include "../cmd/netstatus.h"
