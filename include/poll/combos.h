@@ -440,7 +440,7 @@
 							else
 							{
 								if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_R2) webman_config->man_rate += 5; else webman_config->man_rate += 1;
-								webman_config->man_rate = RANGE(webman_config->man_rate, 20, 95); //%
+								webman_config->man_rate = RANGE(webman_config->man_rate, MIN_FANSPEED, webman_config->maxfan); //%
 								webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate);
 								webman_config->man_speed = RANGE(webman_config->man_speed, MIN_FANSPEED_8BIT, MAX_FANSPEED_8BIT);
 								set_fan_speed(webman_config->man_speed + 1);
@@ -512,7 +512,7 @@
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
-							if(webman_config->minfan < 95) webman_config->minfan += 5;
+							if(webman_config->minfan < webman_config->maxfan) webman_config->minfan += 5;
 							sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH3, webman_config->minfan);
 
 							save_settings();

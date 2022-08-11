@@ -1,3 +1,5 @@
+#include <netex/ifctl.h>
+
 #define getPort(p1x, p2x) ((p1x * 256) + p2x)
 
 static int ssend(int socket, const char *str)
@@ -85,18 +87,9 @@ static int slisten(int port, int backlog)
 	sa.sin_port = htons(port);
 	sa.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	if(bind(s, (struct sockaddr *)&sa, sin_len) < 0){
-		shutdown(s, SHUT_RDWR);
-		socketclose(s);
-		return FAILED;
-	}
+	bind(s, (struct sockaddr *)&sa, sin_len);
+	listen(s, backlog);
 
-	if(listen(s, backlog) < 0){
-		shutdown(s, SHUT_RDWR);
-		socketclose(s);
-		return FAILED;
-	}
-	
 	return s;
 }
 
@@ -108,4 +101,35 @@ static void sclose(int *socket_e)
 		socketclose(*socket_e);
 		*socket_e = NONE;
 	}
+}
+
+#define MIN_KERNEL_FREE_SPACE 256*1024 // 256KiB
+#define MIN_KERNEL_MAX_TRIES 10 // Try 10 times
+#define MIN_KERNEL_RETRY_PAUSE 2 // 2 seconds
+
+static bool wait_for_new_socket(void)
+{
+	int failures = 0;
+	while(true)
+	{
+		unsigned int kernel_free_current = 0;
+		sys_net_if_ctl(0, SYS_NET_CC_GET_MEMORY_FREE_CURRENT, &kernel_free_current, sizeof(kernel_free_current));
+
+		if(kernel_free_current >= MIN_KERNEL_FREE_SPACE)
+		{
+			break; // There's enough space for new socket
+		}
+		else
+		{
+			failures++;
+
+			if(failures >= MIN_KERNEL_MAX_TRIES)
+			{
+				return true; // Kernel is full: Not enough space found
+			}
+
+			sys_ppu_thread_sleep(MIN_KERNEL_RETRY_PAUSE); // Give kernel more time to free up space
+		}
+	}
+	return false;
 }

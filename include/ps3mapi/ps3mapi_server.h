@@ -320,7 +320,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					{
 						if(data_s < 0 && pasv_s >= 0) data_s = accept(pasv_s, NULL, NULL);
 
-						if(data_s > 0)
+						if(data_s >= 0)
 						{
 							if(split)
 							{
@@ -382,7 +382,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					{
 						if(data_s < 0 && pasv_s >= 0) data_s = accept(pasv_s, NULL, NULL);
 
-						if(data_s > 0)
+						if(data_s >= 0)
 						{
 							if(split)
 							{
@@ -642,6 +642,15 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					if(data_s >= 0) sclose(&data_s);
 					if(pasv_s >= 0) sclose(&pasv_s);
 
+					bool kernel_full = wait_for_new_socket();
+
+					if(kernel_full)
+					{
+						// Kernel space is full, tell client to retry later
+						ssend(conn_s_ps3mapi, "421 Could not create socket\r\n");
+						break; // Abort PASV command
+					}
+
 					p1x = ( (pasv_port & 0xff00) >> 8) | 0x80; // use ports 32768 -> 65528 (0x8000 -> 0xFFF8)
 					p2x = ( (pasv_port & 0x00ff)	 );
 
@@ -652,7 +661,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						sprintf(pasv_output, "227 Entering Passive Mode (%s,%i,%i)\r\n", ip_address, p1x, p2x);
 						ssend(conn_s_ps3mapi, pasv_output);
 
-						if((data_s = accept(pasv_s, NULL, NULL)) > 0)
+						if((data_s = accept(pasv_s, NULL, NULL)) >= 0)
 						{
 							dataactive = 1; break;
 						}
