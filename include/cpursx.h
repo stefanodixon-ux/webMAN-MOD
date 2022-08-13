@@ -627,7 +627,7 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 		get_net_info(net_type, ip);
 
 		sprintf(templn, "<hr><h2>"
-						"<input type=button onclick=\"$$('ht').style.display='block';\" value='&#x25BC;'> "
+						"<input type=button onclick=\"$$('ht').style.display='block';window.stop();\" value='&#x25BC;'> "
 						"<a class=\"s\" href=\"/setup.ps3\">"
 						"%s %s<br>" // fw_info
 						"%s<br>"
