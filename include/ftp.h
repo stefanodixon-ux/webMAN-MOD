@@ -125,20 +125,16 @@ static int ssplit(const char *str, char *left, u16 lmaxlen, char *right, u16 rma
 }
 
 // Returns length of a number in digits 
-static int str_num_length(char *ptr, int max_digits)
+static int str_num_length(const char *ptr, int max_digits)
 {
 	if(ptr == NULL) return 0;
 
-	int num_len = 0;
-
-	for(int i = 0; i < max_digits; i++)
+	for(int len = 0; len < max_digits; len++)
 	{
-		if(ptr[i] < '0' || ptr[i] > '9') return num_len;
-
-		num_len++;
+		if(ptr[len] < '0' || ptr[len] > '9') return len;
 	}
 
-	return num_len;
+	return 0;
 }
 
 // Returns long from a string limited to max number of digits
@@ -475,10 +471,10 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 											read_e = (int)recv(data_s, buffer2, BUFFER_SIZE_FTP, MSG_WAITALL);
 											if(read_e > 0)
 											{
+												if(cellFsWrite(fd, buffer2, read_e, NULL)) break; // FAILED
 												#ifdef UNLOCK_SAVEDATA
 												if(webman_config->unlock_savedata && (read_e < 4096)) unlock_param_sfo(filename, (unsigned char*)buffer2, (u16)read_e);
 												#endif
-												if(cellFsWrite(fd, buffer2, read_e, NULL)) break; // FAILED
 											}
 											else if(read_e < 0)
 												break; // FAILED
@@ -703,17 +699,15 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							datetime.second = str_extract_long(&param_modtime[12], 2);
 							datetime.microsecond = 0;
 
-							time_t timestamp;
-							cellRtcGetTime_t(&datetime, &timestamp);
-
 							if(is_ntfs_path(filename))
 							{
 								ssend(conn_s_ftp, FTP_ERROR_501); // NTFS attribute modifications are currently unavailable
-								is_ntfs = true;
 							}
-							
-							if (!is_ntfs)
+							else
 							{
+								time_t timestamp;
+								cellRtcGetTime_t(&datetime, &timestamp);
+
 								CellFsUtimbuf newTime;
 								newTime.actime = timestamp;
 								newTime.modtime = timestamp;
@@ -733,7 +727,6 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								{
 									ssend(conn_s_ftp, FTP_ERROR_501);
 								}
-								
 							}
 						}
 						else
