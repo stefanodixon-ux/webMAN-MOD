@@ -39,7 +39,7 @@ static sys_semaphore_t g_sem_transfer_limit = SYS_SEMAPHORE_ID_INVALID;
 
 #define MFMT_MODTIME_LEN 14 // MFMT modification time is 14 digits long
 
-#define MAX_TRANSFERS 2 // Max 2 concurrent transfers
+#define MAX_FTP_TRANSFERS 2 // Max 2 concurrent transfers
 #define MAX_TRANSFER_WAIT 15000000 // 15 seconds
 
 static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool scan)
@@ -721,11 +721,13 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 							datetime.second = str_extract_long(&param_modtime[12], 2);
 							datetime.microsecond = 0;
 
+							#ifdef USE_NTFS
 							if(is_ntfs_path(filename))
 							{
 								ssend(conn_s_ftp, FTP_ERROR_501); // NTFS attribute modifications are currently unavailable
 							}
 							else
+							#endif
 							{
 								time_t timestamp;
 								cellRtcGetTime_t(&datetime, &timestamp);
