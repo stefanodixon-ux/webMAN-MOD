@@ -5,10 +5,9 @@ Overlay g_Overlay;
 
 Overlay::Overlay()
 {
-    g_Config.Load();
     m_ReloadConfigTime = GetTimeNow() + 10000;
 
-    if (g_Config.overlay.showClockSpeeds)
+    if (g_Config.overlay.showClockSpeeds) // find clock speed offsets only when they are displayed
         sys_ppu_thread_create(&LoadExternalOffsetsThreadId, LoadExternalOffsets, 0, 0xB02, 512, SYS_PPU_THREAD_CREATE_JOINABLE, "Overlay::LoadExternalOffsets()");
 
     sys_ppu_thread_create(&UpdateInfoThreadId, UpdateInfoThread, 0, 0xB01, 512, SYS_PPU_THREAD_CREATE_JOINABLE, "Overlay::UpdateInfoThread()");
