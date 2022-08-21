@@ -1496,6 +1496,19 @@ save_xml:
 		// ---- Build ROMS.xml
 		if(count_roms)
 			build_roms_xml(sysmem_buf, templn, tempstr, roms_count, roms_path, ROM_PATHS);
+		else if(c_roms && XMB_GROUPS)
+		{
+			u16 len = read_file(MY_GAMES_XML, tempstr, _4KB_, 200);
+			if(len)
+			{
+				char *pos = strstr(tempstr, HTML_BASE_PATH "/ROMS.xml");
+				if(pos)
+				{
+					pos -= 83; if(*pos == '<') *pos = ' ';
+					patch_file(MY_GAMES_XML, tempstr, 200, len);
+				}
+			}
+		}
 	}
 	#endif
 
