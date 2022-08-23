@@ -431,6 +431,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_514.42<td>Dynasty Warriors 3: Xtreme Legends</tr>
 <tr><td>CUSTOM<td>SLES_514.43<td>Dynasty Warriors 3: Xtreme Legends</tr>
 <tr><td>CUSTOM<td>SLKA_250.85<td>Dynasty Warriors 3: Xtreme Legends</tr>
+<tr><td>CUSTOM<td>SLUS_206.53<td>Dynasty Warriors 4</tr>
+<tr><td>CUSTOM<td>SLUS_211.53<td>Dynasty Warriors 5</tr>
 <tr><td>CUSTOM<td>SLUS_200.41<td>ESPN International Track & Field</tr>
 <tr><td>CUSTOM<td title="Fixes subtitles being faded under background">SLUS_217.79<td>Eternal Poison</tr>
 <tr><td>CUSTOM<td>SLUS_200.15<td>Eternal Ring <small>Fix instant death glitch</small></tr>
@@ -3155,6 +3157,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_514.42<td>Dynasty Warriors 3: Xtreme Legends</tr>
 <tr><td>ENC<td>SLES_514.43<td>Dynasty Warriors 3: Xtreme Legends</tr>
 <tr><td>ENC<td>SLKA_250.85<td>Dynasty Warriors 3: Xtreme Legends</tr>
+<tr><td>ENC<td>SLUS_206.53<td>Dynasty Warriors 4</tr>
+<tr><td>ENC<td>SLUS_211.53<td>Dynasty Warriors 5</tr>
 <tr><td>ENC<td>SLUS_200.41<td>ESPN International Track & Field</tr>
 <tr><td>ENC<td>SLES_503.56<td>ESPN International Winter Sports</tr>
 <tr><td>ENC<td title="Fixes subtitles being faded under background">SLUS_217.79<td>Eternal Poison</tr>
@@ -4657,7 +4661,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2537, count = tr.length, classics = i;
+var i = 2539, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
@@ -4765,7 +4769,7 @@ function dlCONFIG(elem)
 	fetch(url)
 	  .then((res) => res.arrayBuffer())
 	  .then((data) => {
-		const decoder = new TextDecoder('iso-8859-1');
+		const decoder = new TextDecoder('x-user-defined');
 		const text = decoder.decode(data);
 		code.style=cs;
 		code.innerHTML = "<font color=yellow face=arial><b>" + cols[1].innerText + " " + cols[2].innerText + "<BR><font color=#FFF>" + ToHex(text);
