@@ -37,7 +37,6 @@ private:
    uint32_t GetGpuClockSpeed();
    uint32_t GetGpuGddr3RamClockSpeed();
    uint32_t GetCpuClockSpeed();
-   void FormatSystemTime();
    static void UpdateInfoThread(uint64_t arg);
    static void LoadExternalOffsets(uint64_t arg);
 
@@ -55,7 +54,6 @@ public:
    uint64_t m_TemperatureCycleTime{};
    bool m_CycleTemperatureType{};
    TempType m_TempType{};
-   char m_FormattedSystemTime[80];
 
    uint32_t m_CpuClock{};
    uint32_t m_GpuClock{};
@@ -65,6 +63,9 @@ public:
    uint64_t m_CpuClockSpeedOffsetInLv1{};
 
 private:
+    // Common
+    vsh::eCooperationMode m_CooperationMode;
+
     // Positioning
    vsh::vec2 m_Position{};
    Render::Align m_HorizontalAlignment{};
