@@ -4760,11 +4760,13 @@ function dlCONFIG(elem)
 		self.location = url;
 
 	var url2 = "https://psxdatacenter.com/psx2/images2/covers/" + cols[1].innerText.replace("_","-").replace(".","") + ".jpg";
-	cover.style="display:block;z-index:99;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (event.clientX + 50) + ";top:"+ (event.clientY-150);
+	var posx = event.clientX; if(posx < 360) posx = 360;
+	var posy = event.clientY; if(posy < 160) posy = 160;
+	cover.style="display:block;z-index:99;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (posx + 50) + ";top:"+ (posy-150);
 	if(window.event.composedPath().indexOf('https:')<0)
 		image.src = url2;
 
-	var cs = "padding:10px;max-width:360px;background-color:#111;display:block;z-index:999;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (event.clientX - 350) + ";top:"+ (event.clientY-25);
+	var cs = "padding:10px;max-width:360px;background-color:#111;display:block;z-index:999;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (posx - 350) + ";top:"+ (posy-25);
 
 	fetch(url)
 	  .then((res) => res.arrayBuffer())

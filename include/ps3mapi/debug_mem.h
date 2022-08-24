@@ -158,7 +158,15 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 	{
 		if(islike(param + 10, "lv1")) {size = 16;} else
 		if(islike(param + 10, "lv2")) {pid = LV2;} else
-		if(islike(param + 10, "fla")) {pid = FLASH, size = 16;} else
+		if(islike(param + 10, "fla"))
+		{
+			#ifdef SPOOF_CONSOLEID
+			get_eid0_idps();
+			pid = FLASH, size = IS_NAND ? 256 : 16;
+			#else
+			pid = FLASH, size = 16;
+			#endif
+		} else
 		if(param[10] == 'v' /*vsh */) {start = 0x910000;}  else
 		if(param[10] == 'r' /*rsx */) {start = 0x0000028080000000ULL; size=256;}  else
 		if(param[10] == 'm' /*mem */) {size = IS_DEH ? 512 : 256;} else

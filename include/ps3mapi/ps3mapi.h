@@ -9,7 +9,7 @@
 #define PS3MAPI_WEBUI_VERSION						0x0121
 #define PS3MAPI_WEBUI_MINVERSION					0x0120
 
-#define PS3MAPI_CORE_VERSION			 			0x0123
+#define PS3MAPI_CORE_VERSION						0x0123
 #define PS3MAPI_CORE_MINVERSION						0x0111
 
 #define PS3MAPI_OPCODE_GET_CORE_VERSION				0x0011
@@ -843,8 +843,16 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 
 		if(pid == FLASH)
 		{
+			#ifdef SPOOF_CONSOLEID
+			if(!address)
+			{
+				get_eid0_idps();
+				dump_size = IS_NAND ? (char*)"&dump=10000000" : (char*)"&dump=1000000";
+			}
+			#else
 			if(!address)
 				dump_size = (char*)"&dump=1000000";
+			#endif
 			dump_file = (char*)"/dev_hdd0/dump_flash.bin";
 		}
 

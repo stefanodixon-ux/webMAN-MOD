@@ -92,8 +92,7 @@ document.oncopy = function(e){
 	clipboard.setData("text/plain",a);
 };
 
-window.addEventListener('contextmenu',function(e){
-
+function contextMenu(e){
 	if(s)s.color='#ccc';
 	t=e.target,s=t.style,c=t.className,m=mnu.style;if(c=='gi'){p=t.parentNode.pathname}else{p=t.pathname}if(typeof(p)!='string')return;p=p.replace('/mount.ps3','');
 	if(c=='w'||c=='d'||c=='gi'||t.parentNode.className=='gn'){
@@ -107,6 +106,7 @@ window.addEventListener('contextmenu',function(e){
 		m1.href='/mount.ps3'+p;m1.style.display=!img&&!y&&(w||c=='d'||p.indexOf('/GAME')>0||p.indexOf('ISO/')>0||p.indexOf('ISO_')>0||p.indexOf('/ROMS')>0)?b:n;
 		m2.href=p;m2.text=(w||c=='w')?'Download':'Open';
 		v2.href='/view.ps3'+p;v2.style.display=(c!='d')?b:n;
+		exts=/(\.txt|\.ini|\.log|\.ncl|\.sfx|\.xml|\.cfg|\.cnf|\.his|\.hip|\.bup|\.js|\.css|\.htm|\.bat|\.yaml|\.conf)$/i;if(exts.exec(p)){v2.href='/edit.ps3'+p;v2.text='Edit';}
 		m3.href='/delete.ps3'+p;
 		m4.href='/cut.ps3'+p;
 		m5.href='/cpy.ps3'+p;
@@ -124,7 +124,27 @@ window.addEventListener('contextmenu',function(e){
 		y=p.indexOf('.ps3');if(y>0)p=p.substring(y+4);url=window.location.href;
 		y=e.clientY;w=window.innerHeight;m.top=(((y+mnu.clientHeight)<w)?(y+12):(w-mnu.clientHeight))+'px';
 	}
-},false);
+}
+
+window.addEventListener('contextmenu',contextMenu,false);
 
 // Clear menu
-window.onclick=function(e){if(m)m.display='none';wmsg.style.display='none';t=e.target;if(t.id.indexOf('im')==0||(typeof(t.href)=='string'&&t.href.indexOf('.ps3')>0&&t.href.indexOf('view.ps3')<0&&t.href.indexOf('.png')<0&&t.href.indexOf('.jpg')<0&&t.href.indexOf('prompt')<0&&t.href.indexOf('#Top')<0))wmsg.style.display='block';}
+var tapHold, tapEvent, tapEventFired = false;
+window.onclick=function(e){if(tapEventFired){tapEvent.preventDefault();tapEvent.stopPropagation();return false;}if(m)m.display='none';wmsg.style.display='none';t=e.target;if(t.id.indexOf('im')==0||(typeof(t.href)=='string'&&t.href.indexOf('.ps3')>0&&t.href.indexOf('view.ps3')<0&&t.href.indexOf('.png')<0&&t.href.indexOf('.jpg')<0&&t.href.indexOf('prompt')<0&&t.href.indexOf('#Top')<0))wmsg.style.display='block';}
+
+document.addEventListener('mousedown', function(event){
+	event.preventDefault();
+	tapEvent = event;
+	tapEventFired = false;
+	tapHold = setTimeout(function(e){
+		tapEventFired = true;
+		tapEvent.stopPropagation();
+		contextMenu(tapEvent);
+		clearTimeout(tapHold);
+	}, 2000);
+},false);
+
+document.addEventListener('mouseup', function(event){
+	clearTimeout(tapHold);
+	if(tapEventFired) {event.preventDefault();event.stopPropagation();return false;}
+},false);
