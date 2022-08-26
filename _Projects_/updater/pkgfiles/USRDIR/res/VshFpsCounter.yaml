@@ -7,15 +7,15 @@ overlay:
         showFPS: On
         showCpuInfo: On
         showGpuInfo: On
-        showRamInfo: Off
+        showRamInfo: On
         showFanSpeed: On
         showFirmware: On
-        showAppName: On
+        showAppName: Off
         showClockSpeeds: On
-        temperatureType: BOTH # Available options BOTH, CELSIUS, FAHRENHEIT 
-        textSize: 20.0
+        temperatureType: BOTH # Available options BOTH, CELSIUS, FAHRENHEIT
+        textSize: 16.0
         showPlayTime: Off
-   
+
       game:
         position: TOP_LEFT # Available options TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
         showFPS: On
@@ -23,10 +23,9 @@ overlay:
         showGpuInfo: On
         showRamInfo: Off
         showFanSpeed: On
-        showFirmware: On
+        showFirmware: Off
         showAppName: On
-        showClockSpeeds: On
-        temperatureType: BOTH # Available options BOTH, CELSIUS, FAHRENHEIT 
-        textSize: 20.0
-        showPlayTime: Off
-      
+        showClockSpeeds: Off
+        temperatureType: BOTH # Available options BOTH, CELSIUS, FAHRENHEIT
+        textSize: 16.0
+        showPlayTime: On

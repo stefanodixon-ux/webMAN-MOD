@@ -528,14 +528,14 @@ int main(int argc, const char* argv[])
 
 			if(has(path, "GBA/"))
 			{
-									 sprintf(path, "%s/vba_next%s", RETROARCH, sufix[i]);
-				if(not_exists(path)) sprintf(path, "%s/mgba%s",	 RETROARCH, sufix[i]);
+									 sprintf(path, "%s/mgba%s",	 RETROARCH, sufix[i]);
+				if(not_exists(path)) sprintf(path, "%s/vba_next%s", RETROARCH, sufix[i]);
 				if(not_exists(path)) sprintf(path, "%s/gpsp%s",	 RETROARCH, sufix[i]);
 			}
 			else
+			if(has(path, "MGBA/")) sprintf(path, "%s/mgba%s",	 RETROARCH, sufix[i]);	else
 			if(has(path, "VBA"))   sprintf(path, "%s/vba_next%s", RETROARCH, sufix[i]);	else
-			if(has(path, "MGBA/")) sprintf(path, "%s/mgba%s",	 RETROARCH, sufix[i]);		else
-			if(has(path, "GPSP/")) sprintf(path, "%s/gpsp%s",	 RETROARCH, sufix[i]);		else
+			if(has(path, "GPSP/")) sprintf(path, "%s/gpsp%s",	 RETROARCH, sufix[i]);	else
 
 			if(has(path, "GB/"))
 			{
@@ -756,8 +756,8 @@ int main(int argc, const char* argv[])
 					else
 					if(strcasestr(".GBA", extension))
 					{
-											 sprintf(path, "%s/vba_next%s", RETROARCH, sufix[i]);
-						if(not_exists(path)) sprintf(path, "%s/mgba%s",	 RETROARCH, sufix[i]);
+											 sprintf(path, "%s/mgba%s",	 RETROARCH, sufix[i]);
+						if(not_exists(path)) sprintf(path, "%s/vba_next%s", RETROARCH, sufix[i]);
 						if(not_exists(path)) sprintf(path, "%s/gpsp%s",	 RETROARCH, sufix[i]);
 					}
 					if(strcasestr(".JAR", extension))
