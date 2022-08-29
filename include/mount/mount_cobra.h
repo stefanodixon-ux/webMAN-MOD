@@ -279,15 +279,16 @@ copy_ps2iso_to_hdd0:
 						sys_ppu_thread_usleep(2500);
 						cobra_send_fake_disc_insert_event();
 
-						const char *id = strstr(iso_list[0], " ["); if(!id) id = strstr(iso_list[0], " (");
+						bool done = false;
+						const char *id = strstr(iso_list[0], " [S"); if(!id) id = strstr(iso_list[0], " (S");
 						if(id)
 						{
 							char title_id[12], game_id[12];
-							get_ps_titleid_from_path(title_id, _path);
+							get_ps_titleid_from_path(title_id, iso_list[0]);
 							sprintf(game_id, "%.4s_%.3s.%.2s", title_id, title_id + 4, title_id + 7);
-							copy_ps2config_iso(game_id, templn);
+							done = copy_ps2config_iso(game_id, templn);
 						}
-						else
+						if(!done)
 						{
 							wait_for("/dev_bdvd", 5);
 
