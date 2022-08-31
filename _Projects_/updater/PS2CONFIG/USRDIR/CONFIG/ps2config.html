@@ -901,6 +901,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SCPS_110.14<td>Pipo Saru 2001</tr>
 <tr><td>CUSTOM<td>SCPS_191.04<td>Pipo Saru 2001 [PlayStation 2 The Best]</tr>
 <tr><td>CUSTOM<td>SCPS_191.53<td>Pipo Saru 2001 [PlayStation 2 The Best]</tr>
+<tr><td>CUSTOM<td>SLPM_653.16<td>Pop'n Music 8</tr>
+<tr><td>CUSTOM<td>SLPM_622.88<td>Pop'n Music Best Hits!</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls">SLUS_200.03<td>Portal Runner</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls">SLES_502.63<td>Portal Runner</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls">SLES_504.44<td>Portal Runner</tr>
@@ -3967,6 +3969,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SCPS_110.14<td>Pipo Saru 2001</tr>
 <tr><td>ENC<td>SCPS_191.04<td>Pipo Saru 2001 [PlayStation 2 The Best]</tr>
 <tr><td>ENC<td>SCPS_191.53<td>Pipo Saru 2001 [PlayStation 2 The Best]</tr>
+<tr><td>ENC<td>SLPM_653.16<td>Pop'n Music 8</tr>
+<tr><td>ENC<td>SLPM_622.88<td>Pop'n Music Best Hits!</tr>
 <tr><td>ENC<td>SLUS_200.03<td>Portal Runner</tr>
 <tr><td>ENC<td>SLES_502.63<td>Portal Runner</tr>
 <tr><td>ENC<td>SLES_504.44<td>Portal Runner</tr>
@@ -4662,7 +4666,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2540, count = tr.length, classics = i;
+var i = 2542, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
