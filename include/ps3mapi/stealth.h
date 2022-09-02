@@ -19,7 +19,7 @@ static void disable_signin_dialog(void)
 static void enable_signin_dialog(void)
 {
 	#ifdef COBRA_ONLY
-	sys_map_path(NPSIGNIN_PLUGIN_RCO, NULL);
+	sys_map_path(NPSIGNIN_PLUGIN_RCO, NPSIGNIN_PLUGIN_ON);
 	#endif
 }
 
