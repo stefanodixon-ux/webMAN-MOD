@@ -6,7 +6,7 @@
 
 		char msg[MAX_LINE_LEN], filename[STD_PATH_LEN]; _memset(msg, sizeof(msg)); *filename = NULL;
 
-		setPluginActive();
+		setPluginActive(); unload_plugin_modules(true);
 
 		int ret = download_file(strchr(param_original, '%') ? (param_original + 13) : (param + 13), msg);
 

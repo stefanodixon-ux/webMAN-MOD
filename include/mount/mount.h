@@ -900,15 +900,15 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 static void lock_psp_launchers(void)
 {
 	if(file_exists(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID))
-		sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID, SYSMAP_EMPTY_DIR);
+		sys_map_path2(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID, SYSMAP_EMPTY_DIR);
 	if(file_exists(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID))
-		sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID, SYSMAP_EMPTY_DIR);
+		sys_map_path2(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID, SYSMAP_EMPTY_DIR);
 }
 
 static void unlock_psp_launchers(void)
 {
-	sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID, NULL);
-	sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID, NULL);
+	sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID, _HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID);
+	sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID, _HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID);
 }
 
 static u8 gm = 01;
