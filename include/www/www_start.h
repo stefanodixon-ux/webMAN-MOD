@@ -174,6 +174,11 @@ static void start_www(u64 conn_s_p)
 
 			start_event(EVENT_ON_XMB);
 
+			#ifdef PS3MON_SPRX
+			if(webman_config->ps3mon)
+				load_vsh_plugin(PS3MON_SPRX);
+			#endif
+
 			#ifdef ARTEMIS_PRX
 			clear_codelist();
 			#endif

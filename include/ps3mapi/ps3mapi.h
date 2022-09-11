@@ -175,10 +175,14 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 	bool prx_found = false;
 
 	int slot;
-	if(!find_free_slot && (mode == 3)) // 3 = toggle mode (check unload)
+	if(!find_free_slot && (mode >= 2))
 	{
 		slot = ps3mapi_get_vsh_plugin_slot_by_name(plugin_path, 0);
-		if(slot < 7) goto unload_plugin;
+		if(slot < 7)
+		{
+			if(mode == 3) goto unload_plugin; // 3 = toggle mode (check unload)
+			if(mode >= 2) return slot; // 2-5 = load vsh plugin (prevent load again)
+		}
 	}
 
 	for (slot = 1; slot < 7; slot++)
@@ -187,7 +191,8 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 
 		if(find_free_slot || load_in_new_slot) // 0 = find mode, 2 = load mode, 3 = toggle mode (load), 4 = load vsh gui
 		{
-			if(*tmp_name) continue;
+			if(*tmp_name && (mode != 5)) continue; // slot is busy
+
 			if(load_in_new_slot)
 			{
 				char arg[2] = {1, 0};

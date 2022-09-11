@@ -85,6 +85,13 @@ static void setup_parse_settings(char *param)
 #ifdef ARTEMIS_PRX
 	webman_config->artemis = IS_MARKED("ar=1");
 #endif
+#ifdef PS3MON_SPRX
+	webman_config->ps3mon = IS_MARKED("pm=1");
+	if(webman_config->ps3mon)
+		load_vsh_plugin(PS3MON_SPRX);
+	else
+		unload_vsh_plugin(PS3MON_SPRX);
+#endif
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
@@ -741,6 +748,10 @@ static void setup_form(char *buffer, char *templn)
 #endif
 #ifdef UNLOCK_SAVEDATA
 	add_checkbox_line("up", "Unlock savedata", (webman_config->unlock_savedata), buffer);
+#endif
+#ifdef PS3MON_SPRX
+	if(file_exists(PS3MON_SPRX))
+		add_checkbox_line("pm", "PS3Mon", (webman_config->ps3mon), buffer);
 #endif
 
 	//game listing

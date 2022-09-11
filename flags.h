@@ -53,6 +53,7 @@
 #define PHOTO_GUI		// PhotoGUI: mount games through Photo column
 #define MOUNT_PNG		// support fake PNG as ISO
 #define VISUALIZERS		// Rotate visualizers (earth, lines, canyon, coldboot_*.ac3)
+#define PS3MON_SPRX		"/dev_hdd0/tmp/wm_res/ps3mon.sprx"
 #define ARTEMIS_PRX
 
 //// INTERNAL PLUGINS ////

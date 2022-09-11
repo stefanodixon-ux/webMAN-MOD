@@ -646,6 +646,7 @@ int main()
 
 	// webMAN ADD-ONS
 	file_copy(APP_USRDIR "/addons/prepISO.pkg",    RES_DIR "/prepISO.pkg");
+	file_copy(APP_USRDIR "/addons/ps3mon.sprx",    RES_DIR "/ps3mon.sprx");
 	file_copy(APP_USRDIR "/addons/RELOAD_XMB.ISO", RES_DIR "/RELOAD_XMB.ISO");
 	file_copy(APP_USRDIR "/addons/boot_mamba.pkg",    RES_DIR "/boot_mamba.pkg");
 	file_copy(APP_USRDIR "/addons/boot_fake_ofw.pkg", RES_DIR "/boot_fake_ofw.pkg");

@@ -25,6 +25,7 @@ static void enable_signin_dialog(void)
 
 #ifdef PS3MAPI
 
+static bool notify_restore = true;
 static u64 sc_backup[CFW_SYSCALLS];
 
 static void backup_cfw_syscalls(void)
@@ -76,8 +77,12 @@ static void restore_cfw_syscalls(void)
 	else
 	{
 		disable_signin_dialog();
-		if(!webman_config->nobeep) play_rco_sound("snd_trophy");
-		show_msg_with_icon(ICON_CHECK, STR_RSTCFWSYS);
+		if(notify_restore)
+		{
+			if(!webman_config->nobeep) play_rco_sound("snd_trophy");
+			show_msg_with_icon(ICON_CHECK, STR_RSTCFWSYS);
+			notify_restore = false;
+		}
 	}
 
 	if(payload_ps3hen)
@@ -160,7 +165,7 @@ static void remove_cfw_syscalls(bool keep_ccapi)
 	for(u8 sc = initial_sc; sc < CFW_SYSCALLS; sc++)
 		pokeq(SYSCALL_PTR( sc_disable[sc] ), sc_null);
 
-	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	notify_restore = syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 
 	#ifdef COBRA_ONLY
 	if(syscalls_removed)

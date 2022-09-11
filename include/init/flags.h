@@ -42,7 +42,7 @@
 
 #ifndef PS3MAPI
  #undef PATCH_GAMEBOOT
-// #undef ARTEMIS_PRX
+ #undef PS3MON_SPRX
 #endif
 #ifndef PATCH_GAMEBOOT
  #define set_mount_type(a)

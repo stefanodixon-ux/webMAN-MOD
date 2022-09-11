@@ -157,7 +157,9 @@ typedef struct
 
 	u8 auto_power_off; // 0 = prevent auto power off on ftp, 1 = allow auto power off on ftp (also on install.ps3, download.ps3)
 
-	u8 padding12[5];
+	u8 ps3mon; // 0 = none; 1 = load ps3mon.sprx on startup
+
+	u8 padding12[4];
 
 	u8 homeb; // 0=none, 1=show home button in original GUI
 	char home_url[255]; // url for home button, search path for files not found or path for default application in app_home

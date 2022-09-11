@@ -192,6 +192,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 
 static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
+	size_t size = 0;
 	u64 address = 0, addr, byte_addr, upper_memory = LV1_UPPER_MEMORY, found_address = 0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0, rep = 1, oper = 0; // replace value
 	bool found = false, not_found = false;
@@ -384,7 +385,7 @@ view_file:
 		buffer += concat(buffer, "]");
 
 		// file navigation
-		size_t size = file_size(param);
+		size = file_size(param);
 		u64 max = (size < HEXVIEW_SIZE) ? 0 : (size - HEXVIEW_SIZE);
 		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=0x%llx\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
 		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=0x%llx\">Next></a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=0x%llx\">>></a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
@@ -451,6 +452,8 @@ view_file:
 				if(hilite) buffer += concat(buffer, "</font>");
 			}
 			buffer += concat(buffer, "<br>");
+
+			if(is_file && (byte_addr >= size - 1)) break;
 		}
 
 		p++; if(p>=0x10) p=0;
