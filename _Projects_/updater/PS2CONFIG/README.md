@@ -1,5 +1,5 @@
 Here's some basic info on the "useful" PS2 config commands documented by @mrjaredbeta:
-
+```
 0x07/0x08 - can fix SPS/graphical glitches
 0x09-0x0B - memory/disc image patching
 0x0C - disc read speed adjustment, slows down disc read speed (slower loading, could fix loading screen freeze or improve performance on games that rely on constant stream of data)
@@ -21,7 +21,7 @@ Anything 0x35 and above is netemu only, so you will not see them in gx configs:
 0x46 - performance enhancement in games using GS download
 0x47 - fixes blocky image
 0x50 - enable pressure sensitive controls
-
+```
 More detailed information and examples can be found in these links:
 
 https://www.psdevwiki.com/ps3/PS2_Emulation#Config_Commands
