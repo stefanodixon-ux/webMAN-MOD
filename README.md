@@ -155,7 +155,6 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - A comprehensive set of web commands and features for customization. Link in [Web Commands Documentation](https://www.psx-place.com/threads/webman-mod-web-commands.1508/)
 
 #### Stealth features
-- Automatic block of Sign In to PSN while CFW syscalls are enabled (thanks to DeViL303 for the modded screen).
 - Support for dumping and spoofing IDPS/PSID/act.dat
 - Support for automatic or manual removal of CFW syscalls and spoof console id (IDPS/PSID)
 - "Offline" mode (blocks some PSN/tracking servers) and automatic restore when CFW syscalls are removed. Game updates still work in this mode. (v1.33.03)
