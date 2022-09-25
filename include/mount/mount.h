@@ -898,8 +898,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 #ifdef COBRA_ONLY
 
-#define lock_psp_launchers()
-#define unlock_psp_launchers()
+#define lock_psp_launchers() {}
+#define unlock_psp_launchers() {}
 
 //static void lock_psp_launchers(void)
 //{

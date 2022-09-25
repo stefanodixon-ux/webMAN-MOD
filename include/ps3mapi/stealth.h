@@ -57,7 +57,7 @@ static void restore_cfw_syscalls(void)
 	syscalls_removed = (lv2_peek_hen(TOC) == SYSCALLS_UNAVAILABLE);
 	#endif
 
-//	if(!syscalls_removed) disable_signin_dialog();
+	if(!syscalls_removed) disable_signin_dialog();
 
 #ifndef ENGLISH_ONLY
 	char STR_RSTCFWSYS[80];//	= "CFW Syscalls restored!";
@@ -165,7 +165,11 @@ static void remove_cfw_syscalls(bool keep_ccapi)
 	for(u8 sc = initial_sc; sc < CFW_SYSCALLS; sc++)
 		pokeq(SYSCALL_PTR( sc_disable[sc] ), sc_null);
 
-	notify_restore = syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+
+	#ifdef PS3MAPI
+	notify_restore = syscalls_removed;
+	#endif
 
 	#ifdef COBRA_ONLY
 	if(syscalls_removed)

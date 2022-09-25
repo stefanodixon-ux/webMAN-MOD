@@ -123,10 +123,10 @@ static u16 sc_disable[CFW_SYSCALLS] = {200, 201, 202, 203, 204, 1022, 6, 7, 10, 
 static u16 sc_disable[CFW_SYSCALLS] = {200, 201, 202, 203, 204, 1022, 6, 7, 10, 11, 15, 20, 35, 36, 38, 8, 9};
 #endif
 
-#ifdef COBRA_ONLY
+#define disable_signin_dialog() {}
+#define enable_signin_dialog() {}
 
-#define disable_signin_dialog()
-#define enable_signin_dialog()
+#ifdef COBRA_ONLY
 
 //#ifdef REMOVE_SYSCALLS
 //static void disable_signin_dialog(void);
@@ -586,9 +586,9 @@ static void ps3mapi_syscall8(char *buffer, char *templn, const char *param)
 
 	syscalls_removed = (ret_val != 0); peek_lv1 = (syscalls_removed) ? lv1_peek_ps3mapi : lv1_peek_cfw;
 
-	//#ifdef REMOVE_SYSCALLS
-	//if(!syscalls_removed) disable_signin_dialog();
-	//#endif
+	#ifdef REMOVE_SYSCALLS
+	if(!syscalls_removed) disable_signin_dialog();
+	#endif
 
 	if(ret_val < 0)
 	{

@@ -36,7 +36,7 @@ static void get_cobra_version(char *cfw_info)
 
 #ifdef COBRA_ONLY
 	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
-//	if(!syscalls_removed) disable_signin_dialog();
+	if(!syscalls_removed) disable_signin_dialog();
 
 	if(!cobra_version && !syscalls_removed) sys_get_cobra_version();
 
@@ -158,7 +158,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 	if(dd) sprintf(days, "%id ", dd);
 
 	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
-//	if(!syscalls_removed) disable_signin_dialog();
+	if(!syscalls_removed) disable_signin_dialog();
 
 	u16 len =
 	sprintf(msg, "CPU: %i°C %s %i°C  FAN: %i%%   \n"

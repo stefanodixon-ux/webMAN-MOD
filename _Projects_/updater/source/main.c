@@ -642,7 +642,7 @@ int main()
 	if(not_exists(RES_DIR "/roms_extensions.txt"))
 		file_copy(APP_USRDIR "/res/roms_extensions.txt", RES_DIR "/roms_extensions.txt");
 
-	file_copy(APP_USRDIR "/res/npsignin_plugin.rco",     RES_DIR "/npsignin_plugin.rco");
+	//file_copy(APP_USRDIR "/res/npsignin_plugin.rco",   RES_DIR "/npsignin_plugin.rco");
 
 	// webMAN ADD-ONS
 	file_copy(APP_USRDIR "/addons/prepISO.pkg",    RES_DIR "/prepISO.pkg");
