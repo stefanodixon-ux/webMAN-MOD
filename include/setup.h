@@ -706,14 +706,10 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(templn, HTML_PORT("ndp", "%i") "<br>", webman_config->netsrvp); concat(buffer, templn);
 #endif
 
-#ifdef LITE_EDITION
-	add_checkbox_line("bn", STR_ACCESS,    (webman_config->bind) , buffer);
-#else
 	add_checkbox("bn", STR_ACCESS,  " : ", (webman_config->bind) , buffer);
 
 	sprintf(templn, HTML_INPUT("aip", "%s", "15", "16") " Pwd: "
 					HTML_PASSW("pwd", "%s", "20", "20") "<br>", webman_config->allow_ip, webman_config->ftp_password); concat(buffer, templn);
-#endif
 
 	concat(buffer, HTML_BLU_SEPARATOR);
 
