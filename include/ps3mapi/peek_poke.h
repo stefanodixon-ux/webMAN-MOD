@@ -21,6 +21,32 @@ static u64 lv1_peek_cfw(u64 addr)
 }
 
 #ifdef COBRA_ONLY
+/*
+static process_id_t vsh_pid = 0;
+static void get_vsh_pid(void)
+{
+	#define MAX_PROCESS 16
+	char name[25];
+	u32 tmp_pid_list[MAX_PROCESS];
+	system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)tmp_pid_list);
+	for (int i = 0; i < MAX_PROCESS; i++)
+	{
+		system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_NAME_BY_PID, tmp_pid_list[i], (u64)(u32)name);
+		if (strstr(name, "vsh"))
+		{
+			vsh_pid = tmp_pid_list[i];
+			break;
+		}
+	}
+}
+
+static void poke_vsh(u64 address, char *buf, int size)
+{
+	if(!vsh_pid) get_vsh_pid();
+	if (vsh_pid)
+		system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PROC_MEM, vsh_pid, address, (u64)(u32)buf, size);
+}
+*/
 static u64 lv1_peek_ps3mapi(u64 addr)
 {
 	system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_PEEK, addr);
