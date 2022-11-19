@@ -255,6 +255,7 @@ Requirements for GNU/Linux:
 - DnaWrkshp for Artemis patch engine
 - lmirel port of libraries for exFAT
 - TheRouleteBoi for FPS counter plugin
+- kostirez1 fixes to FTP issues, PS3Mon, improvements to ROS patcher
 - LuanTeles for the help file (based on XMB offline documentation tool by xp3riments & DeViL303)
 - DeViL303 for ideas, gameboot mods, Sign In blocker, XML mods
 - PSX-SCENE, PSX-PLACE, PLAYSTATIONHAX, PS3HAX & other scene websites/users, who translated, helped in the testing process
