@@ -166,6 +166,12 @@ div.sticky {
 #clear:hover {
 	color: yellow;
 }
+a {
+	color: #a0a0a0;
+}
+a:hover {
+	color: white;
+}
 small {font-size:12px; color:#aaa}
 #compat {font-size:10px; font-family:arial;}
 #compat a {text-decoration:none; color:#ccc;}
@@ -308,7 +314,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_504.45<td>Burnout</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_204.97<td>Burnout 2: Point of Impact</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_510.44<td>Burnout 2: Point of Impact</tr>
-<tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_210.50<td>Burnout 3: Takedown</tr>
+<tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_210.50<td>Burnout 3: Takedown (<a href="https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/ALT/SLUS_210.50.CONFIG" title="Fix save and slow motion only">ALT</A>)</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_525.84<td>Burnout 3: Takedown</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_525.85<td>Burnout 3: Takedown</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLPM_657.19<td>Burnout 3: Takedown</tr>
@@ -681,6 +687,12 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_290.59<td>Hunter: The Reckoning: Wayward [Demo]</tr>
 <tr><td>CUSTOM<td>SLPM_663.01<td>Ibara</tr>
 <tr><td>CUSTOM<td>TCPS_101.31<td>Ibara</tr>
+<tr><td>CUSTOM<td>SCUS_971.13<td>Ico</tr>
+<tr><td>CUSTOM<td>SCES_507.60<td>Ico</tr>
+<tr><td>CUSTOM<td>SCKA_200.28<td>Ico</tr>
+<tr><td>CUSTOM<td>SCPS_110.03<td>Ico</tr>
+<tr><td>CUSTOM<td>SCPS_191.03<td>Ico</tr>
+<tr><td>CUSTOM<td>SCPS_550.01<td>Ico</tr>
 <tr><td>CUSTOM<td>SCCS_400.05<td>Ico</tr>
 <tr><td>CUSTOM<td>SLES_500.36<td>International Track & Field</tr>
 <tr><td>CUSTOM<td>SLKA_250.60<td>I.Q Remix+: Intelligent Qube</tr>
@@ -2967,7 +2979,7 @@ setTimeout(function(){
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_504.45<td>Burnout</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_204.97<td>Burnout 2: Point of Impact</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_510.44<td>Burnout 2: Point of Impact</tr>
-<tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_210.50<td>Burnout 3: Takedown</tr>
+<tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLUS_210.50<td>Burnout 3: Takedown (<a href="https://github.com/aldostools/webMAN-MOD/raw/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/ALT/SLUS_210.50.ENC" title="Fix save and slow motion only">ALT</A>)</tr>
 <tr><td>ENC<td>SLUS_291.13<td>Burnout 3: Takedown [Demo]</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_525.84<td>Burnout 3: Takedown</tr>
 <tr><td>ENC<td title="Enables pressure sensitivity to allow controllable speeds while driving">SLES_525.85<td>Burnout 3: Takedown</tr>
@@ -3607,6 +3619,12 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPM_650.05<td>I am the Coach</tr>
 <tr><td>ENC<td>SLPM_663.01<td>Ibara</tr>
 <tr><td>ENC<td>TCPS_101.31<td>Ibara</tr>
+<tr><td>ENC<td>SCUS_971.13<td>Ico</tr>
+<tr><td>ENC<td>SCES_507.60<td>Ico</tr>
+<tr><td>ENC<td>SCKA_200.28<td>Ico</tr>
+<tr><td>ENC<td>SCPS_110.03<td>Ico</tr>
+<tr><td>ENC<td>SCPS_191.03<td>Ico</tr>
+<tr><td>ENC<td>SCPS_550.01<td>Ico</tr>
 <tr><td>ENC<td>SCCS_400.05<td>Ico</tr>
 <tr><td>ENC<td>SLES_500.36<td>International Track & Field</tr>
 <tr><td>ENC<td>SLKA_250.60<td>I.Q Remix+: Intelligent Qube</tr>
@@ -4766,7 +4784,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2592, count = tr.length, classics = i;
+var i = 2598, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
