@@ -179,7 +179,7 @@ static void delete_history(bool delete_folders)
 		while(working && (!cellFsGetDirectoryEntries(fd, &dir, sizeof(dir), &read_e) && read_e))
 		{
 			unlink_file(HDD0_HOME_DIR, entry_name, "/etc/boot_history.dat");
-			unlink_file(HDD0_HOME_DIR, entry_name, "/etc/community/CI.TMP");
+			unlink_file(HDD0_HOME_DIR, entry_name, "/community/CI.TMP");
 			unlink_file(HDD0_HOME_DIR, entry_name, "/community/MI.TMP");
 			unlink_file(HDD0_HOME_DIR, entry_name, "/community/PTL.TMP");
 		}

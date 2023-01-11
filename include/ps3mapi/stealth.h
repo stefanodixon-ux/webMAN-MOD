@@ -6,22 +6,29 @@ static u64 blocked_url[MAX_BLOCKED_URL][2]; u8 url_count = 0;
 
 #ifdef REMOVE_SYSCALLS
 
-//static void disable_signin_dialog(void)
-//{
-//	#ifdef COBRA_ONLY
-//	if(file_exists(NPSIGNIN_PLUGIN_OFF))
-//	{
-//		sys_map_path(NPSIGNIN_PLUGIN_RCO, NPSIGNIN_PLUGIN_OFF);
-//	}
-//	#endif
-//}
-//
-//static void enable_signin_dialog(void)
-//{
-//	#ifdef COBRA_ONLY
-//	sys_map_path(NPSIGNIN_PLUGIN_RCO, NPSIGNIN_PLUGIN_ON);
-//	#endif
-//}
+#ifndef COBRA_ONLY
+#define disable_signin_dialog() {}
+#define enable_signin_dialog() {}
+#endif
+
+#ifdef DISABLE_SIGNIN_DIALOG
+static void disable_signin_dialog(void)
+{
+	#ifdef COBRA_ONLY
+	if(file_exists(NPSIGNIN_PLUGIN_OFF))
+	{
+		sys_map_path(NPSIGNIN_PLUGIN_RCO, NPSIGNIN_PLUGIN_OFF);
+	}
+	#endif
+}
+
+static void enable_signin_dialog(void)
+{
+	#ifdef COBRA_ONLY
+	sys_map_path(NPSIGNIN_PLUGIN_RCO, NPSIGNIN_PLUGIN_ON);
+	#endif
+}
+#endif
 
 #ifdef PS3MAPI
 
@@ -57,7 +64,9 @@ static void restore_cfw_syscalls(void)
 	syscalls_removed = (lv2_peek_hen(TOC) == SYSCALLS_UNAVAILABLE);
 	#endif
 
+	#ifdef DISABLE_SIGNIN_DIALOG
 	if(!syscalls_removed) disable_signin_dialog();
+	#endif
 
 #ifndef ENGLISH_ONLY
 	char STR_RSTCFWSYS[80];//	= "CFW Syscalls restored!";
@@ -199,6 +208,8 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 	#endif
 
+	delete_history(true);
+
 	if(syscalls_removed)
 	{
 		if(!webman_config->nobeep) { BEEP2 }
@@ -218,7 +229,6 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 		restore_blocked_urls(false);
 
 		remove_cfw_syscalls(keep_ccapi);
-		delete_history(true);
 
 		if(syscalls_removed)
 		{
