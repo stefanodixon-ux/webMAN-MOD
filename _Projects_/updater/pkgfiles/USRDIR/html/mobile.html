@@ -2262,19 +2262,30 @@ gallery.goToPage(curPage);
 
 updatePage();
 
+const pulseTimeInMilliseconds = 1050;
+const minPulseSize = 98;
+const maxPulseSize = 103;
+
 function animate()
 {
-	if(slides.length<1) return;
+	if(slides.length < 1) return;
 
-	var img = obj('pic'+ gallery.currentMasterPage).style;
+	var img = obj('pic' + gallery.currentMasterPage).style;
 
-	if(img.zoom=='100%') {img.zoom='102%';} else
-	if(img.zoom=='102%') {img.zoom='103%';} else
-	if(img.zoom=='103%') {img.zoom='101%';} else
-	if(img.zoom=='101%') {img.zoom='99%'; } else
-	if(img.zoom=='99%')  {img.zoom='98%'; } else {img.zoom='100%';}
+	let newSize = calculatePulseSize(minPulseSize, maxPulseSize, pulseTimeInMilliseconds);
 
-	setTimeout(animate, 175);
+	img.zoom = `${newSize}%`;
+
+	setTimeout(animate, 10);
+}
+
+// Pulse animate rewrite written by: https://github.com/Lagunacloud-86
+function calculatePulseSize(minSize, maxSize, pulseTimeInMilliseconds){
+	let addSize = maxSize - minSize;
+	let epoch = Date.now();
+	let pulseNormal = (epoch % pulseTimeInMilliseconds) / pulseTimeInMilliseconds;
+	let sinValue = pulseNormal * Math.PI * 2;
+	return Math.sin(sinValue) * addSize + minSize ;
 }
 setTimeout(animate, 1500);
 
