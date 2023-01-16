@@ -328,7 +328,7 @@ static void toggle_ps2emu(void)
 	#endif //#ifdef REX_ONLY
 	if(file_exists(PS2_EMU_PATH "ps2_netemu.self.swap"))
 	{
-		show_msg("Switch to custom ps2emu...");
+		show_msg("Switching to custom ps2emu...");
 
 		swap_file(PS2_EMU_PATH, "ps2_netemu.self", "ps2_netemu.tmp", "ps2_netemu.self.swap");
 		swap_file(PS2_EMU_PATH, "ps2_gxemu.self",  "ps2_gxemu.tmp",  "ps2_gxemu.self.swap");
