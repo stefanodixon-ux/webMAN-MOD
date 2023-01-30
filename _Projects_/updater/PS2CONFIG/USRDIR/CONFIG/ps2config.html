@@ -460,6 +460,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_515.88<td>Evil Dead: A Fistful of Boomstick</tr>
 <tr><td>CUSTOM<td>SLUS_205.46<td>Evolution Snowboarding</tr>
 <tr><td>CUSTOM<td>SLES_513.92<td>Evolution Snowboarding</tr>
+<tr><td>CUSTOM<td>SLPM_652.31<td>Evolution Snowboarding</tr>
 <tr><td>CUSTOM<td>SCCS_400.18<td>EyeToy: Saru EyeToy: Oosawagi! Ukkiuki Game Tenkomori!!</tr>
 <tr><td>CUSTOM<td>SLUS_202.64<td>F1 2001</tr>
 <tr><td>CUSTOM<td>SLES_504.23<td>F1 2001</tr>
@@ -951,6 +952,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls">SLES_502.63<td>Portal Runner</tr>
 <tr><td>CUSTOM<td title="Enables pressure sensitive controls">SLES_504.44<td>Portal Runner</tr>
 <tr><td>CUSTOM<td>SLUS_204.06<td>Pride FC: Fighting Championships</tr>
+<tr><td>CUSTOM<td>SLES_513.71<td>Pride FC: Fighting Championships</tr>
+<tr><td>CUSTOM<td>SLPM_651.67<td>Pride</tr>
 <tr><td>CUSTOM<td>SCES_511.35<td>Primal</tr>
 <tr><td>CUSTOM<td>SLES_542.03<td>Pro Evolution Soccer 6</tr>
 <tr><td>CUSTOM<td>SLES_542.04<td>Pro Evolution Soccer 6</tr>
@@ -1285,6 +1288,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SCUS_971.96<td>Twisted Metal Black: Online [Demo]</tr>
 <tr><td>CUSTOM<td>SCUS_971.95<td>Twisted Metal Black: Online</tr>
 <tr><td>CUSTOM<td>SCUS_978.60<td>Twisted Metal Black: Online [Beta]</tr>
+<tr><td>CUSTOM<td>SCUS_976.21<td>Twisted Metal: Head-On [Extra Twisted Edition]</tr>
 <tr><td>CUSTOM<td>SLUS_205.71<td>TY the Tasmanian Tiger</tr>
 <tr><td>CUSTOM<td>SLES_512.20<td>TY the Tasmanian Tiger</tr>
 <tr><td>CUSTOM<td>SLUS_210.57<td>TY the Tasmanian Tiger 2: Bush Rescue</tr>
@@ -3253,6 +3257,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_515.88<td>Evil Dead: A Fistful of Boomstick</tr>
 <tr><td>ENC<td>SLUS_205.46<td>Evolution Snowboarding</tr>
 <tr><td>ENC<td>SLES_513.92<td>Evolution Snowboarding</tr>
+<tr><td>ENC<td>SLPM_652.31<td>Evolution Snowboarding</tr>
 <tr><td>ENC<td>SCCS_400.18<td>EyeToy: Saru EyeToy: Oosawagi! Ukkiuki Game Tenkomori!!</tr>
 <tr><td>ENC<td>SLUS_202.64<td>F1 2001</tr>
 <tr><td>ENC<td>SLES_504.23<td>F1 2001</tr>
@@ -4079,6 +4084,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_502.63<td>Portal Runner</tr>
 <tr><td>ENC<td>SLES_504.44<td>Portal Runner</tr>
 <tr><td>ENC<td>SLUS_204.06<td>Pride FC: Fighting Championships</tr>
+<tr><td>ENC<td>SLES_513.71<td>Pride FC: Fighting Championships</tr>
+<tr><td>ENC<td>SLPM_651.67<td>Pride</tr>
 <tr><td>ENC<td>SCUS_971.42<td>Primal: Civilization Is Only Skin Deep</tr>
 <tr><td>ENC<td>NPUC_971.42<td>Primal: Civilization Is Only Skin Deep</tr>
 <tr><td>ENC<td>SCES_511.35<td>Primal</tr>
@@ -4788,7 +4795,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2602, count = tr.length, classics = i;
+var i = 2606, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
