@@ -20,7 +20,7 @@
 
 			if(!param[9] || param[10])
 			{
-				apply_noBD_patches(noBD);
+				apply_noBD_patches(noBD, false);
 			}
 
 			_concat2(&sbuffer, "noBD: ", noBD ? STR_ENABLED : STR_DISABLED);

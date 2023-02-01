@@ -106,7 +106,7 @@ static void setup_parse_settings(char *param)
 		disable_dev_blind();
 
 #ifdef NOBD_PATCH
-	webman_config->noBD = IS_MARKED("bd=1"); apply_noBD_patches(webman_config->noBD);
+	webman_config->noBD = IS_MARKED("bd=1"); apply_noBD_patches(webman_config->noBD, false);
 #endif
 
 	webman_config->root    = IS_UNMARKED("rt=1");
