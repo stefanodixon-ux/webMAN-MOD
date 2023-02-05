@@ -20,6 +20,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 ## Current functionality
 ### General
 - Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.89 CEX, DEX & DECR)
+- Support on Evilnat firmware (ver 4.87.2-4.89.3 CEX, DEX, PEX, D-PEX)
 - Support on REBUG firmware with Cobra feature disabled (ver 4.84.2-4.86.1 CEX, DEX & DECR) 
 - Support on REBUG firmware with Mamba loaded via boot_plugins_nocobra_kernel.txt (ver 4.86.1 CEX & 4.84.2 DEX) 
 - Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.89 HFW
@@ -30,6 +31,8 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - All PS3 Models (including all fat, Slim 20xx, 21xx, 25xx, 3xxx & SuperSlims 4xxx) are supported via PS3HEN payload
 - All PS3 Models capable to downgrade to 3.56 or lower are supported via PS3Xploit Flash Writer (aka PS3Xploit 2.0)
   See *[http://www.psdevwiki.com/ps3/SKU_Models](http://www.psdevwiki.com/ps3/SKU_Models)* for compatibility with CFW
+
+**IMPORTANT**: To support firmware 4.70 and lower, must recompile the project without LAST_FIRMWARE_ONLY in flags.h.
 
 ### sMAN / webMAN vanilla features
 - FTP server with remote control functions (shutdown/restart)
