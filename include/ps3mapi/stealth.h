@@ -208,6 +208,8 @@ static void disable_cfw_syscalls(bool keep_ccapi)
 	{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 	#endif
 
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+
 	delete_history(true);
 
 	if(syscalls_removed)
