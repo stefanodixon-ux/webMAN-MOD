@@ -782,6 +782,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_508.02<td>Knockout Kings 2002</tr>
 <tr><td>CUSTOM<td>SLES_508.03<td>Knockout Kings 2002</tr>
 <tr><td>CUSTOM<td>SLPM_665.82<td>Kohitsuji Hokaku Keakaku! Sweet Boys Life / 仔羊捕獲ケーカク! スイートボーイズライフ</tr>
+<tr><td>CUSTOM<td>SLPS_254.40<td>Konjiki no Gashbell!! Gekitou! Saikyou no Mamono-tachi</tr>
 <tr><td>CUSTOM<td>SLUS_210.07<td>Kuon</tr>
 <tr><td>CUSTOM<td>SLES_534.11<td>Kuon</tr>
 <tr><td>CUSTOM<td>SLPS_253.29<td>Kuon / 九怨</tr>
@@ -1385,6 +1386,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_202.78<td>Yanya Caballista: City Skater</tr>
 <tr><td>CUSTOM<td>SLPM_620.51<td>Yanya Caballista: featuring Gawoo / ヤンヤ　カバジスタ　ｆｅａｔｕｒｉｎｇ　Ｇａｗｏｏ</tr>
 <tr><td>CUSTOM<td title="Fixes the freeze in opening Taito FMV">SLPM_659.26<td>Ys IV: Mask of the Sun: A New Theory</tr>
+<tr><td>CUSTOM<td>SLUS_213.63<td>Zatch Bell! Mamodo Fury</tr>
 <tr><td>CUSTOM<td>SLPS_253.03<td>Zero: Crimson Butterfly</tr>
 <tr><td>CUSTOM<td>SCPS_550.15<td>Zettai Zetsumei Toshi (Disaster Report)</tr>
 <tr><td>NET<td>SLPM_657.32<td>Akai Ito</tr>
@@ -3796,6 +3798,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_508.02<td>Knockout Kings 2002</tr>
 <tr><td>ENC<td>SLES_508.03<td>Knockout Kings 2002</tr>
 <tr><td>ENC<td>SLPM_665.82<td>Kohitsuji Hokaku Keakaku! Sweet Boys Life / 仔羊捕獲ケーカク! スイートボーイズライフ</tr>
+<tr><td>ENC<td>SLPS_254.40<td>Konjiki no Gashbell!! Gekitou! Saikyou no Mamono-tachi</tr>
 <tr><td>ENC<td>SLUS_210.07<td>Kuon</tr>
 <tr><td>ENC<td>SLES_534.11<td>Kuon</tr>
 <tr><td>ENC<td>SLPS_253.29<td>Kuon / 九怨</tr>
@@ -4843,6 +4846,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_202.78<td>Yanya Caballista: City Skater</tr>
 <tr><td>ENC<td>SLPM_620.51<td>Yanya Caballista: featuring Gawoo / ヤンヤ　カバジスタ　ｆｅａｔｕｒｉｎｇ　Ｇａｗｏｏ</tr>
 <tr><td>ENC<td title="Fixes the freeze in opening Taito FMV">SLPM_659.26<td>Ys IV: Mask of the Sun: A New Theory</tr>
+<tr><td>ENC<td>SLUS_213.63<td>Zatch Bell! Mamodo Fury</tr>
 <tr><td>ENC<td>SLPS_253.03<td>Zero: Crimson Butterfly</tr>
 <tr><td>ENC<td>SLPS_251.13<td>Zettai Zetsumei Toshi (Disaster Report)</tr>
 <tr><td>ENC<td>SCPS_550.15<td>Zettai Zetsumei Toshi (Disaster Report)</tr>
@@ -4857,7 +4861,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2640, count = tr.length, classics = i;
+var i = 2642, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
