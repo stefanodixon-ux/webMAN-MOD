@@ -19,14 +19,14 @@ and artists that collaborated with development, knowledge, resources, feedback &
 
 ## Current functionality
 ### General
-- Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.89 CEX, DEX & DECR)
-- Support on Evilnat firmware (ver 4.87.2-4.89.3 CEX, DEX, PEX, D-PEX)
+- Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.90 CEX, DEX & DECR)
+- Support on Evilnat firmware (ver 4.87.2-4.90.1 CEX, DEX, PEX, D-PEX)
 - Support on REBUG firmware with Cobra feature disabled (ver 4.84.2-4.86.1 CEX, DEX & DECR) 
 - Support on REBUG firmware with Mamba loaded via boot_plugins_nocobra_kernel.txt (ver 4.86.1 CEX & 4.84.2 DEX) 
-- Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.89 HFW
-- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.89 CEX, DEX & DECR)
-- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.89 CEX, DEX & DECR)
-- Support on classic custom firmware with PRXLoader (ver 3.41-4.89 CEX, DEX & DECR)
+- Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.90 HFW
+- Support on classic custom firmware with Mamba loaded via IRISMAN (ver 3.41-4.90 CEX, DEX & DECR)
+- Support on classic custom firmware with Mamba/PRXLoader (ver 3.41-4.90 CEX, DEX & DECR)
+- Support on classic custom firmware with PRXLoader (ver 3.41-4.90 CEX, DEX & DECR)
 
 - All PS3 Models (including all fat, Slim 20xx, 21xx, 25xx, 3xxx & SuperSlims 4xxx) are supported via PS3HEN payload
 - All PS3 Models capable to downgrade to 3.56 or lower are supported via PS3Xploit Flash Writer (aka PS3Xploit 2.0)
@@ -209,7 +209,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - [PS2CONFIG](https://store.brewology.com/get/homebrew.php?id=310&fid=2178) : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games
 - [WM Themes](https://store.brewology.com/ahomebrew.php?brewid=310) : Set of packages that customize the look of the XMB icons used by webMAN MOD
 - [Reload XMB](https://store.brewology.com/get/homebrew.php?id=310&fid=2184) : PS3 application that forces the reload of XMB icons
-- [Boot MAMBA](https://github.com/aldostools/webMAN-MOD/releases) : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87/4.88/4.89 with Cobra disabled
+- [Boot MAMBA](https://github.com/aldostools/webMAN-MOD/releases) : Package that installs MAMBA payload for use on Rebug 4.84/4.85/4.86/4.87/4.88/4.89/4.90 with Cobra disabled
 
 - [PS2 Classics Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2187) : PS3 application required to launch PS2 Classics games in .BIN.ENC format
 - [PSP Remasters Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2186) : PS3 application required to launch PSP Remaster games in ISO format

@@ -19,7 +19,7 @@
 			sprintf(param, "<a href=%s>%s</a>: %s (%llu %s)", dev_name, dev_name, disk_size, ret, STR_BYTE);
 		}
 		else
-		if(sc == 200 || sc == 904)
+		if(/* sc == 200 || */ sc == 904)
 		{	// ccapi_get_process_mem || dex_get_process_mem
 			if(sp[2] > MAX_LINE_LEN) sp[2] = MAX_LINE_LEN; _memset(header, sp[2]);
 			{system_call_4(sc, sp[0], sp[1], sp[2], (u64)(u32)header); ret = p1;}

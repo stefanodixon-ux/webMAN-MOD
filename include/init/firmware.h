@@ -1,4 +1,4 @@
-#define LATEST_CFW	4.89f
+#define LATEST_CFW	4.90f
 
 #ifndef COBRA_ONLY
 static u64 base_addr = 0;
@@ -38,6 +38,7 @@ static u64 sc_142 = 0;
 #define FW488	0x323032312F30342FULL // 2021/04/
 #define FW489	0x323032322F30322FULL // 2022/02/
 #define FW489P	0x323032332F30312FULL // 2023/01/ # Ported 4.84 in 4.89.3 Evilnat
+#define FW490	0x323032322F31322FULL // 2022/12/
 
 #define SC_GET_PLATFORM_INFO		(387)
 #define SC_GET_CONSOLE_TYPE			(985)
@@ -111,7 +112,8 @@ static void detect_firmware(void)
 		if(SYSCALL_TABLE) break;
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
 
-		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW489) ? 4.89f :
+		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB58) == FW490) ? 4.90f :
+																					(peek(0x2FCB68) == FW489) ? 4.89f :
 																					(peek(0x2FCB68) == FW488) ? 4.88f :
 #ifndef LITE_EDITION
 																					(peek(0x2FCB68) == FW487) ? 4.87f :
@@ -149,13 +151,13 @@ static void detect_firmware(void)
 
 #ifdef DEX_SUPPORT
 		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW484) ? 4.84f :
-																					(peek(0x31F028) == FW489P)? 4.89f : // Ported 4.84 in 4.89.3 Evilnat
+																					(peek(0x31F028) == FW489P)? 4.89f : // Ported 4.84 in 4.89.3 / 4.90.1 Evilnat
  #ifndef LAST_FIRMWARE_ONLY
-																					(peek(0x31F028) == FW489) ? 4.89f :
-																					(peek(0x31F028) == FW488) ? 4.88f :
-																					(peek(0x31F028) == FW487) ? 4.87f :
-																					(peek(0x31F028) == FW486) ? 4.86f :
-																					(peek(0x31F028) == FW485) ? 4.85f :
+																				//	(peek(0x31F028) == FW489) ? 4.89f :
+																				//	(peek(0x31F028) == FW488) ? 4.88f :
+																				//	(peek(0x31F028) == FW487) ? 4.87f :
+																				//	(peek(0x31F028) == FW486) ? 4.86f :
+																				//	(peek(0x31F028) == FW485) ? 4.85f :
 																					(peek(0x31F028) == FW482) ? 4.82f :
 																					(peek(0x31F028) == FW481) ? 4.81f :
  #endif
@@ -188,11 +190,11 @@ static void detect_firmware(void)
  #endif // #ifndef LAST_FIRMWARE_ONLY
 		if(peek(0x32EB60) == DEH) {SYSCALL_TABLE = SYSCALL_TABLE_475H; c_firmware = (peek(0x344B70) == FW484) ? 4.84f :
  #ifndef LAST_FIRMWARE_ONLY
-																					(peek(0x344B70) == FW489) ? 4.89f :
-																					(peek(0x344B70) == FW488) ? 4.88f :
-																					(peek(0x344B70) == FW487) ? 4.87f :
-																					(peek(0x344B70) == FW486) ? 4.86f :
-																					(peek(0x344B70) == FW485) ? 4.85f :
+																				//	(peek(0x344B70) == FW489) ? 4.89f :
+																				//	(peek(0x344B70) == FW488) ? 4.88f :
+																				//	(peek(0x344B70) == FW487) ? 4.87f :
+																				//	(peek(0x344B70) == FW486) ? 4.86f :
+																				//	(peek(0x344B70) == FW485) ? 4.85f :
 																					(peek(0x344B70) == FW483) ? 4.83f :
 																					(peek(0x344B70) == FH482) ? 4.82f :
 																					(peek(0x344B70) == FW481) ? 4.81f :
@@ -222,7 +224,7 @@ static void detect_firmware(void)
 		if(IS_CEX)
 		{
 			/*
-			if(c_firmware >= 4.75f && c_firmware <= LATEST_CFW) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80-4.89
+			if(c_firmware >= 4.75f && c_firmware <= LATEST_CFW) SYSCALL_TABLE = SYSCALL_TABLE_480; // same for 4.75, 4.76, 4.78, 4.80-4.90
 			#ifndef LAST_FIRMWARE_ONLY
 			if(c_firmware == 4.70f) SYSCALL_TABLE = SYSCALL_TABLE_470;
 			if(BETWEEN(4.60f, c_firmware, 4.66f)) SYSCALL_TABLE = SYSCALL_TABLE_460; // same for 4.60, 4.65, 4.66
@@ -284,7 +286,7 @@ static void detect_firmware(void)
 								{base_addr = 0x2D88E0, open_hook = 0x2A02C8;} else
 		if(c_firmware == 4.70f) {base_addr = 0x2D8A70, open_hook = 0x2975C0;} else
  #endif  // #ifndef LAST_FIRMWARE_ONLY
-		if(c_firmware == 4.80f) {base_addr = 0x2D8AE0, open_hook = 0x29762C;} else
+		if(c_firmware == 4.90f || c_firmware == 4.80f) {base_addr = 0x2D8AE0, open_hook = 0x29762C;} else
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 								{base_addr = 0x2D8AF0, open_hook = 0x297638;}
 	}
@@ -338,7 +340,7 @@ static void detect_firmware(void)
 	{ // CEX
 		if(c_firmware >= 4.55f /*&& c_firmware <= LATEST_CFW*/)
 		{
-			get_fan_policy_offset = 0x8000000000009E38ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80-4.89
+			get_fan_policy_offset = 0x8000000000009E38ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80-4.90
 			set_fan_policy_offset = 0x800000000000A334ULL; // sys 389 set_fan_policy
 
 #ifdef SPOOF_CONSOLEID
@@ -394,7 +396,7 @@ static void detect_firmware(void)
 	{ // DEX & DEH
 		if(c_firmware >= 4.55f /*&& c_firmware <= LATEST_CFW*/)
 		{
-				get_fan_policy_offset = 0x8000000000009EB8ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80-4.89
+				get_fan_policy_offset = 0x8000000000009EB8ULL; // sys 409 get_fan_policy  4.55/4.60/4.65/4.70/4.75/4.76/4.78/4.80-4.90
 				set_fan_policy_offset = 0x800000000000A3B4ULL; // sys 389 set_fan_policy
 
  #ifdef SPOOF_CONSOLEID
@@ -478,7 +480,7 @@ static void detect_firmware(void)
 #ifdef NOBD_PATCH
 static void apply_noBD_patches(u8 noBD, u8 from_boot)
 {
-	// noBD LV1 4.75 - 4.89
+	// noBD LV1 4.75 - 4.90
 	if(ALLOW_NOBD)
 	{
 		if(noBD && peek_lv1(0x712798ULL) == 0xF9210078409E000CULL)
@@ -729,7 +731,7 @@ static void patch_lv2(void)
 		else
 #endif //#ifndef LAST_FIRMWARE_ONLY
 #ifndef LITE_EDITION
-		if(c_firmware == 4.80f)
+		if(c_firmware == 4.90f || c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x8000000000267144ULL, 0x800000000005688CULL, 0x800000000005664CULL,
 								  0x80000000000565F8ULL, 0x800000000005A6DCULL,
