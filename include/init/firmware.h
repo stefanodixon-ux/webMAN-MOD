@@ -39,6 +39,7 @@ static u64 sc_142 = 0;
 #define FW489	0x323032322F30322FULL // 2022/02/
 #define FW489P	0x323032332F30312FULL // 2023/01/ # Ported 4.84 in 4.89.3 Evilnat
 #define FW490	0x323032322F31322FULL // 2022/12/
+#define FW490P	0x323032332F30332FULL // 2023/03/ # Ported 4.84 in 4.90.x Evilnat
 
 #define SC_GET_PLATFORM_INFO		(387)
 #define SC_GET_CONSOLE_TYPE			(985)
@@ -68,6 +69,7 @@ static inline int get_kernel_type(void)
 {
 	u64 type;
 	system_call_1(SC_GET_CONSOLE_TYPE, (u32)&type);
+	if((type > 1) && (peek(0x31F028) >= FW489P)) {pex_mode = 1; return 2;} // PEX
 	return (int)(type - 1);
 }
 
@@ -151,7 +153,8 @@ static void detect_firmware(void)
 
 #ifdef DEX_SUPPORT
 		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW484) ? 4.84f :
-																					(peek(0x31F028) == FW489P)? 4.89f : // Ported 4.84 in 4.89.3 / 4.90.1 Evilnat
+																					(peek(0x31F028) == FW489P)? 4.89f : // Ported 4.84 in 4.89.3 Evilnat
+																					(peek(0x31F028) == FW490P)? 4.90f : // Ported 4.84 in 4.90.x Evilnat
  #ifndef LAST_FIRMWARE_ONLY
 																				//	(peek(0x31F028) == FW489) ? 4.89f :
 																				//	(peek(0x31F028) == FW488) ? 4.88f :
@@ -161,7 +164,7 @@ static void detect_firmware(void)
 																					(peek(0x31F028) == FW482) ? 4.82f :
 																					(peek(0x31F028) == FW481) ? 4.81f :
  #endif
-																					get_firmware_version(); dex_mode = 2;} else
+																					get_firmware_version(); dex_mode = 2; pex_mode = (peek(0x31F028) >= FW489P);} else
  #ifndef LAST_FIRMWARE_ONLY
 		if(peek(0x30F3A0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_480D; c_firmware = 4.80f; dex_mode = 2;}	else
 		if(peek(0x30F2D0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_475D; c_firmware = (peek(0x31EF48) == FW478) ? 4.78f :

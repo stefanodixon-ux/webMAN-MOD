@@ -229,6 +229,7 @@ static bool syscalls_removed = false;
 
 static float c_firmware = 0.0f;
 static u8 dex_mode = 0;
+static u8 pex_mode = 0;
 
 #ifndef LITE_EDITION
 static u8 chart_init = 0;
