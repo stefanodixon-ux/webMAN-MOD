@@ -114,8 +114,8 @@ static void detect_firmware(void)
 		if(SYSCALL_TABLE) break;
 		LV2_OFFSET_ON_LV1 = (u64)lv2_offset * 0x1000000ULL;
 
-		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB58) == FW490) ? 4.90f :
-																					(peek(0x2FCB68) == FW489) ? 4.89f :
+		if(peek(0x2ED808) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_480;  c_firmware = (peek(0x2FCB58) == FW490) ? 4.90f : 4.80f;}	else
+		if(peek(0x2ED818) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_482;  c_firmware = (peek(0x2FCB68) == FW489) ? 4.89f :
 																					(peek(0x2FCB68) == FW488) ? 4.88f :
 #ifndef LITE_EDITION
 																					(peek(0x2FCB68) == FW487) ? 4.87f :
@@ -133,7 +133,6 @@ static void detect_firmware(void)
 #endif
 																					get_firmware_version();} else
 #ifndef LAST_FIRMWARE_ONLY
-		if(peek(0x2ED808) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_480;  c_firmware = 4.80f;}	else
 		if(peek(0x2ED778) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_470;  c_firmware = 4.70f;}	else
 		if(peek(0x2ED860) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_465;  c_firmware = (peek(0x2FC938) == FW466) ? 4.66f : 4.65f;} else
 		if(peek(0x2ED850) == CEX) {SYSCALL_TABLE = SYSCALL_TABLE_460;  c_firmware = 4.60f;}	else
