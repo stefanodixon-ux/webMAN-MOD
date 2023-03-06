@@ -16,6 +16,10 @@
 #define ORG_GAME_EXT_PATH	"/dev_flash/vsh/module/game_ext_plugin.sprx"
 #define NEW_GAME_EXT_PATH	"/./dev_hdd0/tmp/gameboot/game_ext_plugin.sprx"
 
+#define CUSTOM_RENDER_PLUGIN_RCO	"/dev_flash/vsh/resource/custom_render_plugin.rco"
+#define GAMEBOOT_MULTI_AC3			"/dev_flash/vsh/resource/gameboot_multi.ac3"
+#define GAMEBOOT_STEREO_AC3			"/dev_flash/vsh/resource/gameboot_stereo.ac3"
+
 #define ORG_LIBAUDIO_PATH	"/dev_flash/sys/external/libaudio.sprx"
 #define NEW_LIBAUDIO_PATH	"/./dev_hdd0/tmp/libaudio.sprx"
 
@@ -53,6 +57,7 @@
 #define WM_ICONS_PATH		TMP_DIR "/wm_icons"				// webMAN icons folder
 #define WM_COMBO_PATH		TMP_DIR "/wm_combo"				// webMAN custom combos folder
 #define WM_INGAME_PATH		TMP_DIR "/wm_ingame"			// webMAN ingame scripts
+#define WM_GAMEBOOT_PATH	TMP_DIR "/gameboot"				// gameboot animations per console emulator
 
 #define WM_CONFIG_FILE		TMP_DIR "/wm_config.bin"		// webMAN config file
 #define WM_NOSCAN_FILE		TMP_DIR "/wm_noscan"			// webMAN config file to skip on boot

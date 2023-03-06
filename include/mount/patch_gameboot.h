@@ -14,7 +14,7 @@ static void patch_gameboot(u8 boot_type)
 {
 	if(is_patching_gameboot) return;
 
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= MIN_RCO_SIZE))
+	if(IS_ON_XMB && (file_size(CUSTOM_RENDER_PLUGIN_RCO) >= MIN_RCO_SIZE))
 	{
 		is_patching_gameboot = true;
 
@@ -73,15 +73,15 @@ static void patch_gameboot(u8 boot_type)
 			}
 
 			char path[48];
-			if(isDir("/dev_hdd0/tmp/gameboot"))
+			if(isDir(WM_GAMEBOOT_PATH))
 			{
 				map_patched_modules();
 
-				sprintf(path, "%s/%s_boot_stereo.ac3", "/dev_hdd0/tmp/gameboot", id);
+				sprintf(path, "%s/%s_boot_stereo.ac3", WM_GAMEBOOT_PATH, id);
 
 				const char *snd = file_exists(path) ? path : NULL;
-				sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  snd);
-				sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", snd);
+				sys_map_path(GAMEBOOT_MULTI_AC3,  snd);
+				sys_map_path(GAMEBOOT_STEREO_AC3, snd);
 
 				const char *media[6] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM", "ICON0.PNG"};
 				for(u8 i = 0; i < 6; i++)
@@ -90,7 +90,7 @@ static void patch_gameboot(u8 boot_type)
 					if(not_exists(path))
 					{
 						char src_path[40];
-						sprintf(src_path, "%s/%s_%s", "/dev_hdd0/tmp/gameboot", id, media[i]);
+						sprintf(src_path, "%s/%s_%s", WM_GAMEBOOT_PATH, id, media[i]);
 						file_copy(src_path, path);
 					}
 				}
@@ -104,7 +104,7 @@ static void patch_gameboot(u8 boot_type)
 static void patch_gameboot_by_type(const char *path) // called only by set_mount_type
 {
 	// customize gameboot per console emulator using DeViL303's custom_render_plugin.rco
-	if(IS_ON_XMB && (file_size("/dev_flash/vsh/resource/custom_render_plugin.rco") >= MIN_RCO_SIZE))
+	if(IS_ON_XMB && (file_size(CUSTOM_RENDER_PLUGIN_RCO) >= MIN_RCO_SIZE))
 	{
 		if(mount_unk == EMU_PSX)
 			patch_gameboot(1); // PS1
