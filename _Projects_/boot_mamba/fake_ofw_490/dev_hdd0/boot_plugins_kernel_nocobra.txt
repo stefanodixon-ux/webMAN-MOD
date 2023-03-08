@@ -1,0 +1,1 @@
+/dev_hdd0/plugins/kernel/fake_ofw_mamba_490C.bin

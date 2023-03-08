@@ -8,8 +8,8 @@ if not exist fake_ofw md fake_ofw
 
 :: Change these for your application / manual...
 set CID=CUSTOM-INSTALLER_00-0000000000000000
-set PKG_DIR=./fake_ofw/
-set PKG_NAME=boot_fake_ofw.pkg
+set PKG_DIR=./fake_ofw_490/
+set PKG_NAME=boot_fake_ofw_490.pkg
 
 ..\updater\pkg_custom.exe --contentid %CID% %PKG_DIR% %PKG_NAME%
 
