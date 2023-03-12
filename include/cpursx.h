@@ -340,9 +340,12 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 			buffer += concat(buffer, " [<a href=\"/xmb.ps3$exit\">Exit</a>]");
 		}
 
-		if(syscalls_removed && !is_cpursx)
+		if(!is_cpursx)
 		{
-			sprintf(templn, "%s<h1>%s</h1>", HTML_RED_SEPARATOR, STR_CFWSYSALRD); concat(buffer, templn);
+			if(syscalls_removed)
+				{sprintf(templn, "%s<h1>%s</h1>", HTML_RED_SEPARATOR, STR_CFWSYSALRD); concat(buffer, templn);}
+			else if(!cobra_version)
+				{sprintf(templn, "%s<h1>%s %s</h1>", HTML_RED_SEPARATOR, "Cobra", STR_DISABLED); concat(buffer, templn);}
 		}
 
 		get_game_info();
@@ -372,9 +375,12 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 			buffer += concat(buffer, "</H2></span>");
 		}
 	}
-	else if(syscalls_removed && !is_cpursx)
+	else if(!is_cpursx)
 	{
-		sprintf(templn, "%s<h1>%s</h1>", HTML_RED_SEPARATOR, STR_CFWSYSALRD); concat(buffer, templn);
+		if(syscalls_removed)
+			{sprintf(templn, "%s<h1>%s</h1>", HTML_RED_SEPARATOR, STR_CFWSYSALRD); concat(buffer, templn);}
+		else if(!cobra_version)
+			{sprintf(templn, "%s<h1>%s %s</h1>", HTML_RED_SEPARATOR, "Cobra", STR_DISABLED); concat(buffer, templn);}
 	}
 }
 

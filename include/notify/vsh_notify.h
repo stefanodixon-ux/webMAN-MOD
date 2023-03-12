@@ -284,6 +284,9 @@ static void show_status(const char *label, u8 status)
 static void show_error(const char *text)
 {
 	char msg[200];
-	snprintf(msg, sizeof(msg), "%s %s", STR_ERROR, text);
+	if(IS(text, "[nonCobra]"))
+		sprintf(msg, "%s %s", "Cobra", STR_DISABLED);
+	else
+		snprintf(msg, sizeof(msg), "%s %s", STR_ERROR, text);
 	show_msg_with_icon(ICON_ERROR, msg);
 }

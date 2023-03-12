@@ -242,6 +242,8 @@ static void unload_vsh_gui(void)
 {
 	if(syscalls_removed)
 		show_msg_with_icon(ICON_EXCLAMATION, STR_CFWSYSALRD);
+	else if(!cobra_version)
+		show_error("[nonCobra]");
 
 	unload_vsh_plugin("VSH_MENU"); // unload vsh menu
 	unload_vsh_plugin("sLaunch");  // unload sLaunch
@@ -1708,6 +1710,10 @@ static void ps3mapi_home(char *buffer, char *templn)
 	if(syscalls_removed)
 	{
 		sprintf(templn, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); concat(buffer, templn);
+	}
+	else if(!cobra_version)
+	{
+		sprintf(templn, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); concat(buffer, templn);
 	}
 
 	//---------------------------------------------

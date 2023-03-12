@@ -688,6 +688,18 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				close_language();
 				#endif
 
+				syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+				if(syscalls_removed)
+				{
+					sprintf(tempstr, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); concat(buffer, tempstr);
+				}
+				#ifdef COBRA_ONLY
+				else if(!cobra_version)
+				{
+					sprintf(tempstr, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); concat(buffer, tempstr);
+				}
+				#endif
+
 				strcat(buffer, "<div id=\"mount\">");
 				add_breadcrumb_trail2(buffer, is_movie ? STR_MOVIETOM : STR_GAMETOM, source);
 
@@ -759,10 +771,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 							mlen += sprintf(tempstr + mlen, " A previous mount is in progress.");
 						else if(IS_INGAME)
 							mlen += sprintf(tempstr + mlen, " Click to quit the game.");
-						#ifdef COBRA_ONLY
 						else if(!cobra_version)
 							mlen += sprintf(tempstr + mlen, " Cobra payload not available.");
-						#endif
 					}
 					#ifdef COBRA_NON_LITE
 					if(islike(params, "/net") && !is_netsrv_enabled(param[4 + MOUNT_CMD])) mlen += sprintf(tempstr + mlen, " /net%c %s", param[4 + MOUNT_CMD], STR_DISABLED);
@@ -1491,6 +1501,8 @@ static void mount_thread(u64 action)
 		if(ret_val < 0) { show_msg_with_icon(ICON_EXCLAMATION, STR_CFWSYSALRD); { PS3MAPI_DISABLE_ACCESS_SYSCALL8 } goto finish; }
 		if(ret_val > 1) { system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, 1); }
 	}
+	else if(!cobra_version)
+		{ show_error("[nonCobra]"); goto finish; }
 	#else
 
 	if(syscalls_removed || peekq(TOC) == SYSCALLS_UNAVAILABLE) { show_msg_with_icon(ICON_EXCLAMATION, STR_CFWSYSALRD); goto finish; }

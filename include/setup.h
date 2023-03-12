@@ -545,6 +545,12 @@ static void setup_form(char *buffer, char *templn)
 	{
 		sprintf(templn, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); concat(buffer, templn);
 	}
+	#ifdef COBRA_ONLY
+	else if(!cobra_version)
+	{
+		sprintf(templn, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); concat(buffer, templn);
+	}
+	#endif
 
 	u8 value, b, h = is_app_home_onxmb();
 	add_html('0', 0, buffer, templn);

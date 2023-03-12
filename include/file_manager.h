@@ -615,6 +615,12 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 	{
 		sprintf(tempstr, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); _concat(&sout, tempstr);
 	}
+	#ifdef COBRA_ONLY
+	else if(!cobra_version)
+	{
+		sprintf(tempstr, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); _concat(&sout, tempstr);
+	}
+	#endif
 
 	_LINELEN = LINELEN;
 	_MAX_PATH_LEN = MAX_PATH_LEN;
