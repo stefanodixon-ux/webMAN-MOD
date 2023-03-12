@@ -1072,6 +1072,12 @@ next_html_entry:
 			}
 		else
 		{
+			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+			if(syscalls_removed)
+			{
+				sprintf(tempstr, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); _concat(&sout, tempstr);
+			}
+
 			for(u16 m = 0; m < idx; m++)
 			{
 				_concat3(&sout, GAME_DIV_PREFIX, (line_entry[m].path) + HTML_KEY_LEN, GAME_DIV_SUFIX);

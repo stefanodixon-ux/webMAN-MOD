@@ -287,7 +287,7 @@ static void block_online_servers(bool notify)
 
 		if(peekq(TOC) == SYSCALLS_UNAVAILABLE)
 		{
-			show_msg_with_icon(ICON_CAUTION, STR_CFWSYSALRD);
+			show_msg_with_icon(ICON_EXCLAMATION, STR_CFWSYSALRD);
 		}
 		else
 		{

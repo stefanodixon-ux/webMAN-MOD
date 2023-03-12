@@ -240,6 +240,9 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 
 static void unload_vsh_gui(void)
 {
+	if(syscalls_removed)
+		show_msg_with_icon(ICON_EXCLAMATION, STR_CFWSYSALRD);
+
 	unload_vsh_plugin("VSH_MENU"); // unload vsh menu
 	unload_vsh_plugin("sLaunch");  // unload sLaunch
 }
@@ -1700,6 +1703,12 @@ static void ps3mapi_home(char *buffer, char *templn)
 
 	if(!versionfw)
 		syscall8_state = NONE;
+
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	if(syscalls_removed)
+	{
+		sprintf(templn, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); concat(buffer, templn);
+	}
 
 	//---------------------------------------------
 	//PS3 Commands---------------------------------

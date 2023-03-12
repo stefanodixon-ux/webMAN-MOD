@@ -749,7 +749,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				if(!mounted)
 				{
 					if(!c_firmware || syscalls_removed)
-						mlen += sprintf(tempstr + mlen, "%s", STR_CFWSYSALRD);
+						mlen += sprintf(tempstr + mlen, " %s", STR_CFWSYSALRD);
 					else
 					#ifndef ENGLISH_ONLY
 					if(webman_config->lang == 0 || webman_config->lang == LANG_CUSTOM)

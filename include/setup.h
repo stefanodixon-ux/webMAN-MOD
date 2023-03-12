@@ -540,6 +540,12 @@ static void setup_form(char *buffer, char *templn)
  #endif
 	fast_concat.str = NULL;
 
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	if(syscalls_removed)
+	{
+		sprintf(templn, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); concat(buffer, templn);
+	}
+
 	u8 value, b, h = is_app_home_onxmb();
 	add_html('0', 0, buffer, templn);
 	sprintf(templn, " %s </a></b><br><div id=\"cnt\">"

@@ -610,6 +610,12 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 	if(copy_aborted | fix_aborted) {_concat(&sout, "<p>"); sys_ppu_thread_usleep(100000); copy_aborted = fix_aborted = false;}
 	#endif
 
+	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
+	if(syscalls_removed)
+	{
+		sprintf(tempstr, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); _concat(&sout, tempstr);
+	}
+
 	_LINELEN = LINELEN;
 	_MAX_PATH_LEN = MAX_PATH_LEN;
 	_MAX_LINE_LEN = MAX_LINE_LEN;

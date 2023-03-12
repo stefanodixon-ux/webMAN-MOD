@@ -112,6 +112,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 
 	cellRtcGetCurrentTick(&pTick);
 
+	if(op < 20)
 	{
 		u8 st, mode, unknown;
 		sys_sm_get_fan_policy(0, &st, &mode, &fan_speed, &unknown);
@@ -339,6 +340,11 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 			buffer += concat(buffer, " [<a href=\"/xmb.ps3$exit\">Exit</a>]");
 		}
 
+		if(syscalls_removed && !is_cpursx)
+		{
+			sprintf(templn, "%s<h1>%s</h1>", HTML_RED_SEPARATOR, STR_CFWSYSALRD); concat(buffer, templn);
+		}
+
 		get_game_info();
 
 		if(strlen(_game_TitleID) == 9)
@@ -365,6 +371,10 @@ static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 
 			buffer += concat(buffer, "</H2></span>");
 		}
+	}
+	else if(syscalls_removed && !is_cpursx)
+	{
+		sprintf(templn, "%s<h1>%s</h1>", HTML_RED_SEPARATOR, STR_CFWSYSALRD); concat(buffer, templn);
 	}
 }
 
@@ -400,30 +410,30 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 #ifdef COPY_PS3
 	if(ftp_state)
 	{
-		sprintf(templn, "<hr><font size=2>FTP: %s %s</font>", (ftp_state == 1) ? "Sending " : "Receiving ", current_file);
+		sprintf(templn, "<font size=2>FTP: %s %s</font>", (ftp_state == 1) ? "Sending " : "Receiving ", current_file);
 	}
 	else
 	if(copy_in_progress)
 	{
 		get_copy_stats(templn + 100, "");
-		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s</font>", "/copy.ps3", STR_COPYING, templn + 100);
+		sprintf(templn, "<font size=2><a href=\"%s$abort\">&#9746 %s</a> %s</font>", "/copy.ps3", STR_COPYING, templn + 100);
 	}
 	else if(fix_in_progress)
 	{
 		sprintf(templn + 100, "%s (%i %s)", current_file, fixed_count, STR_FILES);
-		sprintf(templn, "<hr><font size=2><a href=\"%s$abort\">&#9746 %s</a> %s</font>", "/fixgame.ps3", STR_FIXING, templn + 100);
+		sprintf(templn, "<font size=2><a href=\"%s$abort\">&#9746 %s</a> %s</font>", "/fixgame.ps3", STR_FIXING, templn + 100);
 	}
 	else
 #endif
 	if(IS_ON_XMB && ((View_Find("game_plugin") != 0) || (View_Find("download_plugin") != 0)) )
 	{
-		sprintf(templn, "<hr><font size=2>&starf; Status: %s %s</font>",
+		sprintf(templn, "<font size=2>&starf; Status: %s %s</font>",
 						View_Find("download_plugin") ? "Downloading file" : "",
 						View_Find("game_plugin")     ? "Installing PKG"   : "");
 	}
 	else if( games_found )
 	{
-		sprintf(templn, "<hr><font size=2>%s%s: %'i %s</font>", STR_SCAN2, SUFIX2(profile), games_found, STR_GAMES);
+		sprintf(templn, "<font size=2>%s%s: %'i %s</font>", STR_SCAN2, SUFIX2(profile), games_found, STR_GAMES);
 	}
 	/*else
 	{
@@ -634,7 +644,6 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 						"<input type=button onclick=\"$$('ht').style.display='block';window.stop();\" value='&#x25BC;'> "
 						"<a class=\"s\" href=\"/setup.ps3\">"
 						"%s %s<br>" // fw_info
-						"%s<br>"
 						"<span id='ht' style='display:none;'>"
 		#ifdef SPOOF_CONSOLEID
 						"%s<hr>" // psid
@@ -645,13 +654,11 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 						"</span></h2></a></b>",
 		#ifdef SPOOF_CONSOLEID
 						IS_NAND ? "NAND" : "NOR", fw_info,
-						(syscalls_removed) ? STR_CFWSYSALRD : "",
 						psid,
 						idps1,
 						idps2,
 		#else
 						"", fw_info,
-						(syscalls_removed) ? STR_CFWSYSALRD : "",
 		#endif
 						mac_address, ip, net_type); buffer += concat(buffer, templn);
 	}
