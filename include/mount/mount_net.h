@@ -211,7 +211,6 @@ retry_net:
 		else if(is_iso && pspiso)
 		{
 			mount_unk = EMU_PSP;
-			unlock_psp_launchers();
 
 			pspiso = strchr(pspiso + 1, '/');
 			if(pspiso)

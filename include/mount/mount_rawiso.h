@@ -116,7 +116,6 @@ mounted_ntfs:
 				if(is_psp)
 				{
 					strcpy(templn, _path);
-					unlock_psp_launchers();
 					ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 				}
 				else //if(is_ps2)

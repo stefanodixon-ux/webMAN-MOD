@@ -908,23 +908,6 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 #ifdef COBRA_ONLY
 
-#define lock_psp_launchers() {}
-#define unlock_psp_launchers() {}
-
-//static void lock_psp_launchers(void)
-//{
-//	if(file_exists(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID))
-//		sys_map_path2(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID, SYSMAP_EMPTY_DIR);
-//	if(file_exists(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID))
-//		sys_map_path2(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID, SYSMAP_EMPTY_DIR);
-//}
-//
-//static void unlock_psp_launchers(void)
-//{
-//	sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID, _HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID);
-//	sys_map_path(HDD0_GAME_DIR PSP_LAUNCHER_REMASTERS_ID, _HDD0_GAME_DIR PSP_LAUNCHER_MINIS_ID);
-//}
-
 static u8 gm = 01;
 
 static void unmap_app_home(void)
@@ -1069,7 +1052,6 @@ static void do_umount(bool clean)
 		{ PS3MAPI_ENABLE_ACCESS_SYSCALL8 }
 
 		cobra_unset_psp_umd(); // eject PSPISO
-		lock_psp_launchers();
 
 		#ifndef LITE_EDITION
 		swap_file(PSP_EMU_PATH, "psp_emulator.self", "psp_emulator.self.dec_edat", "psp_emulator.self.original"); // restore original psp_emulator.self
