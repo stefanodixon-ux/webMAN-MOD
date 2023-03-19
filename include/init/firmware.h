@@ -732,7 +732,6 @@ static void patch_lv2(void)
 		}
 		else
 #endif //#ifndef LAST_FIRMWARE_ONLY
-#ifndef LITE_EDITION
 		if(c_firmware == 4.90f || c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x8000000000267144ULL, 0x800000000005688CULL, 0x800000000005664CULL,
@@ -746,7 +745,6 @@ static void patch_lv2(void)
 			#endif
 		}
 		else
-#endif
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026714CULL, 0x800000000005658CULL, 0x8000000000056650ULL,
