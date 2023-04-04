@@ -89,8 +89,8 @@
 		<A>
 			<T key="app001_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/prepISO_1.30.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/prepISO_1.30.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/prepISO_1.30.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/prepISO_1.30.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-BLES80616_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
@@ -106,8 +106,8 @@
 		<A>
 			<T key="app002_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PS2CONFIG_20230304.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PS2CONFIG_20230304.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2CONFIG_20230403.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2CONFIG_20230403.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-PS2CONFIG_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
@@ -123,8 +123,8 @@
 		<A>
 			<T key="app003_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PS2_Classics_Launcher.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PS2_Classics_Launcher.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2_Classics_Launcher.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2_Classics_Launcher.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>2P0001-PS2U10000_00-0000111122223333</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
@@ -140,8 +140,8 @@
 		<A>
 			<T key="app004_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PSP_Minis_Launcher.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PSP_Minis_Launcher.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PSP_Minis_Launcher.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PSP_Minis_Launcher.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-PSPM66820_00-0000111122223333</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
@@ -157,8 +157,8 @@
 		<A>
 			<T key="app005_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PSP_Remasters_Launcher.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/PSP_Remasters_Launcher.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PSP_Remasters_Launcher.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PSP_Remasters_Launcher.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-PSPC66820_00-0000111122223333</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
@@ -327,8 +327,8 @@
 		<A>
 			<T key="app015_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/webMAN_MOD_1.47.43_Installer.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.43/webMAN_MOD_1.47.43_Installer.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/webMAN_MOD_1.47.44_Installer.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/webMAN_MOD_1.47.44_Installer.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>EP0001-UPDWEBMOD_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>

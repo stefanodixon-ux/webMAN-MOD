@@ -288,7 +288,8 @@ static void detect_firmware(void)
 								{base_addr = 0x2D88E0, open_hook = 0x2A02C8;} else
 		if(c_firmware == 4.70f) {base_addr = 0x2D8A70, open_hook = 0x2975C0;} else
  #endif  // #ifndef LAST_FIRMWARE_ONLY
-		if(c_firmware == 4.90f || c_firmware == 4.80f) {base_addr = 0x2D8AE0, open_hook = 0x29762C;} else
+		if(c_firmware == 4.90f || c_firmware == 4.80f)
+								{base_addr = 0x2D8AE0, open_hook = 0x29762C;} else
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 								{base_addr = 0x2D8AF0, open_hook = 0x297638;}
 	}
@@ -301,7 +302,8 @@ static void detect_firmware(void)
 	  //if(c_firmware == 4.50f) {base_addr = 0x30D2C0, open_hook = 0x2CEF08;} else
 		if(c_firmware == 4.60f) {base_addr = 0x310EE0, open_hook = 0x2D1464;} else
 	#endif  // #ifndef LAST_FIRMWARE_ONLY
-		if(c_firmware == 4.80f) {base_addr = 0x3110F0, open_hook = 0x2C87D4;} else
+		if(c_firmware == 4.90f || c_firmware == 4.80f)
+								{base_addr = 0x3110F0, open_hook = 0x2C87D4;} else
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 								{base_addr = 0x3110F0, open_hook = 0x2C87E0;}
 	}
@@ -325,10 +327,11 @@ static void detect_firmware(void)
 		if(BETWEEN(4.65f, c_firmware, 4.66f))
 								{base_addr = 0x2FA230, open_hook = 0x2BB010;} else
 		if(c_firmware == 4.70f) {base_addr = 0x2FA540, open_hook = 0x2B2480;} else
+  #endif // #ifndef LAST_FIRMWARE_ONLY
 		if(BETWEEN(4.75f, c_firmware, 4.78f))
 								{base_addr = 0x2FA5B0, open_hook = 0x2B24F8;} else
-  #endif // #ifndef LAST_FIRMWARE_ONLY
-		if(c_firmware == 4.80f) {base_addr = 0x2FA680, open_hook = 0x2B25C4;} else
+		if(c_firmware == 4.90f || c_firmware == 4.80f)
+								{base_addr = 0x2FA680, open_hook = 0x2B25C4;} else
 		if(c_firmware >= 4.81f /*&& c_firmware <= LATEST_CFW*/)
 								{base_addr = 0x2FA690, open_hook = 0x2B25D0;}
 	}
@@ -518,7 +521,7 @@ static void apply_noBD_patches(u8 noBD, u8 from_boot)
 #endif
 
 static void apply_lv2_patches(u64 addr_3C, u64 addr_3D, u64 addr_3E,
-						 u64 addr_jump, u64 addr_09)
+							  u64 addr_jump, u64 addr_09)
 {
 	//patches by deank
 	pokeq(addr_3C    , 0x4E80002038600000ULL ); // fix 8001003C error  Original: 0x4E8000208003026CULL
@@ -533,9 +536,9 @@ static void apply_lv2_patches(u64 addr_3C, u64 addr_3D, u64 addr_3E,
 }
 
 static void apply_lv2_patches_new(u64 addr_3C, u64 addr_3D, u64 addr_3E,
-							 u64 addr_jump, u64 addr_09,
-							 u64 addr_lic, u64 addr_17,
-							 u64 addr_restore1, u64 addr_restore2)
+								  u64 addr_jump, u64 addr_09,
+								  u64 addr_lic, u64 addr_17,
+								  u64 addr_restore1, u64 addr_restore2)
 {
 	//patches by deank
 	apply_lv2_patches(addr_3C, addr_3D, addr_3E, addr_jump, addr_09);
@@ -802,8 +805,7 @@ static void patch_lv2(void)
 		}
 		else
  #endif
- #ifndef LITE_EDITION
-		if(c_firmware == 4.80f)
+		if(c_firmware == 4.90f || c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x800000000026E528ULL, 0x800000000005A340ULL, 0x800000000005A020ULL,
 								  0x800000000005A3B0ULL, 0x800000000005E494ULL,
@@ -815,7 +817,6 @@ static void patch_lv2(void)
 			#endif
 		}
 		else
- #endif
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026E530ULL, (c_firmware >= 4.81f) ? 0x800000000005A584ULL : 0x800000000005A344ULL, 0x800000000005A408ULL,
@@ -984,8 +985,7 @@ static void patch_lv2(void)
 		}
 		else
  #endif //#ifndef LAST_FIRMWARE_ONLY
- #ifndef LITE_EDITION
-		if(c_firmware == 4.80f)
+		if(c_firmware == 4.90f || c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x800000000026D860ULL, 0x8000000000059F58ULL, 0x800000000005A01CULL,
 								  0x8000000000059FC8ULL, 0x800000000005E0ACULL,
@@ -998,7 +998,6 @@ static void patch_lv2(void)
 			#endif
 		}
 		else
- #endif
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 		{
 			apply_lv2_patches_new(0x800000000026D868ULL, 0x8000000000059F5CULL, 0x800000000005A020ULL,
