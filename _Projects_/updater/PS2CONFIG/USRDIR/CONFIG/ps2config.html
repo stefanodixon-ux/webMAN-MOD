@@ -421,6 +421,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPS_257.55<td>dot Hack: G.U. Vol.1 - Saitan [Welcome Price!!]</tr>
 <tr><td>CUSTOM<td>SLPS_732.66<td>dot Hack: G.U. Vol.2 - Kimi Omou Koe [PlayStation 2 the Best]</tr>
 <tr><td>CUSTOM<td>SLPS_732.67<td>dot Hack: G.U. Vol.3 - Aruku Youna Hayasa de [PlayStation 2 the Best]</tr>
+<tr><td>CUSTOM<td>SLUS_216.78<td>Dragon Ball Z: Budokai Tenkaichi 3</tr>
 <tr><td>CUSTOM<td title="Fixes characters stuck in cutscene">SLPM_655.55<td>Dragon Quest V</tr>
 <tr><td>CUSTOM<td title="Fixes board spaces not showing up">SLPM_657.97<td>Dragon Quest & Final Fantasy in Itadaki Street Special</tr>
 <tr><td>CUSTOM<td>SLPM_550.23<td>Dragon Quest & Final Fantasy in Itadaki Street Special [Ultimate Hits]</tr>
@@ -1693,8 +1694,8 @@ setTimeout(function(){
 <tr><td>GX<td>SLPS_251.21<td>dot Hack Vol.1</tr>
 <tr><td>GX<td>SLPS_251.43<td>dot Hack Vol.2: Mutation</tr>
 <tr><td>GX<td>SLKA_251.74<td>dot Hack Vol.4: Quarantine</tr>
+<tr><td>GX<td>SLES_512.13<td>Dragon Ball Z: Budokai</tr>
 <tr><td>GX<td>SLPM_663.63<td>Dragon Quest: Shounen Yangus no Fushigi na Daibouken</tr>
-<tr><td>GX<td>SLES_512.13<td>DragonBall Z: Budokai</tr>
 <tr><td>GX<td>SCUS_971.28<td>Drakan: The Ancients' Gates</tr>
 <tr><td>GX<td>SCES_500.06<td>Drakan: The Ancients' Gates</tr>
 <tr><td>GX<td>SLES_539.86<td>DreamWorks La Gang del Bosco</tr>
@@ -3251,6 +3252,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPS_251.21<td>dot Hack Vol.1</tr>
 <tr><td>ENC<td>SLPS_251.43<td>dot Hack Vol.2: Mutation</tr>
 <tr><td>ENC<td>SLKA_251.74<td>dot Hack Vol.4: Quarantine</tr>
+<tr><td>ENC<td>SLES_512.13<td>Dragon Ball Z: Budokai</tr>
+<tr><td>ENC<td>SLUS_216.78<td>Dragon Ball Z: Budokai Tenkaichi 3</tr>
 <tr><td>ENC<td>NPJD_000.05<td>Dragon Force</tr>
 <tr><td>ENC<td>SLPM_657.97<td>Dragon Quest & Final Fantasy in Itadaki Street Special</tr>
 <tr><td>ENC<td>SLPM_550.23<td>Dragon Quest & Final Fantasy in Itadaki Street Special [Ultimate Hits]</tr>
@@ -3264,7 +3267,6 @@ setTimeout(function(){
 <tr><td>ENC<td>SCAJ_201.10<td>Dragon Quest VIII: Sora to Daichi to Norowareshi Himegimi</tr>
 <tr><td>ENC<td>SLPM_664.81<td>Dragon Quest VIII [Ultimate Hits]</tr>
 <tr><td>ENC<td>SLPM_624.90<td>Dragon Quest VIII [Premium Disc]</tr>
-<tr><td>ENC<td>SLES_512.13<td>DragonBall Z: Budokai</tr>
 <tr><td>ENC<td>SCUS_971.28<td>Drakan: The Ancients' Gates</tr>
 <tr><td>ENC<td>SCUS_971.69<td>Drakan: The Ancients' Gates [Demo]</tr>
 <tr><td>ENC<td>SCES_500.06<td>Drakan: The Ancients' Gates</tr>
@@ -4883,7 +4885,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2654, count = tr.length, classics = i;
+var i = 2655, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
