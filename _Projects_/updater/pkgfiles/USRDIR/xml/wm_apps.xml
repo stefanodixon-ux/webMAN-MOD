@@ -42,7 +42,7 @@
 			</T>
 			<T key="app010" include="inc">
 				<P key="title"><>IRISMAN</></P>
-				<P key="info"><>28 MB</></P>
+				<P key="info"><>23 MB</></P>
 			</T>
 			<T key="app011" include="inc">
 				<P key="title"><>Movian</></P>
@@ -62,25 +62,25 @@
 			</T>
 			<T key="app015" include="inc">
 				<P key="title"><>webMAN MOD Installer</></P>
-				<P key="info"><>13.5 MB</></P>
+				<P key="info"><>13.3 MB</></P>
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="app001" attr="app001" src="#app001_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app002" attr="app002" src="#app002_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app003" attr="app003" src="#app003_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app004" attr="app004" src="#app004_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app005" attr="app005" src="#app005_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app006" attr="app006" src="#app006_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app007" attr="app007" src="#app007_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app008" attr="app008" src="#app008_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app009" attr="app009" src="#app009_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app010" attr="app010" src="#app010_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="app001" attr="app001" src="#app001_item"/><!-- prepISO -->
+			<Q class="type:x-xmb/folder-pixmap" key="app002" attr="app002" src="#app002_item"/><!-- PS2 CONFIG Database -->
+			<Q class="type:x-xmb/folder-pixmap" key="app003" attr="app003" src="#app003_item"/><!-- PS2 Classics Launcher -->
+			<Q class="type:x-xmb/folder-pixmap" key="app004" attr="app004" src="#app004_item"/><!-- PSP Minis Launcher -->
+			<Q class="type:x-xmb/folder-pixmap" key="app005" attr="app005" src="#app005_item"/><!-- PSP Remasters Launcher -->
+			<Q class="type:x-xmb/folder-pixmap" key="app006" attr="app006" src="#app006_item"/><!-- PS3 Covers Pack -->
+			<Q class="type:x-xmb/folder-pixmap" key="app007" attr="app007" src="#app007_item"/><!-- PSX & PS2 Covers Pack -->
+			<Q class="type:x-xmb/folder-pixmap" key="app008" attr="app008" src="#app008_item"/><!-- RetroArch CE -->
+			<Q class="type:x-xmb/folder-pixmap" key="app009" attr="app009" src="#app009_item"/><!-- multiMAN -->
+			<Q class="type:x-xmb/folder-pixmap" key="app010" attr="app010" src="#app010_item"/><!-- IRISMAN -->
+			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_item"/><!-- Movian -->
+			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/><!-- Apollo Save Tool -->
+			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/><!-- Artemis GUI [Cheats] -->
+			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/><!-- Ultimate Toolbox v2.03 FULL -->
+			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/><!-- webMAN MOD Installer -->
 		</I>
 	</V>
 
@@ -106,8 +106,8 @@
 		<A>
 			<T key="app002_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2CONFIG_20230403.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2CONFIG_20230403.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2CONFIG_20230406.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.44/PS2CONFIG_20230406.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-PS2CONFIG_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
@@ -242,10 +242,10 @@
 		<A>
 			<T key="app010_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/IRISMAN/releases/download/4.89/IRISMAN_4.89.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/IRISMAN/releases/download/4.89/IRISMAN_4.89.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/IRISMAN/releases/download/4.90/IRISMAN_4.90.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/IRISMAN/releases/download/4.90/IRISMAN_4.90.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
-				<P key="content_id"><>UP0001-IRISMAN00_00-VER4890000000000</></P>
+				<P key="content_id"><>UP0001-IRISMAN00_00-VER4900000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
@@ -259,8 +259,8 @@
 		<A>
 			<T key="app011_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>http://multiman.deanbg.com/multiman/feed/app/movian-5.0.724-deank-playstation3.pkg</></P>
-				<P key="pkg_src_qa"><>http://multiman.deanbg.com/multiman/feed/app/movian-5.0.724-deank-playstation3.pkg</></P>
+				<P key="pkg_src"><>http://multiman.deanbg.com/multiman/feed/app/movian-5.0.730-deank-playstation3.pkg</></P>
+				<P key="pkg_src_qa"><>http://multiman.deanbg.com/multiman/feed/app/movian-5.0.730-deank-playstation3.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-HTSS00003_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
