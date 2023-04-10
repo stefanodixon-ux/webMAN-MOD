@@ -367,6 +367,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_202.02<td>Crazy Taxi</tr>
 <tr><td>CUSTOM<td>SLES_502.15<td>Crazy Taxi</tr>
 <tr><td>CUSTOM<td>SLPM_621.02<td>Crazy Taxi / クレイジータクシー</tr>
+<tr><td>CUSTOM<td>SLES_541.46<td>Crusty Demons</tr>
 <tr><td>CUSTOM<td>SCUS_971.11<td>Dark Cloud</tr>
 <tr><td>CUSTOM<td>SLUS_210.42<td>Darkwatch</tr>
 <tr><td>CUSTOM<td>SLES_535.64<td>Darkwatch</tr>
@@ -577,6 +578,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPS_202.31<td>Freekstyle Motocross</tr>
 <tr><td>CUSTOM<td>SLPM_623.41<td>Fushigi no Kuni no Alice / 不思議の国のアリス</tr>
 <tr><td>CUSTOM<td>SCPS_150.72<td>Gacha Mecha Stadium Saru Battle / ガチャメカスタジアム　サルバト〜レ</tr>
+<tr><td>CUSTOM<td>SLES_528.45<td>Gadget & the Gadgetinis</tr>
 <tr><td>CUSTOM<td>SLUS_205.60<td>Galerians Ash</tr>
 <tr><td>CUSTOM<td>SLES_513.43<td>Galerians Ash</tr>
 <tr><td>CUSTOM<td>SLPS_251.19<td>Galerians Ash / ガレリアンズ：アッシュ</tr>
@@ -981,6 +983,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLUS_209.78<td>Power Drome</tr>
 <tr><td>CUSTOM<td>SLUS_204.06<td>Pride FC: Fighting Championships</tr>
 <tr><td>CUSTOM<td>SLES_513.71<td>Pride FC: Fighting Championships</tr>
+<tr><td>CUSTOM<td>SLUS_210.22<td>Prince of Persia: Warrior Within</tr>
+<tr><td>CUSTOM<td>SLES_528.22<td>Prince of Persia: Warrior Within</tr>
+<tr><td>CUSTOM<td>SLPM_660.22<td>Prince of Persia: Warrior Within</tr>
 <tr><td>CUSTOM<td>SLPM_651.67<td>Pride</tr>
 <tr><td>CUSTOM<td>SCES_511.35<td>Primal</tr>
 <tr><td>CUSTOM<td>SLES_542.03<td>Pro Evolution Soccer 6</tr>
@@ -3121,6 +3126,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLUS_202.02<td>Crazy Taxi</tr>
 <tr><td>ENC<td>SLES_502.15<td>Crazy Taxi</tr>
 <tr><td>ENC<td>SLPM_621.02<td>Crazy Taxi / クレイジータクシー</tr>
+<tr><td>ENC<td>SLES_541.46<td>Crusty Demons</tr>
 <tr><td>ENC<td>SLES_536.33<td>Dance: UK XL Lite</tr>
 <tr><td>ENC<td>SLES_536.32<td>Dance: UK XL Party</tr>
 <tr><td>ENC<td>SLPM_624.27<td>Dance Dance Revolution: Party Collection</tr>
@@ -3465,6 +3471,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLPM_661.63<td>Fuuraiki 2</tr>
 <tr><td>ENC<td>SCPS_150.72<td>Gacha Mecha Stadium Saru Battle / ガチャメカスタジアム　サルバト〜レ</tr>
 <tr><td>ENC<td>SCPS_110.26<td>Gacharoku</tr>
+<tr><td>ENC<td>SLES_528.45<td>Gadget & the Gadgetinis</tr>
 <tr><td>ENC<td>SLUS_205.60<td>Galerians Ash</tr>
 <tr><td>ENC<td>SLES_513.43<td>Galerians Ash</tr>
 <tr><td>ENC<td>SLPS_251.19<td>Galerians Ash</tr>
@@ -4168,6 +4175,9 @@ setTimeout(function(){
 <tr><td>ENC<td>SCES_511.35<td>Primal</tr>
 <tr><td>ENC<td>SCES_516.85<td>Primal</tr>
 <tr><td>ENC<td>SLPS_200.13<td>Primal Image Vol.01</tr>
+<tr><td>ENC<td>SLUS_210.22<td>Prince of Persia: Warrior Within</tr>
+<tr><td>ENC<td>SLES_528.22<td>Prince of Persia: Warrior Within</tr>
+<tr><td>ENC<td>SLPM_660.22<td>Prince of Persia: Warrior Within</tr>
 <tr><td>ENC<td>SLKA_252.74<td>Princess Maker 4</tr>
 <tr><td>ENC<td>SLES_542.03<td>Pro Evolution Soccer 6</tr>
 <tr><td>ENC<td>SLES_542.04<td>Pro Evolution Soccer 6</tr>
@@ -4893,7 +4903,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2659, count = tr.length, classics = i;
+var i = 2664, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
