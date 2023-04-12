@@ -106,7 +106,7 @@ extern int stdc_C3E14CBE(const void *ptr1, const void *ptr2, size_t num);				// 
 #define __memcmp	stdc_C3E14CBE
 int memcmp(const void *ptr1, const void *ptr2, size_t num) {if(!ptr1 || !ptr1 || !num) return -1; return __memcmp(ptr1, ptr2, num);}
 
-char *stdc_DEBEE2AF(const char *str, int c);										// strchr()
+extern char *stdc_DEBEE2AF(const char *str, int c);										// strchr()
 char* strchr(const char *str, int c) {if(!str) return NULL; return stdc_DEBEE2AF(str, c);}
 
 extern char *stdc_73EAE03D(const char *s, int c);										// strrchr()
