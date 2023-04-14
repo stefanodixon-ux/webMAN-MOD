@@ -52,6 +52,11 @@
 		ps3mapi_setmem(pbuffer, templn, param);
 	}
 	else
+	if(islike(param, "/payload.ps3mapi"))
+	{
+		ps3mapi_payload(pbuffer, templn, param);
+	}
+	else
 	if(islike(param, "/setidps.ps3mapi"))
 	{
 		ps3mapi_setidps(pbuffer, templn, param);

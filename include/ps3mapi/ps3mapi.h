@@ -134,6 +134,7 @@ static void enable_signin_dialog(void);
 #define enable_signin_dialog() {}
 #endif
 
+static bool StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize);
 
 static u32 get_current_pid(void)
 {
@@ -888,7 +889,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 				char val_tmp[HEXDATA_SIZE + 1];
 				char *new_value = val_tmp;
 
-				u8 oper = get_operator(val_param, false); // val=, val|=, val&=, val^=
+				u8 oper = get_operator(val_param, false); // val=, val|=, val&=, val^=, val+=, val-=
 				if(!oper && get_param("oper=", addr_tmp, param, 4)) oper = (u8)val(addr_tmp);
 
 				ps3mapi_get_memory(pid, address, value, BINDATA_SIZE);
@@ -1053,7 +1054,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 			char *val_param = strstr(param, "&val");
 			if(val_param)
 			{
-				oper = get_operator(val_param, false); // val=, val|=, val&=, val^=
+				oper = get_operator(val_param, false); // val=, val|=, val&=, val^=, val+=, val-=
 				if(!oper && get_param("oper=", addr_tmp, param, 4)) oper = (u8)val(addr_tmp);
 
 				if(get_param("=", val_tmp, val_param, HEXDATA_SIZE))
@@ -1104,6 +1105,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 	if(pid && length && oper)
 	{
 		int retval = ps3mapi_patch_process(pid, address, value, length, oper);
+
 		if(retval < 0)
 			sprintf(templn, "<br><b><u>%s: %i</u></b>", "Error", retval);
 		else
@@ -1112,6 +1114,58 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 	}
 
 	if(length == 0) concat(buffer, "<script>val.value=output.value</script>");
+
+	if(!is_ps3mapi_home) concat(buffer, "<br>" HTML_RED_SEPARATOR); else concat(buffer, "<br>");
+}
+
+static void ps3mapi_payload(char *buffer, char *templn, const char *param)
+{
+	bool is_ps3mapi_home = (*param == ' ');
+
+	u32 pid = 0;
+
+	char payload[STD_PATH_LEN]; strcpy(payload, "/dev_hdd0/payload.bin");
+
+	if(strstr(param, ".ps3mapi?"))
+	{
+		if(get_param("val=", payload, param, STD_PATH_LEN))
+		{
+			pid = get_current_pid();
+		}
+		if(!pid) pid = get_valuen32(param, "proc=");
+	}
+	if(!pid) 
+		pid = get_current_pid();
+
+	if(!is_ps3mapi_home)
+		sprintf(templn, "<b>%s%s</b>"
+						HTML_BLU_SEPARATOR,
+						HOME_PS3MAPI, "Set process payload");
+	else
+		sprintf(templn, "<u>%s:</u>", "Set process payload");
+	
+	concat(buffer, templn);
+
+	sprintf(templn, HTML_FORM_METHOD_FMT("/payload"), HTML_FORM_METHOD); concat(buffer, templn);
+
+	if(!is_ps3mapi_home)
+		add_proc_list(buffer, templn, &pid, 3);
+
+	sprintf(templn, "Payload path:" 
+					HTML_INPUT("val", "%s", "260", "80")
+					" <input class=\"bs\" type=\"submit\" accesskey=\"s\" value=\" %s \"/>%s", payload, "Load", "</tr></table></form>");
+	concat(buffer, templn);
+
+	if(pid && file_exists(payload))
+	{
+		int retval = StartGamePayload(pid, payload, 0x7D0, 0x4000);
+
+		if(retval < 0)
+			sprintf(templn, "<br><b><u>%s: %i</u></b>", "Error", retval);
+		else
+			sprintf(templn, "<br><b><u>%s!</u></b>", "Done");
+		concat(buffer, templn);
+	}
 
 	if(!is_ps3mapi_home) concat(buffer, "<br>" HTML_RED_SEPARATOR); else concat(buffer, "<br>");
 }
@@ -1749,6 +1803,8 @@ static void ps3mapi_home(char *buffer, char *templn)
 		//SetMem
 		//ps3mapi_setmem(buffer, templn, " ");
 
+		ps3mapi_payload(buffer, templn, " ");
+	
 		//---------------------------------------------
 		//Game Plugin
 		//---------------------------------------------

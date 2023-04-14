@@ -235,6 +235,8 @@ static u8 get_operator(char *equal_pos, bool nullfy)
 	if(*prev == '^') {*prev = c; return'^';} // field^=value
 	if(*prev == '|') {*prev = c; return'|';} // field|=value
 	if(*prev == '&') {*prev = c; return'&';} // field&=value
+	if(*prev == '+') {*prev = c; return'+';} // field|=value
+	if(*prev == '-') {*prev = c; return'-';} // field&=value
 	return 0;
 }
 
@@ -246,6 +248,10 @@ static u64 update_value(u64 old_valuen, u64 new_valuen, u8 oper)
 		new_valuen &= old_valuen;
 	if(oper == '^')
 		new_valuen ^= old_valuen;
+	if(oper == '+')
+		new_valuen += old_valuen;
+	if(oper == '-')
+		new_valuen -= old_valuen;
 	return new_valuen;
 }
 #endif

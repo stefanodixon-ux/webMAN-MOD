@@ -3,5 +3,7 @@
 <option value=38>And
 <option value=124>Or
 <option value=94>Xor
+<option value=43>Add
+<option value=45>Sub
 </select><script>document.getElementById("oper").value=1*"    "</script>
 <br><br><b><u>Value:</u></b>

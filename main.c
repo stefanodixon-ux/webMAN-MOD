@@ -447,6 +447,7 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/ps3mapi/debug_mem.h"
 #include "include/ps3mapi/ps3mapi.h"
+#include "include/ps3mapi/ps3mapi_payload.h"
 #include "include/ps3mapi/ps3mapi_server.h"
 #include "include/ps3mapi/stealth.h"
 #include "include/ps3mapi/artemis.h"
