@@ -58,31 +58,42 @@ static int WritePayload(sys_pid_t pid, const char* fileName, uintptr_t startAddr
 	return SUCCEEDED;
 }
 
-// StartGamePayload(GetGameProcessID(), "/dev_hdd0/payload.bin", 0x7D0, 0x4000);
+// StartGamePayload(GetGameProcessID(), "/dev_hdd0/payload.bin", 0x7D0, 0x4000, error_msg);
 
-static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize)
+static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize, char *error_msg)
 {
-	// Starting	to inject payload fileName
-	uint64_t executableMemoryAddress = 0;
-	
+	// Starting to inject payload fileName
+	uint64_t executableMemoryAddress = 0; *error_msg = NULL;
+
 	uint64_t fileSizeOnDisk = file_size(fileName);
+	if (fileSizeOnDisk < 8)
+	{
+		// Invalid payload size
+		strcpy(error_msg, "Invalid payload size");
+		show_error(error_msg);
+		return 0;
+	}
 	
+	fileSizeOnDisk = (fileSizeOnDisk + _4KB_) & 0xFFFF000;
+
 	int ret = ps3mapi_process_page_allocate(pid, fileSizeOnDisk, 0x100, 0x2F, 0x1, &executableMemoryAddress);
 	if (ret)
 	{
-		// Failed to allocate	executable memory 0x%X
-		show_error("Failed to allocate executable memory");
+		// Failed to allocate executable memory
+		strcpy(error_msg, "Failed to allocate executable memory");
+		show_error(error_msg);
 		return 0;
 	}
 
 	sys_ppu_thread_sleep(1);
 
-	uint32_t temp_bytes	= 0;
+	uint32_t temp_bytes = 0;
 	ret = ps3mapi_get_proc_memory(pid, (void*)(uintptr_t)executableMemoryAddress, (void*)&temp_bytes, 4);
 	if (ret)
 	{
 		// Failed to read executable memory
-		show_error("Failed to read executable memory");
+		strcpy(error_msg, "Failed to read executable memory");
+		show_error(error_msg);
 		return 0;
 	}
 
@@ -91,8 +102,9 @@ static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t
 	ret = WritePayload(pid, fileName, (uintptr_t)executableMemoryAddress);
 	if (ret)
 	{
-		// Failedto	read payload fileName
-		show_error("Failed to read payload file");
+		// Failedto read payload fileName
+		strcpy(error_msg, "Failed to read payload file");
+		show_error(error_msg);
 		return 0;
 	}
 
@@ -107,11 +119,13 @@ static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t
 	if (ret)
 	{
 		// Failed to start payload
-		show_error("Failed to start payload");
+		strcpy(error_msg, "Failed to start payload");
+		show_error(error_msg);
 		return 0;
 	}
 
-	// Successfully	started	payload
+	// Successfully started payload
+	sprintf(error_msg, "Started payload @ 0x%llX - 0x%llX bytes allocated", executableMemoryAddress, fileSizeOnDisk);
 	return executableMemoryAddress;
 }
 

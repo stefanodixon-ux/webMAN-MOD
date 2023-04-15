@@ -288,5 +288,6 @@ static void show_error(const char *text)
 		sprintf(msg, "%s %s", "Cobra", STR_DISABLED);
 	else
 		snprintf(msg, sizeof(msg), "%s %s", STR_ERROR, text);
-	show_msg_with_icon(ICON_ERROR, msg);
+	
+	play_sound_id(9); show_msg_with_icon(ICON_ERROR, msg);
 }

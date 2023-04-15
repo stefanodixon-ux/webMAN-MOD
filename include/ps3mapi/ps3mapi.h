@@ -134,7 +134,7 @@ static void enable_signin_dialog(void);
 #define enable_signin_dialog() {}
 #endif
 
-static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize);
+static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize, char *error_msg);
 
 static u32 get_current_pid(void)
 {
@@ -1134,7 +1134,7 @@ static void ps3mapi_payload(char *buffer, char *templn, const char *param)
 		}
 		if(!pid) pid = get_valuen32(param, "proc=");
 	}
-	if(!pid) 
+	if(!pid)
 		pid = get_current_pid();
 
 	if(!is_ps3mapi_home)
@@ -1156,15 +1156,21 @@ static void ps3mapi_payload(char *buffer, char *templn, const char *param)
 					" <input class=\"bs\" type=\"submit\" accesskey=\"s\" value=\" %s \"/>%s", payload, "Load", "</tr></table></form>");
 	concat(buffer, templn);
 
-	if(pid && file_exists(payload))
+	if(strstr(param, ".ps3mapi?"))
 	{
-		uint64_t executableMemoryAddress = StartGamePayload(pid, payload, 0x7D0, 0x4000);
+		if(!pid)
+			sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X)", STR_ERROR, "Process", "Not found!", pid);
+		else if(file_exists(payload))
+		{
+			char error_msg[64];
+			uint64_t executableMemoryAddress = StartGamePayload(pid, payload, 0x7D0, 0x4000, error_msg);
 
-		if(executableMemoryAddress)
-			sprintf(templn, "<br><b>%s %s @ 0x%llX</b> (pid=0x%X)", payload, STR_LOADED2, executableMemoryAddress, pid);
+			sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X)", payload, executableMemoryAddress ? STR_LOADED : STR_ERROR,
+															  error_msg, pid);
+		}
 		else
-			sprintf(templn, "<br><b>%s %s</b> (pid=0x%X)", payload, STR_ERROR, pid);
-
+			sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X)", STR_ERROR, payload, "Not found!", pid);
+		
 		concat(buffer, templn);
 	}
 
