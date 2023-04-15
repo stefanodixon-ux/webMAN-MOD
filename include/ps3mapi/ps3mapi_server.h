@@ -435,8 +435,9 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 									if(file_exists(param1))
 									{
 										u32 attached_pid = val(cmd);
-										uint64_t executableMemoryAddress = StartGamePayload(attached_pid, param1, 0x7D0, 0x4000, param2);
-										sprintf(buffer, "200 %llu|param2\r\n", executableMemoryAddress);
+										char *error_msg = param2;
+										uint64_t executableMemoryAddress = StartGamePayload(attached_pid, param1, 0x7D0, 0x4000, error_msg);
+										sprintf(buffer, "200 %llu|%s\r\n", executableMemoryAddress, error_msg);
 										ssend(conn_s_ps3mapi, buffer);
 									}
 									else

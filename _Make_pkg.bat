@@ -31,3 +31,5 @@ move webMAN_MOD_%ver%.xx_Updater_rebugification_theme.pkg ..\..\webMAN_MOD_%ver%
 move webMAN_MOD_%ver%.xx_Updater_metalification_theme.pkg ..\..\webMAN_MOD_%ver%.%rev%_Installer_metalification_theme.pkg
 
 move webMAN_MOD_latest.pkg ..\..
+
+move /Y ..\..\*.pkg ..\..\..
