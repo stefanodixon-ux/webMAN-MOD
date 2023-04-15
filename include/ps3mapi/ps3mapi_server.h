@@ -377,7 +377,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						}
 						else {ssend(conn_s_ps3mapi, PS3MAPI_ERROR_425); split = 425;}
 					}
-					else if(_IS(cmd, "SET"))	// MEMORY SET <pid> <offset>
+					else if(_IS(cmd, "SET"))	// MEMORY SET <pid> <offset> / // MEMORY SET <pid> <offset>
 					{
 						if(data_s < 0 && pasv_s >= 0) data_s = accept(pasv_s, NULL, NULL);
 
@@ -416,6 +416,31 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 									}
 									if(rr == 0) ssend(conn_s_ps3mapi, PS3MAPI_OK_226);
 									else ssend(conn_s_ps3mapi, PS3MAPI_ERROR_451);
+								}
+							}
+						}
+						else {ssend(conn_s_ps3mapi, PS3MAPI_ERROR_425); split = 425;}
+					}
+					else if(_IS(cmd, "PAYLOAD"))	// MEMORY PAYLOAD <pid> <payload-path>
+					{
+						if(data_s < 0 && pasv_s >= 0) data_s = accept(pasv_s, NULL, NULL);
+
+ 						if(data_s >= 0)
+						{
+							if(split)
+							{
+								split = ssplit(param2, cmd, PS3MAPI_CMD_LEN, param1, PS3MAPI_MAX_LEN);
+								if(split)
+								{
+									if(file_exists(param1))
+									{
+										u32 attached_pid = val(cmd);
+										uint64_t executableMemoryAddress = StartGamePayload(attached_pid, param1, 0x7D0, 0x4000);
+										sprintf(buffer, "200 %llu\r\n", executableMemoryAddress);
+										ssend(conn_s_ps3mapi, buffer);
+									}
+									else
+										ssend(conn_s_ps3mapi, PS3MAPI_ERROR_451);
 								}
 							}
 						}

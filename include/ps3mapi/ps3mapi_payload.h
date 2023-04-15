@@ -60,7 +60,7 @@ static int WritePayload(sys_pid_t pid, const char* fileName, uintptr_t startAddr
 
 // StartGamePayload(GetGameProcessID(), "/dev_hdd0/payload.bin", 0x7D0, 0x4000);
 
-static bool StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize)
+static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize)
 {
 	// Starting	to inject payload fileName
 	uint64_t executableMemoryAddress = 0;
@@ -72,7 +72,7 @@ static bool StartGamePayload(int pid, const char* fileName, int prio, size_t sta
 	{
 		// Failed to allocate	executable memory 0x%X
 		show_error("Failed to allocate executable memory");
-		return false;
+		return 0;
 	}
 
 	sys_ppu_thread_sleep(1);
@@ -83,7 +83,7 @@ static bool StartGamePayload(int pid, const char* fileName, int prio, size_t sta
 	{
 		// Failed to read executable memory
 		show_error("Failed to read executable memory");
-		return false;
+		return 0;
 	}
 
 	sys_ppu_thread_sleep(1);
@@ -93,7 +93,7 @@ static bool StartGamePayload(int pid, const char* fileName, int prio, size_t sta
 	{
 		// Failedto	read payload fileName
 		show_error("Failed to read payload file");
-		return false;
+		return 0;
 	}
 
 	sys_ppu_thread_sleep(1);
@@ -108,11 +108,11 @@ static bool StartGamePayload(int pid, const char* fileName, int prio, size_t sta
 	{
 		// Failed to start payload
 		show_error("Failed to start payload");
-		return false;
+		return 0;
 	}
 
 	// Successfully	started	payload
-	return true;
+	return executableMemoryAddress;
 }
 
 #endif // #ifdef PS3MAPI

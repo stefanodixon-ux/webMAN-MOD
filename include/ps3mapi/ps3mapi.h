@@ -134,7 +134,7 @@ static void enable_signin_dialog(void);
 #define enable_signin_dialog() {}
 #endif
 
-static bool StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize);
+static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize);
 
 static u32 get_current_pid(void)
 {
@@ -1158,12 +1158,13 @@ static void ps3mapi_payload(char *buffer, char *templn, const char *param)
 
 	if(pid && file_exists(payload))
 	{
-		int retval = StartGamePayload(pid, payload, 0x7D0, 0x4000);
+		uint64_t executableMemoryAddress = StartGamePayload(pid, payload, 0x7D0, 0x4000);
 
-		if(retval < 0)
-			sprintf(templn, "<br><b><u>%s: %i</u></b>", "Error", retval);
+		if(executableMemoryAddress)
+			sprintf(templn, "<br><b>%s %s @ 0x%llX</b> (pid=0x%X)", payload, STR_LOADED2, executableMemoryAddress, pid);
 		else
-			sprintf(templn, "<br><b><u>%s!</u></b>", "Done");
+			sprintf(templn, "<br><b>%s %s</b> (pid=0x%X)", payload, STR_ERROR, pid);
+
 		concat(buffer, templn);
 	}
 
