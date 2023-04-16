@@ -134,6 +134,16 @@ static int get_xmm0_interface(void)
 	return CELL_OK;
 }
 
+static void LoadBlankPage(void)
+{
+	//if(game_ext_interface == 0) // test if game_ext_plugin is loaded for interface access
+	{
+		game_ext_interface = (game_ext_plugin_interface *)plugin_GetInterface(View_Find("game_ext_plugin"), 1);
+		if(game_ext_interface == 0) return;
+	}
+	game_ext_interface->LoadPage();
+}
+
 static int LoadPluginById(int id, void *handler)
 {
 	if(get_xmm0_interface()) return FAILED;
@@ -160,6 +170,14 @@ static void UnloadPluginById(int id)
 	}
 }
 
+static void unload_system_plugins(void)
+{
+	UnloadPluginById(nas_plugin);
+	UnloadPluginById(wboard_plugin);
+	UnloadPluginById(np_trophy_plugin);
+	UnloadPluginById(sysconf_plugin);
+}
+
 static void unload_plugin_modules(bool all)
 {
 	// Unload conflicting plugins
@@ -168,10 +186,7 @@ static void unload_plugin_modules(bool all)
 
 	if(all)
 	{
-		UnloadPluginById(nas_plugin);
-		UnloadPluginById(wboard_plugin);
-		UnloadPluginById(np_trophy_plugin);
-		UnloadPluginById(sysconf_plugin);
+		unload_system_plugins();
 	}
 
 #ifdef VIRTUAL_PAD
@@ -184,7 +199,12 @@ static void unload_plugin_modules(bool all)
 	if(!get_explore_interface()) return;
 
 	exec_xmb_command("close_all_list");
-	if(all) sys_ppu_thread_sleep(2);
+	if(all)
+	{
+		sys_ppu_thread_sleep(2);
+		exec_xmb_command2("focus_category %s", "game");
+		exec_xmb_command2("reload_category %s", "game");
+	}
 }
 
 static void downloadPKG_thread(void)
@@ -277,7 +297,9 @@ static int download_file(const char *param, char *msg)
 
 		if(conv_num)
 		{
-			unload_plugin_modules(true);
+			unload_system_plugins();
+
+			sys_ppu_thread_sleep(3);
 
 			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
@@ -297,14 +319,9 @@ end_download_process:
 
 static void installPKG_thread(void)
 {
-	//if(game_ext_interface == 0) // test if game_ext_plugin is loaded for interface access
-	{
-		game_ext_interface = (game_ext_plugin_interface *)plugin_GetInterface(View_Find("game_ext_plugin"), 1);
-		if(game_ext_interface == 0) return;
-	}
+	LoadBlankPage();
 
 	installing_pkg = true;
-	game_ext_interface->LoadPage();
 
 	if(is_ext(pkg_path, ".p3t"))
 		game_ext_interface->installTheme(pkg_path, (char*)"");

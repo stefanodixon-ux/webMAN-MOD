@@ -1,6 +1,7 @@
 #define MAX_WWW_CC		(255)
 
 #define CODE_HTTP_OK            200
+#define CODE_BLANK_PAGE         204
 #define CODE_BAD_REQUEST        400
 #define CODE_FORBIDDEN          403
 #define CODE_PATH_NOT_FOUND     404
@@ -111,6 +112,11 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		else if(islike(filename, "http"))
 			sprintf(body, "<a style=\"%s\" href=\"%s\">%s</a>", HTML_URL_STYLE, filename, filename);
 #ifdef PKG_HANDLER
+		else if(code == CODE_BLANK_PAGE)
+		{
+			slen = sprintf(header, "<body bgcolor=\"#000\">");
+			goto exit_http_response;
+		}
 		else if(code == CODE_INSTALL_PKG || code == CODE_DOWNLOAD_FILE)
 		{
 			sprintf(body, "<style>a{%s}</style>%s", HTML_URL_STYLE, (code == CODE_INSTALL_PKG) ? "Installing " : "");
@@ -162,6 +168,10 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		slen = sprintf(header,  HTML_RESPONSE_FMT,
 								(code == CODE_RETURN_TO_ROOT) ? CODE_HTTP_OK : code, url, HTML_BODY, HTML_RESPONSE_TITLE, body);
 	}
+
+#ifdef PKG_HANDLER
+exit_http_response:
+#endif
 
 	send(conn_s, header, slen, 0);
 	if(done)
