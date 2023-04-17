@@ -76,10 +76,18 @@
 		if(!wm_request)
 		#endif
 		{
-			if(!mc) keep_alive = http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : CODE_INSTALL_PKG, msg);
+			if(!mc) keep_alive = http_response(conn_s, header, param, (ret == FAILED) ? CODE_BAD_REQUEST : (is_ps3_http)  ? CODE_BLANK_PAGE : CODE_INSTALL_PKG, msg);
 		}
 
 		if(!(webman_config->minfo & 1)) show_msg(msg);
+
+		if( *pkg_file == '?' )
+		{
+			// wait for download pkg
+			sys_ppu_thread_sleep(5);
+			while(IS_DOWNLOADING)
+				sys_ppu_thread_sleep(2);
+		}
 
 		if(pkg_delete_after_install || do_restart)
 		{

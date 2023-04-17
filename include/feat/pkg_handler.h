@@ -100,7 +100,7 @@ static void wait_for_xml_download(char *filename, char *param)
 		strcpy(param, filename); strcpy(xml, ".xml");
 		cellFsUnlink(filename);
 		cellFsRename(param, filename);
-
+	
 #ifdef VIRTUAL_PAD
 		if(IS_DOWNLOADING) press_cancel_button(0);
 #endif
@@ -111,7 +111,7 @@ static void wait_for_pkg_install(void)
 {
 	sys_ppu_thread_sleep(5);
 
-	while (working && installing_pkg && IS_INSTALLING) sys_ppu_thread_sleep(2);
+	while (working && IS_INSTALLING) sys_ppu_thread_sleep(2);
 
 	time_t install_time = pkg_install_time;  // set time before install
 	get_pkg_size_and_install_time(pkg_path); // get time after install
@@ -301,6 +301,7 @@ static int download_file(const char *param, char *msg)
 
 			sys_ppu_thread_sleep(3);
 
+			del(pdpath, true);
 			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
 			sprintf(msg_durl, "Downloading %s", pdurl);
@@ -335,7 +336,7 @@ static int installPKG(const char *pkgpath, char *msg)
 {
 	int ret = FAILED;
 
-	unload_plugin_modules(true);
+	unload_system_plugins();
 
 	if(IS_INGAME)
 	{
@@ -371,8 +372,6 @@ static int installPKG(const char *pkgpath, char *msg)
 		{
 			if(is_ext(pkg_path, ".pkg") || is_ext(pkg_path, ".p3t")) //check if file has a .pkg extension or not and treat accordingly
 			{
-				unload_plugin_modules(true);
-
 				LoadPluginById(game_ext_plugin, (void *)installPKG_thread);
 
 				get_pkg_size_and_install_time(pkg_path); // set original pkg_install_time
@@ -457,13 +456,13 @@ static void poll_downloaded_pkg_files(char *msg)
 		{
 			char *dlfile = msg;
 
-			sprintf(dlfile, "%s%s", TEMP_DOWNLOAD_PATH, entry.d_name);
+			int plen = sprintf(dlfile, "%s", TEMP_DOWNLOAD_PATH);
 
 			while(working && (cellFsReaddir(fd, &entry, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 			{
 				if(is_ext(entry.d_name, ".pkg"))
 				{
-					sprintf(dlfile, "%s%s", TEMP_DOWNLOAD_PATH, entry.d_name); pkg_count++;
+					sprintf(dlfile + plen, "%s", entry.d_name); pkg_count++;
 					cellFsChmod(dlfile, MODE);
 
 					u64 pkg_size = get_pkg_size_and_install_time(dlfile); if(pkg_size == 0) continue;
@@ -479,15 +478,13 @@ static void poll_downloaded_pkg_files(char *msg)
 							sprintf(pkgfile + pkg_len - 4, " (%i).pkg", retry);
 						}
 
-						if(pkg_dcount) pkg_dcount--;
+						if(pkg_count) pkg_count--, pkg_dcount--;
 
-						if(pkg_auto_install) {pkg_auto_install--; installPKG(pkgfile, msg); if(pkg_delete_after_install) wait_for_pkg_install();}
+						if(pkg_auto_install) {pkg_auto_install--; installPKG(pkgfile, msg); wait_for_pkg_install();}
 					}
 				}
 			}
 			cellFsClosedir(fd);
-
-			if(pkg_count == 0) pkg_auto_install = pkg_dcount = 0; // disable polling if no pkg files were found (e.g. changed to background download)
 		}
 	}
 }

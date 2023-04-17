@@ -37,9 +37,9 @@
 		while(IS_DOWNLOADING)
 			sys_ppu_thread_sleep(2);
 
-		wait_for_xml_download(filename, param); unload_plugin_modules(true);
+		wait_for_xml_download(filename, param);
 
-		setPluginInactive();
+		setPluginInactive(); unload_plugin_modules(true);
 		goto exit_handleclient_www;
 	}
 #endif
