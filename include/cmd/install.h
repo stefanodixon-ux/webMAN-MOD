@@ -4,10 +4,7 @@
 		// /install.ps3<pkg-path>  (see pkg_handler.h for details)
 		// /install.ps3<pkg-path>? conditional install
 		// /install_ps3<pkg-path>  install & keep pkg
-		// /install.ps3?url=<url>  download, auto-install pkg & delete pkg
-		// /install_ps3?url=<url>  download, auto-install pkg & keep pkg in /dev_hdd0/packages
 		// /install.ps3<pkg-path>?restart.ps3
-		// /install.ps3?url=<url>?restart.ps3
 		// /install.ps3<p3t-path>  install ps3 theme
 		// /install.ps3<directory> install pkgs in directory (GUI)
 		// /install.ps3$           install webman addons (GUI)
@@ -15,6 +12,9 @@
 		// /install_ps3            install all pkg files in /dev_hdd0/packages
 		// /install_ps3$           install all webman addons
 		// /install_ps3<path>      install pkg files in <path>
+		// /xmb.ps3/install.ps3?url=<url>  download, auto-install pkg & delete pkg
+		// /xmb.ps3/install_ps3?url=<url>  download, auto-install pkg & keep pkg in /dev_hdd0/packages
+		// /xmb.ps3/install.ps3?url=<url>?restart.ps3
 
 		char *pkg_file = param + 12; if(*pkg_file == '/') check_path_alias(pkg_file);
 
@@ -87,6 +87,7 @@
 			sys_ppu_thread_sleep(5);
 			while(IS_DOWNLOADING)
 				sys_ppu_thread_sleep(2);
+			unload_plugin_modules(true);
 		}
 
 		if(pkg_delete_after_install || do_restart)

@@ -1,8 +1,8 @@
 #ifdef PKG_HANDLER
 	if(islike(param, "/download.ps3"))
 	{
-		// /download.ps3?url=<url>            (see pkg_handler.h for details)
-		// /download.ps3?to=<path>&url=<url>
+		// /xmb.ps3/download.ps3?url=<url>            (see pkg_handler.h for details)
+		// /xmb.ps3/download.ps3?to=<path>&url=<url>
 
 		char msg[MAX_LINE_LEN], filename[STD_PATH_LEN]; _memset(msg, sizeof(msg)); *filename = NULL;
 
