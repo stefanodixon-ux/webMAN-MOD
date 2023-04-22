@@ -301,7 +301,6 @@ static int download_file(const char *param, char *msg)
 
 			sys_ppu_thread_sleep(3);
 
-			del(pdpath, true);
 			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
 			sprintf(msg_durl, "Downloading %s", pdurl);
