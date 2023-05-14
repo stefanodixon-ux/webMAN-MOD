@@ -20,7 +20,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 ## Current functionality
 ### General
 - Support on all custom firmwares with Cobra feature enabled (ver 4.46-4.90 CEX, DEX & DECR)
-- Support on Evilnat firmware (ver 4.87.2-4.90.1 CEX, DEX, PEX, D-PEX)
+- Support on Evilnat firmware (ver 4.87.2-4.90 CEX, DEX, PEX, D-PEX)
 - Support on REBUG firmware with Cobra feature disabled (ver 4.84.2-4.86.1 CEX, DEX & DECR) 
 - Support on REBUG firmware with Mamba loaded via boot_plugins_nocobra_kernel.txt (ver 4.86.1 CEX & 4.84.2 DEX) 
 - Support on PS3HEN on 4.82-4.84 OFW CEX & DEX and 4.84-4.90 HFW
@@ -183,6 +183,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - Dump full RAM, LV1, LV2, VSH, RSX or a process memory range.
 - Support for remote view & update XRegistry settings
 - Artemis patch engine integrated with PS3MAPI and other modules
+- Apply payload from file to game process using /payload.ps3mapi
 - Remote syscalls
 
 #### Screen & video capture
@@ -317,7 +318,7 @@ the software.
 
 
 
-(C) 2010-2022 multiMAN / webMAN / sMAN / sLaunch / prepNTFS by DeanK
+(C) 2010-2023 multiMAN / webMAN / sMAN / sLaunch / prepNTFS by DeanK
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files

@@ -191,6 +191,7 @@ small {font-size:12px; color:#aaa}
 </h1>
 <input type="text" id="txtSrchDB" onkeyup="doSearch(input.value);" placeholder="Search for names or game id..">
 <span id="clear" onclick="input.value='';doSearch(input.value);">X</span>
+
 <button id="btn1" onclick="category='ALL';$('category').value=category;doSearch(input.value);input.select();">CFW</button>
 <button id="btn2" onclick="category='ENC';$('category').value=category;doSearch(input.value);input.select();">HEN</button>
 <select accesskey="c" tabindex="-1" id="category" onchange="category=this.value;doSearch(input.value);input.select();" ondblclick="this.value=category='ALL';doSearch(input.value);">
@@ -5131,7 +5132,8 @@ function doSearch(value) {
 		}
 	}
 	cols = table.getElementsByTagName("th");
-	if(count == 1) cols[2].innerText="Title"; else cols[2].innerHTML="<font color=#FFF>" + count.toLocaleString() + " Titles"
+	if(count == 1) cols[2].innerText="Title"; else cols[2].innerHTML="<font color=#FFF>" + count.toLocaleString() + " Titles";
+	cols[2].innerHTML+='<input type=checkbox id="preview" title="Preview">';
 	input.focus();
 	if(count == 0) {
 		// Try to search by game id
@@ -5160,7 +5162,7 @@ function dlCONFIG(elem)
 	var cols = elem.getElementsByTagName('td');
 	var url = "https://raw.githubusercontent.com/aldostools/webMAN-MOD/master/_Projects_/updater/PS2CONFIG/USRDIR/CONFIG/"  + cols[0].innerText+"/"+cols[1].innerText;
 	url += (cols[0].innerText=="ENC") ? ".ENC" : ".CONFIG";
-	if(window.event.composedPath().indexOf('https:')<0 && !window.event.ctrlKey)
+	if(window.event.composedPath().indexOf('https:')<0 && !window.event.ctrlKey && preview.checked == false)
 		self.location = url;
 
 	var url2 = "https://psxdatacenter.com/psx2/images2/covers/" + cols[1].innerText.replace("_","-").replace(".","") + ".jpg";
@@ -5232,7 +5234,7 @@ function kd(e)
 var lastCol = -1, sortOrder = 1;
 
 function sortTable(colID) {
-	if(count <= 1) return;
+	if(count <= 1 || event.target.id == 'preview') return;
 
 	if(colID != lastCol) {lastCol = colID, sortOrder = 1;} else sortOrder^=1;
 
