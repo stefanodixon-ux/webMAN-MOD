@@ -302,7 +302,7 @@ static void detect_firmware(void)
 	  //if(c_firmware == 4.50f) {base_addr = 0x30D2C0, open_hook = 0x2CEF08;} else
 		if(c_firmware == 4.60f) {base_addr = 0x310EE0, open_hook = 0x2D1464;} else
 	#endif  // #ifndef LAST_FIRMWARE_ONLY
-		if(c_firmware == 4.90f || c_firmware == 4.80f)
+		if(c_firmware == 4.80f)
 								{base_addr = 0x3110F0, open_hook = 0x2C87D4;} else
 		if(c_firmware >= 4.75f /*&& c_firmware <= LATEST_CFW*/)
 								{base_addr = 0x3110F0, open_hook = 0x2C87E0;}
@@ -330,7 +330,7 @@ static void detect_firmware(void)
   #endif // #ifndef LAST_FIRMWARE_ONLY
 		if(BETWEEN(4.75f, c_firmware, 4.78f))
 								{base_addr = 0x2FA5B0, open_hook = 0x2B24F8;} else
-		if(c_firmware == 4.90f || c_firmware == 4.80f)
+		if(c_firmware == 4.80f)
 								{base_addr = 0x2FA680, open_hook = 0x2B25C4;} else
 		if(c_firmware >= 4.81f /*&& c_firmware <= LATEST_CFW*/)
 								{base_addr = 0x2FA690, open_hook = 0x2B25D0;}
@@ -805,7 +805,7 @@ static void patch_lv2(void)
 		}
 		else
  #endif
-		if(c_firmware == 4.90f || c_firmware == 4.80f)
+		if(c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x800000000026E528ULL, 0x800000000005A340ULL, 0x800000000005A020ULL,
 								  0x800000000005A3B0ULL, 0x800000000005E494ULL,
@@ -985,7 +985,7 @@ static void patch_lv2(void)
 		}
 		else
  #endif //#ifndef LAST_FIRMWARE_ONLY
-		if(c_firmware == 4.90f || c_firmware == 4.80f)
+		if(c_firmware == 4.80f)
 		{
 			apply_lv2_patches_new(0x800000000026D860ULL, 0x8000000000059F58ULL, 0x800000000005A01CULL,
 								  0x8000000000059FC8ULL, 0x800000000005E0ACULL,
