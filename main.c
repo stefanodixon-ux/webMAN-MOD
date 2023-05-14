@@ -211,6 +211,7 @@ static u8 system_bgm = 0;
 
 #define APP_GAME  0xFF
 
+static bool from_xmb_ps3 = false;
 static bool show_info_popup = false;
 static bool do_restart = false;
 static bool payload_ps3hen = false;

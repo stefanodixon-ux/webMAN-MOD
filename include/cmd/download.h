@@ -39,7 +39,7 @@
 
 		wait_for_xml_download(filename, param);
 
-		setPluginInactive(); unload_plugin_modules(true);
+		setPluginInactive(); if(from_xmb_ps3) unload_plugin_modules(true);
 		goto exit_handleclient_www;
 	}
 #endif

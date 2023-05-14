@@ -344,7 +344,7 @@
 			{
 				#ifndef LITE_EDITION
 				if(*params == NULL) sprintf(params, "/");
-				if(*params == '/' ) {do_umount(false); check_path_alias(params); sprintf(header, "http://%s%s", local_ip, params); open_browser(header, 0);} else
+				if(*params == '/' ) {do_umount(false); check_path_alias(params); from_xmb_ps3 = true; sprintf(header, "http://%s%s", local_ip, params); open_browser(header, 0);} else
 				if(*params == '$' ) {if(get_explore_interface()) exec_xmb_command(url);} else
 				if(*params == '?' ) {do_umount(false);  open_browser(url, 0);} else
 									{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23

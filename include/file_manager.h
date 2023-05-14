@@ -475,6 +475,13 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 
 	char swap[MAX_PATH_LEN], templn[MAX_PATH_LEN], url[MAX_PATH_LEN], *slash, *buffer = pbuffer;
 
+	if(*param != '/')
+	{
+		add_url(buffer, "<a class=\"f\" href=\"", param, "\">");
+		add_url(buffer, param, "</a>", "");
+		return strlen(pbuffer);
+	}
+
 	strcpy(templn, param);
 
 	// add links to path

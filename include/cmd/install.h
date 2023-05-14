@@ -87,7 +87,7 @@
 			sys_ppu_thread_sleep(5);
 			while(IS_DOWNLOADING)
 				sys_ppu_thread_sleep(2);
-			unload_plugin_modules(true);
+			if(from_xmb_ps3) unload_plugin_modules(true);
 		}
 
 		if(pkg_delete_after_install || do_restart)

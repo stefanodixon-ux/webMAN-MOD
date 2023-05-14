@@ -186,6 +186,7 @@ static void unload_plugin_modules(bool all)
 
 	if(all)
 	{
+		from_xmb_ps3 = false;
 		unload_system_plugins();
 	}
 
