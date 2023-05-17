@@ -66,6 +66,9 @@ OpenWrt<br>
 All platforms (arm, arc, mips, mipsel, i386, powerpc, x86): https://github.com/jhonathanc/ps3netsrv/releases<br> 
 SRC: https://github.com/jhonathanc/ps3netsrv-openwrt<br>
 
+QNAP NAS<br>
+https://www.myqnap.org/product/ps3netsrv-ng/ <br>
+
 Xcode (macOS / Linux / FreeBSD 10):<br>
 https://github.com/klahjn/ps3netsrvXCODE <br>
 https://github.com/klahjn/macOSPS3NetServerGUI

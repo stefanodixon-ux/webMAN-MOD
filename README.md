@@ -205,7 +205,7 @@ and artists that collaborated with development, knowledge, resources, feedback &
 - [Covers Pack for PSX/PS2 games](https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS00000RETRO.pkg)
 
 - [prepISO](https://store.brewology.com/get/homebrew.php?id=310&fid=2188) : tool that scans content stored in exFAT/NTFS/ext2/3/4 devices and prepare the settings files needed by RAWSECISO plugin
-- [ps3netsrv](https://downgit.github.io/#/home?url=https://github.com/aldostools/webMAN-MOD/tree/master/_Projects_/ps3netsrv) : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
+- [ps3netsrv](https://github.com/aldostools/webMAN-MOD/wiki/~-PS3-NET-Server) : Remote content distribution server for PC and linux platforms that uses Cobra's NETISO protocol for streaming of content
 - [PKG/ROM Launcher](https://store.brewology.com/get/homebrew.php?id=310&fid=2183) : allows the execution of PS3 applications and ROMS via RetroArch. Requires that the debug icon "★ app_home/PS3_GAME" be present on XMB
 - [PS2CONFIG](https://store.brewology.com/get/homebrew.php?id=310&fid=2178) : Database of PS2 CONFIG files needed to improve the compatibility of certain PS2 games
 - [WM Themes](https://store.brewology.com/ahomebrew.php?brewid=310) : Set of packages that customize the look of the XMB icons used by webMAN MOD
