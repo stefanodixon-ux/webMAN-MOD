@@ -840,16 +840,23 @@ static void setup_form(char *buffer, char *templn)
 #ifdef SPOOF_CONSOLEID
 	concat(buffer, "<span id='ht'>");
 
+	char tmp[80];
+	sprintf(tmp, "%016llX';vID2.value='%016llX", eid0_idps[0], eid0_idps[1]);
+
 	add_checkbox("id1", "IDPS", " : ", (webman_config->sidps), buffer);
 	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vID1", webman_config->vIDPS1); concat(buffer, templn);
 	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vID2", webman_config->vIDPS2); concat(buffer, templn);
-	sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID2.value=", "1000000000000000"); concat(buffer, templn);
+	//sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID2.value=", "1000000000000000"); concat(buffer, templn);
+	sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID1.value=", tmp); concat(buffer, templn);
+
+	sprintf(tmp, "%016llX';vPS2.value='%016llX", PSID[0], PSID[1]);
 
 	add_checkbox("id2", "PSID", " : ", (webman_config->spsid), buffer);
 	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vPS1", webman_config->vPSID1); concat(buffer, templn);
 	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vPS2", webman_config->vPSID2); concat(buffer, templn);
 	//sprintf(templn, HTML_BUTTON_FMT "<br><br>", HTML_BUTTON, " ", "onclick=\"vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
-	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
+	//sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
+	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=", tmp); concat(buffer, templn);
 
 	add_html('p', 0, buffer, templn);
 #endif
