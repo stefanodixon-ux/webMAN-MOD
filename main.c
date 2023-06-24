@@ -213,6 +213,7 @@ static u8 system_bgm = 0;
 
 static bool from_xmb_ps3 = false;
 static bool show_info_popup = false;
+static bool is_custom_popup = false;
 static bool do_restart = false;
 static bool payload_ps3hen = false;
 

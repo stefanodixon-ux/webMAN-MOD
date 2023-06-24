@@ -134,8 +134,6 @@ static void enable_signin_dialog(void);
 #define enable_signin_dialog() {}
 #endif
 
-static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize, char *error_msg);
-
 static u32 get_current_pid(void)
 {
 	if(IS_INGAME)
@@ -262,6 +260,8 @@ static void start_vsh_gui(bool vsh_menu)
 ///////////////////////////////
 
 #ifdef PS3MAPI
+
+static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize, char *error_msg);
 
 static void ps3mapi_syscall8(char *buffer, char *templn, const char *param);
 static void ps3mapi_setmem(char *buffer, char *templn, const char *param);

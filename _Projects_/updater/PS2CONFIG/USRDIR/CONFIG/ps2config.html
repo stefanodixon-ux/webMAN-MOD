@@ -178,6 +178,7 @@ small {font-size:12px; color:#aaa}
 #compat a:hover {text-decoration:underline; color:yellow;}
 #releases {color:white}
 #releases:hover, #title:hover {color:yellow;}
+#image {width:240px;height:300px}
 </style>
 <title>PS2 CONFIG Database</title>
 </head>
@@ -5195,7 +5196,8 @@ function dlCONFIG(elem)
 	if(window.event.composedPath().indexOf('https:')<0 && !window.event.ctrlKey && preview.checked == false)
 		self.location = url;
 
-	var url2 = "https://psxdatacenter.com/psx2/images2/covers/" + cols[1].innerText.replace("_","-").replace(".","") + ".jpg";
+	//var url2 = "https://psxdatacenter.com/psx2/images2/covers/" + cols[1].innerText.replace("_","-").replace(".","") + ".jpg";
+	var url2 = "https://raw.githubusercontent.com/aldostools/Resources/main/PSX/" + cols[1].innerText + "_COV.JPG";
 	var posx = event.clientX; if(posx < 360) posx = 360;
 	var posy = event.clientY; if(posy < 160) posy = 160;
 	cover.style="display:block;z-index:99;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (posx + 50) + ";top:"+ (posy-150);

@@ -7,6 +7,8 @@
 
 static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 
+#define custom_popup_msg		(html_base_path + 1845)
+
 #define ITEM_CHECKED			" checked=\"checked\""
 #define ITEM_SELECTED			" selected=\"selected\""
 

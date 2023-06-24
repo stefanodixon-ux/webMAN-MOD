@@ -8,7 +8,8 @@
 		// /popup.ps3&snd=<id>
 		// /popup.ps3?<msg>
 		// /popup.ps3?<msg>&icon=<id>
-		// /popup.ps3*<msg>
+		// /popup.ps3$<msg> - show persistent message
+		// /popup.ps3*<msg> - show navigation message
 		// /popup.ps3?<msg>&snd=<id>
 		// /popup.ps3*<msg>&snd=<id>
 		// /popup.ps3?<msg>&icon=<id>&snd=<id>
@@ -19,10 +20,16 @@
 
 		if(param[10] == '\0')
 			{show_info_popup = true;}						// show info once
-		else if(param[10] == '$' && param[11] == '\0')
-			{BEEP1; show_persistent_popup = PERSIST, show_info_popup = true;}	// show persistent info ON
+		else if(param[10] == '$')
+		{
+			show_persistent_popup = PERSIST;
+			if(param[11])
+				{is_custom_popup = true; snprintf(custom_popup_msg, 200, "%s", &param[11]);}
+			else
+				{show_info_popup = true; BEEP1;}			// show persistent info ON
+		}
 		else if(param[10] == '*' && param[11] == '\0')
-			{if(show_persistent_popup) BEEP2; show_persistent_popup = 0;}		// show persistent info OFF
+			{if(show_persistent_popup) BEEP2; is_custom_popup = false, show_persistent_popup = 0;}	// show persistent info OFF
 		else if(param[10] == '?' && param[11] == '\0')
 			{show_wm_version(param);}						// show webman version
 		else

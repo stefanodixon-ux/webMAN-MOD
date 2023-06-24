@@ -414,7 +414,15 @@
 							#endif
 							/////////////////////////////
  show_popup:
-							get_sys_info(msg, (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2), false);
+							if(is_custom_popup)
+							{
+								snprintf(msg, 200, "%s", custom_popup_msg);
+								#ifdef COBRA_NON_LITE
+								parse_tags(msg);
+								#endif
+							}
+							else
+								get_sys_info(msg, (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == CELL_PAD_CTRL_R2), false);
 							show_msg(msg);
 							sys_ppu_thread_sleep(2);
 						}
