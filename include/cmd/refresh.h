@@ -29,7 +29,9 @@
 		}
 		#endif
 
-		refresh_xml(templn);
+		if(strchr(params, '$')) show_scan_progress = true;
+
+		refresh_xml(templn); show_scan_progress = false;
 
 		if(strstr(params, "xmb")) reload_xmb();
 

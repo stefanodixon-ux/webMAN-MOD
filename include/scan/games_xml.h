@@ -1595,7 +1595,7 @@ static void refresh_xml(char *msg)
 		sys_ppu_thread_sleep(3);
 
 		pad_data = pad_read();
-		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3) || show_persistent_popup)
+		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3) || show_persistent_popup || show_scan_progress)
 		{
 			snprintf(msg, 200, "%s:\n %'i %s", STR_SCAN2, games_found, STR_GAMES);
 			show_msg_with_icon(ICON_WAIT, msg);

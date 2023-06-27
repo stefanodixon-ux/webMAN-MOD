@@ -869,13 +869,16 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				bool fast_move = (cp_mode == CP_MODE_MOVE) && is_same_dev(source, target);
 				mkdir_tree(target);
 
+				bool recursive = true;
+				if(IS(source, INT_HDD_ROOT_PATH)) recursive = (strchr(source + 10, '/') != NULL); // prevent recursive copy from root of HDD
+
 				// copy folder to target
-				if(strstr(source,"/exdata"))
+				if(strstr(source, "/exdata"))
 				{
 					scan(source, false, ".edat", islike(source, "/dev_usb") ? SCAN_COPYBK : SCAN_COPY, target);
 				}
 				else if(wildcard)
-					scan(source, true, wildcard, SCAN_COPY, target);
+					scan(source, recursive, wildcard, SCAN_COPY, target); 
 				else if(fast_move)
 					{rename_file(source, target); cp_mode = CP_MODE_COPY;}
 				else if(isDir(source))
