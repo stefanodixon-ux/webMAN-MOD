@@ -160,7 +160,7 @@ static void set_mount_type(const char *path)
 		mount_unk = EMU_PSX; // PS1
 	else if(strstr(path, "PS2ISO"))
 		mount_unk = EMU_PS2_DVD; // PS2
-	else if(strstr(path, "PS3ISO"))
+	else if(strstr(path, "PS3ISO") || strstr(path, "/GAME"))
 		mount_unk = EMU_PS3; // PS3
 	else if(strstr(path, "PSPISO"))
 		mount_unk = EMU_PSP; // PSP

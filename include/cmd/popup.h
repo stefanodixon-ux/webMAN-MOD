@@ -17,6 +17,7 @@
 		// /popup.ps3?<msg>&icon=<rsc_icon>&rco=<plugin_name> (e.g. /popup.ps3?Hello&icon=item_tex_NewAvc&rco=explore_plugin)
 		// /popup.ps3?<rsc_msg>&rco=<plugin_name> (e.g. /popup.ps3?msg_psn&rco=explore_plugin)
 		// /popup.ps3?<rsc_msg>&rco=<plugin_name>&icon=<id> (e.g. /popup.ps3?msg_error_hdd_full&rco=system_plugin&icon=5)
+		// /popup.ps3=<msg> - return raw message (no html)
 
 		if(param[10] == '\0')
 			{show_info_popup = true;}						// show info once

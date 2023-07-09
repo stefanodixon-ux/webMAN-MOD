@@ -112,12 +112,15 @@
 					disable_progress();
 			}
 			#endif
-			else
+			else if(mode != '=')
 				show_msg(msg);
 
-			if(op) _concat(&sbuffer, msg); else _concat2(&sbuffer, "Message sent: ", msg);
-
-			if(mode=='=') sbuffer.size = sprintf(sbuffer.str, "%s", msg); // raw mode
+			if(mode=='=')
+				sbuffer.size = sprintf(sbuffer.str, "%s", msg); // raw mode
+			else if(op)
+				_concat(&sbuffer, msg);
+			else
+				_concat2(&sbuffer, "Message sent: ", msg);
 		}
 
 		loading_html = keep_alive = is_popup = 0; goto send_response;
