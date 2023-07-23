@@ -1459,7 +1459,7 @@ static void mount_autoboot(void)
 /***********************************************/
 /* mount_thread parameters                     */
 /***********************************************/
-static char *_path0;
+static char _path0[MAX_PATH_LEN];
 static bool mount_ret = false;
 /***********************************************/
 
@@ -1839,7 +1839,7 @@ static bool mount_game(const char *path, u8 action)
 */
 	if(is_mounting) return false; is_mounting = true;
 
-	_path0 = (char*)path;
+	strcpy(_path0, path);
 
 	sys_ppu_thread_t t_id;
 	sys_ppu_thread_create(&t_id, mount_thread, (u64)action, THREAD_PRIO_HIGH, THREAD_STACK_SIZE_MOUNT_GAME, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_CMD);
@@ -1849,7 +1849,7 @@ static bool mount_game(const char *path, u8 action)
 
 	close_ftp_sessions_idle();
 
-	_path0 = NULL;
+	_memset(_path0, sizeof(_path0));
 
 	return mount_ret;
 }

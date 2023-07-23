@@ -1,6 +1,9 @@
 #ifdef COBRA_ONLY
 static void patch_ps2_demo(const char *iso_file)
 {
+	// skip patch if using ps2_emu: 0x01 = CECH-A*, 0x02 = CECH-B
+	if((eid0_idps[0] & 0x00000000000000FF) <= 0x02 && !(webman_config->ps2emu)) return;
+
 	u32 offset, root;
 	char data[0x40];
 	char game_id[12];    _memset(game_id,  sizeof(game_id));
