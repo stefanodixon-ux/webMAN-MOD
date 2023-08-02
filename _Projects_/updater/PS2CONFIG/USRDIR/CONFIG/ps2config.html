@@ -1022,6 +1022,9 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>PCPX_963.20<td>PaRappa the Rapper 2</tr>
 <tr><td>CUSTOM<td>SCPS_192.01<td>PaRappa the Rapper 2 [PlayStation 2 The Best]</tr>
 <tr><td>CUSTOM<td>SLES_534.06<td>Party Girls</tr>
+<tr><td>CUSTOM<td>SLES_556.56<td>PES 2012: Pro Evolution Soccer</tr>
+<tr><td>CUSTOM<td>SLES_556.57<td>PES 2012: Pro Evolution Soccer</tr>
+<tr><td>CUSTOM<td>SLES_556.58<td>PES 2012: Pro Evolution Soccer</tr>
 <tr><td>CUSTOM<td>SLUS_211.95<td>Phantasy Star Universe</tr>
 <tr><td>CUSTOM<td>SLUS_216.31<td>Phantasy Star Universe: Ambition of the Illuminus</tr>
 <tr><td>CUSTOM<td>SCPS_150.05<td>Phase Paradox</tr>
@@ -1047,6 +1050,7 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLES_543.60<td>Pro Evolution Soccer 6</tr>
 <tr><td>CUSTOM<td>SLES_543.61<td>Pro Evolution Soccer 6</tr>
 <tr><td>CUSTOM<td>SLES_543.62<td>Pro Evolution Soccer 6</tr>
+<tr><td>CUSTOM<td>SLUS_219.48<td>Pro Evolution Soccer 2012</tr>
 <tr><td>CUSTOM<td>SLUS_210.37<td>Project: Snowblind</tr>
 <tr><td>CUSTOM<td>SLES_508.21<td>Project Zero</tr>
 <tr><td>CUSTOM<td>SLES_523.84<td>Project Zero 2: Crimson Butterfly</tr>
@@ -1483,6 +1487,8 @@ setTimeout(function(){
 <tr><td>CUSTOM<td>SLPM_552.58<td>World Soccer Winning Eleven 10: Aoki Samurai no Chousen</tr>
 <tr><td>CUSTOM<td>SLPM_552.09<td>World Soccer Winning Eleven 10 / ワールドサッカー ウイニングイレブン10</tr>
 <tr><td>CUSTOM<td>SLPM_663.74<td>World Soccer Winning Eleven 10 / ワールドサッカー ウイニングイレブン10</tr>
+<tr><td>CUSTOM<td>SLPM_552.94<td>World Soccer Winning Eleven 2012 / ワールドサッカー ウイニングイレブン 2012</tr>
+<tr><td>CUSTOM<td>SLKA_254.80<td>World Soccer Winning Eleven 2012 / 월드 사커 위닝 일레븐 2012</tr>
 <tr><td>CUSTOM<td>SLUS_204.19<td>WRC: World Rally Championship</tr>
 <tr><td>CUSTOM<td>SCES_532.47<td>WRC: World Rally Championship: Rally Evolved</tr>
 <tr><td>CUSTOM<td>SCES_536.80<td>WRC: World Rally Championship: Rally Evolved / WRC avec Sébastien Loeb Édition 2005</tr>
@@ -4298,6 +4304,9 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_556.36<td>PES 2011: Pro Evolution Soccer</tr>
 <tr><td>ENC<td>SLES_556.37<td>PES 2011: Pro Evolution Soccer</tr>
 <tr><td>ENC<td>SLES_556.38<td>PES 2011: Pro Evolution Soccer</tr>
+<tr><td>ENC<td>SLES_556.56<td>PES 2012: Pro Evolution Soccer</tr>
+<tr><td>ENC<td>SLES_556.57<td>PES 2012: Pro Evolution Soccer</tr>
+<tr><td>ENC<td>SLES_556.58<td>PES 2012: Pro Evolution Soccer</tr>
 <tr><td>ENC<td>NPJD_000.28<td>Phantasy Star Complete Collection</tr>
 <tr><td>ENC<td>SLUS_211.94<td>Phantasy Star Universe</tr>
 <tr><td>ENC<td>SLUS_211.95<td>Phantasy Star Universe</tr>
@@ -4340,6 +4349,7 @@ setTimeout(function(){
 <tr><td>ENC<td>SLES_543.60<td>Pro Evolution Soccer 6</tr>
 <tr><td>ENC<td>SLES_543.61<td>Pro Evolution Soccer 6</tr>
 <tr><td>ENC<td>SLES_543.62<td>Pro Evolution Soccer 6</tr>
+<tr><td>ENC<td>SLUS_219.48<td>Pro Evolution Soccer 2012</tr>
 <tr><td>ENC<td>SLUS_210.37<td>Project: Snowblind</tr>
 <tr><td>ENC<td>SLUS_201.64<td>Project Eden</tr>
 <tr><td>ENC<td>SLES_505.53<td>Project Eden</tr>
@@ -5044,6 +5054,8 @@ setTimeout(function(){
 <tr><td>ENC<td>SCCS_400.22<td>World Soccer Winning Eleven 8: Asia Championship</tr>
 <tr><td>ENC<td>SLPM_663.74<td>World Soccer Winning Eleven 10 / ワールドサッカー ウイニングイレブン10</tr>
 <tr><td>ENC<td>SLPM_552.09<td>World Soccer Winning Eleven 10 / ワールドサッカー ウイニングイレブン10</tr>
+<tr><td>ENC<td>SLPM_552.94<td>World Soccer Winning Eleven 2012 / ワールドサッカー ウイニングイレブン 2012</tr>
+<tr><td>ENC<td>SLKA_254.80<td>World Soccer Winning Eleven 2012 / 월드 사커 위닝 일레븐 2012</tr>
 <tr><td>ENC<td>SLPM_552.58<td>World Soccer Winning Eleven 2010: Aoki Samurai no Chousen</tr>
 <tr><td>ENC<td>SLKA_254.77<td>World Soccer Winning Eleven 2011</tr>
 <tr><td>ENC<td>SLPM_552.76<td>World Soccer Winning Eleven 2011 / ワールドサッカー　ウイニングイレブン　２０１１</tr>
@@ -5105,7 +5117,7 @@ var PS2Classics = false;
 var table = $("dbTable");
 var tbody = table.getElementsByTagName('tbody')[0];
 var tr = tbody.getElementsByTagName('tr');
-var i = 2766, count = tr.length, classics = i;
+var i = 2772, count = tr.length, classics = i;
 for (; i < count; i++) {
 	cols = tr[i].children;
 	if(cols[0].innerText=="ENC") {classics = i; break;}
