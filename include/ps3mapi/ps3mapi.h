@@ -261,8 +261,9 @@ static void start_vsh_gui(bool vsh_menu)
 
 #ifdef PS3MAPI
 
-static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize, uint64_t outPageTable[2], char* error_msg)
+static uint64_t StartGamePayload(int pid, const char* fileName, int prio, size_t stacksize, uint64_t outPageTable[2], char* error_msg);
 
+static int ps3mapi_process_page_free(sys_pid_t pid, uint64_t flags, uint64_t* page_table);
 static void ps3mapi_syscall8(char *buffer, char *templn, const char *param);
 static void ps3mapi_setmem(char *buffer, char *templn, const char *param);
 
@@ -1118,6 +1119,8 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 	if(!is_ps3mapi_home) concat(buffer, "<br>" HTML_RED_SEPARATOR); else concat(buffer, "<br>");
 }
 
+static uint64_t pageTable[2] = {0, 0};
+
 static void ps3mapi_payload(char *buffer, char *templn, const char *param)
 {
 	bool is_ps3mapi_home = (*param == ' ');
@@ -1160,14 +1163,29 @@ static void ps3mapi_payload(char *buffer, char *templn, const char *param)
 	{
 		if(!pid)
 			sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X)", STR_ERROR, "Process", "Not found!", pid);
+		else if(strstr(param, "?unload"))
+		{
+			if(pageTable[0] && pageTable[1])
+			{
+				ps3mapi_process_page_free(pid, 0x2F, pageTable);
+				sprintf(templn, "<br><b>%s</b> (pid=0x%X)", "Payload unloaded", pid);
+				pageTable[0] = pageTable[1] = 0;
+			}
+			else
+				sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X)", STR_ERROR, "Process", "Not found!", pid);
+		}
 		else if(file_exists(payload))
 		{
 			char error_msg[64];
-			uint64_t pageTable[2];
 			uint64_t executableMemoryAddress = StartGamePayload(pid, payload, 0x7D0, 0x4000, pageTable, error_msg);
 
-			sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X)", payload, executableMemoryAddress ? STR_LOADED : STR_ERROR,
-															  error_msg, pid);
+			sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X) ",  payload, executableMemoryAddress ? STR_LOADED : STR_ERROR,
+																error_msg, pid);
+
+			concat(buffer, templn);
+			sprintf(payload, "/payload.ps3mapi?unload&proc=0x%X", pid);
+			sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, "unload", HTML_ONCLICK, payload);
+			
 		}
 		else
 			sprintf(templn, "<br><b>%s %s %s</b> (pid=0x%X)", STR_ERROR, payload, "Not found!", pid);

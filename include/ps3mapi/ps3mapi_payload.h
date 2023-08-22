@@ -5,6 +5,7 @@ static int ps3mapi_create_process_thread(sys_pid_t pid, sys_ppu_thread_t* thread
 	system_call_8(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PROC_CREATE_THREAD, (uint64_t)(uint32_t)pid, (uint64_t)(uint32_t)thread, (uint64_t)(uint32_t)entry, (uint64_t)(uint32_t)arg, (uint64_t)(uint32_t)prio, (uint64_t)(uint32_t)stacksize, (uint64_t)(uint32_t)threadname);
 	return_to_user_prog(int);
 }
+
 static int ps3mapi_process_page_allocate(sys_pid_t pid, uint64_t size, uint64_t page_size, uint64_t flags, uint64_t is_executable, uint64_t* page_table)
 {
 	system_call_8(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PROC_PAGE_ALLOCATE, (uint64_t)(uint32_t)pid, (uint64_t)(uint32_t)size, (uint64_t)(uint32_t)page_size, (uint64_t)(uint32_t)flags, (uint64_t)(uint32_t)is_executable, (uint64_t)(uint32_t)page_table);

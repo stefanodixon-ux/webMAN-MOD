@@ -422,7 +422,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						else {ssend(conn_s_ps3mapi, PS3MAPI_ERROR_425); split = 425;}
 					}
 					else if(_IS(cmd, "PAYLOAD"))	// MEMORY PAYLOAD <pid> <payload-path>
-					{
+					{								// MEMORY PAYLOAD <pid> unload
 						if(data_s < 0 && pasv_s >= 0) data_s = accept(pasv_s, NULL, NULL);
 
  						if(data_s >= 0)
@@ -432,11 +432,23 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 								split = ssplit(param2, cmd, PS3MAPI_CMD_LEN, param1, PS3MAPI_MAX_LEN);
 								if(split)
 								{
-									if(file_exists(param1))
+									if(_IS(param1, "unload"))
+									{
+										u32 attached_pid = val(cmd);
+										if(attached_pid && pageTable[0] && pageTable[1])
+										{
+											ps3mapi_process_page_free(attached_pid, 0x2F, pageTable);
+											sprintf(buffer, "200 %s\r\n", "Payload unloaded");
+											ssend(conn_s_ps3mapi, buffer);
+										}
+										else
+											ssend(conn_s_ps3mapi, PS3MAPI_ERROR_451);
+									}
+									else if(file_exists(param1))
 									{
 										u32 attached_pid = val(cmd);
 										char *error_msg = param2;
-										uint64_t executableMemoryAddress = StartGamePayload(attached_pid, param1, 0x7D0, 0x4000, error_msg);
+										uint64_t executableMemoryAddress = StartGamePayload(attached_pid, param1, 0x7D0, 0x4000, pageTable, error_msg);
 										sprintf(buffer, "200 %llu|%s\r\n", executableMemoryAddress, error_msg);
 										ssend(conn_s_ps3mapi, buffer);
 									}
