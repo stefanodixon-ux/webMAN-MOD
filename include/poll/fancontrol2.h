@@ -42,7 +42,7 @@
 		}
 		#endif // #ifndef LITE_EDITION
 
-		t2 -= 2; // allow a gap of +2°C between RSX (t2) and CPU (t1)
+		t1 -= 2; // allow a gap of +2°C between CPU (t1) and RSX (t2)
 		if(t2 > t1) t1 = t2;
 
 		if(!lasttemp) lasttemp = t1;
