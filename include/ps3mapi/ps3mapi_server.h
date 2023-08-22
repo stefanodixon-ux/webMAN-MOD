@@ -438,6 +438,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 										if(attached_pid && pageTable[0] && pageTable[1])
 										{
 											ps3mapi_process_page_free(attached_pid, 0x2F, pageTable);
+											pageTable[0] = pageTable[1] = 0;
 											sprintf(buffer, "200 %s\r\n", "Payload unloaded");
 											ssend(conn_s_ps3mapi, buffer);
 										}
