@@ -124,6 +124,7 @@ static void randomize_vsh_resources(bool apply_theme, char *param)
 	map_vsh_resource(3, MAP_SELECTED, param, false); // lines.qrc
 	map_vsh_resource(7, MAP_SELECTED, param, false); // impose_plugin.rco
 	map_vsh_resource(8, MAP_SELECTED, param, false); // xmb_plugin_normal.rco + xmb_ingame.rco
+	map_vsh_resource(9, MAP_SELECTED, param, false); // system_plugin.rco
 	if(!apply_theme) return;
 	map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
 }
