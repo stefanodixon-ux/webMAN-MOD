@@ -12,6 +12,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 4) ? "/dev_hdd0/tmp/coldboot" : // 4
 							(res_id == 7) ? "/dev_hdd0/tmp/impose"   : // 7
 							(res_id == 8) ? "/dev_hdd0/tmp/psn_icons": // 8
+							(res_id == 9) ? "/dev_hdd0/tmp/system_plugin": // 9
 											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
 
 	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
@@ -19,6 +20,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 3) ? "/dev_flash/vsh/resource/qgl/lines.qrc" :
 							(res_id == 4) ? "/dev_flash/vsh/resource/coldboot_stereo.ac3":
 							(res_id == 8) ? "/dev_flash/vsh/resource/xmb_plugin_normal.rco":
+							(res_id == 9) ? "/dev_flash/vsh/resource/system_plugin.rco":
 											"/dev_flash/vsh/resource/impose_plugin.rco"; // 7
 
 	if(isDir(hdd_path))
@@ -48,7 +50,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id); // coldboot
 			else if(res_id == 5)
 				sprintf(param, "%s/%i.p3t", hdd_path, _id); // theme
-			else if(res_id == 7)
+			else if(res_id == 7 || res_id == 9)
 				sprintf(param, "%s/%i.rco", hdd_path, _id); // impose
 			else if(res_id == 8)
 				sprintf(param, "%s/%i/xmb_plugin_normal.rco", hdd_path, _id); // psn_icons

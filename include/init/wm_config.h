@@ -190,7 +190,7 @@ typedef struct
 	//u8 last_theme_id;	// [6]: 0=none, 1-255: last selected theme (used to prevent install the current theme again)
 	//u8 impose_id;		// [7]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/impose on each boot
 	//u8 psn_icons_id	// [8]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/psn_icons on each boot
-						// [9]: reserved
+	//u8 clock_id		// [9]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/system_plugin on each boot
 						//[10]: reserved
 						//[11]: reserved
 } /*__attribute__((packed))*/ WebmanCfg;

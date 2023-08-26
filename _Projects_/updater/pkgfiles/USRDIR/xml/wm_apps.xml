@@ -57,10 +57,14 @@
 				<P key="info"><>6.4 MB</></P>
 			</T>
 			<T key="app014" include="inc">
-				<P key="title"><>Ultimate Toolbox v2.03 FULL</></P>
+				<P key="title"><>Ultimate Toolbox v2.03 FULL 4.84-4.88</></P>
 				<P key="info"><>482 MB</></P>
 			</T>
 			<T key="app015" include="inc">
+				<P key="title"><>Ultimate Toolbox v2.03 FULL 4.89-4.90</></P>
+				<P key="info"><>13.3 MB</></P>
+			</T>
+			<T key="app016" include="inc">
 				<P key="title"><>webMAN MOD Installer</></P>
 				<P key="info"><>13.3 MB</></P>
 			</T>
@@ -79,8 +83,9 @@
 			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_item"/><!-- Movian -->
 			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/><!-- Apollo Save Tool -->
 			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/><!-- Artemis GUI [Cheats] -->
-			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/><!-- Ultimate Toolbox v2.03 FULL -->
-			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/><!-- webMAN MOD Installer -->
+			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/><!-- Ultimate Toolbox v2.03 FULL 4.84-4.88-->
+			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.90-->
+			<Q class="type:x-xmb/folder-pixmap" key="app016" attr="app016" src="#app016_item"/><!-- webMAN MOD Installer -->
 		</I>
 	</V>
 
@@ -208,8 +213,8 @@
 		<A>
 			<T key="app008_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_Psx-Place_Community_Edition_unofficial_beta-20220315.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_Psx-Place_Community_Edition_unofficial_beta-20220315.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_CE.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_CE.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>RETROA-RETROARCH_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
@@ -322,10 +327,27 @@
 		</I>
 	</V>
 
-	<!-- webMAN MOD Installer -->
+	<!-- Ultimate Toolbox v2.03 FULL 4.89-4.90 -->
 	<V id="app015_item">
 		<A>
 			<T key="app015_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_for_4.89-4.90_BETA.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_for_4.89-4.90_BETA.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-ULTOOLBOX_00-DEVIL30300000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I>
+			<Item class="type:x-xmb/xmlnpsignup" key="app015_link" attr="app015_link"/>
+		</I>
+	</V>
+
+	<!-- webMAN MOD Installer -->
+	<V id="app016_item">
+		<A>
+			<T key="app016_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.45/webMAN_MOD_1.47.45_Installer.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.45/webMAN_MOD_1.47.45_Installer.pkg</></P>
@@ -335,7 +357,7 @@
  			</T>
 		</A>
 		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app015_link" attr="app015_link"/>
+			<Item class="type:x-xmb/xmlnpsignup" key="app016_link" attr="app016_link"/>
 		</I>
 	</V>
 </X>

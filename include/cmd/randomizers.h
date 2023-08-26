@@ -18,6 +18,7 @@
 			islike(param, "/lines.ps3")     ||
 			islike(param, "/theme.ps3")     ||
 			islike(param, "/impose.ps3")    ||
+			islike(param, "/clock.ps3")     ||
 			islike(param, "/psn_icons.ps3") ||
 			islike(param, "/coldboot.ps3"))
 	{
@@ -35,9 +36,10 @@
 					(param[1] == 'e') ? 1: // 1 = earth
 					(param[4] == 'y') ? 2: // 2 = canyon
 					(param[1] == 'l') ? 3: // 3 = lines
-					(param[1] == 'c') ? 4: // 4 = coldboot
+					(param[5] == 'b') ? 4: // 4 = coldboot
 					(param[1] == 'i') ? 7: // 7 = impose
 					(param[1] == 'p') ? 8: // 8 = psn_icons
+					(param[5] == 'k') ? 9: // 9 = clock
 										5; // 5 = theme (6 = last selected theme)
 
 		char *value = strstr(param, ".ps3") + 4;
@@ -47,7 +49,7 @@
 
 		if(*value) ++value;
 
-		if(*value == 'r') {map_vsh_resource(res_id, 0, param, true); *value = 0;}
+		if(*value == 'r') {map_vsh_resource(res_id, 0, param, true); *value = 0;} // call vsh_random_res.h
 
 		if(*value)
 		{
