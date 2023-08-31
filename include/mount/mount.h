@@ -1152,8 +1152,6 @@ static void get_last_game(char *last_path)
 #ifdef COBRA_ONLY
 static void cache_file_to_hdd(char *source, char *target, const char *basepath, char *msg)
 {
-	do_umount(false); // umount + delete previous cached file
-
 	if(*source == '/')
 	{
 		sprintf(target, "/dev_hdd0%s", basepath);
@@ -1188,6 +1186,8 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 
 		if(file_exists(target)) strcpy(source, target);
 	}
+	
+	do_umount(false); // umount + delete previous cached file
 }
 
 static void cache_icon0_and_param_sfo(char *destpath)
