@@ -1113,7 +1113,7 @@ static void setup_form(char *buffer, char *templn)
 //					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
 	#else
 	concat(buffer,  HTML_RED_SEPARATOR
-					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a><br>"
+					"<a href=\"http://ps3.aldostools.org/links.html\">" WEBMAN_MOD " - Latest release</a><br>"
 					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
 	#endif
 #else
