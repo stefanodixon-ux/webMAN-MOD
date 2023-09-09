@@ -57,10 +57,10 @@ function find()
 	</div>
 
 	<div id="cpursx" style="position:absolute;top:5px;right:150px;max-width:220px;overflow:hidden;">
-	<iframe src="/cpursx_ps3" frameborder="0" scrolling="no" seamless="seamless" style="border:none;height:35px;top:5px;overflow:hidden;"></iframe>
+	<iframe id="temp" src="/cpursx_ps3" frameborder="0" scrolling="no" seamless="seamless" style="border:none;height:35px;top:5px;overflow:hidden;"></iframe>
 	</div>
 
-	<span style="position:absolute;float:right;right:-5px;top:10px;">
+	<span id="srch" style="position:absolute;float:right;right:-5px;top:10px;">
 	<a onclick="if(self.location.href.indexOf('/cpursx.ps3')>0){self.location='/cpursx.html';}else{find();}"><span id="ngames"></span> &nbsp; <img src="/dev_hdd0/tmp/wm_icons/find.png" style="position:relative;top:6px;"></a></font>
 	</span>
 </div>
@@ -76,9 +76,20 @@ function find()
 </font>
 
 <script>
+
 resizeEvent();
+
+if(navigator.userAgent.indexOf("PLAYSTATION")==-1) {
+	document.getElementById('top_buttons').style.pointerEvents = "none";
+	document.getElementById('top_buttons').style.opacity=0.5;
+	document.getElementById('left_action').style.pointerEvents = "none";
+	document.getElementById('left_action').style.opacity=0.5;
+	document.getElementById('smv').style.pointerEvents = "none";
+	document.getElementById('srch').style.display='none';
+}
+
 </script>
-<style>h2 a:hover,h3 a:hover{color:yellow;background:navy;padding:2px;border-radius:8px}</style>
+<style>h2{color:#aff}h2 a:hover,h3 a:hover{color:yellow;background:#003366;padding:5px;border-radius:8px}</style>
 <div id="content" class="propfont">
 <table>
   <colgroup>
