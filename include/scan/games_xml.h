@@ -117,6 +117,8 @@ static void apply_remaps(void)
 	sys_map_path2(VSH_MODULE_DIR WM_PROXY_SPRX ".sprx", file_exists(WM_PROXY) ? WM_PROXY : NULL);
  #endif
 
+	sys_map_path2(ORG_PS1_ROM_PATH, webman_config->ps1rom && file_exists(NEW_PS1_ROM_PATH) ? NEW_PS1_ROM_PATH : NULL);
+
 	//if(payload_ps3hen)
 	{
 		sys_map_path(FB_XML, FB_HEN_XML);
