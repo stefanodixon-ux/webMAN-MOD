@@ -11,6 +11,7 @@
 // [PS2]     PS2 extracted folders in /PS2DISC (needs PS2_DISC compilation flag)
 // [netemu]  Mount ps2/psx game with netemu
 // [psn]     Map /dev_hdd0/game/[GAME_ID] to /dev_bdvd/PS3_GAME (if the folder does not exist)
+// [bios]    Use external ps1_bios.bin
 
 // hold CROSS = force Auto-Play
 // hold CIRCLE = cancel Auto-Play
