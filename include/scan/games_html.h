@@ -86,6 +86,8 @@ static void add_title_id(char *templn, char *title_id)
 	// invalid character breaks XML / HTML
 	replace_char(templn, '<', ' ');
 
+	remove_brackets(templn);
+
 	if(webman_config->tid && HAS_TITLE_ID)
 	{
 		int tlen = strlen(templn); if((tlen < 50) && !strstr(templn, " [")) sprintf(templn + tlen, " [%s]", title_id);

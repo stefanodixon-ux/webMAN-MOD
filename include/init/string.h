@@ -137,6 +137,20 @@ static char *to_upper(char *text)
 	return upper;
 }
 
+static char *remove_brackets(char *title)
+{
+	if(*title == '[')
+	{
+		char *pos = strchr(title, ']');
+		if(pos && !pos[1])
+		{
+			*pos = '\0'; // remove last bracket ]
+			memcpy(title, title + 1, strlen(title)); // remove first bracket [
+		}
+	}
+	return title;
+}
+
 #ifndef LITE_EDITION
 static char *prepend(char *a, const char *b, int len)
 {

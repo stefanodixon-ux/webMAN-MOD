@@ -953,7 +953,7 @@ scan_roms:
 			{
 				CellFsDirectoryEntry entry; u32 read_e;
 				int fd2 = 0, flen, plen;
-				char title_id[12], app_ver[8];
+				char title_id[24], app_ver[8];
 				u8 is_iso = 0;
 
 				#ifdef NET_SUPPORT
