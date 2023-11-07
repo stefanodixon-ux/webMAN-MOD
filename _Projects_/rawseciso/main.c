@@ -69,13 +69,13 @@ enum EMU_TYPE
 #define OK	  0
 #define FAILED -1
 
-#define LAST_SECTOR				1
-#define READ_SECTOR				0xFFFFFFFF
+#define ERR_EBUSY	0x8001000A
+#define NO_SECTOR	0xFFFFFFFF
 
 #define NONE -1
 #define SYS_PPU_THREAD_NONE		(sys_ppu_thread_t)NONE
-#define SYS_EVENT_QUEUE_NONE	   (sys_event_queue_t)NONE
-#define SYS_DEVICE_HANDLE_NONE	 (sys_device_handle_t)NONE
+#define SYS_EVENT_QUEUE_NONE	(sys_event_queue_t)NONE
+#define SYS_DEVICE_HANDLE_NONE	(sys_device_handle_t)NONE
 
 enum STORAGE_COMMAND
 {
@@ -350,13 +350,68 @@ static void get_next_read(u64 discoffset, u64 bufsize, u64 *offset, u64 *readsiz
 	DPRINTF("Offset or size out of range  %lx%08lx   %lx!!!!!!!!\n", discoffset>>32, discoffset, bufsize);
 }
 
-u8 last_sect_buf[4096] __attribute__((aligned(16)));
-u32 last_sect = READ_SECTOR;
+u8 prev_sect_buf[4096] __attribute__((aligned(16)));
+u32 prev_sect = NO_SECTOR;
+
+static int read_storage(u32 sector, u32 n, u8 *buf)
+{
+	if(prev_sect == sector)
+	{
+		return OK;
+	}
+
+	u32 r;
+	int ret;
+
+	for(int x = 0; x < 16; x++)
+	{
+		r = 0;
+		ret = sys_storage_read(handle, 0, sector, n, buf, &r, 0);
+
+		if((ret == OK) && (r == n))
+		{
+			prev_sect = sector;
+			return OK;
+		}
+
+		prev_sect = NO_SECTOR;
+
+		if(emu_mode == EMU_PSX_MULTI) return (int) ERR_EBUSY;
+
+		if((ret == (int) 0x80010002) || (ret == (int) 0x8001002D))
+		{
+			if(handle != SYS_DEVICE_HANDLE_NONE) sys_storage_close(handle); handle = SYS_DEVICE_HANDLE_NONE;
+
+			while(ntfs_running)
+			{
+				if(sys_storage_get_device_info(usb_device, &disc_info) == OK)
+				{
+					ret = sys_storage_open(usb_device, 0, &handle, 0);
+					if(ret == OK) break;
+
+					handle = SYS_DEVICE_HANDLE_NONE; sysUsleep(500000);
+				}
+				else sysUsleep(7000000);
+			}
+
+			x = -1; continue; // retry
+		}
+
+		if(x >= 15 || !ntfs_running)
+		{
+			DPRINTF("sys_storage_read failed: %x 1 -> %x\n", sector, ret);
+			return FAILED;
+		}
+
+		sysUsleep(100000);
+	}
+
+	return ret;
+}
 
 static int process_read_iso_cmd(u8 *buf, u64 offset, u64 size)
 {
 	u64 remaining;
-	int x;
 
 	//DPRINTF("read iso: %p %lx %lx\n", buf, offset, size);
 	remaining = size;
@@ -367,7 +422,6 @@ static int process_read_iso_cmd(u8 *buf, u64 offset, u64 size)
 		int idx;
 		int ret;
 		u32 sector;
-		u32 r;
 
 		if(!ntfs_running) return FAILED;
 
@@ -385,59 +439,15 @@ static int process_read_iso_cmd(u8 *buf, u64 offset, u64 size)
 		if(pos % sec_size)
 		{
 			sector = sections[idx] + (pos / sec_size);
-			for(x = 0; x < 16; x++)
-			{
-				r = 0;
-				if(last_sect == sector)
-				{
-					ret = OK; r = LAST_SECTOR;
-				}
-				else
-					ret = sys_storage_read(handle, 0, sector, 1, last_sect_buf, &r, 0);
 
-				if((ret == OK) && (r == LAST_SECTOR))
-					last_sect = sector;
-				else
-					last_sect = READ_SECTOR;
-
-				if((ret != OK) || (r != LAST_SECTOR))
-				{
-					if(emu_mode == EMU_PSX_MULTI) return (int) 0x8001000A; // EBUSY
-
-					if((ret == (int) 0x80010002) || (ret == (int) 0x8001002D))
-					{
-						if(handle != SYS_DEVICE_HANDLE_NONE) sys_storage_close(handle); handle = SYS_DEVICE_HANDLE_NONE;
-
-						while(ntfs_running)
-						{
-							if(sys_storage_get_device_info(usb_device, &disc_info) == OK)
-							{
-								ret = sys_storage_open(usb_device, 0, &handle, 0);
-								if(ret == OK) break;
-
-								handle = SYS_DEVICE_HANDLE_NONE; sysUsleep(500000);
-							}
-							else sysUsleep(7000000);
-						}
-						x= -1; continue;
-					}
-
-
-					if(x == 15 || !ntfs_running)
-					{
-						DPRINTF("sys_storage_read failed: %x 1 -> %x\n", sector, ret);
-						return FAILED;
-					}
-					else sysUsleep(100000);
-				}
-				else break;
-			}
+			ret = read_storage(sector, 1, prev_sect_buf);
+			if(ret == (int) ERR_EBUSY || ret == FAILED) return (int) ret;
 
 			u64 csize = sec_size - (pos % sec_size);
 
 			if(csize > readsize) csize = readsize;
 
-			memcpy64(buf, last_sect_buf + (pos % sec_size), csize);
+			memcpy64(buf, prev_sect_buf + (pos % sec_size), csize);
 			buf += csize;
 			offset += csize;
 			pos += csize;
@@ -452,47 +462,9 @@ static int process_read_iso_cmd(u8 *buf, u64 offset, u64 size)
 			if(n)
 			{
 				sector = sections[idx] + (pos / sec_size);
-				for(x = 0; x < 16; x++)
-				{
-					r = 0;
-					ret = sys_storage_read(handle, 0, sector, n, buf, &r, 0);
 
-					if((ret == OK) && (r == n))
-						last_sect = sector + n - 1;
-					else
-						last_sect = READ_SECTOR;
-
-					if((ret != OK) || (r != n))
-					{
-						if(emu_mode == EMU_PSX_MULTI) return (int) 0x8001000A; // EBUSY
-
-						if((ret == (int) 0x80010002) || (ret == (int) 0x8001002D))
-						{
-							if(handle != SYS_DEVICE_HANDLE_NONE) sys_storage_close(handle); handle = SYS_DEVICE_HANDLE_NONE;
-
-							while(ntfs_running)
-							{
-								if(sys_storage_get_device_info(usb_device, &disc_info) == OK)
-								{
-									ret = sys_storage_open(usb_device, 0, &handle, 0);
-									if(ret == OK) break;
-
-									handle = SYS_DEVICE_HANDLE_NONE; sysUsleep(500000);
-								}
-								else sysUsleep(7000000);
-							}
-							x= -1; continue;
-						}
-
-						if(x == 15 || !ntfs_running)
-						{
-							DPRINTF("sys_storage_read failed: %x %x -> %x\n", sector, n, ret);
-							return FAILED;
-						}
-						else sysUsleep(100000);
-					}
-					else break;
-				}
+				ret = read_storage(sector, n, buf);
+				if(ret == (int) ERR_EBUSY || ret == FAILED) return (int) ret;
 
 				u64 s = n * sec_size;
 
@@ -506,54 +478,11 @@ static int process_read_iso_cmd(u8 *buf, u64 offset, u64 size)
 			if(readsize)
 			{
 				sector = sections[idx] + pos / sec_size;
-				for(x = 0; x < 16; x++)
-				{
-					r = 0;
-					if(last_sect == sector)
-					{
-						ret = OK; r = LAST_SECTOR;
-					}
-					else
-						ret = sys_storage_read(handle, 0, sector, 1, last_sect_buf, &r, 0);
 
-					if((ret == OK) && (r == LAST_SECTOR))
-						last_sect = sector;
-					else
-						last_sect = READ_SECTOR;
+				ret = read_storage(sector, 1, prev_sect_buf);
+				if(ret == (int) ERR_EBUSY || ret == FAILED) return (int) ret;
 
-					if((ret != OK) || (r != LAST_SECTOR))
-					{
-						if(emu_mode == EMU_PSX_MULTI) return (int) 0x8001000A; // EBUSY
-
-						if((ret == (int) 0x80010002) || (ret == (int) 0x8001002D))
-						{
-							if(handle != SYS_DEVICE_HANDLE_NONE) sys_storage_close(handle); handle = SYS_DEVICE_HANDLE_NONE;
-
-							while(ntfs_running)
-							{
-								if(sys_storage_get_device_info(usb_device, &disc_info) == OK)
-								{
-									ret = sys_storage_open(usb_device, 0, &handle, 0);
-									if(ret == OK) break;
-
-									handle = SYS_DEVICE_HANDLE_NONE; sysUsleep(500000);
-								}
-								else sysUsleep(3000000);
-							}
-							x= -1; continue;
-						}
-
-						if(x == 15 || !ntfs_running)
-						{
-							DPRINTF("sys_storage_read failed: %x 1 -> %x\n", sector, ret);
-							return FAILED;
-						}
-						else sysUsleep(100000);
-					}
-					else break;
-				}
-
-				memcpy64(buf, last_sect_buf, readsize);
+				memcpy64(buf, prev_sect_buf, readsize);
 				buf += readsize;
 				offset += readsize;
 				remaining -= readsize;
@@ -714,7 +643,7 @@ static int process_read_psx_cmd(u8 *buf, u64 offset, u64 size, u32 ssector)
 				ret = cellFsReadWithOffset(discfd, pos, buf + rel, readsize, &p);
 				if(ret)
 				{
-					if(ret == (int) 0x8001002B) return (int) 0x8001000A; // EBUSY
+					if(ret == (int) 0x8001002B) return (int) ERR_EBUSY;
 
 					return OK;
 				}
@@ -1019,8 +948,6 @@ static void eject_thread(u64 arg)
 						DPRINTF("Failed in destroying command_queue\n");
 					}
 				}
-
-
 
 				while(do_run) sysUsleep(100000);
 
@@ -1355,7 +1282,7 @@ static void rawseciso_thread(u64 arg)
 			ret = sys_event_port_send(result_port, ret, 0, 0);
 			if(ret == OK) break;
 
-			if(ret == (int) 0x8001000A)
+			if(ret == (int) ERR_EBUSY)
 			{	   // EBUSY
 					sysUsleep(100000);
 					continue;
