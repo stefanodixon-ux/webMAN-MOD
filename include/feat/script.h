@@ -129,7 +129,7 @@ static void parse_script(const char *script_file)
 				else if(_islike(line, "end")) {exec_mode = do_else = true;}
 				else if(exec_mode)
 				{
-					if(*line == '/')               {if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
+					if(*line == '/')               {if(islike(line, "/dev_blind?0")) disable_dev_blind(); else if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
 					if(_islike(line, "goto "))     {snprintf(label, 24, ":%s", line + 5); goto reload_script;} else
 					if(_islike(line, "del /"))     {path += 4; check_path_tags(path); char *wildcard = strchr(path, '*'); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
 					if(_islike(line, "md /"))      {path += 3; check_path_tags(path); mkdir_tree(path);} else
