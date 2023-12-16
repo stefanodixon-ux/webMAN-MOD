@@ -496,7 +496,7 @@ static int process_open_cmd(client_t *client, netiso_open_cmd *cmd)
 	if((fp_len == 10) && (!strcmp(filepath, "/CLOSEFILE")))
 	{
 		ret = SUCCEEDED;
-		goto send_result; // return FAILED;
+		goto send_result; // return SUCCEEDED;
 	}
 
 	filepath = translate_path(filepath, &viso);
@@ -1671,7 +1671,7 @@ int main(int argc, char *argv[])
 
 	// Show build number
 	set_white_text();
-	printf("ps3netsrv build 20220813");
+	printf("ps3netsrv build 20231215");
 
 	set_red_text();
 	printf(" (mod by aldostools)\n");

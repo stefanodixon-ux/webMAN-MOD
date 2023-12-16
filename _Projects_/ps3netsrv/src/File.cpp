@@ -162,6 +162,18 @@ int File::open(const char *path, int flags)
 	key_path[path_ext_loc - path + 5] = '\0';
 
 	key_fd = open_file(key_path, flags);
+
+	if (!FD_OK(key_fd))
+	{
+		// Check for redump encrypted mode by looking for the ".key" is the same path of the ".iso".
+		key_path[path_ext_loc - path + 1] = 'k';
+		key_path[path_ext_loc - path + 2] = 'e';
+		key_path[path_ext_loc - path + 3] = 'y';
+		key_path[path_ext_loc - path + 4] = '\0';
+
+		key_fd = open_file(key_path, flags);
+	}
+	
 	if (!FD_OK(key_fd))
 	{
 		// Check for redump encrypted mode by looking for the ".dkey" file in the "REDKEY" folder.
@@ -181,10 +193,14 @@ int File::open(const char *path, int flags)
 	if (FD_OK(key_fd))
 	{
 		char keystr[32];
-		if (read_file(key_fd, keystr, sizeof(keystr)) == sizeof(keystr))
+		unsigned char key[16];
+		int klen = read_file(key_fd, keystr, sizeof(keystr));
+		if (klen == sizeof(keystr) || klen == sizeof(key))
 		{
-			unsigned char key[16];
-			keystr_to_keyarr(keystr, key);
+			if(klen == sizeof(key))
+				memcpy(key, keystr, sizeof(key));
+			else
+				keystr_to_keyarr(keystr, key);
 #ifdef POLARSSL
 			if (aes_setkey_dec(&aes_dec_, key, 128) == SUCCEEDED)
 				enc_type_ = kDiscTypeRedump; // SET ENCRYPTION TYPE: Redump
@@ -270,8 +286,15 @@ int File::open(const char *path, int flags)
 		}
 	}
 
+	if(enc_type_ == kDiscTypeRedump)
+		printf("Redump key found.\n");
+	else if(enc_type_ == kDiscType3k3yEnc)
+		printf("3K3YEnc key found.\n");
+	else if(enc_type_ == kDiscType3k3yDec)
+		printf("3K3YDec key found.\n");
+
 	return SUCCEEDED;
-#endif
+#endif //#ifndef NOSSL
 }
 
 int File::close(void)
@@ -383,7 +406,7 @@ ssize_t File::read(void *buf, size_t nbyte)
 			(unsigned long long int)((region_count_ > 0) ? region_info_[region_count_ - 1].regions_first_addr : 0),
 			(unsigned long long int)((region_count_ > 0) ? region_info_[region_count_ - 1].regions_last_addr  : 0));
 		return ret;
-#endif
+#endif //#ifdef NOSSL
 	}
 
 	// read multi part iso (2015 AV)
@@ -519,5 +542,5 @@ void File::decrypt_data(mbedtls_aes_context &aes, unsigned char *data, int secto
 		}
 	}
 }
-#endif
-#endif
+#endif //#ifdef POLARSSL
+#endif //#ifndef NOSSL
