@@ -176,7 +176,7 @@ int File::open(const char *path, int flags)
 	
 	if (!FD_OK(key_fd))
 	{
-		// Check for redump encrypted mode by looking for the ".dkey" file in the "REDKEY" folder.
+		// Check for redump encrypted mode by looking for the ".key" or ".dkey" file in the "REDKEY" folder.
 		key_path[path_ps3iso_loc - path + 0] = 'R';
 		key_path[path_ps3iso_loc - path + 1] = 'E';
 		key_path[path_ps3iso_loc - path + 2] = 'D';
@@ -185,6 +185,18 @@ int File::open(const char *path, int flags)
 		key_path[path_ps3iso_loc - path + 5] = 'Y';
 
 		key_fd = open_file(key_path, flags);
+
+		if (!FD_OK(key_fd))
+		{
+			// Check for redump encrypted mode by looking for the ".dkey" is the same path of the ".iso".
+			key_path[path_ext_loc - path + 1] = 'd';
+			key_path[path_ext_loc - path + 2] = 'k';
+			key_path[path_ext_loc - path + 3] = 'e';
+			key_path[path_ext_loc - path + 4] = 'y';
+			key_path[path_ext_loc - path + 5] = '\0';
+
+			key_fd = open_file(key_path, flags);
+		}
 	}
 
 	delete[] key_path;
