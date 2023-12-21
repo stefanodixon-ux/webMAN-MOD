@@ -723,8 +723,10 @@ static void setup_form(char *buffer, char *templn)
 
 	add_checkbox("bn", STR_ACCESS,  " : ", (webman_config->bind) , buffer);
 
+	char pwd[24]; _memset(pwd, sizeof(pwd)); memcpy(pwd, webman_config->ftp_password, 20);
+
 	sprintf(templn, HTML_INPUT("aip", "%s", "15", "16") " Pwd: "
-					HTML_PASSW("pwd", "%s", "20", "20") "<br>", webman_config->allow_ip, webman_config->ftp_password); concat(buffer, templn);
+					HTML_PASSW("pwd", "%s", "20", "20") "<br>", webman_config->allow_ip, pwd); concat(buffer, templn);
 
 	concat(buffer, HTML_BLU_SEPARATOR);
 

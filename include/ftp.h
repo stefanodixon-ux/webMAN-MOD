@@ -1482,7 +1482,8 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 				else
 				if(_IS(cmd, "PASS"))
 				{
-					if((webman_config->ftp_password[0] == '\0') || IS(webman_config->ftp_password, param))
+					char pwd[24]; _memset(pwd, sizeof(pwd)); memcpy(pwd, webman_config->ftp_password, 20);
+					if((webman_config->ftp_password[0] == '\0') || IS(pwd, param))
 					{
 						ssend(conn_s_ftp, FTP_OK_230);		// User logged in, proceed. Logged out if appropriate.
 						loggedin = 1;
