@@ -25,7 +25,7 @@ SYS_MODULE_STOP(slaunch_stop);
 #define STR_UNLOAD		"Unload webMAN"
 #define STR_QUIT		"Quit"
 
-#define APP_VERSION		"1.16b"
+#define APP_VERSION		"1.17"
 
 typedef struct {
 	uint8_t  gmode;
@@ -205,7 +205,7 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 	if(!games) return;
 
-	const int left_margin=56;
+	const int left_margin = 56;
 
 	uint8_t slot = 0;
 	uint16_t i, j, p;
@@ -213,7 +213,7 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 	// draw background and menu strip
 	flip_frame();
-	memcpy((uint8_t *)ctx.menu, (uint8_t *)(ctx.canvas)+INFOBAR_Y*CANVAS_W*4, CANVAS_W*INFOBAR_H*4);
+	memcpy((uint8_t *)ctx.menu, (uint8_t *)(ctx.canvas) + INFOBAR_Y * CANVAS_W * 4, CANVAS_W * INFOBAR_H * 4);
 
 	set_textbox(LIGHT_GRAY, 0, INFOBAR_Y - 10, CANVAS_W, 1);
 	set_textbox(GRAY,       0, INFOBAR_Y - 9,  CANVAS_W, 1);
@@ -223,21 +223,21 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 	set_textbox(GRAY,       0, INFOBAR_Y + INFOBAR_H + 3, CANVAS_W, 1);
 	set_textbox(LIGHT_GRAY, 0, INFOBAR_Y + INFOBAR_H + 4, CANVAS_W, 1);
 
-	if(disp_h<720) gpp=10;
+	if(disp_h<720) gpp = 10;
 
 	draw_selection(game_idx);
 
 	// draw game icons (5x2) or (10x4)
 	j=(game_idx/gpp)*gpp;
 	p=(games-1) - ((games-1) % gpp);
-	for(i=j;slot<gpp;i++)
+	for(i = j; slot < gpp; i++)
 	{
-		if(i>=games) break;
+		if(i >= games) break;
 
 		// abort drawing if page is changed with L1 or R1 while processing
 		if(i & 1)
 		{
-			MyPadGetData(0, &pdata); // poll only pad 0
+			MyPadGetData(pad_port, &pdata);  // poll last pad port only
 
 			if(pdata.len > 0)
 			{
@@ -396,6 +396,8 @@ static uint8_t draw_side_menu(void)
 
 	draw_side_menu_option(option);
 
+	wait_for_button_release(PAD_TRIANGLE);
+		
 	while(slaunch_running)
 	{
 		pad_read();
@@ -404,8 +406,8 @@ static uint8_t draw_side_menu(void)
 		{
 			if(curpad==oldpad)	// key-repeat
 			{
-				if(++init_delay<=40) continue;
-				else { sys_timer_usleep(40000); key_repeat=1; }
+				if(++init_delay <= 20) continue;
+				sys_timer_usleep(40000); key_repeat=1;
 			}
 			else
 			{
@@ -776,7 +778,7 @@ static void stop_VSH_Menu(void)
 	save_config();
 
 	// prevent pass cross button to XMB
-	release_cross();
+	wait_for_button_release(PAD_CROSS);
 
 	// continue rsx rendering
 	rsx_fifo_pause(0);
@@ -945,7 +947,7 @@ static void slaunch_thread(uint64_t arg)
 				init_delay = 0;
 
 				// prevent set favorite with start button
-				while(slaunch_running) {pad_read(); if(curpad & PAD_START) sys_timer_usleep(20000); else break;}
+				wait_for_button_release(PAD_START);
 
 				continue;
 			}
@@ -964,7 +966,7 @@ static void slaunch_thread(uint64_t arg)
 					init_delay = 0;
 
 					// prevent set favorite with start button
-					while(slaunch_running) {pad_read(); if(curpad & PAD_START) sys_timer_usleep(20000); else break;}
+					wait_for_button_release(PAD_START);
 
 					continue;
 				}
@@ -993,6 +995,7 @@ static void slaunch_thread(uint64_t arg)
 					if(curpad & (PAD_SELECT | PAD_SQUARE | PAD_CIRCLE | PAD_CROSS))
 					{
 						if(fav_mode) fav_game = cur_game; else cur_game_ = cur_game;
+						if(!(curpad & PAD_R3)) init_delay = 1;
 					}
 
 					if(curpad & PAD_TRIANGLE)		// open side-menu
@@ -1002,6 +1005,7 @@ static void slaunch_thread(uint64_t arg)
 						if(option) break;
 
 						load_data(); cur_game=_cur_game;
+						wait_for_button_release(PAD_TRIANGLE | PAD_CIRCLE | PAD_CROSS);
 					}
 					else if(curpad & PAD_CIRCLE)	// back to XMB
 					{
@@ -1015,11 +1019,12 @@ static void slaunch_thread(uint64_t arg)
 					else if(curpad & PAD_R3 && games)	{gpp^=34; draw_page(cur_game, 0); sys_timer_usleep(250000); curpad = init_delay = 0;}
 
 					else if(curpad & PAD_L3)	{return_to_xmb(); send_wm_request("/refresh_ps3"); break;}
-					else if((curpad & PAD_SQUARE) && !fav_mode && !(curpad & PAD_L2)) {if(++gmode>=TYPE_FAV) gmode=TYPE_ALL; dmode=TYPE_ALL; reload_data(curpad); continue;}
+					else if((curpad & PAD_SQUARE) && !fav_mode && !(curpad & PAD_L2)) {if(++gmode>=TYPE_FAV) gmode=TYPE_ALL; dmode=TYPE_ALL; reload_data(curpad); wait_for_button_release(PAD_SQUARE); continue;}
 					else if((curpad & PAD_SQUARE) && !fav_mode &&  (curpad & PAD_L2)) {if(++dmode> DEVS_MAX) dmode=TYPE_ALL; reload_data(curpad); continue;}
 					else if((curpad == PAD_START) && games)	// favorite game XMB
 					{
 						if(fav_mode) remove_game(); else add_game();
+						wait_for_button_release(PAD_START);
 						continue;
 					}
 					if(curpad & PAD_SELECT)	// favorites menu
@@ -1029,6 +1034,7 @@ static void slaunch_thread(uint64_t arg)
 							play_rco_sound("snd_cursor");
 							fav_mode^=1; init_delay = 0;
 							reload_data(curpad);
+							wait_for_button_release(PAD_SELECT);
 						}
 						else if(curpad & PAD_R3)	{return_to_xmb(); send_wm_request("/popup.ps3"); break;}
 						continue;

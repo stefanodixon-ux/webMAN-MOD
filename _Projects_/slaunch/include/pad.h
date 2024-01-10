@@ -26,7 +26,8 @@
 							((((uint32_t)v) & 0x000000FF) << 24)))
 */
 static CellPadData pdata;
-static uint32_t oldpad=0, curpad=0;
+static uint32_t oldpad = 0, curpad = 0;
+static int32_t pad_port = 0;
 
 /***********************************************************************
 * search and return vsh_process toc
@@ -126,6 +127,8 @@ static void start_stop_vsh_pad(uint8_t flag)
 ***********************************************************************/
 static void MyPadGetData(int32_t port_no, CellPadData *data)
 {
+	//memset(data, 0, sizeof(CellPadData));
+	
 	uint32_t port = *(uint32_t*)(*(uint32_t*)(get_vsh_pad_obj() + 4) + 0x104 + port_no * 0xE8);
 
 	// sys_hid_manager_read()
@@ -150,35 +153,42 @@ static int32_t rsx_fifo_pause(uint8_t pause)
 static void pad_read(void)
 {
 	// check only pad all ports
-	for(int32_t port=0; port<8; port++)
-		{MyPadGetData(port, &pdata); curpad = (pdata.button[2] | (pdata.button[3] << 8)); if(curpad && (pdata.len > 0)) break;}  // use MyPadGetData() during VSH menu
+	for(int32_t port = 0; port < 8; port++)
+	{
+		MyPadGetData(port, &pdata); // use MyPadGetData() during VSH menu
+		curpad = (pdata.button[2] | (pdata.button[3] << 8)); 
+		if(pdata.len > 0)
+		{
+			/* Analog left stick management */
+			if (pdata.button[6] < 0x10)
+				curpad |= PAD_LEFT;
+			else if (pdata.button[6] > 0xf0)
+				curpad |= PAD_RIGHT;
 
-	/* Analog left stick management */
-	if (pdata.button[6] < 0x10)
-		curpad |= PAD_LEFT;
-	else if (pdata.button[6] > 0xe0)
-		curpad |= PAD_RIGHT;
+			if (pdata.button[7] < 0x10)
+				curpad |= PAD_UP;
+			else if (pdata.button[7] > 0xf0)
+				curpad |= PAD_DOWN;
 
-	if (pdata.button[7] < 0x10)
-		curpad |= PAD_UP;
-	else if (pdata.button[7] > 0xe0)
-		curpad |= PAD_DOWN;
+			/* Analog right stick management */
+			if (pdata.button[4] < 0x10)
+				curpad |= PAD_LEFT;
+			else if (pdata.button[4] > 0xf0)
+				curpad |= PAD_RIGHT;
 
-	/* Analog right stick management */
-	if (pdata.button[4] < 0x10)
-		curpad |= PAD_LEFT;
-	else if (pdata.button[4] > 0xe0)
-		curpad |= PAD_RIGHT;
+			if (pdata.button[5] < 0x10)
+				curpad |= PAD_UP;
+			else if (pdata.button[5] > 0xf0)
+				curpad |= PAD_DOWN;
 
-	if (pdata.button[5] < 0x10)
-		curpad |= PAD_UP;
-	else if (pdata.button[5] > 0xe0)
-		curpad |= PAD_DOWN;
+			if(curpad) {pad_port = port; break;}
+		}
+	}
 
-	sys_timer_usleep(10000);
+	sys_timer_usleep(18000);
 }
 
-static void release_cross(void)
+static void wait_for_button_release(uint32_t button)
 {
-	while(true) {pad_read(); if(curpad & PAD_CROSS) sys_timer_usleep(150000); else break;}
+	while(true) {pad_read(); if(curpad & button) sys_timer_usleep(150000); else break;}
 }
