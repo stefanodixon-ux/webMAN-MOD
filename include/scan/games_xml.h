@@ -1150,7 +1150,8 @@ scan_roms:
 									if(l == 2)
 										get_name(templn, entry.entry_name.d_name + 2, 0);
 									else if(islike(tempstr, folder_name + 1))
-										strcpy(templn, folder_name + 1);
+										//strcpy(templn, folder_name + 1);
+										get_name(templn, p + 1, 0);
 									else
 										sprintf(templn, "[%s] %s", folder_name + 1, tempstr);
 								}
