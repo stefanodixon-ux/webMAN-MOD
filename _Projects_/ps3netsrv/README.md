@@ -1,5 +1,31 @@
 # ps3netsrv
 
+ps3netsrv is a server application used to stream content from a remote server to the PS3.
+
+Supports automatic decryption of encrypted PS3 ISO and folder conversion to PS3 ISO or standard ISO.
+
+For more information: https://github.com/aldostools/webMAN-MOD/wiki/~-PS3-NET-Server
+
+## Features
+
+* Configurable shared root directory (uses ps3netsrv path if the root directory is omitted)
+* Configurable port (38008 is used by default if port is omitted)
+* Start without command line parameters if GAMES, PS3ISO, PSXISO folders are found in ps3netsrv folder
+* List local server IP addresses
+* Support up to 5 PS3 clients concurrently
+* Remote IP address filtering: Whitelist IP addresses using wildcards
+* Remote directory listing (whole directory at once or by file) / include subdirectories
+* Streaming of ISO images (CD-ROM, CD-ROM XA, DVD, Bluray or PS3 Blurays)
+* Detection of standard & non-standard CD sector sizes: 2048, 2352, 2336, 2448, 2328, 2368, 2340
+* Multi-part ISO support (ISO images split as *.iso.0, *.iso.1, etc.)
+* Realtime decryption of PS3 ISO images (3k3y & redump encrypted images)
+* Realtime conversion of mounted folder to virtual ISO (vISO)
+* Merge multiple paths into a single directory (list paths in folder_name.INI)
+* List files in specified directory and all subdirectories if the path ends with //
+* Remote file operations (stat, open, create, read, close, delete, mkdir, rmdir)
+* Convert game folder or directory to local ISO file (drag & drop the ISO or folder for easy conversion)
+* Decrypt encrypted PS3 ISO (using redump/3k3y encryption) into a new decrypted ISO
+
 ## Requirements
 
 * A C/C++ compiler
@@ -77,7 +103,8 @@ Google Go: https://github.com/xakep666/ps3netsrv-go
 
 ps3netsrv modified for encrypted (3k3y/redump) isos: http://forum.redump.org/topic/14472
 
-ps3netsrv modified for multiMAN: http://deanbg.com/ps3netsrv.zip
+ps3netsrv modified for multiMAN:
+https://github.com/aldostools/webMAN-MOD/blob/master/_Projects_/ps3netsrv/bins/old/ps3netsrv-src-deank.7z
 
 Original ps3netsrv by Cobra for Linux / Windows:<br>
 https://github.com/Joonie86/Cobra-7.00/tree/master/446/PC/ps3netsrv

@@ -64,9 +64,9 @@ typedef struct _client_t
 int make_iso = VISO_NONE;
 
 static char root_directory[MAX_PATH_LEN];
-static size_t root_len = 0;
 
 #ifndef MAKEISO
+static size_t root_len = 0;
 static client_t clients[MAX_CLIENTS];
 
 static int initialize_socket(uint16_t port)
@@ -112,7 +112,6 @@ static int initialize_socket(uint16_t port)
 
 	return s;
 }
-#endif
 
 #ifndef WIN32
 static int recv_all(int s, void *buf, int size)
@@ -140,6 +139,8 @@ static int recv_all(int s, void *buf, int size)
 	return total_read;
 }
 #endif
+
+#endif // #ifndef MAKEISO
 
 static int normalize_path(char *path, int8_t del_last_slash)
 {
@@ -350,6 +351,8 @@ exit_function:
 	return ret;
 }
 
+#ifndef MAKEISO
+
 static char *translate_path(char *path, int *viso)
 {
 	if(!path) return NULL;
@@ -489,8 +492,6 @@ static char *translate_path(char *path, int *viso)
 
 	return p;
 }
-
-#ifndef MAKEISO
 
 static int64_t calculate_directory_size(char *path)
 {
@@ -1810,7 +1811,7 @@ int main(int argc, char *argv[])
 	if(argc < 2)
 	{
 #ifdef MAKEISO
-		printf( "\nUsage: makeiso [directory] [PS3/ISO]\n");
+		printf( "\nUsage: makeiso [directory/encrypted iso] [PS3/ISO]\n");
 		goto exit_error;
 #else
 		file_stat_t fs;
@@ -1886,7 +1887,7 @@ int main(int argc, char *argv[])
 
 	if(argc < 3)
 	{
-		char sfo_path[MAX_PATH];
+		char sfo_path[sizeof(root_directory) + 20];
 		snprintf(sfo_path, sizeof(sfo_path) - 1, "%s/PS3_GAME/PARAM.SFO", root_directory);
 
 		file_stat_t fs;
