@@ -8,6 +8,8 @@
 #include "common.h"
 #include "compat.h"
 
+extern int make_iso;
+
 static const int FAILED		= -1;
 static const int SUCCEEDED	=  0;
 
@@ -98,7 +100,7 @@ int File::open(const char *path, int flags)
 		path_ps3iso_loc = strstr((char *)path, (char *)"ps3iso");
 
 	char *path_ext_loc = NULL;
-	if (path_ps3iso_loc)
+	if (path_ps3iso_loc || make_iso)
 	{
 		path_ext_loc = strstr((char *)(path + flen), (char *)".iso");
 		if (path_ext_loc == NULL)
@@ -106,7 +108,9 @@ int File::open(const char *path, int flags)
 	}
 
 	// Encryption only makes sense for .iso or .ISO files in the .../PS3ISO/ folder so exit quick if req is is not related.
-	if (is_multipart || (path_ps3iso_loc == NULL) || (path_ext_loc == NULL) || (path_ext_loc < path_ps3iso_loc))
+	if(make_iso)
+		;
+	else if (is_multipart || (path_ps3iso_loc == NULL) || (path_ext_loc == NULL) || (path_ext_loc < path_ps3iso_loc))
 	{
 		// Clean-up old region_info_ (even-though it shouldn't be needed).
 		if (region_info_ != NULL)
@@ -161,9 +165,9 @@ int File::open(const char *path, int flags)
 	key_path[path_ext_loc - path + 4] = 'y';
 	key_path[path_ext_loc - path + 5] = '\0';
 
-	key_fd = open_file(key_path, flags);
+	key_fd = open_file(key_path, O_RDONLY);
 
-	if (!FD_OK(key_fd))
+	if (!FD_OK(key_fd) && (path_ext_loc > path))
 	{
 		// Check for redump encrypted mode by looking for the ".key" is the same path of the ".iso".
 		key_path[path_ext_loc - path + 1] = 'k';
@@ -171,10 +175,10 @@ int File::open(const char *path, int flags)
 		key_path[path_ext_loc - path + 3] = 'y';
 		key_path[path_ext_loc - path + 4] = '\0';
 
-		key_fd = open_file(key_path, flags);
+		key_fd = open_file(key_path, O_RDONLY);
 	}
 	
-	if (!FD_OK(key_fd))
+	if (!FD_OK(key_fd) && (path_ps3iso_loc > path))
 	{
 		// Check for redump encrypted mode by looking for the ".key" or ".dkey" file in the "REDKEY" folder.
 		key_path[path_ps3iso_loc - path + 0] = 'R';
@@ -184,7 +188,7 @@ int File::open(const char *path, int flags)
 		key_path[path_ps3iso_loc - path + 4] = 'E';
 		key_path[path_ps3iso_loc - path + 5] = 'Y';
 
-		key_fd = open_file(key_path, flags);
+		key_fd = open_file(key_path, O_RDONLY);
 
 		if (!FD_OK(key_fd))
 		{
@@ -195,7 +199,7 @@ int File::open(const char *path, int flags)
 			key_path[path_ext_loc - path + 4] = 'y';
 			key_path[path_ext_loc - path + 5] = '\0';
 
-			key_fd = open_file(key_path, flags);
+			key_fd = open_file(key_path, O_RDONLY);
 		}
 	}
 
