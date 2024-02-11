@@ -271,6 +271,9 @@ static int create_iso(char *folder_path, char *fileout, int viso)
 
 	strcpy(filepath, folder_path);
 
+	printf("output: %s\n", fileout);
+	client.wo_file = new File();
+
 	if(strstr(filepath, ".iso") || strstr(filepath, ".ISO"))
 	{
 		client.ro_file = new File();
@@ -303,40 +306,40 @@ static int create_iso(char *folder_path, char *fileout, int viso)
 		}
 		else
 		{
-			printf("output: %s\n", fileout);
-			client.wo_file = new File();
-
-			if(client.wo_file->open(fileout, O_WRONLY|O_CREAT|O_TRUNC) < 0)
+			file_t fd_out;
+			fd_out = open_file(fileout, O_WRONLY|O_CREAT|O_TRUNC);
+			if (!FD_OK(fd_out))
 			{
 				printf("ERROR: create error on \"%s\"\n", filepath);
+				goto exit_function;
 			}
 			else
 			{
+				const uint32_t buf_size = 0x10000;
 				char *buffer = (char *)client.buf;
 				uint64_t offset = 0;
-				uint64_t rem_size = st.file_size % BUFFER_SIZE;
+				uint64_t rem_size = st.file_size % buf_size;
 				uint64_t iso_size = st.file_size - rem_size;
-				if(iso_size >= BUFFER_SIZE)
+				uint16_t count = 0x100;
+				if(iso_size >= buf_size)
 				{
-					for(; offset < iso_size; offset += BUFFER_SIZE)
+					for(; offset < iso_size; offset += buf_size)
 					{
-						printf("Dumping ISO: offset %llu of %llu\n", (long long unsigned int)offset, (long long unsigned int)st.file_size);
-						client.ro_file->seek(offset, SEEK_SET);
-						client.ro_file->read(buffer, BUFFER_SIZE);
-						client.wo_file->write(buffer, BUFFER_SIZE);
+						if(++count >= 0x600) {count = 0; printf("Dumping ISO: offset %llu of %llu\n", (long long unsigned int)offset, (long long unsigned int)st.file_size);}
+						client.ro_file->read(buffer, buf_size);
+						write_file(fd_out, buffer, buf_size);
 					}
 				}
 				if(rem_size > 0)
 				{
 					printf("Dumping ISO: offset %llu of %llu\n", (long long unsigned int)offset, (long long unsigned int)st.file_size);
-					client.ro_file->seek(offset, SEEK_SET);
 					client.ro_file->read(buffer, rem_size);
-					client.wo_file->write(buffer, rem_size);
+					write_file(fd_out, buffer, rem_size);
 				}
+				printf("Dumped ISO: %llu bytes\n", (long long unsigned int)st.file_size);
 			}
 
-			delete client.wo_file;
-			client.wo_file = NULL;
+			close_file(fd_out);
 
 			ret = SUCCEEDED;
 		}
@@ -1791,9 +1794,9 @@ int main(int argc, char *argv[])
 	// Show build number
 	set_white_text();
 #ifndef MAKEISO
-	printf("ps3netsrv build 20240210");
+	printf("ps3netsrv build 20240210a");
 #else
-	printf("makeiso build 20240210");
+	printf("makeiso build 20240210a");
 #endif
 
 	set_red_text();

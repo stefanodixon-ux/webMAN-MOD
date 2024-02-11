@@ -64,7 +64,7 @@ File::~File()
 
 int File::open(const char *path, int flags)
 {
-	init_region_info();
+	if(flags == O_RDONLY) init_region_info();
 
 	if(!path)
 	{
@@ -108,7 +108,7 @@ int File::open(const char *path, int flags)
 	}
 
 	// Encryption only makes sense for .iso or .ISO files in the .../PS3ISO/ folder so exit quick if req is is not related.
-	if(make_iso)
+	if(make_iso && (flags == O_RDONLY))
 		;
 	else if (is_multipart || (path_ps3iso_loc == NULL) || (path_ext_loc == NULL) || (path_ext_loc < path_ps3iso_loc))
 	{
@@ -202,6 +202,9 @@ int File::open(const char *path, int flags)
 			key_fd = open_file(key_path, O_RDONLY);
 		}
 	}
+
+	if (FD_OK(key_fd))
+		printf("key: %s\n", key_path);
 
 	delete[] key_path;
 
