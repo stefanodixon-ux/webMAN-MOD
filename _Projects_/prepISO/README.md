@@ -35,6 +35,7 @@ prepISO is equivalent to that option, but has additional features.
   - /THEME - *Scans for theme files and creates an ISO per file*
   - /UPDATE - *Scans for PUP files and creates an ISO per file*
   - /ROMS - *Scans for ROM files and creates an ISO per file*
+- Single ISO and split ISO support in NTFS
 - Extracts the ICON0/PIC1/PIC2/PARAM.SFO for usage during mount process
 - Auto-fix games requiring a FW version higher than current FW version (obsolete)
 - Supports ISO, BIN, IMG, MDF disc images

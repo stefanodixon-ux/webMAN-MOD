@@ -1,0 +1,544 @@
+---------------------------------------------------
+Patches to enable hidden trophy's title on XMB/INFO
+---------------------------------------------------
+File: explore_plugin.sprx (4.90 CEX)
+- Offset: 0x93FE0  | Patch: 0x4800005C
+
+File: explore_plugin.sprx (4.84 DEX)
+- Offset: 0x93FB8  | Patch: 0x4800005C
+
+File: np_trophy_plugin.sprx (4.90 CEX)
+- Offset: 0xD968 | Patch: 0x4800000C
+
+
+------------------------------------------------------
+Patches to enable hidden trophy's title on INGAME/INFO
+------------------------------------------------------
+File: explore_category_psn.sprx (4.90 CEX)
+- Offset: 0x570E0 | Patch: 0x4800005C
+
+File: np_trophy_ingame.sprx (4.90 CEX)
+- Offset: 0x4EB0 | Patch: 0x4800000C
+
+
+--------------------------------------------
+ Patches to bypass Region Block in PS3 games
+--------------------------------------------
+File: game_ext_plugin.sprx (4.90)  
+- Offset: 0x69A8 | Patch: 0x38000000 (li %r0, 0) 
+- Offset: 0x69BC | Patch: 0x38600000 (li %r3, 0)
+
+File: game_ext_plugin.sprx (4.84 DEX)  
+- Offset: 0x6964 | Patch: 0x38000000 (li %r0, 0) 
+- Offset: 0x6978 | Patch: 0x38600000 (li %r3, 0)
+
+
+-----------------------------------------------------------------------
+Patch to enable "Lock" and "Unlock" trophies in CEX 4.89 like Debug OFW
+-----------------------------------------------------------------------
+File: explore_plugin.sprx (4.89)
+- Offset: 0x91F18 || Patch: 0x38600003
+
+Replaces [bl GetReleaseTarget] with  [li r3 3]
+
+File: explore_plugin.sprx (Rebug 4.84.2)
+- Offset: 0x91EF0 || Original: 0x481A81C1 || Patch: 0x38600003
+
+
+---------------------------------------------------------------------------
+Enable  [★ Delete] option in trophies for CEX 4.89/4.90 HFW like Debug OFWs
+---------------------------------------------------------------------------
+File: explore_plugin.sprx
+- Offset: 0x99838 || Patch: 0x38600003
+
+Replaces [bl GetReleaseTarget] with  [li r3 3]
+
+File: explore_plugin.sprx (Rebug 4.84.2 REX / Evilnat 4.90 CEX)
+Offset: 0x99810 || Original: 0x481A08A1 || Patch: 0x38600003
+
+
+---------------------------------------------------------------------------
+Enable [Debug Menu] by default on ps2_netemu without doing the button combo
+---------------------------------------------------------------------------
+File: ps2_netemu.self
+- Offset: 0x280C74 | Patch: 0x38000001
+- Offset: 0x280D24 | Patch: 0x38000001
+- Offset: 0x280DBC | Patch: 0x38000001
+- Offset: 0x280F10 | Patch: 0x38000001
+- Offset: 0x289504 | Patch: 0x38000001
+- Offset: 0x28957C | Patch: 0x38000001
+
+
+---------------------------------------------------------
+disable coldboot on startup without removing coldboot.raf
+---------------------------------------------------------
+File: custom_render_plugin.sprx (4.83)
+- Offset: 0x182C0
+- Patch: 0x60000000
+- Original: 0x4806FF31
+
+
+---------------------------------------------------------
+[Video Settings] in Settings column in DEX
+---------------------------------------------------------
+File: vsh.self (4.84 DEX)
+- Offset: 0xC8D08
+- Patch: 0x38600002
+
+Replaces [bl GetReleaseTarget] with [li r3 2]
+
+
+----------------------------------------------------------------------------------------
+Fix error 0x8002AE32 while using the option [Install All Packages] on non QA flagged PS3
+----------------------------------------------------------------------------------------
+File: nas_plugin.sprx (4.89)
+- Offset: 0x1F858
+- Patch: 0x38600000
+- Original: 0x48032A51
+
+
+---------------------------------------
+disable start up sound while turning on
+---------------------------------------
+File: custom_render_plugin.sprx (4.83)
+- Offset: 0x15F30
+- Patch: 0x38000000
+- Original: 0x881C0000 with 
+
+
+----------------------------------------------
+Disable creation of /dev_hdd0/tmp/turnoff file
+----------------------------------------------
+File: vsh.self (4.87)
+- Offset: 0xB86F0 
+- Patch: 0x4800006C
+- Original: 0x419E006C
+
+---------------------------------------------------------------------------
+Patch to disable coldboot animation and sound on boot. Loads the XMB faster
+---------------------------------------------------------------------------
+File: vsh.self (4.90 CEX)
+- Offset: 0xBD7C0 - 0x60000000
+- Offset:  0xBFC20 - 0x38000001
+
+File: vsh.self (4.84 DEX)
+- Offset: 0xC274C- 0x60000000
+- Offset:  0xC4C3C- 0x38000001
+
+
+------------------------------------------
+Enable [★Lock] and [★Unlock] in CEX/RETAIL
+------------------------------------------
+File: explore_plugin.sprx (4.84 DEX)
+- Offset: 0x91EF0
+- Patch: 0x38600003
+
+------------------------------------------
+Enable [★Delete] Trophy Data in CEX/RETAIL
+------------------------------------------
+File: explore_plugin.sprx (4.84 DEX)
+- Offset: 0x99810
+- Patch: 0x38600003
+
+
+--------------------------------------------------------------------------------------------------------------
+Force use gameboot_stereo.ac3 and coldboot_stereo.ac3 to free up about 1mb of space in /dev_flash (2023/03/26)
+--------------------------------------------------------------------------------------------------------------
+This will force the PS3 to use *_stereo.ac3, you can delete *._multi.ac3 files getting free space in /dev_flash
+
+File: custom_render_plugin.sprx
+- Offset: 0x15A2C
+- Patch: 0x38600002
+
+- Offset: 0x15F3C
+- Patch: 0x38600002
+
+File: gamelib_plugin.sprx
+- Offset: 0x1174
+- Patch: 0x38600001
+
+
+---------------------------------------------------
+Force use gameboot_multi.ac3 and coldboot_multi.ac3
+---------------------------------------------------
+This will force the PS3 to use *_multi.ac3, you can delete *._stereo.ac3 files getting free space in /dev_flash
+File: custom_render_plugin.sprx
+- Offset: 0x15A2C
+- Patch: 0x38600001
+
+- Offset: 0x15F3C
+- Patch: 0x38600001
+
+File: gamelib_plugin.sprx
+- Offset: 0x114C
+- Patch: 0x38600000
+
+- Offset: 0x1154
+- Patch: 0x409E008C
+
+
+- Evilnat
+
+--------------------------
+Enforce gameboot animation
+--------------------------
+on higher Firmwares
+
+game_ext_plugin.sprx : 
+38 80 00 00 7B E3 00 20 -> 38 80 00 00 38 60 00 02 + add gameboot_multi + gameboot_stereo
+if not found on newer fw try:
+2F 89 00 00 7B C3 00 20 -> 2F 89 00 00 38 60 00 02 + add gameboot_multi + gameboot_stereo
+
+
+------------------------
+disable epilepsy message
+------------------------
+vsh.self (cex)
+- search  00 00 00 02 00 00 00 01 02 01 01 01 ff ff ff ff
+- replace 00 00 00 02 00 00 00 01 02 00 01 01 ff ff ff ff
+
+vsh.self (dex/rebug)
+- set search  00 00 00 00 00 00 00 00 01 01 01 00 ff ff ff ff
+- set replace 00 00 00 00 00 00 00 00 00 01 01 00 ff ff ff ff
+
+------------------------------------
+disable wait for coldboot view sleep
+------------------------------------
+vsh.self
+- set search  88 1D 00 06 3C 60 00
+- set replace 38 00 00 01 3C 60 00
+
+
+------------------------------------
+Make EVERYTHING Attachable (Debug LV2)
+------------------------------------
+- set search  40 9E FF C8 4B FF FF C8 E9 22 80 08 7C 08 02 A6
+- set replace 40 9E FF C8 4B FF FF C8 38 60 00 01 4E 80 00 20
+
+-----------------------
+PSP DRM fix (4.75/4.76)
+-----------------------
+Allow: unsigned PSP packages(aka type free without license) , a.k.a. 80029537 error fix
+
+- set search  7FE307B4 EB8101E0EBA101E8 7C0803A6
+- set replace 38600000 EB8101E0EBA101E8 7C0803A6
+
+seg001:0000000000255260 loc_255260:                       # CODE XREF: seg001:0000000000255244j
+seg001:0000000000255260                                   # seg001:0000000000255250j
+seg001:0000000000255260            lis   r31, -0x7FFE     # 0x80029537
+seg001:0000000000255264            ori   r31, r31, 0x9537 # 0x80029537
+seg001:0000000000255268
+
+
+PS2 on non BC enabler
+game_ext_plugin
+ set search  " 88 1f 00 06 3b 80 00 01"
+ set replace " 88 1f 00 02 3b 80 00 01"
+    
+sysconf_plugin
+ set search  " 88 1c 00 06 54 00 07 fe"
+ set replace " 88 1c 00 02 54 00 07 fe"
+
+premo_game_plugin
+ set search  " 41 9e 00 4c e8 01 00 a0 38 60 00 00"
+ set replace " 41 9e 00 4c e8 01 00 a0 38 60 00 01"
+
+premo_plugin
+ set search  " 41 9e 00 4c e8 01 00 a0 38 60 00 00"
+ set replace " 41 9e 00 4c e8 01 00 a0 38 60 00 01"
+------------------------------------
+4.82 lv2ldr.elf Disable ECDSA Checks
+------------------------------------
+Part 1
+Offset | Original Hex Value:
+000022B0 | 3F E1 12 85 18 01 42 06 33 04 99 00 21 00 0F 83
+
+Offset | Replace Hex Value:
+000022B0 | 3F E1 12 85 18 01 42 06 40 80 00 03 21 00 0F 83
+
+Part 2
+Offset | Original Hex Value:
+00002AA0 | 33 03 9C 00 21 00 33 03 04 00 28 84 3F E0 2D 05
+
+Offset | Replace Hex Value:
+00002AA0 | 40 80 00 03 21 00 33 03 04 00 28 84 3F E0 2D 05
+
+
+----------------------------
+geohot patch nas_plugin.sprx
+----------------------------
+Allow pseudo-retail pkg installation
+< 00003250  7c 06 03 78 48 04 b7 21  e8 41 00 28 7c 60 1b 78
+> 00003250  7c 06 03 78 48 04 b7 21  e8 41 00 28 38 00 00 00
+
+Note : Official COBRA7 includes this patch as well, old homebrew from 3.55 era need this patch.
+modulespatch in COBRA7 -> { geohot_pkg_offset, LI(R0, 0), &condition_true }
+
+------------------------------
+kakaroto patch nas_plugin.sprx
+------------------------------
+ Allow debug pkg installation
+--allow-debug-pkg (ps3mfw command-line option)
+< 2f 89 00 00 41 9e 00 4c 38 00 00 00 81 22 8b 10 81 62 8b 14
+> 2f 89 00 00 60 00 00 00 38 00 00 00 81 22 8b 10 81 62 8b 14
+
+Note : Most CEX MFWs include this kakaroto's patch, also used in COBRA7.
+modulespatch in COBRA7 -> { elf2_func1 + elf2_func1_offset, NOP, &condition_true }
+
+---------------------------
+rebug patch nas_plugin.sprx
+---------------------------
+Allow: pseudo-retail pkg installation
+< 41 9E 01 B0 3B A1 00 80 3D 00 2E 7B 7B BD 00 20 3D
+> 60 00 00 00 3B A1 00 80 3D 00 2E 7B 7B BD 00 20 3D
+
+-------------------------------------------------
+ecdsa check patch for fw 4.50 cex nas_plugin.sprx
+-------------------------------------------------
+Allow pseudo-retail pkg installation
+< 00003260  E8 41 00 28 7C 60 1B 78  F8 1F 01 80 E8 7F 01 80
+> 00003260  E8 41 00 28 7C 60 1B 78  F8 1F 01 80 38 60 00 00
+
+-------------------------------------
+waninkoko patch - PL3 nas_plugin.sprx
+-------------------------------------
+Allow debug pkg installs
+--allow-debug-pkg (ps3mfw command-line option)
+< 00037350  41 9e 00 4c 38 00 00 00  81 22 8b 10 81 62 8b 14
+> 00037350  41 9e 00 04 38 00 00 00  81 22 8b 10 81 62 8b 14
+
+
+------------------
+PL3 patch vsh.self
+------------------
+allow unsigned apps on CEX MFW
+< 030a7d0: 409d 0008 3960 0000 8122 ea60 9969 0000
+> 030a7d0: 409d 0008 6000 0000 8122 ea60 9969 0000
+
+   31a7c8:	38 03 ff 7f 	addi    r0,r3,-129
+   31a7cc:	2b a0 00 01 	cmpldi  cr7,r0,1
+   31a7d0:	40 9d 00 08 	ble-    cr7,0x31a7d8
+-  31a7d4:	39 60 00 00 	li      r11,0
++  31a7d4:	60 00 00 00 	nop
+   31a7d8:	81 22 ea 60 	lwz     r9,-5536(r2)
+   31a7dc:	99 69 00 00 	stb     r11,0(r9)
+   31a7e0:	88 09 00 00 	lbz     r0,0(r9)
+
+modulespatch in COBRA7 
+{ elf1_func2 + elf1_func2_offset, NOP, &condition_true }, 
+
+< 05ffee0: 6063 8c06 4bff fe80 f821 ff81 7c08 02a6
+> 05ffee0: 6063 8c06 4bff fe80 3860 0001 4e80 0020
+   60fedc:	3c 60 00 04 	lis     r3,4
+   60fee0:	60 63 8c 06 	ori     r3,r3,35846
+   60fee4:	4b ff fe 80 	b       0x60fd64
+-  60fee8:	f8 21 ff 81 	stdu    r1,-128(r1)
+-  60feec:	7c 08 02 a6 	mflr    r0
++  60fee8:	38 60 00 01 	li      r3,1
++  60feec:	4e 80 00 20 	blr
+   60fef0:	38 61 00 70 	addi    r3,r1,112
+   60fef4:	f8 01 00 90 	std     r0,144(r1)
+   60fef8:	4b ff ff e1 	bl      0x60fed8
+
+modulespatch in COBRA7 
+{ elf1_func1 + elf1_func1_offset, LI(R3, 1), &condition_true },
+{ elf1_func1 + elf1_func1_offset + 4, BLR, &condition_true },
+
+Note : Commonly used in almost all 4.xx MFWs, Do NOT use this patch for DEX MFW, it breaks the ability to run NPDRM fself.
+
+----------------------
+3.55 vs Rebug vsh.self
+----------------------
+< 00305F50  48 00 4D 35   H.M5
+> 00305F50  60 00 00 00   `...
+
+< 0030A7C0  A0 7F 00 04    ...
+> 0030A7C0  38 60 00 82   8`.‚
+
+/* reActPSN - Allow unsigned act.dat and *.rif files */
+< 0030B230  4B CF 5B 45   KÏ[E
+> 0030B230  38 60 00 00   8`..
+
+/* PL3 Patch - allow unsigned apps */
+< 005FFEE8  F8 21 FF 81 7C 08 02 A6   ø!ÿ.|..¦
+> 005FFEE8  38 60 00 01 4E 80 00 20   8`..N€.
+     
+< 006668B0  34 37 35 31 36   47516
+> 006668B0  35 33 36 34 32   53642
+     
+< 0070399B  00 00 00 00 00   .....
+> 0070399B  01 00 6B AB 28   ..k«(
+
+----------------------------------------------
+Enables Screenshot-Feature vsh.elf (CEX, 4.50)
+----------------------------------------------
+< 00184278  7C 00 48 28
+> 00184278  38 00 00 01
+
+< 00185EB0  7C 00 48 28
+> 00185EB0  38 00 00 01
+
+-------------------------------------------------
+Remote Play with PlayStation 3 (Windows Software)
+-------------------------------------------------
+premo_plugin.prx for 4.50
+< 0xB7E4 38 60 00 00  li r3, 0
+> 0xB7E4  38 60 00 01 li r3, 1
+
+premo_game_plugin.prx for 4.50
+< 0xC9E4 38 60 00 00  li r3, 0
+> 0xC9E4 38 60 00 01  li r3, 1
+
+----------------------------------
+Make Remote Play SFO Flag obsolete
+----------------------------------
+game_ext_plugin.prx
+original: 41 9e 00 1c 2f 83 00 03
+patched : 41 9e 00 28 2f 83 00 03
+
+--------------------------------------------------------
+graf chokolo patch /lv1_undocumented_function_114 (mmap)
+--------------------------------------------------------
+lv1.self: Allow mapping of protected memory, needed for lv2 peek/poke
+< 2F 80 00 00 41 9E 00 28 38 60 00 00 38 80 00 00
+> 60 00 00 00 48 00 00 28 38 60 00 00 38 80 00 00
+
+< 000f5a40  39 08 05 48 39 20 00 00  38 60 00 00 4b ff fc 45
+> 000f5a40  39 08 05 48 39 20 00 01  38 60 00 00 4b ff fc 45
+
+   2d5a38:	7f 87 e3 78 	mr      r7,r28
+   2d5a3c:	e8 89 00 00 	ld      r4,0(r9)
+   2d5a40:	39 08 05 48 	addi    r8,r8,1352
+-  2d5a44:	39 20 00 00 	li      r9,0
++  2d5a44:	39 20 00 01 	li      r9,1
+   2d5a48:	38 60 00 00 	li      r3,0
+   2d5a4c:	4b ff fc 45 	bl      0x2d5690
+   2d5a50:	38 00 00 00 	li      r0,0
+
+------------------------------------------
+LV1 peek/poke (Unused LV1 calls 182 & 183)
+------------------------------------------
+lv1.self: Allow LV1 peek/poke
+< 64 00 FF FF 60 00 FF EC F8 03 00 C0 4E 80 00 20 38 00 00 00 64 00 FF FF 60 00 FF EC F8 03 00 C0
+> E8 83 00 18 E8 84 00 00 F8 83 00 C8 4E 80 00 20 38 00 00 00 E8 A3 00 20 E8 83 00 18 F8 A4 00 00
+
+------------------------------------------
+Disable System Integrity Check in lv1.self
+------------------------------------------
+Safe to use with mismatched COREOS/SYSCON versions or if PS3 is not QA enabled
+ < 48 00 E0 35 2F 83 00 00 38 60 00 01 41 9E 00 20
+ > 38 60 00 00 2F 83 00 00 38 60 00 01 41 9E 00 20
+
+-------------------------------
+Skip all ACL Checks in lv1.self
+-------------------------------
+Needed for OtherOS++/Downgrader
+< 54 63 06 3E 2F 83 00 00 41 9E 00 14 E8 01 00 70 54 00 07 FE 2F 80 00 00 40 9E 00 18
+> 38 60 00 01 2F 83 00 00 41 9E 00 14 38 00 00 01 54 00 07 FE 2F 80 00 00 40 9E 00 18
+
+---------------------------
+wutangrza patch in lv1.self
+---------------------------
+hash fixing
+< 00136bc0  00 00 00 00 00 00 00 00  72 73 78 20 64 72 69 76  |........rsx driv|
+> 00136bc0  00 00 00 00 00 00 00 00  72 73 73 20 64 72 69 76  |........rss driv|
+
+< 00136be0  3a 20 63 6f 72 65 2f 63  6f 6e 74 65 78 74 2e 63  |: core/context.c|
+> 00136be0  3a 20 63 6f 72 65 20 63  6f 6e 74 65 78 74 2e 63  |: core context.c|
+
+
+----------------------------------------------
+kakaroto's sigcheck patch lv2_kernel.self 4.21
+----------------------------------------------
+In memory 0x800000000005A2A8, which corresponds to offset 0x6a2a8 in lv2_kernel.elf, replace :
+  e9 22 99 90 7c 08 02 a6
+With :
+  38 60 00 00 4e 80 00 20
+
+------------------------------------------
+PL3 patch lv2_kernel.self: lv2 peek / poke
+------------------------------------------
+< 00029330  7c 63 07 b4 38 21 00 a0  4e 80 00 20 3c 60 80 01
+> 00029330  7c 63 07 b4 38 21 00 a0  4e 80 00 20 e8 63 00 00
+
+< 00029340  60 63 00 03 4e 80 00 20  3c 60 80 01 60 63 00 03
+> 00029340  60 00 00 00 4e 80 00 20  f8 83 00 00 60 00 00 00
+
+ 8000000000019330:	7c 63 07 b4 	extsw   r3,r3
+ 8000000000019334:	38 21 00 a0 	addi    r1,r1,160
+ 8000000000019338:	4e 80 00 20 	blr
+-800000000001933c:	3c 60 80 01 	lis     r3,-32767
+-8000000000019340:	60 63 00 03 	ori     r3,r3,3
++800000000001933c:	e8 63 00 00 	ld      r3,0(r3)
++8000000000019340:	60 00 00 00 	nop
+ 8000000000019344:	4e 80 00 20 	blr
+-8000000000019348:	3c 60 80 01 	lis     r3,-32767
+-800000000001934c:	60 63 00 03 	ori     r3,r3,3
++8000000000019348:	f8 83 00 00 	std     r4,0(r3)
++800000000001934c:	60 00 00 00 	nop
+ 8000000000019350:	4e 80 00 20 	blr
+ 8000000000019354:	3c 60 80 01 	lis     r3,-32767
+ 8000000000019358:	60 63 00 03 	ori     r3,r3,3
+
+-------------------------------
+wutangrza patch lv2_kernel.self
+-------------------------------
+hash fixing
+< 002d6e00  6f 75 6c 64 20 6e 6f 74  20 67 65 74 20 50 50 50  |ould not get PPP|
+> 002d6e00  6f 75 6c 64 20 6e 6f 74  20 6e 6f 74 20 6e 6f 74  |ould not not not|
+
+< 002d6e10  6f 45 20 68 65 61 64 65  72 0a 00 00 00 00 00 00  |oE header.......|
+> 002d6e10  20 6e 6f 74 20 6e 6f 74  20 6e 6f 74 20 6e 00 00  | not not not n..|
+
+< 00359380  a0 40 36 6b 2d 8a 50 99  1e b3 0c 53 e5 9b 5d 6e
+> 00359380  5e b8 a5 00 8c f3 bc 24  08 91 19 61 e6 db 19 cb
+
+< 00359390  61 2c ac b8 00 00 00 00  00 00 00 00 00 00 00 00
+> 00359390  0d ca fd 2f 00 00 00 00  00 00 00 00 00 00 00 00
+
+----------------------------
+Mathieulh FSELF patch appldr
+----------------------------
+< 00001360 40 80 0e 0c 20 00 57 83 32 00 04 80 32 80 80 8e |@... .W.2...2...|
+> 00001360 40 80 0e 0c 20 00 57 83 32 11 73 00 32 80 80 8e |@... .W.2.s.2...|
+
+-----------------
+reActPSN vsh.self
+-----------------
+Allow unsigned act.dat and *.rif files
+
+version       addr       old data          new data                   function
+3.55retail   0x30b230  4b cf 5b 45  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
+3.55retail   0x30ac90  48 31 b4 65  ->   38 60 00 00     // fixed  act.dat missing after reboot
+      
+3.55debug    0x312308  4b ce ea 6d  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
+3.55debug    0x311d68  48 31 b7 d5  ->   38 60 00 00     // fixed  act.dat missing after reboot
+      
+3.41retail   0x305dc4  4b cf af b1  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
+3.41retail   0x305824  48 31 43 ad  ->   38 60 00 00     // fixed  act.dat missing after reboot
+      
+3.41debug    0x30cedc  4b cf 3e 99  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
+3.41debug    0x30c93c  48 31 47 1d  ->   38 60 00 00     // fixed  act.dat missing after reboot
+
+4.30debug    0x2481e4  4b db 8b 91  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
+4.30debug    0x247c44  48 3d 59 61  ->   38 60 00 00     // fixed  act.dat missing after reboot
+
+---------------------
+PS2 on non BC enabler
+---------------------
+game_ext_plugin
+ set search  "88 1f 00 06 3b 80 00 01"
+ set replace "88 1f 00 02 3b 80 00 01"
+    
+sysconf_plugin
+ set search  "88 1c 00 06 54 00 07 fe"
+ set replace "88 1c 00 02 54 00 07 fe"
+
+premo_game_plugin
+ set search  "41 9e 00 4c e8 01 00 a0 38 60 00 00"
+ set replace "41 9e 00 4c e8 01 00 a0 38 60 00 01"
+
+premo_plugin
+ set search  "41 9e 00 4c e8 01 00 a0 38 60 00 00"
+ set replace "41 9e 00 4c e8 01 00 a0 38 60 00 01"
+ 
