@@ -1,20 +1,26 @@
----------------------------------------------------
-Patches to enable hidden trophy's title on XMB/INFO
----------------------------------------------------
-File: explore_plugin.sprx (4.90 CEX)
-- Offset: 0x93FE0  | Patch: 0x4800005C
+---------------------------------------------------------------------------
+Patches to enable hidden trophy's title on XMB/INFO (4.90 CEX and 4.84 DEX)
+---------------------------------------------------------------------------
+[Files: explore_plugin.sprx / explore_category_psn.sprx]
+- Enable hidden trophy's title in XMB/INGAME -> Search: 0x4099005C | Patch: 0x4800005C
+- Enable hidden trophy's details in XMB/INGAME -> Search: 0x813C00487B | Patch: 0x392000017B
+- Enable real trophy's icon for hidden trophies in trophy info in XMB/INGAME -> Search: 0x807E00487B | Patch: 0x386000017B
+ 
+[Files: np_trophy_plugin.sprx / np_trophy_ingame.sprx]
+- Enable hidden trophy's title in trophy info in XMB/INGAME -> Search: 0x4099000C | Patch: 0x4800000C
+- Enable hidden trophy's details in trophy info in XMB/INGAME -> Search: 0x4BFFFC55 | Patch: 0x38600001
+- Enable real trophy's icon for hidden trophies in trophy info in XMB/INGAME -> Search: 0x4BFFFA09 | Patch: 0x38600001
 
-File: explore_plugin.sprx (4.84 DEX)
-- Offset: 0x93FB8  | Patch: 0x4800005C
+Old patches:
+
+File: explore_plugin.sprx
+- Offset: 0x93FE0  | Patch: 0x4800005C (4.90 CEX / XMB)
+- Offset: 0x93FB8  | Patch: 0x4800005C (4.84 DEX / XMB)
 
 File: np_trophy_plugin.sprx (4.90 CEX)
 - Offset: 0xD968 | Patch: 0x4800000C
 
-
-------------------------------------------------------
-Patches to enable hidden trophy's title on INGAME/INFO
-------------------------------------------------------
-File: explore_category_psn.sprx (4.90 CEX)
+File: explore_category_psn.sprx (4.90 CEX / INGAME)
 - Offset: 0x570E0 | Patch: 0x4800005C
 
 File: np_trophy_ingame.sprx (4.90 CEX)

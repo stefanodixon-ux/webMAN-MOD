@@ -238,7 +238,7 @@ struct statvfs {
 	unsigned long f_fsid;
 	unsigned long f_flag;
 	unsigned long f_namemax;
-}; 
+};
 
 #endif
 

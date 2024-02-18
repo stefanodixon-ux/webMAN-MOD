@@ -22,7 +22,7 @@ void addlog(char *msg1, char *msg2)
 static int s_mode; // 0 = png/jpg/sfo, 1=iso/bin/img/mdf
 
 static void convert_dkey_to_key(uint8_t disckey[0x10], char dkey[0x20])
-{	
+{
 	for (int i = 0; i < 0x10; i++)
 	{
 		char byte[3];
@@ -40,11 +40,11 @@ static int readfile_exfat(char *file, char *data, u64 size)
 	UINT re;
 
 	if (!f_open(&fd, file, FA_READ))
-	{								
+	{
 		f_read(&fd, data, size, &re);
 		f_close(&fd);
 		return SUCCESS;
-	}	
+	}
 
 	return FAILED;
 }
@@ -142,15 +142,15 @@ static int dir_read (char *dpath)
 				snprintf(fn, 255, "%s/%s", dpath, fno.fname);
 				snprintf(output, 255, "/dev_hdd0/tmp/wmtmp/%s", fno.fname);
 
-				// If the key exists, copy it to "/dev_hdd0/tmp/wmtmp" to 
+				// If the key exists, copy it to "/dev_hdd0/tmp/wmtmp" to
 				// decrypt on-the-fly with Cobra when the ISO is mounted (By Evilnat)
 				if(strcasestr(ext, ".key"))
 					copy_exfat(fn, output, 0x10);
-				
-				// If the dkey exists, we convert it to disckey and copy it to "/dev_hdd0/tmp/wmtmp" 
+
+				// If the dkey exists, we convert it to disckey and copy it to "/dev_hdd0/tmp/wmtmp"
 				// to decrypt on-the-fly with Cobra when the ISO is mounted (By Evilnat)
 				if(strcasestr(fno.fname + flen - 5, ".dkey"))
-				{ 		
+				{
 					if(!readfile_exfat(fn, dkey, 0x20))
 					{
 						filename[strlen(filename) - 5] = '\0';
@@ -158,7 +158,7 @@ static int dir_read (char *dpath)
 
 						convert_dkey_to_key(disckey, dkey);
 						SaveFile(output, (char *)disckey, 0x10);
-					}		
+					}
 				}
 
 				//--- is ISO?

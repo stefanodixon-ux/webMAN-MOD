@@ -276,16 +276,16 @@ int main(int argc, const char* argv[])
 
 								/* 	By Evilnat
 
-									If disckey ('.key' file) exists, copy it to "/dev_hdd0/tmp/wmtmp" to 
+									If disckey ('.key' file) exists, copy it to "/dev_hdd0/tmp/wmtmp" to
 									decrypt on-the-fly with Cobra when the ISO is mounted
-								
-									If dkey ('.dkey' file) exists, we will transform it to disckey and 
-									copy it to "/dev_hdd0/tmp/wmtmp" 
+
+									If dkey ('.dkey' file) exists, we will transform it to disckey and
+									copy it to "/dev_hdd0/tmp/wmtmp"
 								*/
 								if(strcasestr(ext, ".key") || strcasestr(filename + flen - 5, ".dkey"))
-								{			
+								{
 									snprintf(output, 255, "/dev_hdd0/tmp/wmtmp/%s", dir.d_name);
-									sprintf(key_path, "%s/%s", full_path, filename);	
+									sprintf(key_path, "%s/%s", full_path, filename);
 
 									if(strcasestr(filename + flen - 5, ".dkey"))
 									{
