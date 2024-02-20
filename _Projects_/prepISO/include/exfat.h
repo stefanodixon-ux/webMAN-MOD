@@ -151,6 +151,9 @@ static int dir_read (char *dpath)
 								( (strcasestr(ext, ".img")) ) ||
 								( (strcasestr(ext, ".mdf")) ) ));
 
+					// is multi-part ISO?
+					if(!is_iso && flen > 2) is_iso = strcasestr(ext - 2, ".iso.0");
+
 					if(!is_iso && (g_mode == PS3ISO))
 					{
 						if(subpath && slen && strncmp(subpath, fno.fname, slen))
@@ -251,7 +254,7 @@ static int dir_read (char *dpath)
 	}
 	else // if(s_mode == 2)
 	{
-		int flen, dlen, plen, parts;
+		int flen, dlen, plen, parts, ext_len;
 
 		char *subdir, *filename;
 
@@ -265,6 +268,26 @@ static int dir_read (char *dpath)
 
 			// ISO to sectors
 			parts = fflib_file_to_sectors (fn, sections, sections_size, MAX_SECTIONS, 1);
+
+			// get multi-part file sectors
+			if((flen > 6) && strcasestr(fn + flen - 6, ".iso.0"))
+			{
+				FILINFO fno;
+				char iso_path[MAX_PATH_LEN];
+
+				strcpy(iso_path, fn);
+
+				for (u8 o = 1; o < 64; o++)
+				{
+					if(parts >= MAX_SECTIONS) break;
+
+					sprintf(iso_path + flen - 1, "%i", o);
+					if(f_stat (iso_path, &fno) != FR_OK) break;
+
+					parts += fflib_file_to_sectors (iso_path, sections + parts, sections_size + parts, MAX_SECTIONS - parts, 1);
+				}
+			}
+
 			if (parts >= MAX_SECTIONS) continue;
 
 			// get file name
@@ -293,14 +316,18 @@ static int dir_read (char *dpath)
 				plen = snprintf (wm_path, 255, "%s", filename);
 
 			fn[dlen] = '/'; // restore full path
+			ext_len = 4; if((plen > 6) && wm_path[plen - 6] == '.') ext_len = 6;// multi-part file
 
 			// remove file extension
-			if(!g_mmcm) wm_path[plen - 4] = 0;
+			if(!g_mmcm)
+			{
+				if((plen > ext_len) && wm_path[plen - ext_len] == '.') wm_path[plen - ext_len] = 0;
+			}
 
 			// create cache file
 			if(g_mode >= 4)
 			{
-				char *ext = fn + flen - 4;
+				char *ext = fn + flen - ext_len;
 				make_fake_iso(g_mode, ext, filename, fn, device_id, nt[f]);
 			}
 			else
