@@ -292,6 +292,8 @@ static int dir_read (char *dpath)
 			else
 				plen = snprintf (wm_path, 255, "%s", filename);
 
+			fn[dlen] = '/'; // restore full path
+
 			// remove file extension
 			if(!g_mmcm) wm_path[plen - 4] = 0;
 
