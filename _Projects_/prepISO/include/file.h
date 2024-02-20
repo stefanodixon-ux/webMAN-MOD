@@ -98,3 +98,48 @@ int copy_file(char *src_file, char *out_file)
 	}
 	return FAILED;
 }
+
+/* 	By Evilnat
+
+	If disckey ('.key' file) exists, copy it to "/dev_hdd0/tmp/wmtmp" to
+	decrypt on-the-fly with Cobra when the ISO is mounted
+
+	If dkey ('.dkey' file) exists, we will transform it to disckey and
+	copy it to "/dev_hdd0/tmp/wmtmp"
+*/
+static void convert_dkey_to_key(uint8_t disckey[0x10], char dkey[0x20])
+{
+	for (int i = 0; i < 0x10; i++)
+	{
+		char byte[3];
+		strncpy(byte, &dkey[i * 2], 2);
+		byte[2] = 0;
+		disckey[i] = strtol(byte, NULL, 16);
+	}
+}
+
+static void cache_disckey(char *ext, char *full_path, char *direntry, char *filename)
+{
+	if(strcasestr(ext, ".key") || strcasestr(ext - 1, ".dkey"))
+	{
+		char *key_path = image_file;
+
+		sprintf(key_path, "%s/%s", full_path, direntry);
+		int wlen = snprintf(wm_path, 255, "/dev_hdd0/tmp/wmtmp/%s", filename);
+
+		if(strcasestr(ext - 1, ".dkey"))
+		{
+			char dkey[0x20];
+			if(!readfile_ntfs(key_path, dkey, 0x20))
+			{
+				strcpy(wm_path + wlen - 5, ".key");
+
+				uint8_t disckey[0x10];
+				convert_dkey_to_key(disckey, dkey);
+				SaveFile(wm_path, (char *)disckey, 0x10);
+			}
+		}
+		else
+			copy_file(key_path, wm_path);
+	}
+}

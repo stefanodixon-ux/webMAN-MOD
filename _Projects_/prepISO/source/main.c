@@ -64,8 +64,6 @@ uint8_t plugin_args[PLUGIN_ARGS_SIZE];
 
 #define MAX_PATH_LEN  0x420
 
-static char key_path[MAX_PATH_LEN];
-static char output[MAX_PATH_LEN];
 static char path[MAX_PATH_LEN];
 static char full_path[MAX_PATH_LEN];
 static char wm_path[MAX_PATH_LEN];
@@ -130,7 +128,6 @@ int main(int argc, const char* argv[])
 	char path0[MAX_PATH_LEN], subpath[MAX_PATH_LEN];
 	char direntry[MAX_PATH_LEN];
 	char filename[MAX_PATH_LEN];
-	char filekey[MAX_PATH_LEN];
 	bool has_dirs, is_iso = false;
 	char *ext;
 	u16 flen;
@@ -158,7 +155,7 @@ int main(int argc, const char* argv[])
 
 	if(argc > 0 && argv)
 	{
-		g_mmcm = (!strncmp(argv[0], "/dev_hdd0/game/", 15));
+		g_mmcm = (!strncmp(argv[0], "/dev_hdd0/game/BLES80608/", 25));
 	}
 
 //--- hold CROSS to keep previous cached files
@@ -233,7 +230,6 @@ int main(int argc, const char* argv[])
 							while(ps3ntfs_dirnext(pdir, dir.d_name, &st) == 0)
 							{
 								flen = sprintf(filename, "%s", dir.d_name);
-								strcpy(filekey, filename);
 
 								ext_len = 4;
 								if(flen < ext_len) continue; ext = filename + flen - ext_len;
@@ -274,37 +270,6 @@ int main(int argc, const char* argv[])
 								}
 								//---------------
 
-								/* 	By Evilnat
-
-									If disckey ('.key' file) exists, copy it to "/dev_hdd0/tmp/wmtmp" to
-									decrypt on-the-fly with Cobra when the ISO is mounted
-
-									If dkey ('.dkey' file) exists, we will transform it to disckey and
-									copy it to "/dev_hdd0/tmp/wmtmp"
-								*/
-								if(strcasestr(ext, ".key") || strcasestr(filename + flen - 5, ".dkey"))
-								{
-									snprintf(output, 255, "/dev_hdd0/tmp/wmtmp/%s", dir.d_name);
-									sprintf(key_path, "%s/%s", full_path, filename);
-
-									if(strcasestr(filename + flen - 5, ".dkey"))
-									{
-										uint8_t disckey[0x10];
-										char dkey[0x20];
-
-										if(!readfile_ntfs(key_path, dkey, 0x20))
-										{
-											filekey[strlen(filekey) - 5] = '\0';
-											snprintf(output, 255, "/dev_hdd0/tmp/wmtmp/%s.key", filekey);
-
-											convert_dkey_to_key(disckey, dkey);
-											SaveFile(output, (char *)disckey, 0x10);
-										}
-									}
-									else
-										copy_file(key_path, output);
-								}
-
 								//--- is ISO?
 								is_iso =	( (strcasestr(ext, ".iso")) ) ||
 								(m > 0 && ( ( (strcasestr(ext, ".bin")) ) ||
@@ -319,6 +284,9 @@ int main(int argc, const char* argv[])
 								//--- is SUBFOLDER?
 								if(!is_iso)
 								{
+									if(m == PS3ISO)
+										cache_disckey(ext, full_path, direntry, filename);
+
 									sprintf(subpath, "%s:/%s%s%s/%s", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), dir.d_name);
 									psubdir = ps3ntfs_diropen(subpath);
 									if(psubdir == NULL) continue;
@@ -540,6 +508,9 @@ int main(int argc, const char* argv[])
 										build_file(filename, parts, num_tracks, device_id, profile, m);
 									} // if (parts > 0)
 								} // if( is_iso )
+								else if(m == PS3ISO)
+									cache_disckey(ext, full_path, direntry, filename);
+
 	//////////////////////////////////////////////////////////////
 								if(has_dirs) goto next_ntfs_entry;
 	//////////////////////////////////////////////////////////////
