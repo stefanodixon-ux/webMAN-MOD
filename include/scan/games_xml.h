@@ -746,6 +746,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	}
 	#endif
 
+	u8 _f1_;
 	u16 key;
 	int fdxml; char *xml_file = (char*)MY_GAMES_XML;
 
@@ -892,6 +893,8 @@ scan_roms:
 		{
 			if(!refreshing_xml) break;
 
+			_f1_ = f1;
+
 			if(scanning_roms)
 			{
 				f1 = id_ROMS;
@@ -906,7 +909,8 @@ scan_roms:
 
 				//if(IS_PS2ISO && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
 				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
-				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
+				if(IS_ISO_DIR     ) {if(is_net) continue; else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH1); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_ISO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH1 : "ISO");}}
+				if(IS_VIDEO_FOLDER) {if(is_net) continue; else if(IS_HDD0) strcpy(paths[id_VIDEO], "video"); else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH2); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_VIDEO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH2 : "GAMES_DUP");}}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
 				#ifdef NET_SUPPORT
@@ -915,7 +919,7 @@ scan_roms:
 					if(f1 >= id_ISO) f1 = id_GAMEI; // ignore 9="ISO", 10="video"
 				}
 				#endif
-				if(check_content_type(f1)) continue;
+				if(check_content_type(_f1_)) continue;
 			}
 
 			#ifdef NET_SUPPORT
@@ -1173,7 +1177,7 @@ scan_roms:
 
 							add_info(tempstr + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, is_game_dir ? id_NPDRM : f1, 5);
 
-							if(add_xmb_entry(f0, f1, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, subfolder)) key++;
+							if(add_xmb_entry(f0, _f1_, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, subfolder)) key++;
 						}
 						//////////////////////////////
 						if(subfolder) goto next_xml_entry;

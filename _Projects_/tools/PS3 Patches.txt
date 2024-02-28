@@ -109,7 +109,7 @@ disable start up sound while turning on
 File: custom_render_plugin.sprx (4.83)
 - Offset: 0x15F30
 - Patch: 0x38000000
-- Original: 0x881C0000 with 
+- Original: 0x881C0000
 
 
 ----------------------------------------------

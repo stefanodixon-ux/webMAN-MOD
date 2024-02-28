@@ -33,6 +33,7 @@ enum paths_ids
 #define IS_PS2ISO        (f1==id_PS2ISO)
 #define IS_PSXISO       ((f1==id_PSXISO) || (f1==id_PSXGAMES))
 #define IS_PSPISO       ((f1==id_PSPISO) || (f1==id_ISO))
+#define IS_ISO_DIR       (f1==id_ISO)
 #define IS_VIDEO_FOLDER  (f1==id_VIDEO)
 #define IS_GAMEI_FOLDER  (f1==id_GAMEI)
 #define IS_ROMS_FOLDER   (f1==id_ROMS)
@@ -215,6 +216,8 @@ static void add_query_html(char *buffer, const char *param)
 
 static int check_drive(u8 f0)
 {
+	if(f0 >= MAX_DRIVES) return FAILED;
+
 	if(!webman_config->usb0 && (f0 == 1)) return FAILED;
 	if(!webman_config->usb1 && (f0 == 2)) return FAILED;
 	if(!webman_config->usb2 && (f0 == 3)) return FAILED;
@@ -432,6 +435,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 	struct CellFsStat buf;
 	int fd;
 
+	u8 _f1_;
 	u8 mobile_mode = mode, launchpad_mode = (mode == LAUNCHPAD_MODE);
 
 	#ifdef LAUNCHPAD
@@ -701,6 +705,8 @@ list_games:
 			{
 				if(!loading_games) break;
 
+				_f1_ = f1;
+				
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 				#ifndef COBRA_ONLY
 				if(IS_ISO_FOLDER && !(IS_PS2ISO)) continue; // 0="GAMES", 1="GAMEZ", 5="PS2ISO", 10="video"
@@ -708,8 +714,9 @@ list_games:
 
 				//if(IS_PS2ISO && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
 				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
-				if(IS_VIDEO_FOLDER) {if(is_net) continue; else strcpy(paths[id_VIDEO], (IS_HDD0) ? "video" : "GAMES_DUP");}
-				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
+				if(IS_ISO_DIR     ) {if(is_net) continue; else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH1); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_ISO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH1 : "ISO");}}
+				if(IS_VIDEO_FOLDER) {if(is_net) continue; else if(IS_HDD0) strcpy(paths[id_VIDEO], "video"); else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH2); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_VIDEO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH2 : "GAMES_DUP");}}
+				if(IS_NTFS) {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
 #ifdef NET_SUPPORT
 				if(is_net)
@@ -720,7 +727,7 @@ list_games:
 				if(b0) {if((b0 == 2) && (f0 < NET)); else if((b0 == 3) && (!IS_NTFS)); else if(filter0 != f0) continue;}
 				if(b1) {if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1 != f1) continue;}
 				else
-					if(check_content_type(f1)) continue;
+					if(check_content_type(_f1_)) continue;
 
 				#ifdef NET_SUPPORT
 				#ifdef USE_INTERNAL_NET_PLUGIN

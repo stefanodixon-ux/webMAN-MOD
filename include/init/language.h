@@ -169,6 +169,9 @@ static char STR_HOME[8] = "Home";
 
 #define COVERS_PATH		"http://raw.githubusercontent.com/aldostools/resources/master/COV/%s.JPG"
 
+#define CUSTOM_PATH1	"DVD"
+#define CUSTOM_PATH2	"CD"
+
 #else
 static int fh;
 
@@ -246,6 +249,9 @@ static char STR_FANCH3[72];//		= "MIN FAN SPEED: ";
 static char STR_NOTFOUND[40];//		= "Not found!";
 
 static char COVERS_PATH[100];//		= "";
+
+static char CUSTOM_PATH1[16];//		= "";
+static char CUSTOM_PATH2[16];//		= "";
 
 #define STR_DISCOBRA	"COBRA TOGGLE"
 #define STR_RBGMODE		"RBG MODE TOGGLE"
@@ -514,6 +520,9 @@ static void update_language(void)
 		language("COVERS_PATH", COVERS_PATH, COVERS_PATH);
 		language("IP_ADDRESS", local_ip, local_ip);
 		language("SEARCH_URL", search_url, "http://google.com/search?q=");
+
+		language("CUSTOM_PATH1", CUSTOM_PATH1, "CD");
+		language("CUSTOM_PATH2", CUSTOM_PATH2, "DVD");
 
 /*
 #ifdef COBRA_ONLY
