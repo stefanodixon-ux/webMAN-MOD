@@ -40,13 +40,15 @@ enum emu_modes
 	THEME  = 13,
 	UPDATE = 14,
 	ROMS   = 15,
+	CD     = 16,
+	DVD    = 17,
 	//////////// fake ISO types
-	MAX_MODES = 16
+	MAX_MODES = 18
 };
 
 #define PKGFILE 6 || (m == 7) || (m == 8)
 
-#define FW_VERSION 4.89f
+#define FW_VERSION 4.91f
 
 typedef struct
 {
@@ -69,8 +71,8 @@ static char full_path[MAX_PATH_LEN];
 static char wm_path[MAX_PATH_LEN];
 static char image_file[MAX_PATH_LEN];
 
-//0="PS3ISO", 1="BDISO", 2="DVDISO", 3="PSXISO", 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS"
-static const char *c_path[16] = {"PS3ISO", "BDISO", "DVDISO", "PSXISO", "VIDEO", "MOVIES", "PKG", "Packages", "packages", "BDFILE", "PS2ISO", "PSPISO", "MUSIC", "THEME", "UPDATE", "ROMS"};
+//0="PS3ISO", 1="BDISO", 2="DVDISO", 3="PSXISO", 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS", 16="CD", 17="DVD"
+static const char *c_path[18] = {"PS3ISO", "BDISO", "DVDISO", "PSXISO", "VIDEO", "MOVIES", "PKG", "Packages", "packages", "BDFILE", "PS2ISO", "PSPISO", "MUSIC", "THEME", "UPDATE", "ROMS", "CD", "DVD"};
 static const char *cover_ext[4] = {".jpg", ".png", ".PNG", ".JPG"};
 static const char *prefix[2] = {"", "PS3/"};
 
@@ -217,7 +219,7 @@ int main(int argc, const char* argv[])
 			{
 				for (u8 profile = 0; profile < 6; profile++)
 				{
-					for(u8 m = 0; m < MAX_MODES; m++) //0="PS3ISO", 1="BDISO", 2="DVDISO", 3="PSXISO", 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS"
+					for(u8 m = 0; m < MAX_MODES; m++) //0="PS3ISO", 1="BDISO", 2="DVDISO", 3="PSXISO", 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS", 16="CD", 17="DVD"
 					{
 						has_dirs = false;
 
@@ -234,7 +236,7 @@ int main(int argc, const char* argv[])
 								ext_len = 4;
 								if(flen < ext_len) continue; ext = filename + flen - ext_len;
 
-								//--- create .ntfs[BDFILES] for 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO"
+								//--- create .ntfs[BDFILES] for 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS", 16="CD", 17="DVD"
 								if(m >= 4)
 								{
 									flen = snprintf(filename, sizeof(filename), "%s:/%s%s%s/%s", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), dir.d_name);

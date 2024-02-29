@@ -285,13 +285,13 @@ static int build_fake_iso(char *iso_path, char *src_path, uint64_t device_id, ch
 
 static void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, uint64_t device_id, uint64_t file_size)
 {
-	//if(m >= 4) // 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS"
+	//if(m >= 4) // 4="VIDEO", 5="MOVIES", 6="PKG", 7="Packages", 8="packages", 9="BDFILE", 10="PS2ISO", 11="PSPISO", 12="MUSIC", 13="THEME", 14="UPDATE", 15="ROMS", 16="CD", 17="DVD"
 	{
 		if((m == VIDEO || m == MOVIES) && !strcasestr(".mp4|.mkv|.avi|.wmv|.flv|.mpg|mpeg|.mov|m2ts|.vob|.asf|divx|xvid|.pam|.bik|bink|.vp6|.mth|.3gp|rmvb|.ogm|.ogv|.m2t|.mts|.tsv|.tsa|.tts|.vp3|.vp5|.vp8|.264|.m1v|.m2v|.m4b|.m4p|.m4r|.m4v|mp4v|.mpe|bdmv|.dvb|webm|.nsv", ext)) return;
 		if((m == MUSIC) && !strcasestr(".mp3|.mp2|.wma|.wav|.aac|.ac3|.ogg", ext)) return;
 		if((m == PKGFILE) && !strcasestr(".pkg|.pup|.zip", ext)) return;
 		if((m == BDFILE) && ((iso_name[0] == '.') || (strstr(iso_name, ".") == NULL))) return;
-		if((m == PS2ISO) && !strcasestr(".iso|.enc", ext)) return;
+		if((m == PS2ISO || m == CD || m == DVD) && !strcasestr(".iso|.enc|.bin|.mdf|.img", ext)) return;
 		if((m == PSPISO) && !strcasestr(".iso", ext)) return;
 		if((m == THEME) && !strcasestr(".p3t|.edat", ext)) return;
 		if((m == ROMS) && (	(iso_name[0] == '.') || (strstr(iso_name, ".") == NULL) ||
@@ -304,7 +304,7 @@ static void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, 
 		if(file_exists(path)) return;
 
 		char file_ext[16];
-		if(m == PS2ISO) sprintf(file_ext, ".ntfs[PS2ISO]"); else
+		if(m == PS2ISO || m == CD || m == DVD) sprintf(file_ext, ".ntfs[PS2ISO]"); else
 		if(m == PSPISO) sprintf(file_ext, ".ntfs[PSPISO]"); else
 						sprintf(file_ext, ".ntfs[BDFILE]");
 
@@ -319,7 +319,7 @@ static void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, 
 		if(m == MUSIC )  copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/music.png", path);
 		if(m == THEME )  copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/theme.png", path);
 		if(m == ROMS  )  copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/retro.png", path);
-		if(m == PS2ISO)  copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/ps2iso.png", path);
+		if(m == PS2ISO || m == CD || m == DVD)  copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/ps2iso.png", path);
 		if(m == PSPISO)  copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/pspiso.png", path);
 		return;
 	}

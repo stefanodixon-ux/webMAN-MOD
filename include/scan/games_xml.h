@@ -893,7 +893,7 @@ scan_roms:
 		{
 			if(!refreshing_xml) break;
 
-			_f1_ = f1;
+			_f1_ = f1; // _f1_ changes to id_PS2ISO for CD/DVD folders (9="CD" / 10="DVD")
 
 			if(scanning_roms)
 			{
@@ -1106,7 +1106,7 @@ scan_roms:
 							}
 						}
 
-						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, f1, f0);
+						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0);
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
 						{
