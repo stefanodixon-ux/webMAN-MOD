@@ -897,7 +897,7 @@ scan_roms:
 
 			if(scanning_roms)
 			{
-				f1 = id_ROMS;
+				_f1_ = f1 = id_ROMS;
 			}
 			else
 			{
