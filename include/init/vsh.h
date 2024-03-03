@@ -215,7 +215,7 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 
 		// default segment
 		if(mount_unk == APP_GAME) sprintf(seg_name, "seg_gamedebug"); else
-		if(!*seg_name) sprintf(seg_name, "seg_device");
+		if(!*seg_name) sprintf(seg_name, webman_config->noBD ? "seg_gamedebug" : "seg_device");
 
 		if(!IS(seg_name, "seg_device") || isDir("/dev_bdvd"))
 		{
