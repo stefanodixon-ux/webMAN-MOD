@@ -154,16 +154,17 @@ static void detect_firmware(void)
 #endif  // #ifndef LAST_FIRMWARE_ONLY
 
 #ifdef DEX_SUPPORT
-		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW484) ? 4.84f :
-																					(peek(0x31F028) == FW489P)? 4.89f : // Ported 4.84 in 4.89.3 Evilnat
+		if(peek(0x30F3B0) == DEX) {SYSCALL_TABLE = SYSCALL_TABLE_481D; c_firmware = (peek(0x31F028) == FW491P)? 4.91f : // Ported 4.84 in 4.91.x Evilnat
 																					(peek(0x31F028) == FW490P)? 4.90f : // Ported 4.84 in 4.90.x Evilnat
-																					(peek(0x31F028) == FW491P)? 4.91f : // Ported 4.84 in 4.91.x Evilnat
+																					(peek(0x31F028) == FW489P)? 4.89f : // Ported 4.84 in 4.89.3 Evilnat
+																					(peek(0x31F028) == FW484) ? 4.84f :
  #ifndef LAST_FIRMWARE_ONLY
 																				//	(peek(0x31F028) == FW489) ? 4.89f :
 																				//	(peek(0x31F028) == FW488) ? 4.88f :
 																				//	(peek(0x31F028) == FW487) ? 4.87f :
 																				//	(peek(0x31F028) == FW486) ? 4.86f :
 																				//	(peek(0x31F028) == FW485) ? 4.85f :
+																				//	(peek(0x31F028) == FW483) ? 4.83f :
 																					(peek(0x31F028) == FW482) ? 4.82f :
 																					(peek(0x31F028) == FW481) ? 4.81f :
  #endif
