@@ -79,12 +79,12 @@ static void poll_start_play_time(void)
 				bool set_net_setatus = true;
 				if(net_status < 0)
 				{
-					char online_title_ids[512];
-					read_file(WM_OFFLINE_IDS_FILE, online_title_ids, 512, 0); // auto-disable network only on these title ids
+					char online_title_ids[0x200];
+					read_file(WM_OFFLINE_IDS_FILE, online_title_ids, sizeof(online_title_ids), 0); // auto-disable network only on these title ids
 					if(*online_title_ids) set_net_setatus = strstr(online_title_ids, _game_TitleID);
 					else
 					{
-						read_file(WM_ONLINE_IDS_FILE, online_title_ids, 512, 0);  // auto-disable network except on these title ids
+						read_file(WM_ONLINE_IDS_FILE, online_title_ids, sizeof(online_title_ids), 0);  // auto-disable network except on these title ids
 						set_net_setatus = (strstr(online_title_ids, _game_TitleID) == NULL);
 					}
 				}

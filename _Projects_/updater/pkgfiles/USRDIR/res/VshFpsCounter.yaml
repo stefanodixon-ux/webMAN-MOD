@@ -11,7 +11,7 @@ overlay:
         showFanSpeed: On
         showFirmware: On
         showAppName: Off
-        showClockSpeeds: On
+        showClockSpeeds: Off
         temperatureType: BOTH # Available options BOTH, CELSIUS, FAHRENHEIT
         textSize: 16.0
         showPlayTime: Off
