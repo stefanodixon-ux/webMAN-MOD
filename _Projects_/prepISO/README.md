@@ -79,4 +79,5 @@ The fake ISO files or .ntfs[BDFILE] use 2 files:
 - **aldostools** - Modification, additional features and optimizations.
 - **Estwald** - Port of library for NTFS/ext2/3/4, fake ISO files concept.
 - **lmirel** - Port of library for exFAT
+- **Evilnat** - Support for encrypted 3k3y/Redump ISOs
 - **Cobra Team**

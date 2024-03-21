@@ -256,7 +256,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 				cellFsClose(fdw);
 				cellFsChmod(local_file, MODE);
 
-				ret = CELL_OK;
+				ret = CELL_OK; copied_size += boff;
 			}
 			sys_memory_free(sysmem);
 		}

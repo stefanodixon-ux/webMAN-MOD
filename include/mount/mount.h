@@ -893,7 +893,11 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				else
 				{
 					if(!silent_mode)
+					{
 						show_msg_with_icon(ICON_CHECK, STR_CPYFINISH);
+						if(!webman_config->nobeep && copied_size > _1GB_)
+							play_sound_id(5);
+					}
 					if(do_restart) { del_turnoff(2); vsh_reboot();}
 				}
 

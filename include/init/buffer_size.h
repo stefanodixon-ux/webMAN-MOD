@@ -21,6 +21,9 @@
 #define  _3MB_		0x0300000UL
 #define _32MB_		0x2000000UL
 
+#define _1GB_		0x40000000ULL
+#define _48GB_		0xC00000000ULL
+
 #define USE_2MB		98
 #define USE_3MB		99
 #define MIN_MEM		_192KB_

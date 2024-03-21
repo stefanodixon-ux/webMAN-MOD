@@ -1616,6 +1616,8 @@ static void refresh_xml(char *msg)
 
 	sprintf(msg, "%s XML%s: OK\n%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
 	show_msg_with_icon(ICON_GAME, msg);
+	if(!webman_config->nobeep)
+		play_sound_id(5);
 
 	setPluginInactive(); games_found = 0;
 }

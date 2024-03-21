@@ -266,6 +266,8 @@ next_part:
 					sys_ppu_thread_usleep(1000);
 				}
 
+				copied_size += pos;
+
 				if(check_666 && !copy_aborted && (merge_part < 99))
 				{
 					sprintf(file1_666, ".666%02i", ++merge_part);
@@ -428,7 +430,7 @@ static int folder_copy(const char *path1, char *path2)
 	if(!g_sysmem) {g_chunk_size =  _64KB_; g_sysmem = sys_mem_allocate(g_chunk_size);}
 	if( g_sysmem) g_free = true;
 
-	if(!copy_in_progress) copied_count = 0;
+	if(!copy_in_progress) copied_size = copied_count = 0;
 
 	++copy_in_progress;
 
