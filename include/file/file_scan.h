@@ -56,20 +56,27 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	copy_aborted = false;
 
+	show_progress(path, (fop == SCAN_LIST)   ? OV_SCAN :
+						(fop == SCAN_DELETE) ? OV_DELETE :
+						(fop <= SCAN_COPYBK) ? OV_COPY : OV_CLEAR);
+
+	int counter = 0;
+	bool prescan = (fop == SCAN_DELETE) | (fop == SCAN_MOVE) | (fop == SCAN_RENAME);
+
 	#ifdef USE_NTFS
 	struct stat bufn;
 	DIR_ITER *pdir = NULL;
+
+rescan:
 
 	if(is_ntfs_path(path))
 	{
 		pdir = ps3ntfs_opendir(ntfs_path(path));
 		if(pdir) is_ntfs = true;
 	}
+	#else
+rescan:
 	#endif
-
-	show_progress(path, (fop == SCAN_LIST)   ? OV_SCAN :
-						(fop == SCAN_DELETE) ? OV_DELETE :
-						(fop <= SCAN_COPYBK) ? OV_COPY : OV_CLEAR);
 
 	bool is_root = IS(path, "/");
 
@@ -149,9 +156,13 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 				if((fop == SCAN_COPYBK) && file_exists(dest_entry))
 					{sprintf(dest_entry, "%s.bak", entry); rename_file(entry, dest_entry);}
 			}
+			else if(prescan)
+				counter++; // pre-count move/rename/delete operations
 			#ifdef USE_NTFS
 			else if(is_ntfs)
 			{
+				counter--;
+
 				char *ntfs_entry = (char*)ntfs_path(entry);
 				if(fop == SCAN_DELETE) {ps3ntfs_unlink(ntfs_entry);} else
 				if(fop == SCAN_RENAME) {ps3ntfs_rename(ntfs_entry, dest_entry);} else
@@ -166,6 +177,8 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 			#endif
 			else
 			{
+				counter--;
+
 				if(fop == SCAN_DELETE) {cellFsUnlink(entry);} else
 				if(fop == SCAN_RENAME) {cellFsRename(entry, dest_entry);} else
 				if(fop == SCAN_MOVE  )
@@ -183,6 +196,8 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 		else
 		#endif
 		cellFsClosedir(fd);
+
+		if(prescan || (counter > 0)) {prescan = false; goto rescan;}
 
 		if(copy_aborted) return FAILED;
 	}
