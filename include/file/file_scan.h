@@ -61,7 +61,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 						(fop <= SCAN_COPYBK) ? OV_COPY : OV_CLEAR);
 
 	int counter = 0;
-	bool prescan = (fop == SCAN_DELETE) | (fop == SCAN_MOVE) | (fop == SCAN_RENAME);
+	bool is_root, prescan = (fop == SCAN_DELETE) | (fop == SCAN_MOVE) | (fop == SCAN_RENAME);
 
 	#ifdef USE_NTFS
 	struct stat bufn;
@@ -78,7 +78,7 @@ rescan:
 rescan:
 	#endif
 
-	bool is_root = IS(path, "/");
+	is_root = IS(path, "/");
 
 	if(is_ntfs || cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
 	{
