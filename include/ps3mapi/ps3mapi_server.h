@@ -1,3 +1,60 @@
+///////////// SUMMARY OF PS3MAPI SERVER COMMANDS //////////////
+// /<web command>
+// GET /<web command>
+// DISCONNECT
+// CORE GETVERSION
+// SERVER GETVERSION
+// CORE GETMINVERSION
+// SERVER GETMINVERSION
+// PS3 REBOOT
+// PS3 SOFTREBOOT
+// PS3 HARDREBOOT
+// PS3 SHUTDOWN
+// PS3 GETFWVERSION
+// PS3 GETFWTYPE
+// PS3 GETSYSINFO <id>
+// PS3 NOTIFY <msg>&icon=<0-50>&snd=<0-9>
+// PS3 BUZZER<0-9>
+// PS3 LED <color> <mode>
+// PS3 GETTEMP
+// PS3 DISABLESYSCALL <sc-num>
+// PS3 CHECKSYSCALL <sc-num>
+// PS3 PDISABLESYSCALL8 <mode>
+// PS3 PCHECKSYSCALL8
+// PS3 DELHISTORY
+// PS3 DELHISTORY+F
+// PS3 REMOVEHOOK
+// PS3 GETIDPS
+// PS3 SETIDPS <part1> <part2>
+// PS3 GETPSID
+// PS3 SETPSID <part1> <part2>
+// PROCESS GETNAME <pid>
+// PROCESS GETALLPID
+// PROCESS GETCURRENTPID
+// MEMORY GET <pid> <offset> <size> <= Memory data is sent through data port
+// MEMORY SET <pid> <offset>        <= New data is received through data port
+// MEMORY PAYLOAD <pid> <payload-path>
+// MEMORY PAYLOAD <pid> unload
+// MEMORY PAGEALLOCATE <pid> <size> <page_size> <flags> <is_executable>
+// MEMORY PAGEFREE <pid> <flags> <page_table_0> <page_table_1>
+// MODULE GETNAME <pid> <prxid>
+// MODULE GETFILENAME <pid> <prxid>
+// MODULE UNLOAD <pid> <prx-id>
+// MODULE LOAD <pid> <prx_path>
+// MODULE LOADVSHPLUGS <slot> <prx-path>
+// MODULE UNLOADVSHPLUGS <slot>
+// MODULE GETVSHPLUGINFO <slot>
+// MODULE GETSEGMENTS <pid> <prx-id>
+// THREAD CREATE <pid> <page_table_0> <toc> <arg> <prio> <stack_size> <name>
+// REGISTRY GET <regkey>
+// REGISTRY SET <regkey> <value>
+// TYPE <A/I>
+// PEEKLV1 <address>
+// PEEKLV2 <address>
+// POKELV1 <address> <value>
+// POKELV2 <address> <value>
+// SYSCALL <syscall-number>|0x<hex-value>|<decimal-value>|<string-value>
+// PASV
 ///////////// PS3MAPI BEGIN //////////////
 
 #define THREAD_NAME_PS3MAPI				"ps3m_api_server"
@@ -377,7 +434,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 						}
 						else {ssend(conn_s_ps3mapi, PS3MAPI_ERROR_425); split = 425;}
 					}
-					else if(_IS(cmd, "SET"))	// MEMORY SET <pid> <offset> / // MEMORY SET <pid> <offset>
+					else if(_IS(cmd, "SET"))	// MEMORY SET <pid> <offset>
 					{
 						if(data_s < 0 && pasv_s >= 0) data_s = accept(pasv_s, NULL, NULL);
 
@@ -670,8 +727,8 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 								buf_len += sprintf(buffer + buf_len, "%i|", moduleInfo.start_entry);
 								buf_len += sprintf(buffer + buf_len, "%i|", moduleInfo.stop_entry);
 
-								buf_len += sprintf(buffer + buf_len, "seg0|%016llX|%016llX|%016llX|%016llX|%016llX", 
-									moduleInfo.segments[0].base, moduleInfo.segments[0].filesz, moduleInfo.segments[0].memsz, 
+								buf_len += sprintf(buffer + buf_len, "seg0|%016llX|%016llX|%016llX|%016llX|%016llX",
+									moduleInfo.segments[0].base, moduleInfo.segments[0].filesz, moduleInfo.segments[0].memsz,
 									moduleInfo.segments[0].index, moduleInfo.segments[0].type);
 								buf_len += sprintf(buffer + buf_len, "seg1|%016llX|%016llX|%016llX|%016llX|%016llX",
 									moduleInfo.segments[1].base, moduleInfo.segments[1].filesz, moduleInfo.segments[0].memsz,
