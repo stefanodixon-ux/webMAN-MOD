@@ -11,25 +11,27 @@ Install boot_mamba.pkg, disable Cobra and reboot.
 
 The kernel payload is loaded through boot_plugins_kernel_nocobra.txt when Cobra is disabled.
 
-The alternative package boot_fake_ofw.pkg starts Mamba in fake OFW mode. 
+The alternative package boot_fake_ofw.pkg starts Mamba in fake OFW mode.
 i.e. with CFW syscalls disabled.
+
+Use boot_mamba_48x-491.pkg or boot_fake_ofw_48x-491.pkg for CFW 4.81-4.89 & 4.91
+Use boot_mamba_490.pkg or boot_fake_ofw_490.pkg for CFW 4.80 & 4.90
 
 ## Files Installed
 
-boot_mamba.pkg:
+boot_mamba_48x-491.pkg:
 
 - /dev_hdd0/boot_plugins_kernel_nocobra.txt
 - /dev_hdd0/boot_plugins_kernel_nocobra_dex.txt
 - /dev_hdd0/boot_plugins_nocobra.txt
-- /dev_hdd0/plugins/kernel/mamba_488C.bin
-- /dev_hdd0/plugins/kernel/mamba_484C.bin
-- /dev_hdd0/plugins/kernel/mamba_484D.bin
+- /dev_hdd0/plugins/kernel/mamba_491C.bin
+- /dev_hdd0/plugins/kernel/mamba_491D.bin
 
-boot_fake_ofw.pkg:
+boot_fake_ofw_48x-491.pkg:
 
 - /dev_hdd0/boot_plugins_kernel_nocobra.txt
 - /dev_hdd0/boot_plugins_nocobra.txt
-- /dev_hdd0/plugins/kernel/fake_ofw_mamba_488C.bin
+- /dev_hdd0/plugins/kernel/fake_ofw_mamba_491C.bin
 
 ## Credits
 

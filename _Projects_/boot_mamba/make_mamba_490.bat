@@ -1,6 +1,6 @@
 @ECHO OFF
 title make_package_custom
-if not exist mamba md mamba
+if not exist mamba md mamba_490
 
 :: ----------------------------------------------
 :: Simple script to build a PKG (by CaptainCPS-X)

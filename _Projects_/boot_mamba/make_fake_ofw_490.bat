@@ -1,6 +1,6 @@
 @ECHO OFF
 title make_package_custom
-if not exist fake_ofw md fake_ofw
+if not exist fake_ofw md fake_ofw_490
 
 :: ----------------------------------------------
 :: Simple script to build a PKG (by CaptainCPS-X)
