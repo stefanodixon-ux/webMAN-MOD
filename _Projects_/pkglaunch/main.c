@@ -261,17 +261,17 @@ int main(int argc, const char* argv[])
 	bool is_tar = (strcasestr(ext, ".tar") == ext);
 	bool is_tgz = (strcasestr(ext, ".tgz") == ext) || (strcasestr(ext, ".gz") == ext);
 
-	char *dest_path = param;
+	char *dest_path = param, *dest_file = NULL;
 	if(*dest_path != '/')
 	{
 		urldec(path);
 
-		if(strstr(path, "/PSXISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PSXISO/");
-		if(strstr(path, "/PSPISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PSPISO/");
-		if(strstr(path, "/PS2ISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PS2ISO/");
-		if(strstr(path, "/PS3ISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/PS3ISO/");
-		if(strstr(path, "/DVDISO")) sprintf(dest_path, "/dev_hdd0/tmp/extract/DVDISO/");
-		if(strstr(path, "/BDISO"))  sprintf(dest_path, "/dev_hdd0/tmp/extract/BDISO/");
+		if(strstr(path, "/PSXISO")) {sprintf(dest_path, "/dev_hdd0/tmp/extract/PSXISO/"); dest_file = (char*)"/dev_hdd0/PSXISO/~tmp.iso";}
+		if(strstr(path, "/PSPISO")) {sprintf(dest_path, "/dev_hdd0/tmp/extract/PSPISO/"); dest_file = (char*)"/dev_hdd0/PSPISO/~tmp.iso";}
+		if(strstr(path, "/PS2ISO")) {sprintf(dest_path, "/dev_hdd0/tmp/extract/PS2ISO/"); dest_file = (char*)"/dev_hdd0/PS2ISO/~tmp.iso";}
+		if(strstr(path, "/PS3ISO")) {sprintf(dest_path, "/dev_hdd0/tmp/extract/PS3ISO/"); dest_file = (char*)"/dev_hdd0/PS3ISO/~tmp.iso";}
+		if(strstr(path, "/DVDISO")) {sprintf(dest_path, "/dev_hdd0/tmp/extract/DVDISO/"); dest_file = (char*)"/dev_hdd0/DVDISO/~tmp.iso";}
+		if(strstr(path, "/BDISO"))  {sprintf(dest_path, "/dev_hdd0/tmp/extract/BDISO/");  dest_file = (char*)"/dev_hdd0/BDISO/~tmp.iso";}
 
 		if((is_zip || is_rar || is_bz2 || is_tgz || is_tar || is_7z) && (*dest_path == '/'))
 		{
@@ -300,6 +300,14 @@ int main(int argc, const char* argv[])
 						if(dir.d_name[0] != '.') {sprintf(url, "%s%s", dest_path, dir.d_name); sysLv2FsUnlink(url);}
 					sysLv2FsCloseDir(fd);
 				}
+
+				// clean temp mount file
+				sysLv2FsUnlink("/dev_hdd0/PSXISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/PSPISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/PS2ISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/PS3ISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/DVDISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/BDISO/~tmp.iso");
 
 				// Show message
 				sprintf(url, "Extracting %s", path);
@@ -337,14 +345,23 @@ int main(int argc, const char* argv[])
 					{
 						ext = dir.d_name + dir.d_namlen - 4;
 						if(dir.d_namlen > 4)
-							if(strcasestr(".iso|.bin|.cue|.img|.mdf", ext)) {sprintf(path, "%s/%s", dest_path, dir.d_name); break;}
+							if(strcasestr(".iso|.bin|.cue|.img|.mdf", ext))
+							{
+								sprintf(path, "%s/%s", dest_path, dir.d_name);
+								if(dest_file && file_exists(path))
+								{
+									sysLv2FsLink(path, dest_file);
+									strcpy(path, dest_file);
+								}
+								break;
+							}
 					}
 					sysLv2FsCloseDir(fd);
 				}
 			}
 
 			if(*path)
-				{urlenc(url, path); sprintf(url, "GET /mount.ps3%s HTTP/1.0\r\n", path);}
+				{urlenc(url, path); sprintf(url, "GET /mount_ps3%s HTTP/1.0\r\n", path);}
 			else
 			{
 				// clean extract folder
@@ -357,6 +374,14 @@ int main(int argc, const char* argv[])
 						if(dir.d_name[0] != '.') {sprintf(url, "%s%s", dest_path, dir.d_name); sysLv2FsUnlink(url);}
 					sysLv2FsCloseDir(fd);
 				}
+
+				// clean temp mount file
+				sysLv2FsUnlink("/dev_hdd0/PSXISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/PSPISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/PS2ISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/PS3ISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/DVDISO/~tmp.iso");
+				sysLv2FsUnlink("/dev_hdd0/BDISO/~tmp.iso");
 
 				*url = *path = 0; // do nothing & exit
 			}

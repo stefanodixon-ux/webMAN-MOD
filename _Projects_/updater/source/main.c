@@ -392,7 +392,7 @@ int main()
 
 	if(button & (BUTTON_L1)) full = true; else
 	if(button & (BUTTON_CROSS | BUTTON_CIRCLE)) lite = true; else
-	if(	(!(button & BUTTON_R1) && ((sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 320000))) ||
+	if(	(!(button & BUTTON_R1) && ((sysLv2FsStat(PLUGINS_DIR "/webftp_server.sprx", &stat) == SUCCESS) && (stat.st_size > 324000))) ||
 		(is_ps3hen() == 0x1337) ||
 		(file_exists("/dev_flash/hen/PS3HEN.BIN")) ||
 		(file_exists(HDDROOT_DIR "/hen/PS3HEN.BIN")) ||
@@ -654,6 +654,7 @@ int main()
 	file_copy(APP_USRDIR "/addons/boot_fake_ofw.pkg", RES_DIR "/boot_fake_ofw.pkg");
 	file_copy(APP_USRDIR "/addons/PSP_Minis_Launcher.pkg",     RES_DIR "/PSP_Minis_Launcher.pkg");
 	file_copy(APP_USRDIR "/addons/PSP_Remasters_Launcher.pkg", RES_DIR "/PSP_Remasters_Launcher.pkg");
+	file_copy(APP_USRDIR "/addons/wm_theme_colorful.pkg"		, RES_DIR "/wm_theme_colorful.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_standard.pkg",         RES_DIR "/wm_theme_standard.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_metalification.pkg"	, RES_DIR "/wm_theme_metalification.pkg");
 	file_copy(APP_USRDIR "/addons/wm_theme_rebugification.pkg"	, RES_DIR "/wm_theme_rebugification.pkg");

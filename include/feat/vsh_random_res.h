@@ -49,7 +49,10 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 			else if(res_id == 4)
 				sprintf(param, "%s/%i.ac3", hdd_path, _id); // coldboot
 			else if(res_id == 5)
+			{
+				if(_id == webman_config->resource_id[6]) continue;
 				sprintf(param, "%s/%i.p3t", hdd_path, _id); // theme
+			}
 			else if(res_id == 7 || res_id == 9)
 				sprintf(param, "%s/%i.rco", hdd_path, _id); // impose
 			else if(res_id == 8)
@@ -65,12 +68,24 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 		{
 			if(res_id == 5)
 			{
-				if((set || (_id > 0)) && (webman_config->resource_id[6] != _id))
+				if(set || (_id > 0))
 				{
-					char msg[0x100];
-					scan("/dev_hdd0/theme/", false, "CD_*.p3t", SCAN_DELETE, msg); // delete temporary themes
+					int fd; bool do_scan = true; char entry[0x200];
+					while(do_scan)
+					{
+						do_scan = false;
+						if(cellFsOpendir("/dev_hdd0/theme", &fd) == CELL_FS_SUCCEEDED)
+						{
+							CellFsDirent dir; u64 read_e;
+							while((cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
+							{
+								if(islike(dir.d_name, "CD_")) {do_scan = true; snprintf(entry, 0x200, "%s/%s", "/dev_hdd0/theme", dir.d_name); cellFsUnlink(entry);}
+							}
+							cellFsClosedir(fd);
+						}
+					}
 					wait_for_xmb();
-					installPKG(param, msg);
+					installPKG(param, entry);
 					set = save = true, webman_config->resource_id[6] = _id; // last selected theme
 				}
 			}
@@ -126,6 +141,7 @@ static void randomize_vsh_resources(bool apply_theme, char *param)
 	map_vsh_resource(8, MAP_SELECTED, param, false); // xmb_plugin_normal.rco + xmb_ingame.rco
 	map_vsh_resource(9, MAP_SELECTED, param, false); // system_plugin.rco
 	if(!apply_theme) return;
+
 	map_vsh_resource(5, MAP_SELECTED, param, false); // theme.p3t
 }
 #endif // #ifdef VISUALIZERS

@@ -16,12 +16,15 @@
 #define ORG_GAME_EXT_PATH	"/dev_flash/vsh/module/game_ext_plugin.sprx"
 #define NEW_GAME_EXT_PATH	"/./dev_hdd0/tmp/gameboot/game_ext_plugin.sprx"
 
+#define ORG_EXPLORE_PLUGIN_PATH	"/dev_flash/vsh/module/explore_plugin.sprx"
+#define NEW_EXPLORE_PLUGIN_PATH	"/./dev_hdd0/tmp/explore_plugin.sprx"
+
+#define ORG_LIBAUDIO_PATH		"/dev_flash/sys/external/libaudio.sprx"
+#define NEW_LIBAUDIO_PATH		"/./dev_hdd0/tmp/libaudio.sprx"
+
 #define CUSTOM_RENDER_PLUGIN_RCO	"/dev_flash/vsh/resource/custom_render_plugin.rco"
 #define GAMEBOOT_MULTI_AC3			"/dev_flash/vsh/resource/gameboot_multi.ac3"
 #define GAMEBOOT_STEREO_AC3			"/dev_flash/vsh/resource/gameboot_stereo.ac3"
-
-#define ORG_LIBAUDIO_PATH	"/dev_flash/sys/external/libaudio.sprx"
-#define NEW_LIBAUDIO_PATH	"/./dev_hdd0/tmp/libaudio.sprx"
 
 #define NPSIGNIN_PLUGIN_RCO		"/dev_flash/vsh/resource/npsignin_plugin.rco"
 #define NPSIGNIN_PLUGIN_OFF		"/./dev_hdd0/tmp/wm_res/npsignin_plugin.rco"
@@ -39,9 +42,9 @@
 #define HDD0_GAME_DIR		"/dev_hdd0/game/"
 #define _HDD0_GAME_DIR		"/dev_hdd0//game/"
 
-#define INT_HDD_ROOT_PATH		"/dev_hdd0/"
-#define DEFAULT_PKG_PATH		"/dev_hdd0/packages/"
-#define TEMP_DOWNLOAD_PATH		"/dev_hdd0/tmp/downloader/"
+#define INT_HDD_ROOT_PATH	"/dev_hdd0/"
+#define DEFAULT_PKG_PATH	"/dev_hdd0/packages/"
+#define TEMP_DOWNLOAD_PATH	"/dev_hdd0/tmp/downloader/"
 
 #define MANAGUNZ			_HDD0_GAME_DIR "MANAGUNZ0/USRDIR"	// ManaGunZ folder
 #define MM_ROOT_STD			_HDD0_GAME_DIR "BLES80608/USRDIR"	// multiMAN root folder
@@ -61,6 +64,7 @@
 #define WM_COMBO_PATH		TMP_DIR "/wm_combo"				// webMAN custom combos folder
 #define WM_INGAME_PATH		TMP_DIR "/wm_ingame"			// webMAN ingame scripts
 #define WM_GAMEBOOT_PATH	TMP_DIR "/gameboot"				// gameboot animations per console emulator
+#define WM_EXTRACT_PATH		TMP_DIR "/extract"				// PKGLAUNCH extract path for zip, rar, 7z, gzip, tar
 
 #define WM_CONFIG_FILE		TMP_DIR "/wm_config.bin"		// webMAN config file
 #define WM_NOSCAN_FILE		TMP_DIR "/wm_noscan"			// webMAN config file to skip on boot

@@ -278,7 +278,7 @@ static void show_msg2(const char *text1, const char *text2)
 
 static void show_status(const char *label, u8 status)
 {
-	show_msg2(label, status ? STR_DISABLED : STR_ENABLED);
+	show_msg2(label, status ? STR_ENABLED : STR_DISABLED);
 }
 
 static void show_error(const char *text)

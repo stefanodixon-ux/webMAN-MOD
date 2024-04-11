@@ -104,6 +104,10 @@ static void map_patched_modules(void)
 	if(file_exists(NEW_LIBAUDIO_PATH))
 		sys_map_path(ORG_LIBAUDIO_PATH, NEW_LIBAUDIO_PATH);
 
+	// redirect to patched explore_plugin.sprx
+	if(file_exists(NEW_EXPLORE_PLUGIN_PATH))
+		sys_map_path(ORG_EXPLORE_PLUGIN_PATH, NEW_EXPLORE_PLUGIN_PATH);
+
 	#ifndef LITE_EDITION
 	use_imgfont = (file_ssize(IMAGEFONT_PATH) > 900000);
 	#endif
@@ -1120,6 +1124,8 @@ scan_roms:
 							}
 							else
 							{
+								if(IS_HDD0 && IS(entry.entry_name.d_name, "~tmp.iso")) continue;
+
 								if(webman_config->info & INFO_VER) getTitleID(templn, app_ver, GET_VERSION);
 							#ifdef COBRA_ONLY
 								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) continue;

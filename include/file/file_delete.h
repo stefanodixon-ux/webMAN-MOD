@@ -160,6 +160,7 @@ static void uninstall(char *param)
 	del(VSH_MENU_IMAGES, RECURSIVE_DELETE);
 	del(PS2CONFIG_PATH, RECURSIVE_DELETE);
 	del(WM_GAMEBOOT_PATH, RECURSIVE_DELETE);
+	del(WM_EXTRACT_PATH, RECURSIVE_DELETE);
 	#endif
 
 	restore_fan(SYSCON_MODE);

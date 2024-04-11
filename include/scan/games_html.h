@@ -885,6 +885,8 @@ next_html_entry:
 							}
 							else
 							{
+								if(IS_HDD0 && IS(entry.entry_name.d_name, "~tmp.iso")) continue;
+
 							#ifdef COBRA_ONLY
 								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) continue;
 							#else

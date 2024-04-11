@@ -1042,7 +1042,18 @@ static void do_umount_iso(bool clean)
 
 static void do_umount(bool clean)
 {
-	if(clean) {cellFsUnlink(LAST_GAME_TXT); mount_unk = EMU_OFF;}
+	if(clean)
+	{
+		cellFsUnlink(LAST_GAME_TXT); mount_unk = EMU_OFF;
+
+		for(u8 i = id_GAMES; i < id_ISO; i++)
+			unlink_file(INT_HDD_ROOT_PATH, paths[i], "/~tmp.iso");
+
+		#ifdef COPY_PS3
+		if(webman_config->deliso)
+			del(WM_EXTRACT_PATH, RECURSIVE_DELETE);
+		#endif
+	}
 
 	#ifdef USE_NTFS
 	root_check = true;
