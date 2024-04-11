@@ -45,7 +45,11 @@ static void start_www(u64 conn_s_p)
 		for(u8 indx = 5, d = 6; d < 128; d++)
 		{
 			sprintf(dev_name, "/dev_usb%03i", d);
-			if(isDir(dev_name)) {strcpy(drives[indx++], dev_name); if(indx > 6) break;}
+			if(isDir(dev_name))
+			{
+				if(d == 7 && indx == 5) continue; // avoids duplicated /dev_usb007
+				strcpy(drives[indx++], dev_name); if(indx > 6) break;
+			}
 		}
 		///////////////////////////////////
 
