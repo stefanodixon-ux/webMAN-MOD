@@ -108,7 +108,8 @@ var tapHold, tapEvent, tapEventFired = false;
 window.onclick=function(e){if(tapEventFired){tapEvent.preventDefault();tapEvent.stopPropagation();return false;}if(m)m.display='none';wmsg.style.display='none';t=e.target;if(t.id.indexOf('im')==0||(typeof(t.href)=='string'&&t.href.indexOf('.ps3')>0&&t.href.indexOf('view.ps3')<0&&t.href.indexOf('.png')<0&&t.href.indexOf('.jpg')<0&&t.href.indexOf('prompt')<0&&t.href.indexOf('#Top')<0))wmsg.style.display='block';}
 
 document.addEventListener('mousedown', function(event){
-	event.preventDefault();
+	if(event.target.id!='sz')
+		event.preventDefault();
 	tapEvent = event;
 	tapEventFired = false;
 	tapHold = setTimeout(function(e){
