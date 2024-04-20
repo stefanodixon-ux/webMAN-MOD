@@ -734,15 +734,15 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 						read_file(iso_file, buf, 0x800, sector);
 
 						// find executable
-						for(u16 i = 0; i < 0x7F0; i += buf[i])
+						for(u16 i = 0; i < 0x7D0; i += buf[i])
 						{
 							if( buf[i] == 0 ) break;
 							if( buf[i + 0x20] != 0xD) continue;
 							if((buf[i + 0x21] == 'S') && (buf[i + 0x25] == '_') && (buf[i + 0x29] == '.'))
 							{
-								buf[i + 0x25] = '-';
-								memcpy(title_id, &buf[i + 0x21], 8);
-								memcpy(title_id + 8, &buf[i + 0x2A], 2);
+								buf[i + 0x25] = '-'; // replace _ with -
+								memcpy(title_id, &buf[i + 0x21], 8);     // copy SLES-123
+								memcpy(title_id + 8, &buf[i + 0x2A], 2); // copy 45
 								title_id[10] = 0;
 								break;
 							}
