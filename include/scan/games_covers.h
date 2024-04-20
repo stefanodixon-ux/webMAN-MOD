@@ -295,12 +295,12 @@ static bool get_cover_from_name(char *icon, const char *name, char *title_id) //
 
 	if(HAS(icon)) return true;
 
-	// get cover from title_id in PARAM.SFO
-	if(get_cover_by_titleid(icon, title_id)) return true;
-
 	// get title_id from file name
-	if(HAS_TITLE_ID) ;
-
+	if(HAS_TITLE_ID)
+	{
+		// get cover from title_id in PARAM.SFO
+		if(get_cover_by_titleid(icon, title_id)) return true;
+	}
 	else if((*name == 'B' || *name == 'N' || *name == 'S' || *name == 'U') && ISDIGIT(name[6]) && ISDIGIT(name[7]))
 	{
 		if(name[4] == '_' && name[8] == '.')
@@ -699,12 +699,65 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 	}
 	else
 	{
+		u8 info = webman_config->info & 0xF;
+
+		if(*title_id == 0 && (info == 1 || info == 2) && (f0 <= NET || f0 > NTFS))
+		{
+			char *iso_file = param_sfo;
+
+			if((f1 == id_PSPISO) && (extcasecmp(entry_name, ".iso", 4)))
+			{
+				sprintf(iso_file, "%s/%s", param, entry_name);
+				read_file(iso_file, title_id, 10, 0x8373); title_id[10] = 0;
+			}
+			else if(f1 == id_PSXISO || f1 == id_PS2ISO)
+			{
+				if(get_cover_from_name(icon, entry_name, title_id) == false)
+				{
+					const char *ext = get_ext(entry_name);
+					if(_IS(ext, ".iso") || _IS(ext, ".bin") || _IS(ext, ".img") || _IS(ext, ".mdf"))
+					{
+						char buf[0x800]; u32 sector;
+						sprintf(iso_file, "%s/%s", param, entry_name);
+						read_file(iso_file, buf, 0x200, 0x8000);
+
+						// use CD sector size
+						if(memcmp(buf + 1, "CD001", 5))
+						{
+							read_file(iso_file, buf, 0x200, 0x9318);
+							sector = *((u32*)(buf + 0xA2)) * 0x930 + 0x18;
+						}
+						else
+							sector = *((u32*)(buf + 0xA2)) * 0x800;
+
+						// read root directory
+						read_file(iso_file, buf, 0x800, sector);
+
+						// find executable
+						for(u16 i = 0; i < 0x7F0; i += buf[i])
+						{
+							if( buf[i] == 0 ) break;
+							if( buf[i + 0x20] != 0xD) continue;
+							if((buf[i + 0x21] == 'S') && (buf[i + 0x25] == '_') && (buf[i + 0x29] == '.'))
+							{
+								buf[i + 0x25] = '-';
+								memcpy(title_id, &buf[i + 0x21], 8);
+								memcpy(title_id + 8, &buf[i + 0x2A], 2);
+								title_id[10] = 0;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		get_name(title, entry_name, NO_EXT);
 
 		if(f1 >= id_BDISO && f1 <= id_ISO)
 		{
 			// info level: 0=Path, 1=Path + ID, 2=ID, 3=None
-			if(webman_config->info == 1 || webman_config->info == 2)
+			if(info == 1 || info == 2)
 			{
 				get_cover_from_name(icon, entry_name, title_id); // get title_id from name
 			}
