@@ -938,7 +938,7 @@ void map_app_home(const char *path)
 	sys_map_path("/app_home", path);
 
 	// remap app_home for multi-game discs
-	char *mpath = (char *)malloc(strlen(path) + 18);
+	char *mpath = (char *)malloc(strlen(path) + 11);
 	if(mpath)
 	{
 		sprintf(mpath, "%s/PS3_GM%02i", path, gm);
