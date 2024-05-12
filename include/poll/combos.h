@@ -639,7 +639,9 @@
 							#ifdef ARTEMIS_PRX
 							clear_codelist();
 							#endif
+							#ifdef COBRA_ONLY
 							gm = 00; // resets PS3_GMxx counter in map_app_home() of mount.h
+							#endif
 							break_and_wait;
 						}
 						#ifdef WM_CUSTOM_COMBO

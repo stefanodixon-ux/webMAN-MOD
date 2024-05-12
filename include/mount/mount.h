@@ -1524,6 +1524,10 @@ static void mount_thread(u64 action)
 	char netid = NULL;
 	char _path[STD_PATH_LEN], title_id[TITLEID_LEN];
 
+	#ifdef COBRA_ONLY
+	char *multi = strcasestr(_path0, "?gm="); if(multi) {gm = (u8)val(multi + 4); *multi = 0;} // ?gm=1 -> set default multi-game disc to PS3_GM01 in map_app_home()
+	#endif
+
 	#ifdef PKG_HANDLER
 	if(is_ext(_path0, ".pkg") && file_exists(_path0))
 	{
