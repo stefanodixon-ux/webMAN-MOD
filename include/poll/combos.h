@@ -639,6 +639,7 @@
 							#ifdef ARTEMIS_PRX
 							clear_codelist();
 							#endif
+							gm = 00; // resets PS3_GMxx counter in map_app_home() of mount.h
 							break_and_wait;
 						}
 						#ifdef WM_CUSTOM_COMBO

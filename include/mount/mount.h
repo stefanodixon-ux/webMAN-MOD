@@ -942,8 +942,10 @@ void map_app_home(const char *path)
 		sprintf(mpath, "%s/PS3_GM%02i", path, gm);
 		if(not_exists(mpath))
 		{
-			gm = 01;
 			sys_map_path("/app_home", path);
+
+			sprintf(mpath, "%s/PS3_GM01", path);
+			gm = isDir(mpath) ? 01 : 00; // reset gm to 00 if the game is not a multi-game disc
 		}
 		else
 		{
