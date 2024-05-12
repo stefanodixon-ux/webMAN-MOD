@@ -916,8 +916,6 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 #ifdef COBRA_ONLY
 
-static u8 gm = 01;
-
 static void unmap_app_home(void)
 {
 	// force remove "/app_home", "/app_home/PS3_GAME", "/app_home/USRDIR"
@@ -925,9 +923,13 @@ static void unmap_app_home(void)
 	{
 		sys_map_path("/app_home", NULL);
 		sys_map_path(APP_HOME_DIR, NULL);
-		sys_map_path("/app_home/USRDIR", NULL);
 	}
 }
+
+static u8 gm = 01;	// remembers last multi-game folder.
+					// If PS3_GM01 exists, it's mapped to app_home and gm is incremented.
+					// if the same game is mounted again PS3_GM02 is mapped and gm is incremented again
+					// if PS3_GMxx doesn't exists, PS3_GAME is mapped and gm resets to 01.
 
 void map_app_home(const char *path)
 {
@@ -935,6 +937,7 @@ void map_app_home(const char *path)
 
 	sys_map_path("/app_home", path);
 
+	// remap app_home for multi-game discs
 	char *mpath = (char *)malloc(strlen(path) + 18);
 	if(mpath)
 	{
@@ -947,16 +950,12 @@ void map_app_home(const char *path)
 		if(file_exists(mpath))
 		{
 			sys_map_path("/app_home/PS3_GAME", mpath); gm++;
-			strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
 		}
 		else
 		{
 			sprintf(mpath, "%s/PS3_GAME", path);
 			if(file_exists(mpath))
-			{
 				sys_map_path("/app_home/PS3_GAME", mpath);
-				strcat(mpath, "/USRDIR"); sys_map_path("/app_home", mpath);
-			}
 		}
 
 		free(mpath);
@@ -969,39 +968,29 @@ static void set_app_home(const char *game_path)
 
 	unmap_app_home();
 
-	// map /app_home
-	if(game_path)
-		sys_map_path("/app_home", game_path);
-	else
-		sys_map_path("/app_home", isDir("/dev_hdd0/packages") ?
-										"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD when game is unmounted
-
-	// mount custom app in /app_home/PS3_GAME if has USRDIR/EBOOT.BIN
-	if(!game_path && (webman_config->homeb && is_app_dir(webman_config->home_url, ".")))
-		sys_map_path(APP_HOME_DIR, webman_config->home_url);
-	else if(IS(game_path, PKGLAUNCH_DIR))
-		sys_map_path(APP_HOME_DIR, PKGLAUNCH_PS3_GAME);
+	if(!game_path) // default action on plugin startup or game unmount
+	{
+		if(webman_config->homeb && is_app_dir(webman_config->home_url, ".")) // map /app_home/PS3_GAME to home_url, if available
+			sys_map_path(APP_HOME_DIR, webman_config->home_url);
+		else // otherwise, map /app_home to the packages dir
+			sys_map_path("/app_home", isDir("/dev_hdd0/packages") ?
+											"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD when game is unmounted
+	}
 	else
 	{
-		sys_map_path(APP_HOME_DIR, game_path);
-
-		// USRDIR as /app_home if game path has USRDIR/EBOOT.BIN
-		if(game_path && is_app_dir(game_path, "."))
-		{
-			char new_path[strlen(game_path) + 8];
-			sprintf(new_path, "%s/USRDIR", game_path);
-			sys_map_path("/app_home", new_path);
-		}
+		if(IS(game_path, PKGLAUNCH_DIR))
+			sys_map_path(APP_HOME_DIR, PKGLAUNCH_PS3_GAME);
+		else if(is_app_dir(game_path, ".")) // map /app_home/PS3_GAME to game_path if it points to a game in /dev_hdd0/game/
+			sys_map_path(APP_HOME_DIR, game_path);
+		else
+			sys_map_path("/app_home", game_path);
 	}
 }
 
 static void set_bdvd_as_app_home(void)
 {
 	if(!(webman_config->app_home))
-	{
-		sys_map_path(APP_HOME_DIR, NULL);
-		sys_map_path("/app_home", "/dev_bdvd");
-	}
+		map_app_home("/dev_bdvd");
 }
 
 static void do_umount_iso(bool clean)

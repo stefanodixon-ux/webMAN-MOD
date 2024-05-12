@@ -10,6 +10,8 @@
 // paf_0EAA28B8  // ?
 // paf_59BDA198  // ? rsx command buffer
 
+// paf_EAA28B8(); Framework_End
+// paf_85D1D23B(); Framework_Run
 extern void paf_85D1D23B(void);  // ?, base pointer: pad_data / pad_lwmtx
 
 // paf_A5B4FB55  // ? init libs: gcm, io, ...
@@ -233,7 +235,7 @@ extern const char *paf_10DEDCC7(void);  // returns "PhPlane"
 extern const char *paf_E36C18F5(void);  // returns "PhPlaneDiv"
 
 // paf_0C16A258  // ?
-// paf_8ABAE2F3  // ?
+// paf_8ABAE2F3  // paf_8ABAE2F3(void*, void*, int _0);  _ZN3paf10PhPlaneDivC1EPNS_8PhWidgetEPNS_8PhAppearE | paf::PhPlaneDiv::PhPlaneDiv(paf::PhWidget*, paf::PhAppear*)
 
 extern const char *paf_24A5BD6B(void);  // returns "PhButton"
 
@@ -991,7 +993,7 @@ extern int32_t paf_55F2C2A6(void);  // eject disk
 // paf_E75F9969	  // _ZN3paf6PhText8LineDownEj	paf::PhText::LineDown(unsigned int)
 // paf_6B620D94	  // _ZN3paf6PhText9EraseTextEjj	paf::PhText::EraseText(unsigned int, unsigned int)
 // paf_201528C1	  // _ZN3paf6PhText9ShowCaretEb	paf::PhText::ShowCaret(bool)
-//void paf_7F0930C6(void* text, void* parent, void* appear);	  // _ZN3paf6PhTextC1EPNS_8PhWidgetEPNS_8PhAppearE	paf::PhText::PhText(paf::PhWidget *, paf::PhAppear *)
+//void paf_7F0930C6(void* text, void* parent, void* appear);	  // _ZN3paf6PhTextC1EPNS_8PhWidgetEPNS_8PhAppearE	paf::PhText::PhText(paf::PhWidget *, paf::PhAppear *) // PhText_Constructor
 //static void PhText_Constructor(void* text, void* parent, void* appear) { paf_7F0930C6(text, parent, appear); }
 
 // paf_9C1D60C4	  // _ZN3paf6Thread4JoinEv	paf::Thread::Join(void)

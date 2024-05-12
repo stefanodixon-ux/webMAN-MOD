@@ -96,7 +96,7 @@ extern uint32_t vshcommon_A20E43DB(int32_t, const char* eventName, int32_t, int3
 // vshcommon_A20E43DB  // ? Displays a notification in XMB with texture -> void(*vshcommon_A20E43DB)(int32_t, const char* eventName, int32_t, int32_t* texture, int32_t*, const char*, const char*, float, const wchar_t* text, int32_t, int32_t, int32_t); int dummy = 0; vshcommon_A20E43DB(0, const char* eventName, int32_t, int32_t* texture /*paf_3A8454FC*/, &dummy, "", "", 0f, L"notification", 0, 0, 0)
 // vshcommon_7504447B  // ?
 
-// vshcommon_F1918912  // ?
+// vshcommon_F1918912  // NavigationMessageSetDuration
 
 // vshcommon_21806775  // ?
 
