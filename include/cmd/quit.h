@@ -25,9 +25,14 @@
 		if(file_exists(plugin_path))
 		{
 			if(strstr(plugin_path, "/webftp_server"))
+			{
 				create_file(WM_RELOAD_FILE); // create semaphore file
-
-			load_vsh_module(plugin_path);
+				load_vsh_module(plugin_path);
+				unload_me(3);
+				goto exit_handleclient_www;
+			}
+			else
+				load_vsh_module(plugin_path);
 		}
 		#endif
 
