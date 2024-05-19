@@ -32,6 +32,22 @@ static void poll_start_play_time(void)
 			if(!is_artemis_app)
 				clear_codelist();
 			#endif
+
+			// auto-reload full edition after return to XMB
+			#ifdef AUTO_TOGGLE_ON_XMB
+			#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server.sprx"
+			#define unload_me(mode)	{wm_unload_combo = mode; wwwd_stop();}
+
+			if(!syscalls_removed && !is_mounting && !refreshing_xml && file_exists(TOGGLE_PLUGIN))
+			{
+				create_file(WM_RELOAD_FILE); // create semaphore file
+
+				load_vsh_module(TOGGLE_PLUGIN);
+
+				unload_me(3);
+				return;
+			}
+			#endif
 		}
 	 #endif
 	#endif

@@ -39,6 +39,7 @@
 #define ARTEMIS_PRX
 
 //// EXTRA FEATURES ////
+//#define AUTO_TOGGLE_ON_XMB	// auto switch to full edition (L1+R1+TRIANGLE) when a game returns to XMB
 //#define GET_KLICENSEE	// /klic.ps3
 //#define XMB_SCREENSHOT	// screenshot XMB using L2 + R2 + SELECT + START (thanks to 3141card)
 //#define SWAP_KERNEL		// load custom lv2_kernel.self patching LV1 and soft rebooting (use /copy.ps3) [requires QA flag enabled]
