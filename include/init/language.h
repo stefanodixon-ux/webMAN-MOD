@@ -339,7 +339,7 @@ static void close_language(void)
 	if(fh) cellFsClose(fh); lang_roms = fh = 0;
 }
 
-static bool language(const char *key_name, char *label, const char *default_str)
+static void language(const char *key_name, char *label, const char *default_str)
 {
 	u64 bytes_read = 0;
 	static size_t p = 0, lang_pos = 0, size = 0;
@@ -351,13 +351,15 @@ static bool language(const char *key_name, char *label, const char *default_str)
 	if(!lang_roms) close_language();
 
  retry:
-	strcpy(label, default_str);
+	if(lang_roms < LANG_CUSTOM) strcpy(label, default_str);
 
 	if(fh == 0)
 	{
-		char lang_path[40];
+		char lang_path[48];
 
-		if(lang_roms)
+		if(lang_roms == LANG_CUSTOM)
+			snprintf(lang_path, 48, "%s/gamelist.txt", default_str);
+		else if(lang_roms)
 		{
 			sprintf(lang_path, "%s/LANG_ROMS.TXT", WM_LANG_PATH);
 			if(not_exists(lang_path))
@@ -375,13 +377,9 @@ static bool language(const char *key_name, char *label, const char *default_str)
 			sprintf(lang_path, "%s/LANG%s.TXT", WM_LANG_PATH, lang_code);
 		}
 
-		lang_pos = 0;
+		lang_pos = 0; size = file_size(lang_path); if(!size) return;
 
-		struct CellFsStat buf;
-
-		if(cellFsStat(lang_path, &buf)) return true; size = (size_t)buf.st_size;
-
-		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0)) return false;
+		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0)) return;
 
 		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE;
 	}
@@ -419,7 +417,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 				if(str_len < do_retry) goto do_retry;
 
-				return true;
+				return;
 			}
 		}
 
@@ -430,85 +428,12 @@ static bool language(const char *key_name, char *label, const char *default_str)
 		do_retry:
 		cellFsClose(fh); fh = do_retry = 0; goto retry;
 	}
-
-	return true;
 }
 
 #ifdef MOUNT_ROMS
-static bool rom_alias(const char *key_name, char *label, const char *param)
+static void rom_alias(const char *key_name, char *label, const char *param)
 {
-	u64 bytes_read = 0;
-	static size_t p = 0, lang_pos = 0, size = 0;
-	u8 c, i, key_len = strlen(key_name);
-
-	u8 do_retry = 1;
-	char buffer[MAX_LINE_LEN];
-
- retry:
-
-	if(fh == 0)
-	{
-		char lang_path[40];
-
-		sprintf(lang_path, "%s/gamelist.txt", param);
-
-		lang_pos = 0;
-
-		struct CellFsStat buf;
-
-		if(cellFsStat(lang_path, &buf)) return true; size = (size_t)buf.st_size;
-
-		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0)) return false;
-
-		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE;
-	}
-
-	int fd = fh;
-	
-	do {
-		for(i = 0; i < key_len;)
-		{
-			{ GET_NEXT_BYTE }
-
-			if(c != key_name[i]) break; i++;
-
-			if(i == key_len)
-			{
-				if(buffer[p] > ' ') break;
-
-				size_t str_len = 0; u8 copy = 0;
-
-				cellFsReadWithOffset(fd, lang_pos, buffer, CHUNK_SIZE, NULL); p = 0;
-
-				// set value
-				while(lang_pos < size)
-				{
-					{ GET_NEXT_BYTE }
-
-					if(c == ']' || lang_pos >= size) break;
-
-					if(copy) {label[str_len++] = c; if(str_len >= MAX_LEN) break;}
-
-					if(c == '[') copy = 1;
-				}
-
-				if(str_len) label[str_len] = '\0';
-
-				if(str_len < do_retry) goto do_retry;
-
-				return true;
-			}
-		}
-
-	} while(lang_pos < size);
-
-	if(do_retry)
-	{
-		do_retry:
-		cellFsClose(fh); fh = do_retry = 0; goto retry;
-	}
-
-	return true;
+	lang_roms = LANG_CUSTOM; language(key_name, label, param);
 }
 #endif
 
@@ -526,8 +451,8 @@ static void update_language(void)
 	// initialize variables with default values
 	sprintf(STR_SETTINGSUPD, "%s%s", "Settings updated.<br>", "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
 
-	if(language("STR_FILES", STR_FILES, "Files"))
 	{
+		language("STR_FILES", STR_FILES, "Files");
 		language("STR_GAMES", STR_GAMES, "Games");
 		language("STR_SETUP", STR_SETUP, "Setup");
 		language("STR_HOME", STR_HOME, "Home");

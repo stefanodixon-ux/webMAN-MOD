@@ -560,12 +560,13 @@ static void copy_rom_media(const char *src_path)
 	char *name = get_filename(src_path);
 	if(!name) return;
 
+	// get rom alias. use file name as default title
 	char path[MAX_LINE_LEN]; strcpy(path, src_path);
 	char *title = get_filename(path); *title = 0; char *ex = strrchr(++title, '.');
 	#ifndef ENGLISH_ONLY
 	rom_alias(title, title, path); close_language(); 
 	#endif
-	if(*ex == '.') *ex = 0;
+	if(ex && *ex == '.') *ex = 0;
 
 	// patch title name in PARAM.SFO of PKGLAUNCH
 	char dst_path[64];

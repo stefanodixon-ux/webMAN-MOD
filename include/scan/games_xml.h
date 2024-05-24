@@ -1138,11 +1138,12 @@ scan_roms:
 
 							if(ignore_files && HAS_TITLE_ID && strstr(ignore_files, title_id)) continue;
 
+							// get rom alias. use file name as default title
 							#ifdef MOUNT_ROMS
 							#ifndef ENGLISH_ONLY
 							if(scanning_roms)
 							{
-								char *key = strrchr(entry.entry_name.d_name, '/'); if(!key) key = entry.entry_name.d_name;
+								char *key = get_filename(entry.entry_name.d_name);
 								rom_alias(key, templn, param);
 							}
 							#endif
