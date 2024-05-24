@@ -212,7 +212,7 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	_concat2(&myxml, XML_HEADER, "<V id=\"seg_wm_rom_items\"><A>");
 
 	#ifndef ENGLISH_ONLY
-	close_language(); lang_roms = 1;
+	close_language(); lang_roms = true;
 	#endif
 
 	u32 t_count = 0;
@@ -1137,6 +1137,16 @@ scan_roms:
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
 							if(ignore_files && HAS_TITLE_ID && strstr(ignore_files, title_id)) continue;
+
+							#ifdef MOUNT_ROMS
+							#ifndef ENGLISH_ONLY
+							if(scanning_roms)
+							{
+								char *key = strrchr(entry.entry_name.d_name, '/'); if(!key) key = entry.entry_name.d_name;
+								rom_alias(key, templn, param);
+							}
+							#endif
+							#endif
 
 							#ifdef SLAUNCH_FILE
 							if(key < MAX_SLAUNCH_ITEMS) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);

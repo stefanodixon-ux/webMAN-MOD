@@ -560,8 +560,18 @@ static void copy_rom_media(const char *src_path)
 	char *name = get_filename(src_path);
 	if(!name) return;
 
+	char path[MAX_LINE_LEN]; strcpy(path, src_path);
+	char *title = get_filename(path); *title = 0; char *ex = strrchr(++title, '.');
+	#ifndef ENGLISH_ONLY
+	rom_alias(title, title, path); close_language(); 
+	#endif
+	if(*ex == '.') *ex = 0;
+
+	// patch title name in PARAM.SFO of PKGLAUNCH
 	char dst_path[64];
-	char path[MAX_LINE_LEN];
+	sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
+	patch_file(dst_path, title, 0x378, 0x80);
+
 	const char *PS3_GAME[2] = { "/PS3_GAME", ""};
 
 	char *ext  = strrchr(++name, '.');
@@ -600,9 +610,5 @@ static void copy_rom_media(const char *src_path)
 		}
 		*ext = NULL;
 	}
-
-	// patch title name in PARAM.SFO of PKGLAUNCH
-	sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
-	patch_file(dst_path, name, 0x378, 0x80);
 }
 #endif // #ifdef MOUNT_ROMS

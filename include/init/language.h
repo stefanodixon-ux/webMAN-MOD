@@ -1,5 +1,6 @@
 #define LANG_XX			23
 #define LANG_CUSTOM		99
+#define MAX_LEN			192
 
 #ifdef ENGLISH_ONLY
 
@@ -358,9 +359,9 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 		if(lang_roms)
 		{
-			sprintf(lang_path, "%s/LANG_EMUS.TXT", WM_LANG_PATH);
+			sprintf(lang_path, "%s/LANG_ROMS.TXT", WM_LANG_PATH);
 			if(not_exists(lang_path))
-				sprintf(lang_path, "%s/LANG_ROMS.TXT", WM_LANG_PATH);
+				sprintf(lang_path, "%s/LANG_EMUS.TXT", WM_LANG_PATH);
 		}
 		else
 		{
@@ -386,7 +387,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 	}
 
 	int fd = fh;
-
+	
 	do {
 		for(i = 0; i < key_len;)
 		{
@@ -409,7 +410,7 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 					if(c == ']' || lang_pos >= size) break;
 
-					if(copy) label[str_len++] = c;
+					if(copy) {label[str_len++] = c; if(str_len >= MAX_LEN) break;}
 
 					if(c == '[') copy = 1;
 				}
@@ -432,6 +433,84 @@ static bool language(const char *key_name, char *label, const char *default_str)
 
 	return true;
 }
+
+#ifdef MOUNT_ROMS
+static bool rom_alias(const char *key_name, char *label, const char *param)
+{
+	u64 bytes_read = 0;
+	static size_t p = 0, lang_pos = 0, size = 0;
+	u8 c, i, key_len = strlen(key_name);
+
+	u8 do_retry = 1;
+	char buffer[MAX_LINE_LEN];
+
+ retry:
+
+	if(fh == 0)
+	{
+		char lang_path[40];
+
+		sprintf(lang_path, "%s/gamelist.txt", param);
+
+		lang_pos = 0;
+
+		struct CellFsStat buf;
+
+		if(cellFsStat(lang_path, &buf)) return true; size = (size_t)buf.st_size;
+
+		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0)) return false;
+
+		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE;
+	}
+
+	int fd = fh;
+	
+	do {
+		for(i = 0; i < key_len;)
+		{
+			{ GET_NEXT_BYTE }
+
+			if(c != key_name[i]) break; i++;
+
+			if(i == key_len)
+			{
+				if(buffer[p] > ' ') break;
+
+				size_t str_len = 0; u8 copy = 0;
+
+				cellFsReadWithOffset(fd, lang_pos, buffer, CHUNK_SIZE, NULL); p = 0;
+
+				// set value
+				while(lang_pos < size)
+				{
+					{ GET_NEXT_BYTE }
+
+					if(c == ']' || lang_pos >= size) break;
+
+					if(copy) {label[str_len++] = c; if(str_len >= MAX_LEN) break;}
+
+					if(c == '[') copy = 1;
+				}
+
+				if(str_len) label[str_len] = '\0';
+
+				if(str_len < do_retry) goto do_retry;
+
+				return true;
+			}
+		}
+
+	} while(lang_pos < size);
+
+	if(do_retry)
+	{
+		do_retry:
+		cellFsClose(fh); fh = do_retry = 0; goto retry;
+	}
+
+	return true;
+}
+#endif
 
 #undef CHUNK_SIZE
 #undef GET_NEXT_BYTE
