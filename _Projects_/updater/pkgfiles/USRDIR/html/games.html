@@ -53,7 +53,6 @@ body {
 	opacity: 0.96;
 	object-fit: contain;
 }
-
 .carousel_seg_wm_psx_items img.active {
 	width: 600px;
 	height: 600px;
@@ -122,18 +121,25 @@ body {
 
 .InfoText {
 	position: relative;
-	max-width: 500px;
+	max-width: 1000px;
 	margin: auto;
 	top: -88%;
 }
 
-.ItemName, .ItemTitleID{
+.ItemIndex, .ItemName, .ItemTitleID{
 	position: absolute;
 	text-align: center;
-	font-size: 18px;
+	font-size: 36px;
 	color: white;
-	background-color: rgba(0, 0, 0, 0.7);
+	background-color: rgba(0, 0, 0, 0.2);
 	width: 100%;
+}
+
+.ItemIndex {
+	text-align: left;
+	margin-top: -100px;
+	margin-left: -350px;
+	background-color: transparent;
 }
 
 .ItemName {
@@ -141,7 +147,8 @@ body {
 }
 
 .ItemTitleID {
-	margin-top: 750px;
+	margin-top: 770px;
+	font-size: 18px;
 }
 
 .categories {
@@ -214,6 +221,7 @@ body {
 </head>
 <body>
 <div class="InfoText">
+	<div class="ItemIndex" id="itemIndex"></div>
 	<div class="ItemName" id="itemName"></div>
 	<div class="ItemTitleID" id="itemTitleID"></div>
 </div>
@@ -221,9 +229,9 @@ body {
 </div>
 <div class="categories">
 	<div class="arrow left2" onclick="prevImage2()">&#9664;</div>
-	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_psx.png">
-	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_ps2.png">
 	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_ps3.png" class="active2">
+	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_ps2.png">
+	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_psx.png">
 	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_psp.png">
 	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_dvd.png">
 	<div class="arrow right2" onclick="nextImage2()">&#9654;</div>
@@ -305,7 +313,7 @@ function buildCarouselImageURLs(imageData, sectionId) {
 	logDebug("Building carousel image URLs...");
 	var carousel = document.querySelector('.carousel');
 	carousel.innerHTML = '';
-
+	
 	images = [];
 	titles = [];
 	titleIDs = [];
@@ -324,7 +332,8 @@ function buildCarouselImageURLs(imageData, sectionId) {
 		titleIDs.push("");
 		moduleActions.push(""); // Add empty moduleAction for default image
 		carousel.appendChild(defaultImage);
-		document.getElementById('itemName').innerText = 'No items';
+		document.getElementById('itemName').innerText = '';
+		document.getElementById('itemIndex').innerText = 'No items';
 		document.getElementById('itemTitleID').innerText = '';
 		return;
 	}
@@ -387,21 +396,14 @@ function reloadImage(imgElement) {
 	var reloadCount = parseInt(imgElement.getAttribute('data-reload-count'), 10);
 	var currentSrc = imgElement.src;
 
-	if (reloadCount < 1) {
+	if (reloadCount < 2) {
 		logDebug("Reloading image (" + reloadCount + "): " + currentSrc);
 		imgElement.src = '';
 		imgElement.src = currentSrc;
 		imgElement.setAttribute('data-reload-count', reloadCount + 1);
-	} else if (reloadCount < 2) {
-		logDebug("First reload failed. Trying alternate source: psho.me/CoversPS3");
-		var imageName = currentSrc.substring(currentSrc.lastIndexOf('/') + 1);
-		var newSrc = "http://psho.me/CoversPS3/" + imageName;
-		imgElement.src = '';
-		imgElement.src = newSrc;
-		imgElement.setAttribute('data-reload-count', reloadCount + 1);
 	} else {
 		logDebug("Failed to load image after 2 reload attempts. Falling back to default image.");
-		imgElement.src = "http://psho.me/UI/icon_lp_nocover.png";
+		imgElement.src = "http://0/dev_hdd0/tmp/wm_icons/icon_lp_nocover.png";
 	}
 }
 
@@ -429,7 +431,8 @@ function showImage(index, sectionId) {
 	images[nextNextIndex].className = 'next-next';
 	document.getElementById('itemName').innerText = '' + titles[index];
 	document.getElementById('itemTitleID').innerText = '' + titleIDs[index];
-
+	document.getElementById('itemIndex').innerText = (index + 1) + ' / ' + images.length;
+	
 	var carousel = document.querySelector('.carousel');
 	carousel.className = 'carousel carousel_' + sectionId;
 }
@@ -450,13 +453,14 @@ var categoryNames = [
 	"seg_wm_dvd_items"
 ];
 
-function showImage2(index) {
+function refreshImage2(index) {
 	var prevIndex2 = (index > 0) ? index - 1 : images2.length - 1;
 	var nextIndex2 = (index < images2.length - 1) ? index + 1 : 0;
 	var prevPrevIndex2 = (prevIndex2 > 0) ? prevIndex2 - 1 : images2.length - 1;
 	var nextNextIndex2 = (nextIndex2 < images2.length - 1) ? nextIndex2 + 1 : 0;
 
 	for (var i = 0; i < images2.length; i++) {
+		images2[i].style.opacity = (activeCarousel != 'categories') ? 0.6 : 1;
 		images2[i].style.display = 'block'; // Ensure images are displayed
 		images2[i].className = '';
 	}
@@ -466,6 +470,10 @@ function showImage2(index) {
 	images2[nextIndex2].className = 'next2';
 	images2[prevPrevIndex2].className = 'prev-prev2';
 	images2[nextNextIndex2].className = 'next-next2';
+}
+
+function showImage2(index) {
+	refreshImage2(index);
 
 	// Load the new XML section when a category is selected
 	loadXML(categoryNames[index]);
@@ -586,10 +594,13 @@ window.addEventListener('keydown', function(event) {
 	}
 
 	if (event.keyCode === 38) {
+		//Up Arrow Pressed
 		if (activeCarousel === 'categories') {
 			activeCarousel = 'main';
+			refreshImage2(currentImageIndex2);
+			setTimeout(pulseElement, 200);
 			logDebug("Up Arrow Pressed: Activated main carousel");
-		} else if (activeCarousel === 'main') {
+		} else if (debugVisible && activeCarousel === 'main') {
 			var debugDiv = document.querySelector('.debug');
 			if (debugDiv.style.display === 'none' || !debugDiv.style.display) {
 				debugDiv.style.display = 'block';
@@ -600,15 +611,19 @@ window.addEventListener('keydown', function(event) {
 			}
 		}
 	} else if (event.keyCode === 40) {
+		//Down Arrow Pressed
 		activeCarousel = 'categories';
+		refreshImage2(currentImageIndex2);
 		logDebug("Down Arrow Pressed: Activated Categories carousel");
 	} else if (event.keyCode === 37) { 
+		//Left Arrow Pressed
 		if (activeCarousel === 'main') {
 			prevImage();
 		} else if (activeCarousel === 'categories') {
 			prevImage2();
 		}
 	} else if (event.keyCode === 39) { 
+		//Right Arrow Pressed
 		if (activeCarousel === 'main') {
 			nextImage();
 		} else if (activeCarousel === 'categories') {
@@ -618,6 +633,27 @@ window.addEventListener('keydown', function(event) {
 		logDebug("Other key pressed: " + event.keyCode);
 	}
 });
+
+// pulse animation
+function pulseValue(imgElement) {
+	if (imgElement.style.zoom == 1)
+			return 0.995;
+	if (imgElement.style.zoom == 0.995)
+			return 0.99;
+	if (imgElement.style.zoom == 0.99)
+			return 0.996;
+	return 1;
+}
+
+function pulseElement() {
+	if (activeCarousel != 'categories')
+	{
+		images[currentImageIndex].style.zoom = pulseValue(images[currentImageIndex], 0);
+		setTimeout(pulseElement, 200);
+	}
+}
+
+setTimeout(pulseElement, 200);
 </script>
 
 </body>
