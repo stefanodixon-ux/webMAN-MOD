@@ -1,3 +1,8 @@
+60 FPS (3D DOT GAME HEROES USA)
+0
+rock77
+0 0002a6ac 60000000
+#
 Unlimited Health
 0
 crapulecorp

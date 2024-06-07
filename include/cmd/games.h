@@ -7,7 +7,9 @@
  mobile_response:
 		mobile_mode = true; const char *params = param + 10;
 
-		if(not_exists(MOBILE_HTML))
+		if(is_ps3_http)
+			sprintf(param, GAMES_HTML);
+		else if(not_exists(MOBILE_HTML))
 			{sprintf(param, "/index.ps3%s", params); mobile_mode = false;}
 		else if(strstr(param, "?g="))
 			sprintf(param, MOBILE_HTML);

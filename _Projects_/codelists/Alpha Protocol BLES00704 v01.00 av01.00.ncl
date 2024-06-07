@@ -1,3 +1,8 @@
+60FPS (Alpha Protocol)
+0
+rock77
+0 000d78d48 60000000
+#
 Infinite Health Shield
 0
 jgduff1

@@ -540,6 +540,7 @@ int main()
 
 	// copy html
 	sysLv2FsMkdir(XMLHOST_DIR, DMODE);
+	file_copy(APP_USRDIR "/html/games.html",     XMLHOST_DIR "/games.html");
 	file_copy(APP_USRDIR "/html/mobile.html",    XMLHOST_DIR "/mobile.html");
 	file_copy(APP_USRDIR "/html/background.gif", XMLHOST_DIR "/background.gif");
 	file_copy(APP_USRDIR "/html/sman.htm",       XMLHOST_DIR "/sman.htm");

@@ -2,6 +2,26 @@ Also known as
 Sonic World Adventure
 
 #
+Disable shadows
+0
+illusion
+0 00E0464C 38000000
+#
+Disable motion blur
+0
+illusion
+0 00E234E8 38000000
+#
+Disable depth of field
+0
+illusion
+0 00E5D7C4 38000000
+#
+Disable reflection
+0
+illusion
+0 00E1EEF0 38000000
+#
 Max Rings On Gain
 0
 dron_3

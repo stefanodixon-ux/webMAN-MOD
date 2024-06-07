@@ -1,3 +1,9 @@
+Extended FOV
+0
+vFxMz
+0 0139BDF0 3F59999A
+0 0139BEEC 3F59999A
+#
 Memory Infinite Ammo + No Reload
 0
 jgduff1
