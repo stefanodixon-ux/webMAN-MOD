@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>webMAN MOD - PS3 Coverflow</title>
-	<style>
+<style>
 html {
 	top: 100%;
 	position: relative;
@@ -57,6 +57,7 @@ body {
 	width: 600px;
 	height: 600px;
 }
+.carousel_seg_wm_dvd_items img.active,
 .carousel_seg_wm_ps2_items img.active {
 	width: 500px;
 	height: 700px;
@@ -68,16 +69,12 @@ body {
 }
 .carousel_seg_wm_psp_items img.active {
 	width: 450px;
+	height: 500px;
 	margin-left: 75px;
 }
 .carousel_seg_wm_emu_items img.active {
-
-}
-.carousel_seg_wm_dvd_items img.active {
-
-}
-.carousel_seg_wm_settings_items img.active {
-
+	width: 500px;
+	height: 500px;
 }
 .carousel img.prev, .carousel img.next,
 .carousel img.prev-prev, .carousel img.next-next,
@@ -86,15 +83,13 @@ body {
 	display: block;
 	z-index: 0;
 }
-
 .carousel img.prev, .carousel img.next {
 	transform: translateX(-100%) scale(0.85);
 	width: 40%;
 	margin-top: 265px;
-   opacity: 1;
+	opacity: 1;
 	z-index: 1;
 }
-
 .carousel img.next {
 	transform: translateX(100%) scale(0.85);
 	right: -55%;
@@ -102,30 +97,25 @@ body {
 .carousel img.prev {
 	left: -55%;
 }
-
 .carousel img.prev-prev, .carousel img.next-next {
 	transform: translateX(-200%) scale(0.75);
 	width: 30%;
 	margin-top: 300px;
-   opacity: 1;
+	opacity: 1;
 }
-
 .carousel img.next-next {
 	transform: translateX(200%) scale(0.75);
 	right: -93%;
 }
-
 .carousel img.prev-prev {
 	left: -93%;
 }
-
 .InfoText {
 	position: relative;
 	max-width: 1000px;
 	margin: auto;
 	top: -88%;
 }
-
 .ItemIndex, .ItemName, .ItemTitleID{
 	position: absolute;
 	text-align: center;
@@ -134,32 +124,30 @@ body {
 	background-color: rgba(0, 0, 0, 0.2);
 	width: 100%;
 }
-
 .ItemIndex {
 	text-align: left;
 	margin-top: -100px;
 	margin-left: -350px;
 	background-color: transparent;
 }
-
 .ItemName {
 	margin-top: 722px;
 }
-
 .ItemTitleID {
 	margin-top: 770px;
 	font-size: 18px;
 }
-
 .categories {
 	max-width: 128px;
 	top: -103%;
 }
-
 .categories img.active2 {
 	margin-top: 950px;
 }
-
+.categories img.hide {
+	display: hidden;
+	width: 0%;
+}
 .categories img.prev2, .categories img.next2 {
 	transform: translateX(-100%);
 	width: 60%;
@@ -187,7 +175,6 @@ body {
 .categories img.prev-prev2 {
 	left: -180%;
 }
-
 .arrow {
 	position: absolute;
 	margin-top: 1010px;
@@ -203,7 +190,6 @@ body {
 .arrow.right2 {
 	right: -25px;
 }
-
 .jumpbutton {
 	position: absolute;
 	margin-top: 380px;
@@ -225,32 +211,104 @@ body {
 	<div class="ItemName" id="itemName"></div>
 	<div class="ItemTitleID" id="itemTitleID"></div>
 </div>
+<div class="debug">
+	<div class="debugconsole" id="xmlContent2"></div>
+</div>
 <div class="carousel">
 </div>
 <div class="categories">
 	<div class="arrow left2" onclick="prevImage2()">&#9664;</div>
-	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_ps3.png" class="active2">
-	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_ps2.png">
-	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_psx.png">
-	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_psp.png">
-	<img src="http://0/dev_hdd0/tmp/wm_icons/icon_wm_dvd.png">
+	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_ps3.png" class="active2">
+	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_ps2.png">
+	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_psx.png">
+	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_psp.png">
+	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_dvd.png">
+	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_retro.png">
 	<div class="arrow right2" onclick="nextImage2()">&#9654;</div>
 </div>
-<div class="debug">
-	<div class="debugconsole" id="xmlContent2"></div>
-</div>
+<script src="/dev_hdd0/xmlhost/game_plugin/gamelist.js"></script>
 <script>
+const categoryIds = {
+	PS3 : 0,
+	PS2 : 1,
+	PSX : 2,
+	PSP : 3,
+	DVD : 4,
+	EMU : 5
+};
+
+const categoryNames = [
+	"seg_wm_ps3_items",
+	"seg_wm_ps2_items",
+	"seg_wm_psx_items",
+	"seg_wm_psp_items",
+	"seg_wm_dvd_items",
+	"seg_wm_emu_items",
+];
+
 var currentImageIndex = 0;
-var currentImageIndex2 = 0;
+var currentImageIndex2 = categoryIds.PS3;
 var images = [];
-var titles = []; 
+var titles = [];
 var titleIDs = [];
 var moduleActions = []; // Array to store module actions
 var images2 = document.querySelectorAll('.categories img');
+var images2Last = images2.length - 1;
 var activeCarousel = 'main';
 var debugVisible = false;
 
-function loadXML(sectionId) {
+function $(id) {return document.getElementById(id);}
+
+function clearImages() {
+	$('itemName').innerText = 'No items in here';
+	$('itemTitleID').innerText = '';
+	$('itemIndex').innerText = 'No items';
+	if($('jumpbutton-left' ) != null) $('jumpbutton-left').style.display = 'none';
+	if($('jumpbutton-right') != null) $('jumpbutton-right').style.display = 'none';
+	currentImageIndex = 0;
+
+	for(var i = 0; i < images.length; i++)
+	{
+		images[i].style.display = 'none';
+		images[i].src = '';
+		titles[i] = '';
+		titleIDs[i] = '';
+		moduleActions[i] = '';
+	}
+}
+
+// main carousel
+function loadJS(categoryId) {
+	const categoryPaths = [
+		"/PS3ISO",
+		"/PS2ISO",
+		"/PSXISO",
+		"/PSPISO",
+		"/BDISO",
+		"/ROMS"
+	];
+
+	var carouselItems = [];
+	for(var i = 0, n = 0; i < slides.length; i++)
+	{
+		if( (slides[i].url.indexOf(categoryPaths[categoryId]) > 0) || ((categoryId === categoryIds.DVD) && (slides[i].url.indexOf("/DVDISO") > 0)) )
+		{
+			carouselItems[n++] = { icon: slides[i].img, title: slides[i].desc, titleID: "", moduleAction: slides[i].url };
+			logDebug("Matched icon: " + slides[i].img + " with title: " + slides[i].desc + " and moduleAction: " + slides[i].url);
+		}
+	}
+	buildCarouselImageURLs(carouselItems);
+}
+
+function loadXML(categoryId) {
+	clearImages();
+
+	if(typeof slides != "undefined" && categoryId != categoryIds.PS3)
+	{
+		loadJS(categoryId);
+		return;
+	}
+
 	logDebug("Fetching dev_hdd0/xmlhost/game_plugin/mygames.xml...");
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "http://0/dev_hdd0/xmlhost/game_plugin/mygames.xml", true);
@@ -262,15 +320,15 @@ function loadXML(sectionId) {
 				var responseText = xhr.responseText;
 
 				// Extract the specified section
-				var sectionRegex = new RegExp('<V id="' + sectionId + '">([\\s\\S]*?)<\\/V>', 'i');
+				var sectionRegex = new RegExp('<V id="' + categoryNames[categoryId] + '">([\\s\\S]*?)<\\/V>', 'i');
 				var sectionMatch = responseText.match(sectionRegex);
 				if (!sectionMatch) {
-					logDebug(sectionId + " section not found.");
+					logDebug(categoryNames[categoryId] + " section not found.");
 					return;
 				}
 
+				var carouselItems = [];
 				var sectionText = sectionMatch[1];
-				var debugMessages = [];
 				var regexIcon = /<P key="icon">\s*<>\s*([^<]+)\s*<\/>\s*<\/P>/gi;
 				var regexTitle = /<P key="title">\s*<>\s*([^<]+)\s*<\/>\s*<\/P>/gi;
 				var regexModuleAction = /<P key="module_action">\s*<>\s*([^<]+)\s*<\/>\s*<\/P>/gi; // Regex for module_action
@@ -285,22 +343,21 @@ function loadXML(sectionId) {
 						var title = matchesTitle[i].match(/<>\s*([^<]+)\s*<\/>/)[1];
 						var moduleAction = matchesModuleAction[i].match(/<>\s*([^<]+)\s*<\/>/)[1]; // Extract module_action
 						var titleID = iconPath.split('/').pop().replace(/\.(JPG|PNG|PNG)/i, '');
-						debugMessages.push({ icon: iconPath, title: title, titleID: titleID, moduleAction: moduleAction }); // Include moduleAction in debugMessages
+						carouselItems.push({ icon: iconPath, title: title, titleID: titleID, moduleAction: moduleAction }); // Include moduleAction in carouselItems
 						logDebug("Matched icon: " + iconPath + " with title: " + title + " and titleID: " + titleID + " and moduleAction: " + moduleAction);
 					}
 				}
-
-				if (debugMessages.length > 0) {
-					logDebug("Found the following Items in the " + sectionId + " section:");
-					for (var i = 0; i < debugMessages.length; i++) {
-						var message = debugMessages[i];
+				if (carouselItems.length > 0) {
+					logDebug("Found the following Items in the " + categoryNames[categoryId] + " section:");
+					for (var i = 0; i < carouselItems.length; i++) {
+						var message = carouselItems[i];
 						logDebug(message.icon + " - " + message.title + " - " + message.titleID + " - " + message.moduleAction);
 					}
 				} else {
 					logDebug("No paths found.");
 				}
 
-				buildCarouselImageURLs(debugMessages, sectionId);
+				buildCarouselImageURLs(carouselItems);
 			} else {
 				logDebug("Error loading dev_hdd0/xmlhost/game_plugin/mygames.xml: " + xhr.status);
 			}
@@ -309,11 +366,13 @@ function loadXML(sectionId) {
 	xhr.send();
 }
 
-function buildCarouselImageURLs(imageData, sectionId) {
+function buildCarouselImageURLs(imageData) {
 	logDebug("Building carousel image URLs...");
 	var carousel = document.querySelector('.carousel');
 	carousel.innerHTML = '';
-	
+
+	clearImages();
+
 	images = [];
 	titles = [];
 	titleIDs = [];
@@ -321,29 +380,18 @@ function buildCarouselImageURLs(imageData, sectionId) {
 
 	if (imageData.length === 0) {
 		var defaultImage = document.createElement('img');
-		defaultImage.src = "http://0/dev_hdd0/tmp/wm_icons/power.png";
-		defaultImage.className = 'active';
-		defaultImage.style.width = '50px';
-		defaultImage.style.height = '50px';
-		defaultImage.style.marginTop = '300px';
-		defaultImage.style.marginLeft = '275px';
-		images.push(defaultImage);
-		titles.push("No items in here");
-		titleIDs.push("");
-		moduleActions.push(""); // Add empty moduleAction for default image
-		carousel.appendChild(defaultImage);
-		document.getElementById('itemName').innerText = '';
-		document.getElementById('itemIndex').innerText = 'No items';
-		document.getElementById('itemTitleID').innerText = '';
+		$('itemName').innerText = 'No items in here';
+		$('itemIndex').innerText = 'No items';
+		$('itemTitleID').innerText = '';
 		return;
 	}
 
 	for (var i = 0; i < imageData.length; i++) {
 		var data = imageData[i];
-		var fullPath = "http://0" + data.icon;
-		
+		var fullPath = data.icon;
+
 		// Check and replace the image name using indexOf
-		if (fullPath.indexOf("icon_wm_psp.png") !== -1) {
+		if (fullPath.indexOf("icon_wm_psp.png") > 0) {
 			fullPath = fullPath.replace("icon_wm_psp.png", "icon_lp_psp.png");
 		}
 
@@ -358,13 +406,13 @@ function buildCarouselImageURLs(imageData, sectionId) {
 		moduleActions.push(data.moduleAction); // Store moduleAction
 		carousel.appendChild(img);
 		logDebug("Image: " + fullPath + " Name: " + data.title + " ID: " + data.titleID + " Action: " + data.moduleAction);
-		
+
 		// Add event listener to each image
 		img.addEventListener('click', (function(index) {
 			return function() {
 				if (index !== currentImageIndex) {
 					currentImageIndex = index;
-					showImage(index, sectionId);
+					showImage(index);
 				}
 			};
 		})(i));
@@ -372,23 +420,25 @@ function buildCarouselImageURLs(imageData, sectionId) {
 
 	// Add jump buttons
 	var leftJumpButton = document.createElement('div');
+	leftJumpButton.id = 'jumpbutton-left';
 	leftJumpButton.className = 'jumpbutton left';
 	leftJumpButton.innerHTML = '&#9664;';
 	leftJumpButton.onclick = function() {
-		jumpPrevImage(sectionId);
+		jumpPrevImage(categoryId);
 	};
 
 	var rightJumpButton = document.createElement('div');
+	rightJumpButton.id = 'jumpbutton-right';
 	rightJumpButton.className = 'jumpbutton right';
 	rightJumpButton.innerHTML = '&#9654;';
 	rightJumpButton.onclick = function() {
-		jumpNextImage(sectionId);
+		jumpNextImage(categoryId);
 	};
 
 	carousel.appendChild(leftJumpButton);
 	carousel.appendChild(rightJumpButton);
 
-	showImage(0, sectionId);
+	showImage(0);
 }
 
 
@@ -403,65 +453,72 @@ function reloadImage(imgElement) {
 		imgElement.setAttribute('data-reload-count', reloadCount + 1);
 	} else {
 		logDebug("Failed to load image after 2 reload attempts. Falling back to default image.");
-		imgElement.src = "http://0/dev_hdd0/tmp/wm_icons/icon_lp_nocover.png";
+		imgElement.src = "/dev_hdd0/tmp/wm_icons/icon_lp_nocover.png";
 	}
 }
 
+function showImage(index) {
+	var imgCount = images.length;
+	var imgLast = imgCount - 1;
 
-function showImage(index, sectionId) {
-	var prevIndex = (index > 0) ? index - 1 : images.length - 1;
-	var nextIndex = (index < images.length - 1) ? index + 1 : 0;
-	var prevPrevIndex = (prevIndex > 0) ? prevIndex - 1 : images.length - 1;
-	var nextNextIndex = (nextIndex < images.length - 1) ? nextIndex + 1 : 0;
+	if(index < 0 || index > imgLast) index = 0;
+	var nextIndex = (index < imgLast) ? index + 1 : 0;
+	var nextNextIndex = (nextIndex < imgLast) ? nextIndex + 1 : 0;
+	var prevIndex = (index > 0) ? index - 1 : imgLast;
+	var prevPrevIndex = (prevIndex > 0) ? prevIndex - 1 : imgLast;
 
-	for (var i = 0; i < images.length; i++) {
+	for (var i = 1; i < imgCount; i++) {
 		images[i].style.display = 'none';
 		images[i].className = '';
 	}
 
+	var carousel = document.querySelector('.carousel');
+	carousel.className = 'carousel carousel_' + categoryNames[currentImageIndex2];
+
 	images[index].style.display = 'block';
 	images[index].className = 'active';
-	images[prevIndex].style.display = 'block';
-	images[prevIndex].className = 'prev';
-	images[nextIndex].style.display = 'block';
-	images[nextIndex].className = 'next';
-	images[prevPrevIndex].style.display = 'block';
-	images[prevPrevIndex].className = 'prev-prev';
-	images[nextNextIndex].style.display = 'block';
-	images[nextNextIndex].className = 'next-next';
-	document.getElementById('itemName').innerText = '' + titles[index];
-	document.getElementById('itemTitleID').innerText = '' + titleIDs[index];
-	document.getElementById('itemIndex').innerText = (index + 1) + ' / ' + images.length;
-	
-	var carousel = document.querySelector('.carousel');
-	carousel.className = 'carousel carousel_' + sectionId;
+
+	if(imgCount > 1) {
+		images[nextIndex].style.display = 'block';
+		images[nextIndex].className = 'next';
+	}
+	if(imgCount > 2) {
+		images[nextNextIndex].style.display = 'block';
+		images[nextNextIndex].className = 'next-next';
+	}
+	if(imgCount > 3) {
+		images[prevIndex].style.display = 'block';
+		images[prevIndex].className = 'prev';
+	}
+	if(imgCount > 4) {
+		images[prevPrevIndex].style.display = 'block';
+		images[prevPrevIndex].className = 'prev-prev';
+	}
+	$('itemName').innerText = '' + titles[index];
+	$('itemTitleID').innerText = '' + titleIDs[index];
+	$('itemIndex').innerText = (index + 1) + ' / ' + images.length;
 }
 
 function logDebug(message) {
-	var debugDiv = document.getElementById('xmlContent2');
+	if(debugVisible === false) return;
+	var debugDiv = $('xmlContent2');
 	var logMessage = document.createElement('div');
 	logMessage.innerText = message;
 	debugDiv.appendChild(logMessage);
 	debugDiv.scrollTop = debugDiv.scrollHeight;
 }
 
-var categoryNames = [
-	"seg_wm_ps3_items",
-	"seg_wm_ps2_items",
-	"seg_wm_psx_items",
-	"seg_wm_psp_items",
-	"seg_wm_dvd_items"
-];
-
-function refreshImage2(index) {
-	var prevIndex2 = (index > 0) ? index - 1 : images2.length - 1;
-	var nextIndex2 = (index < images2.length - 1) ? index + 1 : 0;
-	var prevPrevIndex2 = (prevIndex2 > 0) ? prevIndex2 - 1 : images2.length - 1;
-	var nextNextIndex2 = (nextIndex2 < images2.length - 1) ? nextIndex2 + 1 : 0;
+// Category Row
+function refreshImage2(categoryId) {
+	var index = categoryId;
+	var nextIndex2 = (index < images2Last) ? index + 1 : 0;
+	var nextNextIndex2 = (nextIndex2 < images2Last) ? nextIndex2 + 1 : 0;
+	var prevIndex2 = (index > 0) ? index - 1 : images2Last;
+	var prevPrevIndex2 = (prevIndex2 > 0) ? prevIndex2 - 1 : images2Last;
 
 	for (var i = 0; i < images2.length; i++) {
-		images2[i].style.opacity = (activeCarousel != 'categories') ? 0.6 : 1;
 		images2[i].style.display = 'block'; // Ensure images are displayed
+		images2[i].style.opacity = (activeCarousel != 'categories') ? 0.6 : 1;
 		images2[i].className = '';
 	}
 
@@ -470,18 +527,21 @@ function refreshImage2(index) {
 	images2[nextIndex2].className = 'next2';
 	images2[prevPrevIndex2].className = 'prev-prev2';
 	images2[nextNextIndex2].className = 'next-next2';
+
+	const hideExtraCategory = index < 3 ? index + 3 : index - 3;
+	images2[hideExtraCategory].className = 'hide';
 }
 
-function showImage2(index) {
-	refreshImage2(index);
+function showImage2(categoryId) {
+	refreshImage2(categoryId);
 
 	// Load the new XML section when a category is selected
-	loadXML(categoryNames[index]);
+	loadXML(categoryId);
 }
 
 function prevImage2() {
 	logDebug("Category Row - Left Arrow key pressed: Navigating to previous category image.");
-	currentImageIndex2 = (currentImageIndex2 > 0) ? currentImageIndex2 - 1 : images2.length - 1;
+	currentImageIndex2 = (currentImageIndex2 > 0) ? currentImageIndex2 - 1 : images2Last;
 	showImage2(currentImageIndex2);
 	var imageUrl = images2[currentImageIndex2].src;
 	var imageName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
@@ -491,17 +551,19 @@ function prevImage2() {
 
 function nextImage2() {
 	logDebug("Category Row - Right Arrow key pressed: Navigating to next category image.");
-	currentImageIndex2 = (currentImageIndex2 < images2.length - 1) ? currentImageIndex2 + 1 : 0;
+	currentImageIndex2 = (currentImageIndex2 < images2Last) ? currentImageIndex2 + 1 : 0;
 	showImage2(currentImageIndex2);
 	var imageUrl = images2[currentImageIndex2].src;
 	var imageName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
 	var categoryName = categoryNames[currentImageIndex2] ? categoryNames[currentImageIndex2] : "Unknown Category";
 	logDebug("Showing category image at index: " + currentImageIndex2 + " - Full Path: " + imageUrl + " Category: " + categoryName + "");
 }
+
+// Main Carousel
 function prevImage() {
 	logDebug("Main Carousel: Left Arrow key pressed: Navigating to Previous item.");
 	currentImageIndex = (currentImageIndex > 0) ? currentImageIndex - 1 : images.length - 1;
-	showImage(currentImageIndex, categoryNames[currentImageIndex2]);
+	showImage(currentImageIndex);
 	var imageUrl = images[currentImageIndex].src;
 	logDebug("Showing image: " + imageUrl + " - Name: " + titles[currentImageIndex] + " - Title ID: " + titleIDs[currentImageIndex] + " - Module Action: " + moduleActions[currentImageIndex]);
 }
@@ -509,30 +571,31 @@ function prevImage() {
 function nextImage() {
 	logDebug("Main Carousel - Right Arrow key pressed: Navigating to Next item.");
 	currentImageIndex = (currentImageIndex < images.length - 1) ? currentImageIndex + 1 : 0;
-	showImage(currentImageIndex, categoryNames[currentImageIndex2]);
+	showImage(currentImageIndex);
 	var imageUrl = images[currentImageIndex].src;
 	logDebug("Showing image: " + imageUrl + " - Name: " + titles[currentImageIndex] + " - Title ID: " + titleIDs[currentImageIndex] + " - Module Action: " + moduleActions[currentImageIndex]);
 }
 
-function jumpPrevImage(sectionId) {
+function jumpPrevImage() {
 	logDebug("Main Carousel: Left Jump button clicked: Navigating 4 steps to the Previous item.");
 	currentImageIndex = (currentImageIndex - 4 + images.length) % images.length;
-	showImage(currentImageIndex, sectionId);
+	showImage(currentImageIndex);
 	var imageUrl = images[currentImageIndex].src;
 	logDebug("Showing image: " + imageUrl + " - Name: " + titles[currentImageIndex] + " - Title ID: " + titleIDs[currentImageIndex]);
 }
 
-function jumpNextImage(sectionId) {
+function jumpNextImage() {
 	logDebug("Main Carousel: Right Jump button clicked: Navigating 4 steps to the Next item.");
 	currentImageIndex = (currentImageIndex + 4) % images.length;
-	showImage(currentImageIndex, sectionId);
+	showImage(currentImageIndex);
 	var imageUrl = images[currentImageIndex].src;
 	logDebug("Showing image: " + imageUrl + " - Name: " + titles[currentImageIndex] + " - Title ID: " + titleIDs[currentImageIndex]);
 }
 
+// main
 window.onload = function() {
 	logDebug("GUI html Parsed and Loaded successfully");
-	loadXML("seg_wm_ps3_items"); // Load the default section on startup
+	loadXML(categoryIds.PS3); // Load the default section on startup
 	showImage2(currentImageIndex2);
 
 	// Add event listeners to category images
@@ -549,7 +612,6 @@ window.onload = function() {
 	window.moveTo(0, screen.height);
 }
 
-
 // Handle global click to detect left mouse button clicks
 window.addEventListener('click', function(event) {
 	if (event.button === 0) { // Left mouse button
@@ -558,7 +620,8 @@ window.addEventListener('click', function(event) {
 			logDebug("Active carousel: main. Selected item: " + titles[currentImageIndex]);
 
 			// Construct the URL from the module action
-			var moduleActionUrl = "http://0" + moduleActions[currentImageIndex];
+			var moduleActionUrl = moduleActions[currentImageIndex];
+			if(moduleActionUrl.indexOf("mount_ps") < 0) moduleActionUrl = "/mount_ps3" + moduleActionUrl;
 			logDebug("Pinging URL: " + moduleActionUrl);
 
 			// Create an invisible iframe to perform the request
@@ -570,30 +633,37 @@ window.addEventListener('click', function(event) {
 			var categoryName = categoryNames[currentImageIndex2] ? categoryNames[currentImageIndex2] : "Unknown Category";
 			logDebug("Active carousel: categories. Selected category: " + categoryName);
 			// Load the new XML section based on the selected category
-			loadXML(categoryNames[currentImageIndex2]);
+			loadXML(currentImageIndex2);
 		}
 	}
 });
 
+// maximize browser window
 window.moveTo(0, 0);
 window.resizeTo(screen.availWidth, screen.availHeight);
 
+// Key pad events listener
 window.addEventListener('keydown', function(event) {
+	const padLeft  = 37;
+	const padUp    = 38;
+	const padRight = 39;
+	const padDown  = 40;
+
 	var keyNames = {
-		37: "(D-Pad Left)",
-		38: "(D-Pad Up)",
-		39: "(D-Pad Right)",
-		40: "(D-Pad Down)"
+		padLeft : "(D-Pad Left)",
+		padUp   : "(D-Pad Up)",
+		padRight: "(D-Pad Right)",
+		padDown : "(D-Pad Down)"
 	};
 
 	var keyName = keyNames[event.keyCode] ? keyNames[event.keyCode] : "";
 	logDebug("Key pressed: event.keycode " + event.keyCode + " " + keyName);
 
-	if ([37, 38, 39, 40].indexOf(event.keyCode) > -1) {
+	if ([padLeft, padUp, padRight, padDown].indexOf(event.keyCode) > -1) {
 		event.preventDefault();
 	}
 
-	if (event.keyCode === 38) {
+	if (event.keyCode === padUp) {
 		//Up Arrow Pressed
 		if (activeCarousel === 'categories') {
 			activeCarousel = 'main';
@@ -610,19 +680,19 @@ window.addEventListener('keydown', function(event) {
 				logDebug("Up Arrow Pressed: Debug panel hidden");
 			}
 		}
-	} else if (event.keyCode === 40) {
+	} else if (event.keyCode === padDown) {
 		//Down Arrow Pressed
 		activeCarousel = 'categories';
 		refreshImage2(currentImageIndex2);
 		logDebug("Down Arrow Pressed: Activated Categories carousel");
-	} else if (event.keyCode === 37) { 
+	} else if (event.keyCode === padLeft) {
 		//Left Arrow Pressed
 		if (activeCarousel === 'main') {
 			prevImage();
 		} else if (activeCarousel === 'categories') {
 			prevImage2();
 		}
-	} else if (event.keyCode === 39) { 
+	} else if (event.keyCode === padRight) {
 		//Right Arrow Pressed
 		if (activeCarousel === 'main') {
 			nextImage();
@@ -646,7 +716,7 @@ function pulseValue(imgElement) {
 }
 
 function pulseElement() {
-	if (activeCarousel != 'categories')
+	if ( (activeCarousel != 'categories') && (images[currentImageIndex] != null) )
 	{
 		images[currentImageIndex].style.zoom = pulseValue(images[currentImageIndex], 0);
 		setTimeout(pulseElement, 200);

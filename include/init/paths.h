@@ -144,7 +144,7 @@
 #define MY_GAMES_XML			HTML_BASE_PATH "/jbgames.xml"
 #endif
 #define GAMES_HTML				HTML_BASE_PATH "/games.html"
-#define MOBILE_HTML				HTML_BASE_PATH "/mobile.html"
+#define MOBILE_HTML				is_ps3_http ? (GAMES_HTML) : (HTML_BASE_PATH "/mobile.html")
 #define GAMELIST_JS				HTML_BASE_PATH "/gamelist.js"
 #define CPU_RSX_CHART			HTML_BASE_PATH "/cpursx.html"
 
