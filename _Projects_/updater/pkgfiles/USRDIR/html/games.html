@@ -224,6 +224,7 @@ body {
 	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_psp.png">
 	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_dvd.png">
 	<img src="/dev_hdd0/tmp/wm_icons/icon_wm_retro.png">
+	<img src="/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/settings.png">
 	<div class="arrow right2" onclick="nextImage2()">&#9654;</div>
 </div>
 <script src="/dev_hdd0/xmlhost/game_plugin/gamelist.js"></script>
@@ -234,7 +235,8 @@ const categoryIds = {
 	PSX : 2,
 	PSP : 3,
 	DVD : 4,
-	EMU : 5
+	EMU : 5,
+	CFG : 6
 };
 
 const categoryNames = [
@@ -244,6 +246,7 @@ const categoryNames = [
 	"seg_wm_psp_items",
 	"seg_wm_dvd_items",
 	"seg_wm_emu_items",
+	"setup"
 ];
 
 var currentImageIndex = 0;
@@ -300,8 +303,26 @@ function loadJS(categoryId) {
 	buildCarouselImageURLs(carouselItems);
 }
 
+function loadCustomLinks() {
+	const customLinks = [
+		{icon: "/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/settings.png", title: "webMAN Setup", titleID: "", moduleAction: "/setup.ps3"},
+		{icon: "/dev_hdd0/tmp/wm_icons/icon_wm_eject.png", title: "Unmount Game", titleID: "", moduleAction: "/mount.ps3/unmount;/popup.ps3?Disc Unmounted&snd=5"},
+		{icon: "/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/refreshxml.png", title: "Refresh XML", titleID: "", moduleAction: "/refresh.ps3"},
+		{icon: "/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/filemanager.png", title: "File Manager", titleID: "", moduleAction: "/"},
+		{icon: "/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/sysinfo.png", title: "PS3 System Temperature", titleID: "", moduleAction: "/cpursx.ps3"}
+	];
+
+	buildCarouselImageURLs(customLinks);
+}
+
 function loadXML(categoryId) {
 	clearImages();
+
+	if(categoryId === categoryIds.CFG)
+	{
+		loadCustomLinks();
+		return;
+	}
 
 	if(typeof slides != "undefined" && categoryId != categoryIds.PS3)
 	{
@@ -511,15 +532,14 @@ function logDebug(message) {
 // Category Row
 function refreshImage2(categoryId) {
 	var index = categoryId;
+	var prevIndex2 = (index > 0) ? index - 1 : images2Last;
 	var nextIndex2 = (index < images2Last) ? index + 1 : 0;
 	var nextNextIndex2 = (nextIndex2 < images2Last) ? nextIndex2 + 1 : 0;
-	var prevIndex2 = (index > 0) ? index - 1 : images2Last;
 	var prevPrevIndex2 = (prevIndex2 > 0) ? prevIndex2 - 1 : images2Last;
 
 	for (var i = 0; i < images2.length; i++) {
-		images2[i].style.display = 'block'; // Ensure images are displayed
 		images2[i].style.opacity = (activeCarousel != 'categories') ? 0.6 : 1;
-		images2[i].className = '';
+		images2[i].className = 'hide';
 	}
 
 	images2[index].className = 'active2';
@@ -527,9 +547,6 @@ function refreshImage2(categoryId) {
 	images2[nextIndex2].className = 'next2';
 	images2[prevPrevIndex2].className = 'prev-prev2';
 	images2[nextNextIndex2].className = 'next-next2';
-
-	const hideExtraCategory = index < 3 ? index + 3 : index - 3;
-	images2[hideExtraCategory].className = 'hide';
 }
 
 function showImage2(categoryId) {
@@ -621,14 +638,25 @@ window.addEventListener('click', function(event) {
 
 			// Construct the URL from the module action
 			var moduleActionUrl = moduleActions[currentImageIndex];
-			if(moduleActionUrl.indexOf("mount_ps") < 0) moduleActionUrl = "/mount_ps3" + moduleActionUrl;
 			logDebug("Pinging URL: " + moduleActionUrl);
 
-			// Create an invisible iframe to perform the request
-			var iframe = document.createElement('iframe');
-			iframe.style.display = 'none';
-			iframe.src = moduleActionUrl;
-			document.body.appendChild(iframe);
+			if (currentImageIndex2 == categoryIds.CFG && moduleActionUrl.indexOf("/mount") < 0)
+			{
+				window.open(moduleActionUrl, "_self");
+			}
+			else
+			{
+				if(moduleActionUrl.indexOf("/mount_ps3") < 0 && moduleActionUrl.indexOf(".ps3") < 0)
+				{
+					moduleActionUrl = "/mount_ps3" + moduleActionUrl;
+				}
+
+				// Create an invisible iframe to perform the request
+				var iframe = document.createElement('iframe');
+				iframe.style.display = 'none';
+				iframe.src = moduleActionUrl;
+				document.body.appendChild(iframe);
+			}
 		} else if (activeCarousel === 'categories') {
 			var categoryName = categoryNames[currentImageIndex2] ? categoryNames[currentImageIndex2] : "Unknown Category";
 			logDebug("Active carousel: categories. Selected category: " + categoryName);
