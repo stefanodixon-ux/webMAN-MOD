@@ -12,6 +12,7 @@
 #endif
 
 #define VIEW_PARAM_SFO
+#define CHECK_PSHOME
 
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION

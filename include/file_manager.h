@@ -11,6 +11,10 @@ static u16 _MAX_LINE_LEN = MAX_LINE_LEN;
 
 #define FILE_MGR_KEY_LEN	10
 
+#ifdef CHECK_PSHOME
+static bool check_pshome = true;
+#endif
+
 static const char *set_file_type(const char *path, const char *filename)
 {
 	if(!wm_icons_exists) return "";
@@ -41,6 +45,10 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	unsigned long long sbytes = sz; u16 flen, slen;
 
 	const u16 maxlen = MAX_PATH_LEN - 1;
+
+	#ifdef CHECK_PSHOME
+	bool is_pshome_app = false;
+	#endif
 
 	//////////////////
 	// build labels //
@@ -259,11 +267,20 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		}
 		#endif
 		else
+		{
+			#ifdef CHECK_PSHOME
+			if(check_pshome && (flen == 9 || flen == 13) && (rDate.year <= 2016))
+			{
+				is_pshome_app = islike(name, "NPIA00005") || islike(name, "NPEA00013") || islike(name, "NPIA00010") || islike(name, "XXXX00071");
+			}
+			#endif
+
 			#ifdef PS2_DISC
 			snprintf(fsize, maxlen, "<a href=\"/mount%s%s\">%s</a>", strstr(name, "[PS2")?".ps2":".ps3", templn, HTML_DIR);
 			#else
 			snprintf(fsize, maxlen, "<a href=\"/mount.ps3%s\">%s</a>", templn, HTML_DIR);
 			#endif
+		}
 
 		// links to home folders
 		if((plen == 18 || plen == 26) && islike(templn, "/dev_bdvd/PS3_GAME"))
@@ -413,16 +430,17 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	// build list entry //
 	//////////////////////
 
-	const u16 dlen = FILE_MGR_KEY_LEN + 21; // key length + length of date column
+	u16 dlen = FILE_MGR_KEY_LEN + 21; // key length + length of date column
 
 	if(wm_icons_exists && *ft) dclass = 'w';
 
 	// -- key
 	*tempstr = sclass; memcpy(tempstr + 1, ename, FILE_MGR_KEY_LEN -1);
 
+	char *temp_str = tempstr + FILE_MGR_KEY_LEN;
+
 	// -- name column
-	flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
-							 "%c%s\" href=\"%s\"%s%c%s</a>",
+	flen = sprintf(temp_str, "%c%s\" href=\"%s\"%s%c%s</a>",
 							 dclass, ft, templn,
 							#ifndef LITE_EDITION
 							 show_img ? " onmouseover=\"s(this,0);\"" : (is_dir && show_icon0) ? " onmouseover=\"s(this,1);\"" :
@@ -434,7 +452,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 							fsize, is_root ? "" : " &nbsp; ");
 
 	// -- reduce features if html code is too long
-	if((FILE_MGR_KEY_LEN + flen + slen + dlen) >= _LINELEN)
+	if((flen + slen + dlen) >= _LINELEN)
 	{
 		// -- remove link from size column
 		if(is_dir) sprintf(fsize, HTML_DIR); else sprintf(fsize, "%llu %s", sz, sf);
@@ -444,24 +462,29 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 								fsize, is_root ? "" : " &nbsp; ");
 
 		// -- rebuild name without link if html code is still too long
-		if((FILE_MGR_KEY_LEN + flen + slen + dlen) >= _LINELEN)
+		if((flen + slen + dlen) >= _LINELEN)
 		{
-			flen = sprintf(tempstr + FILE_MGR_KEY_LEN,
-									 "%c%s\"%c%s</a>",
+			flen = sprintf(temp_str, "%c%s\"%c%s</a>",
 									 dclass, ft, is_param_sfo, name);
 		}
 	}
 
 	// append size column
-	sprintf(tempstr + FILE_MGR_KEY_LEN + flen, "%s", templn);
+	sprintf(temp_str + flen, "%s", templn);
 
 	// append date column (21 bytes)
-	sprintf(tempstr + FILE_MGR_KEY_LEN + flen + slen, "<td>%02i-%s-%04i %02i:%02i",
-														rDate.day, smonth[rDate.month-1], rDate.year, rDate.hour, rDate.minute);
+	#ifdef CHECK_PSHOME
+	if(is_pshome_app)
+	{
+		dlen = sprintf(temp_str + flen, "<td>&lt;PSHOME><td>&#x26a0;&#xfe0f;This data might be important for PSHOME preservation, please <a href='http://psho.me/info'>click here</a> for more info");
+	}
+	else
+	#endif
+		dlen = sprintf(temp_str + flen + slen, "<td>%02i-%s-%04i %02i:%02i", rDate.day, smonth[rDate.month-1], rDate.year, rDate.hour, rDate.minute);
 
 	flen += slen + dlen; // size of key + name column + size column + date column
 
-	if(FILE_MGR_KEY_LEN + flen >= _LINELEN) {flen = 0, *tempstr = NULL;} //ignore file if it is still too long
+	if(flen >= _LINELEN) {flen = 0, *tempstr = NULL;} //ignore file if it is still too long
 
 	return flen;
 }
@@ -657,6 +680,10 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 						islike(param, HDD0_HOME_DIR)    ? 3 : 0;
 
 		const char *action = "/copy.ps3";
+
+		#ifdef CHECK_PSHOME
+		check_pshome = IS(param, "/dev_hdd0/game");
+		#endif
 
 		#ifdef VISUALIZERS
 		if(islike(param, "/dev_hdd0/tmp/wallpaper")) action = "/wallpaper.ps3";
