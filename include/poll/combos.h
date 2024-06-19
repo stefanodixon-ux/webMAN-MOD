@@ -299,7 +299,7 @@
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] == (CELL_PAD_CTRL_R1 | CELL_PAD_CTRL_L1)) n = 11;
 
 						refresh_xml(msg);
-						if(n > 10) reload_xmb();
+						if(n > 10) reload_xmb(0);
 					}
 					#ifdef VIDEO_REC
 					else

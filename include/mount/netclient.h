@@ -273,7 +273,11 @@ static bool is_netsrv_enabled(u8 server_id)
 
 	if(netiso_svrid == server_id) return true;
 
+	#ifdef NET3NET4
 	if(server_id > 4) return false;
+	#else
+	if(server_id > 2) return false;
+	#endif
 
 	s32 net_enabled = 0;
 	xnet()->GetSettingNet_enable(&net_enabled);

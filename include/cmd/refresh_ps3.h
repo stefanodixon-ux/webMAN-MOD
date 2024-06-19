@@ -4,12 +4,7 @@
 		{
 			refresh_xml(param);
 
-			if(IS_ON_XMB && is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
-			{
-				reload_xmb();
-				sys_ppu_thread_sleep(3);
-				if(IS_ON_XMB) launch_app_home_icon(true);
-			}
+			reload_xmb(0);
 
 			#ifdef WM_REQUEST
 			if(!wm_request)

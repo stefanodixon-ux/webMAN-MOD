@@ -1,3 +1,5 @@
+// Explore_Plugin Commands: https://www.psdevwiki.com/ps3/Explore_plugin
+
 #define EXPLORE_CLOSE_ALL   3
 
 static void * getNIDfunc(const char * vsh_module, u32 fnid, s32 offset)
@@ -340,7 +342,7 @@ static void start_xmb_player(const char* column)
 		if(wait_for_abort(2)) return;
 		parse_pad_command("triangle", 0);
 		if(wait_for_abort(2)) return;
-		parse_pad_command("cross", 0);
+		press_accept_button();
 		if(wait_for_abort(2)) return;
 		parse_pad_command("psbtn", 0);
 		sys_ppu_thread_sleep(1);
@@ -349,45 +351,94 @@ static void start_xmb_player(const char* column)
 }
 #endif
 
-#ifdef COBRA_ONLY
-static void reload_xmb(void)
+static void reload_by_logoff(void)
 {
-	if(!cobra_version) return;
+	// /xmb.ps3$focus_category%20user;/pad.ps3?cross|1|cross|5|cross
+	exec_xmb_command("close_all_list");
+	exec_xmb_command2("focus_category %s", "user");
+	press_accept_button();
+	sys_ppu_thread_usleep(1);
+	press_accept_button();
+	sys_ppu_thread_sleep(2);
+	exec_xmb_command("exec_push");
+	sys_ppu_thread_sleep(6);
+	exec_xmb_command2("focus_category %s", "game");
+	exec_xmb_command2("focus_segment_index %s", "xmb_app3");
+}
+
+static int count_items(const char *path)
+{
+	int fd; u32 count = 0;
+	if(cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
+	{
+		CellFsDirectoryEntry entry; size_t read_e;
+
+		while(working)
+		{
+			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
+			if(entry.entry_name.d_name[0] != '.') ++count;
+		}
+		cellFsClosedir(fd);
+	}
+	return count;
+}
+
+#ifdef COBRA_ONLY
+static void reload_xmb(u8 use_app)
+{
 	if(IS_ON_XMB)
 	{
-		mount_unk = EMU_OFF;
-		if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
+		if(!use_app && count_items(HDD0_HOME_DIR) <= 1) use_app = true;
+
+		if(!use_app || !cobra_version)
 		{
-			set_app_home(RELOADXMB_DIR);
-			mount_unk = APP_GAME;
+			reload_by_logoff();
 		}
-		else if(file_exists(RELOADXMB_ISO))
+		else
 		{
-			mount_unk = mount_game(RELOADXMB_ISO, 0); // MOUNT_SILENT
-		}
-		if(mount_unk)
-		{
-			patch_gameboot(0); // None
-			launch_disc(true);
 			mount_unk = EMU_OFF;
+			if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
+			{
+				set_app_home(RELOADXMB_DIR);
+				mount_unk = APP_GAME;
+			}
+			else if(file_exists(RELOADXMB_ISO))
+			{
+				mount_unk = mount_game(RELOADXMB_ISO, 0); // MOUNT_SILENT
+			}
+			if(mount_unk)
+			{
+				patch_gameboot(0); // None
+				launch_disc(true);
+				mount_unk = EMU_OFF;
+			}
 		}
 	}
 }
 #else
-static void reload_xmb(void)
+static void reload_xmb(u8 use_app)
 {
 	// hold L2 to cancel reload xmb
 	if(is_pressed(CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
 
-	if(IS_ON_XMB && is_app_dir(_HDD0_GAME_DIR, "RELOADXMB"))
+	if(IS_ON_XMB)
 	{
-		if(!get_explore_interface()) return;
+		if(!use_app && count_items(HDD0_HOME_DIR) <= 1) use_app = true;
 
-		exec_xmb_command("close_all_list");
-		exec_xmb_command2("focus_category %s", "network");
-		exec_xmb_command2("focus_segment_index %s", "-1");
-		if(wait_for_abort(1)) return;
-		explore_exec_push(0, false);
+		if(!use_app)
+		{
+			reload_by_logoff();
+		}
+		else if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB"))
+		{
+			if(!get_explore_interface()) return;
+
+			exec_xmb_command("close_all_list");
+			exec_xmb_command2("focus_category %s", "network");
+			exec_xmb_command2("focus_segment_index %s", "-1");
+			if(wait_for_abort(1)) return;
+			explore_exec_push(0, false);
+		}
 	}
 }
 #endif

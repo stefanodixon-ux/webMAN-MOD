@@ -73,8 +73,9 @@ static s32 unregister_ldd_controller(void)
 }
 
 static void press_cancel_button(bool do_enter);
+static void press_accept_button(void);
 
-static u8 parse_pad_command(const char *param, u8 is_combo)
+static u8 parse_pad_command(const char *pad_cmds, u8 is_combo)
 {
 	register_ldd_controller();
 
@@ -94,9 +95,21 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 	data.button[CELL_PAD_BTN_OFFSET_SENSOR_Z] = // 0x0200;
 	data.button[CELL_PAD_BTN_OFFSET_SENSOR_G] =    0x0200;
 
+	char *sep, *param; param = (char*)pad_cmds;
+
 	if(IS(param, "off")) unregister_ldd_controller(); else
 	{
 		u32 delay = 70000;
+
+	parse_buttons:
+		sep = strchr(param, '|'); if(sep) *sep = '\0';
+
+		if(sep && BETWEEN('0', *param, '9'))
+		{
+			sys_ppu_thread_sleep(val(param));
+			param = sep + 1;
+			goto parse_buttons;
+		}
 
 		// press button
 		if(strcasestr(param, "psbtn") ) {data.button[0] |= CELL_PAD_CTRL_LDD_PS;}
@@ -176,8 +189,14 @@ static u8 parse_pad_command(const char *param, u8 is_combo)
 			cellPadLddDataInsert(vpad_handle, &data);
 		}
 
-		if(strcasestr(param, "accept")  ) press_cancel_button(1);
+		if(strcasestr(param, "accept")  ) press_accept_button();
 		if(strcasestr(param, "cancel")  ) press_cancel_button(0);
+
+		if(sep)
+		{
+			param = sep + 1;
+			goto parse_buttons;
+		}
 	}
 
 	return CELL_OK;
@@ -196,6 +215,11 @@ static void press_cancel_button(bool do_enter)
 		parse_pad_command("cross", 0);
 
 	unregister_ldd_controller();
+}
+
+static void press_accept_button(void)
+{
+	press_cancel_button(1);
 }
 
 #endif // #ifdef VIRTUAL_PAD

@@ -33,7 +33,7 @@
 
 		refresh_xml(templn); show_scan_progress = false;
 
-		if(strstr(params, "xmb")) reload_xmb();
+		if(strstr(params, "xmb")) reload_xmb(0);
 
 		#ifndef ENGLISH_ONLY
 		char *STR_XMLRF = (char *)templn;
