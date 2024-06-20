@@ -351,19 +351,32 @@ static void start_xmb_player(const char* column)
 }
 #endif
 
-static void reload_by_logoff(void)
+#ifndef LITE_EDITION
+static void reload_by_logout(void)
 {
 	// /xmb.ps3$focus_category%20user;/pad.ps3?cross|1|cross|5|cross
 	exec_xmb_command("close_all_list");
 	exec_xmb_command2("focus_category %s", "user");
+
+	//click on user to logout
+	sys_ppu_thread_usleep(5000);
 	press_accept_button();
-	sys_ppu_thread_usleep(1);
+
+	//click to logout user
+	if(wait_for_abort(1)) return;
 	press_accept_button();
-	sys_ppu_thread_sleep(2);
+
+	//click to login user
+	if(wait_for_abort(4)) return;
 	exec_xmb_command("exec_push");
-	sys_ppu_thread_sleep(6);
-	exec_xmb_command2("focus_category %s", "game");
-	exec_xmb_command2("focus_segment_index %s", "xmb_app3");
+
+	if(webman_config->reloadxmb == 1)
+	{
+		//wait & set focus on webMAN Games
+		if(wait_for_abort(6)) return;
+		exec_xmb_command2("focus_category %s", "game");
+		exec_xmb_command2("focus_segment_index %s", "xmb_app3");
+	}
 }
 
 static int count_items(const char *path)
@@ -382,19 +395,24 @@ static int count_items(const char *path)
 	}
 	return count;
 }
+#endif
 
 #ifdef COBRA_ONLY
 static void reload_xmb(u8 use_app)
 {
 	if(IS_ON_XMB)
 	{
-		if(!use_app && count_items(HDD0_HOME_DIR) <= 1) use_app = true;
+		#ifdef LITE_EDITION
+		if(!cobra_version)
+		#else
+		if((webman_config->reloadxmb == 2) || (!use_app && count_items(HDD0_HOME_DIR) <= 1)) use_app = true;
 
 		if(!use_app || !cobra_version)
 		{
-			reload_by_logoff();
+			reload_by_logout();
 		}
 		else
+		#endif
 		{
 			mount_unk = EMU_OFF;
 			if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
@@ -423,11 +441,11 @@ static void reload_xmb(u8 use_app)
 
 	if(IS_ON_XMB)
 	{
-		if(!use_app && count_items(HDD0_HOME_DIR) <= 1) use_app = true;
+		if((webman_config->reloadxmb == 2) || (!use_app && count_items(HDD0_HOME_DIR) <= 1)) use_app = true;
 
 		if(!use_app)
 		{
-			reload_by_logoff();
+			reload_by_logout();
 		}
 		else if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB"))
 		{

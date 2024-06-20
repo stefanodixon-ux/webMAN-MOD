@@ -279,6 +279,10 @@ static void setup_parse_settings(char *param)
 	webman_config->launchpad_grp = IS_MARKED("lg=1");
 #endif
 
+#ifndef LITE_EDITION
+	webman_config->reloadxmb = get_valuen(param, "rx=", 0, 2);
+#endif
+
 	webman_config->man_speed = 0;
 
 	webman_config->dyn_temp = get_valuen(param, "step=", 40, MAX_TEMPERATURE); //°C
@@ -830,7 +834,20 @@ static void setup_form(char *buffer, char *templn)
 #else
 	add_checkbox_line("apd", STR_AUTO_PLAY, (webman_config->autoplay), buffer);
 #endif
+
+#ifndef LITE_EDITION
+	add_checkbox("sm\"  accesskey=\"G", "sMAN GUI", " • ", (webman_config->sman), buffer);
+
+	// Force RELOADXMB method instead of reload XMB by logout (new default method)
+	concat(buffer, "Reload XMB: <select name=\"rx\">");
+	add_option_item(0, STR_DEFAULT,          (webman_config->reloadxmb == 0), buffer);
+	add_option_item(1, "Logout + Focus wMM", (webman_config->reloadxmb == 1), buffer);
+	add_option_item(2, "RELOADXMB",          (webman_config->reloadxmb == 2), buffer);
+	concat(buffer, "</select><br>");
+#else
 	add_checkbox_line("sm\"  accesskey=\"G", "sMAN GUI", (webman_config->sman), buffer);
+#endif
+
 	#ifdef ARTEMIS_PRX
 	add_checkbox_line("ar", "Artemis", (webman_config->artemis), buffer);
 	#endif

@@ -48,8 +48,9 @@ typedef struct
 	u8 vsh_mc; // allow allocation from vsh memory container (0=none, 1=app, 2=debug, 3=fg, 4=bg)
 	u8 ignore; // 0=none, 1=ignore files/title id listed in /dev_hdd0/tmp/wm_res/wm_ignore.txt
 	u8 root;   // 0=webMAN folder, 1=root
+	u8 reloadxmb; // 0=use logout method, 1=use logout method + focus webMAN Games, 2=use RELOADXMB app
 
-	u8 padding2[11];
+	u8 padding2[10];
 
 	// start up settings
 
