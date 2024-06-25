@@ -1732,12 +1732,13 @@ exit_mount:
 
 	if(!ret && !isDir("/dev_bdvd")) show_error(_path);
 
+mounting_done:
+
 	// -------------------------------------------------------------------------------------
 	// remove syscalls hodling R2 (or prevent remove syscall if path contains [online] tag)
 	// -------------------------------------------------------------------------------------
-
 	#ifdef REMOVE_SYSCALLS
-	else if(mount_unk == EMU_PS3)
+	if(mount_unk == EMU_PS3 || mount_unk == EMU_GAMEI || mount_unk == EMU_MAX)
 	{
 		// check if holding R2 to disable syscalls on PS3
 		bool r2 = is_pressed(CELL_PAD_CTRL_R2);
@@ -1745,8 +1746,6 @@ exit_mount:
 		if((!r2 && otag) || (r2 && !otag)) disable_cfw_syscalls(webman_config->keep_ccapi);
 	}
 	#endif
-
-mounting_done:
 
 #ifdef COBRA_ONLY
 
