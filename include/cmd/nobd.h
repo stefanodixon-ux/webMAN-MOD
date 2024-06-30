@@ -8,7 +8,7 @@
 
 		u8 noBD = 0;
 
-		// noBD LV1 4.75 - 4.88
+		// noBD LV1 4.75 - 4.91
 		if(ALLOW_NOBD)
 		{
 			if(!param[9])

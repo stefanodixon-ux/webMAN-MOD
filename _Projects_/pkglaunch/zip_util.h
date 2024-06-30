@@ -107,6 +107,10 @@ int zip_directory(char* basedir, char* inputdir, const char* output_filename)
 	walk_zip_directory(basedir, inputdir, archive);
 	ret = zip_close(archive);
 
+	char fullname[256];
+	snprintf(fullname, sizeof(fullname), "%s.967295", output_filename);
+	sysLv2FsRename(fullname, output_filename);
+
 	return (ret == ZIP_ER_OK);
 }
 

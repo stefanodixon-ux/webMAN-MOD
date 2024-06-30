@@ -239,7 +239,9 @@ int main(int argc, const char* argv[])
 	if(*param && isdir(path) && strcasestr(param, ".zip") != NULL)
 	{
 		sprintf(url, "Zipping %s", path);
-		DrawString(20, 216+24, url);
+		DrawString(20, 180+24, url);
+		sprintf(url, "To %s", param);
+		DrawString(20, 180+72, url);
 		SetFontAutoCenter(0);
 		tiny3d_Flip();
 
