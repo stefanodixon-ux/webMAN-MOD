@@ -4,10 +4,16 @@
 //   if not exist <path>
 //   if L1
 //   if R1
+//   if login/logout
+//   if xmb/ingame
+//   if count <value>
+//   if copying/mounting
 //   if cobra/nocobra/debug/mamba/ps3hen/dex/firmware x.xx
 //   if titleid <titleid/pattern>
 //   abort if exist <path>
 //   abort if not exist <path>
+
+// while <if-condition>/continue/break/loop (nested loops are not supported)
 
 // :label
 // goto label
@@ -20,10 +26,11 @@
 // swap <path>=<path>
 // ren <path>=<path>
 
+// wait user
 // wait xmb
 // wait <1-9 secs>
-// wait <path>
-// lwait <path>
+// wait <path>  (timeout 5 seconds)
+// lwait <path> (timeout 30 seconds)
 
 // logfile <pah>
 // log <text>
@@ -46,6 +53,8 @@
 #define line	buffer	/* "line", "path" and "buffer" are synonyms */
 #define path	buffer	/* "line", "path" and "buffer" are synonyms */
 #define IS_WEB_COMMAND(line)	(islike(line, "/mount") || strstr(line, ".ps3") || strstr(line, "_ps3") || strstr(line, ".lv1?") || strstr(line, ".lv2?"))
+#define EXIT_LOOP	{mloop = NULL, count = 0; pos = strcasestr(pos + 1, "loop"); if(!pos) break;} // exit loop
+
 
 static void handle_file_request(const char *wm_url)
 {
@@ -65,16 +74,17 @@ static void parse_script(const char *script_file)
 		sys_addr_t sysmem  = sys_mem_allocate(max_size);
 		if(!sysmem) return;
 
-		char *buffer, *pos, *dest = NULL, label[24]; u16 l;
+		char *buffer, *sep, *pos, *mloop = NULL, *dest = NULL, label[24]; u16 l, count = 0;
 		u8 exec_mode = true, enable_db = true, do_else = true; size_t buffer_size;
 		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE); *label = NULL;
 
 	reload_script:
 		buffer = (char*)sysmem; buffer_size = read_file(script_file, buffer, max_size, 0); buffer[buffer_size] = 0;
-		if(*buffer && !strchr(buffer, '\n')) strcat(buffer, "\n");
+		if(*buffer) strcat(buffer + buffer_size, "\n");
 
 		l = 0, script_running = true;
 
+		if(mloop) {buffer = mloop; mloop = NULL;}
 		if(*label) {pos = strcasestr(buffer, label); if(pos) buffer = pos; else *buffer = NULL; *label = NULL;}
 
 		while(*buffer)
@@ -87,6 +97,9 @@ static void parse_script(const char *script_file)
 
 			// process line
 			pos = strchr(line, '\n'); if(!pos) pos = line;
+
+			// process line separator ;
+			if(BETWEEN('A', *line, 'z'))  {sep = strchr(line, ';'); if(sep && (sep < pos)) pos = sep;}
 
 			if(pos)
 			{
@@ -130,13 +143,16 @@ static void parse_script(const char *script_file)
 				else if(exec_mode)
 				{
 					if(*line == '/')               {if(islike(line, "/dev_blind?0")) disable_dev_blind(); else if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
-					if(_islike(line, "goto "))     {snprintf(label, 24, ":%s", line + 5); goto reload_script;} else
+					if(_islike(line, "goto "))     {mloop = NULL, snprintf(label, 24, ":%s", line + 5); goto reload_script;} else
+					if(_islike(line, "loop") || _islike(line, "continue")) goto reload_script; else
+					if(_islike(line, "break"))     {EXIT_LOOP;} else
 					if(_islike(line, "del /"))     {path += 4; check_path_tags(path); char *wildcard = strchr(path, '*'); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
 					if(_islike(line, "md /"))      {path += 3; check_path_tags(path); mkdir_tree(path);} else
 					if(_islike(line, "wait xmb"))  {wait_for_xmb();} else
+					if(_islike(line, "wait user")) {wait_for_user();} else
 					if(_islike(line, "wait /"))    {path += 5; check_path_tags(path); wait_for(path, 5);} else
 					if(_islike(line, "wait "))     {line += 5; sys_ppu_thread_sleep((u8)val(line));} else
-					if(_islike(line, "lwait /"))   {path += 6; check_path_tags(path); wait_for(path, 10);} else
+					if(_islike(line, "lwait /"))   {path += 6; check_path_tags(path); wait_for(path, 30);} else
 					#ifdef PS3MAPI
 					if(_islike(line, "beep"))      {play_sound_id((u8)(line[4]));} else
 					#else
@@ -157,16 +173,27 @@ static void parse_script(const char *script_file)
 					}
 					else
 	#endif
-					if(_islike(line, "if ") || _islike(line, "abort if "))
+					if(_islike(line, "if ") || _islike(line, "abort if ") || _islike(line, "while "))
 					{
+						#define DO_WHILE	6
 						#define ABORT_IF	9
 
-						bool ret = false; u8 ifmode = (_islike(line, "if ")) ? 3 : ABORT_IF; line += ifmode; do_else = true;
+						u8 ifmode;
+						if(_islike(line, "while ")) {ifmode = DO_WHILE, mloop = line;} else ifmode = _islike(line, "if ") ? 3 : ABORT_IF; 
+						line += ifmode;
+
+						bool ret = false; do_else = true;
 
 						if(_islike(line, "exist /"))     {path +=  6; check_path_tags(path); ret = file_exists(path);} else
 						if(_islike(line, "not exist /")) {path += 10; check_path_tags(path); ret = not_exists(path);} else
 						if(_islike(line, "Firmware")) {line += 9; ret = IS(fw_version, line);} else
 						if(_islike(line, "noCobra")) {ret = !cobra_version;} else
+						if(_islike(line, "xmb"))	{ret = IS_ON_XMB;} else
+						if(_islike(line, "ingame")) {ret = IS_INGAME;} else
+						if(_islike(line, "count "))  {if(!count) {count = (u16)val(line + 6); ret = count;} else ret = --count;} else
+						if(_islike(line, "copying")) {ret = copy_in_progress;} else
+						if(_islike(line, "mounting")) {ret = is_mounting;} else
+						if(_islike(line, "log")) {ret = USER_LOGGEDIN; if(strstr(line, "out")) ret = !ret;} else
 						#if defined(PS3MAPI) || defined(DEBUG_MEM)
 						if(_islike(line, "titleid ")){path += 8; get_game_info(); ret = (strlen(_game_TitleID) >= strlen(path)) ? bcompare(_game_TitleID, path, strlen(path), path) : 0;} else
 						#endif
@@ -183,7 +210,19 @@ static void parse_script(const char *script_file)
 							if(_islike(line, "R1")) ret = is_pressed(CELL_PAD_CTRL_R1);
 						}
 
-						if(ifmode == ABORT_IF) {if(ret) break;} else if(!ret) exec_mode = false;
+						if(ifmode == ABORT_IF)
+						{
+							if(ret) break; // about script if true
+						}
+						else if(!ret) // if condition is false
+						{
+							if(ifmode == DO_WHILE)
+							{
+								EXIT_LOOP;
+							}
+							else
+								exec_mode = false; // do else or go to end
+						}
 					}
 				}
 

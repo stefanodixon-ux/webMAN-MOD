@@ -441,6 +441,11 @@ static u8 wait_for_xmb(void)
 	return (t > MAX_WAIT); // true = timeout
 }
 
+static void wait_for_user(void)
+{
+	while(working && !USER_LOGGEDIN) sys_ppu_thread_sleep(3); wait_for_xmb();
+}
+
 static void check_reload(void)
 {
 	from_reboot = file_exists(WM_NOSCAN_FILE);

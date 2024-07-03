@@ -1,5 +1,6 @@
 // Explore_Plugin Commands: https://www.psdevwiki.com/ps3/Explore_plugin
 
+#define USER_LOGGEDIN		(xusers()->GetCurrentUserNumber() > 0)
 #define EXPLORE_CLOSE_ALL   3
 
 static void * getNIDfunc(const char * vsh_module, u32 fnid, s32 offset)
@@ -55,11 +56,14 @@ static sys_addr_t sys_mem_allocate(u32 bytes)
 
 static explore_plugin_interface *get_explore_interface(void)
 {
-	int view = View_Find("explore_plugin");
-	if(view)
-		explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
-	else
-		explore_interface = NULL;
+	explore_interface = NULL;
+
+	if(USER_LOGGEDIN)
+	{
+		int view = View_Find("explore_plugin");
+		if(view)
+			explore_interface = (explore_plugin_interface *)plugin_GetInterface(view, 1);
+	}
 
 	return explore_interface;
 }
@@ -400,7 +404,7 @@ static int count_items(const char *path)
 #ifdef COBRA_ONLY
 static void reload_xmb(u8 use_app)
 {
-	if(IS_ON_XMB)
+	if(IS_ON_XMB && USER_LOGGEDIN)
 	{
 		#ifdef LITE_EDITION
 		if(!cobra_version)
@@ -439,7 +443,7 @@ static void reload_xmb(u8 use_app)
 	// hold L2 to cancel reload xmb
 	if(is_pressed(CELL_PAD_CTRL_L2)) return; // hold L2 to cancel reload xmb
 
-	if(IS_ON_XMB)
+	if(IS_ON_XMB && USER_LOGGEDIN)
 	{
 		if((webman_config->reloadxmb == 2) || (!use_app && count_items(HDD0_HOME_DIR) <= 1)) use_app = true;
 

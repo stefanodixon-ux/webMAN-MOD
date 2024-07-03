@@ -186,9 +186,10 @@ static void start_www(u64 conn_s_p)
 			#endif
 
 			#ifdef PLAY_MUSIC
-			if(wait_for_abort(1)) sys_ppu_thread_exit(0);
-			if(webman_config->music)
+			if(webman_config->music && USER_LOGGEDIN)
 			{
+				if(wait_for_abort(1)) sys_ppu_thread_exit(0);
+
 				bool is_video = (webman_config->music == 2);
 				sprintf(templn, "Starting %s...\n"
 								"Press O to abort",
