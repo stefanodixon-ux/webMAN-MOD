@@ -253,18 +253,19 @@ static void mkdirs(char *param)
 
 	cellFsMkdir(TMP_DIR, DMODE);
 	cellFsMkdir(WMTMP, DMODE);
+	cellFsMkdir("/dev_hdd0/exdata", DMODE);
 	cellFsMkdir("/dev_hdd0/packages", DMODE);
-	//cellFsMkdir("/dev_hdd0/GAMES",  DMODE);
-	//cellFsMkdir("/dev_hdd0/PS3ISO", DMODE);
-	//cellFsMkdir("/dev_hdd0/DVDISO", DMODE);
-	//cellFsMkdir("/dev_hdd0/BDISO",  DMODE);
-	//cellFsMkdir("/dev_hdd0/PS2ISO", DMODE);
-	//cellFsMkdir("/dev_hdd0/PSXISO", DMODE);
-	//cellFsMkdir("/dev_hdd0/PSPISO", DMODE);
+	//cellFsMkdir("/dev_hdd0/GAMES",  DMODE); //paths[0]
+	//cellFsMkdir("/dev_hdd0/PS3ISO", DMODE); //paths[2]
+	//cellFsMkdir("/dev_hdd0/BDISO",  DMODE); //paths[3]
+	//cellFsMkdir("/dev_hdd0/DVDISO", DMODE); //paths[4]
+	//cellFsMkdir("/dev_hdd0/PS2ISO", DMODE); //paths[5]
+	//cellFsMkdir("/dev_hdd0/PSXISO", DMODE); //paths[6]
+	//cellFsMkdir("/dev_hdd0/PSPISO", DMODE); //paths[8]
 	#ifdef MOUNT_ROMS
 	cellFsMkdir("/dev_hdd0/ROMS", DMODE);
 	#endif
-
+		
 	sprintf(param, "/dev_hdd0");
 	for(u8 i = 0; i < 9; i++)
 	{
