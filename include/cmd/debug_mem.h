@@ -6,6 +6,7 @@
 		// /dump.ps3?rsx
 		// /dump.ps3?mem
 		// /dump.ps3?full
+		// /dump.ps3?flash
 		// /dump.ps3?<start-address>
 		// /dump.ps3?<start-address>&size=<mb>
 
