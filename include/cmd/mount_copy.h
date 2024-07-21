@@ -91,10 +91,17 @@
 			}
 			check_path_alias(params);
 
+
+			// /mount.ps3/dev_hdd0&name=CELL_FS_UTILITY:HDD0&fs=CELL_FS_UFS
+			// /mount.ps3/dev_hdd1&name=CELL_FS_UTILITY:HDD1
+			// /mount.ps3/dev_flash&name=CELL_FS_IOS:BUILTIN_FLSH1
+			// /mount.ps3/dev_flash2&name=CELL_FS_IOS:BUILTIN_FLSH2
+			// /mount.ps3/dev_flash3&name=CELL_FS_IOS:BUILTIN_FLSH3
+
 			// /mount.ps3/<dev_path>&name=<device-name>&fs=<file-system>
 			const char *dev_path = templn;
 			char *dev_name = strstr(dev_path, "&name="); if(dev_name) {*dev_name = 0, dev_name += 6;}
-			char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 3;} else fs = (char*)"CELL_FS_FAT";
+			char *fs = strstr(dev_path, "&fs="); if(fs) {*fs = 0, fs += 4;} else fs = (char*)"CELL_FS_FAT";
 
 			get_flag(dev_path, "?emu=");
 			get_flag(dev_path, "?random=");
