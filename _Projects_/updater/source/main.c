@@ -214,16 +214,22 @@ bool is_cobra(void)
 {
 	bool ret = false;
 
-	if(is_disabled("/dev_blind/sys/stage2_disabled.bin", "/dev_blind/sys/stage2.bin")) return true;
+	if(is_disabled("/dev_blind/sys/stage2.cex.bak", "/dev_blind/sys/stage2.cex")) ret = true;
+	if(is_disabled("/dev_blind/sys/stage2.dex.bak", "/dev_blind/sys/stage2.dex")) ret = true;
 	if(is_disabled("/dev_blind/sys/stage2.bin.bak", "/dev_blind/sys/stage2.bin")) return true;
-	if(is_disabled("/dev_blind/habib/cobra/stage2_disabled.cex", "/dev_blind/habib/cobra/stage2.cex")) return true;
-
+	if(is_disabled("/dev_blind/sys/stage2_disabled.bin", "/dev_blind/sys/stage2.bin")) return true;
 	if(is_disabled("/dev_blind/rebug/cobra/stage2.cex.bak", "/dev_blind/rebug/cobra/stage2.cex")) ret = true;
 	if(is_disabled("/dev_blind/rebug/cobra/stage2.dex.bak", "/dev_blind/rebug/cobra/stage2.dex")) ret = true;
+	if(is_disabled("/dev_blind/habib/cobra/stage2_disabled.cex", "/dev_blind/habib/cobra/stage2.cex")) return true;
+
+	if(ret) return true;
 
 	if(file_exists("/dev_flash/sys/stage2.bin")) return true;
-	if(file_exists(HDDROOT_DIR "/boot_plugins.txt")) return true;
+	if(file_exists("/dev_flash/sys/stage2.cex")) return true;
+	if(file_exists("/dev_flash/sys/stage2.dex")) return true;
+
 	if(file_exists("/dev_flash/rebug/cobra")) return true;
+	if(file_exists(HDDROOT_DIR "/boot_plugins.txt")) return true;
 
 	if (is_mamba()) return false;
 
