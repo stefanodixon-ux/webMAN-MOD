@@ -75,6 +75,14 @@
 	}
 	#endif // #ifdef PKG_LAUNCHER
 
+	struct CellFsStat st;
+	if(cellFsStat(_path, &st) == CELL_FS_SUCCEEDED && !extcasecmp(_path, ".sprx", 5))
+	{
+		int uslot = get_free_slot();
+		if ( uslot ) {system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_LOAD_VSH_PLUGIN, (u64)uslot, (u64)(u32)_path, NULL, 0);}
+		goto mounting_done;
+	}
+
 	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
 		ret = isDir(_path);

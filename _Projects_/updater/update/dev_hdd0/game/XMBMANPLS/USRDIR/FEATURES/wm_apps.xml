@@ -4,6 +4,16 @@
 			<T key="inc">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
+			<T key="menu01">
+				<P key="icon_rsc"><>tex_album_icon</></P>
+				<P key="title"><>XMB MODs</></P>
+				<P key="child"><>segment</></P>
+			</T>
+			<T key="menu02">
+				<P key="icon_rsc"><>tex_album_icon</></P>
+				<P key="title"><>Custom Firmware MODs</></P>
+				<P key="child"><>segment</></P>
+			</T>
 			<T key="app001" include="inc">
 				<P key="title"><>prepISO 1.33</></P>
 				<P key="info"><>0.9 MB</></P>
@@ -45,31 +55,49 @@
 				<P key="info"><>24 MB</></P>
 			</T>
 			<T key="app011" include="inc">
+				<P key="title"><>Simple File Manager MOD</></P>
+				<P key="info"><>1.1 MB</></P>
+			</T>
+			<T key="app012" include="inc">
 				<P key="title"><>Movian M7</></P>
 				<P key="info"><>10.7 MB</></P>
 			</T>
-			<T key="app012" include="inc">
+			<T key="app013" include="inc">
 				<P key="title"><>Apollo Save Tool</></P>
 				<P key="info"><>5.0 MB</></P>
 			</T>
-			<T key="app013" include="inc">
+			<T key="app014" include="inc">
 				<P key="title"><>Artemis GUI [Cheats]</></P>
 				<P key="info"><>6.4 MB</></P>
 			</T>
-			<T key="app014" include="inc">
+			<T key="app015" include="inc">
+				<P key="title"><>PKGi</></P>
+				<P key="info"><>1.6 MB</></P>
+			</T>
+			<T key="app016" include="inc">
+				<P key="title"><>PS3 ezRemote Client</></P>
+				<P key="info"><>25.0 MB</></P>
+			</T>
+			<T key="app017" include="inc">
 				<P key="title"><>Ultimate Toolbox v2.03 FULL 4.84-4.88</></P>
 				<P key="info"><>482 MB</></P>
 			</T>
-			<T key="app015" include="inc">
+			<T key="app018" include="inc">
 				<P key="title"><>Ultimate Toolbox v2.03 FULL 4.89-4.91</></P>
 				<P key="info"><>484 MB</></P>
 			</T>
-			<T key="app016" include="inc">
+			<T key="app019" include="inc">
+				<P key="title"><>webMAN MOD Loader from XMB</></P>
+				<P key="info"><>64 KB</></P>
+			</T>
+			<T key="app020" include="inc">
 				<P key="title"><>webMAN MOD Installer</></P>
-				<P key="info"><>13.8 MB</></P>
+				<P key="info"><>13.6 MB</></P>
 			</T>
 		</A>
 		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="menu01" attr="menu01" src="#seg_mod_xmb"/><!-- XMD MOD -->
+			<Q class="type:x-xmb/folder-pixmap" key="menu02" attr="menu02" src="#seg_mod_cfw"/><!-- CFW MOD -->
 			<Q class="type:x-xmb/folder-pixmap" key="app001" attr="app001" src="#app001_item"/><!-- prepISO -->
 			<Q class="type:x-xmb/folder-pixmap" key="app002" attr="app002" src="#app002_item"/><!-- PS2 CONFIG Database -->
 			<Q class="type:x-xmb/folder-pixmap" key="app003" attr="app003" src="#app003_item"/><!-- PS2 Classics Launcher -->
@@ -80,19 +108,23 @@
 			<Q class="type:x-xmb/folder-pixmap" key="app008" attr="app008" src="#app008_item"/><!-- RetroArch CE -->
 			<Q class="type:x-xmb/folder-pixmap" key="app009" attr="app009" src="#app009_item"/><!-- multiMAN -->
 			<Q class="type:x-xmb/folder-pixmap" key="app010" attr="app010" src="#app010_item"/><!-- IRISMAN -->
-			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_item"/><!-- Movian -->
-			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/><!-- Apollo Save Tool -->
-			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/><!-- Artemis GUI [Cheats] -->
-			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/><!-- Ultimate Toolbox v2.03 FULL 4.84-4.88-->
-			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.91-->
-			<Q class="type:x-xmb/folder-pixmap" key="app016" attr="app016" src="#app016_item"/><!-- webMAN MOD Installer -->
+			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_item"/><!-- Simple File Manager MOD -->
+			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/><!-- Movian -->
+			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/><!-- Apollo Save Tool -->
+			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/><!-- Artemis GUI [Cheats] -->
+			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/><!-- PKGi -->
+			<Q class="type:x-xmb/folder-pixmap" key="app016" attr="app016" src="#app016_item"/><!-- PS3 ezRemote Client -->
+			<Q class="type:x-xmb/folder-pixmap" key="app017" attr="app017" src="#app017_item"/><!-- Ultimate Toolbox v2.03 FULL 4.84-4.88-->
+			<Q class="type:x-xmb/folder-pixmap" key="app018" attr="app018" src="#app018_item"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.91-->
+			<Q class="type:x-xmb/folder-pixmap" key="app019" attr="app019" src="#app019_item"/><!-- Load webMAN MOD -->
+			<Q class="type:x-xmb/folder-pixmap" key="app020" attr="app020" src="#app020_item"/><!-- webMAN MOD Installer -->
 		</I>
 	</V>
 
 	<!-- prepISO -->
 	<V id="app001_item">
 		<A>
-			<T key="app001_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/prepISO_1.33.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/prepISO_1.33.pkg</></P>
@@ -101,15 +133,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app001_link" attr="app001_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- PS2 CONFIG Database -->
 	<V id="app002_item">
 		<A>
-			<T key="app002_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PS2CONFIG.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PS2CONFIG.pkg</></P>
@@ -118,15 +148,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app002_link" attr="app002_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- PS2 Classics Launcher -->
 	<V id="app003_item">
 		<A>
-			<T key="app003_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PS2_Classics_Launcher.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PS2_Classics_Launcher.pkg</></P>
@@ -135,15 +163,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app003_link" attr="app003_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- PSP Minis Launcher -->
 	<V id="app004_item">
 		<A>
-			<T key="app004_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PSP_Minis_Launcher.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PSP_Minis_Launcher.pkg</></P>
@@ -152,15 +178,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app004_link" attr="app004_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- PSP Remasters Launcher -->
 	<V id="app005_item">
 		<A>
-			<T key="app005_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PSP_Remasters_Launcher.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/PSP_Remasters_Launcher.pkg</></P>
@@ -169,15 +193,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app005_link" attr="app005_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- PS3 Covers Pack -->
 	<V id="app006_item">
 		<A>
-			<T key="app006_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS0000000000.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS0000000000.pkg</></P>
@@ -186,15 +208,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app006_link" attr="app006_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- PSX & PS2 Covers Pack -->
 	<V id="app007_item">
 		<A>
-			<T key="app007_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS00000RETRO.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS00000RETRO.pkg</></P>
@@ -203,15 +223,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app007_link" attr="app007_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- RetroArch CE -->
 	<V id="app008_item">
 		<A>
-			<T key="app008_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_CE.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/RetroArch_CE/RetroArch_CE.pkg</></P>
@@ -220,15 +238,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app008_link" attr="app008_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- multiMAN -->
 	<V id="app009_item">
 		<A>
-			<T key="app009_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/multiMAN.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/multiMAN.pkg</></P>
@@ -237,15 +253,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app009_link" attr="app009_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- IRISMAN -->
 	<V id="app010_item">
 		<A>
-			<T key="app010_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/IRISMAN/releases/download/4.91/IRISMAN_4.91.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/IRISMAN/releases/download/4.91/IRISMAN_4.91.pkg</></P>
@@ -254,15 +268,28 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app010_link" attr="app010_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<!-- Simple File Manager -->
+	<V id="app011_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/fm_psx/releases/download/0.10/Simple_File_Manager_MOD_0.10.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/fm_psx/releases/download/0.10/Simple_File_Manager_MOD_0.10.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-PS3SFM001_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- Movian -->
-	<V id="app011_item">
+	<V id="app012_item">
 		<A>
-			<T key="app011_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/movianM7-deank-playstation3.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/movianM7-deank-playstation3.pkg</></P>
@@ -271,32 +298,28 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app011_link" attr="app011_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- Apollo Save Tool -->
-	<V id="app012_item">
+	<V id="app013_item">
 		<A>
-			<T key="app012_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/bucanero/apollo-ps3/releases/download/v2.0.0/apollo-ps3.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/bucanero/apollo-ps3/releases/download/v2.0.0/apollo-ps3.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/apollo-ps3.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/apollo-ps3.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-NP0APOLLO_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app012_link" attr="app012_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- Artemis GUI [Cheats] -->
-	<V id="app013_item">
+	<V id="app014_item">
 		<A>
-			<T key="app013_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/ArtemisPS3-GUI.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/ArtemisPS3-GUI.pkg</></P>
@@ -305,15 +328,43 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app013_link" attr="app013_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<!-- PKGi -->
+	<V id="app015_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/pkgi-ps3.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/pkgi-ps3.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-NP00PKGI3_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<!-- PS3 ezRemote Client -->
+	<V id="app016_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/ps3-ezremote-client.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/ps3-ezremote-client.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>UP0001-RMTC00001_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- Ultimate Toolbox v2.03 FULL -->
-	<V id="app014_item">
+	<V id="app017_item">
 		<A>
-			<T key="app014_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_v2.03_FULL_version.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_v2.03_FULL_version.pkg</></P>
@@ -322,15 +373,13 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app014_link" attr="app014_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<!-- Ultimate Toolbox v2.03 FULL 4.89-4.91 -->
-	<V id="app015_item">
+	<V id="app018_item">
 		<A>
-			<T key="app015_link">
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_for_4.89-4.91_BETA.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/Ultimate_Toolbox_for_4.89-4.91_BETA.pkg</></P>
@@ -339,15 +388,28 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
  			</T>
 		</A>
-		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app015_link" attr="app015_link"/>
-		</I>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<!-- webMAN MOD Installer -->
-	<V id="app016_item">
+	<!-- Load webMAN MOD -->
+	<V id="app019_item">
 		<A>
-			<T key="app016_link">
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Launchers/load_wmm.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Launchers/load_wmm.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>EP0001-LOADWMMOD_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+	
+	<!-- webMAN MOD Installer -->
+	<V id="app020_item">
+		<A>
+			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/webMAN_MOD_1.47.46_Installer.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/webMAN-MOD/releases/download/1.47.46/webMAN_MOD_1.47.46_Installer.pkg</></P>
@@ -356,8 +418,375 @@
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
  			</T>
 		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="seg_mod_cfw">
 		<I>
-			<Item class="type:x-xmb/xmlnpsignup" key="app016_link" attr="app016_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="pkg_dev_blind"	src="#seg_toggle_dev_blind"/>
+			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_mod_items"/>
 		</I>
+	</V>
+
+	<V id="seg_mod_items">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+			<T key="mod001" include="inc">
+				<P key="title"><>Install webMAN LaunchPad for 4.91</></P>
+				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod002" include="inc">
+				<P key="title"><>FREE 4MB in dev_flash</></P>
+				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod003" include="inc">
+				<P key="title"><>Custom Firmware Tools menu MOD for CFW Evilnat 4.91.2</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod004" include="inc">
+				<P key="title"><>Package Manager MOD for CFW Evilnat 4.91.2</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod005" include="inc">
+				<P key="title"><>Package Manager MOD for CFW Evilnat 4.91.2 + Stores</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod006" include="inc">
+				<P key="title"><>4.91.2 Evilnat PEX BETA9 to BETA10</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod007" include="inc">
+				<P key="title"><>4.91.2 Evilnat PEX BETA8 to BETA10</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod008" include="inc">
+				<P key="title"><>Extended Download + Icons</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod001" attr="mod001" src="#mod001_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod002" attr="mod002" src="#mod002_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod003" attr="mod003" src="#mod003_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod004" attr="mod004" src="#mod004_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod005" attr="mod005" src="#mod005_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod006" attr="mod006" src="#mod006_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod007" attr="mod007" src="#mod007_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod008" attr="mod008" src="#mod008_item"/>
+		</I>
+	</V>
+
+	<V id="seg_toggle_dev_blind">
+		<A>
+			<T key="webman_devblind">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/dev_blind.png</></P>
+				<P key="title"><>Enable /dev_blind</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+				<P key="module_action"><>/popup.ps3?/dev_blind+enabled;/dev_blind</></P>
+			</T>
+		</A>
+		<I><I class="type:x-xmb/module-action" key="webman_devblind" attr="webman_devblind"/></I>
+	</V>
+
+	<V id="mod001_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/webMAN_LaunchPad_491_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/webMAN_LaunchPad_491_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod002_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_FREE_4MB_in_dev_flash.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_FREE_4MB_in_dev_flash.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod003_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Custom_Firmware_Tools_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Custom_Firmware_Tools_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod004_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Package_Manager_MOD_with_external_bubbles_99download_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Package_Manager_MOD_with_external_bubbles_99download_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod005_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Package_Manager_MOD_with_stores_external_bubbles_99download_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Package_Manager_MOD_with_stores_external_bubbles_99download_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod006_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod007_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod008_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="seg_mod_xmb">
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_xmb_items"/>
+		</I>
+	</V>
+
+	<V id="seg_xmb_items">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+			<T key="xmb001" include="inc">
+				<P key="title"><>Coldboot Sounds</></P>
+				<P key="info"><>System Startup sounds</></P>
+			</T>
+			<T key="xmb002" include="inc">
+				<P key="title"><>XMB Waves</></P>
+				<P key="info"><>Custom lines.qrc</></P>
+			</T>
+			<T key="xmb003" include="inc">
+				<P key="title"><>Multi Gameboot 4.89-4.91</></P>
+				<P key="info"><>ROMS Gameboot animations and sounds</></P>
+			</T>
+			<T key="xmb004" include="inc">
+				<P key="title"><>Multi Gameboot 4.82-4.88</></P>
+				<P key="info"><>ROMS Gameboot animations and sounds</></P>
+			</T>
+			<T key="xmb005" include="inc">
+				<P key="title"><>Impose Menu 4.89-4.91</></P>
+				<P key="info"><>Custom PS menu modifications</></P>
+			</T>
+			<T key="xmb006" include="inc">
+				<P key="title"><>Impose Menu 4.82-4.88</></P>
+				<P key="info"><>Custom PS menu modifications</></P>
+			</T>
+			<T key="xmb007" include="inc">
+				<P key="title"><>PSN Icons</></P>
+				<P key="info"><>Custom Icons for PSN column on XMB</></P>
+			</T>
+			<T key="xmb008" include="inc">
+				<P key="title"><>Earths</></P>
+				<P key="info"><>Custom Earth Visualizations for XMB Media Player</></P>
+			</T>
+			<T key="xmb009" include="inc">
+				<P key="title"><>Canyons</></P>
+				<P key="info"><>Custom Canyon Visualizations for XMB Media Player</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb001" attr="xmb001" src="#xmb001_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb002" attr="xmb002" src="#xmb002_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb003" attr="xmb003" src="#xmb003_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb004" attr="xmb004" src="#xmb004_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb005" attr="xmb005" src="#xmb005_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb006" attr="xmb006" src="#xmb006_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb007" attr="xmb007" src="#xmb007_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb008" attr="xmb008" src="#xmb008_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb009" attr="xmb009" src="#xmb009_item"/>
+		</I>
+	</V>
+
+	<V id="xmb001_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_coldboot_sounds.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_coldboot_sounds.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="xmb002_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_lines.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_lines.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="xmb003_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_multi_gameboot_req_dev_blind_enabled_for_4.89-4.91.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_multi_gameboot_req_dev_blind_enabled_for_4.89-4.91.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="xmb004_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_multi_gameboot_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_multi_gameboot_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="xmb005_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_impose_for_4.89-4.91.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_impose_for_4.89-4.91.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+	
+	<V id="xmb006_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_impose.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_impose.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="xmb007_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_psn_icons.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_xmb_psn_icons.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="xmb008_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_media_player_earths.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_media_player_earths.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="xmb009_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_media_player_canyons.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/XMB_Randomizers/install_media_player_canyons.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 </X>
