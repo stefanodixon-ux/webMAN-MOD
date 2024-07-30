@@ -433,6 +433,14 @@
 			<T key="inc">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
+			<T key="mod00A" include="inc">
+				<P key="title"><>PSN Login Blocker</></P>
+				<P key="info"><>CFW Only or HEN. Blocks Log Into PSN with CFW Syscalls Enabled</></P>
+			</T>
+			<T key="mod00B" include="inc">
+				<P key="title"><>Install ps3-updatelist.txt</></P>
+				<P key="info"><>CFW or HEN. Blocks OFW updates & lets log into PSN from older FW versions</></P>
+			</T>
 			<T key="mod001" include="inc">
 				<P key="title"><>Install webMAN LaunchPad for 4.91</></P>
 				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
@@ -467,6 +475,8 @@
 			</T>
 		</A>
 		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod00A" attr="mod00A" src="#mod00A_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod00B" attr="mod00B" src="#mod00B_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod001" attr="mod001" src="#mod001_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod002" attr="mod002" src="#mod002_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod003" attr="mod003" src="#mod003_item"/>
@@ -489,6 +499,34 @@
 			</T>
 		</A>
 		<I><I class="type:x-xmb/module-action" key="webman_devblind" attr="webman_devblind"/></I>
+	</V>
+
+	<V id="mod00A_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/install_custom_npsignin_plugin.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/install_custom_npsignin_plugin.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>EP0001-UPDWEBMOD_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod00B_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/install_ps3-updatelist.txt.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/install_ps3-updatelist.txt.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
 	<V id="mod001_item">
