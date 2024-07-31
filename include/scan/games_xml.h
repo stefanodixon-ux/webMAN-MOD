@@ -934,7 +934,7 @@ scan_roms:
 			if(is_net && (ns<0)) break;
 			#endif
 
-			bool ls; u8 li, subfolder; li=subfolder=0; ls=false; // single letter folder
+			bool ls; u8 li, subfolder; li = subfolder = 0; ls=false; // single letter folder
 
 		subfolder_letter_xml:
 			subfolder = 0; if(all_profiles) uprofile = 1; else uprofile = profile;
@@ -1626,12 +1626,22 @@ static void refresh_xml(char *msg)
 		pad_data = pad_read();
 		if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_L3) || show_persistent_popup || show_scan_progress)
 		{
-			snprintf(msg, 200, "%s:\n %'i %s", STR_SCAN2, games_found, STR_GAMES);
+#ifndef LITE_EDITION
+			if(webman_config->lang > 6)
+				snprintf(msg, 200, "%s:\n%s - %'i", STR_SCAN2, STR_GAMES, games_found);
+			else
+#endif
+				snprintf(msg, 200, "%s:\n %'i %s", STR_SCAN2, games_found, STR_GAMES);
 			show_msg_with_icon(ICON_WAIT, msg);
 		}
 	}
 
-	sprintf(msg, "%s XML%s: OK\n%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
+#ifndef LITE_EDITION
+	if(webman_config->lang > 6)
+		sprintf(msg, "%s XML%s: OK\n%s - %'i ", STR_REFRESH, SUFIX2(profile), STR_GAMES, games_found);
+	else
+#endif
+		sprintf(msg, "%s XML%s: OK\n%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
 	show_msg_with_icon(ICON_GAME, msg);
 	if(!webman_config->nobeep)
 		play_sound_id(5);

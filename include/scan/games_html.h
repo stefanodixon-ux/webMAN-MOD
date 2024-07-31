@@ -408,9 +408,11 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 	if(is_net)
 	{
 		char ll[4]; if(li) sprintf(ll, "/%c", '@'+li); else *ll = NULL;
-		sprintf(param, "/%s%s%s",    paths[f1], SUFIX(uprofile), ll);
 
-		if(li == LANG_CUSTOM) sprintf(param, "/%s%s", paths[f1], AUTOPLAY_TAG);
+		if(li == LANG_CUSTOM) 
+			sprintf(param, "/%s%s",   paths[f1], AUTOPLAY_TAG);
+		else
+			sprintf(param, "/%s%s%s", paths[f1], SUFIX(uprofile), ll);
 	}
 	else
 	#endif
@@ -419,8 +421,10 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 			sprintf(param, WMTMP);
 		else
 		{
-			sprintf(param, "%s/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
-			if(li == LANG_CUSTOM) sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
+			if(li == LANG_CUSTOM)
+				sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
+			else
+				sprintf(param, "%s/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
 		}
 	}
 
@@ -737,7 +741,7 @@ list_games:
 				#endif
 				if(is_net && (ns<0)) break;
 //
-				bool ls; u8 li, subfolder; li=subfolder=0; ls=false; // single letter folder
+				bool ls; u8 li, subfolder; li = subfolder = 0; ls=false; // single letter folder
 
 		subfolder_letter_html:
 				subfolder = 0; if(all_profiles) uprofile = 1; else uprofile = profile;
@@ -1021,16 +1025,16 @@ next_html_entry:
 			_concat(&sout, "slides = [");
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
-			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%'i %s';</script>", idx, (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES); _concat(&sout, templn);
+			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%s: %'i';</script>", (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES, idx); _concat(&sout, templn);
 		}
 		else
 		{
 			sprintf(templn, // wait dialog div
 							"<div id=\"wmsg\"><H1>. . .</H1></div>"
 							// show games count + find icon
-							"<a href=\"javascript:_find();\"> &nbsp; %'i %s &#x1F50D;</a></font>"
+							"<a href=\"javascript:_find();\"> &nbsp; %s: %'i &#x1F50D;</a></font>"
 							// separator
-							"<HR><span style=\"white-space:normal;\">", idx, strstr(param, "DI") ? STR_FILES : STR_GAMES); _concat(&sout, templn);
+							"<HR><span style=\"white-space:normal;\">", strstr(param, "DI") ? STR_FILES : STR_GAMES, idx); _concat(&sout, templn);
 
 			#ifndef LITE_EDITION
 			sortable = file_exists(JQUERY_LIB_JS) && file_exists(JQUERY_UI_LIB_JS);
