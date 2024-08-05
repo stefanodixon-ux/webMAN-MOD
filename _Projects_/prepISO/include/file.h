@@ -101,11 +101,11 @@ int copy_file(char *src_file, char *out_file)
 
 /* 	By Evilnat
 
-	If disckey ('.key' file) exists, copy it to "/dev_hdd0/tmp/wmtmp" to
+	If disckey ('.key' file) exists, copy it to CACHE_PATH to
 	decrypt on-the-fly with Cobra when the ISO is mounted
 
 	If dkey ('.dkey' file) exists, we will transform it to disckey and
-	copy it to "/dev_hdd0/tmp/wmtmp"
+	copy it to CACHE_PATH
 */
 static void convert_dkey_to_key(uint8_t disckey[0x10], char dkey[0x20])
 {
@@ -125,7 +125,7 @@ static void cache_disckey(char *ext, char *full_path, char *direntry, char *file
 		char *key_path = image_file;
 
 		sprintf(key_path, "%s/%s", full_path, direntry);
-		int wlen = snprintf(wm_path, 255, "/dev_hdd0/tmp/wmtmp/%s", filename);
+		int wlen = snprintf(wm_path, 255, CACHE_PATH "/%s", filename);
 
 		if(strcasestr(ext - 1, ".dkey"))
 		{

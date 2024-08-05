@@ -300,7 +300,7 @@ static void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, 
 							(strcasestr(".mp3|.mp2|.wma|.wav|.aac|.ac3|.ogg", ext) != NULL)
 							)) return;
 
-		sprintf(path, "/dev_hdd0/tmp/wmtmp/[%s] %s.iso", c_path[m], iso_name);
+		sprintf(path, CACHE_PATH "/[%s] %s.iso", c_path[m], iso_name);
 		if(file_exists(path)) return;
 
 		char file_ext[16];
@@ -310,7 +310,7 @@ static void make_fake_iso(uint8_t m, char *ext, char *iso_name, char *src_path, 
 
 		build_fake_iso(path, src_path, device_id, file_ext, file_size);
 
-		sprintf(path, "/dev_hdd0/tmp/wmtmp/[%s] %s.png", c_path[m], iso_name);
+		sprintf(path, CACHE_PATH "/[%s] %s.png", c_path[m], iso_name);
 		if(file_exists(path)) return;
 
 		if(m == PKGFILE) copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/pkg.png", path);

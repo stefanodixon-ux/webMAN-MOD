@@ -58,7 +58,7 @@ static void build_file(char *filename, int parts, uint32_t num_tracks, uint64_t 
 
 		//--- write .ntfs[ file
 		FILE *flistW;
-		snprintf(path, sizeof(path), "/dev_hdd0/tmp/wmtmp/%s%s.ntfs[%s]", filename, SUFIX2(profile), c_path[m]);
+		snprintf(path, sizeof(path), CACHE_PATH "/%s%s.ntfs[%s]", filename, SUFIX2(profile), c_path[m]);
 		flistW = fopen(path, "wb");
 		if(flistW)
 		{

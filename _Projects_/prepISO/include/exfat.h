@@ -115,10 +115,10 @@ static int dir_read (char *dpath)
 					{
 						if(subpath && slen && strncmp(subpath, fno.fname, slen))
 						{
-							snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/[%s] %s", subpath, fno.fname);
+							snprintf (wm_path, 255, CACHE_PATH "/[%s] %s", subpath, fno.fname);
 						}
 						else
-							snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/%s", fno.fname);
+							snprintf (wm_path, 255, CACHE_PATH "/%s", fno.fname);
 
 						if((not_exists(wm_path)) && (fno.fsize < 4194304))
 						{
@@ -158,19 +158,19 @@ static int dir_read (char *dpath)
 					{
 						if(subpath && slen && strncmp(subpath, fno.fname, slen))
 						{
-							flen = snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/[%s] %s", subpath, fno.fname);
+							flen = snprintf (wm_path, 255, CACHE_PATH "/[%s] %s", subpath, fno.fname);
 						}
 						else
-							flen = snprintf (wm_path, 255, "/dev_hdd0/tmp/wmtmp/%s", fno.fname);
+							flen = snprintf (wm_path, 255, CACHE_PATH "/%s", fno.fname);
 
-						// If the key exists, copy it to "/dev_hdd0/tmp/wmtmp" to
+						// If the key exists, copy it to CACHE_PATH to
 						// decrypt on-the-fly with Cobra when the ISO is mounted (By Evilnat)
 						if(strcasestr(ext, ".key"))
 						{
 							copy_exfat(fn, wm_path, 0x10);
 							continue;
 						}
-						// If the dkey exists, we convert it to disckey and copy it to "/dev_hdd0/tmp/wmtmp"
+						// If the dkey exists, we convert it to disckey and copy it to CACHE_PATH
 						// to decrypt on-the-fly with Cobra when the ISO is mounted (By Evilnat)
 						else if(strcasestr(ext - 1, ".dkey"))
 						{

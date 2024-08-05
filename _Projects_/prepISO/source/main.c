@@ -66,6 +66,14 @@ uint8_t plugin_args[PLUGIN_ARGS_SIZE];
 
 #define MAX_PATH_LEN  0x420
 
+//#define MULTIMAN
+
+#ifdef MULTIMAN
+#define CACHE_PATH    "/dev_hdd0/tmp/mmtmp"
+#else
+#define CACHE_PATH    "/dev_hdd0/tmp/wmtmp"
+#endif
+
 static char path[MAX_PATH_LEN];
 static char full_path[MAX_PATH_LEN];
 static char wm_path[MAX_PATH_LEN];
@@ -90,7 +98,6 @@ static int mountCount;
 #include "fix_game.h"
 #include "fake_iso.h"
 
-//#define MULTIMAN
 #ifndef MULTIMAN
 #include "net.h"
 #endif
@@ -123,7 +130,7 @@ int main(int argc, const char* argv[])
 	DIR_ITER *pdir = NULL, *psubdir= NULL;
 	struct stat st;
 
-	sysLv2FsUnlink((char*)"/dev_hdd0/tmp/wmtmp/games.html");
+	sysLv2FsUnlink((char*)(CACHE_PATH "/games.html"));
 
 	int fd = -1;
 	u64 read = 0;
@@ -149,7 +156,7 @@ int main(int argc, const char* argv[])
 	}
 
 	// create cache folder
-	snprintf(path, sizeof(path), "/dev_hdd0/tmp/wmtmp");
+	snprintf(path, sizeof(path), CACHE_PATH);
 	mkdir(path, S_IRWXO | S_IRWXU | S_IRWXG | S_IFDIR);
 	sysFsChmod(path, S_IFDIR | 0777);
 
@@ -245,25 +252,25 @@ int main(int argc, const char* argv[])
 
 									if((m == PSPISO) && (strcasestr(ext, ".iso") != NULL))
 									{
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.PNG", dir.d_name);
+										sprintf(wm_path, CACHE_PATH "/[PSPISO] %s.PNG", dir.d_name);
 										ExtractFileFromISO(filename, "/PSP_GAME/ICON0.PNG", wm_path);
 
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.PIC1.PNG", dir.d_name);
+										sprintf(wm_path, CACHE_PATH "/[PSPISO] %s.PIC1.PNG", dir.d_name);
 										ExtractFileFromISO(filename, "/PSP_GAME/PIC1.PNG", wm_path);
 
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.PIC0.PNG", dir.d_name);
+										sprintf(wm_path, CACHE_PATH "/[PSPISO] %s.PIC0.PNG", dir.d_name);
 										ExtractFileFromISO(filename, "/PSP_GAME/PIC0.PNG", wm_path);
 
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.SND0.AT3", dir.d_name);
+										sprintf(wm_path, CACHE_PATH "/[PSPISO] %s.SND0.AT3", dir.d_name);
 										ExtractFileFromISO(filename, "/PSP_GAME/SND0.AT3", wm_path);
 
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.ICON1.PAM", dir.d_name);
+										sprintf(wm_path, CACHE_PATH "/[PSPISO] %s.ICON1.PAM", dir.d_name);
 										ExtractFileFromISO(filename, "/PSP_GAME/ICON1.PAM", wm_path);
 
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.EBOOT.BIN", dir.d_name);
+										sprintf(wm_path, CACHE_PATH "/[PSPISO] %s.EBOOT.BIN", dir.d_name);
 										ExtractFileFromISO(filename, "/PSP_GAME/SYSDIR/EBOOT.BIN", wm_path);
 
-										sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/[PSPISO] %s.EBOOT.OLD", dir.d_name);
+										sprintf(wm_path, CACHE_PATH "/[PSPISO] %s.EBOOT.OLD", dir.d_name);
 										ExtractFileFromISO(filename, "/PSP_GAME/SYSDIR/EBOOT.OLD", wm_path);
 									}
 
@@ -341,10 +348,10 @@ int main(int argc, const char* argv[])
 												ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
 										}
 */
-										*ext = '\0'; sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.SFO", filename);
+										*ext = '\0'; sprintf(wm_path, CACHE_PATH "/%s.SFO", filename);
 										if(not_exists(wm_path))
 										{
-											*ext = '.'; sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.SFO", filename);
+											*ext = '.'; sprintf(wm_path, CACHE_PATH "/%s.SFO", filename);
 											if(not_exists(wm_path))
 												ExtractFileFromISO(path, "/PS3_GAME/PARAM.SFO;1", wm_path);
 										}
@@ -375,7 +382,7 @@ int main(int argc, const char* argv[])
 											sprintf(image_file + plen, "%s", cover_ext[e]);
 											if(file_exists(image_file))
 											{
-												sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s%s", filename, cover_ext[e]);
+												sprintf(wm_path, CACHE_PATH "/%s%s", filename, cover_ext[e]);
 												if(not_exists(wm_path))
 													copy_file(image_file, wm_path);
 												break;
@@ -389,7 +396,7 @@ int main(int argc, const char* argv[])
 											if(not_exists(wm_path))
 												ExtractFileFromISO(path, "/PS3_GAME/ICON0.PNG;1", wm_path);
 */
-											sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s.PNG", filename);
+											sprintf(wm_path, CACHE_PATH "/%s.PNG", filename);
 											if(not_exists(wm_path))
 												ExtractFileFromISO(path, "/PS3_GAME/ICON0.PNG;1", wm_path);
 										}
@@ -416,7 +423,7 @@ int main(int argc, const char* argv[])
 											sprintf(image_file + plen, "%s", cover_ext[e]);
 											if(file_exists(image_file))
 											{
-												sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s%s", filename, cover_ext[e]);
+												sprintf(wm_path, CACHE_PATH "/%s%s", filename, cover_ext[e]);
 												if(not_exists(wm_path))
 													copy_file(image_file, wm_path);
 												break;
@@ -425,7 +432,7 @@ int main(int argc, const char* argv[])
 
 										if(e >= 4)
 										{
-											sprintf(wm_path, "/dev_hdd0/tmp/wmtmp/%s%s", filename, ".png");
+											sprintf(wm_path, CACHE_PATH "/%s%s", filename, ".png");
 											if(m == BDISO)  copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/bdiso.png", wm_path);
 											if(m == DVDISO) copy_file("/dev_hdd0/game/BLES80616/USRDIR/icons/dvdiso.png", wm_path);
 										}

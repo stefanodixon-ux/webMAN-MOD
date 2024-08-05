@@ -435,7 +435,7 @@
 			</T>
 			<T key="mod00A" include="inc">
 				<P key="title"><>PSN Login Blocker</></P>
-				<P key="info"><>CFW Only or HEN. Blocks Log Into PSN with CFW Syscalls Enabled</></P>
+				<P key="info"><>CFW or HEN. Blocks Log Into PSN with CFW Syscalls Enabled</></P>
 			</T>
 			<T key="mod00B" include="inc">
 				<P key="title"><>Install ps3-updatelist.txt</></P>
@@ -473,6 +473,10 @@
 				<P key="title"><>Extended Download + Icons</></P>
 				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
+			<T key="mod009" include="inc">
+				<P key="title"><>Power Options on User Column</></P>
+				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
+			</T>
 		</A>
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="mod00A" attr="mod00A" src="#mod00A_item"/>
@@ -485,6 +489,7 @@
 			<Q class="type:x-xmb/folder-pixmap" key="mod006" attr="mod006" src="#mod006_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod007" attr="mod007" src="#mod007_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod008" attr="mod008" src="#mod008_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod009" attr="mod009" src="#mod009_item"/>
 		</I>
 	</V>
 
@@ -633,6 +638,20 @@
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+ 			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod009_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_user_power_options_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_user_power_options_req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
