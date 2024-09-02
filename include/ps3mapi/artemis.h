@@ -783,11 +783,11 @@ static void art_thread(u64 arg)
 					sys_timer_usleep(5000);
 					sys_ppu_thread_yield();
 				}
-				show_msg("Artemis PS3\nStart To Attach");
+				if(!art_cmd) show_msg("Artemis PS3\nStart To Attach");
 			}
 
 			cellPadGetInfo2(&info);
-			if (info.port_status[0] && (cellPadGetData(0, &data) | 1) && data.len > 0)
+			if ((info.port_status[0] && (cellPadGetData(0, &data) | 1) && data.len > 0) || art_cmd)
 			{
 				u32 pad = data.button[2] | (data.button[3] << 8);
 
@@ -827,7 +827,7 @@ static void art_thread(u64 arg)
 						sys_ppu_thread_sleep(1);
 					}
 				}
-				if ((pad & PAD_SELECT) || (art_cmd == 2))
+				else if ((pad & PAD_SELECT) || (art_cmd == 2))
 				{
 					if (attachedPID)
 						show_msg("Artemis PS3\nDetached");

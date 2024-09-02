@@ -234,6 +234,11 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		if(op == 34) // wm version
 			sprintf(msg, "%s MO: %.7s %s", WM_APPNAME, WM_VERSION, EDITION);
 
+		#ifdef BDINFO
+		if(op == 35) // bdinfo
+			get_bdvd_info((char*)"", msg);
+		#endif
+
 		if(op >= 18)
 		{
 			if(nolabel)
@@ -628,13 +633,22 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	{
 		get_last_game(param);
 
-		if(*param == '/') {sprintf( templn, "<hr><font size=\"3\">" HTML_URL " -> ", IS_ON_XMB ? "/play.ps3" : "/dev_bdvd", "/dev_bdvd"); buffer += concat(buffer, templn); add_breadcrumb_trail(buffer, param); buffer += concat(buffer, "</font>");}
+		if(*param == '/')
+		{
+			sprintf( templn, "<hr><font size=\"3\">" HTML_URL " -> ", IS_ON_XMB ? "/play.ps3" : "/dev_bdvd", "/dev_bdvd");
+			buffer += concat(buffer, templn); add_breadcrumb_trail(buffer, param); buffer += concat(buffer, "</font>");
+		}
 	}
+	#ifdef BDINFO
+	else
+	{
+		buffer += concat(buffer, "<hr><font size=\"3\">"); get_bdvd_info((char*)"", param); buffer += concat(buffer, param);
+	}
+	#endif
 
 	// Get mac address [0xD-0x12]
 	if(sys_admin)
 	{
-
 		char *fw_info = param;         get_sys_info(fw_info, 30, false);
 		#ifdef SPOOF_CONSOLEID
 		char *psid    = param + 0x100; get_sys_info(psid, 27, false);

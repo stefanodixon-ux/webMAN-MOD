@@ -6,7 +6,7 @@
 #define USB1	11
 #define PID		14
 
-#ifdef DEBUG_MEM
+#if defined(DEBUG_MEM) || defined(PS3MAPI)
 
 #define LV1_UPPER_MEMORY	0x8000000010000000ULL
 #define LV2_UPPER_MEMORY	0x8000000000800000ULL
@@ -148,6 +148,7 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 	}
 }
 
+#ifdef DEBUG_MEM
 static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 {
 	char dump_file[MAX_PATH_LEN]; u64 start = 0; u32 size = 8, pid = LV1;
@@ -187,6 +188,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 		sprintf(templn, " [" HTML_URL2 "]", "/delete.ps3", dump_file, STR_DELETE); strcat(buffer, templn);
 	}
 }
+#endif
 
 #define HEXVIEW_SIZE	0x200
 

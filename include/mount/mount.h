@@ -1564,7 +1564,7 @@ static void mount_thread(u64 action)
 
 		goto finish;
 	}
-	#ifdef COPY_PS3
+	#ifdef WM_REQUEST
 	else if(is_ext(_path0, ".txt") || is_ext(_path0, ".bat"))
 	{
 		parse_script(_path0);

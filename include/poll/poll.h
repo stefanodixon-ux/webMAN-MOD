@@ -26,7 +26,9 @@ static void poll_start_play_time(void)
 			*param = NULL;
 			#endif
 
+			#ifdef WM_REQUEST
 			start_event(EVENT_ON_XMB);
+			#endif
 
 			#ifdef ARTEMIS_PRX
 			if(!is_artemis_app)
@@ -116,9 +118,11 @@ static void poll_start_play_time(void)
 		}
 		#endif
 
+		#ifdef WM_REQUEST
 		start_event(EVENT_INGAME);
 		wait_for_title_id();
 		start_event(EVENT_PER_GAME);
+		#endif
 
 		#ifdef ARTEMIS_PRX
 		is_artemis_app = IS(_game_TitleID, "ARTPS3001");

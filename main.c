@@ -446,6 +446,7 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/mount/eject_insert.h"
 #include "include/mount/gamedata.h"
+#include "include/feat/scsi_info.h"
 
 #include "include/ftp.h"
 
@@ -513,7 +514,9 @@ static void wwwd_thread(u64 arg)
 
 	#ifdef COPY_PS3
 	_memset(cp_path, sizeof(cp_path));
+	#ifdef WM_REQUEST
 	start_event(EVENT_BOOT_INIT);
+	#endif
 	#endif
 
 	if(webman_config->fanc)
@@ -576,8 +579,9 @@ again_debug:
 
 	led(YELLOW, OFF);
 
+	#ifdef WM_REQUEST
 	start_event(EVENT_AUTOEXEC);
-
+	#endif
 	////////////////////////////////////////
 
 	int list_s = NONE;

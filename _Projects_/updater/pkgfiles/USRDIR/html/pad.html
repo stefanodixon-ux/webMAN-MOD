@@ -1,0 +1,1976 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no" />
+</head>
+<BODY ondragstart="return false;" ondrop="return false;" bgcolor="black">
+
+<title>PS3 Remote Controller</title>
+
+<style type="text/css">
+html, body { height:100%; }
+body {
+	padding:0;
+	margin:0;
+	background:#000;
+	-webkit-user-select:none;
+	-webkit-text-size-adjust:none;
+	color:#eee;
+	font-family:helvetica;
+	font-size:12px;
+}
+
+#wrapper {
+	width:100%;
+	min-width:320px;
+	height:100%;
+	/*background: url("background.gif") fixed center;
+	background-size: 100% 100%;*/
+}
+
+#nav {
+	position:absolute;
+	z-index:100;
+	top:8px;
+	width:200px;
+	height:24px;
+	left:50%;
+	background:rgba(0,0,0,0.75);
+	padding:0;
+	margin:0 0 0 -100px;
+	-webkit-border-radius:10px;
+}
+
+#nav li {
+	display:block;
+	float:left;
+	width:14px;
+	height:14px; line-height:14px;
+	-webkit-border-radius:7px;
+	background:rgba(255,255,255,0.1);
+	overflow:hidden;
+	padding:0;
+	margin:3px 11px 0 0;
+	text-align:center;
+}
+
+#nav li#prev {
+	margin-left:5px;
+	background:transparent;
+}
+
+#nav li#next {
+	margin-right:0;
+	background:transparent;
+}
+
+#nav li.selected {
+	background:rgba(255,255,255,0.4);
+}
+
+#swipeview-slider > div {
+	position:relative;
+	top:50%;
+	display:-webkit-box;
+	-webkit-box-orient:vertical;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+	overflow:hidden;
+}
+
+#swipeview-slider img {
+	display:block;
+	border:5px solid #eee;
+	-webkit-box-shadow:0 2px 6px #000;
+	-webkit-border-radius:2px;
+	-webkit-box-reflect: below 5px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(75%, transparent) , to(rgba(250, 250, 250, 0.2)));
+	-webkit-transition-duration:.4s;
+	-webkit-transition-property:opacity;
+	opacity:1;
+	pointer-events:none;
+	box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.4);
+}
+
+#swipeview-slider span {
+	position:absolute;
+	bottom:0;
+	left:0;
+	width:100%;
+	padding:20px 0;
+	display:block;
+	background:rgba(0,0,0,0.75);
+	font-size:24px;
+	text-align:center;
+	text-shadow:0 1px 0 #000;
+	border-top:1px solid rgba(255,255,255,0.2);
+	-webkit-border-top-left-radius:10px;
+	-webkit-border-top-right-radius:10px;
+	-webkit-transition-duration:.3s;
+	-webkit-transition-property:-webkit-transform;
+	-webkit-transform:translate3d(0,100%,0);
+}
+
+#swipeview-slider .swipeview-active span {
+	-webkit-transform:translate3d(0,0,0);
+}
+
+#wrapper > div > .swipeview-loading {
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#444), to(#555)),
+		-webkit-gradient(linear, 0 0, 100% 0, from(#777), to(#777));
+	background-position:50% 50%, 50% 50%;
+	background-size:200px 140px, 210px 150px;
+	background-repeat:no-repeat;
+}
+
+#wrapper > div > .swipeview-loading img,
+#swipeview-slider img.loading {
+	-webkit-transition-duration:0;
+	opacity:0;
+}
+
+#wrapper > div > .swipeview-loading span {
+	-webkit-transition-duration:0;
+	-webkit-transform:translate3d(0,100%,0);
+}
+
+/* menu */
+body,ul,li {
+	padding:0;
+	margin:0;
+	border:0;
+}
+
+#header {
+	position:absolute; z-index:10101;
+	top:0; left:0;
+	width:100%;
+	height:55px;
+	line-height:50px;
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, color-stop(0, #808080), color-stop(0.05, #D0D0D0), color-stop(1, #808080));
+	background-image:-moz-linear-gradient(top, #808080, #C0C0C0 5%, #202020);
+	background-image:-o-linear-gradient(top, #808080, #C0C0C0 5%, #202020);
+	padding:0;
+	color:#eee;
+	font-size:30px;
+	text-align:center;
+}
+
+#header a {
+	color:#f3f3f3;
+	text-decoration:none;
+	font-weight:bold;
+	text-shadow:0 -1px 0 rgba(0,0,0,0.5);
+}
+
+#footer {
+	position:absolute; z-index:10101;
+	bottom:0; left:0;
+	width:100%;
+	height:48px;
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, color-stop(0, #999), color-stop(0.02, #666), color-stop(1, #222));
+	background-image:-moz-linear-gradient(top, #999, #666 2%, #222);
+	background-image:-o-linear-gradient(top, #999, #666 2%, #222);
+	padding:0;
+	border-top:1px solid #444;
+}
+
+#wrapper-menu {
+	position:absolute; z-index:10100;
+	top:45px; bottom:48px; left:0;
+	width:100%;
+	background:#333;
+	overflow:auto;
+}
+
+#scroller {
+	position:absolute; z-index:10000;
+/*	-webkit-touch-callout:none;*/
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	width:100%;
+	padding:0;
+	cursor: ns-resize;
+}
+
+#scroller ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+	width:100%;
+	text-align:left;
+}
+
+#scroller li {
+	padding:0 10px;
+	height:55px;
+	line-height:50px;
+	border-bottom:1px solid #ccc;
+	border-top:1px solid #fff;
+	background-color:#fafafa;
+	font-size:32px;
+}
+
+#menu a, a:active, a:visited {text-decoration:none;color:#000000;font-weight:bold; cursor: pointer; cursor: hand;}
+#menu a:hover {text-decoration:none;color:#2952A3;font-weight:bold; cursor: pointer; cursor: hand;}
+#menu a:focus {text-decoration:none;color:blue;font-weight:bold; cursor: pointer; cursor: hand;}
+
+#wait-dialog {
+	position:absolute; z-index:3;
+	top:40%;
+	left:30%;
+	width:40%;
+	height:48px;
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, color-stop(0, #999), color-stop(0.02, #666666), color-stop(1, #222222));
+	background-image:-moz-linear-gradient(top, #999, #666666 2%, #222);
+	background-image:-o-linear-gradient(top, #999, #666666 2%, #222);
+	padding:0;
+	border:5px solid #c0c0c0;
+	color: white;
+	z-index: 99999;
+}
+
+a, a:hover, a:active, a:visited, a:focus {color: white; text-decoration: none; outline: none; border:none; outline:none;}
+
+@-webkit-keyframes anim {
+	0% {transform: translateX(100%);}
+	100% {transform: translateX(0);}
+}
+@keyframes anim {
+	0% {transform: translateX(100%);}
+	100% {transform: translateX(0);}
+}
+
+#home{position:absolute;right:20px;top:50px;text-align:right;}
+#home a:hover{text-decoration:underline;}
+
+.container{width: 320px;background: #000;}
+body {margin-top:0px; margin-left:0px; margin-right:0px; overflow:hidden;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+*.unselectable {
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+
+	-ms-user-select: none;
+	user-select: none;
+}
+
+* {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+</style>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var isoffline = false, pause = 0;
+var indexEl = 0, nextEl = null, url = 'http://ps3.aldostools.org';
+
+//if(location.protocol!='http:'){location.href='http:'+window.location.href.substring(window.location.protocol.length);}
+
+if(location.protocol=='https:') document.write("<center><H1>WARNING: <a href='http://ps3.aldostools.org/pad.html' rel='noreferrer nofollow'><font color=yellow>This site only works with HTTP protocol</a></font></CENTER><H1>");
+
+function refreshScreen()
+{
+	if(isoffline) {location.reload(); return;}
+
+	var req = new XMLHttpRequest();
+	req.open('GET', 'http://' + ip);
+	req.setRequestHeader("Content-type", "text/html; charset=utf-8");
+	req.timeout = 2000;
+	req.ontimeout = function() {isoffline = true; /*showMenu();*/ window.open("/dummy.html", "portrait");}
+	req.send();
+}
+
+function showWait()
+{
+	document.getElementById('wait-dialog').style.display='';
+}
+
+function showMenu()
+{
+	document.getElementById('wrapper').style.display='none';
+	document.getElementById('menu').style.display='';
+}
+
+function hideMenu()
+{
+	document.getElementById('wrapper').style.display='';
+	document.getElementById('menu').style.display='none';
+}
+
+(function(){
+var m = Math,
+	mround = function (r) { return r >> 0; },
+	vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
+		(/firefox/i).test(navigator.userAgent) ? 'Moz' :
+		'opera' in window ? 'O' : '',
+
+	// Browser capabilities
+	isAndroid = (/android/gi).test(navigator.appVersion),
+	isIDevice = (/iphone|ipad/gi).test(navigator.appVersion),
+	isPlaybook = (/playbook/gi).test(navigator.appVersion),
+	isTouchPad = (/hp-tablet/gi).test(navigator.appVersion),
+
+	has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix(),
+	hasTouch = 'ontouchstart' in window && !isTouchPad,
+	hasTransform = vendor + 'Transform' in document.documentElement.style,
+	hasTransitionEnd = isIDevice || isPlaybook,
+
+	nextFrame = (function() {
+		return window.requestAnimationFrame
+			|| window.webkitRequestAnimationFrame
+			|| window.mozRequestAnimationFrame
+			|| window.oRequestAnimationFrame
+			|| window.msRequestAnimationFrame
+			|| function(callback) { return setTimeout(callback, 1); }
+	})(),
+	cancelFrame = (function () {
+		return window.cancelRequestAnimationFrame
+			|| window.webkitCancelRequestAnimationFrame
+			|| window.mozCancelRequestAnimationFrame
+			|| window.oCancelRequestAnimationFrame
+			|| window.msCancelRequestAnimationFrame
+			|| clearTimeout
+	})(),
+
+	// Events
+	RESIZE_EV = 'onorientationchange' in window ? 'orientationchange' : 'resize',
+	START_EV = hasTouch ? 'touchstart' : 'mousedown',
+	MOVE_EV = hasTouch ? 'touchmove' : 'mousemove',
+	END_EV = hasTouch ? 'touchend' : 'mouseup',
+	CANCEL_EV = hasTouch ? 'touchcancel' : 'mouseup',
+	WHEEL_EV = vendor == 'Moz' ? 'DOMMouseScroll' : 'mousewheel',
+
+	// Helpers
+	trnOpen = 'translate' + (has3d ? '3d(' : '('),
+	trnClose = has3d ? ',0)' : ')',
+
+	// Constructor
+	iScroll = function (el, options) {
+		var that = this,
+			doc = document,
+			i;
+
+		that.wrapper = typeof el == 'object' ? el : doc.getElementById(el);
+		that.wrapper.style.overflow = 'hidden';
+		that.scroller = that.wrapper.children[0];
+
+		// Default options
+		that.options = {
+			hScroll: false,
+			vScroll: true,
+			x: 0,
+			y: 0,
+			bounce: true,
+			bounceLock: false,
+			momentum: true,
+			lockDirection: true,
+			useTransform: true,
+			useTransition: false,
+			topOffset: 0,
+			checkDOMChanges: true,		// Experimental
+
+			// Scrollbar
+			hScrollbar: false,
+			vScrollbar: true,
+			fixedScrollbar: isAndroid,
+			hideScrollbar: isIDevice,
+			fadeScrollbar: isIDevice && has3d,
+			scrollbarClass: '',
+
+			// Zoom
+			zoom: false,
+			zoomMin: 1,
+			zoomMax: 4,
+			doubleTapZoom: 2,
+			wheelAction: 'scroll',
+
+			// Snap
+			snap: false,
+			snapThreshold: 50,
+
+			// Events
+			onRefresh: null,
+			onBeforeScrollStart: function (e) { e.preventDefault(); },
+			onScrollStart: null,
+			onBeforeScrollMove: null,
+			onScrollMove: null,
+			onBeforeScrollEnd: null,
+			onScrollEnd: null,
+			onTouchEnd: null,
+			onDestroy: null,
+			onZoomStart: null,
+			onZoom: null,
+			onZoomEnd: null
+		};
+
+		// User defined options
+		for (i in options) that.options[i] = options[i];
+
+		// Set starting position
+		that.x = that.options.x;
+		that.y = that.options.y;
+
+		// Normalize options
+		that.options.useTransform = hasTransform ? that.options.useTransform : false;
+		that.options.hScrollbar = that.options.hScroll && that.options.hScrollbar;
+		that.options.vScrollbar = that.options.vScroll && that.options.vScrollbar;
+		that.options.zoom = that.options.useTransform && that.options.zoom;
+		that.options.useTransition = hasTransitionEnd && that.options.useTransition;
+
+		// Helpers FIX ANDROID BUG!
+		// translate3d and scale doesn't work together!
+		// Ignoring 3d ONLY WHEN YOU SET that.options.zoom
+		if ( that.options.zoom && isAndroid ){
+			trnOpen = 'translate(';
+			trnClose = ')';
+		}
+
+		// Set some default styles
+		that.scroller.style[vendor + 'TransitionProperty'] = that.options.useTransform ? '-' + vendor.toLowerCase() + '-transform' : 'top left';
+		that.scroller.style[vendor + 'TransitionDuration'] = '0';
+		that.scroller.style[vendor + 'TransformOrigin'] = '0 0';
+		if (that.options.useTransition) that.scroller.style[vendor + 'TransitionTimingFunction'] = 'cubic-bezier(0.33,0.66,0.66,1)';
+
+		if (that.options.useTransform) that.scroller.style[vendor + 'Transform'] = trnOpen + that.x + 'px,' + that.y + 'px' + trnClose;
+		else that.scroller.style.cssText += ';position:absolute;top:' + that.y + 'px;left:' + that.x + 'px';
+
+		if (that.options.useTransition) that.options.fixedScrollbar = true;
+
+		that.refresh();
+
+		that._bind(RESIZE_EV, window);
+		that._bind(START_EV);
+		if (!hasTouch) {
+			that._bind('mouseout', that.wrapper);
+			if (that.options.wheelAction != 'none')
+				that._bind(WHEEL_EV);
+		}
+
+		if (that.options.checkDOMChanges) that.checkDOMTime = setInterval(function () {
+			that._checkDOMChanges();
+		}, 500);
+	};
+
+	// Prototype
+	iScroll.prototype = {
+		enabled: true,
+		x: 0,
+		y: 0,
+		steps: [],
+		scale: 1,
+		currPageX: 0, currPageY: 0,
+		pagesX: [], pagesY: [],
+		aniTime: null,
+		wheelZoomCount: 0,
+
+		handleEvent: function (e) {
+			var that = this;
+			switch(e.type) {
+				case START_EV:
+					if (!hasTouch && e.button !== 0) return;
+					that._start(e);
+					break;
+				case MOVE_EV: that._move(e); break;
+				case END_EV:
+				case CANCEL_EV: that._end(e); break;
+				case RESIZE_EV: that._resize(); break;
+				case WHEEL_EV: that._wheel(e); break;
+				case 'mouseout': that._mouseout(e); break;
+				case 'webkitTransitionEnd': that._transitionEnd(e); break;
+			}
+		},
+
+		_checkDOMChanges: function () {
+			if (this.moved || this.zoomed || this.animating ||
+				(this.scrollerW == this.scroller.offsetWidth * this.scale && this.scrollerH == this.scroller.offsetHeight * this.scale)) return;
+
+			this.refresh();
+		},
+
+		_scrollbar: function (dir) {
+			var that = this,
+				doc = document,
+				bar;
+
+			if (!that[dir + 'Scrollbar']) {
+				if (that[dir + 'ScrollbarWrapper']) {
+					if (hasTransform) that[dir + 'ScrollbarIndicator'].style[vendor + 'Transform'] = '';
+					that[dir + 'ScrollbarWrapper'].parentNode.removeChild(that[dir + 'ScrollbarWrapper']);
+					that[dir + 'ScrollbarWrapper'] = null;
+					that[dir + 'ScrollbarIndicator'] = null;
+				}
+
+				return;
+			}
+
+			if (!that[dir + 'ScrollbarWrapper']) {
+				// Create the scrollbar wrapper
+				bar = doc.createElement('div');
+
+				if (that.options.scrollbarClass) bar.className = that.options.scrollbarClass + dir.toUpperCase();
+				else bar.style.cssText = 'position:absolute;z-index:100;' + (dir == 'h' ? 'height:7px;bottom:1px;left:2px;right:' + (that.vScrollbar ? '7' : '2') + 'px' : 'width:7px;bottom:' + (that.hScrollbar ? '7' : '2') + 'px;top:2px;right:1px');
+
+				bar.style.cssText += ';pointer-events:none;-' + vendor + '-transition-property:opacity;-' + vendor + '-transition-duration:' + (that.options.fadeScrollbar ? '350ms' : '0') + ';overflow:hidden;opacity:' + (that.options.hideScrollbar ? '0' : '1');
+
+				that.wrapper.appendChild(bar);
+				that[dir + 'ScrollbarWrapper'] = bar;
+
+				// Create the scrollbar indicator
+				bar = doc.createElement('div');
+				if (!that.options.scrollbarClass) {
+					bar.style.cssText = 'position:absolute;z-index:100;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.9);-' + vendor + '-background-clip:padding-box;-' + vendor + '-box-sizing:border-box;' + (dir == 'h' ? 'height:100%' : 'width:100%') + ';-' + vendor + '-border-radius:3px;border-radius:3px';
+				}
+				bar.style.cssText += ';pointer-events:none;-' + vendor + '-transition-property:-' + vendor + '-transform;-' + vendor + '-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1);-' + vendor + '-transition-duration:0;-' + vendor + '-transform:' + trnOpen + '0,0' + trnClose;
+				if (that.options.useTransition) bar.style.cssText += ';-' + vendor + '-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1)';
+
+				that[dir + 'ScrollbarWrapper'].appendChild(bar);
+				that[dir + 'ScrollbarIndicator'] = bar;
+			}
+
+			if (dir == 'h') {
+				that.hScrollbarSize = that.hScrollbarWrapper.clientWidth;
+				that.hScrollbarIndicatorSize = m.max(mround(that.hScrollbarSize * that.hScrollbarSize / that.scrollerW), 8);
+				that.hScrollbarIndicator.style.width = that.hScrollbarIndicatorSize + 'px';
+				that.hScrollbarMaxScroll = that.hScrollbarSize - that.hScrollbarIndicatorSize;
+				that.hScrollbarProp = that.hScrollbarMaxScroll / that.maxScrollX;
+			} else {
+				that.vScrollbarSize = that.vScrollbarWrapper.clientHeight;
+				that.vScrollbarIndicatorSize = m.max(mround(that.vScrollbarSize * that.vScrollbarSize / that.scrollerH), 8);
+				that.vScrollbarIndicator.style.height = that.vScrollbarIndicatorSize + 'px';
+				that.vScrollbarMaxScroll = that.vScrollbarSize - that.vScrollbarIndicatorSize;
+				that.vScrollbarProp = that.vScrollbarMaxScroll / that.maxScrollY;
+			}
+
+			// Reset position
+			that._scrollbarPos(dir, true);
+		},
+
+		_resize: function () {
+			var that = this;
+			setTimeout(function () { that.refresh(); }, isAndroid ? 200 : 0);
+		},
+
+		_pos: function (x, y) {
+			x = this.hScroll ? x : 0;
+			y = this.vScroll ? y : 0;
+
+			if (this.options.useTransform) {
+				this.scroller.style[vendor + 'Transform'] = trnOpen + x + 'px,' + y + 'px' + trnClose + ' scale(' + this.scale + ')';
+			} else {
+				x = mround(x);
+				y = mround(y);
+				this.scroller.style.left = x + 'px';
+				this.scroller.style.top = y + 'px';
+			}
+
+			this.x = x;
+			this.y = y;
+
+			this._scrollbarPos('h');
+			this._scrollbarPos('v');
+		},
+
+		_scrollbarPos: function (dir, hidden) {
+			var that = this,
+				pos = dir == 'h' ? that.x : that.y,
+				size;
+
+			if (!that[dir + 'Scrollbar']) return;
+
+			pos = that[dir + 'ScrollbarProp'] * pos;
+
+			if (pos < 0) {
+				if (!that.options.fixedScrollbar) {
+					size = that[dir + 'ScrollbarIndicatorSize'] + mround(pos * 3);
+					if (size < 8) size = 8;
+					that[dir + 'ScrollbarIndicator'].style[dir == 'h' ? 'width' : 'height'] = size + 'px';
+				}
+				pos = 0;
+			} else if (pos > that[dir + 'ScrollbarMaxScroll']) {
+				if (!that.options.fixedScrollbar) {
+					size = that[dir + 'ScrollbarIndicatorSize'] - mround((pos - that[dir + 'ScrollbarMaxScroll']) * 3);
+					if (size < 8) size = 8;
+					that[dir + 'ScrollbarIndicator'].style[dir == 'h' ? 'width' : 'height'] = size + 'px';
+					pos = that[dir + 'ScrollbarMaxScroll'] + (that[dir + 'ScrollbarIndicatorSize'] - size);
+				} else {
+					pos = that[dir + 'ScrollbarMaxScroll'];
+				}
+			}
+
+			that[dir + 'ScrollbarWrapper'].style[vendor + 'TransitionDelay'] = '0';
+			that[dir + 'ScrollbarWrapper'].style.opacity = hidden && that.options.hideScrollbar ? '0' : '1';
+			that[dir + 'ScrollbarIndicator'].style[vendor + 'Transform'] = trnOpen + (dir == 'h' ? pos + 'px,0' : '0,' + pos + 'px') + trnClose;
+		},
+
+		_start: function (e) {
+			var that = this,
+				point = hasTouch ? e.touches[0] : e,
+				matrix, x, y,
+				c1, c2;
+
+			if (!that.enabled) return;
+
+			if (that.options.onBeforeScrollStart) that.options.onBeforeScrollStart.call(that, e);
+
+			if (that.options.useTransition || that.options.zoom) that._transitionTime(0);
+
+			that.moved = false;
+			that.animating = false;
+			that.zoomed = false;
+			that.distX = 0;
+			that.distY = 0;
+			that.absDistX = 0;
+			that.absDistY = 0;
+			that.dirX = 0;
+			that.dirY = 0;
+
+			// Gesture start
+			if (that.options.zoom && hasTouch && e.touches.length > 1) {
+				c1 = m.abs(e.touches[0].pageX-e.touches[1].pageX);
+				c2 = m.abs(e.touches[0].pageY-e.touches[1].pageY);
+				that.touchesDistStart = m.sqrt(c1 * c1 + c2 * c2);
+
+				that.originX = m.abs(e.touches[0].pageX + e.touches[1].pageX - that.wrapperOffsetLeft * 2) / 2 - that.x;
+				that.originY = m.abs(e.touches[0].pageY + e.touches[1].pageY - that.wrapperOffsetTop * 2) / 2 - that.y;
+
+				if (that.options.onZoomStart) that.options.onZoomStart.call(that, e);
+			}
+
+			if (that.options.momentum) {
+				if (that.options.useTransform) {
+					// Very lame general purpose alternative to CSSMatrix
+					matrix = getComputedStyle(that.scroller, null)[vendor + 'Transform'].replace(/[^0-9-.,]/g, '').split(',');
+					x = matrix[4] * 1;
+					y = matrix[5] * 1;
+				} else {
+					x = getComputedStyle(that.scroller, null).left.replace(/[^0-9-]/g, '') * 1;
+					y = getComputedStyle(that.scroller, null).top.replace(/[^0-9-]/g, '') * 1;
+				}
+
+				if (x != that.x || y != that.y) {
+					if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+					else cancelFrame(that.aniTime);
+					that.steps = [];
+					that._pos(x, y);
+				}
+			}
+
+			that.absStartX = that.x;	// Needed by snap threshold
+			that.absStartY = that.y;
+
+			that.startX = that.x;
+			that.startY = that.y;
+			that.pointX = point.pageX;
+			that.pointY = point.pageY;
+
+			that.startTime = e.timeStamp || Date.now();
+
+			if (that.options.onScrollStart) that.options.onScrollStart.call(that, e);
+
+			that._bind(MOVE_EV);
+			that._bind(END_EV);
+			that._bind(CANCEL_EV);
+		},
+
+		_move: function (e) {
+			var that = this,
+				point = hasTouch ? e.touches[0] : e,
+				deltaX = point.pageX - that.pointX,
+				deltaY = point.pageY - that.pointY,
+				newX = that.x + deltaX,
+				newY = that.y + deltaY,
+				c1, c2, scale,
+				timestamp = e.timeStamp || Date.now();
+
+			if (that.options.onBeforeScrollMove) that.options.onBeforeScrollMove.call(that, e);
+
+			// Zoom
+			if (that.options.zoom && hasTouch && e.touches.length > 1) {
+				c1 = m.abs(e.touches[0].pageX - e.touches[1].pageX);
+				c2 = m.abs(e.touches[0].pageY - e.touches[1].pageY);
+				that.touchesDist = m.sqrt(c1*c1+c2*c2);
+
+				that.zoomed = true;
+
+				scale = 1 / that.touchesDistStart * that.touchesDist * this.scale;
+
+				if (scale < that.options.zoomMin) scale = 0.5 * that.options.zoomMin * Math.pow(2.0, scale / that.options.zoomMin);
+				else if (scale > that.options.zoomMax) scale = 2.0 * that.options.zoomMax * Math.pow(0.5, that.options.zoomMax / scale);
+
+				that.lastScale = scale / this.scale;
+
+				newX = this.originX - this.originX * that.lastScale + this.x,
+				newY = this.originY - this.originY * that.lastScale + this.y;
+
+				this.scroller.style[vendor + 'Transform'] = trnOpen + newX + 'px,' + newY + 'px' + trnClose + ' scale(' + scale + ')';
+
+				if (that.options.onZoom) that.options.onZoom.call(that, e);
+				return;
+			}
+
+			that.pointX = point.pageX;
+			that.pointY = point.pageY;
+
+			// Slow down if outside of the boundaries
+			if (newX > 0 || newX < that.maxScrollX) {
+				newX = that.options.bounce ? that.x + (deltaX / 2) : newX >= 0 || that.maxScrollX >= 0 ? 0 : that.maxScrollX;
+			}
+			if (newY > that.minScrollY || newY < that.maxScrollY) {
+				newY = that.options.bounce ? that.y + (deltaY / 2) : newY >= that.minScrollY || that.maxScrollY >= 0 ? that.minScrollY : that.maxScrollY;
+			}
+
+			if (that.absDistX < 6 && that.absDistY < 6) {
+				that.distX += deltaX;
+				that.distY += deltaY;
+				that.absDistX = m.abs(that.distX);
+				that.absDistY = m.abs(that.distY);
+
+				return;
+			}
+
+			// Lock direction
+			if (that.options.lockDirection) {
+				if (that.absDistX > that.absDistY + 5) {
+					newY = that.y;
+					deltaY = 0;
+				} else if (that.absDistY > that.absDistX + 5) {
+					newX = that.x;
+					deltaX = 0;
+				}
+			}
+
+			that.moved = true;
+			that._pos(newX, newY);
+			that.dirX = deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0;
+			that.dirY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
+
+			if (timestamp - that.startTime > 300) {
+				that.startTime = timestamp;
+				that.startX = that.x;
+				that.startY = that.y;
+			}
+
+			if (that.options.onScrollMove) that.options.onScrollMove.call(that, e);
+		},
+
+		_end: function (e) {
+			if (hasTouch && e.touches.length != 0) return;
+
+			var that = this,
+				point = hasTouch ? e.changedTouches[0] : e,
+				target, ev,
+				momentumX = { dist:0, time:0 },
+				momentumY = { dist:0, time:0 },
+				duration = (e.timeStamp || Date.now()) - that.startTime,
+				newPosX = that.x,
+				newPosY = that.y,
+				distX, distY,
+				newDuration,
+				snap,
+				scale;
+
+			that._unbind(MOVE_EV);
+			that._unbind(END_EV);
+			that._unbind(CANCEL_EV);
+
+			if (that.options.onBeforeScrollEnd) that.options.onBeforeScrollEnd.call(that, e);
+
+			if (that.zoomed) {
+				scale = that.scale * that.lastScale;
+				scale = Math.max(that.options.zoomMin, scale);
+				scale = Math.min(that.options.zoomMax, scale);
+				that.lastScale = scale / that.scale;
+				that.scale = scale;
+
+				that.x = that.originX - that.originX * that.lastScale + that.x;
+				that.y = that.originY - that.originY * that.lastScale + that.y;
+
+				that.scroller.style[vendor + 'TransitionDuration'] = '200ms';
+				that.scroller.style[vendor + 'Transform'] = trnOpen + that.x + 'px,' + that.y + 'px' + trnClose + ' scale(' + that.scale + ')';
+
+				that.zoomed = false;
+				that.refresh();
+
+				if (that.options.onZoomEnd) that.options.onZoomEnd.call(that, e);
+				return;
+			}
+
+			if (!that.moved) {
+				if (hasTouch) {
+					if (that.doubleTapTimer && that.options.zoom) {
+						// Double tapped
+						clearTimeout(that.doubleTapTimer);
+						that.doubleTapTimer = null;
+						if (that.options.onZoomStart) that.options.onZoomStart.call(that, e);
+						that.zoom(that.pointX, that.pointY, that.scale == 1 ? that.options.doubleTapZoom : 1);
+						if (that.options.onZoomEnd) {
+							setTimeout(function() {
+								that.options.onZoomEnd.call(that, e);
+							}, 200); // 200 is default zoom duration
+						}
+					} else {
+						that.doubleTapTimer = setTimeout(function () {
+							that.doubleTapTimer = null;
+
+							// Find the last touched element
+							target = point.target;
+							while (target.nodeType != 1) target = target.parentNode;
+
+							if (target.tagName != 'SELECT' && target.tagName != 'INPUT' && target.tagName != 'TEXTAREA') {
+								ev = document.createEvent('MouseEvents');
+								ev.initMouseEvent('click', true, true, e.view, 1,
+									point.screenX, point.screenY, point.clientX, point.clientY,
+									e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
+									0, null);
+								ev._fake = true;
+								target.dispatchEvent(ev);
+							}
+						}, that.options.zoom ? 250 : 0);
+					}
+				}
+
+				that._resetPos(200);
+
+				if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+				return;
+			}
+
+			if (duration < 300 && that.options.momentum) {
+				momentumX = newPosX ? that._momentum(newPosX - that.startX, duration, -that.x, that.scrollerW - that.wrapperW + that.x, that.options.bounce ? that.wrapperW : 0) : momentumX;
+				momentumY = newPosY ? that._momentum(newPosY - that.startY, duration, -that.y, (that.maxScrollY < 0 ? that.scrollerH - that.wrapperH + that.y - that.minScrollY : 0), that.options.bounce ? that.wrapperH : 0) : momentumY;
+
+				newPosX = that.x + momentumX.dist;
+				newPosY = that.y + momentumY.dist;
+
+				if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) momentumX = { dist:0, time:0 };
+				if ((that.y > that.minScrollY && newPosY > that.minScrollY) || (that.y < that.maxScrollY && newPosY < that.maxScrollY)) momentumY = { dist:0, time:0 };
+			}
+
+			if (momentumX.dist || momentumY.dist) {
+				newDuration = m.max(m.max(momentumX.time, momentumY.time), 10);
+
+				// Do we need to snap?
+				if (that.options.snap) {
+					distX = newPosX - that.absStartX;
+					distY = newPosY - that.absStartY;
+					if (m.abs(distX) < that.options.snapThreshold && m.abs(distY) < that.options.snapThreshold) { that.scrollTo(that.absStartX, that.absStartY, 200); }
+					else {
+						snap = that._snap(newPosX, newPosY);
+						newPosX = snap.x;
+						newPosY = snap.y;
+						newDuration = m.max(snap.time, newDuration);
+					}
+				}
+
+				that.scrollTo(mround(newPosX), mround(newPosY), newDuration);
+
+				if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+				return;
+			}
+
+			// Do we need to snap?
+			if (that.options.snap) {
+				distX = newPosX - that.absStartX;
+				distY = newPosY - that.absStartY;
+				if (m.abs(distX) < that.options.snapThreshold && m.abs(distY) < that.options.snapThreshold) that.scrollTo(that.absStartX, that.absStartY, 200);
+				else {
+					snap = that._snap(that.x, that.y);
+					if (snap.x != that.x || snap.y != that.y) that.scrollTo(snap.x, snap.y, snap.time);
+				}
+
+				if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+				return;
+			}
+
+			that._resetPos(200);
+			if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+		},
+
+		_resetPos: function (time) {
+			var that = this,
+				resetX = that.x >= 0 ? 0 : that.x < that.maxScrollX ? that.maxScrollX : that.x,
+				resetY = that.y >= that.minScrollY || that.maxScrollY > 0 ? that.minScrollY : that.y < that.maxScrollY ? that.maxScrollY : that.y;
+
+			if (resetX == that.x && resetY == that.y) {
+				if (that.moved) {
+					that.moved = false;
+					if (that.options.onScrollEnd) that.options.onScrollEnd.call(that);		// Execute custom code on scroll end
+				}
+
+				if (that.hScrollbar && that.options.hideScrollbar) {
+					if (vendor == 'webkit') that.hScrollbarWrapper.style[vendor + 'TransitionDelay'] = '300ms';
+					that.hScrollbarWrapper.style.opacity = '0';
+				}
+				if (that.vScrollbar && that.options.hideScrollbar) {
+					if (vendor == 'webkit') that.vScrollbarWrapper.style[vendor + 'TransitionDelay'] = '300ms';
+					that.vScrollbarWrapper.style.opacity = '0';
+				}
+
+				return;
+			}
+
+			that.scrollTo(resetX, resetY, time || 0);
+		},
+
+		_wheel: function (e) {
+			var that = this,
+				wheelDeltaX, wheelDeltaY,
+				deltaX, deltaY,
+				deltaScale;
+
+			if ('wheelDeltaX' in e) {
+				wheelDeltaX = e.wheelDeltaX / 12;
+				wheelDeltaY = e.wheelDeltaY / 12;
+			} else if ('detail' in e) {
+				wheelDeltaX = wheelDeltaY = -e.detail * 3;
+			} else {
+				wheelDeltaX = wheelDeltaY = -e.wheelDelta;
+			}
+
+			if (that.options.wheelAction == 'zoom') {
+				deltaScale = that.scale * Math.pow(2, 1/3 * (wheelDeltaY ? wheelDeltaY / Math.abs(wheelDeltaY) : 0));
+				if (deltaScale < that.options.zoomMin) deltaScale = that.options.zoomMin;
+				if (deltaScale > that.options.zoomMax) deltaScale = that.options.zoomMax;
+
+				if (deltaScale != that.scale) {
+					if (!that.wheelZoomCount && that.options.onZoomStart) that.options.onZoomStart.call(that, e);
+					that.wheelZoomCount++;
+
+					that.zoom(e.pageX, e.pageY, deltaScale, 400);
+
+					setTimeout(function() {
+						that.wheelZoomCount--;
+						if (!that.wheelZoomCount && that.options.onZoomEnd) that.options.onZoomEnd.call(that, e);
+					}, 400);
+				}
+
+				return;
+			}
+
+			deltaX = that.x + wheelDeltaX;
+			deltaY = that.y + wheelDeltaY;
+
+			if (deltaX > 0) deltaX = 0;
+			else if (deltaX < that.maxScrollX) deltaX = that.maxScrollX;
+
+			if (deltaY > that.minScrollY) deltaY = that.minScrollY;
+			else if (deltaY < that.maxScrollY) deltaY = that.maxScrollY;
+
+			that.scrollTo(deltaX, deltaY, 0);
+		},
+
+		_mouseout: function (e) {
+			var t = e.relatedTarget;
+
+			if (!t) {
+				this._end(e);
+				return;
+			}
+
+			while (t = t.parentNode) if (t == this.wrapper) return;
+
+			this._end(e);
+		},
+
+		_transitionEnd: function (e) {
+			var that = this;
+
+			if (e.target != that.scroller) return;
+
+			that._unbind('webkitTransitionEnd');
+
+			that._startAni();
+		},
+
+
+		/**
+		 *
+		 * Utilities
+		 *
+		 */
+		_startAni: function () {
+			var that = this,
+				startX = that.x, startY = that.y,
+				startTime = Date.now(),
+				step, easeOut,
+				animate;
+
+			if (that.animating) return;
+
+			if (!that.steps.length) {
+				that._resetPos(400);
+				return;
+			}
+
+			step = that.steps.shift();
+
+			if (step.x == startX && step.y == startY) step.time = 0;
+
+			that.animating = true;
+			that.moved = true;
+
+			if (that.options.useTransition) {
+				that._transitionTime(step.time);
+				that._pos(step.x, step.y);
+				that.animating = false;
+				if (step.time) that._bind('webkitTransitionEnd');
+				else that._resetPos(0);
+				return;
+			}
+
+			animate = function () {
+				var now = Date.now(),
+					newX, newY;
+
+				if (now >= startTime + step.time) {
+					that._pos(step.x, step.y);
+					that.animating = false;
+					if (that.options.onAnimationEnd) that.options.onAnimationEnd.call(that);			// Execute custom code on animation end
+					that._startAni();
+					return;
+				}
+
+				now = (now - startTime) / step.time - 1;
+				easeOut = m.sqrt(1 - now * now);
+				newX = (step.x - startX) * easeOut + startX;
+				newY = (step.y - startY) * easeOut + startY;
+				that._pos(newX, newY);
+				if (that.animating) that.aniTime = nextFrame(animate);
+			};
+
+			animate();
+		},
+
+		_transitionTime: function (time) {
+			time += 'ms';
+			this.scroller.style[vendor + 'TransitionDuration'] = time;
+			if (this.hScrollbar) this.hScrollbarIndicator.style[vendor + 'TransitionDuration'] = time;
+			if (this.vScrollbar) this.vScrollbarIndicator.style[vendor + 'TransitionDuration'] = time;
+		},
+
+		_momentum: function (dist, time, maxDistUpper, maxDistLower, size) {
+			var deceleration = 0.0006,
+				speed = m.abs(dist) / time,
+				newDist = (speed * speed) / (2 * deceleration),
+				newTime = 0, outsideDist = 0;
+
+			// Proportinally reduce speed if we are outside of the boundaries
+			if (dist > 0 && newDist > maxDistUpper) {
+				outsideDist = size / (6 / (newDist / speed * deceleration));
+				maxDistUpper = maxDistUpper + outsideDist;
+				speed = speed * maxDistUpper / newDist;
+				newDist = maxDistUpper;
+			} else if (dist < 0 && newDist > maxDistLower) {
+				outsideDist = size / (6 / (newDist / speed * deceleration));
+				maxDistLower = maxDistLower + outsideDist;
+				speed = speed * maxDistLower / newDist;
+				newDist = maxDistLower;
+			}
+
+			newDist = newDist * (dist < 0 ? -1 : 1);
+			newTime = speed / deceleration;
+
+			return { dist: newDist, time: mround(newTime) };
+		},
+
+		_offset: function (el) {
+			var left = -el.offsetLeft,
+				top = -el.offsetTop;
+
+			while (el = el.offsetParent) {
+				left -= el.offsetLeft;
+				top -= el.offsetTop;
+			}
+
+			if (el != this.wrapper) {
+				left *= this.scale;
+				top *= this.scale;
+			}
+
+			return { left: left, top: top };
+		},
+
+		_snap: function (x, y) {
+			var that = this,
+				i, l,
+				page, time,
+				sizeX, sizeY;
+
+			// Check page X
+			page = that.pagesX.length - 1;
+			for (i=0, l=that.pagesX.length; i<l; i++) {
+				if (x >= that.pagesX[i]) {
+					page = i;
+					break;
+				}
+			}
+			if (page == that.currPageX && page > 0 && that.dirX < 0) page--;
+			x = that.pagesX[page];
+			sizeX = m.abs(x - that.pagesX[that.currPageX]);
+			sizeX = sizeX ? m.abs(that.x - x) / sizeX * 500 : 0;
+			that.currPageX = page;
+
+			// Check page Y
+			page = that.pagesY.length-1;
+			for (i=0; i<page; i++) {
+				if (y >= that.pagesY[i]) {
+					page = i;
+					break;
+				}
+			}
+			if (page == that.currPageY && page > 0 && that.dirY < 0) page--;
+			y = that.pagesY[page];
+			sizeY = m.abs(y - that.pagesY[that.currPageY]);
+			sizeY = sizeY ? m.abs(that.y - y) / sizeY * 500 : 0;
+			that.currPageY = page;
+
+			// Snap with constant speed (proportional duration)
+			time = mround(m.max(sizeX, sizeY)) || 200;
+
+			return { x: x, y: y, time: time };
+		},
+
+		_bind: function (type, el, bubble) {
+			(el || this.scroller).addEventListener(type, this, !!bubble);
+		},
+
+		_unbind: function (type, el, bubble) {
+			(el || this.scroller).removeEventListener(type, this, !!bubble);
+		},
+
+
+		/**
+		 *
+		 * Public methods
+		 *
+		 */
+		destroy: function () {
+			var that = this;
+
+			that.scroller.style[vendor + 'Transform'] = '';
+
+			// Remove the scrollbars
+			that.hScrollbar = false;
+			that.vScrollbar = false;
+			that._scrollbar('h');
+			that._scrollbar('v');
+
+			// Remove the event listeners
+			that._unbind(RESIZE_EV, window);
+			that._unbind(START_EV);
+			that._unbind(MOVE_EV);
+			that._unbind(END_EV);
+			that._unbind(CANCEL_EV);
+
+			if (!that.options.hasTouch) {
+				that._unbind('mouseout', that.wrapper);
+				that._unbind(WHEEL_EV);
+			}
+
+			if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+
+			if (that.options.checkDOMChanges) clearInterval(that.checkDOMTime);
+
+			if (that.options.onDestroy) that.options.onDestroy.call(that);
+		},
+
+		refresh: function () {
+			var that = this,
+				offset,
+				i, l,
+				els,
+				pos = 0,
+				page = 0;
+
+			if (that.scale < that.options.zoomMin) that.scale = that.options.zoomMin;
+			that.wrapperW = that.wrapper.clientWidth || 1;
+			that.wrapperH = that.wrapper.clientHeight || 1;
+
+			that.minScrollY = -that.options.topOffset || 0;
+			that.scrollerW = mround(that.scroller.offsetWidth * that.scale);
+			that.scrollerH = mround((that.scroller.offsetHeight + that.minScrollY) * that.scale);
+			that.maxScrollX = that.wrapperW - that.scrollerW;
+			that.maxScrollY = that.wrapperH - that.scrollerH + that.minScrollY;
+			that.dirX = 0;
+			that.dirY = 0;
+
+			if (that.options.onRefresh) that.options.onRefresh.call(that);
+
+			that.hScroll = that.options.hScroll && that.maxScrollX < 0;
+			that.vScroll = that.options.vScroll && (!that.options.bounceLock && !that.hScroll || that.scrollerH > that.wrapperH);
+
+			that.hScrollbar = that.hScroll && that.options.hScrollbar;
+			that.vScrollbar = that.vScroll && that.options.vScrollbar && that.scrollerH > that.wrapperH;
+
+			offset = that._offset(that.wrapper);
+			that.wrapperOffsetLeft = -offset.left;
+			that.wrapperOffsetTop = -offset.top;
+
+			// Prepare snap
+			if (typeof that.options.snap == 'string') {
+				that.pagesX = [];
+				that.pagesY = [];
+				els = that.scroller.querySelectorAll(that.options.snap);
+				for (i=0, l=els.length; i<l; i++) {
+					pos = that._offset(els[i]);
+					pos.left += that.wrapperOffsetLeft;
+					pos.top += that.wrapperOffsetTop;
+					that.pagesX[i] = pos.left < that.maxScrollX ? that.maxScrollX : pos.left * that.scale;
+					that.pagesY[i] = pos.top < that.maxScrollY ? that.maxScrollY : pos.top * that.scale;
+				}
+			} else if (that.options.snap) {
+				that.pagesX = [];
+				while (pos >= that.maxScrollX) {
+					that.pagesX[page] = pos;
+					pos = pos - that.wrapperW;
+					page++;
+				}
+				if (that.maxScrollX%that.wrapperW) that.pagesX[that.pagesX.length] = that.maxScrollX - that.pagesX[that.pagesX.length-1] + that.pagesX[that.pagesX.length-1];
+
+				pos = 0;
+				page = 0;
+				that.pagesY = [];
+				while (pos >= that.maxScrollY) {
+					that.pagesY[page] = pos;
+					pos = pos - that.wrapperH;
+					page++;
+				}
+				if (that.maxScrollY%that.wrapperH) that.pagesY[that.pagesY.length] = that.maxScrollY - that.pagesY[that.pagesY.length-1] + that.pagesY[that.pagesY.length-1];
+			}
+
+			// Prepare the scrollbars
+			that._scrollbar('h');
+			that._scrollbar('v');
+
+			if (!that.zoomed) {
+				that.scroller.style[vendor + 'TransitionDuration'] = '0';
+				that._resetPos(200);
+			}
+		},
+
+		scrollTo: function (x, y, time, relative) {
+			var that = this,
+				step = x,
+				i, l;
+
+			that.stop();
+
+			if (!step.length) step = [{ x: x, y: y, time: time, relative: relative }];
+
+			for (i=0, l=step.length; i<l; i++) {
+				if (step[i].relative) { step[i].x = that.x - step[i].x; step[i].y = that.y - step[i].y; }
+				that.steps.push({ x: step[i].x, y: step[i].y, time: step[i].time || 0 });
+			}
+
+			that._startAni();
+		},
+
+		scrollToElement: function (el, time) {
+			var that = this, pos;
+			el = el.nodeType ? el : that.scroller.querySelector(el);
+			if (!el) return;
+
+			pos = that._offset(el);
+			pos.left += that.wrapperOffsetLeft;
+			pos.top += that.wrapperOffsetTop;
+
+			pos.left = pos.left > 0 ? 0 : pos.left < that.maxScrollX ? that.maxScrollX : pos.left;
+			pos.top = pos.top > that.minScrollY ? that.minScrollY : pos.top < that.maxScrollY ? that.maxScrollY : pos.top;
+			time = time === undefined ? m.max(m.abs(pos.left)*2, m.abs(pos.top)*2) : time;
+
+			that.scrollTo(pos.left, pos.top, time);
+		},
+
+		scrollToPage: function (pageX, pageY, time) {
+			var that = this, x, y;
+
+			if (that.options.onScrollStart) that.options.onScrollStart.call(that);
+
+			if (that.options.snap) {
+				pageX = pageX == 'next' ? that.currPageX+1 : pageX == 'prev' ? that.currPageX-1 : pageX;
+				pageY = pageY == 'next' ? that.currPageY+1 : pageY == 'prev' ? that.currPageY-1 : pageY;
+
+				pageX = pageX < 0 ? 0 : pageX > that.pagesX.length-1 ? that.pagesX.length-1 : pageX;
+				pageY = pageY < 0 ? 0 : pageY > that.pagesY.length-1 ? that.pagesY.length-1 : pageY;
+
+				that.currPageX = pageX;
+				that.currPageY = pageY;
+				x = that.pagesX[pageX];
+				y = that.pagesY[pageY];
+			} else {
+				x = -that.wrapperW * pageX;
+				y = -that.wrapperH * pageY;
+				if (x < that.maxScrollX) x = that.maxScrollX;
+				if (y < that.maxScrollY) y = that.maxScrollY;
+			}
+
+			that.scrollTo(x, y, time || 400);
+		},
+
+		disable: function () {
+			this.stop();
+			this._resetPos(0);
+			this.enabled = false;
+
+			// If disabled after touchstart we make sure that there are no left over events
+			this._unbind(MOVE_EV);
+			this._unbind(END_EV);
+			this._unbind(CANCEL_EV);
+		},
+
+		enable: function () {
+			this.enabled = true;
+		},
+
+		stop: function () {
+			if (this.options.useTransition) this._unbind('webkitTransitionEnd');
+			else cancelFrame(this.aniTime);
+			this.steps = [];
+			this.moved = false;
+			this.animating = false;
+		},
+
+		zoom: function (x, y, scale, time) {
+			var that = this,
+				relScale = scale / that.scale;
+
+			if (!that.options.useTransform) return;
+
+			that.zoomed = true;
+			time = time === undefined ? 200 : time;
+			x = x - that.wrapperOffsetLeft - that.x;
+			y = y - that.wrapperOffsetTop - that.y;
+			that.x = x - x * relScale + that.x;
+			that.y = y - y * relScale + that.y;
+
+			that.scale = scale;
+			that.refresh();
+
+			that.x = that.x > 0 ? 0 : that.x < that.maxScrollX ? that.maxScrollX : that.x;
+			that.y = that.y > that.minScrollY ? that.minScrollY : that.y < that.maxScrollY ? that.maxScrollY : that.y;
+
+			that.scroller.style[vendor + 'TransitionDuration'] = time + 'ms';
+			that.scroller.style[vendor + 'Transform'] = trnOpen + that.x + 'px,' + that.y + 'px' + trnClose + ' scale(' + scale + ')';
+			that.zoomed = false;
+		},
+
+		isReady: function () {
+			return !this.moved && !this.zoomed && !this.animating;
+		}
+	};
+
+	if (typeof exports !== 'undefined') exports.iScroll = iScroll;
+	else window.iScroll = iScroll;
+
+})();
+
+var myScroll;
+function loaded() {
+	myScroll = new iScroll('wrapper-menu');
+}
+
+document.addEventListener('DOMContentLoaded', loaded, false);
+window.addEventListener('orientationchange', refreshScreen);
+
+function releaseCombo()
+{
+	pad('release');
+	gm.focus();
+	window.focus();
+	window.scrollTo(0, 0);
+}
+
+function clearCombo()
+{
+	combo = 0; scombo = ''; ComboMode.innerHTML='Single Click';
+}
+
+function pad(param)
+{
+	var gmode = isAltKey || game_mode;
+
+	if(param=='SysInfo')
+		{go('/popup.ps3'); clearCombo();}
+	else if(param=='release')
+		{go('/pad.ps3?release'); clearCombo();}
+	else if(isShiftKey)
+		{go('/pad.ps3?AnalogL_'+param+(gmode?'_hold':'')); clearCombo();}
+	else if(isCtrlKey)
+		{go('/pad.ps3?AnalogR_'+param+(gmode?'_hold':'')); clearCombo();}
+	else
+		{go('/pad.ps3?'+scombo+param+((gmode || combo)?'_hold':''));}
+
+	if(combo>0)
+	{
+		isShiftKey = 0; isCtrlKey = 0;
+		combo--; scombo+=param+"_";
+		if(combo == 0 && gmode == 0)
+		{
+			switch (scombo)
+			{
+			 case 'select_start_'     : go('/popup.ps3'        ); break;
+			 case 'select_circle_'    : go('/mount_ps3/unmount'); break;
+			 case 'select_square_'    : go('/extgd.ps3'        ); break;
+			 case 'select_up_'        : go('/cpursx.ps3?up'    ); break;
+			 case 'select_down_'      : go('/cpursx.ps3?dn'    ); break;
+			 case 'select_l3_'        : go('/refresh.ps3'      ); break;
+			 case 'r2_l3_circle_'     : go('/restart.ps3'      ); break;
+			 case 'l3_r2_circle_'     : go('/restart.ps3'      ); break;
+			 case 'r2_l3_cross_'      : go('/shutdown.ps3'     ); break;
+			 case 'l3_r2_cross_'      : go('/shutdown.ps3'     ); break;
+			 case 'select_r2_square_' : go('/mount_ps3/net0'   ); break;
+			 case 'select_l2_square_' : go('/mount_ps3/net1'   ); break;
+			 case 'r2_select_square_' : go('/mount_ps3/net0'   ); break;
+			 case 'l2_select_square_' : go('/mount_ps3/net1'   ); break;
+			}
+		}
+		if(combo == 0)
+			{clearCombo(); setTimeout(releaseCombo, 250);}
+		else
+			{ComboMode.innerHTML='<font color="#CCCCCC">Combo: ' + combo + '</font>'};
+	}
+
+	if(isShiftKey || lstick)
+	{
+		if(param=="_up") btnAnalogL_up.focus(); else
+		if(param=="_down") btnAnalogL_down.focus(); else
+		if(param=="_left") btnAnalogL_left.focus(); else
+		if(param=="_right") btnAnalogL_right.focus(); else
+
+		if(param=="_up_left") btnAnalogL_up_left.focus(); else
+		if(param=="_up_right") btnAnalogL_up_right.focus(); else
+		if(param=="_down_left") btnAnalogL_down_left.focus(); else
+		if(param=="_down_right") btnAnalogL_down_right.focus();
+	}
+	else if(isCtrlKey || rstick)
+	{
+		if(param=="_up") btnAnalogR_up.focus(); else
+		if(param=="_down") btnAnalogR_down.focus(); else
+		if(param=="_left") btnAnalogR_left.focus(); else
+		if(param=="_right") btnAnalogR_right.focus(); else
+
+		if(param=="_up_left") btnAnalogR_up_left.focus(); else
+		if(param=="_up_right") btnAnalogR_up_right.focus(); else
+		if(param=="_down_left") btnAnalogR_down_left.focus(); else
+		if(param=="_down_right") btnAnalogR_down_right.focus();
+	}
+	else
+	{
+		if(param=="_up") btnUp.focus(); else
+		if(param=="_down") btnDown.focus(); else
+		if(param=="_left") btnLeft.focus(); else
+		if(param=="_right") btnRight.focus(); else
+
+		if(param=="_square") btnSquare.focus(); else
+		if(param=="_cross") btnCross.focus(); else
+		if(param=="_circle") btnCircle.focus(); else
+		if(param=="_triangle") btnTriangle.focus(); else
+
+		if(param=="_r1") btnR1.focus(); else
+		if(param=="_l1") btnL1.focus(); else
+		if(param=="_r2") btnR2.focus(); else
+		if(param=="_l2") btnL2.focus(); else
+		if(param=="_r3") btnR3.focus(); else
+		if(param=="_l3") btnL3.focus(); else
+
+		if(param=="_select") btnSelect.focus(); else
+		if(param=="_start") btnStart.focus(); else
+		if(param=="_psbtn") btnPS.focus(); else
+		if(param=="SysInfo") btnInfo.focus(); else
+
+		window.focus();
+	}
+
+	window.scrollTo(0, 0);
+}
+
+function go(url)
+{
+	window.open('http://' + ip + url, 'webMAN');
+}
+
+function navigate(url)
+{
+	if(url.indexOf('http://')>-1 || url.indexOf('https://')>-1)
+		go('/browser.ps3?'+url);
+	else if(url.indexOf('.com')>-1 || url.indexOf('.net')>-1 || url.indexOf('.org')>-1 || url.indexOf('.biz')>-1 || url.indexOf('.info')>-1)
+		go('/browser.ps3?http://'+url);
+	else if(url=='.' || url=='aldostools')
+		go('/browser.ps3?http://ps3.aldostools.org');
+	else if(url.substring(0, 1)=='/')
+		go('/browser.ps3'+url);
+	else if(url=='psx-place')
+		go('/browser.ps3?http://www.psx-place.com');
+	else if(url=='forum')
+		go('/browser.ps3?http://www.psx-place.com/forum');
+	else if(url=='ps3devwiki')
+		go('/browser.ps3?http://www.ps3devwikicom');
+	else if(url=='brewology')
+		go('/browser.ps3?http://store.brewology.com/whatsnew.php');
+	else if(url=='imdb')
+		go('/browser.ps3?http://imdb.com');
+	else if(url=='gmail')
+		go('/browser.ps3?http://gmail.com');
+	else if(url=='psn')
+		go('/browser.ps3*psn:');
+	else if(url=='reg')
+		go('/browser.ps3*regcam:reg?');
+	else
+		go('/browser.ps3?http://google.com/search?q='+url);
+}
+
+function _go(param)
+{
+	hideMenu();
+	lstick = rstick = 0;
+	document.getElementById('wait-dialog').style.display='none';
+
+	if(param[0]!='/') {pad(param); return;}
+
+	iframe_mode = 0;
+	document.getElementById("wmframe").style.display= "";
+	document.getElementById("ComboMode").style.display="none";
+	window.open('http://'+ip+param, (screen.height > screen.width) ? "portrait" : "cpursx" );
+
+	window.focus();
+}
+
+function setCookie(cname, cvalue, exdays)
+{
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	var expires = "expires="+d.toUTCString();
+	document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname, defaultval)
+{
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0; i<ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1);
+		if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+	}
+	return defaultval;
+}
+
+function get(name, defaultval)
+{
+	if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+		return decodeURIComponent(name[1])+"";
+	else
+		return defaultval;
+}
+
+function askIP()
+{
+	var newIP=ip;
+	if(newIP=="127.0.0.1" || newIP=="localhost") newIP='';
+	newIP=prompt("Remote IP Address", newIP);
+
+	if(newIP) {ip=newIP; setCookie("ip", ip, 10000);} else newIP='';
+
+	remoteIP.innerHTML="<font color=blue>Remote IP: " + ip + "</font>";
+	window.open("http://" + ip + "/cpursx.ps3", "cpursx");
+	window.focus();
+}
+
+function toggle_ComboMode()
+{
+	combo = (combo==0) ? 2 : (combo==2) ? 3 : 0; scombo = '';
+	ComboMode.innerHTML=combo ? ('<font color="#CCCCCC">Combo: ' + combo + '</font>') : 'Single Click';
+
+	go('/pad.ps3?release');
+	gm.focus();
+	window.focus();
+	window.scrollTo(0, 0);
+}
+
+function toggle_GameMode()
+{
+	game_mode = game_mode ? 0 : 1;
+	setCookie("gm", game_mode, 10000);
+	GameMode.innerHTML=(game_mode ? " (Game Mode)" : "(Normal Mode)");
+}
+
+var iframe_mode = 1;
+
+function toggle_cpursx()
+{
+	iframe_mode = iframe_mode ? 0 : 1;
+
+	document.getElementById("wmframe").style.display=iframe_mode ? "none" : "";
+	document.getElementById("ComboMode").style.display=!iframe_mode ? "none" : "";
+}
+
+var pressed={};
+
+document.addEventListener("keydown", keyDownEvent, false);
+document.addEventListener("keyup",   keyUpEvent, false);
+
+function toggle_stick(b)
+{
+	if(b) {lstick = 0; rstick = rstick ? 0 : 1;} else {rstick = 0; lstick = lstick ? 0 : 1;}
+}
+
+
+function switch_theme()
+{
+	setCookie("tm", "dark", 10000); window.open('index.html', '_self');
+}
+
+function change_background()
+{
+	if(bgc)
+	{
+		imgpad.src='pad2.jpg';
+		document.body.style.background = 'white';
+	}
+	else
+	{
+		imgpad.src='pad.jpg';
+		document.body.style.background = 'black';
+	}
+}
+
+function toggle_background()
+{
+	bgc = bgc ? 0 : 1;
+	setCookie("bg", bgc, 10000);
+	change_background();
+}
+
+function findNextTabStop(el) {
+	var universe = document.querySelectorAll('input, button, select, textarea, a[href]');
+	var list = Array.prototype.filter.call(universe, function(item) {return item.tabIndex >= "0" && item.parentNode.parentNode.parentNode.id=='scroller'});
+	var index = list.indexOf(el);
+	return list[index + 1] || list[0];
+}
+
+function findBackTabStop(el) {
+	if(el=null) return list[0];
+	var universe = document.querySelectorAll('input, button, select, textarea, a[href]');
+	var list = Array.prototype.filter.call(universe, function(item) {return item.tabIndex >= "0" && item.parentNode.parentNode.parentNode.id=='scroller'});
+	var index = list.indexOf(el);
+	return list[index - 1] || list[0];
+}
+
+function keyDownEvent(e)
+{
+	if(combo>0) clearCombo();
+
+	e = e || window.event;
+	var keyCode = e.keyCode;
+	var et = new Date;
+
+	if(keyCode==115 || keyCode==121) {showMenu(); return;} //F4
+	if(keyCode==27) {document.getElementById("wmframe").style.display= "none"; document.getElementById("ComboMode").style.display=""; hideMenu();}
+
+	if(document.getElementById('wrapper').style.display=='none')
+	{
+		if(keyCode==38) {nextEl = findBackTabStop(nextEl); nextEl.focus(); indexEl--; if(indexEl>0) {return;} indexEl=0;}
+		if(keyCode==40 || keyCode==9) {nextEl = findNextTabStop(nextEl); nextEl.focus(); indexEl++; if(indexEl<13) {return;} indexEl=0;}
+
+		if(keyCode==33 || keyCode==38) {if(myScroll.currPageY>0) myScroll.currPageY--; myScroll.scrollToPage(0,myScroll.currPageY,0);} //pgup
+		if(keyCode==34 || keyCode==40) {if(myScroll.currPageY<3) myScroll.currPageY++; myScroll.scrollToPage(0,myScroll.currPageY,0);} //pgdn
+		if(keyCode==36) myScroll.scrollToPage(0,0,0); //home
+		if(keyCode==35) myScroll.scrollToPage(0,1000,0); //end
+		return;
+	}
+
+	pressed[keyCode] = true;
+
+	isCtrlKey = e.ctrlKey;
+	isShiftKey = e.shiftKey;
+	isAltKey = e.altKey;
+
+	if(isShiftKey || isCtrlKey) {lstick = rstick = 0;}
+
+
+	if(keyCode==66) {toggle_background(); return;} // b
+	if(keyCode==113) {askIP(); return;} // F2
+	if(keyCode==119 || keyCode==71) {toggle_GameMode(); return;} // F8 or G
+	if(keyCode==8) {e.preventDefault();} // back
+
+	var buttons = '';
+
+	if(keyCode==9) {buttons+=isShiftKey?'_start_select':'_select';} // tab
+
+	if(pressed[38] || pressed[104]) buttons+='_up';
+	if(pressed[40] || pressed[98])  buttons+='_down';
+	if(pressed[37] || pressed[100]) buttons+='_left';
+	if(pressed[39] || pressed[102]) buttons+='_right';
+
+	if(pressed[13] && isAltKey) {go('/xmb.ps3$exit;/browser.ps3$home'); btnInfo.focus();} else
+	if(pressed[13] && isCtrlKey )  buttons+='_start'; else
+	if(pressed[13] && isShiftKey)  buttons+='_start'; else
+	if(pressed[90] || pressed[13]) buttons+='_cross'; // z
+	if(pressed[88] || pressed[27] || pressed[8]) buttons+='_circle'; // x
+	if(pressed[65]) buttons+='_square'; // a
+	if(pressed[83]) buttons+='_triangle'; //s
+
+	if(pressed[81] || pressed[36]) buttons+=(isShiftKey || isCtrlKey) ? 'r1+r2+l1+l2+l3+down' : '_l1'; // q
+	if(pressed[87] || pressed[33]) buttons+='_l2'; // w
+	if(pressed[68] || pressed[34]) buttons+='_r2'; // d
+	if(pressed[67] || pressed[35]) buttons+='_r1'; // c
+
+	if(pressed[32]  || pressed[219] || pressed[188]) buttons+='_select'; // [ , (comma)
+	if(pressed[221] || pressed[220] || pressed[190] || pressed[191]) buttons+='_start'; // ] . / \
+
+	if(pressed[82]) buttons+='_l3'; // r
+	if(pressed[84]) buttons+='_r3'; // t
+
+	if(pressed[80]) buttons+='_psbtn'; // p
+
+	if(isShiftKey && pressed[32]) pause = true; // movian hack: shift+space = pause movie with space
+	if(pause && (buttons=='_select')) buttons='_start'; else pause = false; // disable hack with any other key
+
+	if(pressed[72])
+	{
+		go('/browser.ps3$home'+(isCtrlKey?'':'*'));delete pressed[72]; btnInfo.focus(); // h
+	}
+	else if(pressed[73])
+		{go('/popup.ps3'); delete pressed[73]; btnInfo.focus();} // i
+	else if(pressed[123])
+		{go('/play.ps3?col=network&seg=seg_premo'); btnInfo.focus();} // F12
+	else if(pressed[36] || pressed[103]) //home
+	{
+		if(isCtrlKey && isShiftKey){go('/browser.ps3$focus_category music');} else
+		if(isCtrlKey){go('/browser.ps3$focus_category sysconf');} else
+		if(isShiftKey){go('/browser.ps3$focus_category user');} else
+					{go('/browser.ps3$scroll_list -9999');}
+		btnInfo.focus();
+	}
+	else if(pressed[35] || pressed[97]) //end
+	{
+		if(isCtrlKey && isShiftKey){go('/browser.ps3$focus_category video');} else
+		if(isCtrlKey){go('/browser.ps3$focus_category network');} else
+		if(isShiftKey){go('/browser.ps3$focus_category friend');} else
+					{go('/browser.ps3$scroll_list 9999');}
+		btnInfo.focus();
+	}
+	else if(pressed[12] || pressed[101]) //5
+	{
+		if(isCtrlKey && isShiftKey){go('/browser.ps3$home*');} else
+		if(isCtrlKey){go('/browser.ps3$focus_category game;/browser.ps3$focus_segment_index seg_device');} else
+		if(isShiftKey){go('/browser.ps3$focus_category game;/browser.ps3$focus_segment_index seg_gamedebug');} else
+					{pad("cross");}
+		btnInfo.focus();
+	}
+	else if(pressed[33] || pressed[105]) //page up
+		{go('/browser.ps3$scroll_list -5'); btnInfo.focus();}
+	else if(pressed[34] || pressed[99]) //page down
+		{go('/browser.ps3$scroll_list 5'); btnInfo.focus();}
+	else if(isCtrlKey && pressed[77]) //ctrl+m
+		{go('/browser.ps3$music'); btnInfo.focus();}
+	else
+		pad(buttons);
+
+	e.preventDefault();
+	window.focus();
+	window.scrollTo(0, 0);
+}
+
+function keyUpEvent(e)
+{
+	e = e || window.event;
+	var keyCode = e.keyCode;
+	delete pressed[keyCode];
+
+	if(keyCode==120) {e.preventDefault(); switch_theme(); return;} // F9
+
+	var npressed = Object.keys(pressed).length;
+
+	if(npressed>0 || keyCode==116) return;
+
+	pad('release');
+	gm.focus();
+	window.focus();
+	window.scrollTo(0, 0);
+}
+
+var combo = 0, scombo = '';
+var bgc=0;
+
+var lstick=0;
+var rstick=0;
+
+var game_mode=0;
+
+var isCtrlKey=0;
+var isShiftKey=0;
+var isAltKey=0;
+
+var defaultip=getCookie("ip", "127.0.0.1");
+var ip=get("ip", defaultip);
+
+if(ip.length==0 || ip==null) ip="127.0.0.1";
+
+if(ip.length>0 && ip!="127.0.0.1" && ip!="localhost") {setCookie("ip", ip, 10000);}
+//--><!]]>
+</script>
+<noscript>Your browser does not support JavaScript or has it disabled, please enable javascript to use this content!</noscript>
+
+<style type="text/css">
+	#portrait-wrapper { display: none; background:#000;}
+	@media only screen and (orientation:portrait){
+		#wrapper { display:none; }
+		#portrait-wrapper { display:block; }
+	}
+	@media only screen and (orientation:landscape){
+		#portrait-wrapper { display:none; }
+	}
+</style>
+
+<div id="portrait-wrapper">
+<iframe name="portrait" style="position:absolute;margin-top:0px;margin-left:0px;width:100%;height:100%;background-color:black;"></iframe>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+	refreshScreen();
+
+	window.open("http://" + ip + "/cpursx.ps3", "portrait");
+	window.focus();
+//--><!]]>
+</script>
+</div>
+
+<div id="menu" style="display:none;">
+	<div id="header"><a id="nav-close" href="javascript:void(0)" onclick="hideMenu();"><span style="position:absolute;left:10px">&#9664;</span> webPAD</a></div>
+	<div id="wrapper-menu" onclick="hideMenu();">
+		<div id="scroller">
+			<ul id="thelist">
+				<li><a id="nav-menuItem1" onclick="hideMenu();" href="javascript:askIP();">&#9733; Remote IP</a></li>
+				<li><a id="nav-menuItem2" onclick="hideMenu();" href="javascript:_go('off');">&#9733; Disconnect webPAD</a></li>
+				<li><a id="nav-menuItem3" onclick="hideMenu();" href="javascript:toggle_GameMode();">&#9733; Switch Game Mode / Normal</a></li>
+				<li><a id="nav-menuItem4" onclick="hideMenu();" href="javascript:toggle_background();">&#9733; Change Background</a></li>
+				<li><a id="nav-menuItem10" onclick="showWait();" href="javascript:_go('/cpursx.ps3');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAMAAAAM7l6QAAAAB3RJTUUH3wIUFCsA51hhNwAAAAlwSFlzAAAewgAAHsIBbtB1PgAAAARnQU1BAACxjwv8YQUAAAAVUExURf///8zMzJmZmf///zMzMwAAAGZmZqUuTSIAAAABdFJOUwBA5thmAAAAbklEQVR42uWSOw7AMAhD4/C5/5EDtFkqM7QdOtSKGPLAEonHuCNIz0Qt5F2HmwNRmmEzqfo/POu02F/hr8zF9zT9cLeNKY/rTJOK1etdhCDIrEEZriE7e0ga0xihbCG4nEsKupke1Ckthzlb9kALuw4D9LKqcegAAAAASUVORK5CYII=" border=0 style="position:relative;top:6px"> CPU & RSX </a></li>
+				<li><a id="nav-menuItem11" onclick="showWait();" href="javascript:_go('/index.ps3');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAVCAQAAADyFTaQAAAAB3RJTUUH3wIUFQ4zsbm68QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAARnQU1BAACxjwv8YQUAAAEvSURBVHjaY2RgkJZhOcooxwAH//YzRj18wYAHMDEwMFciawEKOf4PY8ALGMXEOS8ziqIK/n/02+bZYzya5OYxJWIK/1vOdBOXlt/LGBX+M5AI/t8mQxM4IEgHLGhWf2Sc/+87YzqjEJT/7v9MJs7/iYz8KAGB7Lz/n/55Pz7CwCCrzTwFHBz3/rc9vgvk2zBtZeTDpWnJw1jsDpJfzBiDw0//juDyBSOKDIomxnfEBQSK8x5wMPzErkxCnuMBDptwgxcoCRgpyP+fY/gDoqVk2YrgYm8edjP8AjH+f2HkwabpJsNfsFAEQwHc9Qxyvx51Axm//m9mjMTpPAV5xkIUTxdIyKOrQdLEqCMlLCf5fyujJIomKfYuOUkpYUYdHKFHLCArwTLzMzI6kKblfyMAFnRYMZYg+WIAAAAASUVORK5CYII=" border=0 style="position:relative;top:2px;left:5px">&nbsp; MY GAMES </a></li>
+				<li><a id="nav-menuItem12" onclick="showWait();" href="javascript:_go('/setup.ps3');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAB3RJTUUH3wIUFDgN+AZcGAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAACKUExURf///9be3oyUnEpSWiEhIf///97n5+/v9zlCUqWlpSEpKTk5Qs7W3nN7hNbW3jE5OSkpKSkpMSEhKdbe57W9xsbGzmNrc2trc1paY1JaWoSMlHuEjGtzc2Nra729xu/v7+/3/zlCSpScpVJaY62ttc7O1jExOTExMXuMnLW9vaWtrbXGzjlKUmNjawUgndwAAAABdFJOUwBA5thmAAAA1klEQVR42m2R6xqCIAyGMcEUEaXU1Eo7WWl6/7fXHOgT1X7At/fZgTFCZqvHMSW/NlA6WIClAg6fUp8RIl7M0CdNut6lYG7fKfrUPKNfliFu7jZ9NLpKyz/ppjUtb3b0TXc8FeidL5cziiuDnnWcoBNCxSZEmcQ1qUxqNWXOznFRe8hke+MciCxKrKIEYwIVLws5pea6Yr5TKHLzwK8xM4NTaxxuvner7Gi1RSwhOFkYTC/1mAEPhYgmGAkZ82D+cG8N57QGuNYes3YEe3D/7NJZrZzFeQM6ewy7ZXtahwAAAABJRU5ErkJggg==" border=0 style="position:relative;top:2px;left:5px">&nbsp; SETUP WEBMAN </a></li>
+				<li><a id="nav-menuItem13" onclick="showWait();" href="javascript:_go('/');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAUCAQAAAA9vDUIAAAAB3RJTUUH3wIUFQQptjSrAQAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAADlSURBVHjaY2BgWOGi+p8fCdp92mPLgBOwMDDcN7zL8A9J6BBv4YIlVQwn0JVyMOi9V/sE1PCJ/x+a1GWl7BX8GGYzMeTMZUgBauBzwLT4IxBignsaIG0MtxmIBW+BmHER9xEWonUw2Pxh2f9guwjxGr6+YXki8oJ49QyvRJiESVDOwCDIwCROkgYxBqZbG0nR8OkkEz8p6hm+vGBSJEmDFAOT6BtSNMgzMN05RoqG29uYpBgYSdDA+5tJi4GNaOXMDAoMTBcPsBKtgZVBi4Hp3kcuEjTs28NS9evb2z1Epg/jt6YfAP77PxQ5JPzrAAAAAElFTkSuQmCC" border=0 style="position:relative;top:2px;left:5px">&nbsp; FILE MANAGER </a></li>
+				<li><a id="nav-menuItem14" onclick="showWait();" href="javascript:_go('/mount.ps3/unmount');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAQAAAAjdQW7AAAAB3RJTUUH3wIUFQgPyIxh8AAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAACPSURBVHjatdGxDYMwFITh3xQowcyAMgszZFhAGESVFbJCMgFd4keFsYVfityV/mSdbIhjWXwtitSMfHzHPLe4jUrdOd/TDK8YAioduKXpHFHp5E+iAX2SSvtwTGpAOKbS0h2/0mWptOPC4bHO6goazbduaQylXK/Kqr5WYrjTquSDp/HD1Sl+mfFP/Fbb1xfsHITyNa0xJgAAAABJRU5ErkJggg==" border=0 style="position:relative;top:2px;left:5px">&nbsp; UNMOUNT GAME </a></li>
+				<li><a id="nav-menuItem20" onclick="hideMenu();" href="javascript:pad('/play.ps3');">&#9737; Play Disc</a></li>
+				<li><a id="nav-menuItem2a" onclick="hideMenu();" href="javascript:_go('/install.ps3');">&#9733; Install PKG</a></li>
+				<li><a id="nav-menuItem21" onclick="hideMenu();" href="javascript:url=prompt('URL',url);navigate(url);">&#127758; Browse on PS3</a></li>
+				<li><a id="nav-menuItem22" onclick="showWait();" href="javascript:_go('/play.ps3?col=network&seg=seg_premo');">&#127915; Remote Play on PS3</a></li>
+				<li><a id="nav-menuItem23" onclick="showWait();" href="javascript:_go('/refresh.ps3');">&#8635; Refresh XML</a></li>
+				<li><a id="nav-menuItem24" onclick="showWait();" href="javascript:_go('/videorec.ps3');">&#9673; Record Video </a></li>
+				<li><a id="nav-menuItem25" onclick="showWait();" href="javascript:_go('r1+r2+l1+l2+l3+down_hold');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAVCAQAAADyFTaQAAAAB3RJTUUH3wIUFQ4zsbm68QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAARnQU1BAACxjwv8YQUAAAEvSURBVHjaY2RgkJZhOcooxwAH//YzRj18wYAHMDEwMFciawEKOf4PY8ALGMXEOS8ziqIK/n/02+bZYzya5OYxJWIK/1vOdBOXlt/LGBX+M5AI/t8mQxM4IEgHLGhWf2Sc/+87YzqjEJT/7v9MJs7/iYz8KAGB7Lz/n/55Pz7CwCCrzTwFHBz3/rc9vgvk2zBtZeTDpWnJw1jsDpJfzBiDw0//juDyBSOKDIomxnfEBQSK8x5wMPzErkxCnuMBDptwgxcoCRgpyP+fY/gDoqVk2YrgYm8edjP8AjH+f2HkwabpJsNfsFAEQwHc9Qxyvx51Axm//m9mjMTpPAV5xkIUTxdIyKOrQdLEqCMlLCf5fyujJIomKfYuOUkpYUYdHKFHLCArwTLzMzI6kKblfyMAFnRYMZYg+WIAAAAASUVORK5CYII=" border=0 style="position:relative;top:2px;left:5px">&nbsp; QA Combo </a></li>
+				<li><a id="nav-menuItem26" onclick="showWait();" href="javascript:_go('/extgd.ps3');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAVCAQAAADyFTaQAAAAB3RJTUUH3wIUFQ4zsbm68QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAARnQU1BAACxjwv8YQUAAAEvSURBVHjaY2RgkJZhOcooxwAH//YzRj18wYAHMDEwMFciawEKOf4PY8ALGMXEOS8ziqIK/n/02+bZYzya5OYxJWIK/1vOdBOXlt/LGBX+M5AI/t8mQxM4IEgHLGhWf2Sc/+87YzqjEJT/7v9MJs7/iYz8KAGB7Lz/n/55Pz7CwCCrzTwFHBz3/rc9vgvk2zBtZeTDpWnJw1jsDpJfzBiDw0//juDyBSOKDIomxnfEBQSK8x5wMPzErkxCnuMBDptwgxcoCRgpyP+fY/gDoqVk2YrgYm8edjP8AjH+f2HkwabpJsNfsFAEQwHc9Qxyvx51Axm//m9mjMTpPAV5xkIUTxdIyKOrQdLEqCMlLCf5fyujJIomKfYuOUkpYUYdHKFHLCArwTLzMzI6kKblfyMAFnRYMZYg+WIAAAAASUVORK5CYII=" border=0 style="position:relative;top:2px;left:5px">&nbsp; TOGGLE gameDATA </a></li>
+				<li><a id="nav-menuItem27" onclick="showWait();" href="javascript:_go('/rebuild.ps3');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAB3RJTUUH3wIUFDgN+AZcGAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAACKUExURf///9be3oyUnEpSWiEhIf///97n5+/v9zlCUqWlpSEpKTk5Qs7W3nN7hNbW3jE5OSkpKSkpMSEhKdbe57W9xsbGzmNrc2trc1paY1JaWoSMlHuEjGtzc2Nra729xu/v7+/3/zlCSpScpVJaY62ttc7O1jExOTExMXuMnLW9vaWtrbXGzjlKUmNjawUgndwAAAABdFJOUwBA5thmAAAA1klEQVR42m2R6xqCIAyGMcEUEaXU1Eo7WWl6/7fXHOgT1X7At/fZgTFCZqvHMSW/NlA6WIClAg6fUp8RIl7M0CdNut6lYG7fKfrUPKNfliFu7jZ9NLpKyz/ppjUtb3b0TXc8FeidL5cziiuDnnWcoBNCxSZEmcQ1qUxqNWXOznFRe8hke+MciCxKrKIEYwIVLws5pea6Yr5TKHLzwK8xM4NTaxxuvner7Gi1RSwhOFkYTC/1mAEPhYgmGAkZ82D+cG8N57QGuNYes3YEe3D/7NJZrZzFeQM6ewy7ZXtahwAAAABJRU5ErkJggg==" border=0 style="position:relative;top:2px;left:5px">&nbsp; REBUILD DB </a></li>
+				<li><a id="nav-menuItem30" onclick="showWait();" href="javascript:_go('/restart.ps3');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAAB3RJTUUH3wIUFRYWeKb27wAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAAEpSURBVHjapVNBasMwEFztioKhv+nZFPKBgt9QSHIL9Oof+B8puLdeC4HSc56RHwQKJfJWkmV3Za9DS6WLNTuj9a5mAZSFa2S/H9WYBnYFgIHu9qrA3oOVAZYHS6uJwG75YPe5RND38Ga3AqEVOWRiek6SXagBdonehhM5/w/ijh5k20ZJaRrTQBki+EIcY22ef5RQJWGqdHqS+AxPM7ge8yrFPWiwz6k343fL4Lor+t52R/hYYJV45+PhDc4QTRC378vSrc0PC+FPy/hyNlD0Bz4u0fjVnJLg6x/lh7ZWGrzU1miCm3oG11feWbNGMozuJFTMZ1vFTYO9B8/gxN40s7cfIHLiDinoJQ430yLkiOaCbERH0uU9f9Fspi/uMHyq1sDPQMezFvsGK+Z6KtcTlWoAAAAASUVORK5CYII=" border=0 style="position:relative;top:2px;left:5px">&nbsp; RESTART PS3 </a></li>
+				<li><a id="nav-menuItem31" onclick="showWait();" href="javascript:_go('/restart.ps3?quick');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAAB3RJTUUH3wIUFRYWeKb27wAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAAEpSURBVHjapVNBasMwEFztioKhv+nZFPKBgt9QSHIL9Oof+B8puLdeC4HSc56RHwQKJfJWkmV3Za9DS6WLNTuj9a5mAZSFa2S/H9WYBnYFgIHu9qrA3oOVAZYHS6uJwG75YPe5RND38Ga3AqEVOWRiek6SXagBdonehhM5/w/ijh5k20ZJaRrTQBki+EIcY22ef5RQJWGqdHqS+AxPM7ge8yrFPWiwz6k343fL4Lor+t52R/hYYJV45+PhDc4QTRC378vSrc0PC+FPy/hyNlD0Bz4u0fjVnJLg6x/lh7ZWGrzU1miCm3oG11feWbNGMozuJFTMZ1vFTYO9B8/gxN40s7cfIHLiDinoJQ430yLkiOaCbERH0uU9f9Fspi/uMHyq1sDPQMezFvsGK+Z6KtcTlWoAAAAASUVORK5CYII=" border=0 style="position:relative;top:2px;left:5px">&nbsp; QUICK RESTART </a></li>
+				<li><a id="nav-menuItem32" onclick="showWait();" href="javascript:_go('/shutdown.ps3');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAMAAAA4Nk+sAAAAB3RJTUUH3wIUFRMM+LP70AAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAAA2UExURf///9bW1s7OzomJiUJCQikpKSEhIWtrazExMTk5OXNzc1JSUrKyskpKSsbGxmNjY97e3lpaWl0eMI4AAAABdFJOUwBA5thmAAAAzklEQVR42mWR2xLDIAhEiWKza7w0//+zxaJt0vICc0ZgF0VWFNUm/6HA8YO2ganHLGecSUWqDqzpXLQCKFKrnlISUJ12kAyOg5XobwWg1vYeYv2tKq1V5KDqyD5bSiUtB3uc5YslK9kkkm6jukBphqNkw66S7O6LzNIXfub4XLjLbpLulg3sYzbClZoGRGlmMV9xNtzcerg+dvvRsn7uttl9bcawCSSW+RdI6+wbkVLSHGNWK8DZGnTwGdDvov3Dsd/ERut/JI03C77j8o0veQMHuhotxnAAAAAASUVORK5CYII=" border=0 style="position:relative;top:2px;left:5px">&nbsp; POWER OFF PS3 </a></li>
+				<li><a id="nav-menuItem33" onclick="showWait();" href="javascript:_go('/shutdown.ps3?vsh');"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAMAAAA4Nk+sAAAAB3RJTUUH3wIUFRMM+LP70AAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAAA2UExURf///9bW1s7OzomJiUJCQikpKSEhIWtrazExMTk5OXNzc1JSUrKyskpKSsbGxmNjY97e3lpaWl0eMI4AAAABdFJOUwBA5thmAAAAzklEQVR42mWR2xLDIAhEiWKza7w0//+zxaJt0vICc0ZgF0VWFNUm/6HA8YO2ganHLGecSUWqDqzpXLQCKFKrnlISUJ12kAyOg5XobwWg1vYeYv2tKq1V5KDqyD5bSiUtB3uc5YslK9kkkm6jukBphqNkw66S7O6LzNIXfub4XLjLbpLulg3sYzbClZoGRGlmMV9xNtzcerg+dvvRsn7uttl9bcawCSSW+RdI6+wbkVLSHGNWK8DZGnTwGdDvov3Dsd/ERut/JI03C77j8o0veQMHuhotxnAAAAAASUVORK5CYII=" border=0 style="position:relative;top:2px;left:5px">&nbsp; SHUTDOWN PS3 (VSH)</a></li>			</ul>
+		</div>
+	</div>
+	<div id="footer" onclick="hideMenu();"></div>
+</div>
+
+<div id="wait-dialog" style="display:none"><center><h2><font color=white>Please wait...</font></h2></center></div>
+
+<div id="wrapper">
+
+<div id="menu-icon" style="position:absolute;right:20px;top:13px;"><a id="nav-menu" href="javascript:void(0)" onclick="showMenu();"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAdCAQAAACKoB0PAAAAB3RJTUUH3wIUFTUMO2149AAAAAlwSFlzAAALEgAACxIB0t1+/AAAAARnQU1BAACxjwv8YQUAAAArSURBVHjaY/z/n4Fi8IqBiXJDQGBYGjMKRhhgHM1TtDZmFIwwMJqnaG4MAM5nCNRqWuBjAAAAAElFTkSuQmCC" border=1 style="position:relative;top:6px;box-shadow: 3px 3px 3px #000000;border-color:black;"></a></div>
+
+<!--<a href="javascript:_go('off');"style="position:absolute;top:15px;right:15px;text-decoration:none;" title="Disconnect"><font face="arial" color=#202020><div id="off"><b>X</b></div></font></a>-->
+
+<center>
+<div id=home><h3><a title="XMB Screen Capture" onclick="javascript:_go('/xmb.ps3$screenshot?show');" style='color:#888'>Capture</a><p><a title="Return to XMB / Home" onclick="javascript:go('/browser.ps3$home*;/xmb.ps3$exit');" style='color:#888'>Home</a></h3></div>
+<img id="imgpad" src="pad.jpg" border="0" width="900" height="572" orgwidth="900" orgheight="572" usemap="#ps3pad" alt="">
+<map name="ps3pad" id="ps3pad">
+<area id="btnUp" href="javascript:_go('up');" shape="rect" coords="137,91,205,173" style="outline-color:red;outline-style:dotted;">
+<area id="btnDown" href="javascript:_go('down');" shape="rect" coords="132,206,204,290" style="outline-color:red;outline-style:dotted;">
+<area id="btnRight" href="javascript:_go('right');" shape="rect" coords="190,156,278,224" style="outline-color:red;outline-style:dotted;">
+<area id="btnLeft" href="javascript:_go('left');" shape="rect" coords="55,152,150,227" style="outline-color:red;outline-style:dotted;">
+<area id="btnTriangle" href="javascript:pad('triangle');" shape="rect" coords="683,83,769,158" style="outline-color:#00cc00;outline-style:dotted;" title="(S)">
+<area id="btnSquare" href="javascript:pad('square');" shape="rect" coords="605,155,691,230" style="outline-color:#ff66cc;outline-style:dotted;" title="(A)">
+<area id="btnCircle" href="javascript:pad('circle');" shape="rect" coords="761,156,847,231" style="outline-color:red;outline-style:dotted;" title="(X) or (Esc)">
+<area id="btnCross" href="javascript:pad('cross');" shape="rect" coords="684,227,770,312" style="outline-color:#3366ff;outline-style:dotted;" title="(Z) or (Enter)">
+<area id="btnSelect" href="javascript:pad('select');" shape="rect" coords="325,149,412,224" style="outline-color:red;outline-style:dotted;" title="(Space) or ([)">
+<area id="btnStart" href="javascript:pad('start');" shape="rect" coords="489,152,576,227" style="outline-color:red;outline-style:dotted;" title="(/) or (\) or (])">
+<area id="btnPS" href="javascript:_go('psbtn');" shape="rect" coords="406,212,493,287" style="outline-color:red;outline-style:dotted;" title="PS (P)">
+<area id="btnR1" href="javascript:pad('r1');" shape="rect" coords="676,5,763,80" style="outline-color:red;outline-style:dotted;" title="R1 (C) or (End)">
+<area id="btnL1" href="javascript:pad('l1');" shape="rect" coords="137,6,224,80" style="outline-color:red;outline-style:dotted;" title="L1 (Q) or (Home)">
+<area id="btnR2" href="javascript:pad('r2');" shape="rect" coords="555,22,653,80" style="outline-color:red;outline-style:dotted;" title="R2 (D) or (PgDn)">
+<area id="btnL2" href="javascript:pad('l2');" shape="rect" coords="249,22,347,80" style="outline-color:red;outline-style:dotted;" title="L2 (W) or (PgUp)">
+<area id="btnR3" href="javascript:pad('r3');" shape="rect" coords="568,292,626,342" style="outline-color:red;outline-style:dotted;" title="R3 (T)">
+<area id="btnL3" href="javascript:pad('l3');" shape="rect" coords="267,290,325,340" style="outline-color:red;outline-style:dotted;" title="L3 (R)">
+<area id="btnAnalogL_down" href="javascript:pad('AnalogL_down');" shape="rect" coords="267,345,325,395" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogL_up" href="javascript:pad('AnalogL_up');" shape="rect" coords="269,236,327,288" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogL_right" href="javascript:pad('AnalogL_right');" shape="rect" coords="328,292,386,342" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogL_left" href="javascript:pad('AnalogL_left');" shape="rect" coords="207,292,265,342" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogL_up_right" href="javascript:pad('AnalogL_up_right');" shape="rect" coords="328,241,386,291" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogL_down_right" href="javascript:pad('AnalogL_down_right');" shape="rect" coords="328,346,386,396" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogL_up_left" href="javascript:pad('AnalogL_up_left');" shape="rect" coords="209,240,267,290" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogL_down_left" href="javascript:pad('AnalogL_down_left');" shape="rect" coords="208,345,266,395" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_up" href="javascript:pad('AnalogR_up');" shape="rect" coords="569,241,627,291" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_down" href="javascript:pad('AnalogR_down');" shape="rect" coords="569,345,627,395" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_right" href="javascript:pad('AnalogR_right');" shape="rect" coords="626,292,684,342" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_left" href="javascript:pad('AnalogR_left');" shape="rect" coords="511,292,569,342" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_up_right" href="javascript:pad('AnalogR_up_right');" shape="rect" coords="627,242,685,292" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_down_right" href="javascript:pad('AnalogR_down_right');" shape="rect" coords="627,344,685,394" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_down_left" href="javascript:pad('AnalogR_down_left');" shape="rect" coords="511,345,569,395" style="outline-color:red;outline-style:dotted;">
+<area id="btnAnalogR_up_left" href="javascript:pad('AnalogR_up_left');" shape="rect" coords="510,240,568,290" style="outline-color:red;outline-style:dotted;">
+<area id="btnInfo" href="javascript:_go('SysInfo');" shape="rect" coords="360,100,540,150" style="outline-color:red;outline-style:dotted;" title="System Info (I)">
+<area id="btnMain" href="javascript:switch_theme();" shape="rect" coords="406,500,493,550" style="outline-color:red;outline-style:dotted;" title="Switch Theme (F9)" >
+<area id="btnBG" href="javascript:toggle_background();" shape="circle" coords="448,470,20" style="outline-style:none;" title="Background (B)" >
+<area id="btnLStick" href="javascript:toggle_stick(0);" shape="rect" coords="240,460,360,490" style="outline-color:red;outline-style:dotted;">
+<area id="btnRStick" href="javascript:toggle_stick(1);" shape="rect" coords="540,460,660,490" style="outline-color:red;outline-style:dotted;">
+</map>
+</a>
+
+<div id="wmframe" style="display:none">
+<iframe name="cpursx" style="position:absolute;margin-top:-575px;margin-left:-50%;width:100%;height:100%;background-color:black;
+animation-timing-function:ease;position:fixed;-webkit-animation:anim 1.2s 1;animation:anim 1.2s 1;"></iframe>
+</div>
+
+<a href="javascript:askIP();"><font face="arial" size=5><div id="remoteIP">
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+	document.write("<font color=blue>Remote IP: " + ip + "</font>");
+
+	window.open("http://" + ip + "/", "cpursx");
+	window.focus();
+//--><!]]>
+</script>
+</div></a>
+
+<a href="javascript:toggle_GameMode();" id="gm"><font face="arial" size=5 color=#505050><div id="GameMode"></div></font></a>
+<a href="javascript:toggle_ComboMode();" style="position:absolute; top: 25px; left: 25px;"><font face="arial" size=5 color=#505050><div id="ComboMode">Single Click</div></font></a>
+
+<a href="javascript:toggle_cpursx();" style="position:relative; top:-72px; left:580px;"><font face="arial" size=4 color=#505050>Toggle</font></a>
+
+
+</center>
+</div>
+
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+	game_mode = get("mode", "none");
+	if(game_mode=="none") game_mode=getCookie("gm", "0");
+	game_mode=(game_mode!="0")?1:0;
+	GameMode.innerHTML=game_mode?"(Game Mode)":"(Normal Mode)";
+
+	if(get("wm", "0")!="0") toggle_cpursx();
+
+
+	bgc = get("bg", "none");
+	if(bgc=="none") bgc=getCookie("bg", "0");
+	bgc=(bgc!="0")?1:0;
+
+	if(bgc) change_background();
+
+	setCookie("tm", "ps3", 10000);
+//--><!]]>
+</script>
+
+<iframe name="webMAN" width=0 hight=0 style="display:none"></iframe>
+</BODY>
+
+</html>

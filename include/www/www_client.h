@@ -608,6 +608,7 @@ parse_request:
 				#include "../cmd/fixgame.h"
 				#include "../cmd/unlockhdd.h"
 				#include "../cmd/unlocksave.h"
+				#include "../cmd/bdinfo.h"
 			}
 			#ifdef COPY_PS3
 			if(islike(param, "/copy")) {dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same file size

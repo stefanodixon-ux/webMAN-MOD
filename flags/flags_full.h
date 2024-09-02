@@ -54,6 +54,7 @@
 #define MOUNT_PNG		// support fake PNG as ISO
 #define VISUALIZERS		// Rotate visualizers (earth, lines, canyon, coldboot_*.ac3)
 #define PS3MON_SPRX		"/dev_hdd0/tmp/wm_res/ps3mon.sprx"
+#define BDINFO			// /bdinfo.ps3
 #define ARTEMIS_PRX
 
 //// INTERNAL PLUGINS ////

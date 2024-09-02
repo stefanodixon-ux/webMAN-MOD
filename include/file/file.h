@@ -443,10 +443,12 @@ static u8 wait_for_xmb(void)
 	return (t > MAX_WAIT); // true = timeout
 }
 
+#ifdef WM_REQUEST
 static void wait_for_user(void)
 {
 	while(working && !USER_LOGGEDIN) sys_ppu_thread_sleep(3); wait_for_xmb();
 }
+#endif
 
 static void check_reload(void)
 {

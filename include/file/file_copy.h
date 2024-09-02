@@ -442,12 +442,15 @@ static int folder_copy(const char *path1, char *path2)
 	return ret;
 }
 
+#ifdef WM_REQUEST
 static void force_folder_copy(char *file1, char *file2)
 {
 	dont_copy_same_size = false; // force copy file with the same size than existing file
 	folder_copy(file1, file2);
 	dont_copy_same_size = true;  // restore default mode (assume file is already copied if existing file has same size)
 }
+#endif
+
 #endif // #ifdef COPY_PS3
 
 //////////////////////////////////////////////////////////////

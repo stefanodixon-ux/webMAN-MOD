@@ -425,6 +425,10 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 				sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
 			else
 				sprintf(param, "%s/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
+
+			// drives: 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
+			if(f0 && isDir(param) == false)
+				sprintf(param, "%s/PS3/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
 		}
 	}
 

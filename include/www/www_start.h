@@ -174,7 +174,9 @@ static void start_www(u64 conn_s_p)
 			if(file_exists("/dev_hdd0/ps3-updatelist.txt"))
 				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
+			#ifdef WM_REQUEST
 			start_event(EVENT_ON_XMB);
+			#endif
 
 			#ifdef PS3MON_SPRX
 			if(webman_config->ps3mon)
