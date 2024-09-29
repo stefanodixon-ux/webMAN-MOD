@@ -57,7 +57,7 @@ static bool is_online_server = false;
 #endif
 
 static bool covers_exist[9];
-static bool covers_retro_exist[3];
+static bool covers_retro_exist[4];
 static bool wm_icons_exists = false;
 
 static bool HAS(char *icon)
@@ -380,7 +380,7 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 			get_cover_from_name(icon, entry_name, title_id);
 
 			// get covers named as titleID from iso folder e.g. /PS3ISO/BLES12345.JPG
-			if(!is_dir && HAS_TITLE_ID && (f0 < 7 || f0 > NTFS))
+			if(!is_dir && HAS_TITLE_ID && (f0 < NET || f0 > NTFS))
 			{
 				if(HAS(icon)) return;
 
@@ -511,6 +511,25 @@ static enum icon_type get_default_icon_by_type(u8 f1)
 #endif
 			IS_DVDISO      ? iDVD : iBDVD;
 }
+
+#ifdef MOUNT_ROMS
+static bool get_covers_retro(char *icon, const char *roms_path, const char *filename)
+{
+	if(HAS(icon)) return true;
+
+	int nlen = sprintf(icon, "%s/covers_retro/%s/%s", MM_ROOT_STD, roms_path, filename);
+
+	for(; nlen > 48; --nlen)
+	{
+		if(icon[nlen] == '.')
+		{
+			if (get_image_file(icon, nlen)) return true;
+			break;
+		}
+	}
+	*icon = NULL; return false;
+}
+#endif
 
 static enum icon_type get_default_icon(char *icon, const char *param, char *file, int is_dir, char *title_id, int ns, u8 f0, u8 f1)
 {
@@ -701,7 +720,7 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 	{
 		u8 info = webman_config->info & 0xF;
 
-		if(*title_id == 0 && (info == 1 || info == 2) && (f0 <= NET || f0 > NTFS))
+		if(*title_id == 0 && (info == 1 || info == 2) && (f0 < NET || f0 > NTFS))
 		{
 			char *iso_file = param_sfo;
 
@@ -719,32 +738,33 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 					{
 						char buf[0x800]; u32 sector;
 						sprintf(iso_file, "%s/%s", param, entry_name);
-						read_file(iso_file, buf, 0x200, 0x8000);
-
-						// use CD sector size
-						if(memcmp(buf + 1, "CD001", 5))
+						if(read_file(iso_file, buf, 0x200, 0x8000) == 0x200)
 						{
-							read_file(iso_file, buf, 0x200, 0x9318);
-							sector = *((u32*)(buf + 0xA2)) * 0x930 + 0x18;
-						}
-						else
-							sector = *((u32*)(buf + 0xA2)) * 0x800;
-
-						// read root directory
-						read_file(iso_file, buf, 0x800, sector);
-
-						// find executable
-						for(u16 i = 0; i < 0x7D0; i += buf[i])
-						{
-							if( buf[i] == 0 ) break;
-							if( buf[i + 0x20] != 0xD) continue;
-							if((buf[i + 0x21] == 'S') && (buf[i + 0x25] == '_') && (buf[i + 0x29] == '.'))
+							// use CD sector size
+							if(memcmp(buf + 1, "CD001", 5))
 							{
-								buf[i + 0x25] = '-'; // replace _ with -
-								memcpy(title_id, &buf[i + 0x21], 8);     // copy SLES-123
-								memcpy(title_id + 8, &buf[i + 0x2A], 2); // copy 45
-								title_id[10] = 0;
-								break;
+								read_file(iso_file, buf, 0x200, 0x9318);
+								sector = *((u32*)(buf + 0xA2)) * 0x930 + 0x18;
+							}
+							else
+								sector = *((u32*)(buf + 0xA2)) * 0x800;
+
+							// read root directory
+							read_file(iso_file, buf, 0x800, sector);
+
+							// find executable
+							for(u16 i = 0; i < 0x7D0; i += buf[i])
+							{
+								if( buf[i] == 0 ) break;
+								if( buf[i + 0x20] != 0xD) continue;
+								if((buf[i + 0x21] == 'S') && (buf[i + 0x25] == '_') && (buf[i + 0x29] == '.'))
+								{
+									buf[i + 0x25] = '-'; // replace _ with -
+									memcpy(title_id, &buf[i + 0x21], 8);     // copy SLES-123
+									memcpy(title_id + 8, &buf[i + 0x2A], 2); // copy 45
+									title_id[10] = 0;
+									break;
+								}
 							}
 						}
 					}

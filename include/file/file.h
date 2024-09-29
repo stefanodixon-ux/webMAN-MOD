@@ -17,10 +17,9 @@
 #include "file_delete.h"
 
 #include "togglers.h"
-
 static bool isDir(const char *path)
 {
-	if(!path) return false;  // sanity check
+	if(!path || *path != '/') return false;  // sanity check
 
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))

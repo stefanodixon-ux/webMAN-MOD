@@ -26,9 +26,9 @@
 
 		char mode = 'h', *params = strchr(param, '?');
 		#ifndef LITE_EDITION
-		if(params) {mode = params[1] | 0x20; if(strchr(param, '$')) {webman_config->default_restart = mode; save_settings();}} else if(is_restart) mode = webman_config->default_restart;
+		if(params) {mode = LCASE(params[1]); if(strchr(param, '$')) {webman_config->default_restart = mode; save_settings();}} else if(is_restart) mode = webman_config->default_restart;
 		#else
-		if(params)  mode = params[1] | 0x20; else if(is_restart) mode = webman_config->default_restart;
+		if(params)  mode = LCASE(params[1]); else if(is_restart) mode = webman_config->default_restart;
 		#endif
 		if(mode == 'q')
 			{system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0);} // (quick reboot) load LPAR id 1

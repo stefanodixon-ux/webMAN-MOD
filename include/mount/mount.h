@@ -1320,7 +1320,7 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 			if(fan_ps2_mode && !ps2_classic_mounted) enable_fan_control(PS2_MODE_OFF); 
 
 			if(webman_config->autob)
-				for(u8 f0 = 1; f0 < 16; f0++)
+				for(u8 f0 = 1; f0 < MAX_DRIVES; f0++)
 				{
 					if(IS_NET || IS_NTFS) continue;
 

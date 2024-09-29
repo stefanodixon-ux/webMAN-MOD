@@ -47,9 +47,9 @@ static void translate_path(char *path, u16 fp_len)
 
 	char tmppath[fp_len + 1]; strcpy(tmppath, path);
 
-	for(u8 i = 0; i < 16; i++)
+	for(u8 i = 0; i < MAX_DRIVES; i++)
 	{
-		if(i == 7) i = NTFS + 1; // skip range from /net0 to /ext
+		if(i == NET) i = NTFS + 1; // skip range from /net0 to /ext
 
 		sprintf(path, "%s%s", drives[i], tmppath);
 
@@ -507,11 +507,11 @@ static int process_read_dir_cmd(u8 index, netiso_read_dir_entry_cmd *cmd)
 
 	/// list folder in all devices ///
 
-	for(u8 i = 0; i < 16; i++)
+	for(u8 i = 0; i < MAX_DRIVES; i++)
 	{
 		if(count >= max_entries || !working) break;
 
-		if(i == 7) i = NTFS + 1; // skip range from /net0 to /ext
+		if(i == NET) i = NTFS + 1; // skip range from /net0 to /ext
 
 		dirpath_len = sprintf(dirpath, "%s%s", drives[i], clients[index].dirpath);
 

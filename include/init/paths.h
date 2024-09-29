@@ -87,6 +87,7 @@
 
 #define WM_IGNORE_FILES		WM_RES_PATH "/wm_ignore.txt"	// webMAN config file to ignore files during content scanning
 #define WM_ROMS_EXTENSIONS	WM_RES_PATH "/roms_extensions.txt"
+#define WM_ROMS_PATHS		WM_RES_PATH "/roms_paths.txt"
 
 #define FILE_LIST_TXT		WMTMP "/filelist.txt"
 #define FILE_LIST_HTM		WMTMP "/filelist.htm"
@@ -172,6 +173,7 @@
 #define MAX_ISO_PARTS				(16)
 #define ISO_EXTENSIONS				".cue.ccd.iso.0.bin.img.mdf.enc"
 #define ARCHIVE_EXTENSIONS			".zip.rar.bz2.tgz.tar.7z.gz"
+#define SKIP_CUE					8
 
 static const char *smonth[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 static char drives[17][13] = {"/dev_hdd0", "/dev_usb000", "/dev_usb001", "/dev_usb002", "/dev_usb003", "/dev_usb006", "/dev_usb007", "/net0", "/net1", "/net2", "/net3", "/net4", "/dev_ntfs0:/", "/dev_sd", "/dev_ms", "/dev_cf", "/dev_blind"};

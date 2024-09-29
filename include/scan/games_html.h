@@ -109,7 +109,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		#ifdef MOUNT_ROMS
 		if(IS_ROMS_FOLDER)
 		{
-			if(ROMS_EXTENSIONS && !strcasestr(ROMS_EXTENSIONS, ext)) return FAILED;
+			if(ROMS_EXTENSIONS && !strcasestr(ROMS_EXTENSIONS + SKIP_CUE, ext)) return FAILED;
 		}
 		else
 		#endif
@@ -166,7 +166,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		{get_name(templn, data[v3_entry].name, NO_EXT);}
 
 	// check for /title/title.iso
-	if(data[v3_entry].is_directory && IS_ISO_FOLDER)
+	if(data[v3_entry].is_directory && BETWEEN(id_PS3ISO, f1, id_PSPISO))
 	{
 		for(u8 e = 0; e < 11; e++)
 		{
@@ -240,7 +240,7 @@ static int check_drive(u8 f0)
 
 	// is_net
 	#ifdef NET_SUPPORT
-	if(((f0 >= NET) && (f0 < NTFS)) && !is_netsrv_enabled(f0 - NET)) return FAILED; //net
+	if(IS_NET && !is_netsrv_enabled(f0 - NET)) return FAILED; //net
 	#else
 	if(IS_NET) return FAILED; // is_net (LITE_EDITION)
 	#endif
@@ -381,7 +381,7 @@ static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
 #ifdef MOUNT_ROMS
 	if(IS_ROMS_FOLDER)
 	{
-		return ROMS_EXTENSIONS && strcasestr(ROMS_EXTENSIONS, ext);
+		return ROMS_EXTENSIONS && strcasestr(ROMS_EXTENSIONS + SKIP_CUE, ext);
 	}
 	else
 #endif
@@ -745,7 +745,7 @@ list_games:
 				#endif
 				if(is_net && (ns<0)) break;
 //
-				bool ls; u8 li, subfolder; li = subfolder = 0; ls=false; // single letter folder
+				bool ls; u8 li, subfolder; li = subfolder = 0; ls = false; // single letter folder
 
 		subfolder_letter_html:
 				subfolder = 0; if(all_profiles) uprofile = 1; else uprofile = profile;
@@ -789,7 +789,9 @@ list_games:
 					#ifdef NET_SUPPORT
 					if(is_net)
 					{
-						if((ls == false) && (li == 0) && (f1 > 1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0')) ls = true; // single letter folder was found
+						bool is_slf = BETWEEN(id_PS3ISO, f1, id_PSPISO) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0');
+
+						if(is_slf) {ls = true; v3_entry++; continue;} // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 1) == FAILED) {v3_entry++; continue;}
 
@@ -879,9 +881,14 @@ next_html_entry:
 								sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
 								check_ps3_game(templn);
 							}
-						}
 
-						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0);
+							is_iso = false;
+						}
+						else
+						{
+							flen = entry.entry_name.d_namlen;
+							is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0); if(!is_iso) continue;
+						}
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
 						{
@@ -976,7 +983,7 @@ next_html_entry:
 				if(IS_ROMS_FOLDER || (f1 < id_ISO && !IS_NTFS))
 				{
 					if(uprofile > 0) {subfolder = 0; if(all_profiles && (uprofile < 4)) ++uprofile; else uprofile = 0; goto read_folder_html;}
-					if(is_net && (f1 > id_GAMEZ) && !IS_ROMS_FOLDER)
+					if(is_net && BETWEEN(id_PS3ISO, f1, id_PSPISO))
 					{
 						if(ls && (li < 27)) {li++; goto subfolder_letter_html;} else if(li < LANG_CUSTOM) {li = LANG_CUSTOM; goto subfolder_letter_html;}
 					}

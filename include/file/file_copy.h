@@ -21,12 +21,38 @@ static void check_path_tags(char *param)
 {
 	if(!param) return;
 
-	char *tag = strstr(param, "$USERID$");
+	char *param2 = strchr(param, '$'); if(!param2) return;
+
+	char *tag = strstr(param2, "$USERID$");
 	if(tag)
 	{
 		char uid[10];
 		sprintf(uid, "%08i", xusers()->GetCurrentUserNumber());
 		memcpy(tag, uid, 8);
+	}
+
+	tag = strstr(param2, "$RND$");
+	bool fixed = !tag; if(fixed) tag = strstr(param2, "$000$");
+	if(tag)
+	{
+		CellRtcTick nTick; cellRtcGetCurrentTick(&nTick);
+		u8 n = 5, rnd = nTick.tick % 0x100;
+		do
+		{
+			sprintf(tag, fixed ? "%03i%s" : "%i%s", rnd, tag + n);
+			n = (fixed || rnd > 99) ? 3 : (rnd >  9) ? 2 : 1; rnd /= 2;
+		}
+		while(rnd && not_exists(param));
+	}
+
+	tag = strstr(param2, "$NEW$");
+	if(tag)
+	{
+		for(u16 n = 5, cnt = 1; cnt < 1000; ++cnt)
+		{
+			sprintf(tag, "%03i%s", cnt, tag + n);
+			if(not_exists(param)) break; n = 3;
+		}
 	}
 }
 #else

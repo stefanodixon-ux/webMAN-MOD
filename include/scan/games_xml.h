@@ -220,7 +220,7 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	// ---- Add roms categories
 	for(u8 i = 0; i < count; i++)
 	{
-		if(roms_count[i])
+		if(roms_path[i] && (roms_count[i] > 0))
 		{
 			#ifndef ENGLISH_ONLY
 			language(roms_path[i], templn, roms_path[i]);
@@ -251,7 +251,7 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 
 	for(u8 i = 0; i < count; i++)
 	{
-		if(roms_count[i])
+		if(roms_path[i] && (roms_count[i] > 0))
 		{
 			sprintf(templn, SRC("%s", "xmb://localhost%s/%s%s.xml#seg_wm_rom_%s"), roms_path[i], roms_path[i], HTML_BASE_PATH, "ROMS_", roms_path[i], roms_path[i]);
 			_concat2(&myxml, XML_QUERY, templn);
@@ -767,9 +767,19 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	check_cover_folders(templn);
 
 	#ifdef MOUNT_ROMS
+
 	#define ROM_PATHS	99
+	char cur_roms_path[16];
 	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME2000", "MAME2003", "MIDWAY", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI800", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "CANNONBALL", "NXENGINE", "COLECO", "AMIGA", "CD32", "VICE", "X64", "X64SC", "X64DTV", "XSCPU64", "X128", "XCBM2", "XCMB25X0", "XPET", "XPLUS4", "XVIC", "DOSBOX", "GME", "GW", "DOOM", "QUAKE", "JAVAME", "JUMP", "O2EM", "INTV", "MSX", "FMSX", "MSX2", "BMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCECD", "PCFX", "SGX", "NGP", "NGPC", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBA", "MGBA", "VBOY", "PALM", "PSXISO", "PS2ISO", "PS3ISO", "PSPISO", "POKEMINI", "SCUMMVM", "GENESIS", "GEN", "SEGACD", "MEGAD", "MEGADRIVE", "GG", "GEARBOY", "MASTER", "PICO", "SG1000", "FUSE", "ZX81", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM", "WSWAMC" };
 	u16 roms_count[ROM_PATHS]; u32 count_roms = 0;
+
+	// remove paths not listed in roms_paths.txt
+	if(file_exists(WM_ROMS_PATHS))
+	{
+		read_file(WM_ROMS_PATHS, templn, 640, 0); templn[640] = '\0'; to_upper(templn);
+		for(u8 i = 0; i < ROM_PATHS; i++)
+			if(!strstr(templn, roms_path[i])) roms_path[i] = NULL;
+	}
 	#endif
 	u8 roms_index = 0;
 
@@ -934,7 +944,7 @@ scan_roms:
 			if(is_net && (ns<0)) break;
 			#endif
 
-			bool ls; u8 li, subfolder; li = subfolder = 0; ls=false; // single letter folder
+			bool ls; u8 li, subfolder; li = subfolder = 0; ls = false; // single letter folder
 
 		subfolder_letter_xml:
 			subfolder = 0; if(all_profiles) uprofile = 1; else uprofile = profile;
@@ -944,6 +954,8 @@ scan_roms:
 			#ifdef MOUNT_ROMS
 			if(scanning_roms)
 			{
+				if(!roms_path[roms_index]) continue;
+
 				if(is_net)
 					sprintf(param, "%s/ROMS%s/%s", "", SUFIX(uprofile), roms_path[roms_index]);
 				else if(IS_NTFS)
@@ -979,15 +991,12 @@ scan_roms:
 				#ifdef MOUNT_ROMS
 				if(isDir(param) == false)
 				{
-					if(f1 != id_ROMS) goto continue_reading_folder_xml; //continue;
+					if(f1 != id_ROMS || !IS_HDD0 || !roms_path[roms_index]) goto continue_reading_folder_xml; //continue;
 
-					strcpy(tempstr, roms_path[roms_index]);
-					for(char *c = tempstr; *c; c++) {if(BETWEEN('A', *c, 'Z')) *c ^= 0x20;} // convert to lower case (e.g. /ROMS/snes)
-
-					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), tempstr);
+					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), cur_roms_path); // try folder name in lower case (e.g. /ROMS/snes)
 					if(isDir(param) == false)
 					{
-						*tempstr ^= 0x20; // capitalize first letter of folder name (e.g. /ROMS/Snes)
+						strcpy(tempstr, cur_roms_path); *tempstr ^= 0x20; // capitalize first letter of folder name (e.g. /ROMS/Snes)
 
 						sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), tempstr);
 						if(isDir(param) == false) goto continue_reading_folder_xml; //continue;
@@ -1014,7 +1023,9 @@ scan_roms:
 					{
 						if(ignore_files && strstr(ignore_files, data[v3_entry].name)) continue;
 
-						if((ls == false) && (li==0) && (f1>1) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0')) ls = true; // single letter folder was found
+						bool is_slf = BETWEEN(id_PS3ISO, f1, id_PSPISO) && (data[v3_entry].is_directory) && (data[v3_entry].name[1] == '\0');
+
+						if(is_slf) {ls = true; v3_entry++; continue;} // single letter folder was found
 
 						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 0) == FAILED) {v3_entry++; continue;}
 
@@ -1108,9 +1119,14 @@ scan_roms:
 								sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
 								check_ps3_game(templn);
 							}
-						}
 
-						flen = entry.entry_name.d_namlen; is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0);
+							is_iso = false;
+						}
+						else
+						{
+							flen = entry.entry_name.d_namlen;
+							is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0); if(!is_iso) continue;
+						}
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
 						{
@@ -1134,6 +1150,9 @@ scan_roms:
 							#endif
 							}
 
+							#ifdef MOUNT_ROMS
+							if(!scanning_roms || get_covers_retro(icon, cur_roms_path, entry.entry_name.d_name) == false)
+							#endif
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
 							if(ignore_files && HAS_TITLE_ID && strstr(ignore_files, title_id)) continue;
@@ -1213,7 +1232,7 @@ scan_roms:
 			if(scanning_roms || (f1 < id_ISO && !IS_NTFS))
 			{
 				if(uprofile > 0) {subfolder = 0; if(all_profiles && (uprofile < 4)) ++uprofile; else uprofile = 0; goto read_folder_xml;}
-				if(is_net && (f1 > id_GAMEZ) && !scanning_roms)
+				if(is_net && BETWEEN(id_PS3ISO, f1, id_PSPISO) && !scanning_roms)
 				{
 					if(ls && (li < 27)) {li++; goto subfolder_letter_xml;} else if(li < LANG_CUSTOM) {li = LANG_CUSTOM; goto subfolder_letter_xml;}
 				}
@@ -1510,6 +1529,7 @@ save_xml:
 	{
 		if(scanning_roms)
 		{
+			skip_rom_path:
 			roms_count[roms_index] = key, count_roms += key;
 			roms_index++;
 		}
@@ -1519,7 +1539,14 @@ save_xml:
 			cellFsUnlink(HTML_BASE_PATH "/ROMS.xml");
 		}
 
-		if(roms_index < ROM_PATHS) goto scan_roms; // loop scanning_roms
+		if(roms_index < ROM_PATHS)
+		{
+			if(!roms_path[roms_index])
+				goto skip_rom_path; // skip roms path if not listed in roms_paths.txt
+
+			strcpy(cur_roms_path, roms_path[roms_index]); to_lower(cur_roms_path);
+			goto scan_roms; // loop scanning_roms
+		}
 		scanning_roms = false;
 
 		// ---- Build ROMS.xml

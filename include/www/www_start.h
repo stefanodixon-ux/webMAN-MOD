@@ -41,18 +41,20 @@ static void start_www(u64 conn_s_p)
 
 
 		//////////// usb ports ////////////
-		char *dev_name = templn;
-		for(u8 indx = 5, d = 6; d < 128; d++)
+		if(webman_config->usb6 || webman_config->usb7)
 		{
-			sprintf(dev_name, "/dev_usb%03i", d);
-			if(isDir(dev_name))
+			char *dev_name = templn;
+			for(u8 indx = 5, d = 6; d < 128; d++)
 			{
-				if(d == 7 && indx == 5) continue; // avoids duplicated /dev_usb007
-				strcpy(drives[indx++], dev_name); if(indx > 6) break;
+				sprintf(dev_name, "/dev_usb%03i", d);
+				if(isDir(dev_name))
+				{
+					if(d == 7 && indx == 5) continue; // avoids duplicated /dev_usb007
+					strcpy(drives[indx++], dev_name); if(indx > 6) break;
+				}
 			}
 		}
 		///////////////////////////////////
-
 
 		check_cover_folders(templn);
 

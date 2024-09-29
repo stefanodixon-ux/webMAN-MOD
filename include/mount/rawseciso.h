@@ -7,6 +7,8 @@
 #define EMU_PSX_MULTI (EMU_PSX + 16)
 #endif
 
+#define NUM_RETRIES		16
+
 enum STORAGE_COMMAND
 {
 	CMD_READ_ISO,
@@ -230,7 +232,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 		if(pos % sec_size)
 		{
 			sector = sections[idx] + (pos / sec_size);
-			for(retry = 0; retry < 16; retry++)
+			for(retry = 0; retry < NUM_RETRIES; retry++)
 			{
 				r = 0;
 				if(last_sect == sector)
@@ -298,7 +300,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 			if(n)
 			{
 				sector = sections[idx] + (pos / sec_size);
-				for(retry = 0; retry < 16; retry++)
+				for(retry = 0; retry < NUM_RETRIES; retry++)
 				{
 					r = 0;
 					ret = sys_storage_read(handle, 0, sector, n, buf, &r, 0);
@@ -353,7 +355,7 @@ static int process_read_iso_cmd_iso(u8 *buf, u64 offset, u64 size)
 			if(readsize)
 			{
 				sector = sections[idx] + pos / sec_size;
-				for(retry = 0; retry < 16; retry++)
+				for(retry = 0; retry < NUM_RETRIES; retry++)
 				{
 					r = 0;
 					if(last_sect == sector)
@@ -973,7 +975,7 @@ static void rawseciso_thread(u64 arg)
 		sec_size = 512ULL;
 		if(args->device)
 		{
-			for(int retry = 0; retry < 16; retry++)
+			for(int retry = 0; retry < NUM_RETRIES; retry++)
 			{
 				if(sys_storage_get_device_info(args->device, &disc_info) == 0)
 				{

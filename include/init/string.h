@@ -130,11 +130,21 @@ static void replace_invalid_chars(char *text)
 	for(unsigned char *c = (unsigned char*)text; *c; c++) if((*c < ' ') || (*c == '"')) *c = ' ';
 }
 
+static char *switch_case(char *text, char a, char z)
+{
+	char *new_text = text;
+	for( ; *text; text++) if(*text >= a && *text <= z) *text ^= 0x20;
+	return new_text;
+}
+
 static char *to_upper(char *text)
 {
-	char *upper = text;
-	for( ; *text; text++) if(*text >= 'a' && *text <= 'z') *text ^= 0x20;
-	return upper;
+	return switch_case(text, 'a', 'z');
+}
+
+static char *to_lower(char *text)
+{
+	return switch_case(text, 'A', 'Z');
 }
 
 static char *remove_brackets(char *title)

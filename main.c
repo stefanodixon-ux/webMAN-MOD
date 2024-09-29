@@ -109,7 +109,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.46h MOD"
+#define WM_VERSION			"1.47.47 MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -509,7 +509,7 @@ static void wwwd_thread(u64 arg)
 		ROMS_EXTENSIONS = malloc(fsize);
 		read_file(WM_ROMS_EXTENSIONS, ROMS_EXTENSIONS, fsize, 0);
 	}
-	if(!ROMS_EXTENSIONS) ROMS_EXTENSIONS = (char *)".BIN.ISO.CUE.CCD.IMG.ZIP";
+	if(!ROMS_EXTENSIONS) ROMS_EXTENSIONS = (char *)".CUE.CCD.BIN.ISO.IMG.ZIP";
 	#endif
 
 	#ifdef COPY_PS3

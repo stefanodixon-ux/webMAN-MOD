@@ -142,15 +142,17 @@ static void enable_signin_dialog(void);
 #define enable_signin_dialog() {}
 #endif
 
+#define MAX_PID		16
+
 static u32 get_current_pid(void)
 {
 	if(IS_INGAME)
 		return GetGameProcessID();
 
-	u32 pid_list[16];
+	u32 pid_list[MAX_PID];
 	{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
 
-	for(int i = 0; i < 16; i++)
+	for(int i = 0; i < MAX_PID; i++)
 	{
 		if(pid_list[i] > 2)
 			return pid_list[i];
@@ -651,10 +653,10 @@ static u8 add_proc_list(char *buffer, char *templn, u32 *proc_id, u8 src)
 
 	concat(buffer, "<select name=\"proc\">");
 
-	u32 pid_list[16];
+	u32 pid_list[MAX_PID];
 	{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
 	if(pid == 0) pid = pid_list[0];
-	for(int i = 0; i < 16; i++)
+	for(int i = 0; i < MAX_PID; i++)
 	{
 		if(1 < pid_list[i])
 		{

@@ -501,7 +501,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 										cellFsClose(fd);
 										if(!working || (err != CELL_FS_OK))
 										{
-											for(u8 n = 0; n < 17; n++)
+											for(u8 n = 0; n < (MAX_DRIVES + 1); n++)
 											{
 												if(islike(filename, drives[n]) && (get_free_space(drives[n]) < BUFFER_SIZE_FTP))
 													{ err = FTP_DEVICE_IS_FULL; break; }

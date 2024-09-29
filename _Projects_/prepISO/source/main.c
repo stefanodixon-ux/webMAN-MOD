@@ -112,6 +112,7 @@ static uint32_t num_tracks;
 static uint8_t g_profile;
 static uint8_t g_mode;
 static uint8_t g_mmcm;
+static uint8_t g_remove_ext;
 
 static rawseciso_args *p_args;
 static int cd_sector_size, cd_sector_size_param;
@@ -161,6 +162,7 @@ int main(int argc, const char* argv[])
 	sysFsChmod(path, S_IFDIR | 0777);
 
 	g_mmcm = 0;
+	g_remove_ext = !g_mmcm
 
 	if(argc > 0 && argv)
 	{
@@ -332,7 +334,7 @@ int main(int argc, const char* argv[])
 								if( is_iso )
 								{
 									size_t path_len;
-									if(!g_mmcm) filename[flen - ext_len] = '\0';
+									if(g_remove_ext) filename[flen - ext_len] = '\0';
 									path_len = snprintf(path, sizeof(path), "%s:/%s%s%s/%s", mounts[i].name, prefix[p], c_path[m], SUFIX(profile), direntry);
 
 									//--- PS3ISO: fix game, cache SFO, ICON0 and PIC1 (if mmCM is installed)

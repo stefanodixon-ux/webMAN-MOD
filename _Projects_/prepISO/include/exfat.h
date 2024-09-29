@@ -319,7 +319,7 @@ static int dir_read (char *dpath)
 			ext_len = 4; if((plen > 6) && wm_path[plen - 6] == '.') ext_len = 6;// multi-part file
 
 			// remove file extension
-			if(!g_mmcm)
+			if(g_remove_ext)
 			{
 				if((plen > ext_len) && wm_path[plen - ext_len] == '.') wm_path[plen - ext_len] = 0;
 			}

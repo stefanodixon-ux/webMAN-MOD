@@ -349,10 +349,10 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					}
 					else if(_IS(cmd, "GETALLPID")) // PROCESS GETALLPID
 					{
-						u32 pid_list[16];
+						u32 pid_list[MAX_PID];
 						u32 buf_len = sprintf(buffer, "200 ");
 						{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
-						for(int i = 0; i < 16; i++)
+						for(int i = 0; i < MAX_PID; i++)
 						{
 							buf_len += sprintf(buffer + buf_len, "%i|", pid_list[i]);
 						}
