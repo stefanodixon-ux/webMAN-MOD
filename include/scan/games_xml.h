@@ -711,7 +711,6 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX);
 	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
 	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
-	sys_addr_t sysmem_ngp = sysmem + BUFFER_SIZE_ALL - _128KB_;
 
 	char *ignore_files = NULL;
 	if(webman_config->ignore && file_exists(WM_IGNORE_FILES))
@@ -804,7 +803,6 @@ scan_roms:
 	t_string myxml_psp; _alloc(&myxml_psp, (char*)sysmem_psp);
 	t_string myxml_dvd; _alloc(&myxml_dvd, (char*)sysmem_dvd);
 	t_string myxml    ; _alloc(&myxml,     (char*)sysmem_xml);
-	t_string myxml_ngp; _alloc(&myxml_ngp, (char*)sysmem_ngp);
 
 	// --- build group headers ---
 	char *tempstr, *folder_name; tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB);
@@ -1267,8 +1265,6 @@ scan_roms:
 		   !(webman_config->cmask & BLU)) {_concat(&myxml_dvd, XML_BEGIN_ITEMS); if(webman_config->rxvid) _concat2(&myxml_dvd, XML_QUERY, SRC("rx_video", "#seg_wm_bdvd"));}
 		#endif
 	}
-	else
-		_alloc(&myxml_ngp, (char*)sysmem_ngp);
 
 	led(YELLOW, OFF);
 	led(GREEN, ON);
@@ -1295,42 +1291,8 @@ scan_roms:
 	sprintf(templn, "%s/FEATURES/webMAN%s.xml", XMBMANPLS_PATH, lang_code);
 	bool add_xmbm_plus = file_exists(templn);
 	#endif
-
-	if(!scanning_roms && webman_config->nogrp)
-	{
-		if(!add_xmbm_plus) _concat2(&myxml_ngp, XML_ITEM, ADD_XMB_ITEM("eject"));
-
-		if( ADD_SETUP )
-		{
-			if(add_xmbm_plus)
-			#ifdef ENGLISH_ONLY
-				_concat2(&myxml_ngp, XML_QUERY, QUERY_SETUP_ENGLISH);
-			#else
-			{
-				sprintf(tempstr, QUERY_SETUP_LOCALIZED, lang_code);
-				_concat2(&myxml_ngp, XML_QUERY, tempstr);
-			}
-			#endif
-			else
-				_concat2(&myxml_ngp, XML_ITEM, ADD_XMB_ITEM("setup"));
-		}
-
-		if(add_custom_xml(templn)) _concat(&myxml_ngp, templn);
-	}
-
 	// --- add sorted items to xml
-	if( webman_config->nogrp || scanning_roms)
-	{
-		u32 max_size = (BUFFER_SIZE - 4300);
-
-		for(u16 len, a = 0; a < key; a++)
-		{
-			len = sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
-			if(myxml_ngp.size + len >= max_size) break;
-			myxml_ngp.size += sprintf(myxml_ngp.str + myxml_ngp.size, "%s", templn);
-		}
-	}
-	else
+	if( !scanning_roms && XMB_GROUPS )
 	{
 		u32 max_size = (BUFFER_SIZE - 5000);
 
@@ -1496,7 +1458,39 @@ save_xml:
 		{
 			cellFsWrite(fdxml, (char*)myxml_ps3.str, myxml_ps3.size, NULL);
 			cellFsWrite(fdxml, (char*)XML_BEGIN_ITEMS, 7, NULL);
-			cellFsWrite(fdxml, (char*)myxml_ngp.str, myxml_ngp.size, NULL);
+
+			if(!scanning_roms)
+			{
+				t_string myxml_ngp; _alloc(&myxml_ngp, (char*)sysmem);
+
+				if(!add_xmbm_plus) _concat2(&myxml_ngp, XML_ITEM, ADD_XMB_ITEM("eject"));
+
+				if( ADD_SETUP )
+				{
+					if(add_xmbm_plus)
+					#ifdef ENGLISH_ONLY
+						_concat2(&myxml_ngp, XML_QUERY, QUERY_SETUP_ENGLISH);
+					#else
+					{
+						sprintf(tempstr, QUERY_SETUP_LOCALIZED, lang_code);
+						_concat2(&myxml_ngp, XML_QUERY, tempstr);
+					}
+					#endif
+					else
+						_concat2(&myxml_ngp, XML_ITEM, ADD_XMB_ITEM("setup"));
+				}
+
+				if(add_custom_xml(templn)) _concat(&myxml_ngp, templn);
+
+				if(myxml_ngp.size)
+					cellFsWrite(fdxml, (char*)myxml_ngp.str, myxml_ngp.size, NULL);
+			}
+
+			for(u16 len, a = 0; a < key; a++)
+			{
+				len = sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
+				cellFsWrite(fdxml, templn, len, NULL);
+			}
 
 			slen = sprintf(buffer, XML_END_OF_FILE);
 		}
