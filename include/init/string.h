@@ -142,10 +142,12 @@ static char *to_upper(char *text)
 	return switch_case(text, 'a', 'z');
 }
 
+#ifdef COBRA_ONLY
 static char *to_lower(char *text)
 {
 	return switch_case(text, 'A', 'Z');
 }
+#endif
 
 static char *remove_brackets(char *title)
 {

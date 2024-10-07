@@ -264,12 +264,14 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	save_file(HTML_BASE_PATH "/ROMS.xml", myxml.str, myxml.size);
 
 	// patch mygames.xml
-	read_file(MY_GAMES_XML, tempstr, KB, 200);
-	char *pos = strstr(tempstr, "         ROM");
-	if(pos)
+	if(read_file(MY_GAMES_XML, tempstr, KB, 200) == KB)
 	{
-		sprintf(templn, "%'8i", t_count); memcpy(pos, templn, 8);
-		patch_file(MY_GAMES_XML, tempstr, 200, KB);
+		char *pos = strstr(tempstr, "         ROM");
+		if(pos)
+		{
+			sprintf(templn, "%'8i", t_count); memcpy(pos, templn, 8);
+			patch_file(MY_GAMES_XML, tempstr, 200, KB);
+		}
 	}
 }
 #endif
@@ -709,22 +711,23 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX);
 	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
 	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
+	sys_addr_t sysmem_ngp = sysmem + BUFFER_SIZE_ALL - _128KB_;
 
 	char *ignore_files = NULL;
 	if(webman_config->ignore && file_exists(WM_IGNORE_FILES))
 	{
-		size_t size = file_size(WM_IGNORE_FILES) + 1;
+		size_t size = file_size(WM_IGNORE_FILES);
 		if(size < _32KB_)
 		{
-			ignore_files = malloc(size);
-			if(ignore_files) read_file(WM_IGNORE_FILES, ignore_files, size, 0);
+			ignore_files = malloc(size + 1);
+			if(ignore_files) {read_file(WM_IGNORE_FILES, ignore_files, size, 0); ignore_files[size] = '\0';}
 		}
 	}
 
 #if defined(LAUNCHPAD) || defined(MOUNT_ROMS)
 	char *sysmem_buf = (char*)sysmem;
 #endif
-	char *sysmem_xml = (char*)sysmem + (BUFFER_SIZE) - 4300;
+	char *sysmem_xml = (char*)sysmem + (BUFFER_SIZE - 4300);
 
 	cellFsMkdir(XML_HOST_PATH, DMODE);
 	cellFsMkdir(HTML_BASE_PATH, DMODE);
@@ -769,16 +772,17 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	#ifdef MOUNT_ROMS
 
 	#define ROM_PATHS	99
-	char cur_roms_path[16];
+	char cur_roms_path[16]; *cur_roms_path = 0;
 	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME2000", "MAME2003", "MIDWAY", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI800", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "CANNONBALL", "NXENGINE", "COLECO", "AMIGA", "CD32", "VICE", "X64", "X64SC", "X64DTV", "XSCPU64", "X128", "XCBM2", "XCMB25X0", "XPET", "XPLUS4", "XVIC", "DOSBOX", "GME", "GW", "DOOM", "QUAKE", "JAVAME", "JUMP", "O2EM", "INTV", "MSX", "FMSX", "MSX2", "BMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCECD", "PCFX", "SGX", "NGP", "NGPC", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBA", "MGBA", "VBOY", "PALM", "PSXISO", "PS2ISO", "PS3ISO", "PSPISO", "POKEMINI", "SCUMMVM", "GENESIS", "GEN", "SEGACD", "MEGAD", "MEGADRIVE", "GG", "GEARBOY", "MASTER", "PICO", "SG1000", "FUSE", "ZX81", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM", "WSWAMC" };
-	u16 roms_count[ROM_PATHS]; u32 count_roms = 0;
+	u16 roms_count[ROM_PATHS]; u32 count_roms = 0; memset(roms_count, 0, ROM_PATHS);
 
 	// remove paths not listed in roms_paths.txt
-	if(file_exists(WM_ROMS_PATHS))
+	u8 len = read_file(WM_ROMS_PATHS, templn, 640, 0);
+	if(len)
 	{
-		read_file(WM_ROMS_PATHS, templn, 640, 0); templn[640] = '\0'; to_upper(templn);
+		templn[len] = '\0'; to_upper(templn);
 		for(u8 i = 0; i < ROM_PATHS; i++)
-			if(!strstr(templn, roms_path[i])) roms_path[i] = NULL;
+			if(roms_path[i] && !strstr(templn, roms_path[i])) roms_path[i] = NULL;
 	}
 	#endif
 	u8 roms_index = 0;
@@ -800,7 +804,7 @@ scan_roms:
 	t_string myxml_psp; _alloc(&myxml_psp, (char*)sysmem_psp);
 	t_string myxml_dvd; _alloc(&myxml_dvd, (char*)sysmem_dvd);
 	t_string myxml    ; _alloc(&myxml,     (char*)sysmem_xml);
-	t_string myxml_ngp; _alloc(&myxml_ngp, (char*)sysmem_dvd);
+	t_string myxml_ngp; _alloc(&myxml_ngp, (char*)sysmem_ngp);
 
 	// --- build group headers ---
 	char *tempstr, *folder_name; tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB);
@@ -872,6 +876,9 @@ scan_roms:
 	#endif
 	#endif
 
+	#ifdef MOUNT_ROMS
+	if(!scanning_roms || roms_path[roms_index])
+	#endif
 	for(u8 f0 = 0; f0 < MAX_DRIVES; f0++)  // drives: 0="/dev_hdd0", 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 7="/net0", 8="/net1", 9="/net2", 10="/net3", 11="/net4", 12="/ext", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
 	{
 		if(!refreshing_xml) break;
@@ -907,6 +914,8 @@ scan_roms:
 		{
 			if(!refreshing_xml) break;
 
+			if(key >= max_xmb_items) break;
+
 			_f1_ = f1; // _f1_ changes to id_PS2ISO for CD/DVD folders (9="CD" / 10="DVD")
 
 			if(scanning_roms)
@@ -915,8 +924,6 @@ scan_roms:
 			}
 			else
 			{
-				if(key >= max_xmb_items) break;
-
 				#ifndef COBRA_ONLY
 				if(IS_ISO_FOLDER && !(IS_PS2ISO)) continue; // 0="GAMES", 1="GAMEZ", 5="PS2ISO", 10="video"
 				#endif
@@ -950,11 +957,11 @@ scan_roms:
 			subfolder = 0; if(all_profiles) uprofile = 1; else uprofile = profile;
 		read_folder_xml:
 		//
-			if(!refreshing_xml) break;
+			if(!refreshing_xml || key >= max_xmb_items) break;
 			#ifdef MOUNT_ROMS
 			if(scanning_roms)
 			{
-				if(!roms_path[roms_index]) continue;
+				//if(!roms_path[roms_index]) break;
 
 				if(is_net)
 					sprintf(param, "%s/ROMS%s/%s", "", SUFIX(uprofile), roms_path[roms_index]);
@@ -962,6 +969,8 @@ scan_roms:
 					sprintf(param, "%s/USRDIR/%s%s", RETROARCH_DIR, cores_roms, roms_path[roms_index]);
 				else
 					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_path[roms_index]);
+
+				show_progress(param, OV_SCAN);
 			}
 			else
 			#endif
@@ -991,19 +1000,19 @@ scan_roms:
 				#ifdef MOUNT_ROMS
 				if(isDir(param) == false)
 				{
-					if(f1 != id_ROMS || !IS_HDD0 || !roms_path[roms_index]) goto continue_reading_folder_xml; //continue;
+					if(f1 != id_ROMS || !IS_HDD0 || !cur_roms_path[0]) goto continue_reading_folder_xml; //continue;
 
 					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), cur_roms_path); // try folder name in lower case (e.g. /ROMS/snes)
 					if(isDir(param) == false)
 					{
-						strcpy(tempstr, cur_roms_path); *tempstr ^= 0x20; // capitalize first letter of folder name (e.g. /ROMS/Snes)
+						sprintf(tempstr, "%s", cur_roms_path); *tempstr ^= 0x20; // capitalize first letter of folder name (e.g. /ROMS/Snes)
 
 						sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), tempstr);
-						if(isDir(param) == false) goto continue_reading_folder_xml; //continue;
+						if(isDir(param) == false) continue;
 					}
 				}
-				#endif
 
+				#endif
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_xml; //continue;
 
 				plen = strlen(param);
@@ -1063,7 +1072,7 @@ scan_roms:
 
 						//////////////////////////////
 						subfolder = 0;
-						if(IS_ISO_FOLDER || IS_VIDEO_FOLDER)
+						if((IS_ISO_FOLDER || IS_VIDEO_FOLDER) && !scanning_roms)
 						{
 							sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
 							if(isDir(subpath) && cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
@@ -1229,7 +1238,7 @@ scan_roms:
 			}
 		//
 		continue_reading_folder_xml:
-			if(scanning_roms || (f1 < id_ISO && !IS_NTFS))
+			if(IS_ROMS_FOLDER || (f1 < id_ISO && !IS_NTFS))
 			{
 				if(uprofile > 0) {subfolder = 0; if(all_profiles && (uprofile < 4)) ++uprofile; else uprofile = 0; goto read_folder_xml;}
 				if(is_net && BETWEEN(id_PS3ISO, f1, id_PSPISO) && !scanning_roms)
@@ -1259,7 +1268,7 @@ scan_roms:
 		#endif
 	}
 	else
-		_alloc(&myxml_ngp, (char*)sysmem_dvd);
+		_alloc(&myxml_ngp, (char*)sysmem_ngp);
 
 	led(YELLOW, OFF);
 	led(GREEN, ON);
@@ -1312,36 +1321,36 @@ scan_roms:
 	// --- add sorted items to xml
 	if( webman_config->nogrp || scanning_roms)
 	{
-		u32 max_size = (BUFFER_SIZE - 1000);
+		u32 max_size = (BUFFER_SIZE - 4300);
 
-		for(u16 a = 0; a < key; a++)
+		for(u16 len, a = 0; a < key; a++)
 		{
-			if(myxml_ngp.size >= max_size) break;
-			sprintf(templn, ADD_XMB_ITEM("%s"), skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
-			_concat2(&myxml_ngp, XML_ITEM, templn);
+			len = sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
+			if(myxml_ngp.size + len >= max_size) break;
+			myxml_ngp.size += sprintf(myxml_ngp.str + myxml_ngp.size, "%s", templn);
 		}
 	}
 	else
 	{
 		u32 max_size = (BUFFER_SIZE - 5000);
 
-		for(u16 a = 0; a < key; a++)
+		for(u16 len, a = 0; a < key; a++)
 		{
-			sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
-			if(*skey[a].value == PS3_&& myxml_ps3.size < max_size)
+			len = sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
+			if(*skey[a].value == PS3_&& ((myxml_ps3.size + len) < max_size))
 				_concat(&myxml_ps3, templn);
 			else
-			if(*skey[a].value == PS2 && myxml_ps2.size < (BUFFER_SIZE_PS2 - 128))
+			if(*skey[a].value == PS2 && ((myxml_ps2.size + len) < (BUFFER_SIZE_PS2 - 128)))
 				_concat(&myxml_ps2, templn);
 			#ifdef COBRA_ONLY
 			else
-			if(*skey[a].value == PS1 && myxml_psx.size < (BUFFER_SIZE_PSX - 128))
+			if(*skey[a].value == PS1 && ((myxml_psx.size + len) < (BUFFER_SIZE_PSX - 128)))
 				_concat(&myxml_psx, templn);
 			else
-			if(*skey[a].value == PSP && myxml_psp.size < (BUFFER_SIZE_PSP - 128))
+			if(*skey[a].value == PSP && ((myxml_psp.size + len) < (BUFFER_SIZE_PSP - 128)))
 				_concat(&myxml_psp, templn);
 			else
-			if(*skey[a].value == BLU && myxml_dvd.size < (BUFFER_SIZE_DVD - 1200))
+			if(*skey[a].value == BLU && ((myxml_dvd.size + len) < (BUFFER_SIZE_DVD - 1200)))
 				_concat(&myxml_dvd, templn);
 			#endif
 		}
@@ -1530,7 +1539,7 @@ save_xml:
 		if(scanning_roms)
 		{
 			skip_rom_path:
-			roms_count[roms_index] = key, count_roms += key;
+			roms_count[roms_index] = key, count_roms += key; *cur_roms_path = key = 0;
 			roms_index++;
 		}
 		else
@@ -1544,7 +1553,7 @@ save_xml:
 			if(!roms_path[roms_index])
 				goto skip_rom_path; // skip roms path if not listed in roms_paths.txt
 
-			strcpy(cur_roms_path, roms_path[roms_index]); to_lower(cur_roms_path);
+			sprintf(cur_roms_path, "%s", roms_path[roms_index]); to_lower(cur_roms_path);
 			goto scan_roms; // loop scanning_roms
 		}
 		scanning_roms = false;

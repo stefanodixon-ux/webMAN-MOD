@@ -743,14 +743,16 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 							// use CD sector size
 							if(memcmp(buf + 1, "CD001", 5))
 							{
-								read_file(iso_file, buf, 0x200, 0x9318);
-								sector = *((u32*)(buf + 0xA2)) * 0x930 + 0x18;
+								if(read_file(iso_file, buf, 0x200, 0x9318) == 0x200)
+									sector = *((u32*)(buf + 0xA2)) * 0x930 + 0x18;
+								else
+									return FAILED;
 							}
 							else
 								sector = *((u32*)(buf + 0xA2)) * 0x800;
 
 							// read root directory
-							read_file(iso_file, buf, 0x800, sector);
+							if(read_file(iso_file, buf, 0x800, sector) != 0x800) return FAILED;
 
 							// find executable
 							for(u16 i = 0; i < 0x7D0; i += buf[i])

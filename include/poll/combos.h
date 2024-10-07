@@ -880,6 +880,8 @@
 							char path[STD_PATH_LEN];
 							set_param_sfo(path);
 
+							refreshing_xml = 0; // cancel content scanning
+
 							if(file_exists(path) || IS_INGAME)
 							{
 								char title[128], title_id[12], app_ver[8];
