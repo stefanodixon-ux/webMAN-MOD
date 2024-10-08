@@ -79,6 +79,31 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 #define HTML_SHOW_LAST_GAME		"<span style=\"position:absolute;right:8px\"><font size=2>"
 #define HTML_SHOW_LAST_GAME_END	"</font></span>"
 
+// add_html(): id codes for WM_RES_PATH/setup/setup%c.dat
+#define dat_QUERY_VIDEOS1	'i'
+#define dat_QUERY_VIDEOS2	'J'
+#define dat_SETUP_FORM		'0'
+#define dat_ICON_TYPE		'1'
+#define dat_LANGUAGES		'2'
+#define dat_INFO_TAGS		'3'
+#define dat_INFO_MSGS		'4'
+#define dat_VIEW_IDPS		'p'
+#define dat_MEMORY_USAGE	'5'
+#define dat_MEM_CONTAINER	'6'
+#define dat_BD_REGIONS		'7'
+#define dat_DVD_REGIONS		'8'
+#define dat_VIDEOREC_FMT	'v'
+#define dat_AUDIOREC_FMT	'a'
+#define dat_CUSTOM_COMBOS	'x'
+#define dat_WAIT_USB_TIME1	'd'
+#define dat_WAIT_USB_TIME2	's'
+#define dat_SETUP_FOOTER	'z'
+#define dat_DEBUG_MEM_KEYS	'k'
+#define dat_MEM_OPERATORS	'o'
+#define dat_SEL_ICON_SIZE	'c'
+#define dat_GET_ICON_SIZE	'g'
+#define dat_SFO_ADD_LINKS	't'
+
 static void open_browser(const char *url, int mode)
 {
 	int is_ingame = View_Find("game_plugin");
@@ -356,6 +381,12 @@ static size_t add_option_item(int value, const char *label, bool selected, char 
 	if(value >= 0x1000) sprintf(svalue, "0x%x", value); else sprintf(svalue, "%i", value);
 	sprintf(templn, "<option value=\"%s\"%s/>%s", svalue, selected ? ITEM_SELECTED : "", label);
 	return concat(buffer, templn);
+}
+
+static size_t add_option_item2(int id, const char *label, const char *var, const char *param, char *buffer)
+{
+	char value[20]; sprintf(value, "%s=%i", var, id);
+	return add_option_item(id, label, IS_MARKED(value), buffer);
 }
 
 #if defined(VIDEO_REC) || defined(USE_UACCOUNT)

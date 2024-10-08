@@ -277,7 +277,7 @@ exit_fix:
 	}
 
 	// fix update folder
-	sprintf(update_path, "%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+	sprintf(update_path, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
 	if(getTitleID(update_path, title_id, FIX_SFO) || webman_config->fixgame==FIX_GAME_FORCED)
 	{
 		sprintf(update_path, "%s%s/USRDIR", HDD0_GAME_DIR, title_id);

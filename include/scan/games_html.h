@@ -485,8 +485,8 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		add_query_html(pbuffer, "usb");
 	#endif //#ifdef COBRA_ONLY
 
-		// cookies script
-		add_html('c', 0, pbuffer, templn);
+		// cookies script & icon size slider
+		add_html(dat_SEL_ICON_SIZE, 0, pbuffer, templn);
 
 		if(webman_config->sman) strcat(pbuffer, "<p></font>");
 
@@ -1064,7 +1064,7 @@ next_html_entry:
 			{
 				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, templn);
 			}
-			add_html('g', 0, sout.str, templn);
+			add_html(dat_GET_ICON_SIZE, 0, sout.str, templn);
 		}
 
 		tlen = buf_len;

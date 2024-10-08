@@ -476,7 +476,7 @@ view_file:
 	}
 
 	// add navigation with left/right keys
-	add_html('k', 0, buffer, templn);
+	add_html(dat_DEBUG_MEM_KEYS, 0, buffer, templn);
 }
 
 #endif // #ifdef DEBUG_MEM

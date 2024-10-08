@@ -521,11 +521,11 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml)
 	char *STR_PS3FORMAT = buffer; //[40];//	= "PS3 format games";
 	language("STR_PS3FORMAT", STR_PS3FORMAT, "PS3 format games");
 	#endif
-	if( !(webman_config->cmask & PS3)) {sprintf(templn, "<T key=\"wm_ps3\">"
+	if( !(webman_config->cmask & PS3)) {sprintf(templn, "<T key=\"wm_%s\">"
 												XML_PAIR("icon","%s")
-												XML_PAIR("title","PLAYSTATION\xC2\xAE\x33")
+												XML_PAIR("title","%s")
 												XML_PAIR("info","%'i %s"),
-												wm_icons[gPS3], item_count[gPS3], STR_PS3FORMAT);
+												"ps3", wm_icons[gPS3], "PLAYSTATION\xC2\xAE\x33", item_count[gPS3], STR_PS3FORMAT);
 										 _concat2(myxml, templn, STR_NOITEM_PAIR);}
 	#ifdef MOUNT_ROMS
 	if(webman_config->roms)
@@ -549,11 +549,11 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml)
 	char *STR_PS2FORMAT = buffer; //[48];//	= "PS2 format games";
 	language("STR_PS2FORMAT", STR_PS2FORMAT, "PS2 format games");
 	#endif
-	if( !(webman_config->cmask & PS2)) {sprintf(templn, "<T key=\"wm_ps2\">"
+	if( !(webman_config->cmask & PS2)) {sprintf(templn, "<T key=\"wm_%s\">"
 												XML_PAIR("icon","%s")
-												XML_PAIR("title","PLAYSTATION\xC2\xAE\x32")
+												XML_PAIR("title","%s")
 												XML_PAIR("info","%'i %s"),
-												wm_icons[gPS2], item_count[gPS2], STR_PS2FORMAT);
+												"ps2", wm_icons[gPS2], "PLAYSTATION\xC2\xAE\x32", item_count[gPS2], STR_PS2FORMAT);
 										_concat2(myxml, templn, STR_NOITEM_PAIR);}
  #ifdef COBRA_ONLY
 
@@ -561,21 +561,21 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml)
 	char *STR_PS1FORMAT = buffer; //[48];//	= "PSOne format games";
 	language("STR_PS1FORMAT", STR_PS1FORMAT, "PSOne format games");
 	#endif
-	if( !(webman_config->cmask & PS1)) {sprintf(templn, "<T key=\"wm_psx\">"
+	if( !(webman_config->cmask & PS1)) {sprintf(templn, "<T key=\"wm_%s\">"
 												XML_PAIR("icon","%s")
-												XML_PAIR("title","PLAYSTATION\xC2\xAE")
+												XML_PAIR("title","%s")
 												XML_PAIR("info","%'i %s"),
-												wm_icons[gPSX], item_count[gPSX], STR_PS1FORMAT);
+												"psx", wm_icons[gPSX], "PLAYSTATION\xC2\xAE", item_count[gPSX], STR_PS1FORMAT);
 										_concat2(myxml, templn, STR_NOITEM_PAIR);}
 	#ifndef ENGLISH_ONLY
 	char *STR_PSPFORMAT = buffer; //[48];//	= "PSP\xE2\x84\xA2 format games";
 	language("STR_PSPFORMAT", STR_PSPFORMAT, "PSP\xE2\x84\xA2 format games");
 	#endif
-	if( !(webman_config->cmask & PSP)) {sprintf(templn, "<T key=\"wm_psp\">"
+	if( !(webman_config->cmask & PSP)) {sprintf(templn, "<T key=\"wm_%s\">"
 												XML_PAIR("icon","%s")
-												XML_PAIR("title","PLAYSTATION\xC2\xAEPORTABLE")
+												XML_PAIR("title","%s")
 												XML_PAIR("info","%'i %s"),
-												wm_icons[gPSP], item_count[gPSP], STR_PSPFORMAT);
+												"psp", wm_icons[gPSP], "PLAYSTATION\xC2\xAEPORTABLE", item_count[gPSP], STR_PSPFORMAT);
 										_concat2(myxml, templn, STR_NOITEM_PAIR);}
 	#ifndef ENGLISH_ONLY
 	char *STR_VIDFORMAT = buffer; //[56];//	= "Blu-ray\xE2\x84\xA2 and DVD";
@@ -585,11 +585,11 @@ static void add_group_tables(char *buffer, char *templn, t_string *myxml)
 	language("STR_VIDEO", STR_VIDEO, "Video content");
 	#endif
 	if( !(webman_config->cmask & DVD) ||
-		!(webman_config->cmask & BLU)) {sprintf(templn, "<T key=\"wm_dvd\">"
+		!(webman_config->cmask & BLU)) {sprintf(templn, "<T key=\"wm_%s\">"
 												XML_PAIR("icon","%s")
 												XML_PAIR("title","%s")
 												XML_PAIR("info","%'i %s"),
-												wm_icons[gDVD], STR_VIDFORMAT, item_count[gDVD], STR_VIDEO);
+												"dvd", wm_icons[gDVD], STR_VIDFORMAT, item_count[gDVD], STR_VIDEO);
 										_concat2(myxml, templn, STR_NOITEM_PAIR);}
  #endif
 }
@@ -1100,7 +1100,7 @@ scan_roms:
 
 								// create game folder in /dev_hdd0/game and copy PARAM.SFO to prevent deletion of XMB icon when gameDATA is disabled
 								char *param_sfo = tempstr;
-								sprintf(param_sfo, "%s%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name);
+								sprintf(param_sfo, "%s/%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name);
 								if(not_exists(param_sfo))
 								{
 									if((strlen(entry.entry_name.d_name) >= 16) && (entry.entry_name.d_name[6] == '-'))
@@ -1291,32 +1291,6 @@ scan_roms:
 	sprintf(templn, "%s/FEATURES/webMAN%s.xml", XMBMANPLS_PATH, lang_code);
 	bool add_xmbm_plus = file_exists(templn);
 	#endif
-	// --- add sorted items to xml
-	if( !scanning_roms && XMB_GROUPS )
-	{
-		u32 max_size = (BUFFER_SIZE - 5000);
-
-		for(u16 len, a = 0; a < key; a++)
-		{
-			len = sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
-			if(*skey[a].value == PS3_&& ((myxml_ps3.size + len) < max_size))
-				_concat(&myxml_ps3, templn);
-			else
-			if(*skey[a].value == PS2 && ((myxml_ps2.size + len) < (BUFFER_SIZE_PS2 - 128)))
-				_concat(&myxml_ps2, templn);
-			#ifdef COBRA_ONLY
-			else
-			if(*skey[a].value == PS1 && ((myxml_psx.size + len) < (BUFFER_SIZE_PSX - 128)))
-				_concat(&myxml_psx, templn);
-			else
-			if(*skey[a].value == PSP && ((myxml_psp.size + len) < (BUFFER_SIZE_PSP - 128)))
-				_concat(&myxml_psp, templn);
-			else
-			if(*skey[a].value == BLU && ((myxml_dvd.size + len) < (BUFFER_SIZE_DVD - 1200)))
-				_concat(&myxml_dvd, templn);
-			#endif
-		}
-	}
 
 	// --- build xml headers
 	#ifdef MOUNT_ROMS
@@ -1339,28 +1313,6 @@ scan_roms:
 						"<V id=\"%s\">"
 						"<A>", XML_HEADER, "seg_mygames");
 	#endif
-
-	// --- close view of xml groups
-	if( XMB_GROUPS )
-	{
-		if(!(webman_config->cmask & PS3)) _concat(&myxml_ps3, XML_END_ITEMS);
-		if(!(webman_config->cmask & PS2)) _concat(&myxml_ps2, XML_END_ITEMS);
-		#ifdef COBRA_ONLY
-		if(!(webman_config->cmask & PS1)) _concat(&myxml_psx, XML_END_ITEMS);
-		if(!(webman_config->cmask & PSP)) _concat(&myxml_psp, XML_END_ITEMS);
-		if(!(webman_config->cmask & DVD) || !(webman_config->cmask & BLU))
-		{
-			_concat(&myxml_dvd, XML_END_ITEMS);
-			if(webman_config->rxvid)
-			{
-				add_html('i', 0, enc_dir_name, templn); // QUERY_VIDEOS1
-				_concat2(&myxml_dvd, "<V id=\"seg_wm_bdvd\"><I>", templn);
-				add_html('j', 0, enc_dir_name, templn); // QUERY_VIDEOS2
-				_concat(&myxml_dvd, templn);
-			}
-		}
-		#endif
-	}
 
 	char *buffer = enc_dir_name;
 
@@ -1496,14 +1448,48 @@ save_xml:
 		}
 		else
 		{
-			if(!(webman_config->cmask & PS3)) cellFsWrite(fdxml, (char*)myxml_ps3.str, myxml_ps3.size, NULL);
-			if(!(webman_config->cmask & PS2)) cellFsWrite(fdxml, (char*)myxml_ps2.str, myxml_ps2.size, NULL);
-		#ifdef COBRA_ONLY
-			if(!(webman_config->cmask & PS1)) cellFsWrite(fdxml, (char*)myxml_psx.str, myxml_psx.size, NULL);
-			if(!(webman_config->cmask & PSP)) cellFsWrite(fdxml, (char*)myxml_psp.str, myxml_psp.size, NULL);
-			if(!(webman_config->cmask & DVD) ||
-			   !(webman_config->cmask & BLU)) cellFsWrite(fdxml, (char*)myxml_dvd.str, myxml_dvd.size, NULL);
-		#endif
+			#ifdef COBRA_ONLY
+			const u8 section[5] = {PS3_, PS2, PS1, PSP, BLU};
+			for(u8 n = 0; n < 5; n++)
+			#else
+			const u8 section[2] = {PS3_, PS2};
+			for(u8 n = 0; n < 2; n++)
+			#endif
+			{
+				// --- items to section
+				if(!(webman_config->cmask & PS3) && (section[n] == PS3_)) cellFsWrite(fdxml, (char*)myxml_ps3.str, myxml_ps3.size, NULL);
+				if(!(webman_config->cmask & PS2) && (section[n] == PS2 )) cellFsWrite(fdxml, (char*)myxml_ps2.str, myxml_ps2.size, NULL);
+				#ifdef COBRA_ONLY
+				if(!(webman_config->cmask & PS1) && (section[n] == PS1 )) cellFsWrite(fdxml, (char*)myxml_psx.str, myxml_psx.size, NULL);
+				if(!(webman_config->cmask & PSP) && (section[n] == PSP )) cellFsWrite(fdxml, (char*)myxml_psp.str, myxml_psp.size, NULL);
+				if((!(webman_config->cmask & DVD) ||!(webman_config->cmask & BLU)) && (section[n] == BLU)) cellFsWrite(fdxml, (char*)myxml_dvd.str, myxml_dvd.size, NULL);
+				#endif
+
+				// --- add sorted items to xml
+				u16 len = 0;
+				for(u16 a = 0; a < key; a++)
+					if(*skey[a].value == section[n])
+					{
+						len = sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
+						cellFsWrite(fdxml, templn, len, NULL);
+					}
+
+				// --- close view of xml groups
+				if(len)
+				{
+					cellFsWrite(fdxml, XML_END_ITEMS, 8, NULL);
+					#ifdef COBRA_ONLY
+					if(webman_config->rxvid && (section[n] == BLU))
+					{
+						add_html(dat_QUERY_VIDEOS1, 0, enc_dir_name, templn); // QUERY_VIDEOS1
+						cellFsWrite(fdxml, "<V id=\"seg_wm_bdvd\"><I>", 23, NULL);
+						cellFsWrite(fdxml, templn, strlen(templn), NULL);
+						add_html(dat_QUERY_VIDEOS2, 0, enc_dir_name, templn); // QUERY_VIDEOS2
+						cellFsWrite(fdxml, templn, strlen(templn), NULL);
+					}
+					#endif
+				}
+			}
 			slen = sprintf(buffer, "</X>\r\n");
 		}
 

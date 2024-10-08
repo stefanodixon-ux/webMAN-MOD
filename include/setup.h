@@ -559,7 +559,7 @@ static void setup_form(char *buffer, char *templn)
 	#endif
 
 	u8 value, b, h = is_app_home_onxmb();
-	add_html('0', 0, buffer, templn);
+	add_html(dat_SETUP_FORM, 0, buffer, templn);
 	sprintf(templn, " %s </a></b><br><div id=\"cnt\">"
 					"<table width=\"820\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\">"
 					"<tr><td width=\"250\">", STR_SCAN2); concat(buffer, templn);
@@ -792,12 +792,12 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("nc\" onclick=\"ic.value=(nc.checked)?1:0;", STR_MMCOVERS, " : ", (value == SHOW_ICON0), buffer);
 
 	// icon type
-	add_html('1', value, buffer, templn);
+	add_html(dat_ICON_TYPE, value, buffer, templn);
 
 #ifndef ENGLISH_ONLY
 	//language
 	sprintf(templn, " • %s: ", STR_PLANG); concat(buffer, templn);
-	add_html('2', webman_config->lang, buffer, templn);
+	add_html(dat_LANGUAGES, webman_config->lang, buffer, templn);
 #endif
 	concat(buffer, "<br>");
 
@@ -806,11 +806,11 @@ static void setup_form(char *buffer, char *templn)
 
 	// info
 	#ifndef LITE_EDITION
-	add_html('3', webman_config->info, buffer, templn);
+	add_html(dat_INFO_TAGS, webman_config->info, buffer, templn);
 	#else
-	add_html('3', webman_config->info & 0xF, buffer, templn);
+	add_html(dat_INFO_TAGS, webman_config->info & 0xF, buffer, templn);
 	#endif
-	add_html('4', webman_config->minfo, buffer, templn);
+	add_html(dat_INFO_MSGS, webman_config->minfo, buffer, templn);
 
 #ifdef FIX_GAME
 	if(c_firmware >= 4.20f && c_firmware < LATEST_CFW)
@@ -880,7 +880,7 @@ static void setup_form(char *buffer, char *templn)
 	//sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
 	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=", tmp); concat(buffer, templn);
 
-	add_html('p', 0, buffer, templn);
+	add_html(dat_VIEW_IDPS, 0, buffer, templn);
 #endif
 
 	//Disable lv1&lv2 peek&poke syscalls (6,7,9,10,36) and delete history files at system startup
@@ -943,11 +943,11 @@ static void setup_form(char *buffer, char *templn)
 
 	//memory usage
 	sprintf(templn, " %s [%iKB]: ", STR_MEMUSAGE, (webman_config->vsh_mc) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, templn);
-	add_html('5', webman_config->foot, buffer, templn);
+	add_html(dat_MEMORY_USAGE, webman_config->foot, buffer, templn);
 
 	//memory container
 	add_option_item(0,  STR_DEFAULT, (webman_config->vsh_mc == 0)  , buffer);
-	add_html('6', webman_config->vsh_mc, buffer, templn);
+	add_html(dat_MEM_CONTAINER, webman_config->vsh_mc, buffer, templn);
 
 	#ifndef LITE_EDITION
 	//Home
@@ -965,16 +965,16 @@ static void setup_form(char *buffer, char *templn)
 	//BD Region
 	concat(buffer, "BD Region: <select id=\"bdr\" name=\"bdr\">");
 	add_option_item(0,  STR_DEFAULT, (cobra_config->bd_video_region == 0)  , buffer);
-	add_html('7', cobra_config->bd_video_region, buffer, templn);
+	add_html(dat_BD_REGIONS, cobra_config->bd_video_region, buffer, templn);
 
 	//DVD Region
 	add_option_item(0,  STR_DEFAULT, (cobra_config->dvd_video_region == 0)  , buffer);
-	add_html('8', cobra_config->dvd_video_region, buffer, templn);
+	add_html(dat_DVD_REGIONS, cobra_config->dvd_video_region, buffer, templn);
 	#endif // #ifdef BDVD_REGION
 
 	#ifdef VIDEO_REC
-	add_html('v', webman_config->rec_video_format, buffer, templn);
-	add_html('a', webman_config->rec_audio_format, buffer, templn);
+	add_html(dat_VIDEOREC_FMT, webman_config->rec_video_format, buffer, templn);
+	add_html(dat_AUDIOREC_FMT, webman_config->rec_audio_format, buffer, templn);
 	#endif // #ifdef VIDEO_REC
 
 	buffer += strlen(buffer);
@@ -1105,7 +1105,7 @@ static void setup_form(char *buffer, char *templn)
 					"<br>", command); concat(buffer, templn);
 					#endif
 
-	add_html('x', 0, buffer, templn);
+	add_html(dat_CUSTOM_COMBOS, 0, buffer, templn);
 
 #endif // #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
 
@@ -1113,11 +1113,13 @@ static void setup_form(char *buffer, char *templn)
 
 	//Wait for any USB device to be ready
 	sprintf(templn, "%swt);\"> %s </a></b><br><div id=\"wt\">", HTML_TOGGLER, STR_ANYUSB); concat(buffer, templn);
-	add_html('d', webman_config->bootd, buffer, templn);
+	add_html(dat_WAIT_USB_TIME1, webman_config->bootd, buffer, templn);
 
 	//Wait additionally for each selected USB device to be ready
 	sprintf(templn, HTML_BLU_SEPARATOR "<u> %s:</u><br>", STR_ADDUSB); concat(buffer, templn);
-	add_html('s', webman_config->boots, buffer, templn);
+	add_html(dat_WAIT_USB_TIME1, webman_config->boots, buffer, templn);
+
+	concat(buffer, "</div>");
 
 	sprintf(templn, HTML_RED_SEPARATOR "<input class=\"bs\" type=\"submit\" accesskey=\"S\" value=\" %s \"/>"
 					"<script>function tgl(o){o.style.maxHeight=(o.style.maxHeight=='500px')?'0px':'500px';}</script>"
@@ -1125,7 +1127,7 @@ static void setup_form(char *buffer, char *templn)
 
 #ifndef LITE_EDITION
 	#ifdef PKG_HANDLER
-	add_html('z', 0, buffer, templn);
+	add_html(dat_SETUP_FOOTER, 0, buffer, templn);
 
 //	concat(buffer,  HTML_RED_SEPARATOR
 //					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a> • "

@@ -293,16 +293,16 @@ static int is_syscall_disabled(u32 sc)
 
 static void add_sound_list(char *buffer, const char *param)
 {
-	add_option_item(1, "Simple", IS_MARKED("snd=1"), buffer);
-	add_option_item(2, "Double", IS_MARKED("snd=2"), buffer);
-	add_option_item(3, "Triple", IS_MARKED("snd=3"), buffer);
-	add_option_item(0, "snd_cancel", IS_MARKED("snd=0"), buffer);
-	add_option_item(4, "snd_cursor", IS_MARKED("snd=4"), buffer);
-	add_option_item(5, "snd_trophy", IS_MARKED("snd=5"), buffer);
-	add_option_item(6, "snd_decide", IS_MARKED("snd=6"), buffer);
-	add_option_item(7, "snd_option", IS_MARKED("snd=7"), buffer);
-	add_option_item(8, "snd_system_ok", IS_MARKED("snd=8"), buffer);
-	add_option_item(9, "snd_system_ng", IS_MARKED("snd=9"), buffer);
+	add_option_item2(1, "Simple", "snd", param, buffer);
+	add_option_item2(2, "Double", "snd", param, buffer);
+	add_option_item2(3, "Triple", "snd", param, buffer);
+	add_option_item2(0, "snd_cancel", "snd", param, buffer);
+	add_option_item2(4, "snd_cursor", "snd", param, buffer);
+	add_option_item2(5, "snd_trophy", "snd", param, buffer);
+	add_option_item2(6, "snd_decide", "snd", param, buffer);
+	add_option_item2(7, "snd_option", "snd", param, buffer);
+	add_option_item2(8, "snd_system_ok", "snd", param, buffer);
+	add_option_item2(9, "snd_system_ng", "snd", param, buffer);
 }
 
 static void ps3mapi_buzzer(char *buffer, char *templn, const char *param)
@@ -368,19 +368,19 @@ static void ps3mapi_led(char *buffer, char *templn, const char *param)
 	sprintf(templn, "<form id=\"led\" action=\"/led%s<br>"
 					"<b>%s:</b>  <select name=\"color\">", HTML_FORM_METHOD,  "Color"); concat(buffer, templn);
 
-	add_option_item(0, "Red",				 IS_MARKED("color=0"), buffer);
-	add_option_item(1, "Green",				 IS_MARKED("color=1"), buffer);
-	add_option_item(2, "Yellow (Red+Green)", IS_MARKED("color=2"), buffer);
+	add_option_item2(0, "Red",				  "color", param, buffer);
+	add_option_item2(1, "Green",			  "color", param, buffer);
+	add_option_item2(2, "Yellow (Red+Green)", "color", param, buffer);
 
 	sprintf(templn, "</select>   <b>%s:</b>  <select name=\"mode\">", "Mode"); concat(buffer, templn);
 
-	add_option_item(0, "Off",		 IS_MARKED("mode=0"), buffer);
-	add_option_item(1, "On",		 IS_MARKED("mode=1"), buffer);
-	add_option_item(2, "Blink fast", IS_MARKED("mode=2"), buffer);
-	add_option_item(3, "Blink slow", IS_MARKED("mode=3"), buffer);
-	add_option_item(4, "Blink alt1", IS_MARKED("mode=4"), buffer);
-	add_option_item(5, "Blink alt2", IS_MARKED("mode=5"), buffer);
-	add_option_item(6, "Blink alt3", IS_MARKED("mode=6"), buffer);
+	add_option_item2(0, "Off",		  "mode", param, buffer);
+	add_option_item2(1, "On",		  "mode", param, buffer);
+	add_option_item2(2, "Blink fast", "mode", param, buffer);
+	add_option_item2(3, "Blink slow", "mode", param, buffer);
+	add_option_item2(4, "Blink alt1", "mode", param, buffer);
+	add_option_item2(5, "Blink alt2", "mode", param, buffer);
+	add_option_item2(6, "Blink alt3", "mode", param, buffer);
 
 	sprintf(templn, "</select>   <input type=\"submit\" value=\" %s \"/></form><br>", "Set");
 	if(!is_ps3mapi_home) strcat(templn, HTML_RED_SEPARATOR); else strcat(templn, "</table>");
@@ -476,8 +476,9 @@ static void ps3mapi_mappath(char *buffer, char *templn, const char *param)
 	concat(buffer, templn);
 }
 
-static bool add_sc_checkbox(int sc, const char *id, const char *label, char *buffer)
+static bool add_sc_checkbox(int sc, const char *label, char *buffer)
 {
+	char id[8]; sprintf(id, "sc%i", sc);
 	bool disabled = is_syscall_disabled(sc);
 	add_check_box(id, disabled, label, _BR_, (!disabled), buffer);
 	return disabled;
@@ -527,27 +528,27 @@ static void ps3mapi_syscall(char *buffer, char *templn, const char *param)
 
 	u8 sc_count = 0;
 
-	if(add_sc_checkbox(6, "sc6", "[6]LV2 Peek", buffer)) sc_count++;
-	if(add_sc_checkbox(7, "sc7", "[7]LV2 Poke", buffer)) sc_count++;
-	if(add_sc_checkbox(9, "sc9", "[9]LV1 Poke", buffer)) sc_count++;
-	add_sc_checkbox(10, "sc10", "[10]LV1 Call", buffer);
-	add_sc_checkbox(15, "sc15", "[15]LV2 Call", buffer);
-	add_sc_checkbox(11, "sc11", "[11]LV1 Peek", buffer);
+	if(add_sc_checkbox(6, "[6]LV2 Peek", buffer)) sc_count++;
+	if(add_sc_checkbox(7, "[7]LV2 Poke", buffer)) sc_count++;
+	if(add_sc_checkbox(9, "[9]LV1 Poke", buffer)) sc_count++;
+	add_sc_checkbox(10, "[10]LV1 Call", buffer);
+	add_sc_checkbox(15, "[15]LV2 Call", buffer);
+	add_sc_checkbox(11, "[11]LV1 Peek", buffer);
 
 	concat(buffer, "<td  width=\"260\"  valign=\"top\" class=\"la\">");
 
-	add_sc_checkbox(35, "sc35", "[35]Map Path", buffer);
-	add_sc_checkbox(36, "sc36", "[36]Map Game", buffer);
-	add_sc_checkbox(38, "sc38", "[38]New sk1e", buffer);
-	add_sc_checkbox(1022, "sc1022", "[1022]PRX Loader", buffer);
+	add_sc_checkbox(35, "[35]Map Path", buffer);
+	add_sc_checkbox(36, "[36]Map Game", buffer);
+	add_sc_checkbox(38, "[38]New sk1e", buffer);
+	add_sc_checkbox(1022, "[1022]PRX Loader", buffer);
 
 	concat(buffer, "<td  width=\"260\"  valign=\"top\" class=\"la\">");
 
-	add_sc_checkbox(200, "sc200", "[200]sys_dbg_read_process_memory", buffer);
-	add_sc_checkbox(201, "sc201", "[201]sys_dbg_write_process_memory", buffer);
-	add_sc_checkbox(202, "sc202", "[202]Free - Payloader3", buffer);
-	add_sc_checkbox(203, "sc203", "[203]LV2 Peek CCAPI", buffer);
-	add_sc_checkbox(204, "sc204", "[204]LV2 Poke CCAPI", buffer);
+	add_sc_checkbox(200, "[200]sys_dbg_read_process_memory", buffer);
+	add_sc_checkbox(201, "[201]sys_dbg_write_process_memory", buffer);
+	add_sc_checkbox(202, "[202]Free - Payloader3", buffer);
+	add_sc_checkbox(203, "[203]LV2 Peek CCAPI", buffer);
+	add_sc_checkbox(204, "[204]LV2 Poke CCAPI", buffer);
 
 #ifdef REMOVE_SYSCALLS
 	concat(buffer, "<br>");
@@ -1014,7 +1015,7 @@ static void ps3mapi_getmem(char *buffer, char *templn, const char *param)
 			//
 
 			// add navigation with left/right keys
-			add_html('k', 0, buffer, templn);
+			add_html(dat_DEBUG_MEM_KEYS, 0, buffer, templn);
 			concat(buffer,  "<textarea id=\"output\" style=\"display:none\">");
 
 			for(int i = 0; i < length; i++)
@@ -1104,7 +1105,7 @@ static void ps3mapi_setmem(char *buffer, char *templn, const char *param)
 
 	sprintf(templn, "<b><u>%s:</u></b> "  HTML_INPUT("addr", "%X", "16", "18"), "Address", address); concat(buffer, templn);
 
-	add_html('o', oper, buffer, templn);
+	add_html(dat_MEM_OPERATORS, oper, buffer, templn);
 
 	sprintf(templn, "<br><table width=\"800\">"
 					"<tr><td class=\"la\">"
@@ -1747,7 +1748,6 @@ static void ps3mapi_gameplugin(char *buffer, char *templn, const char *param)
 						  "<input name=\"sys\" type=\"hidden\" value=\"%u\">"
 						  "<input type=\"submit\" value=\" Unload \" title=\"id=0x%x\">"
 						  "</form>"
-						 ""
 						"</tr>", HTML_FORM_METHOD, pid, mod_list[slot], islike(tmp_filename, "/dev_flash") | IS(tmp_name, "WWWD")<<1, mod_list[slot]);
 			}
 			else

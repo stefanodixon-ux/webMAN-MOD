@@ -271,7 +271,7 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value
 	if(view)
 	{
 		concat(html_table, "</table>");
-		char tmp[KB]; add_html('t', 0, html_table, tmp); // add links using javascript
+		char tmp[KB]; add_html(dat_SFO_ADD_LINKS, 0, html_table, tmp); // add links using javascript
 	}
 	#endif
 }
@@ -331,7 +331,7 @@ static void get_local_app_ver(char *app_ver, const char *title_id, char *param_s
 {
 	if(*title_id)
 	{
-		sprintf(param_sfo, "%s%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+		sprintf(param_sfo, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
 		if(not_exists(param_sfo))
 			{set_param_sfo(param_sfo); return;}
 
