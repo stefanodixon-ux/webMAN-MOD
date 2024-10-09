@@ -81,7 +81,7 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 
 // add_html(): id codes for WM_RES_PATH/setup/setup%c.dat
 #define dat_QUERY_VIDEOS1	'i'
-#define dat_QUERY_VIDEOS2	'J'
+#define dat_QUERY_VIDEOS2	'j'
 #define dat_SETUP_FORM		'0'
 #define dat_ICON_TYPE		'1'
 #define dat_LANGUAGES		'2'
@@ -326,17 +326,19 @@ static void add_html(u8 id, int value, char *buffer, char *templn)
 
 	char res_file[40];
 	sprintf(res_file, "%s/setup/setup%c.dat", WM_RES_PATH, id);
-	read_file(res_file, templn, 1023, 0);
-	char *pos = strstr(templn, "    ");
-	if(pos)
+	if(read_file(res_file, templn, 1023, 0) > 0)
 	{
-		if((id == 'a') || (id == 'v'))
-			sprintf(res_file, "%04x", value);
-		else
-			sprintf(res_file, "%04i", value);
-		memcpy(pos, res_file, 4);
+		char *pos = strstr(templn, "    ");
+		if(pos)
+		{
+			if((id == 'a') || (id == 'v'))
+				sprintf(res_file, "%04x", value);
+			else
+				sprintf(res_file, "%04i", value);
+			memcpy(pos, res_file, 4);
+		}
+		concat(buffer, templn);
 	}
-	concat(buffer, templn);
 }
 
 static size_t add_radio_button(const char *name, int value, const char *id, const char *label, const char *sufix, bool checked, char *buffer)

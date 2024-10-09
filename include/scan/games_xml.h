@@ -206,7 +206,7 @@ static void make_fb_xml(void)
 }
 
 #ifdef MOUNT_ROMS
-static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 roms_count[], const char *roms_path[], u8 count)
+static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 roms_count[], const char *roms_path[], u8 roms_path_count)
 {
 	t_string myxml; _alloc(&myxml, sysmem_buf);
 	_concat2(&myxml, XML_HEADER, "<V id=\"seg_wm_rom_items\"><A>");
@@ -218,7 +218,7 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	u32 t_count = 0;
 
 	// ---- Add roms categories
-	for(u8 i = 0; i < count; i++)
+	for(u8 i = 0; i < roms_path_count; i++)
 	{
 		if(roms_path[i] && (roms_count[i] > 0))
 		{
@@ -249,7 +249,7 @@ static void build_roms_xml(char *sysmem_buf, char *templn, char *tempstr, u16 ro
 	// ---- Add roms queries
 	_concat(&myxml, XML_BEGIN_ITEMS);
 
-	for(u8 i = 0; i < count; i++)
+	for(u8 i = 0; i < roms_path_count; i++)
 	{
 		if(roms_path[i] && (roms_count[i] > 0))
 		{
@@ -598,31 +598,29 @@ static bool add_xmb_entry(u8 f0, u8 f1, const char *tempstr, char *templn, char 
 {
 	set_sort_key(skey, templn, key, subfolder, f1);
 
-	#define ITEMS_BUFFER(a)  (64 * (item_count[a] + 10))
-
 	if( !scanning_roms && XMB_GROUPS )
 	{
 	#ifdef COBRA_ONLY
 		const char *ext = get_ext(entry_name);
-		if(((IS_PS3_TYPE) || ((IS_NTFS) && IS(ext, ".ntfs[PS3ISO]"))) && (myxml_ps3->size < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3))))
-		{_concat(myxml_ps3, tempstr); *skey=PS3_, ++item_count[gPS3];}
+		if(((IS_PS3_TYPE) || ((IS_NTFS) && IS(ext, ".ntfs[PS3ISO]"))) && (myxml_ps3->size < (BUFFER_SIZE - _4KB_)))
+		{_concat(myxml_ps3, tempstr); *skey=PS3, ++item_count[gPS3];}
 		else
-		if(((IS_PS2ISO) || ((IS_NTFS) && IS(ext, ".ntfs[PS2ISO]"))) && (myxml_ps2->size < (BUFFER_SIZE_PS2 - ITEMS_BUFFER(gPS2))))
+		if(((IS_PS2ISO) || ((IS_NTFS) && IS(ext, ".ntfs[PS2ISO]"))) && (myxml_ps2->size < BUFFER_SIZE_PS2))
 		{_concat(myxml_ps2, tempstr); *skey=PS2, ++item_count[gPS2];}
 		else
-		if(((IS_PSXISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSXISO]"))) && (myxml_psx->size < (BUFFER_SIZE_PSX - ITEMS_BUFFER(gPSX))))
+		if(((IS_PSXISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSXISO]"))) && (myxml_psx->size < BUFFER_SIZE_PSX))
 		{_concat(myxml_psx, tempstr); *skey=PS1, ++item_count[gPSX];}
 		else
-		if(((IS_PSPISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSPISO]"))) && (myxml_psp->size < (BUFFER_SIZE_PSP - ITEMS_BUFFER(gPSP))))
+		if(((IS_PSPISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSPISO]"))) && (myxml_psp->size < BUFFER_SIZE_PSP))
 		{_concat(myxml_psp, tempstr); *skey=PSP, ++item_count[gPSP];}
 		else
-		if(((IS_BDISO) || (IS_DVDISO) || ((IS_NTFS) && (IS(ext, ".ntfs[DVDISO]") || IS(ext, ".ntfs[BDISO]") || IS(ext, ".ntfs[BDFILE]")))) && (myxml_dvd->size < (BUFFER_SIZE_DVD - ITEMS_BUFFER(gDVD))))
+		if(((IS_BDISO) || (IS_DVDISO) || ((IS_NTFS) && (IS(ext, ".ntfs[DVDISO]") || IS(ext, ".ntfs[BDISO]") || IS(ext, ".ntfs[BDFILE]")))) && (myxml_dvd->size < BUFFER_SIZE_DVD))
 		{_concat(myxml_dvd, tempstr); *skey=BLU, ++item_count[gDVD];}
 	#else
-		if((IS_PS3_TYPE) && myxml_ps3->size < (BUFFER_SIZE - _4KB_ - ITEMS_BUFFER(gPS3)))
-		{_concat(myxml_ps3, tempstr); *skey=PS3_, ++item_count[gPS3];}
+		if((IS_PS3_TYPE) && myxml_ps3->size < (BUFFER_SIZE - _4KB_))
+		{_concat(myxml_ps3, tempstr); *skey=PS3, ++item_count[gPS3];}
 		else
-		if((IS_PS2ISO) && myxml_ps2->size < (BUFFER_SIZE_PS2 - ITEMS_BUFFER(gPS2)))
+		if((IS_PS2ISO) && myxml_ps2->size < BUFFER_SIZE_PS2)
 		{_concat(myxml_ps2, tempstr); *skey=PS2, ++item_count[gPS2];}
 	#endif
 		else
@@ -630,7 +628,7 @@ static bool add_xmb_entry(u8 f0, u8 f1, const char *tempstr, char *templn, char 
 	}
 	else
 	{
-		if(myxml_ps3->size < (BUFFER_SIZE  - ITEMS_BUFFER(gPS3) - _4KB_))
+		if(myxml_ps3->size < (BUFFER_SIZE - _4KB_))
 			{_concat(myxml_ps3, tempstr); ++item_count[gPS3];}
 		else
 			return (false);
@@ -776,8 +774,8 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	u16 roms_count[ROM_PATHS]; u32 count_roms = 0; memset(roms_count, 0, ROM_PATHS);
 
 	// remove paths not listed in roms_paths.txt
-	u8 len = read_file(WM_ROMS_PATHS, templn, 640, 0);
-	if(len)
+	u16 len = read_file(WM_ROMS_PATHS, templn, 640, 0);
+	if((len > 0) && (len != 632))
 	{
 		templn[len] = '\0'; to_upper(templn);
 		for(u8 i = 0; i < ROM_PATHS; i++)
@@ -1449,26 +1447,28 @@ save_xml:
 		else
 		{
 			#ifdef COBRA_ONLY
-			const u8 section[5] = {PS3_, PS2, PS1, PSP, BLU};
+			const u8 section[5] = {gPS3, gPS2, gPSX, gPSP, gDVD};
 			for(u8 n = 0; n < 5; n++)
 			#else
-			const u8 section[2] = {PS3_, PS2};
+			const u8 section[2] = {gPS3, gPS2};
 			for(u8 n = 0; n < 2; n++)
 			#endif
 			{
+				if(item_count[section[n]] == 0) continue;
+
 				// --- items to section
-				if(!(webman_config->cmask & PS3) && (section[n] == PS3_)) cellFsWrite(fdxml, (char*)myxml_ps3.str, myxml_ps3.size, NULL);
-				if(!(webman_config->cmask & PS2) && (section[n] == PS2 )) cellFsWrite(fdxml, (char*)myxml_ps2.str, myxml_ps2.size, NULL);
+				if(n == 0) cellFsWrite(fdxml, (char*)myxml_ps3.str, myxml_ps3.size, NULL);
+				if(n == 1) cellFsWrite(fdxml, (char*)myxml_ps2.str, myxml_ps2.size, NULL);
 				#ifdef COBRA_ONLY
-				if(!(webman_config->cmask & PS1) && (section[n] == PS1 )) cellFsWrite(fdxml, (char*)myxml_psx.str, myxml_psx.size, NULL);
-				if(!(webman_config->cmask & PSP) && (section[n] == PSP )) cellFsWrite(fdxml, (char*)myxml_psp.str, myxml_psp.size, NULL);
-				if((!(webman_config->cmask & DVD) ||!(webman_config->cmask & BLU)) && (section[n] == BLU)) cellFsWrite(fdxml, (char*)myxml_dvd.str, myxml_dvd.size, NULL);
+				if(n == 2) cellFsWrite(fdxml, (char*)myxml_psx.str, myxml_psx.size, NULL);
+				if(n == 3) cellFsWrite(fdxml, (char*)myxml_psp.str, myxml_psp.size, NULL);
+				if(n == 4) cellFsWrite(fdxml, (char*)myxml_dvd.str, myxml_dvd.size, NULL);
 				#endif
 
 				// --- add sorted items to xml
 				u16 len = 0;
 				for(u16 a = 0; a < key; a++)
-					if(*skey[a].value == section[n])
+					if(*skey[a].value == (1<<n)) // PS3, PS2, PS1, PSP, BLU
 					{
 						len = sprintf(templn, "%s" ADD_XMB_ITEM("%s"), XML_ITEM, skey[a].value + XML_KEY_LEN, skey[a].value + XML_KEY_LEN);
 						cellFsWrite(fdxml, templn, len, NULL);
@@ -1479,10 +1479,10 @@ save_xml:
 				{
 					cellFsWrite(fdxml, XML_END_ITEMS, 8, NULL);
 					#ifdef COBRA_ONLY
-					if(webman_config->rxvid && (section[n] == BLU))
+					if(webman_config->rxvid && (n == gDVD))
 					{
-						add_html(dat_QUERY_VIDEOS1, 0, enc_dir_name, templn); // QUERY_VIDEOS1
 						cellFsWrite(fdxml, "<V id=\"seg_wm_bdvd\"><I>", 23, NULL);
+						add_html(dat_QUERY_VIDEOS1, 0, enc_dir_name, templn); // QUERY_VIDEOS1
 						cellFsWrite(fdxml, templn, strlen(templn), NULL);
 						add_html(dat_QUERY_VIDEOS2, 0, enc_dir_name, templn); // QUERY_VIDEOS2
 						cellFsWrite(fdxml, templn, strlen(templn), NULL);

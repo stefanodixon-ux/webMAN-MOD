@@ -59,8 +59,6 @@ enum paths_ids
 #define TYPE_ROM 6
 #define TYPE_MAX 7
 
-#define PS3_ '3'
-
 #define GAME_DIV_PREFIX  "<div class=\"gc\"><div class=\"ic\"><a href=\"/mount.ps3"
 #define GAME_DIV_SUFIX   "</a></div></div>"
 
