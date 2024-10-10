@@ -354,7 +354,7 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 
 static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *templn)
 {
-	if(!f0) return false;
+	if(IS_HDD0 || IS_ROMS_FOLDER) return false;
 
 	sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
 
@@ -801,7 +801,7 @@ list_games:
 												&& !strcasestr(param,  filter_name)
 												&& !strcasestr(data[v3_entry].name, filter_name)) {v3_entry++; continue;}
 
-						if(urlenc(tempstr, icon)) sprintf(icon, "%s", tempstr);
+						if(urlenc(tempstr, icon)) snprintf(icon, STD_PATH_LEN, "%s", tempstr);
 
 						set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, 0, f1); // sort key
 
@@ -847,9 +847,9 @@ list_games:
 
 						//////////////////////////////
 						subfolder = 0;
-						if(IS_ISO_FOLDER || IS_VIDEO_FOLDER)
+						if(BETWEEN(id_PS3ISO, f1, id_ISO) || (f1 == id_ROMS))
 						{
-							sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
+							snprintf(subpath, STD_PATH_LEN, "%s/%s", param, entry.entry_name.d_name); cellFsClosedir(fd2);
 							if(cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
 							{
 								strcpy(subpath, entry.entry_name.d_name); subfolder = 1;
@@ -857,7 +857,7 @@ next_html_entry:
 								cellFsGetDirectoryEntries(fd2, &entry, sizeof(entry), &read_e);
 								if(read_e < 1) {cellFsClosedir(fd2); fd2 = 0; continue;}
 								if(entry.entry_name.d_name[0] == '.') goto next_html_entry;
-								entry.entry_name.d_namlen = sprintf(templn, "%s/%s", subpath, entry.entry_name.d_name);
+								entry.entry_name.d_namlen = snprintf(templn, D_NAME_LEN, "%s/%s", subpath, entry.entry_name.d_name);
 								strcpy(entry.entry_name.d_name, templn);
 							}
 						}
@@ -870,6 +870,8 @@ next_html_entry:
 							#ifdef MOUNT_GAMEI
 							if(IS_GAMEI_FOLDER)
 							{
+								if(!webman_config->gamei) continue;
+
 								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
 								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
@@ -885,7 +887,7 @@ next_html_entry:
 						else
 						{
 							flen = entry.entry_name.d_namlen;
-							is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0); if(!is_iso) continue;
+							is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0); if(!is_iso) goto continue_loop; //continue;
 						}
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
@@ -898,10 +900,10 @@ next_html_entry:
 							}
 							else
 							{
-								if(IS_HDD0 && IS(entry.entry_name.d_name, "~tmp.iso")) continue;
+								if(IS_HDD0 && IS(entry.entry_name.d_name, "~tmp.iso")) goto continue_loop; //continue;
 
 							#ifdef COBRA_ONLY
-								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) continue;
+								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) goto continue_loop; //continue;
 							#else
 								get_name(templn, entry.entry_name.d_name, NO_EXT);
 							#endif
@@ -909,7 +911,7 @@ next_html_entry:
 
 							if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
 													&& !strcasestr(param,  filter_name)
-													&& !strcasestr(entry.entry_name.d_name, filter_name)) {if(subfolder) goto next_html_entry; else continue;}
+													&& !strcasestr(entry.entry_name.d_name, filter_name)) goto continue_loop; //continue;
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
@@ -921,7 +923,7 @@ next_html_entry:
 
 							templn[80] = '\0'; // truncate title name
 
-							if(urlenc(tempstr, icon)) sprintf(icon, "%s", tempstr);
+							if(urlenc(tempstr, icon)) snprintf(icon, STD_PATH_LEN, "%s", tempstr);
 
 							set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, subfolder, f1); // sort key
 
@@ -929,7 +931,7 @@ next_html_entry:
 							if(launchpad_mode)
 							{
 								flen = sprintf(tempstr, "http://%s/mount_ps3%s/%s", local_ip, param, enc_dir_name);
-								if(flen >= MAX_LINE_LEN) continue; //ignore lines too long
+								if(flen >= MAX_LINE_LEN)  goto continue_loop; //continue; //ignore lines too long
 								strcpy(line_entry[idx].path, tempstr);
 								flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, title_id, icon, false);
 							}
@@ -937,7 +939,7 @@ next_html_entry:
 							#endif
 							if(mobile_mode)
 							{
-								if(!icon || strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
+								if(!icon || strchr(enc_dir_name, '"') || strchr(icon, '"'))  goto continue_loop; // ignore names with quotes: cause syntax error in javascript: gamelist.js
 
 								replace_invalid_chars(templn);
 
@@ -960,17 +962,18 @@ next_html_entry:
 								while(flen > MAX_LINE_LEN);
 							}
 
-							if(flen > MAX_LINE_LEN) continue; //ignore lines too long
+							if(flen > MAX_LINE_LEN)  goto continue_loop; //ignore lines too long
 							strcpy(line_entry[idx].path, tempstr); idx++;
 							tlen += (flen + div_size);
 						}
 						//////////////////////////////
+	continue_loop:
 						if(subfolder) goto next_html_entry;
 						//////////////////////////////
 					}
 				}
 
-				if(!is_net) cellFsClosedir(fd);
+				if(!is_net) cellFsClosedir(fd); cellFsClosedir(fd2);
 
 				#ifdef NET_SUPPORT
 				if(data2) {sys_memory_free(data2); data2 = NULL;}

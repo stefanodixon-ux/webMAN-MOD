@@ -957,8 +957,6 @@ scan_roms:
 			#ifdef MOUNT_ROMS
 			if(scanning_roms)
 			{
-				//if(!roms_path[roms_index]) break;
-
 				if(is_net)
 					sprintf(param, "%s/ROMS%s/%s", "", SUFIX(uprofile), roms_path[roms_index]);
 				else if(IS_NTFS)
@@ -977,7 +975,7 @@ scan_roms:
 			#endif
 			{
 				CellFsDirectoryEntry entry; u32 read_e;
-				int fd2 = 0, flen, plen;
+				int fd2 = 0, flen;
 				char title_id[24], app_ver[8];
 				u8 is_iso = 0;
 
@@ -994,9 +992,9 @@ scan_roms:
 				else
 				#endif
 				#ifdef MOUNT_ROMS
-				if(isDir(param) == false)
+				if(scanning_roms && isDir(param) == false)
 				{
-					if(f1 != id_ROMS || !IS_HDD0 || !cur_roms_path[0]) goto continue_reading_folder_xml; //continue;
+					if(!IS_HDD0) goto continue_reading_folder_xml; //continue;
 
 					sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), cur_roms_path); // try folder name in lower case (e.g. /ROMS/snes)
 					if(isDir(param) == false)
@@ -1007,11 +1005,8 @@ scan_roms:
 						if(isDir(param) == false) continue;
 					}
 				}
-
 				#endif
 				if(!is_net && cellFsOpendir(param, &fd) != CELL_FS_SUCCEEDED) goto continue_reading_folder_xml; //continue;
-
-				plen = strlen(param);
 
 				bool is_game_dir = (allow_npdrm && (f1 == id_GAMEZ));
 
@@ -1068,17 +1063,17 @@ scan_roms:
 
 						//////////////////////////////
 						subfolder = 0;
-						if((IS_ISO_FOLDER || IS_VIDEO_FOLDER) && !scanning_roms)
+						if(BETWEEN(id_PS3ISO, f1, id_ISO) || scanning_roms)
 						{
-							sprintf(subpath, "%s/%s", param, entry.entry_name.d_name);
-							if(isDir(subpath) && cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
+							snprintf(subpath, STD_PATH_LEN, "%s/%s", param, entry.entry_name.d_name); cellFsClosedir(fd2);
+							if(cellFsOpendir(subpath, &fd2) == CELL_FS_SUCCEEDED)
 							{
 								strcpy(subpath, entry.entry_name.d_name); subfolder = 1;
 		next_xml_entry:
 								cellFsGetDirectoryEntries(fd2, &entry, sizeof(entry), &read_e);
 								if(read_e < 1) {cellFsClosedir(fd2); fd2 = 0; continue;}
 								if(entry.entry_name.d_name[0] == '.') goto next_xml_entry;
-								entry.entry_name.d_namlen = sprintf(templn, "%s/%s", subpath, entry.entry_name.d_name);
+								entry.entry_name.d_namlen = snprintf(templn, D_NAME_LEN, "%s/%s", subpath, entry.entry_name.d_name);
 								strcpy(entry.entry_name.d_name, templn);
 							}
 						}
@@ -1087,7 +1082,7 @@ scan_roms:
 						if(key >= max_xmb_items) break;
 
 						// skip duplicated game in /dev_hdd0
-						if(is_dupe(f0, f1, entry.entry_name.d_name, templn)) continue;
+						if(is_dupe(f0, f1, entry.entry_name.d_name, templn)) goto continue_loop; //continue;
 
 						if(IS_JB_FOLDER)
 						{
@@ -1101,7 +1096,7 @@ scan_roms:
 								sprintf(param_sfo, "%s/%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name);
 								if(not_exists(param_sfo))
 								{
-									if((strlen(entry.entry_name.d_name) >= 16) && (entry.entry_name.d_name[6] == '-'))
+									if((entry.entry_name.d_namlen >= 16) && (entry.entry_name.d_name[6] == '-'))
 										sprintf(param_sfo, "%s%.9s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name + 7);
 
 									char *_param_sfo = templn; // GAMEI
@@ -1130,7 +1125,7 @@ scan_roms:
 						else
 						{
 							flen = entry.entry_name.d_namlen;
-							is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0); if(!is_iso) continue;
+							is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0); if(!is_iso) goto continue_loop; //continue;
 						}
 
 						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
@@ -1145,7 +1140,7 @@ scan_roms:
 							}
 							else
 							{
-								if(IS_HDD0 && IS(entry.entry_name.d_name, "~tmp.iso")) continue;
+								if(IS_HDD0 && IS(entry.entry_name.d_name, "~tmp.iso")) goto continue_loop; //continue;
 
 								if(webman_config->info & INFO_VER) getTitleID(templn, app_ver, GET_VERSION);
 							#ifdef COBRA_ONLY
@@ -1160,7 +1155,7 @@ scan_roms:
 							#endif
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
-							if(ignore_files && HAS_TITLE_ID && strstr(ignore_files, title_id)) continue;
+							if(ignore_files && HAS_TITLE_ID && strstr(ignore_files, title_id)) goto continue_loop; //continue;
 
 							// get rom alias. use file name as default title
 							#ifdef MOUNT_ROMS
@@ -1221,12 +1216,13 @@ scan_roms:
 							if(add_xmb_entry(f0, _f1_, tempstr, templn, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, subfolder)) key++;
 						}
 						//////////////////////////////
+				continue_loop:
 						if(subfolder) goto next_xml_entry;
 						//////////////////////////////
 					}
 				}
 
-				if(!is_net) cellFsClosedir(fd);
+				if(!is_net) cellFsClosedir(fd); cellFsClosedir(fd2);
 
 				#ifdef NET_SUPPORT
 				if(data2) {sys_memory_free(data2); data2 = NULL;}
@@ -1533,7 +1529,7 @@ save_xml:
 			if(!roms_path[roms_index])
 				goto skip_rom_path; // skip roms path if not listed in roms_paths.txt
 
-			sprintf(cur_roms_path, "%s", roms_path[roms_index]); to_lower(cur_roms_path);
+			strncpy(cur_roms_path, roms_path[roms_index], sizeof(cur_roms_path)); to_lower(cur_roms_path);
 			goto scan_roms; // loop scanning_roms
 		}
 		scanning_roms = false;

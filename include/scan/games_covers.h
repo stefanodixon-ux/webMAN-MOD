@@ -47,7 +47,7 @@ enum icon_type
 #define SHOW_COVERS_OR_ICON0  (webman_config->nocov != SHOW_DISC)
 #define SHOW_COVERS          ((webman_config->nocov == SHOW_MMCOVERS) || (webman_config->nocov == ONLINE_COVERS))
 
-static const char *ext[4] = {".jpg", ".png", ".PNG", ".JPG"};
+static const char *ext[4] = {".JPG", ".PNG", ".jpg", ".png"};
 
 static const char *cpath[6] = {MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"};
 
@@ -75,12 +75,14 @@ static void check_cover_folders(char *buffer)
 	for(u8 p = 0; p < 3; p++)
 	{
 		sprintf(buffer, "%s/covers_retro/psx", cpath[p]); covers_retro_exist[p] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
+		if(covers_retro_exist[p]) covers_retro_exist[p] = !is_empty_dir(buffer);
 	}
 	for(u8 p = 0; p < 6; p++)
 	{
 		sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
+		if(covers_exist[p]) covers_exist[p] = !is_empty_dir(buffer);
 	}
-												covers_exist[6] = isDir(WMTMP_COVERS);
+												covers_exist[6] = !is_empty_dir(WMTMP_COVERS);
 												covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
 
 	#ifndef ENGLISH_ONLY
@@ -117,17 +119,29 @@ static void swap_ex(u8 e)
 	ex[0] = s;
 }
 
-static bool get_image_file(char *icon, int flen)
+static bool _get_image_file(char *icon, int flen, bool ucase)
 {
 	if(!icon || (flen <= 0) || (*icon != '/')) return false; // sanity check
 
-	for(u8 e = 0; e < 4; e++)
+	int max = ucase ? 2 : 4;
+
+	for(u8 e = 0; e < max; e++)
 	{
-		strcpy(icon + flen, ext[ex[e]]);
+		strcpy(icon + flen, ucase ? ext[e] : ext[ex[e]]);
 
 		if(file_exists(icon)) {swap_ex(e); return true;}
 	}
 	return false;
+}
+
+static bool get_image_file(char *icon, int flen)
+{
+	return _get_image_file(icon, flen, false);
+}
+
+static bool get_image_file2(char *icon, int flen)
+{
+	return _get_image_file(icon, flen, true);
 }
 
 static size_t get_name(char *name, const char *filename, u8 cache)
@@ -217,7 +231,7 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 		if(covers_exist[0] && ((webman_config->nocov == SHOW_MMCOVERS) && (*COVERS_PATH == '/')))
 		{
 			flen = sprintf(icon, "%s/%s", COVERS_PATH, title_id);
-			if(get_image_file(icon, flen)) return true;
+			if(get_image_file2(icon, flen)) return true;
 		}
 		#endif
 
@@ -232,7 +246,7 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 									title_id,
 									title_id + 4, title_id + 7);
 
-					if(get_image_file(icon, flen)) return true;
+					if(get_image_file2(icon, flen)) return true;
 				}
 			}
 		}
@@ -242,23 +256,23 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 			if(covers_exist[p + 1])
 			{
 				flen = sprintf(icon, "%s/covers/%s", cpath[p], title_id);
-				if(get_image_file(icon, flen)) return true;
+				if(get_image_file2(icon, flen)) return true;
 			}
 
 		// Search covers in WMTMP_COVERS
 		if(covers_exist[6])
 		{
 			flen = sprintf(icon, "%s/%s", WMTMP_COVERS, title_id);
-			if(get_image_file(icon, flen)) return true;
+			if(get_image_file2(icon, flen)) return true;
 		}
-
+/*
 		// Search covers in WMTMP
 		if(covers_exist[8])
 		{
 			flen = sprintf(icon, "%s/%s", WMTMP, title_id);
-			if(get_image_file(icon, flen)) return true;
+			if(get_image_file2(icon, flen)) return true;
 		}
-
+*/
 		// Search online covers
 		#ifdef ENGLISH_ONLY
 		if(webman_config->nocov == ONLINE_COVERS)
@@ -392,7 +406,7 @@ static void get_default_icon_from_folder(char *icon, u8 is_dir, const char *para
 					strcpy(titleid, title_id);
 
 				flen = sprintf(icon, "%s/%s", param, titleid);
-				if(get_image_file(icon, flen)) return;
+				if(get_image_file2(icon, flen)) return;
 
 				*icon = NULL;
 			}
@@ -453,10 +467,10 @@ static void get_default_icon_for_iso(char *icon, const char *param, const char *
 	if(!isdir)
 	{
 		flen = remove_ext(icon);
-	}
 
-	//file name + ext
-	if(get_image_file(icon, flen)) return;
+		//file name + ext
+		if(get_image_file(icon, flen)) return;
+	}
 
 	//copy remote file
 	if(not_exists(icon))
@@ -484,10 +498,10 @@ static void get_default_icon_for_iso(char *icon, const char *param, const char *
 
 			for(u8 e = 0; e < 4; e++)
 			{
-				strcpy(icon + icon_len, ext[e]);
+				strcpy(icon + icon_len, ext[ex[e]]);
 				if(file_exists(icon)) return;
 
-				strcpy(remote_file + tlen, ext[e]);
+				strcpy(remote_file + tlen, ext[ex[e]]);
 
 				//Copy remote icon locally
 				copy_net_file(icon, remote_file, ns);
@@ -513,11 +527,15 @@ static enum icon_type get_default_icon_by_type(u8 f1)
 }
 
 #ifdef MOUNT_ROMS
+static const char *last_roms_path = NULL;
+
 static bool get_covers_retro(char *icon, const char *roms_path, const char *filename)
 {
-	if(HAS(icon)) return true;
+	if(HAS(icon)) return true; if(last_roms_path == roms_path) {*icon = NULL; return false;}
 
-	int nlen = sprintf(icon, "%s/covers_retro/%s/%s", MM_ROOT_STD, roms_path, filename);
+	int nlen = sprintf(icon, "%s/covers_retro/%s", MM_ROOT_STD, roms_path); if(isDir(icon) == false) {*icon = NULL; last_roms_path = roms_path; return false;}
+	
+	nlen += sprintf(icon + nlen, "/%s", filename);
 
 	for(; nlen > 48; --nlen)
 	{
@@ -561,7 +579,7 @@ static enum icon_type get_default_icon(char *icon, const char *param, char *file
 	//use the cached PNG from wmtmp if available
 	int flen = get_name(icon, file, GET_WMTMP);
 
-	if(get_image_file(icon, flen)) return default_icon;
+	if(!is_dir && get_image_file(icon, flen)) return default_icon;
 
 no_icon0:
 	if(HAS(icon)) return default_icon;

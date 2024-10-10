@@ -225,6 +225,23 @@ static void check_path_alias(char *param)
 	}
 }
 
+static bool is_empty_dir(const char *path)
+{
+	int fd; bool ret = true;
+	if(cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
+	{
+		CellFsDirectoryEntry entry; size_t read_e;
+		while(working)
+		{
+			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
+			if(entry.entry_name.d_name[0] == '.') continue;
+			ret = false; break;
+		}
+		cellFsClosedir(fd);
+	}
+	return ret;
+}
+
 #if defined(COPY_PS3) || defined(PKG_HANDLER) || defined(MOUNT_GAMEI)
 static void mkdir_tree(const char *full_path)
 {
