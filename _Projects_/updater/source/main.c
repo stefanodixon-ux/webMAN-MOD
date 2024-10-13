@@ -563,7 +563,8 @@ int main()
 	// copy javascripts
 	file_copy(APP_USRDIR "/html/jquery.min.js",    XMLHOST_DIR "/jquery.min.js");  // jQuery v3.1.1
 	file_copy(APP_USRDIR "/html/jquery-ui.min.js", XMLHOST_DIR "/jquery-ui.min.js"); // jQuery UI v1.12.1
-
+	file_copy(APP_USRDIR "/html/qrcode.min.js",    XMLHOST_DIR "/qrcode.min.js"); // QRCode.js
+	
 	file_copy(APP_USRDIR "/html/fm.js",     XMLHOST_DIR "/fm.js");
 	file_copy(APP_USRDIR "/html/fs.js",     XMLHOST_DIR "/fs.js");
 	file_copy(APP_USRDIR "/html/games.js",  XMLHOST_DIR "/games.js");

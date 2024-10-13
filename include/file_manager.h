@@ -1073,6 +1073,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			#endif
 
 			///////////
+			strcpy(html_base_path, param);
 			replace_char(param + 1, '/', 0);
 
 			sprintf(templn, "<hr>"
@@ -1153,6 +1154,12 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *templn, cha
 			}
 			_concat(&sout, "</div>");
 			#endif // #ifndef LITE_EDITION
+		}
+
+		// show qr code
+		if(webman_config->qr_code)
+		{
+			qr_code(tempstr, html_base_path, "<hr>", true, sout.str + sout.size);
 		}
 	}
 	return true;

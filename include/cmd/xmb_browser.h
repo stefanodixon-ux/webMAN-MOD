@@ -1,5 +1,11 @@
 #ifdef PS3_BROWSER
-	if(islike(param, "/browser.ps3") || islike(param, "/xmb.ps3"))
+	if(islike(param, "/qr.ps3"))
+	{
+		qr_code(header, param + 7, "<center><h3><br><br>", false, param);
+		if(!mc) keep_alive = http_response(conn_s, header, param, CODE_PLAIN_TEXT, param);
+		goto exit_handleclient_www;
+	}
+	else if(islike(param, "/browser.ps3") || islike(param, "/xmb.ps3"))
 	{
 		// /browser.ps3?<url>                  open url on PS3 browser
 		// /xmb.ps3$exit                       exit to xmb

@@ -93,6 +93,9 @@ static void setup_parse_settings(char *param)
 		unload_vsh_plugin(PS3MON_SPRX);
 #endif
 
+	// show qr code
+	webman_config->qr_code = IS_MARKED("qr=1");
+
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
 
@@ -770,6 +773,7 @@ static void setup_form(char *buffer, char *templn)
 	if(file_exists(PS3MON_SPRX))
 		add_checkbox_line("pm", "PS3Mon", (webman_config->ps3mon), buffer);
 #endif
+	add_checkbox_line("qr", "QR", (webman_config->qr_code), buffer);
 
 	//game listing
 	concat(buffer, "</div>" HTML_BLU_SEPARATOR);
@@ -1138,12 +1142,18 @@ static void setup_form(char *buffer, char *templn)
 	#else
 	concat(buffer,  HTML_RED_SEPARATOR
 					"<a href=\"http://ps3.aldostools.org/links.html\">" WEBMAN_MOD " - Latest release</a><br>"
-					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><br>");
+					"<a href=\"http://psx-place.com/forums/wMM.126/\">" WEBMAN_MOD " - Info @ PSX-Place</a><p>");
 	#endif
 #else
 	concat(buffer,  HTML_BLU_SEPARATOR
 					WM_APPNAME " - Simple Web Server" EDITION "<p>");
 #endif
+
+	// show qr code
+	if(webman_config->qr_code)
+	{
+		qr_code(templn, "/setup.ps3", "<hr>", true, buffer);
+	}
 
 /*
 	#define VSH_GCM_OBJ			0x70A8A8 // 4.53cex

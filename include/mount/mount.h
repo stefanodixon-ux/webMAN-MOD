@@ -835,6 +835,12 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			}
 			#endif // #ifdef PS2_DISC
 
+			// show qr code
+			if(webman_config->qr_code)
+			{
+				qr_code(templn, param, "<hr>", true, buffer);
+			}
+
 			// auto-focus Data Disc
 			if(mounted && (strstr(source, "PSX") || strstr(source, "DVDISO") || strstr(source, "BDISO"))) auto_play(param, false);
 		}

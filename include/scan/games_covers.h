@@ -78,7 +78,7 @@ static void check_cover_folders(char *buffer)
 	}
 	for(u8 p = 0; p < 6; p++)
 	{
-		sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer) && !is_empty_dir(buffer);;  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
+		sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer) && !is_empty_dir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
 	}
 												covers_exist[6] = !is_empty_dir(WMTMP_COVERS);
 	//											covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP

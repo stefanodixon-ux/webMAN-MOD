@@ -320,6 +320,29 @@ static void get_cpursx(char *cpursx)
 	sprintf(cpursx, "CPU: %i°C | RSX: %i°C", t1, t2);
 }
 
+static void qr_code(char *templn, const char *url, const char *prefix, bool small, char *buffer)
+{
+	int n, s = snprintf(templn, 640, "%s<div id='qrcode'%s></div>"
+									 "<script src='/xmlhost/game_plugin/qrcode.min.js'></script>"
+									 "<script>new QRCode(document.getElementById('qrcode'), \"", prefix, small ? " style='zoom:0.5'" : "");
+	if(*url == '/')
+	{
+		char net_type[8] = "", ip[ip_size] = "-"; get_net_info(net_type, ip);
+		n = snprintf(templn + s, HTML_RECV_SIZE - s - 120, "http://%s%s", ip, url);
+	}
+	else
+		n = snprintf(templn + s, HTML_RECV_SIZE - s - 120, "%s", url);
+
+	strcat(templn + s + n, "\");</script><br>");
+
+	if(!small) snprintf(templn + s + n + 16, n + 1, "%s", templn + s);
+	
+	if(small)
+		concat(buffer, templn);
+	else
+		strcpy(buffer, templn);
+}
+
 static void add_game_info(char *buffer, char *templn, u8 is_cpursx)
 {
 	if(IS_INGAME)
@@ -705,6 +728,12 @@ static void cpu_rsx_stats(char *buffer, char *templn, char *param, u8 is_ps3_htt
 	if(webman_config->combo & SYS_ADMIN) strcat(buffer, sys_admin ? "[ADMIN]":"[USER]");
 
 	strcat(buffer, "<p>");
+
+	// show qr code
+	if(webman_config->qr_code)
+	{
+		qr_code(templn, "/cpursx.ps3", "<hr>", true, buffer);
+	}
 
 	{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 }

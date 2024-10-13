@@ -1884,6 +1884,12 @@ static void ps3mapi_home(char *buffer, char *templn)
 						"[SYSCALL8 %sDISABLED] | PS3MAPI: webUI v%X, Server v%X | By NzV", (syscall8_state == 3) ? "PARTIALLY ":"", PS3MAPI_WEBUI_VERSION, PS3MAPI_SERVER_VERSION);
 		concat(buffer, templn);
 	}
+
+	// show qr code
+	if(webman_config->qr_code)
+	{
+		qr_code(templn, "/home.ps3mapi", "<hr>", true, buffer);
+	}
 }
 #endif // #ifdef PS3MAPI
 

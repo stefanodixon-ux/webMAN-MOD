@@ -56,7 +56,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 	}
 	else if(code == CODE_PLAIN_TEXT)
 	{
-		slen = sprintf(header,  HTML_RESPONSE_FMT,
+		slen = snprintf(header, HTML_RECV_SIZE, HTML_RESPONSE_FMT,
 								CODE_HTTP_OK, url, msg, "", "");
 	}
 	#ifdef VIEW_PARAM_SFO
