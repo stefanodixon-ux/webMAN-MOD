@@ -322,25 +322,33 @@ static void get_cpursx(char *cpursx)
 
 static void qr_code(char *templn, const char *url, const char *prefix, bool small, char *buffer)
 {
-	int n, s = snprintf(templn, 640, "%s<div id='qrcode'%s></div>"
-									 "<script src='/xmlhost/game_plugin/qrcode.min.js'></script>"
-									 "<script>new QRCode(document.getElementById('qrcode'), \"", prefix, small ? " style='zoom:0.5'" : "");
+	int len, sz = snprintf(templn, 160, "%s<div id='qrcode'%s></div>"
+										"<script src='/xmlhost/game_plugin/qrcode.min.js'></script>"
+										"<script>new QRCode(document.getElementById('qrcode'), \"", prefix, small ? " style='zoom:0.5'" : "");
+	char *text = templn + sz;
+
 	if(*url == '/')
 	{
 		char net_type[8] = "", ip[ip_size] = "-"; get_net_info(net_type, ip);
-		n = snprintf(templn + s, HTML_RECV_SIZE - s - 120, "http://%s%s", ip, url);
+		len = snprintf(text, 800, "http://%s%s", ip, url);
 	}
+	else if(*url == '?')
+		len = snprintf(text, 800, "%s", url + 1);
 	else
-		n = snprintf(templn + s, HTML_RECV_SIZE - s - 120, "%s", url);
+		len = snprintf(text, 800, "%s", url);
 
-	strcat(templn + s + n, "\");</script><br>");
+	strcpy(text + len, "\");</script><br>");
 
-	if(!small) snprintf(templn + s + n + 16, n + 1, "%s", templn + s);
-	
 	if(small)
 		concat(buffer, templn);
 	else
-		strcpy(buffer, templn);
+	{
+		sz = sprintf(buffer, "%s", templn);
+
+		// add caption
+		text[len] = 0;
+		strcat(buffer + sz, text);
+	}
 }
 
 static void add_game_info(char *buffer, char *templn, u8 is_cpursx)

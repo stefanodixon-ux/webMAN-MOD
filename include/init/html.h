@@ -385,11 +385,13 @@ static size_t add_option_item(int value, const char *label, bool selected, char 
 	return concat(buffer, templn);
 }
 
+#ifdef PS3MAPI
 static size_t add_option_item2(int id, const char *label, const char *var, const char *param, char *buffer)
 {
 	char value[20]; sprintf(value, "%s=%i", var, id);
 	return add_option_item(id, label, IS_MARKED(value), buffer);
 }
+#endif
 
 #if defined(VIDEO_REC) || defined(USE_UACCOUNT)
 //static size_t add_string_item(const char *value, const char *label, bool selected, char *buffer)
