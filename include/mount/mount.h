@@ -1670,7 +1670,7 @@ exit_mount:
 			show_msg_with_icon(ICON_PSP_UMD, "Use PSP Launcher to play the game");
 		else if((mount_unk == EMU_PS2_CD) || (mount_unk == EMU_PS2_DVD))
 		{
-			if(is_BIN_ENC(msg))
+			if(is_BIN_ENC(_path))
 				show_msg_with_icon(ICON_PS2_DISC, "Use PS2 Launcher to play the game");
 			else
 				show_msg_with_icon(ICON_PS2_DISC, msg);

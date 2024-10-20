@@ -246,9 +246,13 @@ mount_again:
 			{
 				if(!islike(_path, drives[0]))
 				{
+					bool is_ps2classic;
 copy_ps2iso_to_hdd0:
-					if(!payload_ps3hen)
+					is_ps2classic = is_BIN_ENC(_path);
+					if(!payload_ps3hen || is_ps2classic)
 						cache_file_to_hdd(_path, iso_list[0], "/PS2ISO", templn);
+					if(is_ps2classic)
+						goto mount_ps2classic;
 				}
 
 				if(payload_ps3hen)
@@ -262,6 +266,8 @@ copy_ps2iso_to_hdd0:
 				enable_ps2netemu_cobra(webman_config->ps2emu); // 0 = ps2emu, 1 = ps2_netemu
 
 				mount_unk = EMU_PS2_DVD;
+
+				wait_for(iso_list[0], 10);
 
 				if(file_exists(iso_list[0]))
 				{

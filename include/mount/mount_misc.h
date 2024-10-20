@@ -175,6 +175,9 @@
 
 #endif // #ifdef COBRA_ONLY
 
+
+mount_ps2classic:
+
 	// ------------------
 	// mount PS2 Classic
 	// ------------------
