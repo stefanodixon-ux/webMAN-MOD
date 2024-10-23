@@ -65,23 +65,25 @@ static bool HAS(char *icon)
 	return ((*icon == 'h') || ((*icon == '/') && file_exists(icon) && LCASE(icon[strlen(icon) - 1]) == 'g' ));
 }
 
-static void check_cover_folders(char *buffer)
+static void check_cover_folders(char *folder_path)
 {
-	if(!buffer) return; // sanity check
+	if(!folder_path) return; // sanity check
 
 	#ifndef ENGLISH_ONLY
-												covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
+		covers_exist[0] = isDir(COVERS_PATH); // online url or custom path
 	#endif
 	for(u8 p = 0; p < 3; p++)
 	{
-		sprintf(buffer, "%s/covers_retro/psx", cpath[p]); covers_retro_exist[p] = isDir(buffer) && !is_empty_dir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
+		sprintf(folder_path, "%s/covers_retro/psx", cpath[p]);
+		covers_retro_exist[p] = isDir(folder_path) && !is_empty_dir(folder_path);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
 	}
 	for(u8 p = 0; p < 6; p++)
 	{
-		sprintf(buffer, "%s/covers", cpath[p]); covers_exist[p + 1] = isDir(buffer) && !is_empty_dir(buffer);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
+		sprintf(folder_path, "%s/covers", cpath[p]);
+		covers_exist[p + 1] = isDir(folder_path) && !is_empty_dir(folder_path);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
 	}
-												covers_exist[6] = !is_empty_dir(WMTMP_COVERS);
-	//											covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
+		covers_exist[6] = !is_empty_dir(WMTMP_COVERS);
+	//	covers_exist[8] = isDir(WMTMP) && SHOW_COVERS_OR_ICON0; // WMTMP
 
 	#ifndef ENGLISH_ONLY
 	if(!covers_exist[0]) {use_custom_icon_path = strstr(COVERS_PATH, "%s"); use_icon_region = strstr(COVERS_PATH, "%s/%s");} else {use_icon_region = use_custom_icon_path = false;}

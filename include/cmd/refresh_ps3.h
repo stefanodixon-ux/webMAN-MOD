@@ -2,7 +2,8 @@
 	{
 		if(islike(param + 8, "_ps3"))
 		{
-			refresh_xml(param);
+			char *msg = param;
+			refresh_xml(msg);
 
 			reload_xmb(0);
 

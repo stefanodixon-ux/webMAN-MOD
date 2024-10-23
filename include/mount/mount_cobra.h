@@ -60,12 +60,12 @@ mount_again:
 	// ----------
 	if(!isDir(_path))
 	{
-		char templn[MAX_LINE_LEN];
+		char full_path[MAX_LINE_LEN];
 
 		#ifdef MOUNT_PNG
 		bool is_PNG = is_ext(_path, ".png");
 
-		if(is_PNG && (mount_unk == EMU_OFF)) {read_file(_path, templn, 1, 0xFFE0); mount_unk = *templn;}
+		if(is_PNG && (mount_unk == EMU_OFF)) {read_file(_path, full_path, 1, 0xFFE0); mount_unk = *full_path;}
 		#endif
 
 		if( strstr(_path, "/PSXISO") || strstr(_path, "/PSXGAMES") || !extcmp(_path, ".ntfs[PSXISO]", 13) || (mount_unk == EMU_PSX)) {mount_unk = EMU_PSX; select_ps1emu(_path);}
@@ -78,7 +78,7 @@ mount_again:
 
 		u8 iso_parts = 1;
 
-		size_t path_len = sprintf(templn, "%s", _path);
+		size_t path_len = sprintf(full_path, "%s", _path);
 
 		CD_SECTOR_SIZE_2352 = 2352;
 
@@ -89,19 +89,19 @@ mount_again:
 			{
 				#ifdef MOUNT_PNG
 				if(is_PNG)
-					sprintf(templn + path_len - 6, ".%i.PNG", iso_parts);
+					sprintf(full_path + path_len - 6, ".%i.PNG", iso_parts);
 				else
 				#endif
-					sprintf(templn + path_len - 2, ".%i", iso_parts);
+					sprintf(full_path + path_len - 2, ".%i", iso_parts);
 
-				if(not_exists(templn)) break;
+				if(not_exists(full_path)) break;
 			}
 			#ifdef MOUNT_PNG
 			if(is_PNG)
-				templn[path_len - 6] = '\0'; // remove .0.PNG
+				full_path[path_len - 6] = '\0'; // remove .0.PNG
 			else
 			#endif
-				templn[path_len - 2] = '\0'; // remove .0
+				full_path[path_len - 2] = '\0'; // remove .0
 		}
 
 		char *cobra_iso_list[iso_parts], iso_list[iso_parts][path_len + 2];
@@ -112,7 +112,7 @@ mount_again:
 
 		for(u8 n = 1; n < iso_parts; n++)
 		{
-			sprintf(iso_list[n], "%s.%i", templn, n);
+			sprintf(iso_list[n], "%s.%i", full_path, n);
 			#ifdef MOUNT_PNG
 			if(is_PNG) strcat(iso_list[n], ".PNG"); // .iso.#.PNG
 			#endif
@@ -150,8 +150,8 @@ mount_again:
 				cobra_send_fake_disc_insert_event();
 
 				{
-					get_name(templn, _path, GET_WMTMP);
-					cache_icon0_and_param_sfo(templn);
+					get_name(full_path, _path, GET_WMTMP);
+					cache_icon0_and_param_sfo(full_path);
 				}
 			}
 
@@ -163,7 +163,7 @@ mount_again:
 			{
 				if(netid)
 				{
-					cache_file_to_hdd(_path, iso_list[0], "/PSPISO", templn);
+					cache_file_to_hdd(_path, iso_list[0], "/PSPISO", full_path);
 				}
 
 				mount_unk = EMU_PSP;
@@ -174,32 +174,32 @@ mount_again:
 				{
 					int edat = 0;
 
-					sprintf(templn, "%s.MINIS.EDAT", iso_list[0]);
-					if(file_exists(templn))
+					sprintf(full_path, "%s.MINIS.EDAT", iso_list[0]);
+					if(file_exists(full_path))
 					{
 						if(isDir(PSP_LAUNCHER_MINIS))
 						{
 							sprintf(iso_list[1], "/%s%s", PSP_LAUNCHER_MINIS, "/USRDIR/MINIS.EDAT");
-							force_copy(templn, iso_list[1]);
-							edat = read_file(iso_list[1], templn, 4, 0);
+							force_copy(full_path, iso_list[1]);
+							edat = read_file(iso_list[1], full_path, 4, 0);
 						}
 
 						if(isDir(PSP_LAUNCHER_REMASTERS))
 						{
 							sprintf(iso_list[1], "/%s%s", PSP_LAUNCHER_REMASTERS, "/USRDIR/MINIS.EDAT");
-							force_copy(templn, iso_list[1]);
-							edat = read_file(iso_list[1], templn, 4, 0);
+							force_copy(full_path, iso_list[1]);
+							edat = read_file(iso_list[1], full_path, 4, 0);
 						}
 					}
 
-					sprintf(templn, "%s.MINIS2.EDAT", iso_list[0]);
-					if(file_exists(templn))
+					sprintf(full_path, "%s.MINIS2.EDAT", iso_list[0]);
+					if(file_exists(full_path))
 					{
 						if(isDir(PSP_LAUNCHER_REMASTERS))
 						{
 							sprintf(iso_list[1], "/%s%s", PSP_LAUNCHER_REMASTERS, "/USRDIR/MINIS2.EDAT");
-							force_copy(templn, iso_list[1]);
-							edat = read_file(iso_list[1], templn, 4, 0);
+							force_copy(full_path, iso_list[1]);
+							edat = read_file(iso_list[1], full_path, 4, 0);
 						}
 					}
 
@@ -210,7 +210,7 @@ mount_again:
 					// check if decrypted MINIS.EDAT is detected
 					if(edat)
 					{
-						if(!islike(templn, "NPD") && !payload_ps3hen)
+						if(!islike(full_path, "NPD") && !payload_ps3hen)
 						{
 							// install psp_emulator.self with support for decrypted MINIS.EDAT
 							if((c_firmware >= 4.82f) && file_exists(WM_RES_PATH "/psp_emulator.self"))
@@ -250,7 +250,7 @@ mount_again:
 copy_ps2iso_to_hdd0:
 					is_ps2classic = is_BIN_ENC(_path);
 					if(!payload_ps3hen || is_ps2classic)
-						cache_file_to_hdd(_path, iso_list[0], "/PS2ISO", templn);
+						cache_file_to_hdd(_path, iso_list[0], "/PS2ISO", full_path);
 					if(is_ps2classic)
 						goto mount_ps2classic;
 				}
@@ -275,9 +275,8 @@ copy_ps2iso_to_hdd0:
 
 					#ifndef LITE_EDITION
 					// Auto-copy CONFIG from ManaGunZ
-					char templn[STD_PATH_LEN];
-					sprintf(templn, "%s.CONFIG", iso_list[0]);
-					if(!webman_config->ps2config && not_exists(templn))
+					sprintf(full_path, "%s.CONFIG", iso_list[0]);
+					if(!webman_config->ps2config && not_exists(full_path))
 					{
 						mount_ps_disc_image(_path, cobra_iso_list, iso_parts, EMU_PS2_DVD);
 						sys_ppu_thread_usleep(2500);
@@ -290,7 +289,7 @@ copy_ps2iso_to_hdd0:
 							char title_id[12], game_id[12];
 							get_ps_titleid_from_path(title_id, iso_list[0]);
 							sprintf(game_id, "%.4s_%.3s.%.2s", title_id, title_id + 4, title_id + 7);
-							done = copy_ps2config_iso(game_id, templn);
+							done = copy_ps2config_iso(game_id, full_path);
 						}
 						if(!done)
 						{
@@ -306,14 +305,14 @@ copy_ps2iso_to_hdd0:
 								{
 									if( (LCASE(*entry_name) == 's') && (dir.entry_name.d_namlen == 11) ) // SLUS_123.45
 									{
-										if(copy_ps2config_iso(entry_name, templn)) break;
+										if(copy_ps2config_iso(entry_name, full_path)) break;
 									}
 								}
 								cellFsClosedir(fd);
 							}
 						}
 
-						if(file_exists(templn)) {do_umount(false); wait_path("/dev_bdvd", 5, false);} else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
+						if(file_exists(full_path)) {do_umount(false); wait_path("/dev_bdvd", 5, false);} else mount_unk = EMU_PS2_CD; // prevent mount ISO again if CONFIG was not created
 					}
 					#endif
 

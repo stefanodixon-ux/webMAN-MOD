@@ -8,7 +8,7 @@ static void start_www(u64 conn_s_p)
 		apply_remaps();
 		#endif
 
-		char templn[MAX_LINE_LEN];
+		char full_path[MAX_LINE_LEN]; char *msg = full_path;
 
 		if(conn_s_p == START_DAEMON)
 		{
@@ -21,7 +21,7 @@ static void start_www(u64 conn_s_p)
 			{
 				if(!payload_ps3hen && (View_Find("explore_plugin") == 0) && (View_Find("game_plugin") == 0)) sys_ppu_thread_sleep(9); // wait from boot
 
-				show_wm_version(templn);
+				show_wm_version(msg);
 				do_sleep = false;
 			}
 
@@ -37,13 +37,13 @@ static void start_www(u64 conn_s_p)
 			{DELETE_CACHED_GAMES} // refresh XML will force "refresh HTML" to rebuild the cache file
 		}
 
-		mkdirs(templn); // make hdd0 dirs GAMES, PS3ISO, PS2ISO, packages, etc.
+		mkdirs(full_path); // make hdd0 dirs GAMES, PS3ISO, PS2ISO, packages, etc.
 
 
 		//////////// usb ports ////////////
 		if(webman_config->usb6 || webman_config->usb7)
 		{
-			char *dev_name = templn;
+			char *dev_name = full_path;
 			for(u8 indx = 5, d = 6; d < 128; d++)
 			{
 				sprintf(dev_name, "/dev_usb%03i", d);
@@ -56,11 +56,11 @@ static void start_www(u64 conn_s_p)
 		}
 		///////////////////////////////////
 
-		check_cover_folders(templn);
+		check_cover_folders(full_path);
 
 		#ifndef LITE_EDITION
 		// Use system icons if wm_icons don't exist
-		char *icon_path = templn;
+		char *icon_path = full_path;
 		for(u8 i = 0; i < 14; i++)
 		{
 			if(not_exists(wm_icons[i]))
@@ -164,10 +164,10 @@ static void start_www(u64 conn_s_p)
 			if(do_sleep) sys_ppu_thread_sleep(1);
 
 			#ifdef COBRA_ONLY
-			sys_map_path("/dev_flash/vsh/resource/coldboot_stereo.ac3", NULL);
-			sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  NULL);
+			unmap_path("/dev_flash/vsh/resource/coldboot_stereo.ac3");
+			unmap_path("/dev_flash/vsh/resource/coldboot_multi.ac3");
 			#ifdef VISUALIZERS
-			randomize_vsh_resources(true, templn);
+			randomize_vsh_resources(true, full_path);
 			#endif
 			#endif
 
@@ -195,11 +195,11 @@ static void start_www(u64 conn_s_p)
 				if(wait_for_abort(1)) sys_ppu_thread_exit(0);
 
 				bool is_video = (webman_config->music == 2);
-				sprintf(templn, "Starting %s...\n"
-								"Press O to abort",
-								is_video ? "video" : "music"); templn[9] -= 0x20;
+				sprintf(msg, "Starting %s...\n"
+							 "Press O to abort",
+							 is_video ? "video" : "music"); msg[9] -= 0x20; // Capitalize Video/Music
 
-				show_msg_with_icon(is_video ? ICON_VIDEO : ICON_MUSIC, templn);
+				show_msg_with_icon(is_video ? ICON_VIDEO : ICON_MUSIC, msg);
 
 				if(!wait_for_abort(8 + webman_config->boots))
 					start_xmb_player(is_video ? "video" : "music");

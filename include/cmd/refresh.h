@@ -31,12 +31,13 @@
 
 		if(strchr(params, '$')) show_scan_progress = true;
 
-		refresh_xml(templn); show_scan_progress = false;
+		char *msg = html;
+		refresh_xml(msg); show_scan_progress = false;
 
 		if(strstr(params, "xmb")) reload_xmb(0);
 
 		#ifndef ENGLISH_ONLY
-		char *STR_XMLRF = (char *)templn;
+		char *STR_XMLRF = (char *)html;
 
 		sprintf(STR_XMLRF, "Game list refreshed (<a href=\"%s\">mygames.xml</a>).%s",
 				MY_GAMES_XML, "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
@@ -48,8 +49,8 @@
 
 		if(IS_ON_XMB && is_app_dir(_HDD0_GAME_DIR, "RELOADXMB") && is_app_home_onxmb())
 		{
-			sprintf(templn, " [<a href=\"/reloadxmb.ps3\">%s XMB</a>]", STR_REFRESH);
-			_concat(&sbuffer, templn);
+			sprintf(html, " [<a href=\"/reloadxmb.ps3\">%s XMB</a>]", STR_REFRESH);
+			_concat(&sbuffer, html);
 		}
 	}
 	else

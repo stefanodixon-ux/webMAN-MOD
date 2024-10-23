@@ -74,7 +74,7 @@ static int set_gamedata_status(u8 status, bool do_mount)
 			extgd = 0;
 
 			#ifdef COBRA_ONLY
-			sys_map_path("/dev_hdd0/game", NULL);
+			unmap_path("/dev_hdd0/game");
 			{ PS3MAPI_DISABLE_ACCESS_SYSCALL8 }
 			#endif
 
@@ -88,7 +88,7 @@ static int set_gamedata_status(u8 status, bool do_mount)
 		sprintf(msg, "gameDATA %s", STR_DISABLED);
 
 		#ifdef COBRA_ONLY
-		sys_map_path("/dev_hdd0/game", NULL);
+		unmap_path("/dev_hdd0/game");
 		#else
 		add_to_map("/dev_hdd0/game", gamei_path);
 		#endif

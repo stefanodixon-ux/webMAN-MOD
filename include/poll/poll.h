@@ -80,8 +80,8 @@ static void poll_start_play_time(void)
 
 		#ifdef PS3MAPI
 		// unmap gameboot audio
-		sys_map_path("/dev_flash/vsh/resource/gameboot_multi.ac3",  NULL);
-		sys_map_path("/dev_flash/vsh/resource/gameboot_stereo.ac3", NULL);
+		unmap_path("/dev_flash/vsh/resource/gameboot_multi.ac3");
+		unmap_path("/dev_flash/vsh/resource/gameboot_stereo.ac3");
 		#endif
 		#ifdef PATCH_GAMEBOOT
 		patched_address1 = patched_address2 = patched_address3 = patched_address4 = BASE_PATCH_ADDRESS;

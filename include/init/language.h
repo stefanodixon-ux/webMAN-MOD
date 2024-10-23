@@ -266,6 +266,12 @@ static u32 get_system_language(u8 *lang)
 	int val_lang = 1;
 	xsettings()->GetSystemLanguage(&val_lang);
 
+	const int ids[] = {4, 0, 3, 1, 2, 5, 6, 7, 18, 17, 19, 19, 0, 0, 20, 0, 9, 6};
+
+	if(val_lang < 18) *lang = ids[val_lang]; else *lang = 0;
+
+	return val_lang;
+/*
 	switch(val_lang)
 	{
 		case 0x0:
@@ -304,16 +310,16 @@ static u32 get_system_language(u8 *lang)
 			*lang = 19;		//chi-tra / chi-sim
 			break;
 		//case 0xC:
-		//	*lang = 0;		//fin /** missing **/
+		//	*lang = 0;		//fin / missing
 		//	break;
 		//case 0xD:
-		//	*lang = 0;		//swe /** missing**/
+		//	*lang = 0;		//swe / missing
 		//	break;
 		case 0xE:
 			*lang = 20;		//dan
 			break;
 		//case 0xF:
-		//	*lang = 0;		//nor /** missing**/
+		//	*lang = 0;		//nor / missing
 		//	break;
 		case 0x10:
 			*lang = 9;		//pol
@@ -325,8 +331,7 @@ static u32 get_system_language(u8 *lang)
 			*lang = 0;
 			break;
 	}
-
-	return val_lang;
+*/
 }
 
 #define CHUNK_SIZE 512
@@ -546,24 +551,33 @@ static void update_language(void)
 
 	// TITLE_XX
 
-	*TITLE_XX = NULL; u8 id = LANG_CUSTOM, lang = webman_config->lang;
+	*TITLE_XX = NULL; u8 lang = webman_config->lang;
 
-	if(lang ==  1) id = 2;  // fr
-	if(lang ==  2) id = 5;  // it
-	if(lang ==  3) id = 3;  // es
-	if(lang ==  4) id = 4;  // de
-	if(lang ==  5) id = 6;  // nl
-	if(lang ==  6) id = 7;  // pt
-	if(lang ==  7) id = 8;  // ru
-	if(lang ==  9) id = 16; // pl
-	if(lang == 14) id = 19; // tr
-	if(lang == 16) id = 11; // zh
-	if(lang == 17) id = 9;  // ko
-	if(lang == 18) id = 0;  // jp
-	if(lang == 19) id = 10; // ch
-	if(lang == 20) id = 14; // da
-	if(  id == LANG_CUSTOM) return;
+	//if(lang ==  0) id = 1;  // en
+	//if(lang ==  1) id = 2;  // fr
+	//if(lang ==  2) id = 5;  // it
+	//if(lang ==  3) id = 3;  // es
+	//if(lang ==  4) id = 4;  // de
+	//if(lang ==  5) id = 6;  // nl
+	//if(lang ==  6) id = 7;  // pt
+	//if(lang ==  7) id = 8;  // ru
+	//if(lang ==  8) id = 24; // hu
+	//if(lang ==  9) id = 16; // pl
+	//if(lang == 10) id = 25; // el
+	//if(lang == 14) id = 19; // tr
+	//if(lang == 15) id = 21; // ar
+	//if(lang == 16) id = 11; // zh
+	//if(lang == 17) id = 9;  // ko
+	//if(lang == 18) id = 0;  // jp
+	//if(lang == 19) id = 10; // ch
+	//if(lang == 20) id = 14; // da
+	//if(lang == 21) id = 23; // cz
+	//if(  id == LANG_CUSTOM) return;
 
-	sprintf(TITLE_XX, "TITLE_%02i", id);
+	const int ids[] = {1, 2, 5, 3, 4, 6, 7, 8, 24, 16, 25, 1, 1, 1, 19, 21, 11, 9, 0, 10, 14, 23};
+
+	if(lang > 21) return;
+
+	if(ids[lang] != 1) sprintf(TITLE_XX, "TITLE_%02i", ids[lang]);
 }
 #endif //#ifndef ENGLISH_ONLY

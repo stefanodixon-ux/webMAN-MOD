@@ -87,7 +87,7 @@
 		{
 			// /chat.ps3    webchat
 
-			webchat(buffer, templn, param, tempstr, conn_info);
+			webchat(buffer, html, param, tempstr, conn_info);
 		}
 		else
 		#endif

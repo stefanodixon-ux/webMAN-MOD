@@ -149,7 +149,7 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 }
 
 #ifdef DEBUG_MEM
-static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
+static void ps3mapi_mem_dump(char *buffer, char *html, char *param)
 {
 	char dump_file[MAX_PATH_LEN]; u64 start = 0; u32 size = 8, pid = LV1;
 	strcat(buffer, "Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?flash\">Flash</a>] [<a href=\"/dump.ps3?rsx\">RSX</a>] [<a href=\"/dump.ps3?vsh\">VSH</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
@@ -185,7 +185,7 @@ static void ps3mapi_mem_dump(char *buffer, char *templn, char *param)
 		sprintf(dump_file, "/dev_hdd0/dump_%s.bin", param + 10);
 		ps3mapi_dump_process(dump_file, pid, start, (size * _1MB_));
 		add_breadcrumb_trail2(buffer, "<p>Dumped:", dump_file);
-		sprintf(templn, " [" HTML_URL2 "]", "/delete.ps3", dump_file, STR_DELETE); strcat(buffer, templn);
+		sprintf(html, " [" HTML_URL2 "]", "/delete.ps3", dump_file, STR_DELETE); strcat(buffer, html);
 	}
 }
 #endif
@@ -199,7 +199,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	u8 byte = 0, p = 0, lv1 = 0, rep = 1, oper = 0; // replace value
 	bool found = false, not_found = false;
 	int flen = 0, hilite;
-	char *v;
+	char *v; char *html = templn;
 
 	char sfind[0x60];
 	u8 data[HEXVIEW_SIZE];
@@ -279,7 +279,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		flen -= byte; byte = p = 0;
 	}
 
-	buffer += concat(buffer, "<pre>");
+	concat(buffer, "<pre>");
 
 	address|=0x8000000000000000ULL;
 
@@ -336,12 +336,12 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 
 		if(!found)
 		{
-			sprintf(templn, "<font color=#ff0>%s</font><p>", STR_NOTFOUND); buffer += concat(buffer, templn);
+			sprintf(html, "<font color=#ff0>%s</font><p>", STR_NOTFOUND); concat(buffer, html);
 		}
 		else
 		{
 			found_address = address = addr;
-			sprintf(templn, "Offset: 0x%08X<br><br>", (u32)address); buffer += concat(buffer, templn);
+			sprintf(html, "Offset: 0x%08X<br><br>", (u32)address); concat(buffer, html);
 		}
 		disable_progress();
 	}
@@ -382,23 +382,23 @@ view_file:
 		add_breadcrumb_trail(buffer, param);
 
 		// MD5
-		buffer += concat(buffer, ": [");
-		sprintf(templn, HTML_URL2, "/md5.ps3", param, "MD5"); buffer += concat(buffer, templn);
-		buffer += concat(buffer, "]");
+		concat(buffer, ": [");
+		sprintf(html, HTML_URL2, "/md5.ps3", param, "MD5"); concat(buffer, html);
+		concat(buffer, "]");
 
 		// file navigation
 		size = file_size(param);
 		u64 max = (size < HEXVIEW_SIZE) ? 0 : (size - HEXVIEW_SIZE);
-		sprintf(templn, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=0x%llx\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/hexview.ps3%s&offset=0x%llx\">Next></a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=0x%llx\">>></a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
-		buffer += concat(buffer, templn);
+		sprintf(html, "<span style='float:right'><a id=\"pblk\" href=\"/hexview.ps3%s\">&lt;&lt;</a> <a id=\"back\" href=\"/hexview.ps3%s&offset=0x%llx\">&lt;Back</a>", param, param, (address < HEXVIEW_SIZE) ? 0ULL : (address - HEXVIEW_SIZE)); concat(buffer, html);
+		sprintf(html, " <a id=\"next\" href=\"/hexview.ps3%s&offset=0x%llx\">Next></a> <a id=\"nblk\" href=\"/hexview.ps3%s&offset=0x%llx\">>></a></span>", param, MIN(address + HEXVIEW_SIZE, max), param, max);
+		concat(buffer, html);
 
 		char *pos = strstr(param, "&find="); if(pos) *pos = NULL;
-		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&offset=0x%llx&data='+prompt('%s').toString());\">%s</a>]", param - 12, address, "Write", "Write");
-		buffer += concat(buffer, templn);
+		sprintf(html, " [<a href=\"javascript:void(location.href='%s&offset=0x%llx&data='+prompt('%s').toString());\">%s</a>]", param - 12, address, "Write", "Write");
+		concat(buffer, html);
 
-		sprintf(templn, " [<a href=\"javascript:void(location.href='%s&offset=0x%llx&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param - 12, address + 0x10, "Find", sfind, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
-		buffer += concat(buffer, templn);
+		sprintf(html, " [<a href=\"javascript:void(location.href='%s&offset=0x%llx&find='+prompt('%s','%s').toString());\">%s</a>] %s%s%s", param - 12, address + 0x10, "Find", sfind, "Find", "<font color=#ff0>", not_found ? "Not found!" : "", "</font><hr>");
+		concat(buffer, html);
 	}
 
 	////////////////////////////////
@@ -416,7 +416,7 @@ view_file:
 		if(!p)
 		{
 			sprintf(templn, "%08X  ", (int)((address & 0xFFFFFFFFULL) + i));
-			buffer += concat(buffer, templn);
+			concat(buffer, templn);
 		}
 
 		byte_addr = address + i;
@@ -427,13 +427,13 @@ view_file:
 			byte = (u8)((lv1 ? peek_lv1(byte_addr) : peekq(byte_addr)) >> 56);
 
 		hilite = found && (byte_addr >= found_address) && (byte_addr < (found_address + flen));
-		if(hilite) buffer += concat(buffer, "<font color=#ff0>");
-		sprintf(templn, "%02X ", byte); buffer += concat(buffer, templn);
-		if(hilite) buffer += concat(buffer, "</font>");
+		if(hilite) concat(buffer, "<font color=#ff0>");
+		sprintf(templn, "%02X ", byte); concat(buffer, templn);
+		if(hilite) concat(buffer, "</font>");
 
 		if(p == 0xF)
 		{
-			buffer += concat(buffer, " ");
+			concat(buffer, " ");
 			for(u8 c = 0; c < 0x10; c++, addr++)
 			{
 				if(is_file)
@@ -443,17 +443,17 @@ view_file:
 				if(byte<32 || byte>=127) byte='.';
 
 				hilite = (found && addr >= found_address) && (addr < (found_address + flen));
-				if(hilite) buffer += concat(buffer, "<font color=#ff0>");
+				if(hilite) concat(buffer, "<font color=#ff0>");
 				if(byte==0x3C)
-					buffer += concat(buffer, "&lt;");
+					concat(buffer, "&lt;");
 				else if(byte==0x3E)
-					buffer += concat(buffer, ">");
+					concat(buffer, ">");
 				else
-					{sprintf(templn,"%c", byte); buffer += concat(buffer, templn);}
+					{sprintf(templn,"%c", byte); concat(buffer, templn);}
 
-				if(hilite) buffer += concat(buffer, "</font>");
+				if(hilite) concat(buffer, "</font>");
 			}
-			buffer += concat(buffer, "<br>");
+			concat(buffer, "<br>");
 
 			if(is_file && (byte_addr >= size - 1)) break;
 		}
@@ -469,14 +469,14 @@ view_file:
 
 	if(!is_file)
 	{
-		buffer += concat(buffer, "<hr>Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
-		sprintf(templn, " [<a href=\"/dump.ps3?%llx\">Dump 0x%llx</a>]", lv1?address:address + LV2_OFFSET_ON_LV1, lv1?address:address + LV2_OFFSET_ON_LV1); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"pblk\" href=\"/peek.lv%i?%llx\">&lt;&lt;</a> <a id=\"back\" href=\"/peek.lv%i?%llx\">&lt;Back</a>", lv1?1:2, ((int)(address-0x1000)>=0)?(address-0x1000):0, lv1?1:2, ((int)(address-HEXVIEW_SIZE)>=0)?(address-HEXVIEW_SIZE):0); buffer += concat(buffer, templn);
-		sprintf(templn, " <a id=\"next\" href=\"/peek.lv%i?%llx\">Next></a> <a id=\"nblk\" href=\"/peek.lv%i?%llx\">>></a></pre>", lv1?1:2, ((int)(address+0x400)<(int)upper_memory)?(address+HEXVIEW_SIZE):(upper_memory-HEXVIEW_SIZE), lv1?1:2, ((int)(lv1+0x1200)<(int)upper_memory)?(address+0x1000):(upper_memory-HEXVIEW_SIZE)); buffer += concat(buffer, templn);
+		concat(buffer, "<hr>Dump: [<a href=\"/dump.ps3?mem\">Full Memory</a>] [<a href=\"/dump.ps3?lv1\">LV1</a>] [<a href=\"/dump.ps3?lv2\">LV2</a>]");
+		sprintf(html, " [<a href=\"/dump.ps3?%llx\">Dump 0x%llx</a>]", lv1?address:address + LV2_OFFSET_ON_LV1, lv1?address:address + LV2_OFFSET_ON_LV1); concat(buffer, html);
+		sprintf(html, " <a id=\"pblk\" href=\"/peek.lv%i?%llx\">&lt;&lt;</a> <a id=\"back\" href=\"/peek.lv%i?%llx\">&lt;Back</a>", lv1?1:2, ((int)(address-0x1000)>=0)?(address-0x1000):0, lv1?1:2, ((int)(address-HEXVIEW_SIZE)>=0)?(address-HEXVIEW_SIZE):0); concat(buffer, html);
+		sprintf(html, " <a id=\"next\" href=\"/peek.lv%i?%llx\">Next></a> <a id=\"nblk\" href=\"/peek.lv%i?%llx\">>></a></pre>", lv1?1:2, ((int)(address+0x400)<(int)upper_memory)?(address+HEXVIEW_SIZE):(upper_memory-HEXVIEW_SIZE), lv1?1:2, ((int)(lv1+0x1200)<(int)upper_memory)?(address+0x1000):(upper_memory-HEXVIEW_SIZE)); concat(buffer, html);
 	}
 
 	// add navigation with left/right keys
-	add_html(dat_DEBUG_MEM_KEYS, 0, buffer, templn);
+	add_html(dat_DEBUG_MEM_KEYS, 0, buffer, html);
 }
 
 #endif // #ifdef DEBUG_MEM

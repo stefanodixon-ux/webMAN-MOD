@@ -429,7 +429,7 @@ static void setup_parse_settings(char *param)
 #endif
 }
 
-static void setup_form(char *buffer, char *templn)
+static void setup_form(char *buffer, char *html)
 {
  #ifndef ENGLISH_ONLY
 //	char STR_SCAN1[48];//		= "Scan these devices";
@@ -552,20 +552,20 @@ static void setup_form(char *buffer, char *templn)
 	syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 	if(syscalls_removed)
 	{
-		sprintf(templn, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); concat(buffer, templn);
+		sprintf(html, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); concat(buffer, html);
 	}
 	#ifdef COBRA_ONLY
 	else if(!cobra_version)
 	{
-		sprintf(templn, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); concat(buffer, templn);
+		sprintf(html, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); concat(buffer, html);
 	}
 	#endif
 
 	u8 value, b, h = is_app_home_onxmb();
-	add_html(dat_SETUP_FORM, 0, buffer, templn);
-	sprintf(templn, " %s </a></b><br><div id=\"cnt\">"
+	add_html(dat_SETUP_FORM, 0, buffer, html);
+	sprintf(html, " %s </a></b><br><div id=\"cnt\">"
 					"<table width=\"820\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\">"
-					"<tr><td width=\"250\">", STR_SCAN2); concat(buffer, templn);
+					"<tr><td width=\"250\">", STR_SCAN2); concat(buffer, html);
 
 	//Scan these devices
 	if(!isDir("/dev_hdd0/GAMEZ") && h)
@@ -644,9 +644,9 @@ static void setup_form(char *buffer, char *templn)
 		sprintf(_nd, "nd%i", id); sprintf(_neth, "neth%i", id); sprintf(_netp, "netp%i", id);
 
 		add_checkbox(_nd, STR_LANGAMES,  PS3NETSRV, (webman_config->netd[id]), buffer);
-		sprintf(templn, HTML_INPUT("%s", "%s", "15", "16") ":" HTML_PORT("%s", "%i") "<br>",
+		sprintf(html, HTML_INPUT("%s", "%s", "15", "16") ":" HTML_PORT("%s", "%i") "<br>",
 				_neth, webman_config->neth[id],
-				_netp, webman_config->netp[id]); concat(buffer, templn);
+				_netp, webman_config->netp[id]); concat(buffer, html);
 		++PS3NETSRV[21], ++PS3NETSRV[75];
 	}
 	add_checkbox_line("nsd", "Scan remote sub-directories", !(webman_config->nsd), buffer);
@@ -661,17 +661,17 @@ static void setup_form(char *buffer, char *templn)
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 0, "t_0", STR_AUTOAT , " : ", (webman_config->man_speed == 0), buffer);
-	sprintf(templn, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C"
+	sprintf(html, HTML_NUMBER("step\"  accesskey=\"T", "%i", "40", "80") " °C"
 					"<td><label><input type=\"checkbox\"%s/> %s</label> : " HTML_NUMBER("mfan", "%i", "20", "95") " %% - "
 					HTML_NUMBER("mfs", "%i", "40", "95") " %% %s </tr>",
 					webman_config->dyn_temp, (webman_config->fanc && (webman_config->man_speed == 0)) ? ITEM_CHECKED : "",
-					STR_LOWEST, webman_config->minfan, webman_config->maxfan, STR_FANSPEED); concat(buffer, templn);
+					STR_LOWEST, webman_config->minfan, webman_config->maxfan, STR_FANSPEED); concat(buffer, html);
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->man_speed != 0), buffer);
-	sprintf(templn, HTML_NUMBER("manu", "%i", "20", "95") " %% %s "
+	sprintf(html, HTML_NUMBER("manu", "%i", "20", "95") " %% %s "
 					"<td> %s : " HTML_NUMBER("fsp0", "%i", "20", "95") " %% %s </tr>",
-					(webman_config->man_rate), STR_FANSPEED, STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, templn);
+					(webman_config->man_rate), STR_FANSPEED, STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, html);
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 3, "t_3", "Auto #2", _BR_, (webman_config->fanc == FAN_AUTO2), buffer);
@@ -680,12 +680,12 @@ static void setup_form(char *buffer, char *templn)
 #ifndef LITE_EDITION
 	concat(buffer, "<br>");
 	add_checkbox("ct", "CPU/RSX/FAN Chart",  " ", (webman_config->chart), buffer);
-	if(file_exists(CPU_RSX_CHART)) {sprintf(templn, HTML_URL, CPU_RSX_CHART, "&#x1F453;"); concat(buffer, templn);}
+	if(file_exists(CPU_RSX_CHART)) {sprintf(html, HTML_URL, CPU_RSX_CHART, "&#x1F453;"); concat(buffer, html);}
 #endif
 	concat(buffer, "</table>");
 
 	//general settings
-	sprintf(templn, "%scfg);\"> " WM_APPNAME " MOD %s </a></b><br><div id=\"cfg\">", HTML_TOGGLER, STR_SETUP); concat(buffer, templn);
+	sprintf(html, "%scfg);\"> " WM_APPNAME " MOD %s </a></b><br><div id=\"cfg\">", HTML_TOGGLER, STR_SETUP); concat(buffer, html);
 
 	add_checkbox("lp", STR_LPG   , " • ",   (webman_config->lastp),  buffer);
 	add_checkbox("nb", "BEEP", " • ",      !(webman_config->nobeep), buffer);
@@ -713,27 +713,27 @@ static void setup_form(char *buffer, char *templn)
 	concat(buffer, HTML_BLU_SEPARATOR);
 
 	add_checkbox("ft", STR_FTPSVC,   " : ", (webman_config->ftpd) , buffer);
-	sprintf(templn, HTML_PORT("ff", "%i") " • Timeout ", webman_config->ftp_port); concat(buffer, templn);
+	sprintf(html, HTML_PORT("ff", "%i") " • Timeout ", webman_config->ftp_port); concat(buffer, html);
 
 #ifdef AUTO_POWER_OFF
-	sprintf(templn, HTML_NUMBER("tm", "%i", "0", "255") " mins • ", webman_config->ftp_timeout); concat(buffer, templn);
+	sprintf(html, HTML_NUMBER("tm", "%i", "0", "255") " mins • ", webman_config->ftp_timeout); concat(buffer, html);
 	add_checkbox_line("pw", "No Auto Power Off",  !(webman_config->auto_power_off), buffer);
 #else
-	sprintf(templn, HTML_NUMBER("tm", "%i", "0", "255") " mins<br>", webman_config->ftp_timeout); concat(buffer, templn);
+	sprintf(html, HTML_NUMBER("tm", "%i", "0", "255") " mins<br>", webman_config->ftp_timeout); concat(buffer, html);
 #endif
 
 #ifdef PS3NET_SERVER
-	sprintf(templn, "%s", STR_FTPSVC); char *pos = strcasestr(templn, "FTP"); if(pos) {pos[0] = 'N', pos[1] = 'E', pos[2] = 'T';}
-	add_checkbox("nd", templn,   " : ", (webman_config->netsrvd) , buffer);
-	sprintf(templn, HTML_PORT("ndp", "%i") "<br>", webman_config->netsrvp); concat(buffer, templn);
+	sprintf(html, "%s", STR_FTPSVC); char *pos = strcasestr(html, "FTP"); if(pos) {pos[0] = 'N', pos[1] = 'E', pos[2] = 'T';}
+	add_checkbox("nd", html,   " : ", (webman_config->netsrvd) , buffer);
+	sprintf(html, HTML_PORT("ndp", "%i") "<br>", webman_config->netsrvp); concat(buffer, html);
 #endif
 
 	add_checkbox("bn", STR_ACCESS,  " : ", (webman_config->bind) , buffer);
 
 	char pwd[24]; _memset(pwd, sizeof(pwd)); memcpy(pwd, webman_config->ftp_password, 20);
 
-	sprintf(templn, HTML_INPUT("aip", "%s", "15", "16") " Pwd: "
-					HTML_PASSW("pwd", "%s", "20", "20") "<br>", webman_config->allow_ip, pwd); concat(buffer, templn);
+	sprintf(html, HTML_INPUT("aip", "%s", "15", "16") " Pwd: "
+					HTML_PASSW("pwd", "%s", "20", "20") "<br>", webman_config->allow_ip, pwd); concat(buffer, html);
 
 	concat(buffer, HTML_BLU_SEPARATOR);
 
@@ -755,8 +755,8 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 	//game mounting
-	sprintf(templn, "%s + %s net/ntfs cached ISO", STR_UNMOUNT, STR_DELETE);
-	add_checkbox_line("dx", templn, (webman_config->deliso), buffer);
+	sprintf(html, "%s + %s net/ntfs cached ISO", STR_UNMOUNT, STR_DELETE);
+	add_checkbox_line("dx", html, (webman_config->deliso), buffer);
 
 #ifdef NOSINGSTAR
 	add_checkbox_line("nss", STR_NOSINGSTAR,  (webman_config->noss), buffer);
@@ -796,12 +796,12 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("nc\" onclick=\"ic.value=(nc.checked)?1:0;", STR_MMCOVERS, " : ", (value == SHOW_ICON0), buffer);
 
 	// icon type
-	add_html(dat_ICON_TYPE, value, buffer, templn);
+	add_html(dat_ICON_TYPE, value, buffer, html);
 
 #ifndef ENGLISH_ONLY
 	//language
-	sprintf(templn, " • %s: ", STR_PLANG); concat(buffer, templn);
-	add_html(dat_LANGUAGES, webman_config->lang, buffer, templn);
+	sprintf(html, " • %s: ", STR_PLANG); concat(buffer, html);
+	add_html(dat_LANGUAGES, webman_config->lang, buffer, html);
 #endif
 	concat(buffer, "<br>");
 
@@ -810,11 +810,11 @@ static void setup_form(char *buffer, char *templn)
 
 	// info
 	#ifndef LITE_EDITION
-	add_html(dat_INFO_TAGS, webman_config->info, buffer, templn);
+	add_html(dat_INFO_TAGS, webman_config->info, buffer, html);
 	#else
-	add_html(dat_INFO_TAGS, webman_config->info & 0xF, buffer, templn);
+	add_html(dat_INFO_TAGS, webman_config->info & 0xF, buffer, html);
 	#endif
-	add_html(dat_INFO_MSGS, webman_config->minfo, buffer, templn);
+	add_html(dat_INFO_MSGS, webman_config->minfo, buffer, html);
 
 #ifdef FIX_GAME
 	if(c_firmware >= 4.20f && c_firmware < LATEST_CFW)
@@ -858,9 +858,9 @@ static void setup_form(char *buffer, char *templn)
 
 	//general settings
 #ifdef SPOOF_CONSOLEID
-	sprintf(templn,	"%sadv);\"> IDPS & MEM %s </a></b><br><div id=\"adv\">", HTML_TOGGLER, STR_SETUP); concat(buffer, templn);
+	sprintf(html,	"%sadv);\"> IDPS & MEM %s </a></b><br><div id=\"adv\">", HTML_TOGGLER, STR_SETUP); concat(buffer, html);
 #else
-	sprintf(templn,	"%sadv);\"> MEM %s </a></b><br><div id=\"adv\">", HTML_TOGGLER, STR_SETUP); concat(buffer, templn);
+	sprintf(html,	"%sadv);\"> MEM %s </a></b><br><div id=\"adv\">", HTML_TOGGLER, STR_SETUP); concat(buffer, html);
 #endif
 
 #ifdef SPOOF_CONSOLEID
@@ -870,21 +870,21 @@ static void setup_form(char *buffer, char *templn)
 	sprintf(tmp, "%016llX';vID2.value='%016llX", eid0_idps[0], eid0_idps[1]);
 
 	add_checkbox("id1", "IDPS", " : ", (webman_config->sidps), buffer);
-	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vID1", webman_config->vIDPS1); concat(buffer, templn);
-	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vID2", webman_config->vIDPS2); concat(buffer, templn);
-	//sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID2.value=", "1000000000000000"); concat(buffer, templn);
-	sprintf(templn, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID1.value=", tmp); concat(buffer, templn);
+	sprintf(html, HTML_INPUT("%s", "%s", "16", "22"), "vID1", webman_config->vIDPS1); concat(buffer, html);
+	sprintf(html, HTML_INPUT("%s", "%s", "16", "22"), "vID2", webman_config->vIDPS2); concat(buffer, html);
+	//sprintf(html, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID2.value=", "1000000000000000"); concat(buffer, html);
+	sprintf(html, HTML_BUTTON_FMT "<br>", HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vID1.value=", tmp); concat(buffer, html);
 
 	sprintf(tmp, "%016llX';vPS2.value='%016llX", PSID[0], PSID[1]);
 
 	add_checkbox("id2", "PSID", " : ", (webman_config->spsid), buffer);
-	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vPS1", webman_config->vPSID1); concat(buffer, templn);
-	sprintf(templn, HTML_INPUT("%s", "%s", "16", "22"), "vPS2", webman_config->vPSID2); concat(buffer, templn);
-	//sprintf(templn, HTML_BUTTON_FMT "<br><br>", HTML_BUTTON, " ", "onclick=\"vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
-	//sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, templn);
-	sprintf(templn, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=", tmp); concat(buffer, templn);
+	sprintf(html, HTML_INPUT("%s", "%s", "16", "22"), "vPS1", webman_config->vPSID1); concat(buffer, html);
+	sprintf(html, HTML_INPUT("%s", "%s", "16", "22"), "vPS2", webman_config->vPSID2); concat(buffer, html);
+	//sprintf(html, HTML_BUTTON_FMT "<br><br>", HTML_BUTTON, " ", "onclick=\"vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, html);
+	//sprintf(html, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=vPS2.value=", "0000000000000000"); concat(buffer, html);
+	sprintf(html, HTML_BUTTON_FMT, HTML_BUTTON, " ", "onclick=\"if(t=='ht')h();vPS1.value=", tmp); concat(buffer, html);
 
-	add_html(dat_VIEW_IDPS, 0, buffer, templn);
+	add_html(dat_VIEW_IDPS, 0, buffer, html);
 #endif
 
 	//Disable lv1&lv2 peek&poke syscalls (6,7,9,10,36) and delete history files at system startup
@@ -910,7 +910,7 @@ static void setup_form(char *buffer, char *templn)
 
 #ifndef LITE_EDITION
 	//default content profile
-	sprintf(templn, "%s : <select name=\"usr\">", STR_PROFILE); concat(buffer, templn);
+	sprintf(html, "%s : <select name=\"usr\">", STR_PROFILE); concat(buffer, html);
 	add_option_item(0 , STR_DEFAULT, (profile == 0) , buffer);
 	char profile_id[] = {'1', 0};
 	for(u8 usr = 1; usr <= 4; ++usr, ++profile_id[0])
@@ -921,7 +921,7 @@ static void setup_form(char *buffer, char *templn)
 	//default user account
 	if(!webman_config->uaccount[0]) sprintf(webman_config->uaccount, "%08i", xusers()->GetCurrentUserNumber());
 
-	sprintf(templn, "</select> : <a href=\"%s\">%s</a><select name=\"uacc\">", HDD0_HOME_DIR, HDD0_HOME_DIR + 5); concat(buffer, templn);
+	sprintf(html, "</select> : <a href=\"%s\">%s</a><select name=\"uacc\">", HDD0_HOME_DIR, HDD0_HOME_DIR + 5); concat(buffer, html);
 	{
 		int fd;
 		if(cellFsOpendir(HDD0_HOME_DIR, &fd) == CELL_FS_SUCCEEDED)
@@ -939,24 +939,24 @@ static void setup_form(char *buffer, char *templn)
 	#endif
 
 	#ifdef NOBD_PATCH
-	sprintf(templn, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]%s<p>", STR_DELETE, ALLOW_NOBD ? " [<a href=\"/nobd.ps3\">noBD</a>]" : ""); concat(buffer, templn);
+	sprintf(html, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]%s<p>", STR_DELETE, ALLOW_NOBD ? " [<a href=\"/nobd.ps3\">noBD</a>]" : ""); concat(buffer, html);
 	#else
-	sprintf(templn, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]<p>", STR_DELETE); concat(buffer, templn);
+	sprintf(html, "</select> &nbsp; %s : [<a href=\"/delete.ps3?wmconfig\">wmconfig</a>] [<a href=\"/delete.ps3?wmtmp\">wmtmp</a>] [<a href=\"/delete.ps3?history\">history</a>] • [<a href=\"/rebuild.ps3\">rebuild</a>] [<a href=\"/recovery.ps3\">recovery</a>]<p>", STR_DELETE); concat(buffer, html);
 	#endif
 #endif
 
 	//memory usage
-	sprintf(templn, " %s [%iKB]: ", STR_MEMUSAGE, (webman_config->vsh_mc) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, templn);
-	add_html(dat_MEMORY_USAGE, webman_config->foot, buffer, templn);
+	sprintf(html, " %s [%iKB]: ", STR_MEMUSAGE, (webman_config->vsh_mc) ? 3072 : (int)(BUFFER_SIZE_ALL / KB)); concat(buffer, html);
+	add_html(dat_MEMORY_USAGE, webman_config->foot, buffer, html);
 
 	//memory container
 	add_option_item(0,  STR_DEFAULT, (webman_config->vsh_mc == 0)  , buffer);
-	add_html(dat_MEM_CONTAINER, webman_config->vsh_mc, buffer, templn);
+	add_html(dat_MEM_CONTAINER, webman_config->vsh_mc, buffer, html);
 
 	#ifndef LITE_EDITION
 	//Home
-	sprintf(templn, " : " HTML_INPUT("hurl", "%s", "255", "50") "<p>", webman_config->home_url);
-	add_checkbox("hm", STR_HOME, templn, webman_config->homeb, buffer);
+	sprintf(html, " : " HTML_INPUT("hurl", "%s", "255", "50") "<p>", webman_config->home_url);
+	add_checkbox("hm", STR_HOME, html, webman_config->homeb, buffer);
 	#endif
 
 	#ifdef BDVD_REGION
@@ -969,24 +969,24 @@ static void setup_form(char *buffer, char *templn)
 	//BD Region
 	concat(buffer, "BD Region: <select id=\"bdr\" name=\"bdr\">");
 	add_option_item(0,  STR_DEFAULT, (cobra_config->bd_video_region == 0)  , buffer);
-	add_html(dat_BD_REGIONS, cobra_config->bd_video_region, buffer, templn);
+	add_html(dat_BD_REGIONS, cobra_config->bd_video_region, buffer, html);
 
 	//DVD Region
 	add_option_item(0,  STR_DEFAULT, (cobra_config->dvd_video_region == 0)  , buffer);
-	add_html(dat_DVD_REGIONS, cobra_config->dvd_video_region, buffer, templn);
+	add_html(dat_DVD_REGIONS, cobra_config->dvd_video_region, buffer, html);
 	#endif // #ifdef BDVD_REGION
 
 	#ifdef VIDEO_REC
-	add_html(dat_VIDEOREC_FMT, webman_config->rec_video_format, buffer, templn);
-	add_html(dat_AUDIOREC_FMT, webman_config->rec_audio_format, buffer, templn);
+	add_html(dat_VIDEOREC_FMT, webman_config->rec_video_format, buffer, html);
+	add_html(dat_AUDIOREC_FMT, webman_config->rec_audio_format, buffer, html);
 	#endif // #ifdef VIDEO_REC
 
 	buffer += strlen(buffer);
 
 	//combos
-	sprintf(templn, "</div>%scmb);\"> %s </a></b><br><div id=\"cmb\">"
+	sprintf(html, "</div>%scmb);\"> %s </a></b><br><div id=\"cmb\">"
 					"<button onclick=\"var cb=$$('cmb').querySelectorAll('input[type=checkbox]');for(i=0;i<cb.length;i++)cb[i].checked=false;return false;\">%s</button>"
-					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", HTML_TOGGLER, STR_COMBOS2, STR_COMBOS); concat(buffer, templn);
+					"<table width=\"800\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\"><tr><td nowrap valign=top>", HTML_TOGGLER, STR_COMBOS2, STR_COMBOS); concat(buffer, html);
 
 	#ifdef COBRA_ONLY
 	add_checkbox("vs", "VSH MENU",      " : <b>SELECT</b><br>"       , !(webman_config->combo2 & C_VSHMENU), buffer);
@@ -1005,20 +1005,20 @@ static void setup_form(char *buffer, char *templn)
 	add_checkbox("ppv", STR_PREVGAME,   " : <b>SELECT+L1</b><br>"        , !(webman_config->combo & PREV_GAME),  buffer);
 	add_checkbox("pnx", STR_NEXTGAME,   " : <b>SELECT+R1</b><br>"        , !(webman_config->combo & NEXT_GAME),  buffer);
 
-	sprintf(templn, " : <b>SELECT+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
-	add_checkbox("umt", STR_UNMOUNT,    templn                           , !(webman_config->combo2 & UMNT_GAME), buffer);
+	sprintf(html, " : <b>SELECT+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_checkbox("umt", STR_UNMOUNT,    html                           , !(webman_config->combo2 & UMNT_GAME), buffer);
 	add_checkbox("pgd", "gameDATA",     " : <b>SELECT+&#9633;</b><br>"   , !(webman_config->combo2 & EXTGAMDAT), buffer);
 
-	sprintf(templn, "%s XML", STR_REFRESH);
-	add_checkbox("pxr", templn,         " : <b>SELECT+L3</b><br>"        , !(webman_config->combo2 & XMLREFRSH), buffer);
+	sprintf(html, "%s XML", STR_REFRESH);
+	add_checkbox("pxr", html,         " : <b>SELECT+L3</b><br>"        , !(webman_config->combo2 & XMLREFRSH), buffer);
 
 	#ifdef VIDEO_REC
 	add_checkbox("vrc", "VIDEO REC (in-game)", " : <b>SELECT+R3</b><br>" , !(webman_config->combo2 & VIDRECORD), buffer);
 	#endif
 
 #ifdef REX_ONLY
-	sprintf(templn, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
-	add_checkbox("pid", STR_SHOWIDPS,   templn                    , !(webman_config->combo & SHOW_IDPS),  buffer);
+	sprintf(html, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_checkbox("pid", STR_SHOWIDPS,   html                    , !(webman_config->combo & SHOW_IDPS),  buffer);
 	add_checkbox("puw", STR_UNLOADWM,   " : <b>L3+R2+R3</b><br>"  , !(webman_config->combo & UNLOAD_WM),  buffer);
 	add_checkbox("psd", STR_SHUTDOWN2,  " : <b>L3+R2+X</b><br>"   , !(webman_config->combo & SHUT_DOWN),  buffer);
 	add_checkbox("prs", STR_RESTART2,   " : <b>L3+R2+O</b><br>"   , !(webman_config->combo & RESTARTPS),  buffer);
@@ -1029,8 +1029,8 @@ static void setup_form(char *buffer, char *templn)
 	#endif
 #else
 	#ifdef SPOOF_CONSOLEID
-	sprintf(templn, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
-	add_checkbox("pid", STR_SHOWIDPS,   templn                         ,   !(webman_config->combo & SHOW_IDPS),  buffer);
+	sprintf(html, " : <b>R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_checkbox("pid", STR_SHOWIDPS,   html                         ,   !(webman_config->combo & SHOW_IDPS),  buffer);
 	#endif
 
 	#ifdef WM_REQUEST
@@ -1084,8 +1084,8 @@ static void setup_form(char *buffer, char *templn)
 #endif
 
 #ifdef PKG_HANDLER
-	sprintf(templn, " : <b>SELECT+R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
-	add_checkbox("pkg", "INSTALL PKG", templn                           , !(webman_config->combo2 & INSTALPKG), buffer);
+	sprintf(html, " : <b>SELECT+R2+%c</b><br>", (CELL_PAD_CIRCLE_BTN == CELL_PAD_CTRL_CIRCLE) ? 'O' : 'X');
+	add_checkbox("pkg", "INSTALL PKG", html                           , !(webman_config->combo2 & INSTALPKG), buffer);
 #endif
 	add_checkbox("hom", "GOTO_HOME", " : <b>L2+L3+R3</b><br>"           , !(webman_config->combo & GOTO_HOME), buffer);
 
@@ -1101,37 +1101,37 @@ static void setup_form(char *buffer, char *templn)
  #endif
 		read_file(WM_COMBO_PATH, command, 255, 0);
 
-	sprintf(templn, "&nbsp; &nbsp;" HTML_INPUT("ccbo\" list=\"cmds", "%s", "255", "50")
+	sprintf(html, "&nbsp; &nbsp;" HTML_INPUT("ccbo\" list=\"cmds", "%s", "255", "50")
 					#ifdef WM_CUSTOM_COMBO
 					"<button onclick=\"window.location='/edit.ps3%s';return false;\">&#x270D;</button>"
-					"<br>", command, WM_CUSTOM_COMBO "r2_square"); concat(buffer, templn);
+					"<br>", command, WM_CUSTOM_COMBO "r2_square"); concat(buffer, html);
 					#else
-					"<br>", command); concat(buffer, templn);
+					"<br>", command); concat(buffer, html);
 					#endif
 
-	add_html(dat_CUSTOM_COMBOS, 0, buffer, templn);
+	add_html(dat_CUSTOM_COMBOS, 0, buffer, html);
 
 #endif // #if defined(WM_CUSTOM_COMBO) || defined(WM_REQUEST)
 
 	concat(buffer, "</div>");
 
 	//Wait for any USB device to be ready
-	sprintf(templn, "%swt);\"> %s </a></b><br><div id=\"wt\">", HTML_TOGGLER, STR_ANYUSB); concat(buffer, templn);
-	add_html(dat_WAIT_USB_TIME1, webman_config->bootd, buffer, templn);
+	sprintf(html, "%swt);\"> %s </a></b><br><div id=\"wt\">", HTML_TOGGLER, STR_ANYUSB); concat(buffer, html);
+	add_html(dat_WAIT_USB_TIME1, webman_config->bootd, buffer, html);
 
 	//Wait additionally for each selected USB device to be ready
-	sprintf(templn, HTML_BLU_SEPARATOR "<u> %s:</u><br>", STR_ADDUSB); concat(buffer, templn);
-	add_html(dat_WAIT_USB_TIME1, webman_config->boots, buffer, templn);
+	sprintf(html, HTML_BLU_SEPARATOR "<u> %s:</u><br>", STR_ADDUSB); concat(buffer, html);
+	add_html(dat_WAIT_USB_TIME1, webman_config->boots, buffer, html);
 
 	concat(buffer, "</div>");
 
-	sprintf(templn, HTML_RED_SEPARATOR "<input class=\"bs\" type=\"submit\" accesskey=\"S\" value=\" %s \"/>"
+	sprintf(html, HTML_RED_SEPARATOR "<input class=\"bs\" type=\"submit\" accesskey=\"S\" value=\" %s \"/>"
 					"<script>function tgl(o){o.style.maxHeight=(o.style.maxHeight=='500px')?'0px':'500px';}</script>"
-					"</form>", STR_SAVE); concat(buffer, templn);
+					"</form>", STR_SAVE); concat(buffer, html);
 
 #ifndef LITE_EDITION
 	#ifdef PKG_HANDLER
-	add_html(dat_SETUP_FOOTER, 0, buffer, templn);
+	add_html(dat_SETUP_FOOTER, 0, buffer, html);
 
 //	concat(buffer,  HTML_RED_SEPARATOR
 //					"<a href=\"http://github.com/aldostools/webMAN-MOD/releases\">" WEBMAN_MOD " - Latest release</a> • "
@@ -1152,7 +1152,7 @@ static void setup_form(char *buffer, char *templn)
 	// show qr code
 	if(webman_config->qr_code)
 	{
-		qr_code(templn, "/setup.ps3", "<hr>", true, buffer);
+		qr_code(html, "/setup.ps3", "<hr>", true, buffer);
 	}
 
 /*
@@ -1173,11 +1173,11 @@ static void setup_form(char *buffer, char *templn)
 		_cellGcmIoOffsetToAddress(gcm_obj1[0], &buf_adr[1]); //0x37ee5ac
 	}
 
-	sprintf(templn, "OFFSET#0: %x, P: %i, W: %i, H: %i, E: %x <br>",
-		gcm_obj0[0], gcm_obj0[1], gcm_obj0[2], gcm_obj0[3], buf_adr[0]); concat(buffer, templn);
+	sprintf(html, "OFFSET#0: %x, P: %i, W: %i, H: %i, E: %x <br>",
+		gcm_obj0[0], gcm_obj0[1], gcm_obj0[2], gcm_obj0[3], buf_adr[0]); concat(buffer, html);
 
-	sprintf(templn, "OFFSET#1: %x, P: %i, W: %i, H: %i, E: %x <br>",
-		gcm_obj1[0], gcm_obj1[1], gcm_obj1[2], gcm_obj1[3], buf_adr[1]); concat(buffer, templn);
+	sprintf(html, "OFFSET#1: %x, P: %i, W: %i, H: %i, E: %x <br>",
+		gcm_obj1[0], gcm_obj1[1], gcm_obj1[2], gcm_obj1[3], buf_adr[1]); concat(buffer, html);
 */
 }
 

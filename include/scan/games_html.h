@@ -68,6 +68,12 @@ enum paths_ids
 
 #define HTML_KEY    -1
 
+typedef struct
+{
+	char key[HTML_KEY_LEN];
+	char data[];
+} t_new_entry;
+
 #include "games_launchpad.h"
 #include "games_slaunch.h"
 #include "games_covers.h"
@@ -80,22 +86,22 @@ enum paths_ids
 
 static u8 loading_games = 0;
 
-static void add_title_id(char *templn, char *title_id)
+static void add_title_id(char *title, char *title_id)
 {
 	// invalid character breaks XML / HTML
-	replace_char(templn, '<', ' ');
+	replace_char(title, '<', ' ');
 
-	remove_brackets(templn);
+	remove_brackets(title);
 
 	if(webman_config->tid && HAS_TITLE_ID)
 	{
-		int tlen = strlen(templn); if((tlen < 50) && !strstr(templn, " [")) sprintf(templn + tlen, " [%s]", title_id);
+		int tlen = strlen(title); if((tlen < 50) && !strstr(title, " [")) sprintf(title + tlen, " [%s]", title_id);
 	}
 }
 
 #ifdef NET_SUPPORT
 //static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0);
-static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *templn, char *tempstr, char *enc_dir_name, char *icon, char *title_id, char *app_ver, u8 f1, u8 is_html)
+static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry, char *neth, char *param, char *title, char *tempstr, char *enc_dir_name, char *icon, char *title_id, char *app_ver, u8 f1, u8 is_html)
 {
 	*app_ver = NULL;
 
@@ -118,50 +124,53 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 	*icon = *title_id = NULL;
 
+	char *local_path = title;
+	char *remote_path = enc_dir_name;
+
 	// skip duplicated games in /dev_hdd0
-	sprintf(templn, "%s%s/%s", drives[0], param, data[v3_entry].name);
-	if(file_exists(templn)) return FAILED;
+	sprintf(local_path, "%s%s/%s", drives[0], param, data[v3_entry].name);
+	if(file_exists(local_path)) return FAILED;
 
 	// get name
 	if(IS_PS3_TYPE) //PS3 games only (0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI")
 	{
 		if(data[v3_entry].is_directory)
-			sprintf(templn, WMTMP "/%s.SFO", data[v3_entry].name);
+			sprintf(local_path, WMTMP "/%s.SFO", data[v3_entry].name);
 		else
-			{get_name(templn, data[v3_entry].name, GET_WMTMP); strcat(templn, ".SFO");}
+			{get_name(local_path, data[v3_entry].name, GET_WMTMP); strcat(local_path, ".SFO");}
 
-		if(not_exists(templn))
+		if(not_exists(local_path))
 		{
 			if(data[v3_entry].is_directory)
 			{
 				if(IS_GAMEI_FOLDER)
-					sprintf(enc_dir_name, "%s/%s/PARAM.SFO", param, data[v3_entry].name);
+					sprintf(remote_path, "%s/%s/PARAM.SFO", param, data[v3_entry].name);
 				else
-					sprintf(enc_dir_name, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
+					sprintf(remote_path, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
 
-				copy_net_file(templn, enc_dir_name, ns);
+				copy_net_file(local_path, remote_path, ns);
 
-				strcpy(templn + strlen(templn) - 4, ".png");
-				strcpy(enc_dir_name + strlen(enc_dir_name) - 9, "ICON0.PNG");
+				strcpy(local_path + strlen(local_path) - 4, ".png");
+				strcpy(remote_path + strlen(remote_path) - 9, "ICON0.PNG");
 			}
 			else
 			{
 				get_name(tempstr, data[v3_entry].name, NO_EXT);
-				sprintf(enc_dir_name, "%s/%s.SFO", param, tempstr);
+				sprintf(remote_path, "%s/%s.SFO", param, tempstr);
 			}
-			copy_net_file(templn, enc_dir_name, ns);
+			copy_net_file(local_path, remote_path, ns);
 		}
 
-		if(webman_config->info & INFO_VER) getTitleID(templn, app_ver, GET_VERSION);
+		if(webman_config->info & INFO_VER) getTitleID(local_path, app_ver, GET_VERSION);
 
-		get_title_and_id_from_sfo(templn, title_id, data[v3_entry].name, icon, tempstr, 0);
+		get_title_and_id_from_sfo(title, title_id, data[v3_entry].name, icon, tempstr, 0);
 
 		get_local_app_ver(app_ver, title_id, tempstr);
 	}
 	else if(is_html)
-		{get_name(enc_dir_name, data[v3_entry].name, NO_EXT); htmlenc(templn, enc_dir_name, 1);}
+		{get_name(enc_dir_name, data[v3_entry].name, NO_EXT); htmlenc(title, enc_dir_name, 1);}
 	else
-		{get_name(templn, data[v3_entry].name, NO_EXT);}
+		{get_name(title, data[v3_entry].name, NO_EXT);}
 
 	// check for /title/title.iso
 	if(data[v3_entry].is_directory && BETWEEN(id_PS3ISO, f1, id_PSPISO))
@@ -179,14 +188,14 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		// cover: folder/filename.jpg
 		for(u8 e = 0; e < 4; e++)
 		{
-			sprintf(enc_dir_name, "%s/%s/%s%s", param, data[v3_entry].name, data[v3_entry].name, ext[ex[e]]);
-			if(remote_file_exists(ns, enc_dir_name)) {index = ex[e]; swap_ex(e); break;}
+			sprintf(remote_path, "%s/%s/%s%s", param, data[v3_entry].name, data[v3_entry].name, ext[ex[e]]);
+			if(remote_file_exists(ns, remote_path)) {index = ex[e]; swap_ex(e); break;}
 		}
 
 		if(index < 4)
 		{
 			get_name(icon, data[v3_entry].name, GET_WMTMP); strcat(icon, ext[index]);
-			copy_net_file(icon, enc_dir_name, ns);
+			copy_net_file(icon, remote_path, ns);
 
 			if(not_exists(icon)) *icon = NULL;
 		}
@@ -194,7 +203,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 		sprintf(data[v3_entry].name, "%s", tempstr + strlen(param) + 1);
 	}
 
-	add_title_id(templn, title_id);
+	add_title_id(title, title_id);
 	urlenc(enc_dir_name, data[v3_entry].name);
 
 	get_default_icon(icon, param, data[v3_entry].name, data[v3_entry].is_directory, title_id, ns, ((neth[4] & 0x0F) + NET), f1);
@@ -207,9 +216,9 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 static void add_query_html(char *buffer, const char *param)
 {
-	char templn[64], label[8];
+	char html[64], label[8];
 	sprintf(label, "%s", param); to_upper(label);
-	sprintf(templn, "[<a href=\"/index.ps3?%s\">%s</a>] ", param, label); strcat(buffer, templn);
+	sprintf(html, "[<a href=\"/index.ps3?%s\">%s</a>] ", param, label); concat(buffer, html);
 }
 
 static int check_drive(u8 f0)
@@ -268,61 +277,61 @@ static char *is_multi_cd(const char *name)
 	return p;
 }
 
-static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
+static void set_sort_key(char *skey, char *title, int key, u8 subfolder, u8 f1)
 {
 	bool is_html = (key <= HTML_KEY);
 
-	if(templn[1] == '/')
-		strcpy(templn, templn + 2); // skip single letter folder
+	if(title[1] == '/')
+		strcpy(title, title + 2); // skip single letter folder
 	else
 	{
-		char *p = strchr(templn, '/');
+		char *p = strchr(title, '/');
 		if(p)
 		{
 			*p = NULL;
-			if(islike(templn, p + 1))
+			if(islike(title, p + 1))
 				strcpy(skey, p + 1);
 			else
-				sprintf(skey, "[%s] %s", templn, p + 1);
-			strcpy(templn, skey);
+				sprintf(skey, "[%s] %s", title, p + 1);
+			strcpy(title, skey);
 		}
 	}
 
-	u16 tlen = strlen(templn);
-	if(tlen < HTML_KEY_LEN) strcat(templn, "      "); // HTML_KEY_LEN = 6
+	u16 tlen = strlen(title);
+	if(tlen < HTML_KEY_LEN) strcat(title, "      "); // HTML_KEY_LEN = 6
 
 	u8 c = 0, s = 5;
-	if(templn[0] == '[')
+	if(title[0] == '[')
 	{
-		if(templn[4] == ']') {c = (templn[5] != ' ') ? 5 : 6;} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
-		if(templn[3] == ']') {c = (templn[4] != ' ') ? 4 : 5;} // ignore tag prefixes. e.g. [CD]
-		if(templn[2] == ']') {c = (templn[3] != ' ') ? 3 : 4;} // ignore tag prefixes. e.g. [C]
-		if(c) strcat(templn, "      ");
+		if(title[4] == ']') {c = (title[5] != ' ') ? 5 : 6;} // ignore tag prefixes. e.g. [PS3] [PS2] [PSX] [PSP] [DVD] [BDV] [ISO] etc.
+		if(title[3] == ']') {c = (title[4] != ' ') ? 4 : 5;} // ignore tag prefixes. e.g. [CD]
+		if(title[2] == ']') {c = (title[3] != ' ') ? 3 : 4;} // ignore tag prefixes. e.g. [C]
+		if(c) strcat(title, "      ");
 	}
 
 	if(is_html)
 	{
 	#ifdef LAUNCHPAD
 		if(webman_config->launchpad_grp || (key ==  HTML_KEY))
-			snprintf(skey, HTML_KEY_LEN + 1, "%s", templn);
+			snprintf(skey, HTML_KEY_LEN + 1, "%s", title);
 		else
 		{
 			char group = IS_BDISO ? id_VIDEO : get_default_icon_by_type(f1);
-			snprintf(skey, HTML_KEY_LEN + 1, "%c%s", group, templn);
+			snprintf(skey, HTML_KEY_LEN + 1, "%c%s", group, title);
 		}
 	#else
-		snprintf(skey, HTML_KEY_LEN + 1, "%s", templn);
+		snprintf(skey, HTML_KEY_LEN + 1, "%s", title);
 	#endif
 	}
 	else
-		sprintf(skey, "!%.6s%04i", templn + c, key);
+		sprintf(skey, "!%.6s%04i", title + c, key);
 
-	if(c == 0 && templn[0] == '[') {char *s = strstr(templn + 3, "] "); if(s) {skey[4]=s[2],skey[5]=s[3],skey[6]=s[4];}}
-	//else if(subfolder) {char *s = strchr(templn + 3, '/'); if(s) {skey[4]=s[1],skey[5]=s[2],skey[6]=s[3];}}
+	if(c == 0 && title[0] == '[') {char *s = strstr(title + 3, "] "); if(s) {skey[4]=s[2],skey[5]=s[3],skey[6]=s[4];}}
+	//else if(subfolder) {char *s = strchr(title + 3, '/'); if(s) {skey[4]=s[1],skey[5]=s[2],skey[6]=s[3];}}
 
-	templn[tlen] = '\0';
+	title[tlen] = '\0';
 
-	char *p = NULL, *nm = templn + 5;
+	char *p = NULL, *nm = title + 5;
 	if(f1 > id_PS3ISO)
 	{
 		p = is_multi_cd(nm);
@@ -340,35 +349,35 @@ static void set_sort_key(char *skey, char *templn, int key, u8 subfolder, u8 f1)
 		if(tlen > 64) tlen = 64;
 		for(u16 i = s; i < tlen; i++)
 		{
-			if(templn[i+1]=='[') {tlen = i; break;}
-			if(templn[i] == ' ') {s = i + 1; w2 = skey[6] = templn[s]; break;} // sort by 2nd word
+			if(title[i+1]=='[') {tlen = i; break;}
+			if(title[i] == ' ') {s = i + 1; w2 = skey[6] = title[s]; break;} // sort by 2nd word
 		}
 		for(u16 i = tlen; i > s; i--)
 		{
-			if(ISDIGIT(templn[i])) {if(w2) skey[5] = w2; skey[6] = templn[i]; break;} // sort by game number (if possible)
+			if(ISDIGIT(title[i])) {if(w2) skey[5] = w2; skey[6] = title[i]; break;} // sort by game number (if possible)
 		}
 	}
 
 	to_upper(skey + (is_html ? 0 : 1));
 }
 
-static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *templn)
+static bool is_dupe(u8 f0, u8 f1, const char *d_name, char *hdd_path)
 {
 	if(IS_HDD0 || IS_ROMS_FOLDER) return false;
 
-	sprintf(templn, "%s/%s/%s", drives[0], paths[f1], d_name);
+	sprintf(hdd_path, "%s/%s/%s", drives[0], paths[f1], d_name);
 
 #ifdef COBRA_ONLY
 	if(IS_NTFS)
 	{
-		char *ext = strstr(templn, ".ntfs["); if(!ext) return true;
+		char *ext = strstr(hdd_path, ".ntfs["); if(!ext) return true;
 		for(u8 e = 0; e < 10; e++)
-			{strcpy(ext, iso_ext[e]); if(file_exists(templn)) return true;}
+			{strcpy(ext, iso_ext[e]); if(file_exists(hdd_path)) return true;}
 		*ext = NULL;
 	}
 #endif
 
-	return file_exists(templn);
+	return file_exists(hdd_path);
 }
 
 static bool is_iso_file(char *entry_name, int flen, u8 f1, u8 f0)
@@ -449,7 +458,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 	#endif
 	if((!mobile_mode) && strstr(param, "/index.ps3"))
 	{
-		char *pbuffer = buffer + buf_len + concat(buffer, "<font style=\"font-size:13px\">");
+		char *pbuffer = buffer + buf_len; concat(pbuffer, "<font style=\"font-size:13px\">");
 
 	#ifdef COBRA_ONLY
 		if(!(webman_config->cmask & PS3)) { add_query_html(pbuffer, "ps3");
@@ -486,13 +495,12 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		// cookies script & icon size slider
 		add_html(dat_SEL_ICON_SIZE, 0, pbuffer, templn);
 
-		if(webman_config->sman) strcat(pbuffer, "<p></font>");
+		if(webman_config->sman) concat(pbuffer, "<p></font>");
 
-		buf_len += strlen(buffer + buf_len);
+		buf_len += strlen(pbuffer);
 	}
 	else
-		buf_len += concat(buffer, " <br>");
-
+		buf_len += concat(buffer + buf_len, " <br>");
 
 	// --- wait until 120 seconds if server is busy loading games ---
 	retry = 0; while(loading_games && working && (++retry < 600)) sys_ppu_thread_usleep(200000);
@@ -529,6 +537,8 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		u16 idx = 0;
 		u32 tlen = buf_len; buffer[tlen] = '\0';
 		char *sysmem_html = buffer + (webman_config->sman ? _12KB_ : _8KB_);
+		char *title = templn, *param_sfo = templn, *entry_name = templn;
+		t_new_entry *new_entry = (t_new_entry *)tempstr; char *new_entry_ = (char*)new_entry;
 
 		typedef struct
 		{
@@ -544,7 +554,7 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 		#ifndef ENGLISH_ONLY
 		if(!use_custom_icon_path) *onerror_prefix = *onerror_suffix = NULL;
 		#endif
-		char icon[STD_PATH_LEN], subpath[STD_PATH_LEN], enc_dir_name[STD_PATH_LEN*3];
+		char icon[STD_PATH_LEN], subpath[STD_PATH_LEN], enc_dir_name[STD_PATH_LEN * 3];
 
 		// filter html content
 		char filter_name[STD_PATH_LEN]; *filter_name = NULL;
@@ -604,13 +614,13 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 			{
 				if(idx >= max_entries || tlen >= BUFFER_MAXSIZE) break;
 
-				char *templn = slaunch.name;
+				char *title = slaunch.name;
 				const char *path = slaunch.name + slaunch.path_pos;
 				const char *param = path + 10; // remove /mount_ps3
 				char *icon = slaunch.name + slaunch.icon_pos;
 
-				if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
-										&& !strcasestr(param,  filter_name)) continue;
+				if(*filter_name >= ' '  && !strcasestr(title, filter_name)
+										&& !strcasestr(param, filter_name)) continue;
 
 				u8 f1 = (slaunch.type == TYPE_PS1) ? id_PSXISO :
 						(slaunch.type == TYPE_PS2) ? id_PS2ISO :
@@ -620,16 +630,22 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 
 				if(f1 == id_PS3ISO)
 				{
-					if(filter1 == f1 && islike(param, HDD0_GAME_DIR)) continue; else
-					if(strstr(param, "/GAME")) f1 = id_GAMES;
+					if(filter1 == f1 && islike(param, HDD0_GAME_DIR)) continue;
+					char *pos = strstr(param, "/GAME"); if(pos) f1 = (pos[5] == 'I') ? id_GAMEI : id_GAMES;
 				}
 
 				#ifdef COBRA_ONLY
-				if(filter0 == NTFS) {if(!islike(param, WMTMP)) continue;}
-				if(filter0 == NET)  {if(!islike(param, "/net")) continue;}
+				if(filter0 == NTFS) {if(!islike(param, WMTMP)) continue;} else
+				if(filter0 == NET)  {if(!islike(param, "/net")) continue;} else
 				#endif
-				if(filter0 == 1) {if(!islike(param, "/dev_usb")) continue;}
-				if(b1) {if(b1 == id_NPDRM) {if(!islike(param, HDD0_GAME_DIR)) continue;} if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1!=f1) continue;}
+				if(filter0 == 1) {if(!islike(param, "/dev_usb")) continue;} else
+				if(b0 == 1) {if(!islike(param, drives[filter0])) continue;} else
+				if(b0 == 2) {if(!islike(param, "/dev_usb")) continue;}
+				if(b1)
+				{
+					if((b1 == id_NPDRM) && !islike(param, HDD0_GAME_DIR)) continue;
+					if((b1 >= 2) && ((f1 < b1) || IS_JB_FOLDER) && (filter1 < 3)); else if(filter1 != f1) continue;
+				}
 				else
 					if(check_content_type(f1)) continue;
 
@@ -642,15 +658,15 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 					*pos = '/';
 				}
 
-				set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, 0, f1); // sort key
+				set_sort_key(new_entry->key, title, HTML_KEY - launchpad_mode, 0, f1); // sort key
 
 				#ifdef LAUNCHPAD
 				if(launchpad_mode)
 				{
-					flen = sprintf(tempstr, "http://%s%s", local_ip, path);
+					flen = sprintf(new_entry_, "http://%s%s", local_ip, path);
 					if(flen >= MAX_LINE_LEN) continue; //ignore lines too long
-					strcpy(line_entry[idx].path, tempstr);
-					flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, slaunch.id, icon, false);
+					strcpy(line_entry[idx].path, new_entry_);
+					flen = add_launchpad_entry(new_entry->data, title, line_entry[idx].path, slaunch.id, icon, false);
 				}
 				else
 				#endif
@@ -658,29 +674,29 @@ static bool game_listing(char *buffer, char *templn, char *param, char *tempstr,
 				{
 					if(!icon || strchr(icon, '"')) continue; // ignore names with quotes: cause syntax error in javascript: gamelist.js
 
-					replace_invalid_chars(templn);
+					replace_invalid_chars(title);
 
 					int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320, h = 176;} else if(strstr(icon, "icon_wm_")) {w = 280, h = 280;}
 
-					flen = sprintf(tempstr + HTML_KEY_LEN, "{img:\"%s\",width:%i,height:%i,desc:\"%s\",url:\"%s\"},",
-									icon, w, h, templn, param);
+					flen = sprintf(new_entry->data, "{img:\"%s\",width:%i,height:%i,desc:\"%s\",url:\"%s\"},",
+													icon, w, h, title, param);
 				}
 				else
 				{
 					slen = slaunch.path_pos - 1;
 					do
 					{
-						flen = sprintf(tempstr + HTML_KEY_LEN, "%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s\">%s",
-										param, idx, icon, onerror_prefix, (*onerror_prefix && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, templn);
+						flen = sprintf(new_entry->data, "%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s\">%s",
+														param, idx, icon, onerror_prefix, (*onerror_prefix && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, title);
 
 						slen -= 4; if(slen < 32) break;
-						templn[slen] = '\0';
+						title[slen] = '\0';
 					}
 					while(flen > MAX_LINE_LEN);
 				}
 
 				if(flen > MAX_LINE_LEN) continue; //ignore lines too long
-				strcpy(line_entry[idx].path, tempstr); idx++;
+				strcpy(line_entry[idx].path, new_entry_); idx++;
 				tlen += (flen + div_size);
 			}
 			cellFsClose(fd);
@@ -791,27 +807,27 @@ list_games:
 
 						if(is_slf) {ls = true; v3_entry++; continue;} // single letter folder was found
 
-						if(add_net_game(ns, data, v3_entry, neth, param, templn, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 1) == FAILED) {v3_entry++; continue;}
+						if(add_net_game(ns, data, v3_entry, neth, param, title, tempstr, enc_dir_name, icon, title_id, app_ver, f1, 1) == FAILED) {v3_entry++; continue;}
 
 						#ifdef SLAUNCH_FILE
-						if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, templn, title_id, f1);
+						if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, neth, param, data[v3_entry].name, icon, title, title_id, f1);
 						#endif
 
-						if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
-												&& !strcasestr(param,  filter_name)
+						if(*filter_name >= ' '  && !strcasestr(title, filter_name)
+												&& !strcasestr(param, filter_name)
 												&& !strcasestr(data[v3_entry].name, filter_name)) {v3_entry++; continue;}
 
 						if(urlenc(tempstr, icon)) snprintf(icon, STD_PATH_LEN, "%s", tempstr);
 
-						set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, 0, f1); // sort key
+						set_sort_key(new_entry->key, title, HTML_KEY - launchpad_mode, 0, f1); // sort key
 
 						#ifdef LAUNCHPAD
 						if(launchpad_mode)
 						{
-							flen = sprintf(tempstr, "http://%s/mount_ps3%s%s/%s", local_ip, neth, param, enc_dir_name);
+							flen = sprintf(new_entry_, "http://%s/mount_ps3%s%s/%s", local_ip, neth, param, enc_dir_name);
 							if(flen >= MAX_LINE_LEN) continue; //ignore lines too long
-							strcpy(line_entry[idx].path, tempstr);
-							flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, title_id, icon, false);
+							strcpy(line_entry[idx].path, new_entry_);
+							flen = add_launchpad_entry(new_entry->data, title, line_entry[idx].path, title_id, icon, false);
 						}
 						else
 						#endif
@@ -819,22 +835,22 @@ list_games:
 						{
 							if(!icon ||  strchr(enc_dir_name, '"') || strchr(icon, '"')) continue; // ignore: cause syntax error in javascript: gamelist.js
 
-							replace_invalid_chars(templn);
+							replace_invalid_chars(title);
 
 							int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320; h = 176;} else if(strstr(icon, "icon_wm_")) {w = 320; h = 280;}
 
-							flen = sprintf(tempstr + HTML_KEY_LEN, "{img:\"%s\",width:%i,height:%i,desc:\"%s\",url:\"%s%s/%s\"},",
-											*icon ? icon : wm_icons[default_icon], w, h, templn, neth, param, enc_dir_name);
+							flen = sprintf(new_entry->data, "{img:\"%s\",width:%i,height:%i,desc:\"%s\",url:\"%s%s/%s\"},",
+											*icon ? icon : wm_icons[default_icon], w, h, title, neth, param, enc_dir_name);
 						}
 						else
-							flen = sprintf(tempstr + HTML_KEY_LEN, "%s%s/%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s%s/%s\">%s",
+							flen = sprintf(new_entry->data, "%s%s/%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s%s/%s\">%s",
 											neth, param, enc_dir_name, idx,
 											icon, onerror_prefix, (*onerror_prefix  && default_icon) ? wm_icons[default_icon] : "", onerror_suffix,
-											neth, param, enc_dir_name, templn);
+											neth, param, enc_dir_name, title);
 
 						v3_entry++;
 						if((flen + HTML_KEY_LEN) > MAX_LINE_LEN) continue; //ignore lines too long
-						strcpy(line_entry[idx].path, tempstr); idx++;
+						strcpy(line_entry[idx].path, new_entry_); idx++;
 						tlen += (flen + div_size);
 					}
 					else
@@ -857,8 +873,9 @@ next_html_entry:
 								cellFsGetDirectoryEntries(fd2, &entry, sizeof(entry), &read_e);
 								if(read_e < 1) {cellFsClosedir(fd2); fd2 = 0; continue;}
 								if(entry.entry_name.d_name[0] == '.') goto next_html_entry;
-								entry.entry_name.d_namlen = snprintf(templn, D_NAME_LEN, "%s/%s", subpath, entry.entry_name.d_name);
-								strcpy(entry.entry_name.d_name, templn);
+
+								strcpy(entry_name, entry.entry_name.d_name);
+								entry.entry_name.d_namlen = snprintf(entry.entry_name.d_name, D_NAME_LEN, "%s/%s", subpath, entry_name);
 							}
 						}
 						//////////////////////////////
@@ -873,13 +890,13 @@ next_html_entry:
 								if(!webman_config->gamei) continue;
 
 								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
-								sprintf(templn, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
+								sprintf(param_sfo, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
 							}
 							else
 							#endif
 							{
-								sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
-								check_ps3_game(templn);
+								sprintf(param_sfo, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
+								check_ps3_game(param_sfo);
 							}
 
 							is_iso = false;
@@ -890,50 +907,50 @@ next_html_entry:
 							is_iso = is_iso_file(entry.entry_name.d_name, flen, _f1_, f0); if(!is_iso) goto continue_loop; //continue;
 						}
 
-						if(is_iso || (IS_JB_FOLDER && file_exists(templn)))
+						if(is_iso || (IS_JB_FOLDER && file_exists(param_sfo)))
 						{
 							*icon = *title_id = NULL;
 
-							if(!is_iso)
+							if(!is_iso) // IS_JB_FOLDER
 							{
-								get_title_and_id_from_sfo(templn, title_id, entry.entry_name.d_name, icon, tempstr, 0);
+								get_title_and_id_from_sfo(title, title_id, entry.entry_name.d_name, icon, tempstr, 0);
 							}
-							else
+							else // is_iso
 							{
 								if(IS_HDD0 && IS(entry.entry_name.d_name, "~tmp.iso")) goto continue_loop; //continue;
 
-							#ifdef COBRA_ONLY
-								if(get_name_iso_or_sfo(templn, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) goto continue_loop; //continue;
-							#else
-								get_name(templn, entry.entry_name.d_name, NO_EXT);
-							#endif
+								#ifdef COBRA_ONLY
+								if(get_name_iso_or_sfo(title, title_id, icon, param, entry.entry_name.d_name, f0, f1, uprofile, flen, tempstr) == FAILED) goto continue_loop; //continue;
+								#else
+								get_name(title, entry.entry_name.d_name, NO_EXT);
+								#endif
 							}
 
-							if(*filter_name >= ' '  && !strcasestr(templn, filter_name)
-													&& !strcasestr(param,  filter_name)
+							if(*filter_name >= ' '  && !strcasestr(title, filter_name)
+													&& !strcasestr(param, filter_name)
 													&& !strcasestr(entry.entry_name.d_name, filter_name)) goto continue_loop; //continue;
 
 							get_default_icon(icon, param, entry.entry_name.d_name, !is_iso, title_id, ns, f0, f1);
 
 							#ifdef SLAUNCH_FILE
-							if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, templn, title_id, f1);
+							if(fdsl && (idx < MAX_SLAUNCH_ITEMS)) add_slaunch_entry(fdsl, "", param, entry.entry_name.d_name, icon, title, title_id, f1);
 							#endif
-							add_title_id(templn, title_id);
+							add_title_id(title, title_id);
 							urlenc(enc_dir_name, entry.entry_name.d_name);
 
-							templn[80] = '\0'; // truncate title name
+							title[80] = '\0'; // truncate title name
 
 							if(urlenc(tempstr, icon)) snprintf(icon, STD_PATH_LEN, "%s", tempstr);
 
-							set_sort_key(tempstr, templn, HTML_KEY - launchpad_mode, subfolder, f1); // sort key
+							set_sort_key(new_entry->key, title, HTML_KEY - launchpad_mode, subfolder, f1); // sort key
 
 							#ifdef LAUNCHPAD
 							if(launchpad_mode)
 							{
-								flen = sprintf(tempstr, "http://%s/mount_ps3%s/%s", local_ip, param, enc_dir_name);
+								flen = sprintf(new_entry_, "http://%s/mount_ps3%s/%s", local_ip, param, enc_dir_name);
 								if(flen >= MAX_LINE_LEN)  goto continue_loop; //continue; //ignore lines too long
-								strcpy(line_entry[idx].path, tempstr);
-								flen = add_launchpad_entry(tempstr + HTML_KEY_LEN, templn, line_entry[idx].path, title_id, icon, false);
+								strcpy(line_entry[idx].path, new_entry_);
+								flen = add_launchpad_entry(new_entry->data, title, line_entry[idx].path, title_id, icon, false);
 							}
 							else
 							#endif
@@ -941,29 +958,29 @@ next_html_entry:
 							{
 								if(!icon || strchr(enc_dir_name, '"') || strchr(icon, '"'))  goto continue_loop; // ignore names with quotes: cause syntax error in javascript: gamelist.js
 
-								replace_invalid_chars(templn);
+								replace_invalid_chars(title);
 
 								int w = 260, h = 300; if(strstr(icon, "ICON0.PNG")) {w = 320, h = 176;} else if(strstr(icon, "icon_wm_")) {w = 280, h = 280;}
 
-								flen = sprintf(tempstr + HTML_KEY_LEN, "{img:\"%s\",width:%i,height:%i,desc:\"%s\",url:\"%s/%s\"},",
-												icon, w, h, templn, param, enc_dir_name);
+								flen = sprintf(new_entry->data, "{img:\"%s\",width:%i,height:%i,desc:\"%s\",url:\"%s/%s\"},",
+												icon, w, h, title, param, enc_dir_name);
 							}
 							else
 							{
-								slen = strlen(templn);
+								slen = strlen(title);
 								do
 								{
-									flen = sprintf(tempstr + HTML_KEY_LEN, "%s%s/%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s%s/%s\">%s",
-													param, "", enc_dir_name, idx, icon, onerror_prefix, (*onerror_prefix && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, "", enc_dir_name, templn);
+									flen = sprintf(new_entry->data, "%s%s/%s\"><img id=\"im%i\" src=\"%s\"%s%s%s class=\"gi\"></a></div><div class=\"gn\"><a href=\"%s%s/%s\">%s",
+													param, "", enc_dir_name, idx, icon, onerror_prefix, (*onerror_prefix && default_icon) ? wm_icons[default_icon] : "", onerror_suffix, param, "", enc_dir_name, title);
 
 									slen -= 4; if(slen < 32) break;
-									templn[slen] = '\0';
+									title[slen] = '\0';
 								}
 								while(flen > MAX_LINE_LEN);
 							}
 
 							if(flen > MAX_LINE_LEN)  goto continue_loop; //ignore lines too long
-							strcpy(line_entry[idx].path, tempstr); idx++;
+							strcpy(line_entry[idx].path, new_entry_); idx++;
 							tlen += (flen + div_size);
 						}
 						//////////////////////////////
@@ -1022,7 +1039,7 @@ next_html_entry:
 		bool sortable = false;
 		#endif
 
-		t_string sout; _set(&sout, buffer, buf_len);
+		t_string sout; _set(&sout, buffer, buf_len); char *html = templn;
 
 		#ifdef LAUNCHPAD
 		if(launchpad_mode)
@@ -1037,23 +1054,23 @@ next_html_entry:
 			_concat(&sout, "slides = [");
 		else if(islike(param, "/sman.ps3") || webman_config->sman)
 		{
-			sprintf(templn, "<script>document.getElementById('ngames').innerHTML='%s: %'i';</script>", (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES, idx); _concat(&sout, templn);
+			sprintf(html, "<script>document.getElementById('ngames').innerHTML='%s: %'i';</script>", (strstr(param, "DI")!=NULL) ? STR_FILES : STR_GAMES, idx); _concat(&sout, html);
 		}
 		else
 		{
-			sprintf(templn, // wait dialog div
+			sprintf(html,	// wait dialog div
 							"<div id=\"wmsg\"><H1>. . .</H1></div>"
 							// show games count + find icon
 							"<a href=\"javascript:_find();\"> &nbsp; %s: %'i &#x1F50D;</a></font>"
 							// separator
-							"<HR><span style=\"white-space:normal;\">", strstr(param, "DI") ? STR_FILES : STR_GAMES, idx); _concat(&sout, templn);
+							"<HR><span style=\"white-space:normal;\">", strstr(param, "DI") ? STR_FILES : STR_GAMES, idx); _concat(&sout, html);
 
 			#ifndef LITE_EDITION
 			sortable = file_exists(JQUERY_LIB_JS) && file_exists(JQUERY_UI_LIB_JS);
 			if(sortable)
 			{	// add external jquery libraries
-				sprintf(templn, SCRIPT_SRC_FMT, JQUERY_LIB_JS); _concat(&sout, templn);
-				sprintf(templn, SCRIPT_SRC_FMT, JQUERY_UI_LIB_JS); _concat(&sout, templn);
+				sprintf(html, SCRIPT_SRC_FMT, JQUERY_LIB_JS); _concat(&sout, html);
+				sprintf(html, SCRIPT_SRC_FMT, JQUERY_UI_LIB_JS); _concat(&sout, html);
 				_concat(&sout, "<script>$(function(){$(\"#mg\").sortable();});</script>");
 			}
 			#endif
@@ -1063,9 +1080,9 @@ next_html_entry:
 		{
 			if(file_exists(GAMES_SCRIPT_JS))
 			{
-				sprintf(templn, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, templn);
+				sprintf(html, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, html);
 			}
-			add_html(dat_GET_ICON_SIZE, 0, sout.str, templn);
+			add_html(dat_GET_ICON_SIZE, 0, sout.str, html);
 		}
 
 		tlen = buf_len;
@@ -1076,13 +1093,14 @@ next_html_entry:
 			int fd, size;
 			if(cellFsOpen(LAUNCHPAD_FILE_XML, CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 			{
+				char *xml_item = tempstr;
 				for(u16 m = 0; m < idx; m++)
 				{
-					size = sprintf(tempstr, "<mtrl id=\"%lu\" until=\"2100-12-31T23:59:00.000Z\">\n"
-											"<desc>%s"
-											"<cntry agelmt=\"0\">all</cntry>\n"
-											"<lang>all</lang></mtrl>\n\n", (1080000000UL + m), (line_entry[m].path) + HTML_KEY_LEN);
-					cellFsWrite(fd, tempstr, size, NULL);
+					size = sprintf(xml_item, "<mtrl id=\"%lu\" until=\"2100-12-31T23:59:00.000Z\">\n"
+											 "<desc>%s"
+											 "<cntry agelmt=\"0\">all</cntry>\n"
+											 "<lang>all</lang></mtrl>\n\n", (1080000000UL + m), (line_entry[m].path) + HTML_KEY_LEN);
+					cellFsWrite(fd, xml_item, size, NULL);
 				}
 				cellFsClose(fd);
 			}
@@ -1102,18 +1120,18 @@ next_html_entry:
 			syscalls_removed = CFW_SYSCALLS_REMOVED(TOC);
 			if(syscalls_removed)
 			{
-				sprintf(tempstr, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); _concat(&sout, tempstr);
+				sprintf(html, "<h1>%s</h1>%s", STR_CFWSYSALRD, HTML_RED_SEPARATOR); _concat(&sout, html);
 			}
 			#ifdef COBRA_ONLY
 			else if(!cobra_version)
 			{
-				sprintf(tempstr, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); _concat(&sout, tempstr);
+				sprintf(html, "<h1>%s %s</h1>%s", "Cobra", STR_DISABLED, HTML_RED_SEPARATOR); _concat(&sout, html);
 			}
 			#endif
 
 			for(u16 m = 0; m < idx; m++)
 			{
-				_concat3(&sout, GAME_DIV_PREFIX, (line_entry[m].path) + HTML_KEY_LEN, GAME_DIV_SUFIX);
+				_concat3(&sout, GAME_DIV_PREFIX, (line_entry[m].path + HTML_KEY_LEN), GAME_DIV_SUFIX);
 			}
 		}
 

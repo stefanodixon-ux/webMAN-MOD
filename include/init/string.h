@@ -32,7 +32,7 @@ static char *_concat(t_string *dest, const char *src)
 
 	if(src) while ((*str++ = *src++)) dest->size++; // append src
 
-	return dest->str;
+	return str;
 }
 
 static void _concat2(t_string *dest, const char *src1, const char *src2)

@@ -6,15 +6,15 @@
 						"<script>parent.document.getElementById('lbl_cpursx').innerHTML = \"%s\";</script>",
 						HTML_REFRESH, "/cpursx_ps3", cpursx);
  */
-		int buf_len = sprintf(buffer, "%s15;URL=%s\">"
-									  "%s"
-									  "<a href=\"%s\" target=\"_parent\" style=\"text-decoration:none;\">"
-									  "<font color=\"#fff\">%s</a>",
-									  HTML_REFRESH, "/cpursx_ps3",
-									  HTML_BODY, "/cpursx.ps3", cpursx);
+		sprintf(buffer, "%s15;URL=%s\">"
+						"%s"
+						"<a href=\"%s\" target=\"_parent\" style=\"text-decoration:none;\">"
+						"<font color=\"#fff\">%s</a>",
+						HTML_REFRESH, "/cpursx_ps3",
+						HTML_BODY, "/cpursx.ps3", cpursx);
 
-		buf_len = sprintf(header, HTML_RESPONSE_FMT,
-								  CODE_HTTP_OK, "/cpursx_ps3", HTML_HEADER, buffer, HTML_BODY_END);
+		int buf_len = sprintf(header, HTML_RESPONSE_FMT,
+									  CODE_HTTP_OK, "/cpursx_ps3", HTML_HEADER, buffer, HTML_BODY_END);
 
 		send(conn_s, header, buf_len, 0); keep_alive = 0;
 

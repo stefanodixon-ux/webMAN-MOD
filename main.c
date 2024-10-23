@@ -109,7 +109,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.47f MOD"
+#define WM_VERSION			"1.47.47g MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -400,6 +400,7 @@ static void do_umount_iso(bool clean);
 static void unload_vsh_gui(void);
 static void set_app_home(const char *game_path);
 static bool is_iso_0(const char *filename);
+static void unmap_path(const char *path);
 #endif
 
 static void get_cpursx(char *cpursx);

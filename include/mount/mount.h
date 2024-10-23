@@ -175,7 +175,7 @@ static void auto_play(char *param, u8 force_autoplay)
 	}
 }
 
-static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, bool mount_ps3, bool forced_mount)
+static bool game_mount(char *buffer, char *html, char *param, char *tempstr, bool mount_ps3, bool forced_mount)
 {
 	bool mounted = false, umounted = false, check_alias = true;
 
@@ -213,8 +213,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 	if(umounted)
 	{
 		strcat(buffer, STR_GAMEUM);
-		sprintf(templn, HTML_REDIRECT_TO_URL, "/cpursx.ps3", HTML_REDIRECT_WAIT);
-		strcat(buffer, templn);
+		sprintf(html, HTML_REDIRECT_TO_URL, "/cpursx.ps3", HTML_REDIRECT_WAIT);
+		strcat(buffer, html);
 	}
 
 
@@ -284,7 +284,8 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		// --------------
 		// set mount url
 		// --------------
-		urlenc(templn, source);
+		char *full_path = html;
+		urlenc(full_path, source);
 
 		// -----------
 		// mount game
@@ -331,7 +332,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 					mounted = mount_game(source, MOUNT_NORMAL);
 				}
 				else
-					sprintf(tempstr, "<H3>%s : <a href=\"/mount.ps3/unmount\">%s %s</a></H3><hr><a href=\"/mount_ps3%s\">", STR_UNMOUNTGAME, _game_TitleID, _game_Title, templn); strcat(buffer, tempstr);
+					sprintf(tempstr, "<H3>%s : <a href=\"/mount.ps3/unmount\">%s %s</a></H3><hr><a href=\"/mount_ps3%s\">", STR_UNMOUNTGAME, _game_TitleID, _game_Title, full_path); strcat(buffer, tempstr);
 			}
 			else
 			{
@@ -367,7 +368,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// set mount label
 			// ----------------
 
-			if(islike(templn, "/net"))
+			if(islike(source, "/net"))
 			{
 				utf8enc(_path, source, 0);
 				slen = strlen(source);
@@ -388,7 +389,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						 strstr(_path, "PSX") ? id_PSXISO :
 						 strstr(_path, "PSP") ? id_PSPISO : id_PS3ISO;
 
-				check_cover_folders(templn);
+				check_cover_folders(full_path);
 
 				// get iso name
 				*filename = NULL; // sets _path
@@ -399,13 +400,13 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				{
 					if(is_dir)
 					{
-						sprintf(templn, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name); check_ps3_game(templn);
-						get_title_and_id_from_sfo(templn, title_id, d_name, icon, buf, 0); f1 = id_GAMES;
+						sprintf(full_path, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name); check_ps3_game(full_path);
+						get_title_and_id_from_sfo(full_path, title_id, d_name, icon, buf, 0); f1 = id_GAMES;
 					}
 					#ifdef COBRA_ONLY
 					else
 					{
-						get_name_iso_or_sfo(templn, title_id, icon, _path, d_name, f0, f1, FROM_MOUNT, strlen(d_name), buf);
+						get_name_iso_or_sfo(full_path, title_id, icon, _path, d_name, f0, f1, FROM_MOUNT, strlen(d_name), buf);
 					}
 					#endif
 					free(buf);
@@ -824,10 +825,10 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 						{
 							if(pcount == 0) strcat(buffer, "<br><HR>");
 							urlenc(enc_dir_name, entry_name);
-							tlen += sprintf(templn, "<a href=\"/mount.ps2%s/%s\">%s</a><br>", target, enc_dir_name, entry_name);
+							tlen += sprintf(html, "<a href=\"/mount.ps2%s/%s\">%s</a><br>", target, enc_dir_name, entry_name);
 
 							if(tlen > (BUFFER_SIZE - _2KB_)) break;
-							strcat(buffer, templn); pcount++;
+							strcat(buffer, html); pcount++;
 						}
 					}
 					cellFsClosedir(fd2);
@@ -838,7 +839,7 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 			// show qr code
 			if(webman_config->qr_code)
 			{
-				qr_code(templn, param, "<hr>", true, buffer);
+				qr_code(html, param, "<hr>", true, buffer);
 			}
 
 			// auto-focus Data Disc
@@ -852,9 +853,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 		if(sys_admin && is_copy)
 		{
 			if(islike(target, source))
-				{sprintf(templn, "<hr>%s %s %s", STR_ERROR, STR_CPYDEST, source); strcat(buffer, templn);}
+				{sprintf(html, "<hr>%s %s %s", STR_ERROR, STR_CPYDEST, source); strcat(buffer, html);}
 			else if((!islike(source, "/net")) && not_exists(source))
-				{sprintf(templn, "<hr>%s %s %s", STR_ERROR, source, STR_NOTFOUND); strcat(buffer, templn);}
+				{sprintf(html, "<hr>%s %s %s", STR_ERROR, source, STR_NOTFOUND); strcat(buffer, html);}
 			else
 			{
 				setPluginActive();
@@ -862,8 +863,9 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 				// show msg begin
 				if(!silent_mode)
 				{
-					sprintf(templn, "%s %s\n%s %s", STR_COPYING, source, STR_CPYDEST, target);
-					show_msg(templn);
+					char *msg = html;
+					sprintf(msg, "%s %s\n%s %s", STR_COPYING, source, STR_CPYDEST, target);
+					show_msg(msg);
 				}
 
 				if(islike(target, "/dev_blind")) enable_dev_blind(NO_MSG);
@@ -922,13 +924,18 @@ static bool game_mount(char *buffer, char *templn, char *param, char *tempstr, b
 
 #ifdef COBRA_ONLY
 
+static void unmap_path(const char *path)
+{
+	sys_map_path(path, NULL);
+}
+
 static void unmap_app_home(void)
 {
 	// force remove "/app_home", "/app_home/PS3_GAME"
 	for(u8 retry = 0; retry < 3; retry++)
 	{
-		sys_map_path("/app_home", NULL);
-		sys_map_path(APP_HOME_DIR, NULL);
+		unmap_path("/app_home");
+		unmap_path(APP_HOME_DIR);
 	}
 }
 
@@ -1070,18 +1077,18 @@ static void do_umount(bool clean)
 
 		apply_remaps();
 
-		sys_map_path("/dev_bdvd/PS3/UPDATE", NULL); // unmap UPDATE from bdvd
+		unmap_path("/dev_bdvd/PS3/UPDATE"); // unmap UPDATE from bdvd
 
 		// map PKGLAUNCH cores folder to RETROARCH
-		sys_map_path(PKGLAUNCH_DIR, NULL);
-		sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", NULL);
-		sys_map_path("/app_home/PS3_GAME/USRDIR/cores", NULL);
-		sys_map_path("/dev_bdvd/PS3_GAME", NULL);
-		sys_map_path("/app_home/PS3_GAME", NULL);
+		unmap_path(PKGLAUNCH_DIR);
+		unmap_path("/dev_bdvd/PS3_GAME/USRDIR/cores");
+		unmap_path("/app_home/PS3_GAME/USRDIR/cores");
+		unmap_path("/dev_bdvd/PS3_GAME");
+		unmap_path("/app_home/PS3_GAME");
 
 		// unmap bdvd & apphome
-		sys_map_path("/dev_bdvd", NULL);
-		sys_map_path("//dev_bdvd", NULL);
+		unmap_path("/dev_bdvd");
+		unmap_path("//dev_bdvd");
 
 		set_app_home(NULL); // unmap app_home
 
@@ -1091,8 +1098,8 @@ static void do_umount(bool clean)
 		{
 			char gamei_mapping[32];
 			sprintf(gamei_mapping, "%s%s", HDD0_GAME_DIR, map_title_id);
-			sys_map_path(gamei_mapping, NULL);
-			sys_map_path(PKGLAUNCH_DIR, NULL);
+			unmap_path(gamei_mapping);
+			unmap_path(PKGLAUNCH_DIR);
 			*map_title_id = NULL;
 		}
 		#endif

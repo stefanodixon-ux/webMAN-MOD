@@ -75,8 +75,8 @@ mounted_ntfs:
 
 		if(IS(ntfs_ext, ".ntfs[PS3ISO]"))
 		{
-			get_name(templn, _path, GET_WMTMP);
-			cache_icon0_and_param_sfo(templn);
+			get_name(full_path, _path, GET_WMTMP);
+			cache_icon0_and_param_sfo(full_path);
 #ifdef FIX_GAME
 			fix_game(_path, title_id, webman_config->fixgame);
 #endif
@@ -114,8 +114,8 @@ mounted_ntfs:
 
 				if(is_psp)
 				{
-					strcpy(templn, _path);
-					ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+					strcpy(full_path, _path);
+					ret = (cobra_set_psp_umd(_path, full_path, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 				}
 				else //if(is_ps2)
 					goto copy_ps2iso_to_hdd0;

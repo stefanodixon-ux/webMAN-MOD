@@ -37,8 +37,8 @@ static void select_ps1emu(const char *path)
 {
 	webman_config->ps1emu = pad_select_netemu(path, webman_config->ps1emu);
 
-	sys_map_path("/dev_flash/ps1emu/ps1_netemu.self", NULL);
-	sys_map_path("/dev_flash/ps1emu/ps1_emu.self"   , NULL);
+	unmap_path("/dev_flash/ps1emu/ps1_netemu.self");
+	unmap_path("/dev_flash/ps1emu/ps1_emu.self");
 
 	if(webman_config->ps1emu)
 	{

@@ -320,15 +320,16 @@ static void add_url(char *body, const char *prefix, const char *url, const char 
 	if(sufix)  concat(body, sufix);
 }
 
-static void add_html(u8 id, int value, char *buffer, char *templn)
+static size_t add_html(u8 id, int value, char *buffer, char *data)
 {
-	if(!buffer || !templn) return;
+	if(!buffer || !data) return 0;
 
 	char res_file[40];
 	sprintf(res_file, "%s/setup/setup%c.dat", WM_RES_PATH, id);
-	if(read_file(res_file, templn, 1023, 0) > 0)
+
+	if(read_file(res_file, data, 1023, 0) > 0)
 	{
-		char *pos = strstr(templn, "    ");
+		char *pos = strstr(data, "    ");
 		if(pos)
 		{
 			if((id == 'a') || (id == 'v'))
@@ -337,34 +338,35 @@ static void add_html(u8 id, int value, char *buffer, char *templn)
 				sprintf(res_file, "%04i", value);
 			memcpy(pos, res_file, 4);
 		}
-		concat(buffer, templn);
+		return concat(buffer, data);
 	}
+	return 0;
 }
 
 static size_t add_radio_button(const char *name, int value, const char *id, const char *label, const char *sufix, bool checked, char *buffer)
 {
 	if(!buffer || !label) return 0;
 
-	char templn[MAX_LINE_LEN];
-	sprintf(templn, "<label><input type=\"radio\" name=\"%s\" value=\"%i\" id=\"%s\"%s/> %s%s</label>", name, value, id, checked ? ITEM_CHECKED : "", label, (sufix) ? sufix : "<br>");
-	return concat(buffer, templn);
+	char html[MAX_LINE_LEN];
+	sprintf(html, "<label><input type=\"radio\" name=\"%s\" value=\"%i\" id=\"%s\"%s/> %s%s</label>", name, value, id, checked ? ITEM_CHECKED : "", label, (sufix) ? sufix : "<br>");
+	return concat(buffer, html);
 }
 
 static size_t add_check_box(const char *name, bool disabled, const char *label, const char *sufix, bool checked, char *buffer)
 {
 	if(!buffer || !label) return 0;
 
-	char templn[MAX_LINE_LEN];
+	char html[MAX_LINE_LEN];
 	const char *pos = strstr(label, AUTOBOOT_PATH), *clabel = label;
 	if(pos)
 	{
-		char *autob = templn + 100; clabel = autob;
+		char *autob = html + 100; clabel = autob;
 		int n = (pos - label); strcpy(autob, label); // prefix
 		const char *on_startup = pos + strlen(AUTOBOOT_PATH); // sufix
 		sprintf(autob + n, HTML_INPUT("autop", "%s", "255", "40") "%s", webman_config->autoboot_path, on_startup);
 	}
-	sprintf(templn, "<label><input type=\"checkbox\" name=\"%s\" value=\"1\" %s%s/> %s</label>%s", name, disabled ? HTML_DISABLED_CHECKBOX : "", checked ? ITEM_CHECKED : "", clabel, (!sufix) ? "<br>" : sufix);
-	return concat(buffer, templn);
+	sprintf(html, "<label><input type=\"checkbox\" name=\"%s\" value=\"1\" %s%s/> %s</label>%s", name, disabled ? HTML_DISABLED_CHECKBOX : "", checked ? ITEM_CHECKED : "", clabel, (!sufix) ? "<br>" : sufix);
+	return concat(buffer, html);
 }
 
 static size_t add_checkbox(const char *name, const char *label, const char *sufix, bool checked, char *buffer)
@@ -379,10 +381,10 @@ static size_t add_checkbox_line(const char *name, const char *label, bool checke
 
 static size_t add_option_item(int value, const char *label, bool selected, char *buffer)
 {
-	char templn[MAX_LINE_LEN], svalue[20];
+	char html[MAX_LINE_LEN], svalue[20];
 	if(value >= 0x1000) sprintf(svalue, "0x%x", value); else sprintf(svalue, "%i", value);
-	sprintf(templn, "<option value=\"%s\"%s/>%s", svalue, selected ? ITEM_SELECTED : "", label);
-	return concat(buffer, templn);
+	sprintf(html, "<option value=\"%s\"%s/>%s", svalue, selected ? ITEM_SELECTED : "", label);
+	return concat(buffer, html);
 }
 
 #ifdef PS3MAPI
@@ -393,14 +395,14 @@ static size_t add_option_item2(int id, const char *label, const char *var, const
 }
 #endif
 
-#if defined(VIDEO_REC) || defined(USE_UACCOUNT)
+//#if defined(VIDEO_REC) || defined(USE_UACCOUNT)
 //static size_t add_string_item(const char *value, const char *label, bool selected, char *buffer)
 //{
 //	char templn[MAX_LINE_LEN];
 //	sprintf(templn, "<option value=\"%s\"%s/>%s", value, selected ? ITEM_SELECTED : "", label);
 //	return concat(buffer, templn);
 //}
-#endif
+//#endif
 
 static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 {
@@ -414,7 +416,7 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 									webman_config->bind ? "" : // disallow CORS if bind (remote access to FTP/WWW services) is disabled
 									"Access-Control-Allow-Origin: *\r\n"); // default: allow CORS (Cross-Origin Resource Sharing)
 
-	t_string header; _set(&header, buffer, slen);
+	t_string *header, mimetype; _set(&mimetype, buffer, slen); header = &mimetype;
 
 	// get mime type
 	if(is_binary == BINARY_FILE)
@@ -422,111 +424,111 @@ static size_t prepare_header(char *buffer, const char *param, u8 is_binary)
 		const char *ext = get_ext(param);
 
 		if(_IS(ext, ".png"))
-			_concat2(&header, "image/", "png");
+			_concat2(&mimetype, "image/", "png");
 		else
 		if(_IS(ext, ".jpg") || _IS(ext, ".jpeg") || IS(ext, ".STH"))
-			_concat2(&header, "image/", "jpeg");
+			_concat2(&mimetype, "image/", "jpeg");
 		else
 		if(_IS(ext, ".htm") || _IS(ext, ".html") || _IS(ext, ".shtm"))
-			{_concat2(&header, "text/", "html;charset=UTF-8"); set_base_path = true;}
+			{_concat2(&mimetype, "text/", "html;charset=UTF-8"); set_base_path = true;}
 		else
 		if(_IS(ext + 1, ".js"))
-			_concat2(&header, "text/", "javascript");
+			_concat2(&mimetype, "text/", "javascript");
 		else
 		if(_IS(ext, ".css"))
-			_concat2(&header, "text/", "css");
+			_concat2(&mimetype, "text/", "css");
 		else
 		if(_IS(ext, ".txt") || _IS(ext, ".log") || _IS(ext, ".ini") || _IS(ext, ".cfg") || IS(ext, ".HIP") || IS(ext, ".HIS") || IS(ext, ".HIP") || IS(ext, ".CNF"))
-			_concat2(&header, "text/", "plain;charset=UTF-8");
+			_concat2(&mimetype, "text/", "plain;charset=UTF-8");
 		else
 		if(_IS(ext, ".svg"))
-			_concat2(&header, "image/", "svg+xml");
+			_concat2(&mimetype, "image/", "svg+xml");
 		#ifndef LITE_EDITION
 		else
 		if(_IS(ext, ".gif"))
-			_concat2(&header, "image/", "gif");
+			_concat2(&mimetype, "image/", "gif");
 		else
 		if(_IS(ext, ".bmp"))
-			_concat2(&header, "image/", "bmp");
+			_concat2(&mimetype, "image/", "bmp");
 		else
 		if(_IS(ext, ".tif"))
-			_concat2(&header, "image/", "tiff");
+			_concat2(&mimetype, "image/", "tiff");
 		else
 		if(_IS(ext, ".avi"))
-			_concat2(&header, "video/", "x-msvideo");
+			_concat2(&mimetype, "video/", "x-msvideo");
 		else
 		if(_IS(ext, ".mp4") || IS(ext, ".MTH"))
-			_concat2(&header, "video/", "mp4");
+			_concat2(&mimetype, "video/", "mp4");
 		else
 		if(_IS(ext, ".mkv"))
-			_concat2(&header, "video/", "x-matroska");
+			_concat2(&mimetype, "video/", "x-matroska");
 		else
 		if(_IS(ext, ".mpg") || _IS(ext, ".mp2") || strcasestr(ext, ".mpe"))
-			_concat2(&header, "video/", "mpeg");
+			_concat2(&mimetype, "video/", "mpeg");
 		else
 		if(_IS(ext, ".vob"))
-			_concat2(&header, "video/", "vob");
+			_concat2(&mimetype, "video/", "vob");
 		else
 		if(_IS(ext, ".wmv"))
-			_concat2(&header, "video/", "x-ms-wmv");
+			_concat2(&mimetype, "video/", "x-ms-wmv");
 		else
 		if(_IS(ext, ".flv"))
-			_concat2(&header, "video/", "x-flv");
+			_concat2(&mimetype, "video/", "x-flv");
 		else
 		if(_IS(ext, ".mov"))
-			_concat2(&header, "video/", "quicktime");
+			_concat2(&mimetype, "video/", "quicktime");
 		else
 		if(_IS(ext, ".webm"))
-			_concat2(&header, "video/", "webm");
+			_concat2(&mimetype, "video/", "webm");
 		else
 		if(_IS(ext, ".mp3"))
-			_concat2(&header, "audio/", "mpeg");
+			_concat2(&mimetype, "audio/", "mpeg");
 		else
 		if(_IS(ext, ".wav"))
-			_concat2(&header, "audio/", "x-wav");
+			_concat2(&mimetype, "audio/", "x-wav");
 		else
 		if(_IS(ext, ".wma"))
-			_concat2(&header, "audio/", "x-ms-wma");
+			_concat2(&mimetype, "audio/", "x-ms-wma");
 		else
 		if(_IS(ext, ".mid") || _IS(ext, ".kar"))
-			_concat2(&header, "audio/", "midi");
+			_concat2(&mimetype, "audio/", "midi");
 		else
 		if(_IS(ext, ".mod"))
-			_concat2(&header, "audio/", "mod");
+			_concat2(&mimetype, "audio/", "mod");
 		else
 		if(_IS(ext, ".zip"))
-			_concat2(&header, "application/", "zip");
+			_concat2(&mimetype, "application/", "zip");
 		else
 		if(_IS(ext, ".pdf"))
-			_concat2(&header, "application/", "pdf");
+			_concat2(&mimetype, "application/", "pdf");
 		else
 		if(_IS(ext, ".doc"))
-			_concat2(&header, "application/", "msword");
+			_concat2(&mimetype, "application/", "msword");
 		else
 		if(_IS(ext, ".docx"))
-			_concat2(&header, "application/", "vnd.openxmlformats-officedocument.wordprocessingml.document");
+			_concat2(&mimetype, "application/", "vnd.openxmlformats-officedocument.wordprocessingml.document");
 		else
 		if(_IS(ext, ".xls"))
-			_concat2(&header, "application/", "vnd.ms-excel");
+			_concat2(&mimetype, "application/", "vnd.ms-excel");
 		else
 		if(_IS(ext, ".xlsx"))
-			_concat2(&header, "application/", "vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			_concat2(&mimetype, "application/", "vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		else
 		if(_IS(ext, ".ppt") || _IS(ext, ".pps"))
-			_concat2(&header, "application/", "vnd.ms-powerpoint");
+			_concat2(&mimetype, "application/", "vnd.ms-powerpoint");
 		else
 		if(_IS(ext, ".swf"))
-			_concat2(&header, "application/", "x-shockwave-flash");
+			_concat2(&mimetype, "application/", "x-shockwave-flash");
 		#endif
 		else
-			_concat2(&header, "application/", "octet-stream");
+			_concat2(&mimetype, "application/", "octet-stream");
 	}
 	else
-		{_concat2(&header, "text/", "html;charset=UTF-8"); set_base_path = true;}
+		{_concat2(&mimetype, "text/", "html;charset=UTF-8"); set_base_path = true;}
+
+	_concat(&mimetype, "\r\n");
 
 	if(set_base_path && (is_binary != WEB_COMMAND) && param[0] == '/') {strcpy(html_base_path, param); if(!isDir(param)) remove_filename(html_base_path);}
 
-	_concat(&header, "\r\n");
-
-	return header.size;
+	return header->size;
 }

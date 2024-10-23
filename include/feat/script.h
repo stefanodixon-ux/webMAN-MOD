@@ -165,7 +165,7 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "unlock /"))  {path += 7; scan(path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);} else
 	#endif
 	#ifdef COBRA_ONLY
-					if(_islike(line, "unmap /"))   {path += 6; sys_map_path(path, NULL);} else
+					if(_islike(line, "unmap /"))   {path += 6; unmap_path(path);} else
 					if(_islike(line, "mute coldboot"))
 					{
 						sys_map_path(VSH_RESOURCE_DIR "coldboot_stereo.ac3", SYSMAP_EMPTY_DIR);

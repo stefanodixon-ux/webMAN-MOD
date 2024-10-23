@@ -3,7 +3,7 @@
 #define WMCHATFILE			"/dev_hdd0/tmp/wmtmp/wmchat.htm"
 
 #ifndef LITE_EDITION
-static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_net_sockinfo_t conn_info_main)
+static void webchat(char *buffer, char *html, char *param, char *tempstr, sys_net_sockinfo_t conn_info_main)
 {
 	struct CellFsStat buf;
 
@@ -21,14 +21,14 @@ static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_
 
 		if(cellFsOpen(WMCHATFILE, CELL_FS_O_WRONLY | CELL_FS_O_TRUNC | CELL_FS_O_CREAT | CELL_FS_O_APPEND, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
-			size = sprintf(templn,	"%s10\">"
-									"<body bgcolor=\"#101010\" text=\"#c0c0c0\">"
-									"<script>window.onload=toBottom;function toBottom(){window.scrollTo(0, document.body.scrollHeight);}"
-									"</script>\0", HTML_REFRESH);
+			size = sprintf(html, "%s10\">"
+								 "<body bgcolor=\"#101010\" text=\"#c0c0c0\">"
+								 "<script>window.onload=toBottom;function toBottom(){window.scrollTo(0, document.body.scrollHeight);}"
+								 "</script>\0", HTML_REFRESH);
 
-			if(*tempstr) {strcat(templn, "<!--"); size += 4;}
+			if(*tempstr) {strcat(html, "<!--"); size += 4;}
 
-			cellFsWrite(fd, templn, size, NULL);
+			cellFsWrite(fd, html, size, NULL);
 			cellFsWrite(fd, tempstr, size, NULL);
 			cellFsClose(fd);
 		}
@@ -42,11 +42,11 @@ static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_
 		pos = strstr(param, "u="); if(pos) get_value(user, pos + 2, 20);
 		pos = strstr(param, "m="); if(pos) get_value(msg , pos + 2, 200);
 
-		size = sprintf(templn, "<font color=\"red%s\"><b>%s</b></font><br>%s<br><!---->", user, user, msg);
+		size = sprintf(html, "<font color=\"red%s\"><b>%s</b></font><br>%s<br><!---->", user, user, msg);
 
 		if(cellFsOpen(WMCHATFILE, CELL_FS_O_RDWR|CELL_FS_O_CREAT|CELL_FS_O_APPEND, &fd, NULL, 0) == CELL_OK)
 		{
-			cellFsWrite(fd, templn, size, NULL);
+			cellFsWrite(fd, html, size, NULL);
 		}
 		cellFsClose(fd);
 
@@ -54,14 +54,14 @@ static void webchat(char *buffer, char *templn, char *param, char *tempstr, sys_
 	}
 
 	// show msg log
-	sprintf(templn, "<iframe src=\"%s\" width=\"99%%\" height=\"300\"></iframe>", WMCHATFILE); strcat(buffer, templn);
+	sprintf(html, "<iframe src=\"%s\" width=\"99%%\" height=\"300\"></iframe>", WMCHATFILE); strcat(buffer, html);
 
 	// prompt msg
-	sprintf(templn, "<hr>"
+	sprintf(html, "<hr>"
 					"<form name=\"f\" action=\"\">"
 					HTML_INPUT("u", "%s", "10", "5") ":" HTML_INPUT("m", "", "500", "80")
 					"<input type=submit value=\"send\">"
-					"</form><script>f.m.focus();</script>", user); strcat(buffer, templn);
+					"</form><script>f.m.focus();</script>", user); strcat(buffer, html);
 }
 
 #endif

@@ -113,12 +113,12 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 		{
 			if(id != DEFAULT_RES) id = 0;
 			if(res_id == 8)
-				sys_map_path("/dev_flash/vsh/resource/xmb_ingame.rco",  NULL);
+				unmap_path("/dev_flash/vsh/resource/xmb_ingame.rco");
 			if(res_id == 5)
 				webman_config->resource_id[6] = 0; // reset last selected theme
 			else
 				strcpy(param, res_path);
-			sys_map_path(param, NULL);
+			unmap_path(param);
 		}
 
 		if(set && (save || (webman_config->resource_id[res_id] != id)))

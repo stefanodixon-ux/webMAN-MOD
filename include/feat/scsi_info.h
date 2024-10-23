@@ -38,7 +38,7 @@ static int ps3rom_lv2_get_inquiry(int fd, uint8_t *buffer) {
 	return sys_storage_send_atapi_command(fd, &atapi_cmnd, buffer);
 }
 
-static void get_bdvd_info(char *dump_path, char *buffer)
+static void get_bdvd_info(const char *dump_path, char *buffer)
 {
 	// open Blu Ray Drive
 	uint32_t fd;

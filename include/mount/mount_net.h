@@ -107,7 +107,7 @@ if(BETWEEN('0', netid, '4'))
 					u16 cue_size = read_sfo(TEMP_NET_PSXCUE, cue_buf);
 					cellFsUnlink(TEMP_NET_PSXCUE);
 
-					num_tracks = parse_cue(templn, cue_buf, cue_size, tracks);
+					num_tracks = parse_cue(full_path, cue_buf, cue_size, tracks);
 					free(cue_buf);
 				}
 			}
@@ -142,9 +142,9 @@ if(BETWEEN('0', netid, '4'))
 
 		sprintf(netiso_args.path, "/***DVD***%s", "/ROMS");
 
-		sprintf(templn, "/dev_bdvd/%s", netpath + 6);
-		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", templn, SAVE_ALL);
-		copy_rom_media(templn);
+		sprintf(full_path, "/dev_bdvd/%s", netpath + 6);
+		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", full_path, SAVE_ALL);
+		copy_rom_media(full_path);
 	}
 	else
 	{
@@ -199,8 +199,8 @@ retry_net:
 		{
 			wait_for("/dev_bdvd", 15);
 
-			get_name(templn, _path, GET_WMTMP);
-			cache_icon0_and_param_sfo(templn);
+			get_name(full_path, _path, GET_WMTMP);
+			cache_icon0_and_param_sfo(full_path);
 
 			#ifdef FIX_GAME
 			fix_game(_path, title_id, webman_config->fixgame);
@@ -214,12 +214,12 @@ retry_net:
 			pspiso = strchr(pspiso + 1, '/');
 			if(pspiso)
 			{
-				sprintf(templn,  "%s%s", "/dev_bdvd", pspiso);
-				strcpy(_path, templn);
+				sprintf(full_path,  "%s%s", "/dev_bdvd", pspiso);
+				strcpy(_path, full_path);
 
 				sys_ppu_thread_sleep(1);
 
-				ret = (cobra_set_psp_umd(_path, templn, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
+				ret = (cobra_set_psp_umd(_path, full_path, (char*)"/dev_hdd0/tmp/wm_icons/psp_icon.png") == CELL_FS_SUCCEEDED);
 			}
 		}
 
@@ -246,13 +246,13 @@ retry_net:
 			wait_for("/dev_bdvd", 15);
 			set_app_home("/dev_bdvd"); // sys_map_path(APP_HOME_DIR, "/dev_bdvd");
 
-			sprintf(templn, "%s/PARAM.SFO", "/dev_bdvd");
-			getTitleID(templn, map_title_id, GET_TITLE_ID_ONLY);
+			sprintf(full_path, "%s/PARAM.SFO", "/dev_bdvd");
+			getTitleID(full_path, map_title_id, GET_TITLE_ID_ONLY);
 
 			if(*map_title_id)
 			{
-				sprintf(templn, "%s/%s", "/dev_hdd0/game", map_title_id);
-				sys_map_path(templn, "/dev_bdvd");
+				sprintf(full_path, "%s/%s", "/dev_hdd0/game", map_title_id);
+				sys_map_path(full_path, "/dev_bdvd");
 			}
 
 			sys_ppu_thread_sleep(1);

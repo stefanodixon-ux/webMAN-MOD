@@ -183,7 +183,7 @@ exit_http_response:
 	return 0;
 }
 
-static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_http, u8 is_cpursx, bool mount_ps3)
+static size_t prepare_html(char *buffer, char *html, char *param, u8 is_ps3_http, u8 is_cpursx, bool mount_ps3)
 {
 	t_string sbuffer; _alloc(&sbuffer, buffer);
 
@@ -196,21 +196,21 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 
 		// add javascript
 		{
-			sprintf(templn, "<noscript><h1 style='color:#f03'>%s Javascript %s</h1></noscript>", STR_ERROR, STR_DISABLED); _concat(&sbuffer, templn);
+			sprintf(html, "<noscript><h1 style='color:#f03'>%s Javascript %s</h1></noscript>", STR_ERROR, STR_DISABLED); _concat(&sbuffer, html);
 			#ifndef ENGLISH_ONLY
 			if(webman_config->lang)
 			{
 				_concat(&sbuffer, "<script>");
-				sprintf(templn, "l('%s','%s');", "games",    STR_GAMES);    _concat(&sbuffer, templn);
-				sprintf(templn, "l('%s','%s');", "files",    STR_FILES);    _concat(&sbuffer, templn);
-				sprintf(templn, "l('%s','%s');", "setup",    STR_SETUP);    _concat(&sbuffer, templn);
-				sprintf(templn, "l('%s','%s');", "eject",    STR_EJECT);    _concat(&sbuffer, templn);
-				sprintf(templn, "l('%s','%s');", "insert",   STR_INSERT);   _concat(&sbuffer, templn);
-				sprintf(templn, "l('%s','%s');", "refresh",  STR_REFRESH);  _concat(&sbuffer, templn);
-				sprintf(templn, "l('%s','%s');", "restart",  STR_RESTART);  _concat(&sbuffer, templn);
-				sprintf(templn, "l('%s','%s');", "shutdown", STR_SHUTDOWN); _concat(&sbuffer, templn);
-				sprintf(templn, "l('msg2','%s ...');"
-								"</script>",                 STR_MYGAMES);  _concat(&sbuffer, templn);
+				sprintf(html, "l('%s','%s');", "games",    STR_GAMES);    _concat(&sbuffer, html);
+				sprintf(html, "l('%s','%s');", "files",    STR_FILES);    _concat(&sbuffer, html);
+				sprintf(html, "l('%s','%s');", "setup",    STR_SETUP);    _concat(&sbuffer, html);
+				sprintf(html, "l('%s','%s');", "eject",    STR_EJECT);    _concat(&sbuffer, html);
+				sprintf(html, "l('%s','%s');", "insert",   STR_INSERT);   _concat(&sbuffer, html);
+				sprintf(html, "l('%s','%s');", "refresh",  STR_REFRESH);  _concat(&sbuffer, html);
+				sprintf(html, "l('%s','%s');", "restart",  STR_RESTART);  _concat(&sbuffer, html);
+				sprintf(html, "l('%s','%s');", "shutdown", STR_SHUTDOWN); _concat(&sbuffer, html);
+				sprintf(html, "l('msg2','%s ...');"
+								"</script>",                 STR_MYGAMES);  _concat(&sbuffer, html);
 			}
 			#endif
 
@@ -220,11 +220,11 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 
 			if(webman_config->homeb && islike(webman_config->home_url, "http"))
 			{
-				sprintf(templn, "<script>hurl=\"%s\";</script>", webman_config->home_url);  _concat(&sbuffer, templn);
+				sprintf(html, "<script>hurl=\"%s\";</script>", webman_config->home_url);  _concat(&sbuffer, html);
 			}
 		}
 
-		if(param[1] && !strstr(param, ".ps3")) {_concat(&sbuffer,  "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
+		if(param[1] && !strstr(param, ".ps3")) {_concat(&sbuffer,  "<base href=\""); urlenc(html, param); strcat(html, "/\">"); _concat(&sbuffer, html);}
 
 		return sbuffer.size;
 	}
@@ -252,19 +252,19 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 	}
 	if(css_exists)
 	{
-		sprintf(templn, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); _concat(&sbuffer, templn);
+		sprintf(html, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); _concat(&sbuffer, html);
 	}
 
-	if(param[1] && !strstr(param, ".ps3")) {_concat(&sbuffer, "<base href=\""); urlenc(templn, param); strcat(templn, "/\">"); _concat(&sbuffer, templn);}
+	if(param[1] && !strstr(param, ".ps3")) {_concat(&sbuffer, "<base href=\""); urlenc(html, param); strcat(html, "/\">"); _concat(&sbuffer, html);}
 
 	if(is_ps3_http == 1)
-		{sprintf(templn, "<style>%s</style>", ".gi{height:210px;width:267px"); _concat(&sbuffer, templn);}
+		{sprintf(html, "<style>%s</style>", ".gi{height:210px;width:267px"); _concat(&sbuffer, html);}
 
 	_concat2(&sbuffer, "</head>", HTML_BODY);
 
 	const char *coverflow = NULL; if(file_exists(MOBILE_HTML)) coverflow = (char*)" [<a href=\"/games.ps3\">Coverflow</a>]";
 
-	size_t tlen = sprintf(templn, "<b>" WM_APP_VERSION "<br><font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
+	size_t tlen = sprintf(html, "<b>" WM_APP_VERSION "<br><font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
 
 #ifdef SYS_ADMIN_MODE
 	if(sys_admin)
@@ -272,24 +272,24 @@ static size_t prepare_html(char *buffer, char *templn, char *param, u8 is_ps3_ht
 #endif
 #ifdef PS3MAPI
 	#ifdef WEB_CHAT
-		sprintf(templn + tlen, " [<a href=\"/chat.ps3\">Chat</a>] [<a href=\"/home.ps3mapi\">PS3MAPI</a>] [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP);
+		sprintf(html + tlen, " [<a href=\"/chat.ps3\">Chat</a>] [<a href=\"/home.ps3mapi\">PS3MAPI</a>] [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP);
 	#else
-		sprintf(templn + tlen, " [<a href=\"/home.ps3mapi\">PS3MAPI</a>] [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP);
+		sprintf(html + tlen, " [<a href=\"/home.ps3mapi\">PS3MAPI</a>] [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP);
 	#endif
 #else
 	#ifdef WEB_CHAT
-		sprintf(templn + tlen, " [<a href=\"/chat.ps3\">Chat</a>] [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP);
+		sprintf(html + tlen, " [<a href=\"/chat.ps3\">Chat</a>] [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP);
 	#else
-		sprintf(templn + tlen, " [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP );
+		sprintf(html + tlen, " [<a href=\"/setup.ps3\">%s</a>]</b>", STR_SETUP );
 	#endif
 #endif
 #ifdef SYS_ADMIN_MODE
 	}
 	else
-		strcat(templn, "</b>");
+		strcat(html, "</b>");
 #endif
 
-	_concat(&sbuffer, templn);
+	_concat(&sbuffer, html);
 	return sbuffer.size;
 }
 
@@ -627,7 +627,7 @@ parse_request:
 
 			#include "www_binary.h"
 
-			char templn[1024];
+			char templn[1024]; char *html = templn;
 			{u16 ulen = strlen(param); if((ulen > 1) && (param[ulen - 1] == '/')) ulen--, param[ulen] = '\0';}
 			//sprintf(templn, "X-PS3-Info: %llu [%s]\r\n", (unsigned long long)c_len, param); strcat(header, templn);
 
@@ -648,7 +648,7 @@ parse_request:
 				if(mount_ps3 && IS_INGAME) {mount_ps3 = false, forced_mount = true, param[6] = '.';}
 
 				if(conn_s_p != WM_FILE_REQUEST)
-					sbuffer.size = prepare_html(buffer, templn, param, is_ps3_http, is_cpursx, mount_ps3);
+					sbuffer.size = prepare_html(buffer, html, param, is_ps3_http, is_cpursx, mount_ps3);
 
 				char *pbuffer = buffer + sbuffer.size;
 				char *tempstr = buffer + BUFFER_SIZE_HTML - _4KB_;
@@ -662,7 +662,7 @@ parse_request:
 					// /cpursx.ps3?up
 					// /cpursx.ps3?dn
 
-					cpu_rsx_stats(pbuffer, templn, param, is_ps3_http);
+					cpu_rsx_stats(pbuffer, html, param, is_ps3_http);
 
 					loading_html = keep_alive = is_cpursx = 0; goto send_response;
 
@@ -691,7 +691,7 @@ continue_rendering:
 
 				if(is_binary == FOLDER_LISTING) // folder listing
 				{
-					if(folder_listing(buffer, BUFFER_SIZE_HTML, templn, param, conn_s, tempstr, header, is_ps3_http, sort_by, sort_order, file_query) == false)
+					if(folder_listing(buffer, BUFFER_SIZE_HTML, html, param, conn_s, tempstr, header, is_ps3_http, sort_by, sort_order, file_query) == false)
 					{
 						goto exit_handleclient_www;
 					}
@@ -740,13 +740,13 @@ send_response:
 				{
 					// add bdvd & go to top links to the footer
 					_concat(&sbuffer, "<div style=\"position:fixed;right:20px;bottom:10px;opacity:0.2\">");
-					if(isDir("/dev_bdvd")) {sprintf(templn, "<a href=\"%s\"><img src=\"%s\" height=\"12\"></a> ", "/dev_bdvd", wm_icons[iPS3]); _concat(&sbuffer, templn);}
+					if(isDir("/dev_bdvd")) {sprintf(html, "<a href=\"%s\"><img src=\"%s\" height=\"12\"></a> ", "/dev_bdvd", wm_icons[iPS3]); _concat(&sbuffer, html);}
 					_concat(&sbuffer, "<a href=\"#Top\">&#9650;</a></div><b>");
 
 					// extend web content using custom javascript
 					if(common_js_exists)
 					{
-						sprintf(templn, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); _concat(&sbuffer, templn);
+						sprintf(html, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); _concat(&sbuffer, html);
 					}
 
 					_concat(&sbuffer, HTML_BODY_END); //end-html
