@@ -173,10 +173,9 @@
 	}
 	#endif // #ifdef MOUNT_ROMS
 
-#endif // #ifdef COBRA_ONLY
-
-
 mount_ps2classic:
+
+#endif // #ifdef COBRA_ONLY
 
 	// ------------------
 	// mount PS2 Classic

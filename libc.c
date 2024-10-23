@@ -338,7 +338,7 @@ size_t strspn(const char *s1, const char *s2)
 		ret++;
 	return ret;
 }
-*/
+
 size_t strcspn(const char *s1, const char *s2)
 {
 	register const char *p, *spanp;
@@ -351,9 +351,9 @@ size_t strcspn(const char *s1, const char *s2)
 				return (p - 1 - s1);
 		} while (sc != 0);
 	}
-	/* NOTREACHED */
+	// * NOTREACHED * //
 }
-
+*/
 int extcasecmp(const char *s1, const char *s2, size_t n);
 int extcasecmp(const char *s1, const char *s2, size_t n)
 {

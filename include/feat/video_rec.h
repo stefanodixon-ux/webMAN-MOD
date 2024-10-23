@@ -87,17 +87,6 @@ bool recording = false;
 u32 *recOpt = NULL;           // recording utility vsh options struct
 s32 (*reco_open)(s32) = NULL; // base pointer
 
-static void set_setting_to_change(char *msg, const char *text)
-{
-	sprintf(msg, "%s", text);
-	if(rec_setting_to_change == 0) concat(msg, "Recording Options"); else
-	if(rec_setting_to_change == 1) concat(msg, "Video Format");      else
-	if(rec_setting_to_change == 2) concat(msg, "Video Size");        else
-	if(rec_setting_to_change == 3) concat(msg, "Video Bitrate");     else
-	if(rec_setting_to_change == 4) concat(msg, "Audio Format");      else
-	if(rec_setting_to_change == 5) concat(msg, "Audio Bitrate");
-}
-
 static void show_rec_format(const char *msg)
 {
 	char text[200];
@@ -146,6 +135,37 @@ static void show_rec_format(const char *msg)
 	if(flags == 0x9) concat(text, "1536K");
 
 	show_msg(text);
+}
+
+static void set_setting_to_change(char *msg, const char *text)
+{
+	sprintf(msg, "%s", text);
+	if(rec_setting_to_change == 0) concat(msg, "Recording Options"); else
+	if(rec_setting_to_change == 1) concat(msg, "Video Format");      else
+	if(rec_setting_to_change == 2) concat(msg, "Video Size");        else
+	if(rec_setting_to_change == 3) concat(msg, "Video Bitrate");     else
+	if(rec_setting_to_change == 4) concat(msg, "Audio Format");      else
+	if(rec_setting_to_change == 5) concat(msg, "Audio Bitrate");
+}
+
+static void change_rec_format(const char *msg)
+{
+	if(rec_setting_to_change == 0)
+	{
+		rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_64K;
+		if(rec_video_format == CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_5000K_30FPS)   {rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_LARGE_2048K_30FPS; } else
+		if(rec_video_format == CELL_REC_PARAM_VIDEO_FMT_MPEG4_LARGE_2048K_30FPS)  {rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_768K_30FPS; rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_PCM_768K;} else
+		if(rec_video_format == CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_768K_30FPS) {rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_SMALL_512K_30FPS;  } else
+		if(rec_video_format == CELL_REC_PARAM_VIDEO_FMT_MPEG4_SMALL_512K_30FPS)   {rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MJPEG_HD720_11000K_30FPS; rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_96K;} else
+																				  {rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_5000K_30FPS;  }
+	}
+	if(rec_setting_to_change == 1) {rec_video_format += 0x1000; if((rec_video_format & 0xF000) > 0x4000) rec_video_format &= 0x0FFF;} else
+	if(rec_setting_to_change == 2) {rec_video_format += 0x0100; if((rec_video_format & 0x0F00) > 0x0300) {rec_video_format += 0x0200; if((rec_video_format & 0x0F00) > 0x0600) rec_video_format &= 0xF0FF;}} else
+	if(rec_setting_to_change == 3) {rec_video_format += 0x0010; if((rec_video_format & 0x00F0) > 0x0090) rec_video_format &= 0xFF0F; else if((rec_video_format & 0x00F0) == 0x0050) rec_video_format += 0x0010;} else
+	if(rec_setting_to_change == 4) {rec_audio_format += 0x1000; if((rec_audio_format & 0xF000) > 0x2000) rec_audio_format &= 0x0FFF;} else
+	if(rec_setting_to_change == 5) {rec_audio_format += 0x0001; if((rec_audio_format & 0x000F) > 0x0002) {rec_audio_format += 0x0004; if((rec_audio_format & 0x000F) > 0x0009) rec_audio_format &= 0xFFF0;}}
+
+	show_rec_format(msg);
 }
 
 static bool rec_start(const char *param)

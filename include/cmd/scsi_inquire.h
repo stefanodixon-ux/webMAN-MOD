@@ -44,7 +44,7 @@ static void get_bdvd_info(char *dump_path)
 	// open Blu Ray Drive
 	uint32_t fd;
 	int ret = sys_storage_open(BDVD_DRIVE, 0, &fd, 0);
-	if(ret != 0)
+	if(ret) // ret != 0
 	{
 		//printf("sys_storage_open failed (0x%x)...\n", ret);
 		return;
@@ -55,7 +55,7 @@ static void get_bdvd_info(char *dump_path)
 
 	// inquiry command
 	ret = ps3rom_lv2_get_inquiry(fd, buf);
-	if(ret != 0)
+	if(ret) // ret != 0
 	{
 		//printf("sys_storage_send_device_command failed (0x%x)...\n", ret);
 		return;

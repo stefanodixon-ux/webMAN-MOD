@@ -819,7 +819,7 @@ int snprintf(char *buffer, size_t len, const char *fmt, ...)
 	va_end(args);
 	return i;
 }
-
+/*
 #define PRINTF_MAX	128
 
 #ifdef DEBUG_FILE
@@ -870,6 +870,6 @@ int printf(const char *fmt, ...)
 	ttyWrite(1, strBuf, i, &written);
 	return written;
 }
-#endif /* DEBUG_FILE */
-
+#endif // * DEBUG_FILE *
+*/
 //#endif /* DEBUG */

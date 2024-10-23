@@ -8,6 +8,12 @@
 #define ISHEX(a)			(ISDIGIT(a) || BETWEEN('a', LCASE(a), 'f'))
 #define	INT32(a)			(*((u32*)(a)))
 
+extern long int stdc_D14ECE90(const char *str, char **endptr, int base);              // strtol()
+#define strtol stdc_D14ECE90
+
+extern uint64_t stdc_36C067C1(const char *a, char **b, int x);                        // _Stoll
+#define _Stoll stdc_36C067C1
+
 static char h2a(const char hex) // hex byte to ascii char
 {
 	char c = (unsigned char)hex;
@@ -31,7 +37,10 @@ static u8 h2b(const char hex) // hex char to byte
 static u64 convertH(const char *val) // convert hex string to unsigned integer 64bit
 {
 	if(!val || (*val == 0)) return 0;
-
+	
+	char *end;
+	return _Stoll(val, &end, 16);
+/*
 	u64 ret = 0; u8 n = 0, c;
 
 	if(islike(val, "0x")) n = 2;
@@ -48,6 +57,7 @@ static u64 convertH(const char *val) // convert hex string to unsigned integer 6
 	}
 
 	return ret;
+*/
 }
 
 #ifndef LITE_EDITION
@@ -82,15 +92,18 @@ static u16 Hex2Bin(const char *src, char *out)
 static int oct(const char *c)
 {
 	if(!c) return 0;
-
+	
+	char *end;
+	return strtol(c, &end, 8);
+/*
 	int value = 0;
-	if(c)
-		while(ISDIGIT(*c))
-		{
-			value <<= 3;
-			value += (*c - '0'); c++;
-		}
+	while(ISDIGIT(*c))
+	{
+		value <<= 3;
+		value += (*c - '0'); c++;
+	}
 	return value;
+*/
 }
 
 static s64 val(const char *c)
@@ -99,9 +112,12 @@ static s64 val(const char *c)
 
 	if(islike(c, "0x"))
 	{
-		return convertH((char*)c);
+		return convertH(c);
 	}
-
+	
+	char *end;
+	return _Stoll(c, &end, 10);
+/*
 	s64 result = 0;
 	s64 sign = 1;
 
@@ -121,6 +137,7 @@ static s64 val(const char *c)
 		c++;
 	}
 	return(result * sign);
+*/
 }
 
 static u16 get_value(char *value, const char *url, u16 max_size)

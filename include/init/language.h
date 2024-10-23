@@ -263,74 +263,39 @@ static u32 get_system_language(u8 *lang)
 {
 	//u32 val_lang = get_xreg_value("/setting/system/language", 1);
 
+	*lang = 0; //eng-us (default)
+
 	int val_lang = 1;
 	xsettings()->GetSystemLanguage(&val_lang);
 
-	const int ids[] = {4, 0, 3, 1, 2, 5, 6, 7, 18, 17, 19, 19, 0, 0, 20, 0, 9, 6};
+	if(val_lang < 0) return val_lang;
 
-	if(val_lang < 18) *lang = ids[val_lang]; else *lang = 0;
+	const u8 ids[] = {4, 0, 3, 1, 2, 5, 6, 7, 18, 17, 19, 19, 0, 0, 20, 0, 9, 6};
+
+	if(val_lang < (int)sizeof(ids)) *lang = ids[val_lang];
 
 	return val_lang;
 /*
-	switch(val_lang)
-	{
-		case 0x0:
-			*lang = 4;		//ger;
-			break;
-		//case 0x1:
-		//	lang = 0;		//eng-us
-		//	break;
-		case 0x2:
-			*lang = 3;		//spa
-			break;
-		case 0x3:
-			*lang = 1;		//fre
-			break;
-		case 0x4:
-			*lang = 2;		//ita
-			break;
-		case 0x5:
-			*lang = 5;		//dut //Olandese
-			break;
-		case 0x6:			//por-por
-		case 0x11:			//por-bra
-			*lang = 6;
-			break;
-		case 0x7:
-			*lang = 7;		//rus
-			break;
-		case 0x8:
-			*lang = 18;		//jap
-			break;
-		case 0x9:
-			*lang = 17;		//kor
-			break;
-		case 0xA:
-		case 0xB:
-			*lang = 19;		//chi-tra / chi-sim
-			break;
-		//case 0xC:
-		//	*lang = 0;		//fin / missing
-		//	break;
-		//case 0xD:
-		//	*lang = 0;		//swe / missing
-		//	break;
-		case 0xE:
-			*lang = 20;		//dan
-			break;
-		//case 0xF:
-		//	*lang = 0;		//nor / missing
-		//	break;
-		case 0x10:
-			*lang = 9;		//pol
-			break;
-		//case 0x12:
-		//	*lang = 0;		//eng-uk
-		//	break;
-		default:
-			*lang = 0;
-			break;
-	}
+	*lang = 0;	//eng-us (default)
+	if(val_lang == 0x0)  *lang = 4;  //ger;
+//	if(val_lang == 0x1)  *lang = 0;  //eng-us
+	if(val_lang == 0x2)  *lang = 3;  //spa
+	if(val_lang == 0x3)  *lang = 1;  //fre
+	if(val_lang == 0x4)  *lang = 2;  //ita
+	if(val_lang == 0x5)  *lang = 5;  //dut //Olandese
+	if(val_lang == 0x6)  *lang = 6;  //por-por
+	if(val_lang == 0x7)  *lang = 7;  //rus
+	if(val_lang == 0x8)  *lang = 18; //jap
+	if(val_lang == 0x9)  *lang = 17; //kor
+	if(val_lang == 0xA)  *lang = 19; //chi-tra / chi-sim
+	if(val_lang == 0xB)  *lang = 19; //chi-tra / chi-sim
+//	if(val_lang == 0xC)  *lang = 0;  //fin / missing
+//	if(val_lang == 0xD)  *lang = 0;  //swe / missing
+	if(val_lang == 0xE)  *lang = 20; //dan
+//	if(val_lang == 0xF)  *lang = 0;  //nor / missing
+	if(val_lang == 0x10) *lang = 9;  //pol
+	if(val_lang == 0x11) *lang = 6;  //por-bra
+//	if(val_lang == 0x12) *lang = 0;  //eng-uk
 */
 }
 
@@ -574,10 +539,11 @@ static void update_language(void)
 	//if(lang == 21) id = 23; // cz
 	//if(  id == LANG_CUSTOM) return;
 
-	const int ids[] = {1, 2, 5, 3, 4, 6, 7, 8, 24, 16, 25, 1, 1, 1, 19, 21, 11, 9, 0, 10, 14, 23};
+	const u8 ids[] = {1, 2, 5, 3, 4, 6, 7, 8, 24, 16, 25, 1, 1, 1, 19, 21, 11, 9, 0, 10, 14, 23};
 
-	if(lang > 21) return;
-
-	if(ids[lang] != 1) sprintf(TITLE_XX, "TITLE_%02i", ids[lang]);
+	if(lang < sizeof(ids) && ids[lang] != 1)
+	{
+		sprintf(TITLE_XX, "TITLE_%02i", ids[lang]);
+	}
 }
 #endif //#ifndef ENGLISH_ONLY

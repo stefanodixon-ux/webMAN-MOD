@@ -591,22 +591,28 @@ no_icon0:
 
 	//show the default icon by type
 	{
-		sprintf(icon, "%s/%s", param + (IS_NET ? 0 : 6), file);
+		default_icon = iPS3;
 
-			 if(strstr(icon, "PSX")) //if(strstr(param, "/PSX") || !extcmp(file, ".ntfs[PSXISO]", 13))
-			default_icon = iPSX;
-		else if(strstr(icon, "PS2")) //if(strstr(param, "/PS2ISO") || is_BIN_ENC(param) || !extcmp(file, ".ntfs[PS2ISO]", 13))
-			default_icon = iPS2;
-		else if(strstr(icon, "PSP")) //if(strstr(param, "/PSPISO") || strstr(param, "/ISO/") || !extcmp(file, ".ntfs[PSPISO]", 13))
-			default_icon = iPSP;
+		flen = sprintf(icon, "%s/%s", param + (IS_NET ? 0 : 6), file);
+
+		char *ps = strstr(icon, "PS");
+		if(ps)
+		{
+				 if(strstr(ps, "PSX")) //if(strstr(param, "/PSX") || !extcmp(file, ".ntfs[PSXISO]", 13))
+				default_icon = iPSX;
+			else if(strstr(ps, "PS2")) //if(strstr(param, "/PS2ISO") || is_BIN_ENC(param) || !extcmp(file, ".ntfs[PS2ISO]", 13))
+				default_icon = iPS2;
+			else if(strstr(ps, "PSP")) //if(strstr(param, "/PSPISO") || strstr(param, "/ISO/") || !extcmp(file, ".ntfs[PSPISO]", 13))
+				default_icon = iPSP;
+		}
+		else if(strstr(param, "/ROMS")) //if(strstr(param, "/ROMS"))
+			default_icon = iROM;
+		else if(strstr(param, "/GAME")) //if(strstr(param, "/GAMES") || strstr(param, "/GAMEZ") || strstr(param, "/GAMEI"))
+			default_icon = iPS3;
 		else if(strstr(icon, "DVD")) //if(strstr(param, "/DVDISO") || !extcmp(file, ".ntfs[DVDISO]", 13))
 			default_icon = iDVD;
 		else if(strstr(icon, "BDISO")) //if(strstr(param, "/BDISO") || !extcmp(file, ".ntfs[BDISO]", 13))
 			default_icon = iBDVD;
-		else if(strstr(icon, "/ROMS"))
-			default_icon = iROM;
-		else
-			default_icon = iPS3;
 	}
 
 	if(!HAS(icon))
