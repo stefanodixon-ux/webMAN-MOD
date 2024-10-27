@@ -602,7 +602,7 @@ static void copy_rom_media(const char *src_path)
 	concat2(dst_path, PKGLAUNCH_DIR, "/PS3_GAME/PARAM.SFO");
 	patch_file(dst_path, title, 0x378, 0x80);
 
-	const char *PS3_GAME[2] = { "/PS3_GAME", ""};
+	const char *PS3_GAME[2] = { "/PS3_GAME/", "/" };
 
 	char *ext  = strrchr(++name, '.');
 	if(ext)
@@ -610,7 +610,7 @@ static void copy_rom_media(const char *src_path)
 		for(u8 p = 0; p < 2; p++)
 		{
 			// copy rom icon to ICON0.PNG
-			concat_path2(dst_path, PKGLAUNCH_DIR, PS3_GAME[p], "/ICON0.PNG");
+			concat3(dst_path, PKGLAUNCH_DIR, PS3_GAME[p], "ICON0.PNG");
 			{strcpy(ext, ".png"); if(file_exists(src_path)) {file_copy(src_path, dst_path);} else
 			{strcpy(ext, ".PNG"); if(file_exists(src_path)) {file_copy(src_path, dst_path);} else
 			{
@@ -623,10 +623,10 @@ static void copy_rom_media(const char *src_path)
 
 			strcpy(path, src_path); char *path_ = get_filename(path) + 1;
 
-			const char *media[5] = {"/PIC0.PNG", "/PIC1.PNG", "/PIC2.PNG", "/SND0.AT3", "/ICON1.PAM"};
+			const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
 			for(u8 i = 0; i < 5; i++)
 			{
-				concat_path2(dst_path, PKGLAUNCH_DIR, PS3_GAME[p], media[i]); cellFsUnlink(dst_path);
+				concat3(dst_path, PKGLAUNCH_DIR, PS3_GAME[p], media[i]); cellFsUnlink(dst_path);
 				strcpy(ext + 1, media[i]);
 				if(file_exists(src_path))
 					file_copy(src_path, dst_path);

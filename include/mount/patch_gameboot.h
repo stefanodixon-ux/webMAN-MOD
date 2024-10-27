@@ -77,16 +77,16 @@ static void patch_gameboot(u8 boot_type)
 			{
 				map_patched_modules();
 
-				sprintf(path, "%s/%s_boot_stereo.ac3", WM_GAMEBOOT_PATH, id);
+				concat_path2(path, WM_GAMEBOOT_PATH, id, "_boot_stereo.ac3");
 
 				const char *snd = file_exists(path) ? path : NULL;
 				sys_map_path(GAMEBOOT_MULTI_AC3,  snd);
 				sys_map_path(GAMEBOOT_STEREO_AC3, snd);
 
-				const char *media[6] = {"/PIC0.PNG", "/PIC1.PNG", "/PIC2.PNG", "/SND0.AT3", "/ICON1.PAM", "/ICON0.PNG"};
+				const char *media[6] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM", "ICON0.PNG"};
 				for(u8 i = 0; i < 6; i++)
 				{
-					concat_path2(path, PKGLAUNCH_DIR, "/PS3_GAME", media[i]);
+					concat3(path, PKGLAUNCH_DIR, "/PS3_GAME/", media[i]);
 					if(not_exists(path))
 					{
 						char src_path[40];

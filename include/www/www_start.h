@@ -59,7 +59,7 @@ static void start_www(u64 conn_s_p)
 		check_cover_folders(full_path);
 
 		#ifndef LITE_EDITION
-		// Use system icons if wm_icons don't exist
+		// Use system icons if wm_icons don't exist at /dev_hdd0/tmp/wm_icons/
 		char *icon_path = full_path;
 		for(u8 i = 0; i < 14; i++)
 		{

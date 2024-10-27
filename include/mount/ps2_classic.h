@@ -174,10 +174,10 @@ static bool copy_ps2config_iso(char *entry_name, char *_path)
 static void copy_ps2config(char *config, const char *_path)
 {
 	char config_path[STD_PATH_LEN];
-	size_t len = sprintf(config, "%s.CONFIG", _path); // <name>.BIN.ENC.CONFIG
+	size_t len = concat2(config, _path, ".CONFIG"); // <name>.BIN.ENC.CONFIG
 	strcpy(config_path, config);
 
-	if(not_exists(config) && len > 15) sprintf(config + len - 15, ".CONFIG"); // remove .BIN.ENC
+	if(not_exists(config) && len > 15) strcopy(config + len - 15, ".CONFIG"); // remove .BIN.ENC
 	if(not_exists(config))
 	{
 		char title_id[TITLE_ID_LEN + 1];

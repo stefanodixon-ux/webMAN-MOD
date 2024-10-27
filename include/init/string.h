@@ -81,7 +81,7 @@ static size_t concat(char *dest, const char *src)
 	return _concat(&fast_concat, src) - dest;
 }
 
-static size_t concat2(char *dest, const char *src1, const char *src2)
+static int concat2(char *dest, const char *src1, const char *src2)
 {
 	return sprintf(dest, "%s%s", src1, src2);
 }
@@ -91,12 +91,12 @@ static void concat3(char *dest, const char *src1, const char *src2, const char *
 	sprintf(dest, "%s%s%s", src1, src2, src3);
 }
 
-static size_t concat_path(char *dest, const char *src1, const char *src2)
+static int concat_path(char *dest, const char *src1, const char *src2)
 {
 	return sprintf(dest, "%s/%s", src1, src2);
 }
 
-static size_t concat_path2(char *dest, const char *src1, const char *src2, const char *src3)
+static int concat_path2(char *dest, const char *src1, const char *src2, const char *src3)
 {
 	return sprintf(dest, "%s/%s%s", src1, src2, src3);
 }
