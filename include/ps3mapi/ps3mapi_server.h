@@ -108,7 +108,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 
 	ssend(conn_s_ps3mapi, PS3MAPI_OK_220);
 
-	u8 ip_len = sprintf(ip_address, "%s", inet_ntoa(conn_info.local_adr));
+	u8 ip_len = strcopy(ip_address, inet_ntoa(conn_info.local_adr));
 	for(u8 n = 0; n < ip_len; n++) if(ip_address[n] == '.') ip_address[n] = ',';
 
 	ssend(conn_s_ps3mapi, PS3MAPI_OK_230);
@@ -720,23 +720,19 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 								u32 buf_len = sprintf(buffer, "200 ");
 								{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MODULE_SEGMENTS, (u64)pid, (u64)prx_id, (u64)(u32)&moduleInfo); }
 
-								buf_len += sprintf(buffer + buf_len, "%s|", moduleInfo.name);
-								buf_len += sprintf(buffer + buf_len, "%s|", moduleInfo.filename);
-								buf_len += sprintf(buffer + buf_len, "%i|", moduleInfo.filename_size);
-								buf_len += sprintf(buffer + buf_len, "%i|", moduleInfo.modattribute);
-								buf_len += sprintf(buffer + buf_len, "%i|", moduleInfo.start_entry);
-								buf_len += sprintf(buffer + buf_len, "%i|", moduleInfo.stop_entry);
-
-								buf_len += sprintf(buffer + buf_len, "seg0|%016llX|%016llX|%016llX|%016llX|%016llX",
+								buf_len += sprintf(buffer + buf_len, "%s|%s|%i|%i|%i|%i|",
+									moduleInfo.name, moduleInfo.filename, moduleInfo.filename_size,
+									moduleInfo.modattribute, moduleInfo.start_entry, moduleInfo.stop_entry);
+								buf_len += sprintf(buffer + buf_len, "seg%c|%016llX|%016llX|%016llX|%016llX|%016llX", '0',
 									moduleInfo.segments[0].base, moduleInfo.segments[0].filesz, moduleInfo.segments[0].memsz,
 									moduleInfo.segments[0].index, moduleInfo.segments[0].type);
-								buf_len += sprintf(buffer + buf_len, "seg1|%016llX|%016llX|%016llX|%016llX|%016llX",
+								buf_len += sprintf(buffer + buf_len, "seg%c|%016llX|%016llX|%016llX|%016llX|%016llX", '1',
 									moduleInfo.segments[1].base, moduleInfo.segments[1].filesz, moduleInfo.segments[0].memsz,
 									moduleInfo.segments[1].index, moduleInfo.segments[1].type);
-								buf_len += sprintf(buffer + buf_len, "seg2|%016llX|%016llX|%016llX|%016llX|%016llX",
+								buf_len += sprintf(buffer + buf_len, "seg%c|%016llX|%016llX|%016llX|%016llX|%016llX", '2',
 									moduleInfo.segments[2].base, moduleInfo.segments[2].filesz, moduleInfo.segments[0].memsz,
 									moduleInfo.segments[2].index, moduleInfo.segments[2].type);
-								buf_len += sprintf(buffer + buf_len, "seg3|%016llX|%016llX|%016llX|%016llX|%016llX",
+								buf_len += sprintf(buffer + buf_len, "seg%c|%016llX|%016llX|%016llX|%016llX|%016llX", '3',
 									moduleInfo.segments[3].base, moduleInfo.segments[3].filesz, moduleInfo.segments[0].memsz,
 									moduleInfo.segments[3].index, moduleInfo.segments[3].type);
 

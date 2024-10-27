@@ -47,7 +47,7 @@
 			get_game_info(); snprintf(buffer, 0x200, "%s %s</H2>"
 											 "KLicensee: %s<br>"
 											 "Content ID: %s<br>"
-												 "File: %s<p>",
+											 "File: %s<p>",
 											 _game_TitleID, _game_Title,
 											 kl, (char*)KLIC_CONTENT_ID, (char*)KLIC_PATH);
 		}

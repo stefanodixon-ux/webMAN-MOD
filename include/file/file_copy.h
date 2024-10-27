@@ -406,8 +406,8 @@ static int recursive_folder_copy(const char *path1, char *path2)
 		char source[STD_PATH_LEN];
 		char target[STD_PATH_LEN];
 
-		u16 plen1 = sprintf(source, "%s", path1);
-		u16 plen2 = sprintf(target, "%s", path2);
+		u16 plen1 = strcopy(source, path1);
+		u16 plen2 = strcopy(target, path2);
 
 		while(working)
 		{
@@ -599,7 +599,7 @@ static void copy_rom_media(const char *src_path)
 
 	// patch title name in PARAM.SFO of PKGLAUNCH
 	char dst_path[64];
-	sprintf(dst_path, "%s/PS3_GAME/%s", PKGLAUNCH_DIR, "PARAM.SFO");
+	concat2(dst_path, PKGLAUNCH_DIR, "/PS3_GAME/PARAM.SFO");
 	patch_file(dst_path, title, 0x378, 0x80);
 
 	const char *PS3_GAME[2] = { "/PS3_GAME", ""};
@@ -610,11 +610,11 @@ static void copy_rom_media(const char *src_path)
 		for(u8 p = 0; p < 2; p++)
 		{
 			// copy rom icon to ICON0.PNG
-			sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], "ICON0.PNG");
+			concat_path2(dst_path, PKGLAUNCH_DIR, PS3_GAME[p], "/ICON0.PNG");
 			{strcpy(ext, ".png"); if(file_exists(src_path)) {file_copy(src_path, dst_path);} else
 			{strcpy(ext, ".PNG"); if(file_exists(src_path)) {file_copy(src_path, dst_path);} else
 			{
-				sprintf(path, "%s/%s", WMTMP, name);
+				concat_path(path, WMTMP, name);
 				char *ext2 = strrchr(path, '.');
 				{strcpy(ext2, ".png"); if(file_exists(path)) {file_copy(path, dst_path);} else
 				{strcpy(ext2, ".PNG"); if(file_exists(path)) {file_copy(path, dst_path);} else
@@ -623,10 +623,10 @@ static void copy_rom_media(const char *src_path)
 
 			strcpy(path, src_path); char *path_ = get_filename(path) + 1;
 
-			const char *media[5] = {"PIC0.PNG", "PIC1.PNG", "PIC2.PNG", "SND0.AT3", "ICON1.PAM"};
+			const char *media[5] = {"/PIC0.PNG", "/PIC1.PNG", "/PIC2.PNG", "/SND0.AT3", "/ICON1.PAM"};
 			for(u8 i = 0; i < 5; i++)
 			{
-				sprintf(dst_path, "%s%s/%s", PKGLAUNCH_DIR, PS3_GAME[p], media[i]); cellFsUnlink(dst_path);
+				concat_path2(dst_path, PKGLAUNCH_DIR, PS3_GAME[p], media[i]); cellFsUnlink(dst_path);
 				strcpy(ext + 1, media[i]);
 				if(file_exists(src_path))
 					file_copy(src_path, dst_path);

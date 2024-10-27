@@ -282,7 +282,7 @@ static bool do_custom_combo(const char *filename)
 	char combo_file[128];
 
 	if(*filename == '/')
-		snprintf(combo_file, sizeof(combo_file), "%s", filename);
+		strncopy(combo_file, sizeof(combo_file), filename);
 	else
 		snprintf(combo_file, sizeof(combo_file), "%s%s", WM_CUSTOM_COMBO, filename); // use default path
  #else

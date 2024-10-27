@@ -328,12 +328,12 @@ static void language(const char *key_name, char *label, const char *default_str)
 		char lang_path[48];
 
 		if(lang_roms == LANG_CUSTOM)
-			snprintf(lang_path, 48, "%s/gamelist.txt", default_str);
+			snprintf(lang_path, sizeof(lang_path), "%s/gamelist.txt", default_str);
 		else if(lang_roms)
 		{
-			sprintf(lang_path, "%s/LANG_ROMS.TXT", WM_LANG_PATH);
+			concat_path(lang_path, WM_LANG_PATH, "LANG_ROMS.TXT");
 			if(not_exists(lang_path))
-				sprintf(lang_path, "%s/LANG_EMUS.TXT", WM_LANG_PATH);
+				concat_path(lang_path, WM_LANG_PATH, "LANG_EMUS.TXT");
 		}
 		else
 		{
@@ -419,7 +419,7 @@ static void update_language(void)
 	*COVERS_PATH = NULL;
 
 	// initialize variables with default values
-	sprintf(STR_SETTINGSUPD, "%s%s", "Settings updated.<br>", "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
+	concat2(STR_SETTINGSUPD, "Settings updated.<br>", "<br>Click <a href=\"/restart.ps3\">here</a> to restart your PLAYSTATION®3 system.");
 
 	{
 		language("STR_FILES", STR_FILES, "Files");

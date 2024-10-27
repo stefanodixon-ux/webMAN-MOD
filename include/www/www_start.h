@@ -65,18 +65,18 @@ static void start_www(u64 conn_s_p)
 		{
 			if(not_exists(wm_icons[i]))
 			{	// Check /dev_flash/vsh/resource/explore/icon/
-				sprintf(icon_path, VSH_RESOURCE_DIR "explore/icon/%s", wm_icons[i] + 23); strcpy(wm_icons[i], icon_path);
+				concat_path(icon_path, VSH_RESOURCE_DIR "explore/icon", wm_icons[i] + 23); strcpy(wm_icons[i], icon_path);
 				if(file_exists(icon_path)) continue;
 
 				// If not found, use /dev_flash/vsh/resource/explore/user/
 				char *icon = wm_icons[i] + 32;
-				if(i == gPS3 || i == iPS3)	sprintf(icon, "user/024.png"); else // ps3
-				if(i == gPSX || i == iPSX)	sprintf(icon, "user/026.png"); else // psx
-				if(i == gPS2 || i == iPS2)	sprintf(icon, "user/025.png"); else // ps2
-				if(i == gPSP || i == iPSP)	sprintf(icon, "user/022.png"); else // psp
-				if(i == gDVD || i == iDVD)	sprintf(icon, "user/023.png"); else // dvd
-				if(i == iROM || i == iBDVD)	strcpy(wm_icons[i], wm_icons[iPS3]); else
-											sprintf(icon + 5, "icon_home.png"); // setup / eject
+				if(i == gPS3 || i == iPS3)	strcopy(icon, "user/024.png"); else // ps3
+				if(i == gPSX || i == iPSX)	strcopy(icon, "user/026.png"); else // psx
+				if(i == gPS2 || i == iPS2)	strcopy(icon, "user/025.png"); else // ps2
+				if(i == gPSP || i == iPSP)	strcopy(icon, "user/022.png"); else // psp
+				if(i == gDVD || i == iDVD)	strcopy(icon, "user/023.png"); else // dvd
+				if(i == iROM || i == iBDVD)	strcopy(wm_icons[i], wm_icons[iPS3]); else
+											strcopy(icon + 5, "icon_home.png"); // setup / eject
 			}
 		}
 		#endif

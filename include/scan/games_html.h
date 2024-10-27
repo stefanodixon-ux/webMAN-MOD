@@ -135,7 +135,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 	if(IS_PS3_TYPE) //PS3 games only (0="GAMES", 1="GAMEZ", 2="PS3ISO", 10="video", 11="GAMEI")
 	{
 		if(data[v3_entry].is_directory)
-			sprintf(local_path, WMTMP "/%s.SFO", data[v3_entry].name);
+			concat_path2(local_path, WMTMP, data[v3_entry].name, ".SFO");
 		else
 			{get_name(local_path, data[v3_entry].name, GET_WMTMP); strcat(local_path, ".SFO");}
 
@@ -144,9 +144,9 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			if(data[v3_entry].is_directory)
 			{
 				if(IS_GAMEI_FOLDER)
-					sprintf(remote_path, "%s/%s/PARAM.SFO", param, data[v3_entry].name);
+					concat_path2(remote_path, param, data[v3_entry].name, "/PARAM.SFO");
 				else
-					sprintf(remote_path, "%s/%s/PS3_GAME/PARAM.SFO", param, data[v3_entry].name);
+					concat_path2(remote_path, param, data[v3_entry].name, "/PS3_GAME/PARAM.SFO");
 
 				copy_net_file(local_path, remote_path, ns);
 
@@ -156,7 +156,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			else
 			{
 				get_name(tempstr, data[v3_entry].name, NO_EXT);
-				sprintf(remote_path, "%s/%s.SFO", param, tempstr);
+				concat_path2(remote_path, param, tempstr, ".SFO");
 			}
 			copy_net_file(local_path, remote_path, ns);
 		}
@@ -200,7 +200,7 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 			if(not_exists(icon)) *icon = NULL;
 		}
 
-		sprintf(data[v3_entry].name, "%s", tempstr + strlen(param) + 1);
+		strcopy(data[v3_entry].name, tempstr + strlen(param) + 1);
 	}
 
 	add_title_id(title, title_id);
@@ -216,9 +216,11 @@ static int add_net_game(int ns, netiso_read_dir_result_data *data, int v3_entry,
 
 static void add_query_html(char *buffer, const char *param)
 {
-	char html[64], label[8];
-	sprintf(label, "%s", param); to_upper(label);
-	sprintf(html, "[<a href=\"/index.ps3?%s\">%s</a>] ", param, label); concat(buffer, html);
+	char html[64];
+	sprintf(html,"[<a href=\"/index.ps3?%s\">%s</a>] ",
+														param,
+														to_upper(strfmt("%s", param))); // label
+	concat(buffer, html);
 }
 
 static int check_drive(u8 f0)
@@ -313,14 +315,14 @@ static void set_sort_key(char *skey, char *title, int key, u8 subfolder, u8 f1)
 	{
 	#ifdef LAUNCHPAD
 		if(webman_config->launchpad_grp || (key ==  HTML_KEY))
-			snprintf(skey, HTML_KEY_LEN + 1, "%s", title);
+			strncopy(skey, HTML_KEY_LEN + 1, title);
 		else
 		{
 			char group = IS_BDISO ? id_VIDEO : get_default_icon_by_type(f1);
 			snprintf(skey, HTML_KEY_LEN + 1, "%c%s", group, title);
 		}
 	#else
-		snprintf(skey, HTML_KEY_LEN + 1, "%s", title);
+		strncopy(skey, HTML_KEY_LEN + 1, title);
 	#endif
 	}
 	else
@@ -429,9 +431,9 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 		else
 		{
 			if(li == LANG_CUSTOM)
-				sprintf(param, "%s/%s%s", drives[f0], paths[f1], AUTOPLAY_TAG);
+				concat_path2(param, drives[f0], paths[f1], AUTOPLAY_TAG);
 			else
-				sprintf(param, "%s/%s%s", drives[f0], paths[f1], SUFIX(uprofile));
+				concat_path2(param, drives[f0], paths[f1], SUFIX(uprofile));
 
 			// drives: 1="/dev_usb000", 2="/dev_usb001", 3="/dev_usb002", 4="/dev_usb003", 5="/dev_usb006", 6="/dev_usb007", 13="/dev_sd", 14="/dev_ms", 15="/dev_cf"
 			if(f0 && isDir(param) == false)
@@ -736,8 +738,8 @@ list_games:
 
 				//if(IS_PS2ISO && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
 				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
-				if(IS_ISO_DIR     ) {if(is_net) continue; else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH1); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_ISO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH1 : "ISO");}}
-				if(IS_VIDEO_FOLDER) {if(is_net) continue; else if(IS_HDD0) strcpy(paths[id_VIDEO], "video"); else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH2); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_VIDEO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH2 : "GAMES_DUP");}}
+				if(IS_ISO_DIR     ) {if(is_net) continue; else {concat_path(param, drives[f0], CUSTOM_PATH1); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_ISO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH1 : "ISO");}}
+				if(IS_VIDEO_FOLDER) {if(is_net) continue; else if(IS_HDD0) strcpy(paths[id_VIDEO], "video"); else {concat_path(param, drives[f0], CUSTOM_PATH2); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_VIDEO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH2 : "GAMES_DUP");}}
 				if(IS_NTFS) {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
 #ifdef NET_SUPPORT
@@ -817,7 +819,7 @@ list_games:
 												&& !strcasestr(param, filter_name)
 												&& !strcasestr(data[v3_entry].name, filter_name)) {v3_entry++; continue;}
 
-						if(urlenc(tempstr, icon)) snprintf(icon, STD_PATH_LEN, "%s", tempstr);
+						if(urlenc(tempstr, icon)) strncopy(icon, STD_PATH_LEN, tempstr);
 
 						set_sort_key(new_entry->key, title, HTML_KEY - launchpad_mode, 0, f1); // sort key
 
@@ -890,12 +892,12 @@ next_html_entry:
 								if(!webman_config->gamei) continue;
 
 								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
-								sprintf(param_sfo, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
+								concat_path2(param_sfo, param, entry.entry_name.d_name, "/PARAM.SFO");
 							}
 							else
 							#endif
 							{
-								sprintf(param_sfo, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
+								concat_path2(param_sfo, param, entry.entry_name.d_name, "/PS3_GAME/PARAM.SFO");
 								check_ps3_game(param_sfo);
 							}
 
@@ -940,7 +942,7 @@ next_html_entry:
 
 							title[80] = '\0'; // truncate title name
 
-							if(urlenc(tempstr, icon)) snprintf(icon, STD_PATH_LEN, "%s", tempstr);
+							if(urlenc(tempstr, icon)) strncopy(icon, STD_PATH_LEN, tempstr);
 
 							set_sort_key(new_entry->key, title, HTML_KEY - launchpad_mode, subfolder, f1); // sort key
 
@@ -1069,8 +1071,8 @@ next_html_entry:
 			sortable = file_exists(JQUERY_LIB_JS) && file_exists(JQUERY_UI_LIB_JS);
 			if(sortable)
 			{	// add external jquery libraries
-				sprintf(html, SCRIPT_SRC_FMT, JQUERY_LIB_JS); _concat(&sout, html);
-				sprintf(html, SCRIPT_SRC_FMT, JQUERY_UI_LIB_JS); _concat(&sout, html);
+				_concat(&sout, strfmt(SCRIPT_SRC_FMT, JQUERY_LIB_JS));
+				_concat(&sout, strfmt(SCRIPT_SRC_FMT, JQUERY_UI_LIB_JS));
 				_concat(&sout, "<script>$(function(){$(\"#mg\").sortable();});</script>");
 			}
 			#endif
@@ -1080,7 +1082,7 @@ next_html_entry:
 		{
 			if(file_exists(GAMES_SCRIPT_JS))
 			{
-				sprintf(html, SCRIPT_SRC_FMT, GAMES_SCRIPT_JS); _concat(&sout, html);
+				_concat(&sout, strfmt(SCRIPT_SRC_FMT, GAMES_SCRIPT_JS));
 			}
 			add_html(dat_GET_ICON_SIZE, 0, sout.str, html);
 		}
@@ -1143,7 +1145,7 @@ next_html_entry:
 			char *mount_path = line_entry[0].path + HTML_KEY_LEN;
 			get_flag(mount_path, "?random=");
 			get_flag(mount_path, "\">");
-			sprintf(buffer, "%s%s", "/mount.ps3", mount_path);
+			concat2(buffer, "/mount.ps3", mount_path);
 		}
 		else if(mobile_mode)
 		{

@@ -61,16 +61,16 @@ static void get_cobra_version(char *cfw_info)
 	if(!cobra_version) {char *cfw = strchr(cfw_info, ' '); *cfw = NULL;}
 #elif defined(DEX_SUPPORT)
 	#if defined(DECR_SUPPORT)
-		sprintf(cfw_info, "%s", IS_DEH ? "DECR" : dex_mode ? "DEX" : "CEX");
+		strcopy(cfw_info, IS_DEH ? "DECR" : dex_mode ? "DEX" : "CEX");
 	#else
-		sprintf(cfw_info, "%s", dex_mode ? "DEX" : "CEX");
+		strcopy(cfw_info, dex_mode ? "DEX" : "CEX");
 	#endif
 	if(pex_mode) *cfw_info = 'P';
 #else
-		sprintf(cfw_info, "CEX");
+		strcopy(cfw_info, "CEX");
 #endif
 #ifndef COBRA_ONLY
-		sprintf(cfw_info, " nonCobra");
+		strcopy(cfw_info, " nonCobra");
 #endif
 
 	// noBD LV1 4.75 - 4.91
@@ -183,7 +183,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		if(op == 19) // temp
 			{char *p = strchr(msg, '\n'); _memset(p, len-30); return;}
 		if(op == 20) // fan mode
-			{sprintf(msg, "%s", fan_mode + 3); return;}
+			{strcopy(msg, fan_mode + 3); return;}
 		#endif
 		if(op == 21) // Startup time
 			sprintf(msg, "%s: %s%02d:%02d:%02d", "Startup", days, hh, mm, ss);
@@ -244,7 +244,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			if(nolabel)
 			{
 				char *sep = strchr(msg, ':');
-				if(sep) sprintf(msg, "%s", sep + 2);
+				if(sep) strcopy(msg, sep + 2);
 			}
 			else if(op == 34) replace_char(msg, ':', 'D');
 			return;
@@ -333,9 +333,9 @@ static void qr_code(char *html, const char *url, const char *prefix, bool small,
 		len = snprintf(text, 800, "http://%s%s", ip, url);
 	}
 	else if(*url == '?')
-		len = snprintf(text, 800, "%s", url + 1);
+		len = strncopy(text, 800, url + 1);
 	else
-		len = snprintf(text, 800, "%s", url);
+		len = strncopy(text, 800, url);
 
 	strcpy(text + len, "\");</script><br>");
 
@@ -343,7 +343,7 @@ static void qr_code(char *html, const char *url, const char *prefix, bool small,
 		concat(buffer, html);
 	else
 	{
-		sz = sprintf(buffer, "%s", html);
+		sz = strcopy(buffer, html);
 
 		// add caption
 		text[len] = 0;

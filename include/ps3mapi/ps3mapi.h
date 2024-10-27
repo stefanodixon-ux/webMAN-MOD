@@ -263,7 +263,7 @@ static void start_vsh_gui(bool vsh_menu)
 	unload_vsh_gui();
 
 	char plugin_path[40];
-	sprintf(plugin_path, "%s/%s.sprx", WM_RES_PATH, vsh_menu ? "wm_vsh_menu" : "slaunch");
+	concat_path2(plugin_path, WM_RES_PATH, vsh_menu ? "wm_vsh_menu" : "slaunch", ".sprx");
 	load_vsh_gui(plugin_path);
 }
 #endif
@@ -831,7 +831,7 @@ static void ps3mapi_getmem(char *buffer, char *html, const char *param)
 		{
 			find = strstr(param, "find=") + 5;
 			char sfind[0x60], *mask = addr_tmp;
-			u8 len = snprintf(sfind, sizeof(sfind), "%s", addr_tmp);
+			u8 len = strncopy(sfind, sizeof(sfind), addr_tmp);
 
 			// search hex: 0xAABBCC112233
 			if(isHEX(addr_tmp))
@@ -1074,7 +1074,7 @@ static void ps3mapi_setmem(char *buffer, char *html, const char *param)
 					if(isHEX(val_tmp))
 						length = Hex2Bin(val_tmp, value);
 					else
-						length = sprintf(value, "%s", val_tmp);
+						length = strcopy(value, val_tmp);
 				}
 			}
 		}
@@ -1311,7 +1311,7 @@ static void add_plugins_list(char *buffer, char *html, u8 is_vsh)
 				{
 					if(!extcmp(entry_name, ext, ext_len))
 					{
-						sprintf(html + plen, "%s", entry_name); concat(buffer, html); if(++cnt > 450) break;
+						strcopy(html + plen, entry_name); concat(buffer, html); if(++cnt > 450) break;
 					}
 				}
 				cellFsClosedir(fd);
@@ -1339,10 +1339,10 @@ static void ps3mapi_vshplugin(char *buffer, char *html, const char *param)
 			sprintf(tmp_filename, "/dev_hdd0/boot_plugins.txt"); if(dex_mode) sprintf(tmp_filename + 22, "_dex.txt");
 			switch (boot_mode)
 			{
-				case 1: sprintf(tmp_filename + 10, "mamba_plugins.txt"); break;
-				case 2: sprintf(tmp_filename + 10, "prx_plugins.txt");   break;
-				case 3: sprintf(tmp_filename + 10, "game/PRXLOADER/USRDIR/plugins.txt"); break;
-				case 4: sprintf(tmp_filename + 22, "_nocobra.txt"); if(dex_mode) sprintf(tmp_filename + 30, "_dex.txt"); break;
+				case 1: strcopy(tmp_filename + 10, "mamba_plugins.txt"); break;
+				case 2: strcopy(tmp_filename + 10, "prx_plugins.txt");   break;
+				case 3: strcopy(tmp_filename + 10, "game/PRXLOADER/USRDIR/plugins.txt"); break;
+				case 4: strcopy(tmp_filename + 22, "_nocobra.txt"); if(dex_mode) sprintf(tmp_filename + 30, "_dex.txt"); break;
 			}
 
 			sprintf(html, "<p><a href=\"%s\" style=\"padding:8px;background:#900;border-radius:8px;\">%s</a><p>", tmp_filename, tmp_filename); concat(buffer, html);
@@ -1435,17 +1435,17 @@ static void ps3mapi_vshplugin(char *buffer, char *html, const char *param)
 	}
 
 	sprintf(html, "<tr><td colspan=4><p>%s > "	HTML_BUTTON_FMT
-													HTML_BUTTON_FMT
-													HTML_BUTTON_FMT
-													HTML_BUTTON_FMT
-													HTML_BUTTON_FMT "</tr>", STR_SAVE,
-		HTML_BUTTON, "boot_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
+												HTML_BUTTON_FMT
+												HTML_BUTTON_FMT
+												HTML_BUTTON_FMT
+												HTML_BUTTON_FMT "</tr>", STR_SAVE,
+		HTML_BUTTON, "boot_plugins.txt",		HTML_ONCLICK, "/vshplugin.ps3mapi?s=0",
 		HTML_BUTTON, dex_mode ?
 					"boot_plugins_nocobra_dex.txt" :
-					"boot_plugins_nocobra.txt",		HTML_ONCLICK, "/vshplugin.ps3mapi?s=4",
-		HTML_BUTTON, "mamba_plugins.txt",			HTML_ONCLICK, "/vshplugin.ps3mapi?s=1",
-		HTML_BUTTON, "prx_plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=2",
-		HTML_BUTTON, "plugins.txt",					HTML_ONCLICK, "/vshplugin.ps3mapi?s=3"); concat(buffer, html);
+					"boot_plugins_nocobra.txt",	HTML_ONCLICK, "/vshplugin.ps3mapi?s=4",
+		HTML_BUTTON, "mamba_plugins.txt",		HTML_ONCLICK, "/vshplugin.ps3mapi?s=1",
+		HTML_BUTTON, "prx_plugins.txt",			HTML_ONCLICK, "/vshplugin.ps3mapi?s=2",
+		HTML_BUTTON, "plugins.txt",				HTML_ONCLICK, "/vshplugin.ps3mapi?s=3"); concat(buffer, html);
 
 	add_plugins_list(buffer, html, 0);
 
@@ -1470,7 +1470,7 @@ static void ps3mapi_kernelplugin(char *buffer, char *html, const char *param)
 		if(pos)
 		{
 			u8 boot_mode = get_valuen(pos, "?s=", 0, 4);
-			sprintf(tmp_name, "/dev_hdd0/boot_plugins_kernel.txt");
+			strcopy(tmp_name, "/dev_hdd0/boot_plugins_kernel.txt");
 			if(boot_mode)
 			{
 				sprintf(tmp_name + 29, dex_mode ? "_nocobra_dex.txt" : "_nocobra.txt");

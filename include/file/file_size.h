@@ -65,7 +65,7 @@ static size_t size_link(const char *source)
 			if(!islike(usrdir + 8, "EBOOT.BIN"))
 			{
 				char game_path[MAX_PATH_LEN];
-				sprintf(game_path, "%s%s%s", _HDD0_GAME_DIR, stitle_id, usrdir);
+				concat3(game_path, _HDD0_GAME_DIR, stitle_id, usrdir);
 				if(file_size(game_path) == size)
 				{
 					if(copy_aborted) return 0;
@@ -132,7 +132,7 @@ static u64 folder_size(const char *path)
 		char *entry_name = entry.entry_name.d_name;
 
 		char source[STD_PATH_LEN];
-		u16 plen1 = sprintf(source, "%s", path);
+		u16 plen1 = strcopy(source, path);
 		char *psource = source + plen1;
 
 		while(working)
@@ -146,8 +146,9 @@ static u64 folder_size(const char *path)
 #endif
 			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
 
-			if(copy_aborted) break;
 			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == '\0')) continue;
+
+			if(copy_aborted) break;
 
 			sprintf(psource, "/%s", entry_name); if(do_chmod) cellFsChmod(source, new_mode);
 
@@ -172,3 +173,29 @@ static u64 folder_size(const char *path)
 	return dir_size;
 }
 #endif // #ifdef COPY_PS3
+
+static int folder_count(const char *path, s8 max_items)
+{
+	int fd;
+
+	int dir_items = 0;
+
+	if(cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
+	{
+		CellFsDirectoryEntry entry; u32 read_f;
+		char *entry_name = entry.entry_name.d_name;
+
+		while(working)
+		{
+			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_f) || !read_f) break;
+
+			if(entry_name[0] == '.') continue;
+
+			if(++dir_items == max_items) break; // max_items: 1=is_dir_empty, 2=has_one_user_dir (2 or more), -1=folder count
+		}
+
+		cellFsClosedir(fd);
+	}
+
+	return dir_items;
+}

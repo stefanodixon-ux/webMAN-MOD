@@ -15,13 +15,13 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 							(res_id == 9) ? "/dev_hdd0/tmp/system_plugin": // 9
 											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
 
-	const char *res_path =  (res_id == 1) ? "/dev_flash/vsh/resource/qgl/earth.qrc" :
-							(res_id == 2) ? "/dev_flash/vsh/resource/qgl/canyon.qrc":
-							(res_id == 3) ? "/dev_flash/vsh/resource/qgl/lines.qrc" :
-							(res_id == 4) ? "/dev_flash/vsh/resource/coldboot_stereo.ac3":
-							(res_id == 8) ? "/dev_flash/vsh/resource/xmb_plugin_normal.rco":
-							(res_id == 9) ? "/dev_flash/vsh/resource/system_plugin.rco":
-											"/dev_flash/vsh/resource/impose_plugin.rco"; // 7
+	const char *res_path =  (res_id == 1) ? "qgl/earth.qrc" :
+							(res_id == 2) ? "qgl/canyon.qrc":
+							(res_id == 3) ? "qgl/lines.qrc" :
+							(res_id == 4) ? "coldboot_stereo.ac3":
+							(res_id == 8) ? "xmb_plugin_normal.rco":
+							(res_id == 9) ? "system_plugin.rco":
+											"impose_plugin.rco"; // 7
 
 	if(isDir(hdd_path))
 	{
@@ -91,7 +91,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 			}
 			else if(res_id)
 			{
-				sys_map_path(res_path, param);
+				sys_map_path(strfmt("%s%s", VSH_RESOURCE_DIR, res_path), param);
 				if(res_id == 4)
 					sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
 				if(res_id == 8)
@@ -117,7 +117,7 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 			if(res_id == 5)
 				webman_config->resource_id[6] = 0; // reset last selected theme
 			else
-				strcpy(param, res_path);
+				concat2(param, VSH_RESOURCE_DIR, res_path);
 			unmap_path(param);
 		}
 

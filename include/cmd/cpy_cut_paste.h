@@ -4,7 +4,7 @@
 		// /cut.ps3<path>  stores <path> in <cp_path> clipboard buffer for move with /paste.ps3 (cp_mode = 2)
 
 		cp_mode = islike(param, "/cut.ps3") ? CP_MODE_MOVE : CP_MODE_COPY;
-		snprintf(cp_path, STD_PATH_LEN, "%s", param + 8);
+		strncopy(cp_path, STD_PATH_LEN, param + 8);
 		check_path_alias(cp_path);
 		if(not_exists(cp_path) && !islike(cp_path, "/net"))
 			cp_mode = CP_MODE_NONE;

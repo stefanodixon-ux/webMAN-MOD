@@ -6,6 +6,7 @@
 
 #define COBRA_ONLY		// comment out for ccapi/non-cobra release
 #define REX_ONLY		// shortcuts for REBUG REX CFWs / comment out for usual CFW
+#define FULL_EDITION
 
 #define PS3MAPI			// ps3 manager API & webGUI by _NzV_
 //#define LITE_EDITION	// no ps3netsrv support, smaller memory footprint

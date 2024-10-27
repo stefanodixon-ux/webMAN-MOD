@@ -27,7 +27,7 @@ if(BETWEEN('0', netid, '4'))
 		}
 	}
 
-	size_t len = sprintf(netiso_args.path, "%s", netpath);
+	size_t len = strcopy(netiso_args.path, netpath);
 
 	const char *ext = strrchr(netpath, '.');
 	bool is_iso = ext && strcasestr(ISO_EXTENSIONS, ext);
@@ -133,16 +133,16 @@ if(BETWEEN('0', netid, '4'))
 	else if((islike(netpath, "/GAMES") || islike(netpath, "/GAMEZ") || islike(netpath, "/PS3ISO")) && strchr(netpath + 5, '/'))
 	{
 		mount_unk = netiso_args.emu_mode = EMU_PS3;
-		if(!is_iso) sprintf(netiso_args.path, "/***PS3***%s", netpath);
+		if(!is_iso) concat2(netiso_args.path, "/***PS3***", netpath);
 	}
 	else if(islike(netpath, "/ROMS"))
 	{
 		//netiso_args.emu_mode = EMU_BD;
 		mount_unk = EMU_ROMS;
 
-		sprintf(netiso_args.path, "/***DVD***%s", "/ROMS");
+		concat2(netiso_args.path, "/***DVD***", "/ROMS");
 
-		sprintf(full_path, "/dev_bdvd/%s", netpath + 6);
+		concat2(full_path, "/dev_bdvd/", netpath + 6);
 		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", full_path, SAVE_ALL);
 		copy_rom_media(full_path);
 	}
@@ -214,7 +214,7 @@ retry_net:
 			pspiso = strchr(pspiso + 1, '/');
 			if(pspiso)
 			{
-				sprintf(full_path,  "%s%s", "/dev_bdvd", pspiso);
+				concat2(full_path,  "/dev_bdvd", pspiso);
 				strcpy(_path, full_path);
 
 				sys_ppu_thread_sleep(1);
@@ -246,12 +246,12 @@ retry_net:
 			wait_for("/dev_bdvd", 15);
 			set_app_home("/dev_bdvd"); // sys_map_path(APP_HOME_DIR, "/dev_bdvd");
 
-			sprintf(full_path, "%s/PARAM.SFO", "/dev_bdvd");
+			concat2(full_path, "/dev_bdvd", "/PARAM.SFO");
 			getTitleID(full_path, map_title_id, GET_TITLE_ID_ONLY);
 
 			if(*map_title_id)
 			{
-				sprintf(full_path, "%s/%s", "/dev_hdd0/game", map_title_id);
+				concat2(full_path, HDD0_GAME_DIR, map_title_id);
 				sys_map_path(full_path, "/dev_bdvd");
 			}
 

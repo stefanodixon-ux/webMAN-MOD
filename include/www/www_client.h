@@ -135,7 +135,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		}
 #endif
 		else
-			strcpy(body, msg);
+			strcopy(body, msg);
 
 		if(code == CODE_PATH_NOT_FOUND)
 		{
@@ -146,24 +146,24 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 
 		if(css_exists)
 		{
-			sprintf(header, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); strcat(body, header);
+			sprintf(header, "<LINK href=\"%s\" rel=\"stylesheet\" type=\"text/css\">", COMMON_CSS); concat(body, header);
 		}
 		if(common_js_exists)
 		{
-			sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); strcat(body, header);
+			sprintf(header, SCRIPT_SRC_FMT, COMMON_SCRIPT_JS); concat(body, header);
 		}
 
 		#ifdef PATCH_ROS
 		if(done)
 		{
 			sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
-							HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); strcat(body, header);
+							HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); concat(body, header);
 		}
 		else
-			strcat(body, "<hr></font>");
+			concat(body, "<hr></font>");
 		#else
 			sprintf(header, "<hr>" HTML_BUTTON_FMT "%s",
-							HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); strcat(body, header);
+							HTML_BUTTON, " &#9664;  ", HTML_ONCLICK, ((code == CODE_RETURN_TO_ROOT) ? "/" : "javascript:history.back();"), HTML_BODY_END); concat(body, header);
 		#endif
 
 		slen = sprintf(header,  HTML_RESPONSE_FMT,
@@ -201,16 +201,16 @@ static size_t prepare_html(char *buffer, char *html, char *param, u8 is_ps3_http
 			if(webman_config->lang)
 			{
 				_concat(&sbuffer, "<script>");
-				sprintf(html, "l('%s','%s');", "games",    STR_GAMES);    _concat(&sbuffer, html);
-				sprintf(html, "l('%s','%s');", "files",    STR_FILES);    _concat(&sbuffer, html);
-				sprintf(html, "l('%s','%s');", "setup",    STR_SETUP);    _concat(&sbuffer, html);
-				sprintf(html, "l('%s','%s');", "eject",    STR_EJECT);    _concat(&sbuffer, html);
-				sprintf(html, "l('%s','%s');", "insert",   STR_INSERT);   _concat(&sbuffer, html);
-				sprintf(html, "l('%s','%s');", "refresh",  STR_REFRESH);  _concat(&sbuffer, html);
-				sprintf(html, "l('%s','%s');", "restart",  STR_RESTART);  _concat(&sbuffer, html);
-				sprintf(html, "l('%s','%s');", "shutdown", STR_SHUTDOWN); _concat(&sbuffer, html);
-				sprintf(html, "l('msg2','%s ...');"
-								"</script>",                 STR_MYGAMES);  _concat(&sbuffer, html);
+				_concat(&sbuffer, strfmt("l('%s','%s');", "games",		STR_GAMES));
+				_concat(&sbuffer, strfmt("l('%s','%s');", "files",		STR_FILES));
+				_concat(&sbuffer, strfmt("l('%s','%s');", "setup",		STR_SETUP));
+				_concat(&sbuffer, strfmt("l('%s','%s');", "eject",		STR_EJECT));
+				_concat(&sbuffer, strfmt("l('%s','%s');", "insert",		STR_INSERT));
+				_concat(&sbuffer, strfmt("l('%s','%s');", "refresh",	STR_REFRESH));
+				_concat(&sbuffer, strfmt("l('%s','%s');", "restart",	STR_RESTART));
+				_concat(&sbuffer, strfmt("l('%s','%s');", "shutdown",	STR_SHUTDOWN));
+				_concat(&sbuffer, strfmt("l('msg2','%s ...');"
+								"</script>",							STR_MYGAMES));
 			}
 			#endif
 
@@ -224,7 +224,7 @@ static size_t prepare_html(char *buffer, char *html, char *param, u8 is_ps3_http
 			}
 		}
 
-		if(param[1] && !strstr(param, ".ps3")) {_concat(&sbuffer,  "<base href=\""); urlenc(html, param); strcat(html, "/\">"); _concat(&sbuffer, html);}
+		if(param[1] && !strstr(param, ".ps3")) {urlenc(html, param); _concat3(&sbuffer, "<base href=\"", html, "/\">");}
 
 		return sbuffer.size;
 	}
@@ -264,7 +264,9 @@ static size_t prepare_html(char *buffer, char *html, char *param, u8 is_ps3_http
 
 	const char *coverflow = NULL; if(file_exists(MOBILE_HTML)) coverflow = (char*)" [<a href=\"/games.ps3\">Coverflow</a>]";
 
-	size_t tlen = sprintf(html, "<b>" WM_APP_VERSION "<br><font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_FILES, (webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
+	size_t tlen = sprintf(html, "<b>" WM_APP_VERSION "<br>"
+								"<font style=\"font-size:18px\">[<a href=\"/\">%s</a>] [<a href=\"%s\">%s</a>]%s", STR_FILES,
+								(webman_config->sman && file_exists(HTML_BASE_PATH "/sman.htm")) ? "/sman.ps3" : "/index.ps3", STR_GAMES, coverflow);
 
 #ifdef SYS_ADMIN_MODE
 	if(sys_admin)
@@ -286,7 +288,7 @@ static size_t prepare_html(char *buffer, char *html, char *param, u8 is_ps3_http
 #ifdef SYS_ADMIN_MODE
 	}
 	else
-		strcat(html, "</b>");
+		strcat(html + tlen, "</b>");
 #endif
 
 	_concat(&sbuffer, html);
@@ -324,7 +326,7 @@ static void do_web_command(u64 conn_s_p, const char *wm_url)
 		sys_net_get_sockinfo(conn_s, &conn_info, 1);
 
 		char *remote_ip = cmd;
-		sprintf(remote_ip, "%s", inet_ntoa(conn_info.remote_adr));
+		strcopy(remote_ip, inet_ntoa(conn_info.remote_adr));
 
 		// check remote access
 		if(webman_config->bind && is_remote_ip && !islike(remote_ip, webman_config->allow_ip))
@@ -431,7 +433,7 @@ parse_request:
 						if(*header == '/')
 							buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", wm_url);
 						else
-							buf.st_size = snprintf(header, HTML_RECV_SIZE, "%s", wm_url);
+							buf.st_size = strncopy(header, HTML_RECV_SIZE, wm_url);
 					}
 
 					replace_char(header, '\t', ' ');
@@ -459,7 +461,7 @@ parse_request:
 
 								// add /mount_ps3 prefix
 								strcpy(param, photo_path);
-								sprintf(photo_path, "/mount_ps3%s", param);
+								concat2(photo_path, "/mount_ps3", param);
 							}
 						}
 						else
@@ -609,6 +611,7 @@ parse_request:
 				#include "../cmd/unlockhdd.h"
 				#include "../cmd/unlocksave.h"
 				#include "../cmd/bdinfo.h"
+				#include "../cmd/err.h"
 			}
 			#ifdef COPY_PS3
 			if(islike(param, "/copy")) {dont_copy_same_size = (param[5] == '.'); param[5] = '.';} //copy_ps3 -> force copy files of the same file size

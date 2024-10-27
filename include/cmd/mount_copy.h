@@ -83,7 +83,7 @@
 
 		else if(!islike(params, "/net") && !islike(params, WMTMP))
 		{
-			strcpy(templn, params);
+			strcopy(templn, params);
 			if(not_exists(params))
 			{
 				find_slaunch_game(params, 10); // search in slaunch.bin

@@ -35,20 +35,20 @@ static void enable_ps2netemu_cobra(int emu)
 static void copy_ps2icon(char *imgfile, const char *_path)
 {
 	char pic[64]; sprintf(pic, PS2_CLASSIC_ISO_ICON);
-	sprintf(imgfile, "%s.bak", PS2_CLASSIC_ISO_ICON);
+	concat2(imgfile, PS2_CLASSIC_ISO_ICON, ".bak");
 
 	if(not_exists(imgfile))
 		force_copy(pic, imgfile);
 
-	int len = sprintf(imgfile, "%s.png", _path); len -= 12;
-	if(not_exists(imgfile)) sprintf(imgfile, "%s.PNG", _path);
-	if(not_exists(imgfile) && (len > 0)) sprintf(imgfile + len, ".png"); // remove .BIN.ENC
-	if(not_exists(imgfile) && (len > 0)) sprintf(imgfile + len, ".PNG");
+	int len = concat2(imgfile, _path, ".png"); len -= 12;
+	if(not_exists(imgfile)) concat2(imgfile, _path, ".PNG");
+	if(not_exists(imgfile) && (len > 0)) strcopy(imgfile + len, ".png"); // remove .BIN.ENC
+	if(not_exists(imgfile) && (len > 0)) strcopy(imgfile + len, ".PNG");
 
 	if(file_exists(imgfile))
 		cellFsUnlink(pic);
 	else
-		sprintf(imgfile, "%s.bak", PS2_CLASSIC_ISO_ICON);
+		concat2(imgfile, PS2_CLASSIC_ISO_ICON, ".bak");
 
 	force_copy(imgfile, pic);
 
@@ -151,7 +151,7 @@ static bool copy_ps2config_iso(char *entry_name, char *_path)
 	   )
 	{
 		char temp[STD_PATH_LEN];
-		sprintf(temp, "%s/%s.CONFIG", PS2CONFIG_PATH, tempID);
+		concat_path2(temp, PS2CONFIG_PATH, tempID, ".CONFIG");
 		if(file_exists(temp))
 			force_copy(temp, _path);
 		else
@@ -214,7 +214,7 @@ static void copy_ps2savedata(char *vme, const char *_path)
 			else
 				sprintf(savedata_vme, "%s/SAVEDATA/SCEVMC%i.VME", PS2_CLASSIC_PLACEHOLDER, i);
 
-			sprintf(savedata_bak, "%s.bak", savedata_vme);
+			concat2(savedata_bak, savedata_vme, ".bak");
 			if(file_exists(vme))
 			{
 				cellFsRename(savedata_vme, savedata_bak); // backup default vme
@@ -226,7 +226,7 @@ static void copy_ps2savedata(char *vme, const char *_path)
 				cellFsRename(savedata_bak, savedata_vme); // restore backup vme
 			}
 
-			len = sprintf(vme, "%s", savedata_vme); vme[len - 5] = '1' - i;
+			len = strcopy(vme, savedata_vme); vme[len - 5] = '1' - i;
 
 			if(not_exists(vme))
 				force_copy(savedata_vme, vme);

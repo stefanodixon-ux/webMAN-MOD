@@ -70,7 +70,7 @@ static char search_url[50];
  #ifdef LITE_EDITION
 	#define EDITION_ " [Lite]"
 	#define _EDITION EDITION_
- #elif defined(PS3NET_SERVER) && defined(NET3NET4) && defined(XMB_SCREENSHOT)
+ #elif defined(FULL_EDITION)
 	#define EDITION_ " [Full]"
 	#define _EDITION EDITION_
  #else

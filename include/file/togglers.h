@@ -71,17 +71,17 @@ static void swap_file(const char *path, const char *curfile, const char *rento, 
 {
 	char file1[64], file2[64];
 
-	sprintf(file1, "%s%s%s", "/dev_flash", path + 10, newfile);
+	concat3(file1, "/dev_flash", path + 10, newfile);
 
 	if(file_exists(file1))
 	{
 		mount_device("/dev_blind", NULL, NULL);
-		sprintf(file1, "%s%s", path, curfile);
+		concat2(file1, path, curfile);
 
-		sprintf(file2, "%s%s", path, rento);
+		concat2(file2, path, rento);
 		cellFsRename(file1, file2);
 
-		sprintf(file2, "%s%s", path, newfile);
+		concat2(file2, path, newfile);
 		cellFsRename(file2, file1);
 	}
 }

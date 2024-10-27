@@ -119,7 +119,7 @@ install_mm_payload:
 	{
 		char filename[STD_PATH_LEN + 20];
 
-		sprintf(filename, "%s/PS3_GAME/PARAM.SFO", _path);
+		concat2(filename, _path, "/PS3_GAME/PARAM.SFO");
 		getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 	}
 	#else

@@ -72,7 +72,7 @@
 			goto html_response;
 		}
 
-		if(islike(param, "/favicon.ico")) {sprintf(param, "%s", wm_icons[iPS3]);}
+		if(islike(param, "/favicon.ico")) {strcopy(param, wm_icons[iPS3]);}
 		else check_path_alias(param);
 
 		is_binary = is_ntfs || (cellFsStat(param, &buf) == CELL_FS_SUCCEEDED); allow_retry_response = true;
@@ -91,9 +91,8 @@
 		cellFsUnlink(FILE_LIST);
 		if(reply_html)
 		{
-			sprintf(header, SCRIPT_SRC_FMT, FS_SCRIPT_JS);
 			save_file(FILE_LIST, HTML_HEADER, SAVE_ALL);
-			save_file(FILE_LIST, header, APPEND_TEXT);
+			save_file(FILE_LIST, strfmt(SCRIPT_SRC_FMT, FS_SCRIPT_JS), APPEND_TEXT);
 			save_file(FILE_LIST, "<body onload='try{t2lnks()}finally{}' bgcolor=#333 text=white vlink=white link=white><pre>", APPEND_TEXT);
 		}
 

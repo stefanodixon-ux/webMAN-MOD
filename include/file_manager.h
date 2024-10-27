@@ -81,16 +81,16 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	if( !is_dir && IS(name, "PARAM.SFO") )
 	{
 		char *html = tempstr;
-		char titleid[10], app_ver[8], title[128]; snprintf(title, 127, "%s", full_path);
+		char titleid[10], app_ver[8], title[128]; strncopy(title, sizeof(title), full_path);
 
 		//get title & app app_ver from PARAM.SFO
 		getTitleID(full_path, app_ver, GET_VERSION);
 		getTitleID(title, titleid, GET_TITLE_AND_ID); get_flag(title, " ["); get_flag(title, "\n");
 		get_cover_from_name(tempstr, get_filename(param) + 1, titleid); // get title id from path (if title ID was not found in PARAM.SFO)
 		if(*app_ver >= '0') {strcat(title, " v"); strcat(title, app_ver);}
-		sprintf(buf_path, "%s%s", HDD0_GAME_DIR, titleid); bool has_updates_dir = file_exists(buf_path);
+		concat2(buf_path, HDD0_GAME_DIR, titleid); bool has_updates_dir = file_exists(buf_path);
 
-		sprintf(html, " title=\"%s\">%s</a>", title, name); snprintf(name, maxlen, "%s", html);
+		sprintf(html, " title=\"%s\">%s</a>", title, name); strncopy(name, maxlen, html);
 
 		is_param_sfo = ' '; ft = " cfg";
 
@@ -98,7 +98,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 		if(has_updates_dir)
 			snprintf(fsize, maxlen, HTML_URL2, HDD0_GAME_DIR, titleid, title);
 		else
-			snprintf(fsize, maxlen, "%s", title);
+			strncopy(fsize, maxlen, title);
 
 		// show title id & link to updates
 		if(*titleid && !islike(titleid, "NPWR"))
@@ -123,7 +123,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	// encode url for html //
 	/////////////////////////
 
-	if(urlenc(buf_path, full_path)) {buf_path[_MAX_LINE_LEN] = '\0'; sprintf(full_path, "%s", buf_path);}
+	if(urlenc(buf_path, full_path)) {buf_path[_MAX_LINE_LEN] = '\0'; strcopy(full_path, buf_path);}
 
 	// is image?
 	u8 show_img = (!is_dir && (_IS(ext, ".png") || _IS(ext, ".jpg") || _IS(ext, ".bmp")));
@@ -227,15 +227,15 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 				}
 
 				if(sys_admin && IS(full_path, "/dev_flash"))
-					sprintf(buf_path, "%s%s", "/dev_blind", "?1");
+					concat2(buf_path, "/dev_blind", "?1");
 				else if(IS(full_path, "/dev_blind"))
-					sprintf(buf_path, "%s%s", "/dev_blind", "?0");
+					concat2(buf_path, "/dev_blind", "?0");
 				#ifdef USE_NTFS
 				else if(is_ntfs)
-					sprintf(buf_path, "%s%s", "/refresh.ps3", "?prepntfs");
+					concat2(buf_path, "/refresh.ps3", "?prepntfs");
 				#endif
 				else
-					sprintf(buf_path, "%s%s", "/mount.ps3", full_path);
+					concat2(buf_path, "/mount.ps3", full_path);
 
 				// show graphic bar of device size & free space
 				if(devSize > 0)
@@ -417,14 +417,14 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	else
 	{
 		//if(*name == '0' && flen == 8 && IS(param, HDD0_HOME_DIR))
-		//	snprintf(ename, FILE_MGR_KEY_LEN, "%s", name + 3);
+		//	strncopy(ename, FILE_MGR_KEY_LEN, name + 3);
 		//else
 		snprintf(ename, FILE_MGR_KEY_LEN, "%s         ", name); sclass = dclass;
 
 		if(flen > FILE_MGR_KEY_LEN -2) {char c = name[flen - 1]; if(ISDIGIT(c)) ename[FILE_MGR_KEY_LEN - 2] = c;} // sort isos
 	}
 
-	if((plen > 1) && memcmp(full_path, param, plen) == 0) sprintf(full_path, "%s", full_path + plen + 1); // remove path from full_path (use relative path)
+	if((plen > 1) && memcmp(full_path, param, plen) == 0) strcopy(full_path, full_path + plen + 1); // remove path from full_path (use relative path)
 
 
 	//////////////////////
@@ -475,7 +475,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 	new_item += flen;
 
 	// append size column
-	sprintf(new_item, "%s", html_sizecol);
+	strcopy(new_item, html_sizecol);
 
 	// append date column (21 bytes)
 	#ifdef CHECK_PSHOME
@@ -532,8 +532,8 @@ static int add_breadcrumb_trail(char *pbuffer, const char *param)
 	}
 
 	// add link to file or folder
-	if(!param[1]) slen = sprintf(swap, "/");
-	else if((param[1] != 'n') && not_exists(param)) slen = sprintf(swap, "%s", get_filename(param) + 1);
+	if(!param[1]) slen = strcopy(swap, "/");
+	else if((param[1] != 'n') && not_exists(param)) slen = strcopy(swap, get_filename(param) + 1);
 	else
 	{
 		char label[_MAX_PATH_LEN];
@@ -786,7 +786,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char 
 							else if(dir_items[n].name[0] == '/')
 								flen = sprintf(full_path, "%.5s%s", param, dir_items[n].name);
 							else
-								flen = sprintf(full_path, "%s%s", param, dir_items[n].name);
+								flen = concat2(full_path, param, dir_items[n].name);
 
 							normalize_path(full_path, false);
 
@@ -905,7 +905,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char 
 					}
 					else
 					{
-						flen = sprintf(full_path, "%s/%s", param, entry_name);
+						flen = concat_path(full_path, param, entry_name);
 					}
 					if(full_path[flen - 1] == '/') full_path[flen--] = '\0';
 
@@ -1018,19 +1018,19 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char 
 				if(is_net && jb_games)
 				{
 					replace_char(param + 12, '/', 0);
-					sprintf(full_path, "%s/PS3_GAME/ICON0.PNG", param);
+					concat2(full_path, param, "/PS3_GAME/ICON0.PNG");
 					show_icon = true;
 				}
 
 				if(!show_icon)
 				{
-					sprintf(full_path, "%s/ICON0.PNG", param); show_icon = file_exists(full_path);                    // current folder
+					concat_path(full_path, param, "ICON0.PNG"); show_icon = file_exists(full_path);                    // current folder
 					if(!show_icon) sprintf(full_path, "%s/ICON2.PNG", param); show_icon = file_exists(full_path);     // ps3_extra folder
 					if(!show_icon)
 					{
 						replace_char(param + 18, '/', 0);
-						sprintf(full_path, "%s/PS3_GAME/ICON0.PNG", param); show_icon = file_exists(full_path); // dev_bdvd or jb folder
-						if(!show_icon) sprintf(full_path, "%s/ICON0.PNG", param); show_icon = file_exists(full_path); // game dir
+						concat2(full_path, param, "/PS3_GAME/ICON0.PNG"); show_icon = file_exists(full_path); // dev_bdvd or jb folder
+						if(!show_icon) concat_path(full_path, param, "ICON0.PNG"); show_icon = file_exists(full_path); // game dir
 					}
 				}
 
@@ -1046,7 +1046,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char 
 					if(iso_disctype == DISC_TYPE_DVD)    dt = iDVD;
 					#endif
 
-					sprintf(full_path, "%s", wm_icons[dt]); show_icon = true;
+					strcopy(full_path, wm_icons[dt]); show_icon = true;
 				}
 
 				for(u16 m = idx; m < 10; m++) _concat(&sout, "<br>");

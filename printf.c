@@ -101,7 +101,7 @@
 #include <limits.h>
 #include <stdarg.h>
 
-//#include "printf.h"
+#include "printf.h"
 
 #define HAVE_UNSIGNED_LONG_LONG_INT
 #define HAVE_STDINT_H
@@ -801,10 +801,9 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 int sprintf(char *buffer, const char *fmt, ...)
 {//__attribute__ ((format (printf, 2, 3)))
 	va_list args;
-	int i;
 
 	va_start(args, fmt);
-	i = vsprintf(buffer, fmt,args);
+	int i = vsprintf(buffer, fmt,args);
 	va_end(args);
 	return i;
 }
@@ -812,13 +811,26 @@ int sprintf(char *buffer, const char *fmt, ...)
 int snprintf(char *buffer, size_t len, const char *fmt, ...)
 {
 	va_list args;
-	int i;
 
 	va_start(args, fmt);
-	i = vsnprintf(buffer, len, fmt, args);
+	int i = vsnprintf(buffer, len, fmt, args);
 	va_end(args);
 	return i;
 }
+
+static char strfmt_buf[0x200];
+
+char *strfmt(const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	vsnprintf(strfmt_buf, sizeof(strfmt_buf), fmt, args);
+	va_end(args);
+
+	return strfmt_buf;
+}
+
 /*
 #define PRINTF_MAX	128
 

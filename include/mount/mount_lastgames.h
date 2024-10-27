@@ -44,12 +44,12 @@
 		if(lastgames.last >= MAX_LAST_GAMES)
 		{
 			lastgames.last = 0;
-			snprintf(lastgames.game[lastgames.last].path, STD_PATH_LEN, "%s", _path);
+			strncopy(lastgames.game[lastgames.last].path, STD_PATH_LEN, _path);
 		}
 		else
 		{
 			// multi-CD
-			char multi[STD_PATH_LEN]; snprintf(multi, STD_PATH_LEN, "%s", _path);
+			char multi[STD_PATH_LEN]; strncopy(multi, STD_PATH_LEN, _path);
 			char *mcd = is_multi_cd(multi);
 
 			u8 n;
@@ -62,7 +62,7 @@
 			{
 				lastgames.last++;
 				if(lastgames.last >= MAX_LAST_GAMES) lastgames.last = 0;
-				snprintf(lastgames.game[lastgames.last].path, STD_PATH_LEN, "%s", _path);
+				strncopy(lastgames.game[lastgames.last].path, STD_PATH_LEN, _path);
 
 				// multi-CD
 				if(mcd)
@@ -81,7 +81,7 @@
 
 						n++;
 						if(n >= MAX_LAST_GAMES) n = 0;
-						snprintf(lastgames.game[n].path, STD_PATH_LEN, "%s", multi); multiCD = true;
+						strncopy(lastgames.game[n].path, STD_PATH_LEN, multi); multiCD = true;
 					}
 				}
 			}

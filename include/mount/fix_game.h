@@ -146,7 +146,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 	int fd; char title_id[10], update_path[STD_PATH_LEN];
 
 	#ifdef COPY_PS3
-	sprintf(current_file, "%s", iso_file);
+	strcopy(current_file, iso_file);
 	#endif
 
 	show_progress(iso_file, OV_FIX);
@@ -277,10 +277,10 @@ exit_fix:
 	}
 
 	// fix update folder
-	sprintf(update_path, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+	concat_path2(update_path, HDD0_GAME_DIR, title_id, "/PARAM.SFO");
 	if(getTitleID(update_path, title_id, FIX_SFO) || webman_config->fixgame==FIX_GAME_FORCED)
 	{
-		sprintf(update_path, "%s%s/USRDIR", HDD0_GAME_DIR, title_id);
+		concat_path2(update_path, HDD0_GAME_DIR, title_id, "/USRDIR");
 		fix_game_folder(update_path);
 	}
 }
@@ -311,9 +311,9 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 			if(islike(game_path, "/net") || strstr(game_path, ".ntfs["))
 				{get_name(filename, get_filename(game_path) + 1, GET_WMTMP); strcat(filename, ".SFO");}
 			else
-				sprintf(filename, "%s/PARAM.SFO", game_path);
+				concat2(filename, game_path, "/PARAM.SFO");
 
-			if(not_exists(filename)) sprintf(filename, "%s/PS3_GAME/PARAM.SFO", game_path);
+			if(not_exists(filename)) concat2(filename, game_path, "/PS3_GAME/PARAM.SFO");
 			if(not_exists(filename)) {wait_for("/dev_bdvd", 10); sprintf(filename, "/dev_bdvd/PS3_GAME/PARAM.SFO");}
 
 			char paramsfo[_4KB_];
@@ -323,7 +323,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 			if(is_sfo(mem))
 			{
 				// fix ps3 extra or bgm + remoteplay + ps3 extra
-				char tmp_path[STD_PATH_LEN]; sprintf(tmp_path, "%s/PS3_EXTRA", game_path); bool has_ps3_extra = isDir(tmp_path);
+				char tmp_path[STD_PATH_LEN]; concat2(tmp_path, game_path, "/PS3_EXTRA"); bool has_ps3_extra = isDir(tmp_path);
 				if((fix_type == FIX_GAME_FORCED || (has_ps3_extra && fix_type != FIX_GAME_DISABLED)) && fix_sfo_attribute(mem, (u16)bytes_read))
 				{
 					save_file(filename, paramsfo, bytes_read);
@@ -367,7 +367,7 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 							sprintf(filename, "%s %s%s", STR_FIXING, HDD0_GAME_DIR, title_id);
 							show_msg(filename);
 
-							sprintf(filename, "%s%s/USRDIR", HDD0_GAME_DIR, title_id);  // fix update folder in /dev_hdd0/game
+							concat_path2(filename, HDD0_GAME_DIR, title_id, "/USRDIR");  // fix update folder in /dev_hdd0/game
 
 							fix_game_folder(filename);
 						}

@@ -58,7 +58,7 @@ static void get_bdvd_info(const char *dump_path, char *buffer)
 	ret = ps3rom_lv2_get_inquiry(fd, buf);
 	if(ret != 0)
 	{
-		sprintf(buffer, "sys_storage_send_device_command failed (0x%x)", ret);
+		sprintf(buffer, "sys_storage_send_atapi_command failed (0x%x)", ret);
 		return;
 	}
 

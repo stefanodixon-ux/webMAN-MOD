@@ -30,7 +30,7 @@
 				get_value(map_title_id, pos, TITLE_ID_LEN);
 			}
 
-			sprintf(_path, "%s%s", HDD0_GAME_DIR, map_title_id);
+			concat2(_path, HDD0_GAME_DIR, map_title_id);
 			sys_map_path(_path, _path0);
 
 			ret = is_app_dir("/dev_hdd0/game", map_title_id);
@@ -93,10 +93,10 @@
 
 			if(islike(_path0, HDD0_GAME_DIR))
 			{
-				sprintf(_path, "%s%s", HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0/game/
+				concat2(_path, HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0/game/
 				if(not_exists(_path))
 				{
-					sprintf(_path, "%s%s", _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
+					concat2(_path, _HDD0_GAME_DIR, _path0 + 15); // use /dev_hdd0//game/ if GAMEI is enabled
 				}
 			}
 			ret = isDir(_path);

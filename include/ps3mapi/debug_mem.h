@@ -256,7 +256,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 				flen = Hex2Bin(pos, templn);
 			else
 			{
-				flen = sprintf(templn, "%s", pos);
+				flen = strcopy(templn, pos);
 				// convert pipes to line breaks
 				for(pos = templn; *pos; ++pos) if(*pos == '|') *pos = '\n';
 			}
@@ -316,7 +316,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		if(isHEX(v + 1))
 			flen = Hex2Bin(v + 1, sfind);
 		else
-			flen = sprintf(sfind, "%s", v + 1);
+			flen = strcopy(sfind, v + 1);
 
 		u64 (*peek_mem)(u64) = lv1 ? peek_lv1 : peekq;
 

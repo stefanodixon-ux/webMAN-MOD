@@ -25,7 +25,7 @@
 		{
 			show_persistent_popup = PERSIST;
 			if(param[11])
-				{is_custom_popup = true; snprintf(custom_popup_msg, 200, "%s", &param[11]);}
+				{is_custom_popup = true; strncopy(custom_popup_msg, 200, &param[11]);}
 			else
 				{show_info_popup = true; BEEP1;}			// show persistent info ON
 		}

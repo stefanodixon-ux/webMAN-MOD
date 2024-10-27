@@ -97,16 +97,16 @@
 			#ifdef COBRA_NON_LITE
 			strcpy(header, params); params = (char*)header;
 			if(_islike(params, "movian") || IS(params, "HTSS00003"))
-											 {sprintf(params, "col=tv&seg=HTSS00003"); mount_unk = APP_GAME;} else
-			if(_islike(params, "remoteplay")){sprintf(params, "col=network&seg=seg_premo");} else
-			if(_islike(params, "retro"))     {sprintf(params, "SSNE10000");} else
-			if(_islike(params, "multiman"))  {sprintf(params, "BLES80608");} else
-			if(_islike(params, "rebug"))     {sprintf(params, "RBGTLBOX2");}
+											 {strcopy(params, "col=tv&seg=HTSS00003"); mount_unk = APP_GAME;} else
+			if(_islike(params, "remoteplay")){strcopy(params, "col=network&seg=seg_premo");} else
+			if(_islike(params, "retro"))     {strcopy(params, "SSNE10000");} else
+			if(_islike(params, "multiman"))  {strcopy(params, "BLES80608");} else
+			if(_islike(params, "rebug"))     {strcopy(params, "RBGTLBOX2");}
 			#endif
 
 			#ifdef COBRA_ONLY
 			char path[32];
-			snprintf(path, 32, "%s%s", HDD0_GAME_DIR, params);
+			snprintf(path, sizeof(path), "%s%s", HDD0_GAME_DIR, params);
 
 			if(*map_title_id && (*params == NULL))
 			{

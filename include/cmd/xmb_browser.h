@@ -319,9 +319,9 @@
 		if(IS_ON_XMB || *params == '?' || *params == '/')
 		{   // in-XMB
 			#ifdef COBRA_ONLY
-			if(islike(params, "$vsh_menu")) {start_vsh_gui(true); sprintf(param, "/cpursx.ps3"); goto html_response;}
+			if(islike(params, "$vsh_menu")) {start_vsh_gui(true); strcopy(param, "/cpursx.ps3"); goto html_response;}
 			else
-			if(islike(params, "$slaunch")) {start_vsh_gui(false); sprintf(param, "/cpursx.ps3"); goto html_response;}
+			if(islike(params, "$slaunch")) {start_vsh_gui(false); strcopy(param, "/cpursx.ps3"); goto html_response;}
 			else
 			#endif
 			#ifdef XMB_SCREENSHOT
@@ -349,7 +349,7 @@
 			#endif
 			{
 				#ifndef LITE_EDITION
-				if(*params == NULL) sprintf(params, "/");
+				if(*params == NULL) strcopy(params, "/");
 				if(*params == '/' ) {do_umount(false); check_path_alias(params); from_xmb_ps3 = true; sprintf(header, "http://%s%s", local_ip, params); open_browser(header, 0);} else
 				if(*params == '$' ) {if(get_explore_interface()) exec_xmb_command(url);} else
 				if(*params == '?' ) {do_umount(false);  open_browser(url, 0);} else
@@ -360,7 +360,7 @@
 			}
 		}
 		else
-			sprintf(url, "ERROR: Not in XMB!");
+			strcopy(url, "ERROR: Not in XMB!");
 
 		if(!mc) keep_alive = http_response(conn_s, header, param, CODE_HTTP_OK, url);
 

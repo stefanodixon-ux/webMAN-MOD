@@ -399,7 +399,7 @@
  show_popup:
 							if(is_custom_popup)
 							{
-								snprintf(msg, 200, "%s", custom_popup_msg);
+								strncopy(msg, 200, custom_popup_msg);
 								#ifdef COBRA_NON_LITE
 								parse_tags(msg);
 								#endif
@@ -872,7 +872,7 @@
 								get_game_version(path, title, title_id, app_ver);
 								get_last_game(path);
 								if(not_exists(path))
-									sprintf(path, "%s%s", HDD0_GAME_DIR, title_id);
+									concat2(path, HDD0_GAME_DIR, title_id);
 
 								sprintf(msg, "ID: %s - v%s\n%s\n\n%s", title_id, app_ver, title, path);
 								show_msg(msg);

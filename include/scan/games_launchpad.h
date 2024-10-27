@@ -47,7 +47,7 @@ static int add_launchpad_entry(char *buffer, const char *title, const char *url,
 
 	if(file_exists(icon)) {urlenc(buffer, icon); sprintf(icon, "http://%s%s", local_ip, buffer);}
 	else if(nocover_exists && IS(title_id, "NOID")) sprintf(icon, "http://%s%s", local_ip, WM_ICONS_PATH "/icon_lp_nocover.png");
-	else sprintf(icon, "%s/%s%s", LAUNCHPAD_COVER_SVR, title_id, strstr(title_id, ".png") ? "" : ".JPG");
+	else concat_path2(icon, LAUNCHPAD_COVER_SVR, title_id, strstr(title_id, ".png") ? "" : ".JPG");
 
 	int size;
 	char *new_entry = buffer;
@@ -95,12 +95,12 @@ static void add_launchpad_footer(char *buffer)
 {
 	char server_url[64];
 	char *icon_path = buffer;
-	sprintf(icon_path, "%s/blank.png", WM_ICONS_PATH);
+	concat2(icon_path, WM_ICONS_PATH, "/blank.png");
 
 	if(file_exists(icon_path))
 		sprintf(server_url, "http://%s%s", local_ip, WM_ICONS_PATH);
 	else
-		sprintf(server_url, "%s", LAUNCHPAD_COVER_SVR);
+		strcopy(server_url, LAUNCHPAD_COVER_SVR);
 
 	// --- add scroller placeholder
 	u16 size = sprintf(buffer, "<mtrl id=\"1081000000\" lastm=\"9999-12-31T23:59:00.000Z\" until=\"2100-12-31T23:59:00.000Z\">\n"

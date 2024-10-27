@@ -12,7 +12,7 @@
 
 					// backup original PARAM.SFO
 					if(patch)
-						{sprintf(out, "%s.bak", filename); save_file(out, param_sfo, sfo_size);}
+						{concat2(out, filename, ".bak"); save_file(out, param_sfo, sfo_size);}
 
 					// add header & style sheet
 					sprintf(tmp, "<style>a{%s;cursor:pointer}</style>", HTML_URL_STYLE);

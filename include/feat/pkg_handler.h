@@ -65,7 +65,7 @@ static u64 get_pkg_size_and_install_time(const char *pkgfile)
 	{
 		if(cellFsRead(fd, (void *)&pkg_header, sizeof(pkg_header), NULL) == CELL_FS_SUCCEEDED && pkg_header.magic == PKG_MAGIC)
 		{
-			sprintf(install_path, "%s%s%s", HDD0_GAME_DIR, pkg_header.title_id, "/PS3LOGO.DAT");
+			concat3(install_path, HDD0_GAME_DIR, pkg_header.title_id, "/PS3LOGO.DAT");
 
 			struct CellFsStat s;
 			if(cellFsStat(install_path, &s) == CELL_FS_SUCCEEDED) pkg_install_time = s.st_mtime; // prevents pkg deletion if user cancels install
@@ -227,20 +227,20 @@ static int download_file(const char *param, char *msg)
 
 	if(!net_enabled)
 	{
-		sprintf(msg, "ERROR: %s", "network disabled");
+		concat2(msg,  "ERROR: ", "network disabled");
 		return ret;
 	}
 
 	if(IS_INGAME)
 	{
-		sprintf(msg, "ERROR: %s", "download from XMB");
+		concat2(msg,  "ERROR: ", "download from XMB");
 		return ret;
 	}
 
 	char *msg_durl = msg;
 	char *msg_dpath = msg + MAX_URL_LEN + 16;
 
-	sprintf(msg_durl,  "ERROR: %s", "Invalid URL");
+	concat2(msg_durl,  "ERROR: ", "Invalid URL");
 	sprintf(msg_dpath, "Download canceled");
 
 	char pdurl[MAX_URL_LEN];
@@ -268,7 +268,7 @@ static int download_file(const char *param, char *msg)
 		len = get_param("?url=", pdurl, param, MAX_DLPATH_LEN); if(!islike(pdurl, "http")) goto end_download_process;
 		conv_num = mbstowcs((wchar_t *)pkg_durl,(const char *)pdurl, len + 1);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
-		len = sprintf(pdpath, "%s", is_ext(pdurl, ".p3t") ? "/dev_hdd0/theme" : DEFAULT_PKG_PATH);
+		len = strcopy(pdpath, is_ext(pdurl, ".p3t") ? "/dev_hdd0/theme" : DEFAULT_PKG_PATH);
 	}
 
 	if(conv_num)
@@ -310,7 +310,7 @@ static int download_file(const char *param, char *msg)
 			ret = CELL_OK;
 		}
 		else
-			sprintf(msg_durl, "ERROR: %s", "Setting storage location");
+			concat2(msg_durl, "ERROR: ", "Setting storage location");
 	}
 
 end_download_process:
@@ -344,7 +344,7 @@ static int installPKG(const char *pkgpath, char *msg)
 
 		if(IS_INGAME)
 		{
-			sprintf(msg, "ERROR: %s", "install from XMB");
+			concat2(msg,  "ERROR: ", "install from XMB");
 			return ret;
 		}
 	}
@@ -366,7 +366,7 @@ static int installPKG(const char *pkgpath, char *msg)
 			return download_file(pkgpath, msg);
 		}
 		else
-			snprintf(pkg_path, MAX_PKGPATH_LEN, "%s", pkgpath);
+			strncopy(pkg_path, MAX_PKGPATH_LEN, pkgpath);
 
 		if(file_exists(pkg_path))
 		{
@@ -383,7 +383,7 @@ static int installPKG(const char *pkgpath, char *msg)
 		}
 	}
 
-	if(ret) sprintf(msg, "ERROR: %s", pkgpath);
+	if(ret) concat2(msg,  "ERROR: ", pkgpath);
 	return ret;
 }
 
@@ -456,13 +456,13 @@ static void poll_downloaded_pkg_files(char *msg)
 		{
 			char *dlfile = msg;
 
-			int plen = sprintf(dlfile, "%s", TEMP_DOWNLOAD_PATH);
+			int plen = strcopy(dlfile, TEMP_DOWNLOAD_PATH);
 
 			while(working && (cellFsReaddir(fd, &entry, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 			{
 				if(is_ext(entry.d_name, ".pkg"))
 				{
-					sprintf(dlfile + plen, "%s", entry.d_name); pkg_count++;
+					strcopy(dlfile + plen, entry.d_name); pkg_count++;
 					cellFsChmod(dlfile, MODE);
 
 					u64 pkg_size = get_pkg_size_and_install_time(dlfile); if(pkg_size == 0) continue;
@@ -471,7 +471,7 @@ static void poll_downloaded_pkg_files(char *msg)
 					if(cellFsStat(dlfile, &s) == CELL_FS_SUCCEEDED && pkg_size == s.st_size)
 					{
 						char pkgfile[MAX_PATH_LEN];
-						u16 pkg_len = sprintf(pkgfile, "%s%s", DEFAULT_PKG_PATH, entry.d_name);
+						u16 pkg_len = concat2(pkgfile, DEFAULT_PKG_PATH, entry.d_name);
 						for(u8 retry = 1; retry < 255; retry++)
 						{
 							if(cellFsRename(dlfile, pkgfile) == CELL_FS_SUCCEEDED) break;

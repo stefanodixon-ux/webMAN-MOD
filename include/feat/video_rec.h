@@ -93,58 +93,58 @@ static void show_rec_format(const char *msg)
 	sprintf(text, "%s\nVideo: ", msg);
 
 	u32 flags = (rec_video_format & 0xF000); // video format
-	if(flags == 0x0000) concat(text, "MPEG4 ");  else
-	if(flags == 0x1000) concat(text, "AVC MP "); else
-	if(flags == 0x2000) concat(text, "AVC BL "); else
-	if(flags == 0x3000) concat(text, "MJPEG ");  else
+	if(flags == 0x0000) concat(text, "MPEG4 ");
+	if(flags == 0x1000) concat(text, "AVC MP ");
+	if(flags == 0x2000) concat(text, "AVC BL ");
+	if(flags == 0x3000) concat(text, "MJPEG ");
 	if(flags == 0x4000) concat(text, "M4HD ");
 
 	flags = (rec_video_format & 0xF00); // video size
-	if(flags == 0x000) concat(text, "240p @ "); else
-	if(flags == 0x100) concat(text, "272p @ "); else
-	if(flags == 0x200) concat(text, "368p @ "); else
-	if(flags == 0x300) concat(text, "480p @ "); else
-	if(flags == 0x600) concat(text, "720p @ ");
+	if(flags == 0x000) concat(text, strfmt("%ip @ ", 240));
+	if(flags == 0x100) concat(text, strfmt("%ip @ ", 272));
+	if(flags == 0x200) concat(text, strfmt("%ip @ ", 368));
+	if(flags == 0x300) concat(text, strfmt("%ip @ ", 480));
+	if(flags == 0x600) concat(text, strfmt("%ip @ ", 720));
 	//if(flags == 0x700) concat(text, "1080p @ ");
 
 	flags = (rec_video_format & 0xF0); // video bitrate
-	if(flags == 0x00) concat(text, "512K");   else
-	if(flags == 0x10) concat(text, "768K");   else
-	if(flags == 0x20) concat(text, "1024K");  else
-	if(flags == 0x30) concat(text, "1536K");  else
-	if(flags == 0x40) concat(text, "2048K");  else
-	if(flags == 0x60) concat(text, "5000K");  else
-	if(flags == 0x70) concat(text, "11000K"); else
-	if(flags == 0x80) concat(text, "20000K"); else
-	if(flags == 0x90) concat(text, "25000K");
+	if(flags == 0x00) concat(text, strfmt("%iK", 512));
+	if(flags == 0x10) concat(text, strfmt("%iK", 768));
+	if(flags == 0x20) concat(text, strfmt("%iK", 1024));
+	if(flags == 0x30) concat(text, strfmt("%iK", 1536));
+	if(flags == 0x40) concat(text, strfmt("%iK", 2048));
+	if(flags == 0x60) concat(text, strfmt("%iK", 5000));
+	if(flags == 0x70) concat(text, strfmt("%iK", 11000));
+	if(flags == 0x80) concat(text, strfmt("%iK", 20000));
+	if(flags == 0x90) concat(text, strfmt("%iK", 25000));
 	//if(flags == 0xA0) concat(text, "30000K");
 
 	concat(text, "\nAudio: ");  // audio format
 
 	flags = (rec_audio_format & 0xF000);
-	if(flags == 0x0000) concat(text, "AAC ");  else
-	if(flags == 0x1000) concat(text, "ULAW "); else
+	if(flags == 0x0000) concat(text, "AAC ");
+	if(flags == 0x1000) concat(text, "ULAW ");
 	if(flags == 0x2000) concat(text, "PCM ");
 
 	flags = (rec_audio_format & 0xF); // audio bitrate
-	if(flags == 0x0) concat(text, "96K");  else
-	if(flags == 0x1) concat(text, "128K"); else
-	if(flags == 0x2) concat(text, "64K");  else
-	if(flags == 0x7) concat(text, "384K"); else
-	if(flags == 0x8) concat(text, "768K"); else
-	if(flags == 0x9) concat(text, "1536K");
+	if(flags == 0x0) concat(text, strfmt("%iK", 96));
+	if(flags == 0x1) concat(text, strfmt("%iK", 128));
+	if(flags == 0x2) concat(text, strfmt("%iK", 64));
+	if(flags == 0x7) concat(text, strfmt("%iK", 384));
+	if(flags == 0x8) concat(text, strfmt("%iK", 768));
+	if(flags == 0x9) concat(text, strfmt("%iK", 1536));
 
 	show_msg(text);
 }
 
 static void set_setting_to_change(char *msg, const char *text)
 {
-	sprintf(msg, "%s", text);
-	if(rec_setting_to_change == 0) concat(msg, "Recording Options"); else
-	if(rec_setting_to_change == 1) concat(msg, "Video Format");      else
-	if(rec_setting_to_change == 2) concat(msg, "Video Size");        else
-	if(rec_setting_to_change == 3) concat(msg, "Video Bitrate");     else
-	if(rec_setting_to_change == 4) concat(msg, "Audio Format");      else
+	strcopy(msg, text);
+	if(rec_setting_to_change == 0) concat(msg, "Recording Options");
+	if(rec_setting_to_change == 1) concat(msg, "Video Format");
+	if(rec_setting_to_change == 2) concat(msg, "Video Size");
+	if(rec_setting_to_change == 3) concat(msg, "Video Bitrate");
+	if(rec_setting_to_change == 4) concat(msg, "Audio Format");
 	if(rec_setting_to_change == 5) concat(msg, "Audio Bitrate");
 }
 
@@ -183,9 +183,9 @@ static bool rec_start(const char *param)
 		{
 			rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_5000K_30FPS;									// .mp4 (720p)
 
-			if(strstr(param, "240"))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_SMALL_768K_30FPS;		// .mp4 (240p / 208p)
-			if(strstr(param, "272"))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_MIDDLE_768K_30FPS;		// .mp4 (272p)
-			if(strstr(param, "368"))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_LARGE_2048K_30FPS;		// .mp4 (368p)
+			if(strnum(param, 240))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_SMALL_768K_30FPS;		// .mp4 (240p / 208p)
+			if(strnum(param, 272))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_MIDDLE_768K_30FPS;		// .mp4 (272p)
+			if(strnum(param, 368))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_MPEG4_LARGE_2048K_30FPS;		// .mp4 (368p)
 		}
 
 		if(strcasestr(param, "jpeg")) {rec_video_format = CELL_REC_PARAM_VIDEO_FMT_YOUTUBE_MJPEG; rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_YOUTUBE_MJPEG;}	// mjpeg
@@ -200,18 +200,18 @@ static bool rec_start(const char *param)
 		{
 			rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_11000K_30FPS;								// hd (11000k)
 
-			if(strstr(param, "768"))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_MIDDLE_768K_30FPS;		// hd 768k  (272p)
-			if(strstr(param, "1536"))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_LARGE_1536K_30FPS;		// hd 1536k (368p)
-			if(strstr(param, "2048"))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_2048K_30FPS;		// hd 2048k (720p)
+			if(strnum(param, 768))   rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_MIDDLE_768K_30FPS;		// hd 768k  (272p)
+			if(strnum(param, 1536))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_LARGE_1536K_30FPS;		// hd 1536k (368p)
+			if(strnum(param, 2048))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_M4HD_HD720_2048K_30FPS;		// hd 2048k (720p)
 		}
 		else
 		{
 			if(strcasestr(param, "avc"))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_768K_30FPS;	// avc (psp/ps3)
 
-			if(strstr(param, "512"))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_512K_30FPS;		// avc 512k
-			if(strstr(param, "768"))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_768K_30FPS;		// avc 768k
-			if(strstr(param, "1024")) rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_1024K_30FPS;	// avc 1024k
-			if(strstr(param, "1536")) rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_1536K_30FPS;	// avc 1536k
+			if(strnum(param, 512))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_512K_30FPS;		// avc 512k
+			if(strnum(param, 768))  rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_768K_30FPS;		// avc 768k
+			if(strnum(param, 1024)) rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_1024K_30FPS;	// avc 1024k
+			if(strnum(param, 1536)) rec_video_format = CELL_REC_PARAM_VIDEO_FMT_AVC_MP_MIDDLE_1536K_30FPS;	// avc 1536k
 		}
 	}
 
@@ -231,15 +231,15 @@ static bool rec_start(const char *param)
 	if(strcasestr(param, "aac"))
 	{
 		rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_96K;							// aac_96k
-		if(strstr(param, "64"))  rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_64K;	// aac_64k
-		if(strstr(param, "128")) rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_128K;	// aac_128k
+		if(strnum(param, 64))  rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_64K;	// aac_64k
+		if(strnum(param, 128)) rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_AAC_128K;	// aac_128k
 	}
 	else
 	if(strcasestr(param, "pcm"))
 	{
 		rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_PCM_768K;								// pcm_768k
-		if(strstr(param, "384"))  rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_PCM_384K;		// pcm_384k
-		if(strstr(param, "1536")) rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_PCM_1536K;	// pcm_1536k
+		if(strnum(param, 384))  rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_PCM_384K;		// pcm_384k
+		if(strnum(param, 1536)) rec_audio_format = CELL_REC_PARAM_AUDIO_FMT_PCM_1536K;	// pcm_1536k
 	}
 
 	// validate audio format (use default if invalid)

@@ -48,7 +48,7 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 
 	if(*path == '/')
 	{
-		sprintf(absPath_s, "%s", path);
+		strcopy(absPath_s, path);
 
 		normalize_path(absPath_s, true);
 
@@ -57,7 +57,7 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 	}
 	else
 	{
-		u16 len = sprintf(absPath_s, "%s", cwd);
+		u16 len = strcopy(absPath_s, cwd);
 
 		normalize_path(absPath_s, true);
 
@@ -87,7 +87,7 @@ static u8 parsePath(char *absPath_s, const char *path, const char *cwd, bool sca
 				}
 			} else {
 				// Path is absolute
-				snprintf(absPath_s, STD_PATH_LEN, "%s", path);
+				strncopy(absPath_s, STD_PATH_LEN, path);
 			}
 		}
 
@@ -200,7 +200,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	sys_net_get_sockinfo(conn_s_ftp, &conn_info, 1);
 
 	char remote_ip[16];
-	sprintf(remote_ip, "%s", inet_ntoa(conn_info.remote_adr));
+	strcopy(remote_ip, inet_ntoa(conn_info.remote_adr));
 
 	// check remote access
 	if(webman_config->bind && is_remote_ip && !islike(remote_ip, webman_config->allow_ip))
@@ -217,7 +217,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 	setPluginActive();
 
 	char ip_address[16];
-	sprintf(ip_address, "%s", inet_ntoa(conn_info.local_adr));
+	strcopy(ip_address, inet_ntoa(conn_info.local_adr));
 	for(u8 n = 0; ip_address[n]; n++) if(ip_address[n] == '.') ip_address[n] = ',';
 
 	int data_s = NONE;			// data socket
@@ -462,7 +462,7 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 								{
 									if(is_dev_blind && file_exists(filename))
 									{
-										u16 len = sprintf(source, "%s", filename);
+										u16 len = strcopy(source, filename);
 										sprintf(filename + len, ".~");
 										if(file_exists(filename)) {filename[len] = *source = NULL;} // overwrite if the temp file exists
 									}
@@ -977,17 +977,17 @@ static void handleclient_ftp(u64 conn_s_ftp_p)
 													entry_name);
 										}
 										else
-											slen = sprintf(buffer, "%s%s%s%s%s%s%s%s%s%s 1 root  root  %13llu %s %02i %02i:%02i %s\r\n",
-													(mode & S_IFDIR) ? "d" : "-",
-													(mode & S_IRUSR) ? "r" : "-",
-													(mode & S_IWUSR) ? "w" : "-",
-													(mode & S_IXUSR) ? "x" : "-",
-													(mode & S_IRGRP) ? "r" : "-",
-													(mode & S_IWGRP) ? "w" : "-",
-													(mode & S_IXGRP) ? "x" : "-",
-													(mode & S_IROTH) ? "r" : "-",
-													(mode & S_IWOTH) ? "w" : "-",
-													(mode & S_IXOTH) ? "x" : "-",
+											slen = sprintf(buffer, "%c%c%c%c%c%c%c%c%c%c 1 root  root  %13llu %s %02i %02i:%02i %s\r\n",
+													(mode & S_IFDIR) ? 'd' : '-',
+													(mode & S_IRUSR) ? 'r' : '-',
+													(mode & S_IWUSR) ? 'w' : '-',
+													(mode & S_IXUSR) ? 'x' : '-',
+													(mode & S_IRGRP) ? 'r' : '-',
+													(mode & S_IWGRP) ? 'w' : '-',
+													(mode & S_IXGRP) ? 'x' : '-',
+													(mode & S_IROTH) ? 'r' : '-',
+													(mode & S_IWOTH) ? 'w' : '-',
+													(mode & S_IXOTH) ? 'x' : '-',
 													(unsigned long long)entry.attribute.st_size, smonth[rDate.month - 1], rDate.day,
 													rDate.hour, rDate.minute, entry_name);
 									}

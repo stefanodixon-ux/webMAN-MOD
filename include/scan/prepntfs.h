@@ -58,7 +58,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 	// get multi-part file sectors
 	if(is_iso_0(filename))
 	{
-		size_t nlen = sprintf(tmp_path, "%s", iso_path);
+		size_t nlen = strcopy(tmp_path, iso_path);
 		extlen = 6, --nlen; int nparts;
 
 		for(u8 o = 1; o < 64; o++)
@@ -190,7 +190,7 @@ static void create_ntfs_file(char *iso_path, char *filename, size_t plen)
 		}
 
 		// copy .PNG and .SFO from NTFS drive
-		int tlen = sprintf(tmp_path, "%s/%s", WMTMP, filename);
+		int tlen = concat_path(tmp_path, WMTMP, filename);
 
 		// copy external .SFO to WMTMP if exists
 		if((ntfs_m == id_PS3ISO) && !sfo_found)
@@ -251,11 +251,11 @@ static void scan_path_ntfs(const char *path, bool chk_dirs)
 		while(ps3ntfs_dirnext(pdir, dir.d_name, &st) == 0)
 		{
 			if(dir.d_name[0] == '.') continue;
-			size_t flen = snprintf(dir_entry + plen, STD_PATH_LEN - plen, "%s", dir.d_name);
+			size_t flen = strncopy(dir_entry + plen, STD_PATH_LEN - plen, dir.d_name);
 
 			if(st.st_mode & S_IFDIR)
 			{
-				if(idx < max_entries) {sprintf(dir_entries[idx++].path, "%s", dir.d_name);}
+				if(idx < max_entries) {strcopy(dir_entries[idx++].path, dir.d_name);}
 			}
 			else if(is_iso_file(dir.d_name, flen, ntfs_m, 0))
 			{
@@ -266,7 +266,7 @@ static void scan_path_ntfs(const char *path, bool chk_dirs)
 
 		for(int i = 0; i < idx; i++)
 		{
-			snprintf(dir_entry + plen, STD_PATH_LEN - plen, "%s", dir_entries[i].path);
+			strncopy(dir_entry + plen, STD_PATH_LEN - plen, dir_entries[i].path);
 
 			ntfs_subdir = dir_entries[i].path;
 			for(int c = 0; ntfs_subdir[c]; c++)

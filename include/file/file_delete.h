@@ -100,7 +100,7 @@ static int del(const char *path, u8 recursive)
 static void unlink_file(const char *drive, const char *path, const char *file)
 {
 	char filename[64];
-	sprintf(filename, "%s/%s%s", drive, path, file); cellFsUnlink(filename);
+	concat_path2(filename, drive, path, file); cellFsUnlink(filename);
 }
 
 #ifndef LITE_EDITION
@@ -165,7 +165,7 @@ static void uninstall(char *param)
 
 	restore_fan(SYSCON_MODE);
 
-	sprintf(param, "%s%s", "/delete.ps3", "?uninstall");
+	concat2(param, "/delete.ps3", "?uninstall");
 }
 #endif
 
@@ -195,7 +195,7 @@ static void delete_history(bool delete_folders)
 
 	for(u8 p = 0; p < 10; p++)
 	{
-		sprintf(path, "%s/%s", drives[0], paths[p]); cellFsRmdir(path);
+		concat_path(path, drives[0], paths[p]); cellFsRmdir(path);
 		strcat(path, AUTOPLAY_TAG); 				 cellFsRmdir(path);
 	}
 	cellFsRmdir("/dev_hdd0/PKG");

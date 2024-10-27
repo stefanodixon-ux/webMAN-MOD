@@ -19,8 +19,8 @@ static void snd0_thread(__attribute__((unused)) u64 arg)
 		{
 			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
 			if(entry.entry_name.d_namlen != TITLE_ID_LEN) continue;
-			sprintf(snd0_file, "%s/SND0.AT3",  entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
-			sprintf(snd0_file, "%s/ICON1.PAM", entry.entry_name.d_name); cellFsChmod(snd0_file, mode);
+			concat2(snd0_file, entry.entry_name.d_name, "/SND0.AT3"); cellFsChmod(snd0_file, mode);
+			concat2(snd0_file, entry.entry_name.d_name, "/ICON1.PAM"); cellFsChmod(snd0_file, mode);
 		}
 		cellFsClosedir(fd);
 	}

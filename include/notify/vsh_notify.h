@@ -39,7 +39,7 @@ static void show_progress(const char *path, u8 oper)
 	else if(oper == OV_FIND)
 		snprintf(data, sizeof(data), "\n%s:\n%s", "Searching", path);
 	else // if(oper == OV_SHOW)
-		snprintf(data, sizeof(data), "%s", path);
+		strncopy(data, sizeof(data), path);
 
 	// fix degree character
 	if(overlay_info)
@@ -176,12 +176,12 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 								"tex_go_game",						//50
 							};
 
-	if(icon_id >= MAX_RCO_IMAGES) icon_id = 0;
+	char rco[64], texture[64];
 	const char *plugin = "explore_plugin";
-	const char *tex = rco_images[icon_id];
+	const char *tex = texture;
+	if(icon_id >= MAX_RCO_IMAGES) icon_id = 0;
 
 	// custom textures
-	char rco[64], texture[64];
 	char *pos = strstr(msg, "&icon=");
 	if(pos)
 	{
@@ -193,7 +193,7 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 		}
 		else if(get_param("&icon=", texture, pos, 63))
 		{
-			tex = texture, icon_id = MAX_RCO_IMAGES;
+			icon_id = MAX_RCO_IMAGES;
 
 			// example: /popup.ps3?message&icon=item_tex_cam_facebook&rco=explore_plugin
 			if(get_param("&rco=", rco, pos, 63))
@@ -205,6 +205,8 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 		}
 		*pos = NULL;
 	}
+	else
+		tex = rco_images[icon_id];
 
 	if(icon_id < 18) plugin = "system_plugin";
 
@@ -249,8 +251,7 @@ static void show_msg(const char *text)
 	//	vshtask_notify = getNIDfunc("vshtask", 0xA02D46E7, 0);
 	//if(!vshtask_notify) return;
 
-	char msg[240];
-	snprintf(msg, sizeof(msg), "%s", text);
+	char msg[240]; strncopy(msg, sizeof(msg), text);
 
 	char *snd = strstr(msg, "&snd=");
 	if(snd)

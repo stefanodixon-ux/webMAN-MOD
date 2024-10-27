@@ -331,7 +331,7 @@ static void get_local_app_ver(char *app_ver, const char *title_id, char *param_s
 {
 	if(*title_id)
 	{
-		sprintf(param_sfo, "%s/%s/PARAM.SFO", HDD0_GAME_DIR, title_id);
+		concat_path2(param_sfo, HDD0_GAME_DIR, title_id, "/PARAM.SFO");
 		if(not_exists(param_sfo))
 			{set_param_sfo(param_sfo); return;}
 

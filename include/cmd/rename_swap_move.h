@@ -59,7 +59,7 @@
 	#endif
 			if((cmd_len == SWAP_CMD) && file_exists(source) && file_exists(dest))
 			{
-				sprintf(header, "%s.bak", source);
+				concat2(header, source, ".bak");
 				rename_file(source, header);
 				rename_file(dest, source);
 				rename_file(header, dest);

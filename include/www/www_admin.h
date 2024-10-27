@@ -63,7 +63,7 @@
 
 		if(!accept)
 		{
-			sprintf(param, "%s\nADMIN %s", STR_ERROR, STR_DISABLED);
+			concat3(param, STR_ERROR, "\nADMIN ", STR_DISABLED);
 			keep_alive = http_response(conn_s, header, param, CODE_BAD_REQUEST, param);
 			goto exit_handleclient_www;
 		}

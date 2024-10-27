@@ -3,7 +3,7 @@
 	if(islike(param, "/mount") && is_ntfs_path(param + 10))
 	{
 		char *filename = param + 10; change_cue2iso(filename);
-		sprintf(header, "%s%s", filename, ".ntfs[");
+		concat2(header, filename, ".ntfs[");
 		int flen = get_name(filename, header, GET_WMTMP);
 
 		for(int i = 2; i < 9; i++) // "PS3ISO", "BDISO", "DVDISO", "PS2ISO", "PSXISO", "PSXGAMES", "PSPISO"

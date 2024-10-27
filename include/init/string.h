@@ -1,6 +1,24 @@
 #define LCASE(a)	(a | 0x20)
 
 extern char *strcasestr(const char *s1, const char *s2);
+extern char *strfmt(const char *fmt, ...);
+
+#ifdef VIDEO_REC
+static char *strnum(const char *str, int num)
+{
+	return strstr(str, strfmt("%i", num));
+}
+#endif
+
+static int strcopy(char *dest, const char *src)
+{
+	return sprintf(dest, "%s", src);
+}
+
+static int strncopy(char *dest, int length, const char *src)
+{
+	return snprintf(dest, length, "%s", src);
+}
 
 typedef struct {
 	u32  size;
@@ -63,6 +81,26 @@ static size_t concat(char *dest, const char *src)
 	return _concat(&fast_concat, src) - dest;
 }
 
+static size_t concat2(char *dest, const char *src1, const char *src2)
+{
+	return sprintf(dest, "%s%s", src1, src2);
+}
+
+static void concat3(char *dest, const char *src1, const char *src2, const char *src3)
+{
+	sprintf(dest, "%s%s%s", src1, src2, src3);
+}
+
+static size_t concat_path(char *dest, const char *src1, const char *src2)
+{
+	return sprintf(dest, "%s/%s", src1, src2);
+}
+
+static size_t concat_path2(char *dest, const char *src1, const char *src2, const char *src3)
+{
+	return sprintf(dest, "%s/%s%s", src1, src2, src3);
+}
+
 static void memcpy64(void *dst, const void *src, int n)
 {
 	if(!dst || !src || !n) return;
@@ -109,7 +147,7 @@ static char *replace(char *text, const char *rep, const char *with, int count)
 		if(gap >= 0)
 			memcpy(pos, with, len_with);
 		else
-			sprintf(pos, "%s%s", with, pos + len_with - gap);
+			concat2(pos, with, pos + len_with - gap);
 
 		pos = strstr(pos + len_with, rep);
 	}

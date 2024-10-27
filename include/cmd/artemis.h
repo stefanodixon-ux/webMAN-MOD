@@ -21,7 +21,7 @@
 		if((*code_list != '/') || strstr(code_list, ".ncl"))
 			code_list = ARTEMIS_CODES_FILE;
 
-		sprintf(param, "%s%s", "/edit.ps3", code_list);
+		concat2(param, "/edit.ps3", code_list);
 
 		start_artemis(); sys_ppu_thread_sleep(1);
 

@@ -39,7 +39,6 @@
 #define ARTEMIS_PRX
 
 //// EXTRA FEATURES ////
-//#define AUTO_TOGGLE_ON_XMB	// auto switch to full edition (L1+R1+TRIANGLE) when a game returns to XMB
 //#define GET_KLICENSEE	// /klic.ps3
 //#define XMB_SCREENSHOT	// screenshot XMB using L2 + R2 + SELECT + START (thanks to 3141card)
 //#define SWAP_KERNEL		// load custom lv2_kernel.self patching LV1 and soft rebooting (use /copy.ps3) [requires QA flag enabled]
@@ -55,6 +54,7 @@
 //#define PHOTO_GUI			// PhotoGUI: mount games through Photo column
 //#define MOUNT_PNG			// support fake PNG as ISO
 //#define VISUALIZERS		// Rotate visualizers (earth, lines, canyon, coldboot_*.ac3)
+//#define AUTO_TOGGLE_ON_XMB	// auto switch to full edition (L1+R1+TRIANGLE) when a game returns to XMB
 
 //// INTERNAL PLUGINS ////
 //#define USE_INTERNAL_NET_PLUGIN	// comment out to use netiso.sprx

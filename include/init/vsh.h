@@ -82,8 +82,8 @@ static int get_game_info(void)
 		game_interface = (game_plugin_interface *)plugin_GetInterface(is_ingame, 1);
 		game_interface->gameInfo(_game_info);
 
-		snprintf(_game_TitleID, 10, "%s", _game_info+0x04);
-		snprintf(_game_Title,   64, "%s", _game_info+0x14);
+		strncopy(_game_TitleID, 10, _game_info+0x04);
+		strncopy(_game_Title,   64, _game_info+0x14);
 	}
 
 	return is_ingame;
@@ -136,9 +136,8 @@ static void exec_xmb_command(const char *cmd)
 
 static void exec_xmb_command2(const char *cmd, const char *param)
 {
-	char explore_command[128]; // info: http://www.psdevwiki.com/ps3/explore_plugin
-	sprintf(explore_command, cmd, param);
-	exec_xmb_command(explore_command);
+	// info: http://www.psdevwiki.com/ps3/explore_plugin
+	exec_xmb_command(strfmt(cmd, param));
 }
 
 #ifdef PKG_HANDLER
@@ -202,7 +201,7 @@ static bool explore_exec_push(u32 usecs, u8 focus_first)
 	return false;
 }
 
-static void exec_xmb_item(char *category, char *seg_name, bool execute)
+static void exec_xmb_item(const char *category, const char *seg_name, bool execute)
 {
 	u8 n;
 
@@ -219,11 +218,11 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 	if(explore_interface)
 	{
 		// default category
-		if(!*category) sprintf(category, "game");
+		if(!category) category = "game";
 
 		// default segment
-		if(mount_unk == APP_GAME) sprintf(seg_name, "seg_gamedebug"); else
-		if(!*seg_name) sprintf(seg_name, webman_config->noBD ? "seg_gamedebug" : "seg_device");
+		if(mount_unk == APP_GAME) seg_name = "seg_gamedebug"; else
+		if(!seg_name) seg_name = webman_config->noBD ? "seg_gamedebug" : "seg_device";
 
 		if(!IS(seg_name, "seg_device") || isDir("/dev_bdvd"))
 		{
@@ -239,9 +238,9 @@ static void exec_xmb_item(char *category, char *seg_name, bool execute)
 			{
 				if(isDir("/dev_bdvd/PS3_GAME")) {timeout = 40, icon_found = timeout - 5;} else
 				if(file_exists("/dev_bdvd/SYSTEM.CNF")) {timeout = 4, icon_found = 0;} else
-				if(isDir("/dev_bdvd/BDMV") )    {sprintf(category, "video"); sprintf(seg_name, "seg_bdmav_device");} else
-				if(isDir("/dev_bdvd/VIDEO_TS")) {sprintf(category, "video"); sprintf(seg_name, "seg_dvdv_device" );} else
-				if(isDir("/dev_bdvd/AVCHD"))    {sprintf(category, "video"); sprintf(seg_name, "seg_avchd_device");} else
+				if(isDir("/dev_bdvd/BDMV") )    {category = "video", seg_name = "seg_bdmav_device";} else
+				if(isDir("/dev_bdvd/VIDEO_TS")) {category = "video", seg_name = "seg_dvdv_device" ;} else
+				if(isDir("/dev_bdvd/AVCHD"))    {category = "video", seg_name = "seg_avchd_device";} else
 				return;
 			}
 			else {timeout = 1, icon_found = 1;}
@@ -298,8 +297,7 @@ static bool is_app_home_onxmb(void)
 
 static void launch_disc(bool exec)
 {
-	char category[8], seg_name[16]; *category = *seg_name = NULL;
-	exec_xmb_item(category, seg_name, exec);
+	exec_xmb_item(NULL, NULL, exec);
 }
 
 static bool launch_app_home_icon(bool exec)
@@ -385,21 +383,11 @@ static void reload_by_logout(void)
 	}
 }
 
-static int count_items(const char *path)
-{
-	int fd; u32 count = 0;
-	if(cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
-	{
-		CellFsDirectoryEntry entry; size_t read_e;
+static int folder_count(const char *path, s8 max_items);
 
-		while(working)
-		{
-			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
-			if(entry.entry_name.d_name[0] != '.') ++count;
-		}
-		cellFsClosedir(fd);
-	}
-	return count;
+static bool has_one_user_dir(void)
+{
+	return folder_count(HDD0_HOME_DIR, 2) <= 1;
 }
 #endif
 
@@ -411,7 +399,7 @@ static void reload_xmb(u8 use_app)
 		#ifdef LITE_EDITION
 		if(!cobra_version)
 		#else
-		if((webman_config->reloadxmb == 2) || (!use_app && count_items(HDD0_HOME_DIR) <= 1)) use_app = true;
+		if((webman_config->reloadxmb == 2) || (!use_app && has_one_user_dir())) use_app = true;
 
 		if(!use_app || !cobra_version)
 		{
@@ -447,7 +435,7 @@ static void reload_xmb(u8 use_app)
 
 	if(IS_ON_XMB && USER_LOGGEDIN)
 	{
-		if((webman_config->reloadxmb == 2) || (!use_app && count_items(HDD0_HOME_DIR) <= 1)) use_app = true;
+		if((webman_config->reloadxmb == 2) || (!use_app && has_one_user_dir())) use_app = true;
 
 		if(!use_app)
 		{

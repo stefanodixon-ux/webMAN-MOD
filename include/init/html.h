@@ -348,7 +348,10 @@ static size_t add_radio_button(const char *name, int value, const char *id, cons
 	if(!buffer || !label) return 0;
 
 	char html[MAX_LINE_LEN];
-	sprintf(html, "<label><input type=\"radio\" name=\"%s\" value=\"%i\" id=\"%s\"%s/> %s%s</label>", name, value, id, checked ? ITEM_CHECKED : "", label, (sufix) ? sufix : "<br>");
+	sprintf(html, "<label><input type=\"radio\" name=\"%s\" value=\"%i\" id=\"%s\"%s/> %s%s</label>",
+					name, value, id,
+					checked ? ITEM_CHECKED : "",
+					label, (sufix) ? sufix : "<br>");
 	return concat(buffer, html);
 }
 
@@ -365,7 +368,11 @@ static size_t add_check_box(const char *name, bool disabled, const char *label, 
 		const char *on_startup = pos + strlen(AUTOBOOT_PATH); // sufix
 		sprintf(autob + n, HTML_INPUT("autop", "%s", "255", "40") "%s", webman_config->autoboot_path, on_startup);
 	}
-	sprintf(html, "<label><input type=\"checkbox\" name=\"%s\" value=\"1\" %s%s/> %s</label>%s", name, disabled ? HTML_DISABLED_CHECKBOX : "", checked ? ITEM_CHECKED : "", clabel, (!sufix) ? "<br>" : sufix);
+	sprintf(html, "<label><input type=\"checkbox\" name=\"%s\" value=\"1\" %s%s/> %s</label>%s",
+					name,
+					disabled ? HTML_DISABLED_CHECKBOX : "",
+					checked ? ITEM_CHECKED : "",
+					clabel, (!sufix) ? "<br>" : sufix);
 	return concat(buffer, html);
 }
 

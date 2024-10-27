@@ -39,7 +39,7 @@
 				if(isHEX(data))
 					size = Hex2Bin(data, header);
 				else
-					size = sprintf(header, "%s", data);
+					size = strcopy(header, data);
 
 				write_file(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, header, offset, size, false);
 

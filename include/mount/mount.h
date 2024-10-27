@@ -155,7 +155,7 @@ static void auto_play(char *param, u8 force_autoplay)
 			const char *folder[8] = {"VIDEO", "MOVIES", "MUSIC", "PICTURE", "PHOTOS", "COMICS", "EBOOK", "MAGAZINE"};
 			for(u8 i = 0; i < 8; i++)
 			{
-				sprintf(path, "/dev_bdvd/%s", folder[i]);
+				concat_path(path, "/dev_bdvd", folder[i]);
 				if(isDir(path))
 				{
 					const char *category =  (i < 2) ? "video" :
@@ -375,7 +375,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 			}
 			else
 			{
-				slen = sprintf(_path, "%s", source);
+				slen = strcopy(_path, source);
 			}
 
 			// -----------------
@@ -400,7 +400,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 				{
 					if(is_dir)
 					{
-						sprintf(full_path, "%s/%s/PS3_GAME/PARAM.SFO", _path, d_name); check_ps3_game(full_path);
+						concat_path2(full_path, _path, d_name, "/PS3_GAME/PARAM.SFO"); check_ps3_game(full_path);
 						get_title_and_id_from_sfo(full_path, title_id, d_name, icon, buf, 0); f1 = id_GAMES;
 					}
 					#ifdef COBRA_ONLY
@@ -438,7 +438,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 				{
 					dont_copy_same_size = false; // force copy
 					normalize_path(source, false);
-					sprintf(target, "%s%s", source, get_filename(cp_path));
+					concat2(target, source, get_filename(cp_path));
 					strcpy(source, cp_path);
 				}
 				else
@@ -456,89 +456,89 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 					#endif // #ifdef SWAP_KERNEL
 					if(strstr(source, "/***PS3***/"))
 					{
-						sprintf(target, "/dev_hdd0/PS3ISO%s.iso", filename); // /copy.ps3/net0/***PS3***/GAMES/BLES12345  -> /dev_hdd0/PS3ISO/BLES12345.iso
+						concat_path2(target, "/dev_hdd0/PS3ISO", filename, ".iso"); // /copy.ps3/net0/***PS3***/GAMES/BLES12345  -> /dev_hdd0/PS3ISO/BLES12345.iso
 					}
 					else
 					if(strstr(source, "/***DVD***/"))
 					{
-						sprintf(target, "/dev_hdd0/DVDISO%s.iso", filename); // /copy.ps3/net0/***DVD***/folder  -> /dev_hdd0/DVDISO/folder.iso
+						concat_path2(target, "/dev_hdd0/DVDISO", filename, ".iso"); // /copy.ps3/net0/***DVD***/folder  -> /dev_hdd0/DVDISO/folder.iso
 					}
 					else if(IS(ext, ".pkg"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/Packages", drives[usb]);
+							concat2(target, drives[usb], "/Packages");
 						else
-							sprintf(target, "/dev_hdd0/packages");
+							strcopy(target, "/dev_hdd0/packages");
 
 						strcat(target, filename);
 					}
 					else if(_IS(ext, ".bmp") || _IS(ext, ".gif"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/PICTURE", drives[usb]);
+							concat2(target, drives[usb], "/PICTURE");
 						else
-							sprintf(target, "%s/PICTURE", drives[0]);
+							concat2(target, drives[0], "/PICTURE");
 
 						strcat(target, filename);
 					}
 					else if(_IS(ext, ".jpg") || _IS(ext, ".png"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/PICTURE", drives[usb]);
+							concat2(target, drives[usb], "/PICTURE");
 						else if(strstr(source, "BL") || strstr(param, "BC") || strstr(source, "NP"))
-							sprintf(target, "/dev_hdd0/GAMES/covers");
+							strcopy(target, "/dev_hdd0/GAMES/covers");
 						else
-							sprintf(target, "%s/PICTURE", drives[0]);
+							concat2(target, drives[0], "/PICTURE");
 
 						strcat(target, filename);
 					}
 					else if(strcasestr(source, "/covers"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/COVERS", drives[usb]);
+							concat2(target, drives[usb], "/COVERS");
 						else
-							sprintf(target, "/dev_hdd0/GAMES/covers");
+							strcopy(target, "/dev_hdd0/GAMES/covers");
 					}
 					else if(_IS(ext, ".mp4") || _IS(ext, ".mkv") || _IS(ext, ".avi"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/VIDEO", drives[usb]);
+							concat2(target, drives[usb], "/VIDEO");
 						else
-							sprintf(target, "/dev_hdd0/VIDEO");
+							concat2(target, drives[0], "/VIDEO");
 
 						strcat(target, filename);
 					}
 					else if(_IS(ext, ".mp3"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/MUSIC", drives[usb]);
+							concat2(target, drives[usb], "/MUSIC");
 						else
-							sprintf(target, "%s/MUSIC", drives[0]);
+							concat2(target, drives[0], "/MUSIC");
 
 						strcat(target, filename);
 					}
 					else if(IS(ext, ".p3t"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/PS3/THEME", drives[usb]);
+							concat2(target, drives[usb], "/PS3/THEME");
 						else
-							sprintf(target, "/dev_hdd0/theme");
+							strcopy(target, "/dev_hdd0/theme");
 
 						strcat(target, filename);
 					}
 					else if(!extcmp(source, ".edat", 5))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/exdata", drives[usb]);
+							concat2(target, drives[usb], "/exdata");
 						else
-							sprintf(target, "%s/%s/exdata", HDD0_HOME_DIR, webman_config->uaccount);
+							concat_path2(target, HDD0_HOME_DIR, webman_config->uaccount, "/exdata");
 
 						strcat(target, filename);
 					}
 					else if(IS(ext, ".rco") || strstr(source, "/coldboot"))
 					{
 						enable_dev_blind(NO_MSG);
-						sprintf(target, "/dev_blind/vsh/resource");
+						strcopy(target, "/dev_blind/vsh/resource");
 
 						if(IS(ext, ".raf"))
 							strcat(target, "/coldboot.raf");
@@ -548,7 +548,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 					else if(IS(ext, ".qrc"))
 					{
 						enable_dev_blind(NO_MSG);
-						sprintf(target, "%s/qgl", "/dev_blind/vsh/resource");
+						concat2(target, "/dev_blind/vsh/resource", "/qgl");
 
 						if(strstr(param, "/lines"))
 							strcat(target, "/lines.qrc");
@@ -558,49 +558,49 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 					else if(strstr(source, "/exdata"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/exdata", drives[usb]);
+							concat2(target, drives[usb], "/exdata");
 						else
-							sprintf(target, "%s/%s/exdata", HDD0_HOME_DIR, webman_config->uaccount);
+							concat_path2(target, HDD0_HOME_DIR, webman_config->uaccount, "/exdata");
 					}
 					else if(strstr(source, "/PS3/THEME"))
-						sprintf(target, "/dev_hdd0/theme");
+						strcopy(target, "/dev_hdd0/theme");
 					else if(strcasestr(source, "/savedata/"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/PS3/SAVEDATA", drives[usb]);
+							concat2(target, drives[usb], "/PS3/SAVEDATA");
 						else
-							sprintf(target, "%s/%s/savedata", HDD0_HOME_DIR, webman_config->uaccount);
+							concat_path2(target, HDD0_HOME_DIR, webman_config->uaccount, "/savedata");
 
 						strcat(target, filename);
 					}
 					else if(strcasestr(source, "/trophy/"))
 					{
 						if(is_copying_from_hdd)
-							sprintf(target, "%s/PS3/TROPHY", drives[usb]);
+							concat2(target, drives[usb], "/PS3/TROPHY");
 						else
-							sprintf(target, "%s/%s/trophy", HDD0_HOME_DIR, webman_config->uaccount);
+							concat_path2(target, HDD0_HOME_DIR, webman_config->uaccount, "/trophy");
 
 						strcat(target, filename);
 					}
 					else if(strstr(source, "/webftp_server"))
 					{
-						sprintf(target, "%s/webftp_server.sprx", "/dev_hdd0/plugins");
-						if(not_exists(target)) sprintf(target + 31, "_ps3mapi.sprx");
-						if(not_exists(target)) sprintf(target + 10, "webftp_server.sprx");
-						if(not_exists(target)) sprintf(target + 23, "_ps3mapi.sprx");
+						concat_path(target, "/dev_hdd0/plugins", "webftp_server.sprx");
+						if(not_exists(target)) strcopy(target + 31, "_ps3mapi.sprx");
+						if(not_exists(target)) strcopy(target + 10, "webftp_server.sprx");
+						if(not_exists(target)) strcopy(target + 23, "_ps3mapi.sprx");
 					}
 					else if(strstr(source, "/boot_plugins"))
 					{
-						sprintf(target, "/dev_hdd0/boot_plugins.txt");
+						strcopy(target, "/dev_hdd0/boot_plugins.txt");
 						if(cobra_version == 0)
-							sprintf(target + 22, "_nocobra.txt");
+							strcopy(target + 22, "_nocobra.txt");
 					}
 					else if(is_copying_from_hdd)
-						sprintf(target, "%s%s", drives[usb], source + 9);
+						concat2(target, drives[usb], source + 9);
 					else if(islike(source, "/dev_usb"))
-						sprintf(target, "%s%s", drives[0], source + 11);
+						concat2(target, drives[0], source + 11);
 					else if(islike(source, "/net"))
-						sprintf(target, "%s%s", drives[0], source + 5);
+						concat2(target, drives[0], source + 5);
 					else
 					{
 						if(islike(source, "/dev_bdvd"))
@@ -613,7 +613,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 							} while (isDir(target));
 
 							char title[128];
-							sprintf(title, "/dev_bdvd/PS3_GAME/PARAM.SFO"); check_ps3_game(title);
+							strcopy(title, "/dev_bdvd/PS3_GAME/PARAM.SFO"); check_ps3_game(title);
 							if(file_exists(title))
 							{
 								char title_id[TITLEID_LEN];
@@ -664,7 +664,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 				// show target path
 				use_open_path = true; add_breadcrumb_trail(buffer, target); *tempstr = NULL;
 
-				if(strstr(target, "/webftp_server")) {sprintf(tempstr, "<HR>%s", STR_SETTINGSUPD);} else
+				if(strstr(target, "/webftp_server")) {concat2(tempstr, "<hr>", STR_SETTINGSUPD);} else
 				if(cp_mode) {dont_copy_same_size = true; char *p = get_filename(_path); *p = NULL; sprintf(tempstr, HTML_REDIRECT_TO_URL, _path, HTML_REDIRECT_WAIT);}
 
 				if(g_sysmem) {sys_memory_free(g_sysmem); g_sysmem = NULL;}
@@ -823,7 +823,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 
 						if(is_iso || strstr(entry_name, "[PS2"))
 						{
-							if(pcount == 0) strcat(buffer, "<br><HR>");
+							if(pcount == 0) strcat(buffer, "<br><hr>");
 							urlenc(enc_dir_name, entry_name);
 							tlen += sprintf(html, "<a href=\"/mount.ps2%s/%s\">%s</a><br>", target, enc_dir_name, entry_name);
 
@@ -957,7 +957,7 @@ void map_app_home(const char *path)
 		{
 			sys_map_path("/app_home", path);
 
-			sprintf(mpath, "%s/PS3_GM01", path);
+			concat2(mpath, path, "/PS3_GM01");
 			gm = isDir(mpath) ? 01 : 00; // reset gm to 00 if the game is not a multi-game disc
 		}
 		else
@@ -1097,7 +1097,7 @@ static void do_umount(bool clean)
 		if(*map_title_id)
 		{
 			char gamei_mapping[32];
-			sprintf(gamei_mapping, "%s%s", HDD0_GAME_DIR, map_title_id);
+			concat2(gamei_mapping, HDD0_GAME_DIR, map_title_id);
 			unmap_path(gamei_mapping);
 			unmap_path(PKGLAUNCH_DIR);
 			*map_title_id = NULL;
@@ -1160,7 +1160,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 {
 	if(*source == '/')
 	{
-		sprintf(target, "/dev_hdd0%s", basepath);
+		concat2(target, "/dev_hdd0", basepath);
 		cellFsMkdir(target, DMODE);
 
 		strcat(target, get_filename(source)); // add file name
@@ -1342,11 +1342,11 @@ static void mount_on_insert_usb(bool on_xmb, char *msg)
 						if(automount != f0)
 						{
 							char *game_path = msg;
-							sprintf(game_path, "%s/AUTOMOUNT.ISO", drives[f0]);
+							concat2(game_path, drives[f0], "/AUTOMOUNT.ISO");
 							if(file_exists(game_path)) {mount_game(game_path, MOUNT_SILENT); automount = f0; break;}
 							else
 							{
-								sprintf(game_path, "%s/PS3_GAME/PARAM.SFO", drives[f0]); check_ps3_game(game_path);
+								concat2(game_path, drives[f0], "/PS3_GAME/PARAM.SFO"); check_ps3_game(game_path);
 								if(file_exists(game_path)) {mount_game(game_path, MOUNT_SILENT); automount = f0; break;}
 							}
 						}
@@ -1713,7 +1713,7 @@ exit_mount:
 			getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 
 			// check for PARAM.SFO in hdd0/game folder
-			sprintf(filename, "%s%s%s", HDD0_GAME_DIR, title_id, "/PARAM.SFO");
+			concat3(filename, HDD0_GAME_DIR, title_id, "/PARAM.SFO");
 
 			if(not_exists(filename))
 			{
@@ -1724,7 +1724,7 @@ exit_mount:
 					if(strcasestr(_path0, ".iso") || strstr(_path0, ".ntfs[PS3ISO]"))
 					{
 						strcpy(map_title_id, title_id);
-						sprintf(filename, "%s%s", HDD0_GAME_DIR, map_title_id);
+						concat2(filename, HDD0_GAME_DIR, map_title_id);
 						sys_map_path(filename, "/dev_bdvd/PS3_GAME");
 					}
 				}
@@ -1808,10 +1808,10 @@ mounting_done:
 				{
 					set_app_home(_path0);
 
-					sprintf(_path, "%s/PARAM.SFO", "/dev_bdvd");
+					concat2(_path, "/dev_bdvd", "/PARAM.SFO");
 					getTitleID(_path, map_title_id, GET_TITLE_ID_ONLY);
 
-					sprintf(_path, "%s%s", HDD0_GAME_DIR, map_title_id);
+					concat2(_path, HDD0_GAME_DIR, map_title_id);
 					sys_map_path(_path, _path0);
 
 					sys_ppu_thread_sleep(1);

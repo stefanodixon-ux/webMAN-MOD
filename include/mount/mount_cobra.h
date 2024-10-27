@@ -78,7 +78,7 @@ mount_again:
 
 		u8 iso_parts = 1;
 
-		size_t path_len = sprintf(full_path, "%s", _path);
+		size_t path_len = strcopy(full_path, _path);
 
 		CD_SECTOR_SIZE_2352 = 2352;
 
@@ -410,7 +410,7 @@ copy_ps2iso_to_hdd0:
 	#else
 		char filename[STD_PATH_LEN + 20];
 
-		sprintf(filename, "%s/PS3_GAME/PARAM.SFO", _path);
+		concat2(filename, _path, "/PS3_GAME/PARAM.SFO");
 		getTitleID(filename, title_id, GET_TITLE_ID_ONLY);
 	#endif
 		// ----

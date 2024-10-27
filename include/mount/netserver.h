@@ -51,7 +51,7 @@ static void translate_path(char *path, u16 fp_len)
 	{
 		if(i == NET) i = NTFS + 1; // skip range from /net0 to /ext
 
-		sprintf(path, "%s%s", drives[i], tmppath);
+		concat2(path, drives[i], tmppath);
 
 		if(file_exists(path)) break;
 	}
@@ -513,7 +513,7 @@ static int process_read_dir_cmd(u8 index, netiso_read_dir_entry_cmd *cmd)
 
 		if(i == NET) i = NTFS + 1; // skip range from /net0 to /ext
 
-		dirpath_len = sprintf(dirpath, "%s%s", drives[i], clients[index].dirpath);
+		dirpath_len = concat2(dirpath, drives[i], clients[index].dirpath);
 
 		if(not_exists(dirpath)) continue;
 
@@ -554,7 +554,7 @@ static int process_read_dir_cmd(u8 index, netiso_read_dir_entry_cmd *cmd)
 						dir_entries[count].is_directory = 0;
 				}
 
-				snprintf(dir_entries[count].name, 510, "%s", entry.d_name);
+				strncopy(dir_entries[count].name, 510, entry.d_name);
 				dir_entries[count].mtime = (s64)(st.st_mtime);
 
 				count++;

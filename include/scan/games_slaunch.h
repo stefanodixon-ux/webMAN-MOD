@@ -54,7 +54,7 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 				(slaunch.type == TYPE_PSP) ? id_PSPISO :
 				(slaunch.type == TYPE_VID) ? id_BDISO  : id_ROMS;
 
-		sprintf(enc_filename, "%s%s/", "/dev_usb000/PICTURE/", paths[f1]); cellFsMkdir(enc_filename, DMODE);
+		concat_path(enc_filename, "/dev_usb000/PICTURE", paths[f1]); cellFsMkdir(enc_filename, DMODE);
 		strcat(enc_filename, filename);
 		strcat(enc_filename, strcasestr(icon, ".png") ? ".PNG" : ".JPG");
 
@@ -62,14 +62,14 @@ static void add_slaunch_entry(int fd, const char *neth, const char *path, const 
 	}
 	#endif
 
-	snprintf(slaunch.id, sizeof(slaunch.id), "%s", id); urlenc_ex(enc_filename, filename, false);
+	strncopy(slaunch.id, sizeof(slaunch.id), id); urlenc_ex(enc_filename, filename, false);
 
-	slaunch.path_pos = snprintf(slaunch.name, 128, "%s", name) + 1;
+	slaunch.path_pos = strncopy(slaunch.name, 128, name) + 1;
 
 	if(slaunch.type == TYPE_PS2 && strcasestr(filename, ".BIN.ENC")) c = '.'; else c = '_';
 
 	slaunch.icon_pos = snprintf(slaunch.name + slaunch.path_pos, 454 - slaunch.path_pos, "/mount%cps3%s%s/%s", c, neth, path, enc_filename) + slaunch.path_pos + 1;
-					   snprintf(slaunch.name + slaunch.icon_pos, 507 - slaunch.icon_pos, "%s", icon);
+					   strncopy(slaunch.name + slaunch.icon_pos, 507 - slaunch.icon_pos, icon);
 
 	cellFsWrite(fd, (void *)&slaunch, sizeof(_slaunch), NULL);
 }
@@ -94,7 +94,7 @@ static int find_slaunch_game(char *filename, u8 offset)
 		{
 			char *path = slaunch.name + slaunch.path_pos;
 			if((strcasestr(path, filename2) == NULL) && (strcasestr(name, filename) == NULL)) continue;
-			ret = sprintf(filename, "%s", path + offset); break;
+			ret = strcopy(filename, path + offset); break;
 		}
 		cellFsClose(fsl);
 	}

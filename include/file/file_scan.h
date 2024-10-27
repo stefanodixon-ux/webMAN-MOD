@@ -88,11 +88,11 @@ rescan:
 
 		char entry[STD_PATH_LEN], dest_entry[STD_PATH_LEN];
 
-		u16 path_len = sprintf(entry, "%s", path);
+		u16 path_len = strcopy(entry, path);
 		bool p_slash = (path_len > 1) && (path[path_len - 1] == '/');
 		char *pentry = entry + path_len;
 
-		u16 dest_len = sprintf(dest_entry, "%s", dest);
+		u16 dest_len = strcopy(dest_entry, dest);
 		char *pdest = dest_entry + dest_len;
 
 		while(working)
@@ -112,9 +112,9 @@ rescan:
 			if(copy_aborted) break;
 			if(entry_name[0] == '.' && (entry_name[1] == '.' || entry_name[1] == '\0')) continue;
 
-			if(p_slash) sprintf(pentry, "%s", entry_name); else sprintf(pentry, "/%s", entry_name);
+			if(p_slash) strcopy(pentry, entry_name); else sprintf(pentry, "/%s", entry_name);
 
-			if(use_dest) sprintf(pdest, "/%s", entry_name);
+			if(use_dest) strcopy(pdest, entry_name);
 
 			if(isDir(entry))
 				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
@@ -154,7 +154,7 @@ rescan:
 					file_copy(entry, dest_entry); // copy ntfs & cellFS
 
 				if((fop == SCAN_COPYBK) && file_exists(dest_entry))
-					{sprintf(dest_entry, "%s.bak", entry); rename_file(entry, dest_entry);}
+					{concat2(dest_entry, entry, ".bak"); rename_file(entry, dest_entry);}
 			}
 			else if(prescan)
 				counter++; // pre-count move/rename/delete operations

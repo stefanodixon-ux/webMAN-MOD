@@ -30,7 +30,7 @@ static void no_singstar_icon(void)
 				{
 					int fd2;
 
-					sprintf(country_path, "%s/%s/c", XIL2_DIR, country_id);
+					concat_path2(country_path, XIL2_DIR, country_id, "/c");
 
 					if(cellFsOpendir(country_path, &fd2) == CELL_FS_SUCCEEDED)
 					{
@@ -56,7 +56,7 @@ static void no_singstar_icon(void)
 				}
 				else
 				{
-					sprintf(country_path, "%s/%s", XIL2_DIR, country_id);
+					concat_path(country_path, XIL2_DIR, country_id);
 					del(country_path, RECURSIVE_DELETE); // allow restore singstar icon
 				}
 			}

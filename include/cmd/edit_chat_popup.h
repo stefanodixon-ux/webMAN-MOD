@@ -15,14 +15,14 @@
 
 			if(*filename != '/')
 			{
-				sprintf(filename, "/dev_hdd0/boot_plugins.txt"); // default file
+				strcopy(filename, "/dev_hdd0/boot_plugins.txt"); // default file
 			}
 
 			char *pos = strstr(param, "&t=");
 			if(pos)
 			{
 				// backup the original text file
-				sprintf(backup, "%s.bak", filename);
+				concat2(backup, filename, ".bak");
 				rename_file(filename, backup);  // replace previous backup
 
 				// save text file
@@ -116,7 +116,7 @@
 				show_msg(msg);
 
 			if(mode=='=')
-				sbuffer.size = sprintf(sbuffer.str, "%s", msg); // raw mode
+				sbuffer.size = strcopy(sbuffer.str, msg); // raw mode
 			else if(op)
 				_concat(&sbuffer, msg);
 			else

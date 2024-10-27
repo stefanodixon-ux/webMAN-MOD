@@ -44,8 +44,8 @@ static bool file_exists(const char *path)
 
 static bool is_app_dir(const char *path, const char *app_name)
 {
-	char eboot[STD_PATH_LEN + 1];
-	snprintf(eboot, STD_PATH_LEN, "%s/%s/USRDIR/EBOOT.BIN", path, app_name);
+	char eboot[STD_PATH_LEN];
+	snprintf(eboot, STD_PATH_LEN, "%s/%s%s", path, app_name, "/USRDIR/EBOOT.BIN");
 	return file_exists(eboot);
 }
 
@@ -185,14 +185,14 @@ static void check_path_alias(char *param)
 			if(strstr(param, ".ps3")) return;
 
 			char path[STD_PATH_LEN];
-			int len = snprintf(path, STD_PATH_LEN - 1, "%s", (*param == '/') ? param + 1 : param);
+			int len = strncopy(path, STD_PATH_LEN, (*param == '/') ? param + 1 : param);
 			char *wildcard = strchr(path, '*'); if(wildcard) *wildcard = 0;
 			if((len == 4) && path[3] == '/') path[3] = 0; // normalize path
 			if(IS(path, "pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
 			if(IS(path, "xml")) {*path = 0;} else // use HTML_BASE_PATH
-			if(IS(path, "xmb")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource/explore/xmb");} else
-			if(IS(path, "res")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/resource");} else
-			if(IS(path, "mod")) {enable_dev_blind(NULL); sprintf(param, "/dev_blind/vsh/module");} else
+			if(IS(path, "xmb")) {enable_dev_blind(NULL); strcopy(param, "/dev_blind/vsh/resource/explore/xmb");} else
+			if(IS(path, "res")) {enable_dev_blind(NULL); strcopy(param, "/dev_blind/vsh/resource");} else
+			if(IS(path, "mod")) {enable_dev_blind(NULL); strcopy(param, "/dev_blind/vsh/module");} else
 			if(IS(path, "cov")) {sprintf(param, "%s/covers", MM_ROOT_STD);} else
 			if(IS(path, "cvr")) {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
 			if(islike(path, "res/"))  {sprintf(param, "/dev_blind/vsh/resource/%s", path + 4);} else
@@ -227,19 +227,7 @@ static void check_path_alias(char *param)
 
 static bool is_empty_dir(const char *path)
 {
-	int fd; bool ret = true;
-	if(cellFsOpendir(path, &fd) == CELL_FS_SUCCEEDED)
-	{
-		CellFsDirectoryEntry entry; size_t read_e;
-		while(working)
-		{
-			if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
-			if(entry.entry_name.d_name[0] == '.') continue;
-			ret = false; break;
-		}
-		cellFsClosedir(fd);
-	}
-	return ret;
+	return folder_count(path, 1) == 0;
 }
 
 #if defined(COPY_PS3) || defined(PKG_HANDLER) || defined(MOUNT_GAMEI)

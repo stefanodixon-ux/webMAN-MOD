@@ -809,7 +809,7 @@ scan_roms:
 	// --- build group headers ---
 	char *tempstr, *table_xml, *folder_name; table_xml = tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB);
 
-	char localhost[2]; sprintf(localhost, "0"); //sprintf(localhost, "http://%s", local_ip); // "0" = localhost
+	char localhost[2]; strcopy(localhost, "0"); //sprintf(localhost, "http://%s", local_ip); // "0" = localhost
 	const char *proxy_include = (char*)WEB_LINK_INC;
 	#ifdef WM_PROXY_SPRX
 	if((cobra_version > 0) && file_exists(WM_PROXY) && !(webman_config->wm_proxy)) {proxy_include = (char*)XAI_LINK_INC, *localhost = NULL;}
@@ -930,8 +930,8 @@ scan_roms:
 
 				//if(IS_PS2ISO && f0>0)  continue; // PS2ISO is supported only from /dev_hdd0
 				if(IS_GAMEI_FOLDER) {if((!webman_config->gamei) || (IS_HDD0) || (IS_NTFS)) continue;}
-				if(IS_ISO_DIR     ) {if(is_net) continue; else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH1); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_ISO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH1 : "ISO");}}
-				if(IS_VIDEO_FOLDER) {if(is_net) continue; else if(IS_HDD0) strcpy(paths[id_VIDEO], "video"); else {sprintf(param, "%s/%s", drives[f0], CUSTOM_PATH2); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_VIDEO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH2 : "GAMES_DUP");}}
+				if(IS_ISO_DIR     ) {if(is_net) continue; else {concat_path(param, drives[f0], CUSTOM_PATH1); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_ISO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH1 : "ISO");}}
+				if(IS_VIDEO_FOLDER) {if(is_net) continue; else if(IS_HDD0) strcpy(paths[id_VIDEO], "video"); else {concat_path(param, drives[f0], CUSTOM_PATH2); if(isDir(param)) _f1_ = id_PS2ISO; strcpy(paths[id_VIDEO], (_f1_ == id_PS2ISO) ? CUSTOM_PATH2 : "GAMES_DUP");}}
 				if(IS_NTFS)  {if(f1 >= id_ISO) break; else if(IS_JB_FOLDER || (f1 == id_PSXGAMES)) continue;} // 0="GAMES", 1="GAMEZ", 7="PSXGAMES", 9="ISO", 10="video", 11="GAMEI", 12="ROMS"
 
 				#ifdef NET_SUPPORT
@@ -1004,7 +1004,7 @@ scan_roms:
 					if(isDir(param) == false)
 					{
 						char *roms_folder = tempstr;
-						sprintf(roms_folder, "%s", cur_roms_path); *roms_folder ^= 0x20; // capitalize first letter of folder name (e.g. /ROMS/Snes)
+						strcopy(roms_folder, cur_roms_path); *roms_folder ^= 0x20; // capitalize first letter of folder name (e.g. /ROMS/Snes)
 
 						sprintf(param, "%s/ROMS%s/%s", drives[f0], SUFIX(uprofile), roms_folder);
 						if(isDir(param) == false) continue;
@@ -1098,14 +1098,14 @@ scan_roms:
 								if(!webman_config->gamei) continue;
 
 								if(!is_app_dir(param, entry.entry_name.d_name)) continue;
-								sprintf(param_sfo, "%s/%s/PARAM.SFO", param, entry.entry_name.d_name);
+								concat_path2(param_sfo, param, entry.entry_name.d_name, "/PARAM.SFO");
 
 								// create game folder in /dev_hdd0/game and copy PARAM.SFO to prevent deletion of XMB icon when gameDATA is disabled
 								char *hdd_game_sfo = tempstr;
 								if((entry.entry_name.d_namlen >= 16) && (entry.entry_name.d_name[6] == '-'))
 									sprintf(hdd_game_sfo, "%s%.9s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name + 7); // convert content_id => title_id
 								else
-									sprintf(hdd_game_sfo, "%s/%s/PARAM.SFO", _HDD0_GAME_DIR, entry.entry_name.d_name); // title_id
+									concat_path2(hdd_game_sfo, _HDD0_GAME_DIR, entry.entry_name.d_name, "/PARAM.SFO"); // title_id
 
 								if(not_exists(hdd_game_sfo))
 								{
@@ -1119,10 +1119,10 @@ scan_roms:
 							else
 							#endif // #ifdef MOUNT_GAMEI
 							if(is_game_dir)
-								read_e = sprintf(param_sfo, "%s/%s/USRDIR/EBOOT.BIN", param, entry.entry_name.d_name);
+								read_e = concat_path2(param_sfo, param, entry.entry_name.d_name, "/USRDIR/EBOOT.BIN");
 							else
 							{
-								sprintf(param_sfo, "%s/%s/PS3_GAME/PARAM.SFO", param, entry.entry_name.d_name);
+								concat_path2(param_sfo, param, entry.entry_name.d_name, "/PS3_GAME/PARAM.SFO");
 								check_ps3_game(param_sfo);
 							}
 
@@ -1140,7 +1140,7 @@ scan_roms:
 
 							if(!is_iso) // IS_JB_FOLDER
 							{
-								if(is_game_dir) sprintf(param_sfo + read_e - 17, "/PARAM.SFO");
+								if(is_game_dir) strcopy(param_sfo + read_e - 17, "/PARAM.SFO");
 								if(webman_config->info & INFO_VER) getTitleID(param_sfo, app_ver, GET_VERSION);
 
 								get_title_and_id_from_sfo(title, title_id, entry.entry_name.d_name, icon, tempstr, 0);
@@ -1496,7 +1496,7 @@ save_xml:
 					#endif
 				}
 			}
-			slen = sprintf(buffer, "</X>\r\n");
+			slen = strcopy(buffer, "</X>\r\n");
 		}
 
 		cellFsWrite(fdxml, (char*)buffer, slen, NULL);
@@ -1652,20 +1652,24 @@ static void refresh_xml(char *msg)
 		{
 #ifndef LITE_EDITION
 			if(webman_config->lang > 6)
-				snprintf(msg, 200, "%s:\n%s - %'i", STR_SCAN2, STR_GAMES, games_found);
+				snprintf(msg, 200,	"%s:\n"
+									"%s - %'i", STR_SCAN2, STR_GAMES, games_found);
 			else
 #endif
-				snprintf(msg, 200, "%s:\n %'i %s", STR_SCAN2, games_found, STR_GAMES);
+				snprintf(msg, 200,	"%s:\n"
+									" %'i %s", STR_SCAN2, games_found, STR_GAMES);
 			show_msg_with_icon(ICON_WAIT, msg);
 		}
 	}
 
 #ifndef LITE_EDITION
 	if(webman_config->lang > 6)
-		sprintf(msg, "%s XML%s: OK\n%s - %'i ", STR_REFRESH, SUFIX2(profile), STR_GAMES, games_found);
+		sprintf(msg, "%s XML%s: OK\n"
+					 "%s - %'i ", STR_REFRESH, SUFIX2(profile), STR_GAMES, games_found);
 	else
 #endif
-		sprintf(msg, "%s XML%s: OK\n%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
+		sprintf(msg, "%s XML%s: OK\n"
+					 "%'i %s", STR_REFRESH, SUFIX2(profile), games_found, STR_GAMES);
 	show_msg_with_icon(ICON_GAME, msg);
 	if(!webman_config->nobeep)
 		play_sound_id(5);

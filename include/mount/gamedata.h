@@ -5,7 +5,7 @@ static u8 get_default_usb_drive(const char *folder)
 	for(n = 1; n < MAX_DRIVES; n++)
 	{
 		if(n == NET) n = NTFS + 1;
-		sprintf(usb_path, "%s%s", drives[n], folder); if(isDir(usb_path)) return n; // 1-6 / 13-15
+		concat2(usb_path, drives[n], folder); if(isDir(usb_path)) return n; // 1-6 / 13-15
 	}
 
 	if(folder)
