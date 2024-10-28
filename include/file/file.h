@@ -402,8 +402,8 @@ int save_file(const char *file, const char *mem, s64 size)
 
 	bool crlf = (size == APPEND_TEXT); // auto add new line
 
-	int flags = CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY;
-	if( size < 0 )  {flags = CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY; size = crlf ? SAVE_ALL : -size;} else
+	int flags = CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC;
+	if( size < 0 )  {flags = CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_APPEND; size = crlf ? SAVE_ALL : -size;} else
 	if(!extcmp(file, "/PARAM.SFO", 10)) flags = CELL_FS_O_WRONLY;
 	return write_file(file, flags, mem, 0, (int)size, crlf);
 }

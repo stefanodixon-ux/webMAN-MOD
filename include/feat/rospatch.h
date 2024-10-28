@@ -180,7 +180,7 @@ static int patch_ros(const char *patch_file, u8 *mem, int conn_s, u8 ros, bool f
         ssend_message(conn_s, "<p>Preparing ROS%d overlay...</p>", cur_ros);
         int fd_overlay;
 
-        if(cellFsOpen(overlay_path[cur_ros], CELL_FS_O_CREAT|CELL_FS_O_WRONLY|CELL_FS_O_TRUNC, &fd_overlay, NULL, 0) != CELL_FS_SUCCEEDED)
+        if(cellFsOpen(overlay_path[cur_ros], CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd_overlay, NULL, 0) != CELL_FS_SUCCEEDED)
         {
             ssend_message(conn_s, "<p style=\"color:red;\">Error creating overlay file!</p>");
             BEEP3; ros_patching = false; return FAILED;

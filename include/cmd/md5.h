@@ -5,11 +5,10 @@
 
 		check_path_alias(filename);
 
-		sprintf(buffer, "File: ");
+		strcopy(buffer, "File: ");
 		add_breadcrumb_trail(buffer, filename);
 
-		struct CellFsStat buf; cellFsStat(filename, &buf);
-		unsigned long long sz = (unsigned long long)buf.st_size;
+		u64 sz = file_size(filename);
 
 		char md5[33];
 		calc_md5(filename, md5);

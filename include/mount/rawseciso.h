@@ -732,7 +732,7 @@ static void get_psx_track_data(void)
 	}
 	else
 	{
-		lv2_addr = 0x8000000000000000ULL + (u64) track_data[2];
+		lv2_addr = BASE_MEMORY | (u64) track_data[2];
 		my_memcpy64((u64*)buff, lv2_addr, track_data[3]);
 
 		while(k < (int) track_data[3])

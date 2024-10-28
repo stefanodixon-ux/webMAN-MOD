@@ -25,7 +25,7 @@ static int create_slaunch_file(void)
 	usb0_picture_exists = photo_gui && isDir("/dev_usb000/PICTURE");
 	#endif
 	int fd; custom_icon = false;
-	if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+	if(cellFsOpen(SLAUNCH_FILE, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		return fd;
 	else
 		return 0;

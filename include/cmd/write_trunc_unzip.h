@@ -104,7 +104,7 @@
 								pos = strstr(buffer, "\n");
 								if(pos) {size -= ++pos - buffer; buffer = pos;} // skip first line
 							}
-							write_file(filename, CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY, buffer, len + 1, size, false);
+							write_file(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_APPEND, buffer, len + 1, size, false);
 							//save_file(filename, buffer, -size);  // append rest of file
 						}
 						else if(size + len < buffer_size)

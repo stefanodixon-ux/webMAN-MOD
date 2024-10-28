@@ -22,7 +22,7 @@
 // ~C = L"\uF893" = Dualshock L2 buttonD-Pad LEFT Button-Combo
 // ~D = L"\uF894" = Dualshock R2 buttonD-Pad RIGHT Button-Combo
 
-static void show_navigation_msg(char* msg)
+static void show_navigation_msg(const char* msg)
 {
 	u32 system_plugin_handle = View_Find("system_plugin");
 	if (system_plugin_handle == 0)
@@ -35,7 +35,7 @@ static void show_navigation_msg(char* msg)
 	int len = strlen(msg) + 1;
 
 	wchar_t wmsg[len];
-	mbstowcs((wchar_t*)wmsg, (const char*)msg, len);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
+	mbstowcs((wchar_t*)wmsg, msg, len);  //size_t stdc_FCAC2E8E(wchar_t *dest, const char *src, size_t max)
 
 	for (int i = 0; i < len; i++) if (wmsg[i] == 0x7E) { wmsg[i] = 0xF850 + (u8)wmsg[i + 1], wmsg[++i] = 0x20; }
 
@@ -43,7 +43,7 @@ static void show_navigation_msg(char* msg)
 }
 
 /*
-static void show_navigation_msg(char* msg)
+static void show_navigation_msg(const char* msg)
 {
 	int view = View_Find("xmb_plugin");
 	if(view)

@@ -237,7 +237,7 @@ static int copy_net_file(const char *local_file, const char *remote_file, int ns
 
 			show_progress(remote_file, OV_COPY);
 
-			if(cellFsOpen(local_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
+			if(cellFsOpen(local_file, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fdw, NULL, 0) == CELL_FS_SUCCEEDED)
 			{
 				if(chunk_size > file_size) chunk_size = (u32)file_size;
 

@@ -19,7 +19,7 @@ static void webchat(char *buffer, char *html, char *param, char *tempstr, sys_ne
 			read_file(WMCHATFILE, tempstr, 4080, (buf.st_size - 4080);
 		}
 
-		if(cellFsOpen(WMCHATFILE, CELL_FS_O_WRONLY | CELL_FS_O_TRUNC | CELL_FS_O_CREAT | CELL_FS_O_APPEND, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+		if(cellFsOpen(WMCHATFILE, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC | CELL_FS_O_APPEND, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
 			size = sprintf(html, "%s10\">"
 								 "<body bgcolor=\"#101010\" text=\"#c0c0c0\">"
@@ -44,7 +44,7 @@ static void webchat(char *buffer, char *html, char *param, char *tempstr, sys_ne
 
 		size = sprintf(html, "<font color=\"red%s\"><b>%s</b></font><br>%s<br><!---->", user, user, msg);
 
-		if(cellFsOpen(WMCHATFILE, CELL_FS_O_RDWR|CELL_FS_O_CREAT|CELL_FS_O_APPEND, &fd, NULL, 0) == CELL_OK)
+		if(cellFsOpen(WMCHATFILE, CELL_FS_O_RDWR | CELL_FS_O_CREAT | CELL_FS_O_APPEND, &fd, NULL, 0) == CELL_OK)
 		{
 			cellFsWrite(fd, html, size, NULL);
 		}

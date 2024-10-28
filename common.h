@@ -127,6 +127,8 @@
 
 #define SYSCALL_PTR(n)				( (SYSCALL_TABLE) + ( 8 * (n) ) )
 
+#define BASE_MEMORY					0x8000000000000000ULL
+
 #define HV_BASE						0x8000000014000000ULL	// where in lv2 to map lv1
 #define HV_SIZE						0x001000				// 0x1000 (we need 4k from lv1 only)
 #define HV_PAGE_SIZE				0x0C					// 4k = 0x1000 (1 << 0x0c)

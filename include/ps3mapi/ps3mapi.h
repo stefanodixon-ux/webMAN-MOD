@@ -1740,7 +1740,7 @@ static void ps3mapi_gameplugin(char *buffer, char *html, const char *param)
 
 				buffer += add_breadcrumb_trail(buffer, tmp_filename);
 
-				sprintf(html, ""
+				sprintf(html,
 						 "<td width=\"100\" class=\"ra\">"
 						  HTML_FORM_METHOD_FMT("/gameplugin")
 						  "<input name=\"proc\" type=\"hidden\" value=\"0x%x\">"

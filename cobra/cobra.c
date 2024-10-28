@@ -463,7 +463,7 @@ static int copy_file(char *src, char *dst)
 	ret = cellFsOpen(src, CELL_FS_O_RDONLY, &fd_s, NULL, 0);
 	if(ret == 0)
 	{
-		ret = cellFsOpen(dst, CELL_FS_O_WRONLY | CELL_FS_O_CREAT | CELL_FS_O_TRUNC, &fd_d, NULL, 0);
+		ret = cellFsOpen(dst, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd_d, NULL, 0);
 		if(ret == 0)
 		{
 			const u32 buf_size = _16KB_;

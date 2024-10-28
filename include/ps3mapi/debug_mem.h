@@ -13,7 +13,7 @@
 
 static void poke_chunk_lv1(u64 start, int size, u8 *buffer, u8 oper)
 {
-	start |= 0x8000000000000000ULL; u64 old_value, new_value;
+	start |= BASE_MEMORY; u64 old_value, new_value;
 	for(int offset = 0; offset < size; offset += 8)
 	{
 		new_value = *(u64*)(buffer + offset);
@@ -28,7 +28,7 @@ static void poke_chunk_lv1(u64 start, int size, u8 *buffer, u8 oper)
 
 static void poke_chunk_lv2(u64 start, int size, u8 *buffer, u8 oper)
 {
-	start |= 0x8000000000000000ULL; u64 old_value, new_value;
+	start |= BASE_MEMORY; u64 old_value, new_value;
 	for(int offset = 0; offset < size; offset += 8)
 	{
 		new_value = *(u64*)(buffer + offset);
@@ -85,11 +85,11 @@ static int ps3mapi_get_memory(u32 pid, u32 address, char *mem, u32 size)
 {
 	if(pid == LV1)
 	{
-		peek_chunk_lv1((address | 0x8000000000000000ULL), size, (u64*)mem);
+		peek_chunk_lv1((address | BASE_MEMORY), size, (u64*)mem);
 	}
 	else if(pid == LV2)
 	{
-		peek_chunk_lv2((address | 0x8000000000000000ULL), size, (u64*)mem);
+		peek_chunk_lv2((address | BASE_MEMORY), size, (u64*)mem);
 	}
 	else if(pid == FLASH)
 	{
@@ -125,7 +125,7 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 
 		show_msg_with_icon(ICON_WAIT, "Dumping...");
 
-		if(cellFsOpen(dump_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+		if(cellFsOpen(dump_file, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
 			char label[20];
 			for(u32 addr = 0; addr < size; addr += _64KB_)
@@ -281,7 +281,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 
 	concat(buffer, "<pre>");
 
-	address|=0x8000000000000000ULL;
+	address |= BASE_MEMORY;
 
 	lv1 = strstr(param,".lv1?") ? 1 : 0;
 	#ifdef COBRA_ONLY
@@ -297,7 +297,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 
 		pos = strstr(param, "&stop=");
 		if(pos)
-			{upper_memory = convertH(pos + 6) | 0x8000000000000000ULL; *pos = NULL;}
+			{upper_memory = convertH(pos + 6) | BASE_MEMORY; *pos = NULL;}
 		else
 			{upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;}
 	}

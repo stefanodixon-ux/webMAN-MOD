@@ -179,15 +179,15 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 
 	*act_dat = NULL; int i = 0;
 
-	cellFsUnlink("/dev_hdd0/psid.hex");
-	cellFsUnlink("/dev_hdd0/idps.hex");
-	cellFsUnlink("/dev_hdd0/act.dat");
+	unlink_file(drives[0], "", "/psid.hex");
+	unlink_file(drives[0], "", "/idps.hex");
+	unlink_file(drives[0], "", "/act.dat");
 
 	if(is_psid)
 	{
 		for(i = 1; i >= 0; i--)
 		{
-			if(is_default) {sprintf(filename, "%s/psid.hex", drives[i]); sprintf(act_dat, "%s/act.dat", drives[i]);}
+			if(is_default) {concat2(filename, drives[i], "/psid.hex"); concat2(act_dat, drives[i], "/act.dat");}
 			save_file(filename, (char*)&PSID[0], 16);
 			if(file_exists(filename)) break; is_default = true;
 		}
@@ -197,7 +197,7 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 	{
 		for(i = 1; i >= 0; i--)
 		{
-			if(is_default) {sprintf(filename, "%s/idps.hex", drives[i]); sprintf(act_dat, "%s/act.dat", drives[i]);}
+			if(is_default) {concat2(filename, drives[i], "/idps.hex"); concat2(act_dat, drives[i], "/act.dat");}
 			save_file(filename, (char*)&IDPS[0], 16);
 			if(file_exists(filename)) break; is_default = true;
 		}
@@ -227,12 +227,12 @@ static void save_idps_psid(bool is_psid, bool is_idps, char *header, char *param
 
 	if(is_idps)
 	{
-		if(is_default) sprintf(file_path, "%s/idps.hex", drives[i]);
+		if(is_default) concat2(file_path, drives[i], "/idps.hex");
 		if(file_exists(file_path)) {add_breadcrumb_trail(buffer, file_path); sprintf(header, " • %016llX%016llX<br>", IDPS[0], IDPS[1]); strcat(buffer, header);}
 	}
 	if(is_psid)
 	{
-		if(is_default) sprintf(file_path, "%s/psid.hex", drives[i]);
+		if(is_default) concat2(file_path, drives[i], "/psid.hex");
 		if(file_exists(file_path)) {add_breadcrumb_trail(buffer, file_path); sprintf(header, " • %016llX%016llX<br>", PSID[0], PSID[1]); strcat(buffer, header);}
 	}
 }

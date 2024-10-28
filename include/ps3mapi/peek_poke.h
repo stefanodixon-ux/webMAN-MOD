@@ -11,7 +11,7 @@
 #define SYSCALL8_OPCODE_PS3MAPI			0x7777
 #define PS3MAPI_OPCODE_LV1_POKE			0x1009
 
-#define CFW_SYSCALLS_REMOVED(a)			((lv2_peek_hen(a) & 0xFFFFFFFFFF000000) != 0x8000000000000000)
+#define CFW_SYSCALLS_REMOVED(a)			((lv2_peek_hen(a) & 0xFFFFFFFFFF000000ULL) != BASE_MEMORY)
 
 /////////////////// LV1 PEEK //////////////////////
 static u64 lv1_peek_cfw(u64 addr)
@@ -52,21 +52,18 @@ static u64 lv1_peek_ps3mapi(u64 addr)
 	system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_PEEK, addr);
 	return (u64) p1;
 }
-#endif
 
 /////////////////// LV1 POKE //////////////////////
-static void lv1_poke_cfw( u64 addr, u64 value)
-{
-	system_call_2(SC_POKE_LV1, addr, value);
-}
-
-#ifdef COBRA_ONLY
 static void lv1_poke_ps3mapi(u64 addr, u64 value)
 {
 	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV1_POKE, addr, value);
 }
-#endif
+#endif //#ifdef COBRA_ONLY
 
+static void lv1_poke_cfw( u64 addr, u64 value)
+{
+	system_call_2(SC_POKE_LV1, addr, value);
+}
 /////////////////// LV2 PEEK //////////////////////
 static u64 lv2_peek_cfw(u64 addr) //sc8 + LV2_OFFSET_ON_LV1
 {
@@ -92,19 +89,17 @@ static void lv2_poke_hen(u64 addr, u64 value) //sc7
 {
 	system_call_2(SC_POKE_LV2, addr, value);
 }
-#endif
+
+static void lv2_poke_ps3mapi(u64 addr, u64 value) //sc8 + ps3mapi
+{
+	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV2_POKE, addr, value);
+}
+#endif //#ifdef COBRA_ONLY
 
 static void lv2_poke_cfw(u64 addr, u64 value) //sc8 + LV2_OFFSET_ON_LV1
 {
 	system_call_2(SC_POKE_LV1, addr + LV2_OFFSET_ON_LV1, value);
 }
-
-#ifdef COBRA_ONLY
-static void lv2_poke_ps3mapi(u64 addr, u64 value) //sc8 + ps3mapi
-{
-	system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LV2_POKE, addr, value);
-}
-#endif
 ///////////////////////////////////////////////////
 
 static void (*lv2_poke_fan)(u64, u64) = lv2_poke_cfw;  // ps3hen: lv2_poke_fan = lv2_poke_fan_hen;
@@ -117,7 +112,7 @@ static void (*poke_lv1)(u64, u64) = lv1_poke_cfw;
 
 static u64 peek(u64 addr)
 {
-	return peekq(addr | 0x8000000000000000ULL);
+	return peekq(addr | BASE_MEMORY);
 }
 
 #ifdef COBRA_ONLY
@@ -136,7 +131,7 @@ static void lv2_poke_fan_hen(u64 addr, u64 value)
 static void lv1_poke_hen(u64 addr, u64 value)
 {
 	if(addr >= LV2_OFFSET_ON_LV1)
-		pokeq((addr - LV2_OFFSET_ON_LV1) | 0x8000000000000000ULL, value);
+		pokeq((addr - LV2_OFFSET_ON_LV1) | BASE_MEMORY, value);
 	else
 		poke_lv1(addr, value);
 }
@@ -209,24 +204,27 @@ static void install_peek_poke(void)
 	remove_lv2_memory_protection();
 
 	if(c_firmware>=4.30f /*&& c_firmware<=LATEST_CFW*/)
-	{	// add lv2 peek/poke + lv1 peek/poke
-		pokeq(0x800000000000171CULL + 0x00, 0x7C0802A6F8010010ULL);
-		pokeq(0x800000000000171CULL + 0x08, 0x396000B644000022ULL);
-		pokeq(0x800000000000171CULL + 0x10, 0x7C832378E8010010ULL);
-		pokeq(0x800000000000171CULL + 0x18, 0x7C0803A64E800020ULL);
-		pokeq(0x800000000000171CULL + 0x20, 0x7C0802A6F8010010ULL);
-		pokeq(0x800000000000171CULL + 0x28, 0x396000B744000022ULL);
-		pokeq(0x800000000000171CULL + 0x30, 0x38600000E8010010ULL);
-		pokeq(0x800000000000171CULL + 0x38, 0x7C0803A64E800020ULL);
-		pokeq(0x800000000000171CULL + 0x40, 0x7C0802A6F8010010ULL);
-		pokeq(0x800000000000171CULL + 0x48, 0x7D4B537844000022ULL);
-		pokeq(0x800000000000171CULL + 0x50, 0xE80100107C0803A6ULL);
-		pokeq(0x800000000000171CULL + 0x58, 0x4E80002080000000ULL); // sc6  @ 0x8000000000001778 = 800000000000170C
-		pokeq(0x800000000000171CULL + 0x60, 0x0000170C80000000ULL); // sc7  @ 0x8000000000001780 = 8000000000001714
-		pokeq(0x800000000000171CULL + 0x68, 0x0000171480000000ULL); // sc8  @ 0x8000000000001788 = 800000000000171C
-		pokeq(0x800000000000171CULL + 0x70, 0x0000171C80000000ULL); // sc9  @ 0x8000000000001790 = 800000000000173C
-		pokeq(0x800000000000171CULL + 0x78, 0x0000173C80000000ULL); // sc10 @ 0x8000000000001798 = 800000000000175C
-		pokeq(0x800000000000171CULL + 0x80, 0x0000175C00000000ULL);
+	{
+		#define INSTALL_PEEK_POKE_OFFSET	0x800000000000171CULL
+
+		// add lv2 peek/poke + lv1 peek/poke
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x00, 0x7C0802A6F8010010ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x08, 0x396000B644000022ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x10, 0x7C832378E8010010ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x18, 0x7C0803A64E800020ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x20, 0x7C0802A6F8010010ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x28, 0x396000B744000022ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x30, 0x38600000E8010010ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x38, 0x7C0803A64E800020ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x40, 0x7C0802A6F8010010ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x48, 0x7D4B537844000022ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x50, 0xE80100107C0803A6ULL);
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x58, 0x4E80002080000000ULL); // sc6  @ 0x8000000000001778 = 800000000000170C
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x60, 0x0000170C80000000ULL); // sc7  @ 0x8000000000001780 = 8000000000001714
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x68, 0x0000171480000000ULL); // sc8  @ 0x8000000000001788 = 800000000000171C
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x70, 0x0000171C80000000ULL); // sc9  @ 0x8000000000001790 = 800000000000173C
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x78, 0x0000173C80000000ULL); // sc10 @ 0x8000000000001798 = 800000000000175C
+		pokeq(INSTALL_PEEK_POKE_OFFSET + 0x80, 0x0000175C00000000ULL);
 
 		// enable syscalls 6, 7, 8, 9, 10
 		for(u8 sc = 6; sc < 11; sc++)
@@ -277,4 +275,4 @@ static u16 string_to_lv2(const char *path, u64 addr)
 	}
 	return len * 8;
 }
-#endif
+#endif //#ifndef COBRA_ONLY

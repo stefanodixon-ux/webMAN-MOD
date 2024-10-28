@@ -1404,7 +1404,7 @@ save_xml:
 	else
 #endif
 	// --- save xml file
-	if(cellFsOpen(xml_file, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fdxml, NULL, 0) == CELL_FS_SUCCEEDED)
+	if(cellFsOpen(xml_file, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fdxml, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
 		cellFsWrite(fdxml, (char*)myxml.str, myxml.size, NULL);
 

@@ -69,7 +69,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 
 	// create bmp file
 	int fd; mkdir_tree(path);
-	if(IS_INGAME || cellFsOpen(path, CELL_FS_O_WRONLY|CELL_FS_O_CREAT|CELL_FS_O_TRUNC, &fd, NULL, 0) != CELL_FS_SUCCEEDED) { BEEP3 ; return;}
+	if(IS_INGAME || cellFsOpen(path, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd, NULL, 0) != CELL_FS_SUCCEEDED) { BEEP3 ; return;}
 
 	// max frame line size = 1920 pixel * 4(byte per pixel) = 7680 byte = 8 KB
 	// max bmp buffer size = 1920 pixel * 3(byte per pixel) = 5760 byte = 6 KB

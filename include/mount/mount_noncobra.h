@@ -24,9 +24,9 @@ install_mm_payload:
 
 			if(sc_600)
 			{   // restore original values
-				sc_600 |= 0x8000000000000000ULL;
-				sc_604 |= 0x8000000000000000ULL;
-				sc_142 |= 0x8000000000000000ULL;
+				sc_600 |= BASE_MEMORY;
+				sc_604 |= BASE_MEMORY;
+				sc_142 |= BASE_MEMORY;
 
 				if(peekq(SYSCALL_PTR(600)) != sc_600) pokeq(SYSCALL_PTR(600), sc_600); // sys_storage_open 600
 				if(peekq(SYSCALL_PTR(604)) != sc_604) pokeq(SYSCALL_PTR(604), sc_604); // sys_storage_send_device_cmd 604
@@ -140,13 +140,13 @@ install_mm_payload:
 
 			char path2[strlen(_path) + 24];
 
-			sprintf(path2, "%s/PS3_GAME", _path); check_ps3_game(path2);
+			concat2(path2, _path, "/PS3_GAME"); check_ps3_game(path2);
 			add_to_map(APP_HOME_DIR, path2);
 
-			sprintf(path2, "%s/PS3_GAME/USRDIR", _path); check_ps3_game(path2);
+			concat2(path2, _path, "/PS3_GAME/USRDIR"); check_ps3_game(path2);
 			add_to_map("/app_home/USRDIR", path2);
 
-			sprintf(path2, "%s/PS3_GAME/USRDIR/", _path); check_ps3_game(path2);
+			concat2(path2, _path, "/PS3_GAME/USRDIR/"); check_ps3_game(path2);
 			add_to_map("/app_home/", path2);
 		}
 
@@ -164,7 +164,7 @@ install_mm_payload:
 	else if(strstr(_path, "/GAME"))
 	{
 		char extgdfile[STD_PATH_LEN + 24], *extgdini = extgdfile;
-		sprintf(extgdfile, "%s/PS3_GAME/PS3GAME.INI", _path); check_ps3_game(extgdfile);
+		concat2(extgdfile, _path, "/PS3_GAME/PS3GAME.INI"); check_ps3_game(extgdfile);
 		if(read_file(extgdfile, extgdini, 12, 0))
 		{
 			if((extgd == 0) &&  (extgdini[10] & (1<<1))) set_gamedata_status(1, false); else
@@ -182,30 +182,30 @@ install_mm_payload:
 		char expplg[64];
 		char app_sys[40];
 
-			sprintf(app_sys, "%s/sys", MM_ROOT_STD);
+			concat2(app_sys, MM_ROOT_STD, "/sys");
 		if(!isDir(app_sys))
-			sprintf(app_sys, "%s/sys", MM_ROOT_STL);
+			concat2(app_sys, MM_ROOT_STL, "/sys");
 		if(!isDir(app_sys))
-			sprintf(app_sys, "%s/sys", MM_ROOT_SSTL);
+			concat2(app_sys, MM_ROOT_SSTL, "/sys");
 
 		if(c_firmware == 3.55f)
-			sprintf(expplg, "%s/IEXP0_355.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_355.BIN");
 		else if(c_firmware == 4.21f)
-			sprintf(expplg, "%s/IEXP0_420.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_420.BIN");
 		else if(c_firmware == 4.30f || c_firmware == 4.31f)
-			sprintf(expplg, "%s/IEXP0_430.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_430.BIN");
 		else if(c_firmware == 4.40f || c_firmware == 4.41f)
-			sprintf(expplg, "%s/IEXP0_440.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_440.BIN");
 		else if(c_firmware == 4.46f)
-			sprintf(expplg, "%s/IEXP0_446.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_446.BIN");
 		else if(BETWEEN(4.50f, c_firmware, 4.55f))
-			sprintf(expplg, "%s/IEXP0_450.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_450.BIN");
 		else if(BETWEEN(4.60f, c_firmware, 4.66f))
-			sprintf(expplg, "%s/IEXP0_460.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_460.BIN");
 		else if(c_firmware >= 4.70f)
-			sprintf(expplg, "%s/IEXP0_470.BIN", app_sys);
+			concat2(expplg, app_sys, "/IEXP0_470.BIN");
 		else
-			sprintf(expplg, "%s/none", app_sys);
+			concat2(expplg, app_sys, "/none");
 
 		if(action && file_exists(expplg))
 			add_to_map(VSH_MODULE_DIR "explore_plugin.sprx", expplg);
@@ -216,9 +216,9 @@ install_mm_payload:
 		if(action && (c_firmware >= 4.20f))
 		{
 			if(file_exists(NEW_LIBFS_PATH))
-				sprintf(expplg, NEW_LIBFS_PATH);
+				str_copy(expplg, NEW_LIBFS_PATH);
 			else
-				sprintf(expplg, "%s/ILFS0_000.BIN", app_sys);
+				concat2(expplg, app_sys, "/ILFS0_000.BIN");
 
 			if(file_exists(expplg))
 				add_to_map(ORG_LIBFS_PATH, expplg);
@@ -235,20 +235,20 @@ install_mm_payload:
 
 	u16 src_len, dst_len;
 
-	for(u8 n = 0; n < max_mapped; n++)
+	for(u8 n = 0; n < max_mapped; n++, map_data += 0x20)
 	{
 		if(map_paths > 0x80000000007FE800ULL) break;
 
-		pokeq(map_data + (n * 0x20) + 0x10, map_paths);
+		pokeq(map_data + 0x10, map_paths);
 		src_len = string_to_lv2(file_to_map[n].src, map_paths);
 		map_paths += src_len; //(src_len + 8) & 0x7f8;
 
-		pokeq(map_data + (n * 0x20) + 0x18, map_paths);
+		pokeq(map_data + 0x18, map_paths);
 		dst_len = string_to_lv2(file_to_map[n].dst, map_paths);
 		map_paths += dst_len; //(dst_len + 8) & 0x7f8;
 
-		pokeq(map_data + (n * 0x20) + 0x00, src_len);
-		pokeq(map_data + (n * 0x20) + 0x08, dst_len);
+		pokeq(map_data + 0x00, src_len);
+		pokeq(map_data + 0x08, dst_len);
 	}
 
 	wait_for("/dev_bdvd", 2);

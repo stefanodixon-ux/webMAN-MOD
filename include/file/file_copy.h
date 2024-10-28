@@ -249,7 +249,7 @@ next_part:
 			}
 			#endif
 			// copy_file
-			if(is_ntfs2 || merge_part || (cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd2, 0, 0) == CELL_FS_SUCCEEDED))
+			if(is_ntfs2 || merge_part || (cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC , &fd2, 0, 0) == CELL_FS_SUCCEEDED))
 			{
 				pos = 0;
 				while(size > 0)
@@ -504,7 +504,7 @@ static int file_concat(const char *file1, char *file2)
 		if(sysmem)
 		{
 			// append
-			if(cellFsOpen(file2, CELL_FS_O_CREAT | CELL_FS_O_RDWR | CELL_FS_O_APPEND, &fd2, 0, 0) == CELL_FS_SUCCEEDED)
+			if(cellFsOpen(file2, CELL_FS_O_RDWR | CELL_FS_O_CREAT | CELL_FS_O_APPEND, &fd2, 0, 0) == CELL_FS_SUCCEEDED)
 			{
 				char *chunk = (char*)sysmem;
 				u64 read = 0, written = 0, pos=0;

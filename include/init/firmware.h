@@ -342,8 +342,8 @@ static void detect_firmware(void)
 	}
  #endif //#ifdef DEX_SUPPORT
 
-	base_addr |= 0x8000000000000000ULL;
-	open_hook |= 0x8000000000000000ULL;
+	base_addr |= BASE_MEMORY;
+	open_hook |= BASE_MEMORY;
 #endif //#ifndef COBRA_ONLY
 
 	if(IS_CEX)
@@ -1037,7 +1037,7 @@ static bool disable_map_path(bool toggle_patch) // based on haxxxen's patch post
 {
 	if(open_hook)
 	{
-		const u64 open_hook_symbol = open_hook | 0x8000000000000000ULL;
+		const u64 open_hook_symbol = open_hook | BASE_MEMORY;
 
 		if(!map_path_instruction) map_path_instruction = peekq(open_hook_symbol); // backup cobra mappath instruction
 

@@ -1093,7 +1093,7 @@ next_html_entry:
 		if(launchpad_mode)
 		{
 			int fd, size;
-			if(cellFsOpen(LAUNCHPAD_FILE_XML, CELL_FS_O_APPEND | CELL_FS_O_CREAT | CELL_FS_O_WRONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+			if(cellFsOpen(LAUNCHPAD_FILE_XML, CELL_FS_O_WRONLY | CELL_FS_O_APPEND | CELL_FS_O_CREAT, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 			{
 				char *xml_item = tempstr;
 				for(u16 m = 0; m < idx; m++)

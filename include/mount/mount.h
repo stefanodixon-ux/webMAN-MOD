@@ -1160,7 +1160,7 @@ static void cache_file_to_hdd(char *source, char *target, const char *basepath, 
 {
 	if(*source == '/')
 	{
-		concat2(target, "/dev_hdd0", basepath);
+		concat2(target, drives[0], basepath);
 		cellFsMkdir(target, DMODE);
 
 		strcat(target, get_filename(source)); // add file name

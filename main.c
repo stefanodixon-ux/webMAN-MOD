@@ -338,6 +338,7 @@ static u8 unlock_param_sfo(const char *param_sfo, unsigned char *mem, u16 sfo_si
 size_t read_file(const char *file, char *data, size_t size, s32 offset);
 int save_file(const char *file, const char *mem, s64 size);
 int wait_for(const char *path, u8 timeout);
+static void unlink_file(const char *drive, const char *path, const char *file);
 
 //static int (*vshtask_notify)(int, const char *) = NULL;
 //static int (*View_Find)(const char *) = NULL;
@@ -351,8 +352,8 @@ int wait_for(const char *path, u8 timeout);
 
 #include "include/feat/syscall.h"
 #include "include/feat/xregistry.h"
-#include "include/feat/idps.h"
 #include "include/feat/vpad.h"
+#include "include/feat/idps.h"
 
 #include "include/init/html.h"
 #include "include/init/language.h"
