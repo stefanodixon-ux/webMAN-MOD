@@ -725,17 +725,10 @@ static bool scan_mygames_xml(u64 conn_s_p)
 		}
 	}
 
-	// set boundary margins
-	if(XMB_GROUPS)
-	{
-		BUFFER_SIZE_PSX -= 0x10, BUFFER_SIZE_PSP -= 0x10;
-		BUFFER_SIZE_PS2 -= 0x10, BUFFER_SIZE_DVD -= 0x10;
-	}
-
 #if defined(LAUNCHPAD) || defined(MOUNT_ROMS)
 	char *sysmem_buf = (char*)sysmem;
 #endif
-	char *sysmem_xml = (char*)sysmem + (BUFFER_SIZE - 4300);
+	char *sysmem_xml = (char*)sysmem + (BUFFER_SIZE - BUFFER_SIZE_XML);
 
 	cellFsMkdir(XML_HOST_PATH, DMODE);
 	cellFsMkdir(HTML_BASE_PATH, DMODE);
@@ -777,6 +770,17 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	check_cover_folders(templn);
 
+	// set boundary margins
+	if(XMB_GROUPS)
+	{
+		BUFFER_SIZE_PSX -= 0x10;
+		BUFFER_SIZE_PS2 -= ps2_launcher ? 0x100 : 0x10;
+		#ifdef COBRA_ONLY
+		BUFFER_SIZE_PSP -= psp_launcher ? 0x100 : 0x10;
+		BUFFER_SIZE_DVD -= webman_config->rxvid ? 0x100 : 0x10;
+		#endif
+	}
+
 	#ifdef MOUNT_ROMS
 
 	#define ROM_PATHS	99
@@ -809,12 +813,12 @@ scan_roms:
 
 	for(u8 i = 0; i < 6; i++) item_count[i] = 0;
 
-	t_string myxml_ps3; _alloc(&myxml_ps3, (char*)sysmem);
-	t_string myxml_psx; _alloc(&myxml_psx, (char*)sysmem_psx);
-	t_string myxml_ps2; _alloc(&myxml_ps2, (char*)sysmem_ps2);
-	t_string myxml_psp; _alloc(&myxml_psp, (char*)sysmem_psp);
-	t_string myxml_dvd; _alloc(&myxml_dvd, (char*)sysmem_dvd);
-	t_string myxml    ; _alloc(&myxml,     (char*)sysmem_xml);
+	t_string myxml_ps3; _alloc(&myxml_ps3, (char*)sysmem);		//BUFFER_SIZE_PS3
+	t_string myxml    ; _alloc(&myxml,     (char*)sysmem_xml);	//BUFFER_SIZE_XML
+	t_string myxml_psx; _alloc(&myxml_psx, (char*)sysmem_psx);	//BUFFER_SIZE_PSX
+	t_string myxml_psp; _alloc(&myxml_psp, (char*)sysmem_psp);	//BUFFER_SIZE_PSP
+	t_string myxml_ps2; _alloc(&myxml_ps2, (char*)sysmem_ps2);	//BUFFER_SIZE_PS2
+	t_string myxml_dvd; _alloc(&myxml_dvd, (char*)sysmem_dvd);	//BUFFER_SIZE_DVD
 
 	// --- build group headers ---
 	char *tempstr, *table_xml, *folder_name; table_xml = tempstr = sysmem_xml; folder_name = sysmem_xml + (3*KB);

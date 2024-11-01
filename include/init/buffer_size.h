@@ -64,6 +64,8 @@ static u32 BUFFER_SIZE_PS2;
 static u32 BUFFER_SIZE_DVD;
 static u32 BUFFER_SIZE_ALL;
 
+#define BUFFER_SIZE_XML			4320
+
 #ifdef MOUNT_ROMS
 static const u32 BUFFER_SIZE_IGN = _4KB_;
 #endif
@@ -226,5 +228,5 @@ static void set_buffer_sizes(u8 footprint)
 	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD);
 	#endif
 
-	BUFFER_SIZE_PS3 = (BUFFER_SIZE - _4KB_);
+	BUFFER_SIZE_PS3 = (BUFFER_SIZE - BUFFER_SIZE_XML -32);
 }
