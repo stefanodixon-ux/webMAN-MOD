@@ -285,7 +285,7 @@ static void add_tag(char *tags, u16 code)
 }
 #endif
 
-static void add_info(char *table_xml, char *folder_name, u8 roms_index, char *filename, char *title_id, u8 f0, u8 f1, u8 s)
+static int add_info(char *table_xml, char *folder_name, u8 roms_index, char *filename, char *title_id, u8 f0, u8 f1, u8 s)
 {
 	char tags[20]; *tags = '\0'; u8 info = webman_config->info & 0xF;
 
@@ -391,25 +391,28 @@ static void add_info(char *table_xml, char *folder_name, u8 roms_index, char *fi
 	}
 	#endif
 
+	int len = 0;
+
 	// info level: 0=Path, 1=Path | titleid, 2=titleid | drive, 3=none, 0x10 = tags, 0x20 = version
 	if(info <= INFO_PATH_ID)
 	{
 		if((info == INFO_PATH_ID) & HAS_TITLE_ID) {strcat(folder_name, " | "); strcat(folder_name, title_id);}
-		sprintf(table_xml, XML_PAIR("info","%s/%s%s%s"), drives[f0] + s, (f1 == id_NPDRM) ? "game" : paths[f1], folder_name, tags);
+		len = sprintf(table_xml, XML_PAIR("info","%s/%s%s%s"), drives[f0] + s, (f1 == id_NPDRM) ? "game" : paths[f1], folder_name, tags);
 	}
 	else if(info == INFO_ID)
 	{
 		if(HAS_TITLE_ID)
-			sprintf(table_xml, XML_PAIR("info","%s%s"), title_id, tags);
+			len = sprintf(table_xml, XML_PAIR("info","%s%s"), title_id, tags);
 		else
-			sprintf(table_xml, XML_PAIR("info","%s"), tags);
+			len = sprintf(table_xml, XML_PAIR("info","%s"), tags);
 	}
 	else if(webman_config->info & INFO_TAGS_ONLY)
 	{
-		sprintf(table_xml, XML_PAIR("info","%s"), tags);
+		len = sprintf(table_xml, XML_PAIR("info","%s"), tags);
 	}
 
 	strcat(table_xml, "</T>");
+	return (len + 4);
 }
 
 static char *eject_table(char *buffer, char *table_xml)
@@ -595,7 +598,7 @@ static void add_group_tables(char *buffer, char *table_xml, t_string *myxml)
  #endif
 }
 
-static bool add_xmb_entry(u8 f0, u8 f1, const char *table_xml, char *title, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u8 subfolder)
+static bool add_xmb_entry(u8 f0, u8 f1, u32 table_size, const char *table_xml, char *title, char *skey, u16 key, t_string *myxml_ps3, t_string *myxml_ps2, t_string *myxml_psx, t_string *myxml_psp, t_string *myxml_dvd, char *entry_name, u8 subfolder)
 {
 	set_sort_key(skey, title, key, subfolder, f1);
 
@@ -603,25 +606,25 @@ static bool add_xmb_entry(u8 f0, u8 f1, const char *table_xml, char *title, char
 	{
 	#ifdef COBRA_ONLY
 		const char *ext = get_ext(entry_name);
-		if(((IS_PS3_TYPE) || ((IS_NTFS) && IS(ext, ".ntfs[PS3ISO]"))) && (myxml_ps3->size < (BUFFER_SIZE - _4KB_)))
+		if((IS_PS3_TYPE || (IS_NTFS && IS(ext, ".ntfs[PS3ISO]"))) && ((myxml_ps3->size + table_size) < BUFFER_SIZE_PS3))
 		{_concat(myxml_ps3, table_xml); *skey=PS3, ++item_count[gPS3];}
 		else
-		if(((IS_PS2ISO) || ((IS_NTFS) && IS(ext, ".ntfs[PS2ISO]"))) && (myxml_ps2->size < BUFFER_SIZE_PS2))
+		if((IS_PS2ISO || (IS_NTFS && IS(ext, ".ntfs[PS2ISO]"))) && ((myxml_ps2->size + table_size) < BUFFER_SIZE_PS2))
 		{_concat(myxml_ps2, table_xml); *skey=PS2, ++item_count[gPS2];}
 		else
-		if(((IS_PSXISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSXISO]"))) && (myxml_psx->size < BUFFER_SIZE_PSX))
+		if((IS_PSXISO || (IS_NTFS && IS(ext, ".ntfs[PSXISO]"))) && ((myxml_psx->size + table_size) < BUFFER_SIZE_PSX))
 		{_concat(myxml_psx, table_xml); *skey=PS1, ++item_count[gPSX];}
 		else
-		if(((IS_PSPISO) || ((IS_NTFS) && IS(ext, ".ntfs[PSPISO]"))) && (myxml_psp->size < BUFFER_SIZE_PSP))
+		if((IS_PSPISO || (IS_NTFS && IS(ext, ".ntfs[PSPISO]"))) && ((myxml_psp->size + table_size) < BUFFER_SIZE_PSP))
 		{_concat(myxml_psp, table_xml); *skey=PSP, ++item_count[gPSP];}
 		else
-		if(((IS_BDISO) || (IS_DVDISO) || ((IS_NTFS) && (IS(ext, ".ntfs[DVDISO]") || IS(ext, ".ntfs[BDISO]") || IS(ext, ".ntfs[BDFILE]")))) && (myxml_dvd->size < BUFFER_SIZE_DVD))
+		if((IS_BDISO || IS_DVDISO || (IS_NTFS && (IS(ext, ".ntfs[DVDISO]") || IS(ext, ".ntfs[BDISO]") || IS(ext, ".ntfs[BDFILE]")))) && ((myxml_dvd->size + table_size) < BUFFER_SIZE_DVD))
 		{_concat(myxml_dvd, table_xml); *skey=BLU, ++item_count[gDVD];}
 	#else
-		if((IS_PS3_TYPE) && myxml_ps3->size < (BUFFER_SIZE - _4KB_))
+		if(IS_PS3_TYPE && ((myxml_ps3->size + table_size) < BUFFER_SIZE_PS3))
 		{_concat(myxml_ps3, table_xml); *skey=PS3, ++item_count[gPS3];}
 		else
-		if((IS_PS2ISO) && myxml_ps2->size < BUFFER_SIZE_PS2)
+		if(IS_PS2ISO && ((myxml_ps2->size + table_size) < BUFFER_SIZE_PS2))
 		{_concat(myxml_ps2, table_xml); *skey=PS2, ++item_count[gPS2];}
 	#endif
 		else
@@ -629,7 +632,7 @@ static bool add_xmb_entry(u8 f0, u8 f1, const char *table_xml, char *title, char
 	}
 	else
 	{
-		if(myxml_ps3->size < (BUFFER_SIZE - _4KB_))
+		if((myxml_ps3->size + table_size) < BUFFER_SIZE_PS3)
 			{_concat(myxml_ps3, table_xml); ++item_count[gPS3];}
 		else
 			return (false);
@@ -706,10 +709,10 @@ static bool scan_mygames_xml(u64 conn_s_p)
 
 	if(!sysmem) return false; // recheck
 
-	sys_addr_t sysmem_psx = sysmem + (BUFFER_SIZE);
-	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX);
-	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP);
-	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2);
+	sys_addr_t sysmem_psx = sysmem + (BUFFER_SIZE); //BUFFER_SIZE_PSX
+	sys_addr_t sysmem_psp = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX); //BUFFER_SIZE_PSP
+	sys_addr_t sysmem_ps2 = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP); //BUFFER_SIZE_PS2
+	sys_addr_t sysmem_dvd = sysmem + (BUFFER_SIZE) + (BUFFER_SIZE_PSX) + (BUFFER_SIZE_PSP) + (BUFFER_SIZE_PS2); // BUFFER_SIZE_DVD
 
 	char *ignore_files = NULL;
 	if(webman_config->ignore && file_exists(WM_IGNORE_FILES))
@@ -720,6 +723,13 @@ static bool scan_mygames_xml(u64 conn_s_p)
 			ignore_files = malloc(size + 1);
 			if(ignore_files) {read_file(WM_IGNORE_FILES, ignore_files, size, 0); ignore_files[size] = '\0';}
 		}
+	}
+
+	// set boundary margins
+	if(XMB_GROUPS)
+	{
+		BUFFER_SIZE_PSX -= 0x10, BUFFER_SIZE_PSP -= 0x10;
+		BUFFER_SIZE_PS2 -= 0x10, BUFFER_SIZE_DVD -= 0x10;
 	}
 
 #if defined(LAUNCHPAD) || defined(MOUNT_ROMS)
@@ -1051,9 +1061,9 @@ scan_roms:
 
 						if(*app_ver) {strcat(title_id, " | v"); strcat(title_id, app_ver);}
 
-						add_info(table_xml + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 1);
+						read_e += add_info(table_xml + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, f1, 1);
 
-						if(add_xmb_entry(f0, f1, table_xml, title, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, 0)) key++;
+						if(add_xmb_entry(f0, f1, read_e, table_xml, title, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, data[v3_entry].name, 0)) key++; else break;
 
 						v3_entry++;
 					}
@@ -1220,16 +1230,16 @@ scan_roms:
 
 							if(*app_ver) {strcat(title_id, " | v"); strcat(title_id, app_ver);}
 
-							add_info(table_xml + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, is_game_dir ? id_NPDRM : f1, 5);
+							read_e += add_info(table_xml + read_e, folder_name, roms_index, enc_dir_name, title_id, f0, is_game_dir ? id_NPDRM : f1, 5);
 
-							if(add_xmb_entry(f0, _f1_, table_xml, title, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, subfolder)) key++;
+							if(add_xmb_entry(f0, _f1_, read_e, table_xml, title, skey[key].value, key, &myxml_ps3, &myxml_ps2, &myxml_psx, &myxml_psp, &myxml_dvd, entry.entry_name.d_name, subfolder)) key++; else break;
 						}
 						//////////////////////////////
-				continue_loop:
+					continue_loop:
 						if(subfolder) goto next_xml_entry;
 						//////////////////////////////
 					}
-				}
+				} //while
 
 				if(!is_net) cellFsClosedir(fd); cellFsClosedir(fd2);
 
@@ -1237,7 +1247,7 @@ scan_roms:
 				if(data2) {sys_memory_free(data2); data2 = NULL;}
 				#endif
 			}
-		//
+//
 		continue_reading_folder_xml:
 			if(IS_ROMS_FOLDER || (f1 < id_ISO && !IS_NTFS))
 			{
@@ -1247,12 +1257,12 @@ scan_roms:
 					if(ls && (li < 27)) {li++; goto subfolder_letter_xml;} else if(li < LANG_CUSTOM) {li = LANG_CUSTOM; goto subfolder_letter_xml;}
 				}
 			}
-		//
-		}
+//
+		} //f1
 		#ifdef NET_SUPPORT
 		if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 		#endif
-	}
+	} //f0
 
 	drives[NTFS][10] = ':';
 

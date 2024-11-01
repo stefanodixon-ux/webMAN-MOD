@@ -57,6 +57,7 @@ static void get_meminfo(void)
 static u32 BUFFER_SIZE_FTP;
 
 static u32 BUFFER_SIZE;
+static u32 BUFFER_SIZE_PS3;
 static u32 BUFFER_SIZE_PSX;
 static u32 BUFFER_SIZE_PSP;
 static u32 BUFFER_SIZE_PS2;
@@ -224,4 +225,6 @@ static void set_buffer_sizes(u8 footprint)
 	#else
 	BUFFER_SIZE = BUFFER_SIZE_ALL - (BUFFER_SIZE_PSX + BUFFER_SIZE_PSP + BUFFER_SIZE_PS2 + BUFFER_SIZE_DVD);
 	#endif
+
+	BUFFER_SIZE_PS3 = (BUFFER_SIZE - _4KB_);
 }

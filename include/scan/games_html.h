@@ -986,20 +986,19 @@ next_html_entry:
 							tlen += (flen + div_size);
 						}
 						//////////////////////////////
-	continue_loop:
+					continue_loop:
 						if(subfolder) goto next_html_entry;
 						//////////////////////////////
 					}
-				}
+				} //while
 
 				if(!is_net) cellFsClosedir(fd); cellFsClosedir(fd2);
 
 				#ifdef NET_SUPPORT
 				if(data2) {sys_memory_free(data2); data2 = NULL;}
 				#endif
-
 //
-	continue_reading_folder_html:
+			continue_reading_folder_html:
 				if(IS_ROMS_FOLDER || (f1 < id_ISO && !IS_NTFS))
 				{
 					if(uprofile > 0) {subfolder = 0; if(all_profiles && (uprofile < 4)) ++uprofile; else uprofile = 0; goto read_folder_html;}
@@ -1009,12 +1008,12 @@ next_html_entry:
 					}
 				}
 //
-			}
+			} //f1
 
 			#ifdef NET_SUPPORT
 			if(is_net && (ns >= 0) && (ns!=g_socket)) sclose(&ns);
 			#endif
-		}
+		} //f0
 
 		#ifdef SLAUNCH_FILE
 		close_slaunch_file(fdsl);
