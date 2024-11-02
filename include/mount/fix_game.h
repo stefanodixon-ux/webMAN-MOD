@@ -197,7 +197,7 @@ static void fix_iso(char *iso_file, u64 maxbytes, bool patch_update)
 
 					if(size > lba) size = lba;
 
-					sprintf(chunk, "%s %s", STR_FIXING, iso_file);
+					concat_text(chunk, STR_FIXING, iso_file);
 					show_msg(chunk);
 
 					start = 0, lba = getLBA(chunk, chunk_size, "PS3_DISC.SFB;1", 14, &start, &siz), lba *= 0x800ULL, chunk_size = 0x800; //1 sector
@@ -336,10 +336,10 @@ static void fix_game(char *game_path, char *title_id, u8 fix_type)
 				{
 					save_file(filename, paramsfo, bytes_read);
 
-					sprintf(filename, "%s %s", STR_FIXING, game_path);
+					concat_text(filename, STR_FIXING, game_path);
 					show_msg(filename);
 
-					sprintf(filename, "%s/PS3_GAME/USRDIR", game_path);  // fix bdvd game
+					concat2(filename, game_path, "/PS3_GAME/USRDIR");  // fix bdvd game
 
 					fix_game_folder(filename);
 				}

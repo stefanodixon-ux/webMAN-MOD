@@ -1138,7 +1138,7 @@ static void ps3mapi_payload(char *buffer, char *html, const char *param)
 
 	u32 pid = 0;
 
-	char payload[STD_PATH_LEN]; strcpy(payload, "/dev_hdd0/payload.bin");
+	char payload[STD_PATH_LEN]; strcopy(payload, "/dev_hdd0/payload.bin");
 
 	if(strstr(param, ".ps3mapi?"))
 	{
@@ -1538,10 +1538,10 @@ static void ps3mapi_kernelplugin(char *buffer, char *html, const char *param)
 		if(!slot)
 		{
 			if(!cobra_version)
-				sprintf(html, dex_mode ?  "boot_plugins_kernel_nocobra_dex.txt" :
-											"boot_plugins_kernel_nocobra.txt");
+				strcopy(html, dex_mode ? "boot_plugins_kernel_nocobra_dex.txt" :
+										 "boot_plugins_kernel_nocobra.txt");
 			else
-				sprintf(html, "boot_plugins_kernel.txt");
+				strcopy(html, "boot_plugins_kernel.txt");
 			read_file(html, tmp_filename, STD_PATH_LEN, 0);
 			if(*tmp_filename == 0)
 				sprintf(html, WMTMP "/kernel%i.txt", slot);

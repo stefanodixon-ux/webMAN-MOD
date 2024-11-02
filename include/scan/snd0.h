@@ -12,7 +12,7 @@ static void snd0_thread(__attribute__((unused)) u64 arg)
 		CellFsDirectoryEntry entry; size_t read_e; char path[64];
 		int mode = webman_config->nosnd0 ? NOSND : MODE; // toggle file access permissions
 
-		u8 path_len = sprintf(path, HDD0_GAME_DIR);
+		u8 path_len = strcopy(path, HDD0_GAME_DIR);
 		char *snd0_file = path + path_len;
 
 		while(working)

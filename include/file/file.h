@@ -188,14 +188,14 @@ static void check_path_alias(char *param)
 			int len = strncopy(path, STD_PATH_LEN, (*param == '/') ? param + 1 : param);
 			char *wildcard = strchr(path, '*'); if(wildcard) *wildcard = 0;
 			if((len == 4) && path[3] == '/') path[3] = 0; // normalize path
-			if(IS(path, "pkg")) {sprintf(param, DEFAULT_PKG_PATH);} else
+			if(IS(path, "pkg")) {strcopy(param, DEFAULT_PKG_PATH);} else
 			if(IS(path, "xml")) {*path = 0;} else // use HTML_BASE_PATH
 			if(IS(path, "xmb")) {enable_dev_blind(NULL); strcopy(param, "/dev_blind/vsh/resource/explore/xmb");} else
 			if(IS(path, "res")) {enable_dev_blind(NULL); strcopy(param, "/dev_blind/vsh/resource");} else
 			if(IS(path, "mod")) {enable_dev_blind(NULL); strcopy(param, "/dev_blind/vsh/module");} else
-			if(IS(path, "cov")) {sprintf(param, "%s/covers", MM_ROOT_STD);} else
-			if(IS(path, "cvr")) {sprintf(param, "%s/covers_retro/psx", MM_ROOT_STD);} else
-			if(islike(path, "res/"))  {sprintf(param, "/dev_blind/vsh/resource/%s", path + 4);} else
+			if(IS(path, "cov")) {concat2(param, MM_ROOT_STD, "/covers");} else
+			if(IS(path, "cvr")) {concat2(param, MM_ROOT_STD, "/covers_retro/psx");} else
+			if(islike(path, "res/"))  {concat2(param, "/dev_blind/vsh/resource/", path + 4);} else
 			if(isDir(html_base_path)) {snprintf(param, HTML_RECV_LAST, "%s/%s", html_base_path, path);} // use html path (if path is omitted)
 
 			if(not_exists(param)) {snprintf(param, HTML_RECV_LAST, "%s/%s", HTML_BASE_PATH, path);} // try HTML_BASE_PATH

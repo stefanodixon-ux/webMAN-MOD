@@ -90,7 +90,7 @@ s32 (*reco_open)(s32) = NULL; // base pointer
 static void show_rec_format(const char *msg)
 {
 	char text[200];
-	sprintf(text, "%s\nVideo: ", msg);
+	concat2(text, msg, "\nVideo: ");
 
 	u32 flags = (rec_video_format & 0xF000); // video format
 	if(flags == 0x0000) concat(text, "MPEG4 ");

@@ -10,6 +10,13 @@ static char *strnum(const char *str, int num)
 }
 #endif
 
+#ifdef COBRA_ONLY
+static char *strconcat(const char *src1, const char *src2)
+{
+	return strfmt("%s%s", src1, src2);
+}
+#endif
+
 static int strcopy(char *dest, const char *src)
 {
 	return sprintf(dest, "%s", src);
@@ -46,9 +53,9 @@ static char *_concat(t_string *dest, const char *src)
 
 	char *str = dest->str + dest->size;
 
-	while (*str) {str++, dest->size++;} // find last null byte
+	while (*str) str++; dest->size = str - dest->str; // find last null byte
 
-	if(src) while ((*str++ = *src++)) dest->size++; // append src
+	if(src) {while ((*str++ = *src++)) ; dest->size = str - 1 - dest->str;} // append src
 
 	return str;
 }
@@ -89,6 +96,11 @@ static int concat2(char *dest, const char *src1, const char *src2)
 static void concat3(char *dest, const char *src1, const char *src2, const char *src3)
 {
 	sprintf(dest, "%s%s%s", src1, src2, src3);
+}
+
+static int concat_text(char *dest, const char *src1, const char *src2)
+{
+	return sprintf(dest, "%s %s", src1, src2);
 }
 
 static int concat_path(char *dest, const char *src1, const char *src2)

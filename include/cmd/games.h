@@ -10,12 +10,12 @@
 		if(not_exists(MOBILE_HTML))
 			{concat2(param, "/index.ps3", params); mobile_mode = false;}
 		else if(strstr(param, "?g="))
-			sprintf(param, MOBILE_HTML);
+			strcopy(param, MOBILE_HTML);
 		else if(strchr(param, '?'))
 			concat2(param, "/index.ps3", params);
 		else if(not_exists(GAMELIST_JS))
-			sprintf(param, "/index.ps3?mobile");
+			concat2(param, "/index.ps3", "?mobile");
 		else
-			sprintf(param, MOBILE_HTML);
+			strcopy(param, MOBILE_HTML);
 	}
 	else mobile_mode = false;

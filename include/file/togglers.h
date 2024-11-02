@@ -8,25 +8,25 @@ static void swap_kernel(const char *source, char *target, char *tempstr)
 		enable_dev_blind(source);
 
 		// for cobra req: /dev_flash/sys/stage2.bin & /dev_flash/sys/lv2_self
-		strcpy(target, SYS_COBRA_PATH "stage2.bin");
+		strcopy(target, SYS_COBRA_PATH "stage2.bin");
 		if(isDir("/dev_flash/rebug/cobra"))
 		{
 			const char *ext = get_ext(source);
 			if(IS(ext, ".dex"))
-				sprintf(target, "%s/stage2.dex", "/dev_flash/rebug/cobra");
+				concat_path(target, "/dev_flash/rebug/cobra", "stage2.dex");
 			else if(IS(ext, ".cex"))
-				sprintf(target, "%s/stage2.cex", "/dev_flash/rebug/cobra");
+				concat_path(target, "/dev_flash/rebug/cobra", "stage2.cex");
 		}
 
 		if(not_exists(target))
 		{
-			strcpy(tempstr, source);
-			strcpy(get_filename(tempstr), "/stage2.bin");
+			strcopy(tempstr, source);
+			strcopy(get_filename(tempstr), "/stage2.bin");
 			if(file_exists(tempstr)) force_copy(tempstr, target);
 		}
 
 		// copy: /dev_flash/sys/lv2_self
-		sprintf(target, "/dev_blind/sys/lv2_self");
+		strcopy(target, "/dev_blind/sys/lv2_self");
 		if(file_size(target) != size)
 			force_copy(source, target);
 

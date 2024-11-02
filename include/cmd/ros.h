@@ -150,7 +150,7 @@
 			goto exit_handleclient_www;
 		}
 		else
-			sprintf(param, "ADMIN %s", STR_DISABLED);
+			concat_text(param, "ADMIN", STR_DISABLED);
 
 		// show error
 		strcat(buffer, param); strcpy(param, buffer);

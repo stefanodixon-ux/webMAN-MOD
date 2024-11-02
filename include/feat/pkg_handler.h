@@ -281,17 +281,17 @@ static int download_file(const char *param, char *msg)
 
 		else if(isDir(DEFAULT_PKG_PATH) || cellFsMkdir(DEFAULT_PKG_PATH, DMODE) == CELL_FS_SUCCEEDED)
 		{
-			len = sprintf(pdpath, DEFAULT_PKG_PATH);
+			len = strcopy(pdpath, DEFAULT_PKG_PATH);
 		}
 		else
 		{
-			len = sprintf(pdpath, INT_HDD_ROOT_PATH);
+			len = strcopy(pdpath, INT_HDD_ROOT_PATH);
 		}
 
-		sprintf(msg_dpath, "To: %s", pdpath);
+		concat_text(msg_dpath, "To:", pdpath);
 		if(IS(pdpath, DEFAULT_PKG_PATH) && strstr(pdurl, ".pkg"))
 		{
-			len = sprintf(pdpath, TEMP_DOWNLOAD_PATH); pkg_dcount++;
+			len = strcopy(pdpath, TEMP_DOWNLOAD_PATH); pkg_dcount++;
 		}
 
 		conv_num = mbstowcs((wchar_t *)pkg_dpath, (const char *)pdpath, len + 1);
@@ -304,7 +304,7 @@ static int download_file(const char *param, char *msg)
 
 			mkdir_tree(pdpath); cellFsMkdir(pdpath, DMODE);
 
-			sprintf(msg_durl, "Downloading %s", pdurl);
+			concat_text(msg_durl, "Downloading", pdurl);
 
 			LoadPluginById(download_plugin, (void *)downloadPKG_thread);
 			ret = CELL_OK;
@@ -387,7 +387,7 @@ static int installPKG(const char *pkgpath, char *msg)
 	return ret;
 }
 
-static char *INSTALL_PKG_PATH; // input parameter of installPKG_combo_thread
+static const char *INSTALL_PKG_PATH; // input parameter of installPKG_combo_thread
 
 static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 {
@@ -402,14 +402,14 @@ static void installPKG_combo_thread(__attribute__((unused)) u64 arg)
 		CellFsDirent dir; u64 read_e;
 
 		char pkgfile[MAX_PKGPATH_LEN];
-		u16 plen = sprintf(pkgfile, "%s/", INSTALL_PKG_PATH);
+		u16 plen = concat2(pkgfile, INSTALL_PKG_PATH, "/");
 		char *path_file = pkgfile + plen;
 
 		while(working && (cellFsReaddir(fd, &dir, &read_e) == CELL_FS_SUCCEEDED) && (read_e > 0))
 		{
 			if(is_ext(dir.d_name, ".pkg"))
 			{
-				strcpy(path_file, dir.d_name);
+				strcopy(path_file, dir.d_name);
 
 				char msg[MAX_PATH_LEN];
 				ret = installPKG(pkgfile, msg); if(!(webman_config->minfo & 1)) show_msg(msg);
@@ -435,8 +435,9 @@ static void installPKG_all(const char *path, bool delete_after_install)
 
 	if(!install_in_progress && IS_ON_XMB)
 	{
-		INSTALL_PKG_PATH = (char*)path;
-		check_path_tags(INSTALL_PKG_PATH);
+		check_path_tags((char*)path);
+
+		INSTALL_PKG_PATH = path;
 
 		if(isDir(INSTALL_PKG_PATH))
 		{

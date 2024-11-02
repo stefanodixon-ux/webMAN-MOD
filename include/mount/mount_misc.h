@@ -132,10 +132,10 @@
 			if(file_exists(RETROARCH_DIR0))
 			{
 				//sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
-				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
-				sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR0 "/USRDIR/cores");
+				sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", strconcat(RETROARCH_DIR0, "/USRDIR/cores"));
+				sys_map_path("/app_home/PS3_GAME/USRDIR/cores", strconcat(RETROARCH_DIR0, "/USRDIR/cores"));
 
-				force_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
+				force_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce", strconcat(PKGLAUNCH_PS3_GAME, "/USRDIR/retroarch.cfg"));
 				cellFsUnlink(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cce");
 			}
 			else
@@ -143,17 +143,17 @@
 				if(file_exists(RETROARCH_DIR1))
 				{
 					//sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
-					sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
-					sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR1 "/USRDIR/cores");
+					sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", strconcat(RETROARCH_DIR1, "/USRDIR/cores"));
+					sys_map_path("/app_home/PS3_GAME/USRDIR/cores", strconcat(RETROARCH_DIR1, "/USRDIR/cores"));
 				}
 				else
 				{
 					//sys_map_path(PKGLAUNCH_DIR "/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
-					sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
-					sys_map_path("/app_home/PS3_GAME/USRDIR/cores", RETROARCH_DIR2 "/USRDIR/cores");
+					sys_map_path("/dev_bdvd/PS3_GAME/USRDIR/cores", strconcat(RETROARCH_DIR2, "/USRDIR/cores"));
+					sys_map_path("/app_home/PS3_GAME/USRDIR/cores", strconcat(RETROARCH_DIR2, "/USRDIR/cores"));
 				}
 
-				force_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak", (char*)PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.cfg");
+				force_copy(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak", strconcat(PKGLAUNCH_PS3_GAME, "/USRDIR/retroarch.cfg"));
 				cellFsUnlink(PKGLAUNCH_PS3_GAME "/USRDIR/retroarch.bak");
 			}
 
@@ -221,11 +221,11 @@ mount_ps2classic:
 				sprintf(temp, "\"%s\" %s", get_filename(_path) + 1, STR_LOADED2); ret = true;
 			}
 			else
-				sprintf(temp, "%s %s", _path, STR_NOTFOUND);
+				concat_text(temp, _path, STR_NOTFOUND);
 		}
 		else
 		{
-			sprintf(temp, "PS2 Classic Placeholder %s", STR_NOTFOUND);
+			concat_text(temp, "PS2 Classic Launcher", STR_NOTFOUND);
 		}
 
 		if(!(webman_config->minfo & 2))

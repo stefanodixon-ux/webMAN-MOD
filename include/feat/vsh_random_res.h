@@ -45,20 +45,20 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 			if(loop) _id /= 2;
 
 			if(res_id == 0)
-				sprintf(param, "%s/%i.png", hdd_path, _id); // wallpaper
+				sprintf(param, "%s/%i%s", hdd_path, _id, ".png"); // wallpaper
 			else if(res_id == 4)
-				sprintf(param, "%s/%i.ac3", hdd_path, _id); // coldboot
+				sprintf(param, "%s/%i%s", hdd_path, _id, ".ac3"); // coldboot
 			else if(res_id == 5)
 			{
 				if(_id == webman_config->resource_id[6]) continue;
-				sprintf(param, "%s/%i.p3t", hdd_path, _id); // theme
+				sprintf(param, "%s/%i%s", hdd_path, _id, ".p3t"); // theme
 			}
 			else if(res_id == 7 || res_id == 9)
-				sprintf(param, "%s/%i.rco", hdd_path, _id); // impose
+				sprintf(param, "%s/%i%s", hdd_path, _id, ".rco"); // impose
 			else if(res_id == 8)
-				sprintf(param, "%s/%i/xmb_plugin_normal.rco", hdd_path, _id); // psn_icons
+				sprintf(param, "%s/%i%s", hdd_path, _id, "/xmb_plugin_normal.rco"); // psn_icons
 			else
-				sprintf(param, "%s/%i.qrc", hdd_path, _id); // lines, earth, canyon
+				sprintf(param, "%s/%i%s", hdd_path, _id, ".qrc"); // lines, earth, canyon
 
 			if(id == DEFAULT_RES) break; loop = 1;
 		}
@@ -91,14 +91,14 @@ static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 			}
 			else if(res_id)
 			{
-				sys_map_path(strfmt("%s%s", VSH_RESOURCE_DIR, res_path), param);
+				sys_map_path(strconcat(VSH_RESOURCE_DIR, res_path), param);
 				if(res_id == 4)
 					sys_map_path("/dev_flash/vsh/resource/coldboot_multi.ac3",  param);
 				if(res_id == 8)
 				{
 					sprintf(param, "%s/%i/xmb_ingame.rco", hdd_path, _id); // psn_icons
 					sys_map_path("/dev_flash/vsh/resource/xmb_ingame.rco",  param);
-					sprintf(param, "%s/%i.png", hdd_path, _id); // show preview
+					sprintf(param, "%s/%i%s", hdd_path, _id, ".png"); // show preview
 				}
 			}
 			else

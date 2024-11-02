@@ -29,7 +29,7 @@
 				play_rco_sound(params);
 
 				#ifdef PS3MAPI
-				sprintf(param, "/buzzer.ps3mapi");
+				strcopy(param, "/buzzer.ps3mapi");
 				goto html_response;
 				#else
 				if(!mc) keep_alive = http_response(conn_s, header, param, CODE_VIRTUALPAD, params);
@@ -64,7 +64,7 @@
 					}
 
 					launch_app_home_icon(true);
-					sprintf(param, "/cpursx.ps3");
+					strcopy(param, "/cpursx.ps3");
 				}
 				else
 				#endif
@@ -151,6 +151,6 @@
 		// default: play.ps3?col=game&seg=seg_device
 		launch_disc(true);
 
-		sprintf(param, "/cpursx.ps3");
+		strcopy(param, "/cpursx.ps3");
 	}
 #endif //  #ifdef VIRTUAL_PAD

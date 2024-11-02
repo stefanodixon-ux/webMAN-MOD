@@ -286,7 +286,7 @@ static void show_error(const char *text)
 {
 	char msg[200];
 	if(IS(text, "[nonCobra]"))
-		sprintf(msg, "%s %s", "Cobra", STR_DISABLED);
+		concat_text(msg, "Cobra", STR_DISABLED);
 	else
 		snprintf(msg, sizeof(msg), "%s %s", STR_ERROR, text);
 	

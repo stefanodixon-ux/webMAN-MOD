@@ -76,7 +76,7 @@ static int add_launchpad_entry(char *buffer, const char *title, const char *url,
 static void add_launchpad_extras(char *buffer, char *url)
 {
 	char STR_REFRESH_LP[64];
-	sprintf(STR_REFRESH_LP, "%s LaunchPad", STR_REFRESH);
+	concat_text(STR_REFRESH_LP, STR_REFRESH, "LaunchPad");
 
 	char icon_url[MAX_PATH_LEN]; *icon_url = NULL;
 

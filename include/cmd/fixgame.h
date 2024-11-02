@@ -10,7 +10,7 @@
 
 		check_path_alias(game_path);
 
-		sprintf(header, STR_FIXING);
+		strcopy(header, STR_FIXING);
 
 		if(file_exists(game_path))
 			keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, game_path);

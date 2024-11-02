@@ -210,9 +210,9 @@
 				launch_app_home_icon(true);
 
 				if(is_unzip)
-					sprintf(header, "/unzip.ps3");
+					strcopy(header, "/unzip.ps3");
 				else
-					sprintf(header, "/dozip.ps3");
+					strcopy(header, "/dozip.ps3");
 			}
 			else
 			{

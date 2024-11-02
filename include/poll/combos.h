@@ -385,7 +385,7 @@
 							{
 								#ifdef FIX_GAME
 								if(fix_in_progress)
-									sprintf(msg, "%s %s", STR_FIXING, current_file);
+									concat_text(msg, STR_FIXING, current_file);
 								else
 								#endif
 									get_copy_stats(msg, STR_COPYING);

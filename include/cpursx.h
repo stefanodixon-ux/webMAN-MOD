@@ -143,13 +143,13 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 
 	char fan_mode[24];
 	if(fan_ps2_mode || ps2_classic_mounted)
-		sprintf(fan_mode, "   PS2 Mode");
+		strcopy(fan_mode, "   PS2 Mode");
 	else if(webman_config->fanc == FAN_AUTO2)
-		sprintf(fan_mode, "   MAX: AUTO");
+		strcopy(fan_mode, "   MAX: AUTO");
 	else if(max_temp)
 		sprintf(fan_mode, "   MAX: %i°C", max_temp);
 	else if(webman_config->fanc == DISABLED)
-		sprintf(fan_mode, "   SYSCON");
+		strcopy(fan_mode, "   SYSCON");
 	else
 		_memset(fan_mode, sizeof(fan_mode));
 
@@ -179,7 +179,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 	{
 		#ifndef LITE_EDITION
 		if(op == 18) // syscalls
-			sprintf(msg, "Syscalls: %s", syscalls_removed ? STR_DISABLED : STR_ENABLED);
+			concat_text(msg, "Syscalls:", syscalls_removed ? STR_DISABLED : STR_ENABLED);
 		if(op == 19) // temp
 			{char *p = strchr(msg, '\n'); _memset(p, len-30); return;}
 		if(op == 20) // fan mode
@@ -203,7 +203,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			return;
 		}
 		if(op == 25) // id+title
-			{get_game_info(); sprintf(msg, "%s %s", _game_TitleID, _game_Title); return;}
+			{get_game_info(); concat_text(msg, _game_TitleID, _game_Title); return;}
 		#ifdef COBRA_ONLY
 		if(op == 26) // pid
 			sprintf(msg, "PID: 0x%x", get_current_pid());
@@ -573,8 +573,8 @@ static void cpu_rsx_stats(char *buffer, char *html, char *param, u8 is_ps3_http)
 		sprintf(max_temp1, "<small>[%s %s]</small>", STR_FANCTRL3, "SYSCON");
 	else if(webman_config->fanc == FAN_AUTO2)
 	{
-		sprintf(max_temp1, "(AUTO)");
-		sprintf(max_temp2, "(AUTO)");
+		strcopy(max_temp1, "(AUTO)");
+		strcopy(max_temp2, "(AUTO)");
 	}
 	else if(max_temp)
 	{
@@ -595,9 +595,9 @@ static void cpu_rsx_stats(char *buffer, char *html, char *param, u8 is_ps3_http)
 					t1f, max_temp2, t2f); concat(buffer, html);
 
 	if(IS_ON_XMB && file_exists(WM_RES_PATH "/slaunch.sprx"))
-		sprintf(max_temp1, "/browser.ps3$slaunch");
+		strcopy(max_temp1, "/browser.ps3$slaunch");
 	else
-		sprintf(max_temp1, "/games.ps3");
+		strcopy(max_temp1, "/games.ps3");
 
 	char hdd_free[40];
 
@@ -764,7 +764,7 @@ static void show_wm_version(char *param)
 	}
 	else
 	{
-		if(!cobra_version) sprintf(cfw_info, "[nonCobra]");
+		if(!cobra_version) strcopy(cfw_info, "[nonCobra]");
 		sprintf(param,	"%s\n"
 						"%s %s" EDITION, WM_APP_VERSION, fw_version, cfw_info);
 	}

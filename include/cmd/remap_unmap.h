@@ -27,7 +27,7 @@
 			u64 open_hook_symbol = (dex_mode) ? open_hook_dex : open_hook_cex;
 
 			bool map_path_enabled = (peekq(open_hook_symbol) != original_open_hook);
-			sprintf(param, "%s %s", "map_path", map_path_enabled ? STR_ENABLED : STR_DISABLED );
+			concat_text(param, "map_path", map_path_enabled ? STR_ENABLED : STR_DISABLED );
 		}
 		else
 		#endif
@@ -51,7 +51,7 @@
 
 			if(isremap)
 			{
-				sprintf(path2, "/dev_bdvd");
+				strcopy(path2, "/dev_bdvd");
 				get_param("to=", path2, param, MAX_PATH_LEN);
 			}
 

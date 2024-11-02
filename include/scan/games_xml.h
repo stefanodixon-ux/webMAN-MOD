@@ -180,10 +180,10 @@ static void make_fb_xml(void)
 			if(!(webman_config->app_home) && !is_app_home_onxmb())
 			{
 				has_app_home = !(webman_config->root);
-				size += sprintf(myxml + size, QUERY_APP_HOME_ICON);
+				size += strcopy(myxml + size, QUERY_APP_HOME_ICON);
 			}
 			else
-				size += sprintf(myxml + size, XML_BEGIN_ITEMS);
+				size += strcopy(myxml + size, XML_BEGIN_ITEMS);
 
 			size += sprintf(myxml + size, "%s" SRC("mgames", "xmb://localhost%s#seg_mygames") "%s", // MY_GAMES_XML
 										  XML_QUERY, MY_GAMES_XML, XML_END_OF_FILE);
@@ -437,10 +437,11 @@ static char *setup_table(char *buffer, char *table_xml, bool add_xmbm_plus)
 	char *STR_WMSETUP2 = buffer; //[56];//	= "Setup webMAN options";
 	language("STR_WMSETUP2", STR_WMSETUP2, "Setup webMAN options");
 	#endif
-	sprintf(table_xml, "<T key=\"setup\">"
+	sprintf(table_xml, "<T key=\"%s\">"
 						XML_PAIR("icon","%s")
 						XML_PAIR("title","%s")
 						XML_PAIR("info","%s") "%s",
+						"setup",
 						add_xmbm_plus ? XMBMANPLS_PATH "/IMAGES/multiman.png" : wm_icons[10],
 						STR_WMSETUP, STR_WMSETUP2, WEB_LINK_PAIR);
 	return table_xml;
@@ -452,10 +453,11 @@ static char *ps2launcher_table(char *buffer, char *table_xml)
 	char *STR_LAUNCHPS2 =  buffer; //[48];//	= "Launch PS2 Classic";
 	language("STR_LAUNCHPS2", STR_LAUNCHPS2, "Launch PS2 Classic");
 	#endif
-	sprintf(table_xml, "<T key=\"ps2_classic_launcher\">"
-						XML_PAIR("icon", PS2_CLASSIC_ISO_ICON)
-						XML_PAIR("title","PS2 Classic Launcher")
+	sprintf(table_xml, "<T key=\"%s\">"
+						XML_PAIR("icon","%s")
+						XML_PAIR("title","%s")
 						XML_PAIR("info","%s") "%s",
+						"ps2_classic_launcher", PS2_CLASSIC_ISO_ICON, "PS2 Classic Launcher",
 						STR_LAUNCHPS2, STR_NOITEM_PAIR);
 	return table_xml;
 }
@@ -467,11 +469,12 @@ static char *psplauncher_table(char *buffer, char *table_xml)
 	char *STR_LAUNCHPSP =  buffer; //[144];//	= "Launch PSP ISO mounted through webMAN or mmCM";
 	language("STR_LAUNCHPSP", STR_LAUNCHPSP, "Launch PSP ISO mounted through webMAN or mmCM");
 	#endif
-	sprintf(table_xml, "<T key=\"cobra_psp_launcher\">"
-						XML_PAIR("icon","/dev_hdd0//game/%s/ICON0.PNG")
-						XML_PAIR("title","PSP Launcher")
+	char icon[40]; concat2(icon, isDir(PSP_LAUNCHER_REMASTERS) ? PSP_LAUNCHER_REMASTERS : PSP_LAUNCHER_MINIS, "/ICON0.PNG");
+	sprintf(table_xml, "<T key=\"%s\">"
+						XML_PAIR("icon","%s")
+						XML_PAIR("title","%s")
 						XML_PAIR("info","%s") "%s",
-						isDir(PSP_LAUNCHER_REMASTERS) ? PSP_LAUNCHER_REMASTERS_ID : PSP_LAUNCHER_MINIS_ID,
+						"cobra_psp_launcher", icon, "PSP Launcher",
 						STR_LAUNCHPSP, STR_NOITEM_PAIR);
 	return table_xml;
 }

@@ -31,7 +31,7 @@
 			}
 		}
 
-		sprintf(templn, "System BGM: %s", system_bgm ? STR_ENABLED : STR_DISABLED);
+		concat_text(templn, "System BGM:", system_bgm ? STR_ENABLED : STR_DISABLED);
 		_concat(&sbuffer, templn);
 		show_msg(templn);
 	}

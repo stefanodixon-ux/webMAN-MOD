@@ -63,9 +63,9 @@
 			res_id = map_vsh_resource(res_id, MAP_SELECTED, param, false);	// random resource
 
 		if(!res_id)
-			sprintf(header, "Random");
+			strcopy(header, "Random");
 		else
-			sprintf(header, "Fixed");
+			strcopy(header, "Fixed");
 
 		keep_alive = http_response(conn_s, header, param, CODE_PREVIEW_FILE, param);
 		goto exit_handleclient_www;

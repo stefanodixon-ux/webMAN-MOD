@@ -502,7 +502,7 @@ parse_request:
 		}
 		else if(mc_param)
 		{
-			sprintf(header, "GET %s", mc_param); // next multi-command param
+			concat_text(header, "GET", mc_param); // next multi-command param
 			free(mc_param); mc_param = NULL;
 		}
 

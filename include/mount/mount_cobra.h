@@ -24,7 +24,7 @@ if(!cobra_version) {ret = false; goto finish;}
 		else if(strstr(_path, "/GAME"))
 		{
 			char extgdfile[strlen(_path) + 24], *extgdini = extgdfile;
-			sprintf(extgdfile, "%s/PS3_GAME/PS3GAME.INI", _path); check_ps3_game(extgdfile);
+			concat2(extgdfile, _path, "/PS3_GAME/PS3GAME.INI"); check_ps3_game(extgdfile);
 			if(read_file(extgdfile, extgdini, 12, 0))
 			{
 				if((extgd == 0) &&  (extgdini[10] & (1<<1))) set_gamedata_status(1, false); else
@@ -174,7 +174,7 @@ mount_again:
 				{
 					int edat = 0;
 
-					sprintf(full_path, "%s.MINIS.EDAT", iso_list[0]);
+					concat2(full_path, iso_list[0], ".MINIS.EDAT");
 					if(file_exists(full_path))
 					{
 						if(isDir(PSP_LAUNCHER_MINIS))
@@ -192,7 +192,7 @@ mount_again:
 						}
 					}
 
-					sprintf(full_path, "%s.MINIS2.EDAT", iso_list[0]);
+					concat2(full_path, iso_list[0], ".MINIS2.EDAT");
 					if(file_exists(full_path))
 					{
 						if(isDir(PSP_LAUNCHER_REMASTERS))
@@ -275,7 +275,7 @@ copy_ps2iso_to_hdd0:
 
 					#ifndef LITE_EDITION
 					// Auto-copy CONFIG from ManaGunZ
-					sprintf(full_path, "%s.CONFIG", iso_list[0]);
+					concat2(full_path, iso_list[0], ".CONFIG");
 					if(!webman_config->ps2config && not_exists(full_path))
 					{
 						mount_ps_disc_image(_path, cobra_iso_list, iso_parts, EMU_PS2_DVD);
@@ -427,7 +427,7 @@ copy_ps2iso_to_hdd0:
 		// -- mount game folder
 		bool is_gameid = BETWEEN('A', *title_id, 'Z') && ISDIGIT(title_id[8]);
 		if (!is_gameid)
-			sprintf(title_id, "TEST00000");
+			strcopy(title_id, "TEST00000");
 
 		cobra_map_game(_path, title_id, mount_app_home | !(webman_config->app_home));
 

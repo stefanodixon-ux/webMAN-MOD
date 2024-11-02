@@ -2,7 +2,7 @@
 	if(islike(param, "/secureid.ps3"))
 	{
 		hook_savedata_plugin();
-		sprintf(param, "Save data plugin: %s", securfileid_hooked ? STR_ENABLED : STR_DISABLED);
+		concat_text(param, "Save data plugin:", securfileid_hooked ? STR_ENABLED : STR_DISABLED);
 
 		if(file_exists("/dev_hdd0/secureid.log") concat2(param, "<p>Download: ", strfmt(HTML_URL, "/dev_hdd0/secureid.log", "/dev_hdd0/secureid.log")); 
  
