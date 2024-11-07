@@ -96,8 +96,8 @@
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="menu01" attr="menu01" src="#seg_mod_xmb"/><!-- XMD MOD -->
-			<Q class="type:x-xmb/folder-pixmap" key="menu02" attr="menu02" src="#seg_mod_cfw"/><!-- CFW MOD -->
+			<Q class="type:x-xmb/folder-pixmap" key="menu01" attr="menu01" src="#seg_mod_xmb"/><!-- XMD MODs -->
+			<Q class="type:x-xmb/folder-pixmap" key="menu02" attr="menu02" src="#seg_mod_cfw"/><!-- CFW MODs -->
 			<Q class="type:x-xmb/folder-pixmap" key="app001" attr="app001" src="#app001_item"/><!-- prepISO -->
 			<Q class="type:x-xmb/folder-pixmap" key="app002" attr="app002" src="#app002_item"/><!-- PS2 CONFIG Database -->
 			<Q class="type:x-xmb/folder-pixmap" key="app003" attr="app003" src="#app003_item"/><!-- PS2 Classics Launcher -->
@@ -161,7 +161,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>2P0001-PS2U10000_00-0000111122223333</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -251,7 +251,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>MM4PS3-BLES80608_00-MULTIMANAGER0470</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -266,7 +266,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-IRISMAN00_00-VER4910000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -281,7 +281,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-PS3SFM001_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -296,7 +296,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-HTSS00003_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -311,7 +311,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-NP0APOLLO_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -326,7 +326,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-ARTPS3001_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -341,7 +341,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-NP00PKGI3_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -356,7 +356,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>UP0001-RMTC00001_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -371,7 +371,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-ULTOOLBOX_00-DEVIL30300000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -386,7 +386,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-ULTOOLBOX_00-DEVIL30300000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -416,7 +416,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>EP0001-UPDWEBMOD_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/webman.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -426,6 +426,19 @@
 			<Q class="type:x-xmb/folder-pixmap" key="pkg_dev_blind"	src="#seg_toggle_dev_blind"/>
 			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_mod_items"/>
 		</I>
+	</V>
+
+	<V id="seg_toggle_dev_blind">
+		<A>
+			<T key="webman_devblind">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/dev_blind.png</></P>
+				<P key="title"><>Enable /dev_blind</></P>
+				<P key="module_name"><>idle_plugin</></P>
+				<P key="bar_action"><>none</></P>
+				<P key="module_action"><>/popup.ps3?/dev_blind+enabled;/dev_blind</></P>
+			</T>
+		</A>
+		<I><I class="type:x-xmb/module-action" key="webman_devblind" attr="webman_devblind"/></I>
 	</V>
 
 	<V id="seg_mod_items">
@@ -462,20 +475,54 @@
 				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod006" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA9 to BETA10</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETA10 to BETA12</></P>
 				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod007" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA8 to BETA10</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETA9 to BETA10</></P>
 				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod008" include="inc">
-				<P key="title"><>Extended Download + Icons</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETA8 to BETA10</></P>
 				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod009" include="inc">
+				<P key="title"><>Extended Download + Icons</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod010" include="inc">
 				<P key="title"><>Power Options on User Column</></P>
 				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
+			</T>
+
+			<T key="mod101" include="inc">
+				<P key="title"><>[PS1] Install default PS1 emulators from CFW Evilnat</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod102" include="inc">
+				<P key="title"><>[PS2] Install default PS2 emulators from CFW Evilnat</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+
+			<T key="mnu">
+				<P key="icon_rsc"><>tex_album_icon</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="menu11" include="mnu">
+				<P key="title"><>PS1 NETEMU MODs</></P>
+				<P key="child"><>segment</></P>
+			</T>
+			<T key="menu12" include="mnu">
+				<P key="title"><>PS2 NETEMU MODs</></P>
+				<P key="child"><>segment</></P>
+			</T>
+			<T key="menu13" include="mnu">
+				<P key="title"><>PS2 GXEMU MODs</></P>
+				<P key="child"><>segment</></P>
+			</T>
+			<T key="menu14" include="mnu">
+				<P key="title"><>PS2 GXEMU MODs</></P>
+				<P key="child"><>segment</></P>
 			</T>
 		</A>
 		<I>
@@ -490,20 +537,173 @@
 			<Q class="type:x-xmb/folder-pixmap" key="mod007" attr="mod007" src="#mod007_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod008" attr="mod008" src="#mod008_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod009" attr="mod009" src="#mod009_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod010" attr="mod010" src="#mod010_item"/>
+
+			<Q class="type:x-xmb/folder-pixmap" key="mod101" attr="mod101" src="#mod101_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod102" attr="mod102" src="#mod102_item"/>
+
+			<Q class="type:x-xmb/folder-pixmap" key="menu11" attr="menu11" src="#seg_mnu_ps1netemu"/><!-- PS1 NETEMU MODs -->
+			<Q class="type:x-xmb/folder-pixmap" key="menu12" attr="menu12" src="#seg_mnu_ps2netemu"/><!-- PS2 NETEMU MODs -->
+			<Q class="type:x-xmb/folder-pixmap" key="menu13" attr="menu13" src="#seg_mnu_ps2gxemu"/> <!-- PS2 GXEMU MODs -->
+			<Q class="type:x-xmb/folder-pixmap" key="menu14" attr="menu14" src="#seg_mnu_ps2emu"/>   <!-- PS2 EMU MODs -->
 		</I>
 	</V>
 
-	<V id="seg_toggle_dev_blind">
+	<V id="seg_mnu_ps1netemu">
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="pkg_dev_blind"	src="#seg_toggle_dev_blind"/>
+			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_mod_ps1netemu"/>
+		</I>
+	</V>
+
+	<V id="seg_mnu_ps2netemu">
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="pkg_dev_blind"	src="#seg_toggle_dev_blind"/>
+			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_mod_ps2netemu"/>
+		</I>
+	</V>
+
+	<V id="seg_mnu_ps2gxemu">
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="pkg_dev_blind"	src="#seg_toggle_dev_blind"/>
+			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_mod_ps2gxemu"/>
+		</I>
+	</V>
+
+	<V id="seg_mnu_ps2emu">
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="pkg_dev_blind"	src="#seg_toggle_dev_blind"/>
+			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_mod_ps2emu"/>
+		</I>
+	</V>
+
+	<V id="seg_mod_ps1netemu">
 		<A>
-			<T key="webman_devblind">
-				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/dev_blind.png</></P>
-				<P key="title"><>Enable /dev_blind</></P>
-				<P key="module_name"><>idle_plugin</></P>
-				<P key="bar_action"><>none</></P>
-				<P key="module_action"><>/popup.ps3?/dev_blind+enabled;/dev_blind</></P>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+			<T key="mod110" include="inc">
+				<P key="title"><>[PS1] Install PS1 emulators with automatic GTE widescreen patches</></P>
+			</T>
+			<T key="mod111" include="inc">
+				<P key="title"><>[PS1 NETEMU] Install ps1_netemu with nearest-neighbor interpolation filtering</></P>
+			</T>
+			<T key="mod112" include="inc">
+				<P key="title"><>[PS1 NETEMU] Install ps1_netemu with no dithering filter</></P>
+			</T>
+			<T key="mod113" include="inc">
+				<P key="title"><>[PS1 NETEMU] Install ps1_netemu with nearest-neighbor interpolation + no dithering filter</></P>
 			</T>
 		</A>
-		<I><I class="type:x-xmb/module-action" key="webman_devblind" attr="webman_devblind"/></I>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod110" attr="mod110" src="#mod110_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod111" attr="mod111" src="#mod111_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod112" attr="mod112" src="#mod112_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod113" attr="mod113" src="#mod113_item"/>
+		</I>
+	</V>
+
+	<V id="seg_mod_ps2netemu">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+			<T key="mod120" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with fps counter + menu combo + EE overclocking + partial antiblur + x modules</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press Left DPAD + SQUARE + L1 + R1 for 5-6 seconds for menu</></P>
+			</T>
+			<T key="mod121" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu default</></P>
+			</T>
+			<T key="mod122" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu default + Debug Menu</></P>
+			</T>
+			<T key="mod123" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with HDD Browser</></P>
+			</T>
+			<T key="mod124" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with HDD Browser + Debug Menu</></P>
+			</T>
+			<T key="mod125" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with Memory Dumper Mod</></P>
+			</T>
+			<T key="mod126" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with Memory Dumper Mod + Debug Menu</></P>
+			</T>
+			<T key="mod127" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with Temperature Mod</></P>
+			</T>
+			<T key="mod128" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with Temperature Mod + Debug Menu</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod120" attr="mod120" src="#mod120_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod121" attr="mod121" src="#mod121_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod122" attr="mod122" src="#mod122_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod123" attr="mod123" src="#mod123_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod124" attr="mod124" src="#mod124_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod125" attr="mod125" src="#mod125_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod126" attr="mod126" src="#mod126_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod127" attr="mod127" src="#mod127_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod128" attr="mod128" src="#mod128_item"/>
+		</I>
+	</V>
+
+	<V id="seg_mod_ps2gxemu">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+			<T key="mod130" include="inc">
+				<P key="title"><>[PS2 GXEMU] Install ps2_gxemu v2 with fps_counter + temperature display + x modules + custom configs + extended config table</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press SQUARE + SELECT for Temperature display and FPS counter</></P>
+			</T>
+			<T key="mod131" include="inc">
+				<P key="title"><>[PS2 GXEMU] Install ps2_gxemu v1 with temperature display + x modules + custom_configs + extended config table</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press SQUARE + SELECT for Temperature display and FPS counter</></P>
+			</T>
+			<T key="mod132" include="inc">
+				<P key="title"><>[PS2 GXEMU] Install ps2_gxemu v1 with fps_counter + combo</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press SQUARE + SELECT for FPS counter</></P>
+			</T>
+			<T key="mod133" include="inc">
+				<P key="title"><>[PS2 GXEMU] Install ps2_gxemu v1 with custom configs</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod130" attr="mod130" src="#mod130_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod131" attr="mod131" src="#mod131_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod132" attr="mod132" src="#mod132_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod133" attr="mod133" src="#mod133_item"/>
+		</I>
+	</V>
+
+	<V id="seg_mod_ps2emu">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+			<T key="mod140" include="inc">
+				<P key="title"><>[PS2 EMU] Install ps2_emu v2 with temperature display</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press SQUARE + SELECT for Temperature display</></P>
+			</T>
+			<T key="mod141" include="inc">
+				<P key="title"><>[PS2 EMU] Install ps2_emu v1 with temperature display</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press SQUARE + SELECT for Temperature display</></P>
+			</T>
+			<T key="mod142" include="inc">
+				<P key="title"><>[PS2 EMU] Install ps2_emu v1 with all strings</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod140" attr="mod140" src="#mod140_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod141" attr="mod141" src="#mod141_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod142" attr="mod142" src="#mod142_item"/>
+		</I>
 	</V>
 
 	<V id="mod00A_item">
@@ -515,7 +715,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>EP0001-UPDWEBMOD_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -529,7 +729,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -543,7 +743,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -557,7 +757,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -571,7 +771,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -585,7 +785,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -599,7 +799,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -608,12 +808,12 @@
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10_to_BETA12_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10_to_BETA12_req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -622,12 +822,12 @@
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -636,12 +836,12 @@
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -650,16 +850,340 @@
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_Extended_Download_MOD_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod010_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_user_power_options_req_dev_blind_enabled.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_user_power_options_req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
+	<!-- PS1 & PS2 mods by kozarovv-->
+	<V id="mod101_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_default_ps1_emus_cfw_evilnat-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_default_ps1_emus_cfw_evilnat-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod102_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_default_ps2_emus_cfw_evilnat-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_default_ps2_emus_cfw_evilnat-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod110_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_automatic_GTE_widescreen_patches-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_automatic_GTE_widescreen_patches-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod111_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_nearest-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_nearest-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod112_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_no_dither-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_no_dither-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod113_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_nearset_no_dither-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_nearset_no_dither-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod120_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_fps_counter+menu_combo+EE_overclocking+partial_antiblur+x_modules-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_fps_counter+menu_combo+EE_overclocking+partial_antiblur+x_modules-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod121_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_default-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_default-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod122_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_default_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_default_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod123_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_hdd-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_hdd-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod124_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_hdd_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_hdd_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod125_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_memory-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_memory-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+	
+	<V id="mod126_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_memory_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_memory_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+	
+	<V id="mod127_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_temp-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_temp-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+	
+	<V id="mod128_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_temp_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_temp_dbg-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod130_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v2_fps_counter+temperature_display+x_modules+custom_configs+extended_config_table-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v2_fps_counter+temperature_display+x_modules+custom_configs+extended_config_table-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod131_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_temperature_display+x_modules+custom_configs+extended_config_table-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_temperature_display+x_modules+custom_configs+extended_config_table-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod132_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_fps_counter+combo_square_select-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_fps_counter+combo_square_select-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod133_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_custom_configs-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_custom_configs-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod140_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_emu_v2_temperature_display-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_emu_v2_temperature_display-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod141_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_emu_v1_temperature_display-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_emu_v1_temperature_display-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod142_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_emu_z_all_strings-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_emu_z_all_strings-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<!-- XMB MODs-->
 	<V id="seg_mod_xmb">
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_xmb_items"/>
@@ -730,7 +1254,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -744,7 +1268,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -758,7 +1282,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -772,7 +1296,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -786,7 +1310,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -800,7 +1324,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -814,7 +1338,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -828,7 +1352,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
@@ -842,7 +1366,7 @@
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
- 			</T>
+			</T>
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
