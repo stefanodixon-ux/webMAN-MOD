@@ -21,8 +21,8 @@ The plugin receives the web command through the `module_action` parameter from t
 a GET request is constructed and the http request is sent to webMAN's web server using the 
 loopback IP address 127.0.0.1 on port 80.
 
-If webMAN's web server is not running, the proxy tries to mount the file using Cobra commands.
-Only certain file types are supported. Other the message "webMAN not ready!" is displayed.
+If webMAN's web server is not running, the XMB proxy tries to mount the file using Cobra commands.
+Only certain file types are supported. Otherwise the message "webMAN not ready!" is displayed.
 
 The file types that CAN be mounted directly by the proxy before show a "webMAN not ready!"
 - GAMES and GAMEZ in JB folder format
@@ -36,7 +36,7 @@ The file types that CAN be mounted directly by the proxy before show a "webMAN n
 
 The file types that CANNOT be mounted directly by the proxy are:
 - Remote network files (ps3netsrv)
-- External ISO stored in exFAT / NTFS /ext2/3/4
+- External ISO or FakeISO stored in exFAT / NTFS /ext2/3/4
 - multi-part ISOs
 - PSPISO
 - GAMEI
