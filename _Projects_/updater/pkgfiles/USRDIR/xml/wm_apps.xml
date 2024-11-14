@@ -40,14 +40,18 @@
 			</T>
 			<T key="app007" include="inc">
 				<P key="title"><>PSX & PS2 Covers Pack</></P>
-				<P key="info"><>625 MB</></P>
+				<P key="info"><>634 MB</></P>
+			</T>
+			<T key="app03D" include="inc">
+				<P key="title"><>PSX & PS2 Covers Pack 3D</></P>
+				<P key="info"><>496 MB</></P>
 			</T>
 			<T key="app008" include="inc">
 				<P key="title"><>RetroArch Community Edition</></P>
 				<P key="info"><>601 MB</></P>
 			</T>
 			<T key="app009" include="inc">
-				<P key="title"><>multiMAN</></P>
+				<P key="title"><>multiMAN MOD</></P>
 				<P key="info"><>35 MB</></P>
 			</T>
 			<T key="app010" include="inc">
@@ -63,8 +67,8 @@
 				<P key="info"><>10.7 MB</></P>
 			</T>
 			<T key="app013" include="inc">
-				<P key="title"><>Apollo Save Tool</></P>
-				<P key="info"><>5.0 MB</></P>
+				<P key="title"><>Apollo Save Tool MOD</></P>
+				<P key="info"><>6.2 MB</></P>
 			</T>
 			<T key="app014" include="inc">
 				<P key="title"><>Artemis GUI [Cheats]</></P>
@@ -86,6 +90,10 @@
 				<P key="title"><>Ultimate Toolbox v2.03 FULL 4.89-4.91</></P>
 				<P key="info"><>484 MB</></P>
 			</T>
+			<T key="appPSH" include="inc">
+				<P key="title"><>PlayStation Home Online</></P>
+				<P key="info"><>42.9 MB | Use DNS: 104.37.190.154 | Domain: pshomeologylab.net</></P>
+			</T>
 			<T key="app019" include="inc">
 				<P key="title"><>webMAN MOD Loader from XMB</></P>
 				<P key="info"><>64 KB</></P>
@@ -105,6 +113,7 @@
 			<Q class="type:x-xmb/folder-pixmap" key="app005" attr="app005" src="#app005_item"/><!-- PSP Remasters Launcher -->
 			<Q class="type:x-xmb/folder-pixmap" key="app006" attr="app006" src="#app006_item"/><!-- PS3 Covers Pack -->
 			<Q class="type:x-xmb/folder-pixmap" key="app007" attr="app007" src="#app007_item"/><!-- PSX & PS2 Covers Pack -->
+			<Q class="type:x-xmb/folder-pixmap" key="app03D" attr="app03D" src="#app03D_item"/><!-- PSX & PS2 Covers Pack 3D -->
 			<Q class="type:x-xmb/folder-pixmap" key="app008" attr="app008" src="#app008_item"/><!-- RetroArch CE -->
 			<Q class="type:x-xmb/folder-pixmap" key="app009" attr="app009" src="#app009_item"/><!-- multiMAN -->
 			<Q class="type:x-xmb/folder-pixmap" key="app010" attr="app010" src="#app010_item"/><!-- IRISMAN -->
@@ -116,6 +125,7 @@
 			<Q class="type:x-xmb/folder-pixmap" key="app016" attr="app016" src="#app016_item"/><!-- PS3 ezRemote Client -->
 			<Q class="type:x-xmb/folder-pixmap" key="app017" attr="app017" src="#app017_item"/><!-- Ultimate Toolbox v2.03 FULL 4.84-4.88-->
 			<Q class="type:x-xmb/folder-pixmap" key="app018" attr="app018" src="#app018_item"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.91-->
+			<Q class="type:x-xmb/folder-pixmap" key="appPSH" attr="appPSH" src="#appPSH_item"/><!-- PS Home Online -->
 			<Q class="type:x-xmb/folder-pixmap" key="app019" attr="app019" src="#app019_item"/><!-- Load webMAN MOD -->
 			<Q class="type:x-xmb/folder-pixmap" key="app020" attr="app020" src="#app020_item"/><!-- webMAN MOD Installer -->
 		</I>
@@ -220,6 +230,21 @@
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS00000RETRO.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>EP0001-BLES80608_00-COVERS00000RETRO</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<!-- PSX & PS2 Covers Pack 3D -->
+	<V id="app03D_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS000000003D.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/1.0/EP0001-BLES80608_00-COVERS000000003D.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>EP0001-BLES80608_00-COVERS000000003D</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
@@ -391,6 +416,21 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
+	<!-- PS3 Home Online -->
+	<V id="appPSH_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/homeologylab_pshome.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/homeologylab_pshome.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>EP9000-PSHLAB186_00-HOME000000000001</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
 	<!-- Load webMAN MOD -->
 	<V id="app019_item">
 		<A>
@@ -445,6 +485,7 @@
 		<A>
 			<T key="inc">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod00A" include="inc">
 				<P key="title"><>PSN Login Blocker</></P>
@@ -464,49 +505,42 @@
 			</T>
 			<T key="mod003" include="inc">
 				<P key="title"><>Custom Firmware Tools menu MOD for CFW Evilnat 4.91.2</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod004" include="inc">
 				<P key="title"><>Package Manager MOD for CFW Evilnat 4.91.2</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod005" include="inc">
 				<P key="title"><>Package Manager MOD for CFW Evilnat 4.91.2 + Stores</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod006" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA10 to BETA12</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETA10 and BETA12 to BETA13</></P>
 			</T>
 			<T key="mod007" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA9 to BETA10</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETA10 to BETA12</></P>
 			</T>
 			<T key="mod008" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA8 to BETA10</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETA9 to BETA10</></P>
 			</T>
 			<T key="mod009" include="inc">
-				<P key="title"><>Extended Download + Icons</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETA8 to BETA10</></P>
 			</T>
 			<T key="mod010" include="inc">
+				<P key="title"><>Extended Download + Icons</></P>
+			</T>
+			<T key="mod011" include="inc">
 				<P key="title"><>Power Options on User Column</></P>
 				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
 			</T>
 
 			<T key="mod101" include="inc">
 				<P key="title"><>[PS1] Install default PS1 emulators from CFW Evilnat</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod102" include="inc">
 				<P key="title"><>[PS2] Install default PS2 emulators from CFW Evilnat</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 
 			<T key="mnu">
 				<P key="icon_rsc"><>tex_album_icon</></P>
-				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="menu11" include="mnu">
 				<P key="title"><>PS1 NETEMU MODs</></P>
@@ -538,6 +572,7 @@
 			<Q class="type:x-xmb/folder-pixmap" key="mod008" attr="mod008" src="#mod008_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod009" attr="mod009" src="#mod009_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod010" attr="mod010" src="#mod010_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod011" attr="mod011" src="#mod011_item"/>
 
 			<Q class="type:x-xmb/folder-pixmap" key="mod101" attr="mod101" src="#mod101_item"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod102" attr="mod102" src="#mod102_item"/>
@@ -808,6 +843,20 @@
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10_and_BETA12_to_BETA13_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10_and_BETA12_to_BETA13_req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod007_item">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10_to_BETA12_req_dev_blind_enabled.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10_to_BETA12_req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
@@ -818,7 +867,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod007_item">
+	<V id="mod008_item">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -832,7 +881,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod008_item">
+	<V id="mod009_item">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -846,7 +895,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod009_item">
+	<V id="mod010_item">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -860,7 +909,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod010_item">
+	<V id="mod011_item">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>

@@ -6,6 +6,15 @@
 #include <errno.h>
 #include <time.h>
 
+char *strcpy(char *dest, const char* src)
+{
+	char *ret = dest;
+
+	while ((*dest++ = *src++)) ;
+
+	return ret;
+}
+
 int strncmp(const char* s1, const char* s2, size_t n)
 {
 	if(n == 0) return 0;

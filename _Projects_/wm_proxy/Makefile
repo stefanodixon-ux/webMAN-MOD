@@ -1,7 +1,7 @@
 CELL_MK_DIR = $(CELL_SDK)/samples/mk
 include $(CELL_MK_DIR)/sdk.makedef.mk
 
-BUILD_TYPE     	= release
+BUILD_TYPE = release
 
 ROOT_PATH = ../..
 
@@ -9,18 +9,18 @@ LIBSTUB_DIR		= ./lib
 PRX_DIR			= .
 INSTALL			= cp
 PEXPORTPICKUP		= ppu-lv2-prx-exportpickup
-PRX_LDFLAGS_EXTRA	= -L./lib -Wl,--strip-unused-data
+PRX_LDFLAGS_EXTRA	= -L../../lib -Wl,--strip-unused-data
 
 CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='ecrti.o)
 CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='crtbegin.o)
 CRT_TAIL                += $(shell ppu-lv2-gcc -print-file-name'='crtend.o)
 CRT_HEAD                += $(shell ppu-lv2-gcc -print-file-name'='ecrtn.o)
 
-PPU_SRCS = libc.c main.c 
+PPU_SRCS = libc.c cobra/cobra.c main.c 
 PPU_PRX_TARGET = wm_proxy.prx
 PPU_PRX_LDFLAGS += $(PRX_LDFLAGS_EXTRA)
 PPU_PRX_STRIP_FLAGS = -s
-PPU_PRX_LDLIBS 	= -lstdc_export_stub -lnet_stub -lio_stub
+PPU_PRX_LDLIBS 	= -lfs_stub -lstdc_export_stub -lnet_stub -lio_stub
 
 PPU_CFLAGS += -Os -fno-builtin-printf -nodefaultlibs -fmerge-all-constants -std=gnu99 -Wno-shadow -Wno-unused-parameter
 #				-ffunction-sections -fdata-sections

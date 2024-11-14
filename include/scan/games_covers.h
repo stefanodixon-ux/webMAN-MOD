@@ -74,6 +74,9 @@ static void check_cover_folders(char *folder_path)
 	#endif
 	for(u8 p = 0; p < 3; p++)
 	{
+		if(!isDir(cpath[p]) && isDir(drives[p]))
+			cpath[p] = drives[p]; // replace with /dev_usb000 & /dev_usb001 if doesn't exist MM_ROOT_STL or MM_ROOT_SSTL
+
 		concat2(folder_path, cpath[p], "/covers_retro/psx");
 		covers_retro_exist[p] = isDir(folder_path) && !is_empty_dir(folder_path);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
 	}

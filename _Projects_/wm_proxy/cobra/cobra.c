@@ -14,7 +14,7 @@
 
 #include "cobra.h"
 #include "storage_ext.h"
-#include "psp.h"
+// #include "psp.h"
 // #include "syscall8.h"
 // #include "scsi.h"
 // #include "ufi.h"
@@ -110,22 +110,20 @@ typedef struct
 } __attribute__((packed)) netiso_args;
 */
 
-void _memset(void *m, size_t n);
+//size_t read_file(const char *file, char *data, const size_t size, s32 offset);
+//int save_file(const char *file, const char *mem, s64 size);
 
-size_t read_file(const char *file, char *data, const size_t size, s32 offset);
-int save_file(const char *file, const char *mem, s64 size);
-
-int file_copy(const char *file1, char *file2);
-int wait_for(const char *path, u8 timeout);
+//int file_copy(const char *file1, char *file2);
+//int wait_for(const char *path, u8 timeout);
 
 #define not_exists(path)	(!file_exists(path))
-
+/*
 static u8 file_exists(const char *path)
 {
 	CellFsStat stat;
 	return (cellFsStat(path, &stat) == CELL_FS_SUCCEEDED);
 }
-
+*/
 /*
 #define N_TITLE_IDS	102
 #define N_TITLE_NAMES	24
@@ -339,7 +337,7 @@ static char *get_blank_iso_path(void)
 	return s;
 }
 */
-
+/*
 static void build_iso_record(u8 *buf, u32 offset)
 {
 	buf[offset] = 0x28;
@@ -354,60 +352,54 @@ static void build_iso_record(u8 *buf, u32 offset)
 	buf[offset + 0x17] = buf[offset + 0x19] = 2;
 	buf[offset + 0x1C] = buf[offset + 0x1F] = buf[offset + 0x20] = 1;
 }
-
+*/
 static void build_blank_iso(const char *title_id)
 {
-	sys_addr_t sysmem = NULL;
-	if(sys_memory_allocate(_128KB_, SYS_MEMORY_PAGE_SIZE_64K, &sysmem) /*!= CELL_OK*/) return;
-	u8 *buf = (u8*)sysmem;
+	sys_addr_t sysmem=0;
+	if(sys_memory_allocate(128*1024, SYS_MEMORY_PAGE_SIZE_64K, &sysmem)!=0) return;
+	//uint8_t buf_[128*1024];
+	uint8_t *buf = (uint8_t*)sysmem;//malloc(128*1024);
 
-/*
-	// build task.dat from external template file
-	read_file("/dev_hdd0/tmp/wm_res/task.dat", (char*)buf, _128KB_, 0);
-
-	memcpy(buf + 0x810, title_id, 4);
-	buf[0x814] = '-';
-	memcpy(buf + 0x815, title_id+4, 5);
-
-	save_file("/dev_hdd0/vsh/task.dat", (char*)buf, _128KB_);
-
-	if(sysmem) sys_memory_free(sysmem);
-	return;
-*/
-
-	_memset(buf, _128KB_);
+	memset(buf, 0, 128*1024);
 
 	buf[3] = 2;
 	buf[0x17] = 0x3F;
-	strcpy((char *)buf + 0x800, "PlayStation3");
-	memcpy(buf + 0x810, title_id, 4);
+	strcpy((char *)buf+0x800, "PlayStation3");
+	memcpy(buf+0x810, title_id, 4);
 	buf[0x814] = '-';
-	memcpy(buf + 0x815, title_id + 4, 5);
-	memset(buf + 0x81A, ' ', 0x16);
+	memcpy(buf+0x815, title_id+4, 5);
+	memset(buf+0x81A, ' ', 0x16);
 	buf[0x8000] = 1;
-	strcpy((char *)buf + 0x8001, "CD001");
+	strcpy((char *)buf+0x8001, "CD001");
 	buf[0x8006] = 1;
-	memset(buf + 0x8008, ' ', 0x40);
-	memcpy(buf + 0x8028, "PS3VOLUME", 9);
+	memset(buf+0x8008, ' ', 0x20);
+	memcpy(buf+0x8028, "PS3VOLUME", 9);
+	memset(buf+0x8031, ' ', 0x17);
 	buf[0x8050] = buf[0x8057] = 0x40;
 	buf[0x8078] = buf[0x807B] = buf[0x807C] = buf[0x807F] = 1;
 	buf[0x8081] = buf[0x8082] = 8;
 	buf[0x8084] = buf[0x808B] = 0xA;
 	buf[0x808C] = 0x14;
 	buf[0x8097] = 0x15;
-
-	build_iso_record(buf, 0x809C);
 	buf[0x809C] = 0x22;
-
-	memcpy(buf + 0x80BE, "PS3VOLUME", 9);
-	memset(buf + 0x80C7, ' ', 0x266);
-	strcpy((char *)buf + 0x832D, "20131111050513");
-	memset(buf + 0x833B, '0', 0x35);
-	buf[0x833D] = buf[0x834E] = buf[0x835F] = 0;
+	buf[0x809E] = buf[0x80A5] = 0x18;
+	buf[0x80A7] = buf[0x80AC] = 8;
+	buf[0x80AE] = 0x6F;
+	buf[0x80AF] = 7;
+	buf[0x80B0] = 0x16;
+	buf[0x80B1] = 2;
+	buf[0x80B2] = 0x2B;
+	buf[0x80B3] = buf[0x80B5] = 2;
+	buf[0x80B8] = buf[0x80BB] = buf[0x80BC] = 1;
+	memcpy(buf+0x80be, "PS3VOLUME", 9);
+	memset(buf+0x80C7, ' ', 0x266);
+	strcpy((char *)buf+0x832d, "2007111105051300");
+	strcpy((char *)buf+0x833e, "0000000000000000");
+	strcpy((char *)buf+0x834f, "0000000000000000");
+	strcpy((char *)buf+0x8360, "0000000000000000");
 	buf[0x8371] = 1;
-
 	buf[0x8800] = 2;
-	strcpy((char *)buf + 0x8801, "CD001");
+	strcpy((char *)buf+0x8801, "CD001");
 	buf[0x8806] = 1;
 	buf[0x8829] = 'P';
 	buf[0x882B] = 'S';
@@ -418,41 +410,113 @@ static void build_blank_iso(const char *title_id)
 	buf[0x8835] = 'U';
 	buf[0x8837] = 'M';
 	buf[0x8839] = 'E';
-	buf[0x8850] = buf[0x8857] = buf[0x885A] = 0x40;
-	buf[0x8858] = 0x25;
-	buf[0x8859] = 0x2F;
+	buf[0x8850] = buf[0x8857] = 0x40;
+	strcpy((char *)buf+0x8858, "%/@");
 	buf[0x8878] = buf[0x887B] = buf[0x887C] = buf[0x887F] = 1;
 	buf[0x8881] = buf[0x8882] = 8;
 	buf[0x8884] = buf[0x888B] = 0xA;
 	buf[0x888C] = 0x16;
 	buf[0x8897] = 0x17;
-
-	build_iso_record(buf, 0x889C);
 	buf[0x889C] = 0x22;
 	buf[0x889E] = buf[0x88A5] = 0x19;
+	buf[0x88A7] = buf[0x88AC] = 8;
+	buf[0x88AE] = 0x6F;
+	buf[0x88AF] = 7;
+	buf[0x88B0] = 0x16;
+	buf[0x88B1] = 2;
+	buf[0x88B2] = 0x2B;
+	buf[0x88B3] = buf[0x88B5] = 2;
+	buf[0x88B8] = buf[0x88BB] = buf[0x88BC] = 1;
+	buf[0x88BF] = 'P';
+	buf[0x88C1] = 'S';
+	buf[0x88C3] = '3';
+	buf[0x88C5] = 'V';
+	buf[0x88C7] = 'O';
+	buf[0x88C9] = 'L';
+	buf[0x88CB] = 'U';
+	buf[0x88CD] = 'M';
+	buf[0x88CF] = 'E';
 
-	memcpy(buf + 0x88BF, buf + 0x8829, 17); // 'P S 3 V O L U M E'
-	memcpy((char *)buf + 0x8B2D, (char *)buf + 0x832D, 0x43);
+	strcpy((char *)buf+0x8B2D, "2007111105051300");
+	strcpy((char *)buf+0x8B3E, "0000000000000000");
+	strcpy((char *)buf+0x8B4F, "0000000000000000");
+	strcpy((char *)buf+0x8b60, "0000000000000000");
 	buf[0x8B71] = 1;
 	buf[0x9000] = 0xFF;
-	strcpy((char *)buf + 0x9001, "CD001");
+	strcpy((char *)buf+0x9001, "CD001");
+	buf[0xA000] = 1;
+	buf[0xA002] = 0x18;
+	buf[0xA006] = 1;
+	buf[0xA800] = 1;
+	buf[0xA805] = 0x18;
+	buf[0xA807] = 1;
+	buf[0xB000] = 1;
+	buf[0xB002] = 0x19;
+	buf[0xB006] = 1;
+	buf[0xB800] = 1;
+	buf[0xB805] = 0x19;
+	buf[0xB807] = 1;
+	buf[0xC000] = 0x28;
+	buf[0xC002] = buf[0xC009] = 0x18;
+	buf[0xC00B] = buf[0xC010] = 8;
+	buf[0xC012] = 0x6F;
+	buf[0xC013] = 7;
+	buf[0xC014] = 0x16;
+	buf[0xC015] = 2;
+	buf[0xC016] = 0x2B;
+	buf[0xC017] = buf[0xC019] = 2;
+	buf[0xC01C] = buf[0xC01F] = buf[0xC020] = 1;
+	buf[0xC028] = 0x28;
+	buf[0xC02A] = buf[0xC031] = 0x18;
+	buf[0xC033] = buf[0xC038] = 8;
+	buf[0xC03A] = 0x6F;
+	buf[0xC03B] = 7;
+	buf[0xC03C] = 0x16;
+	buf[0xC03D] = 2;
+	buf[0xC03E] = 0x2B;
+	buf[0xC03F] = buf[0xC041] = 2;
+	buf[0xC044] = buf[0xC047] = buf[0xC048] = buf[0xC049] = 1;
+	buf[0xC800] = 0x28;
+	buf[0xC802] = buf[0xC809] = 0x19;
+	buf[0xC80B] = buf[0xC810] = 8;
+	buf[0xC812] = 0x6F;
+	buf[0xC813] = 7;
+	buf[0xC814] = 0x16;
+	buf[0xC815] = 2;
+	buf[0xC816] = 0x2B;
+	buf[0xC817] = buf[0xC819] = 2;
+	buf[0xC81C] = buf[0xC81F] = buf[0xC820] = 1;
+	buf[0xC828] = 0x28;
+	buf[0xC82A] = buf[0xC831] = 0x19;
+	buf[0xC833] = buf[0xC838] = 8;
+	buf[0xC83A] = 0x6F;
+	buf[0xC83B] = 7;
+	buf[0xC83C] = 0x16;
+	buf[0xC83D] = 2;
+	buf[0xC83E] = 0x2B;
+	buf[0xC83F] = buf[0xC841] = 2;
+	buf[0xC844] = buf[0xC847] = buf[0xC848] = buf[0xC849] = 1;
 
-	buf[0xA000] = buf[0xA006] = buf[0xA800] = buf[0xA807] = 1;
-	buf[0xA002] = buf[0xA805] = 0x18;
-	buf[0xB000] = buf[0xB006] = buf[0xB800] = buf[0xB807] = 1;
-	buf[0xB002] = buf[0xB805] = 0x19;
+	int f=0;
+	uint64_t nwritten=0;
+	cellFsOpen((char*)"/dev_hdd0/vsh/task.dat", CELL_FS_O_WRONLY | CELL_FS_O_CREAT | CELL_FS_O_TRUNC, &f, NULL, 0);
+	//for(int i=0;i<8192;i++)
+	cellFsWrite(f, buf, 128*1024, &nwritten);
+	/*if (fwrite(buf, 1, 128*1024, f) != (128*1024))
+	{
+		fclose(f);
+		free(buf);
+		free(ret);
+		return NULL;
+	}
 
-	build_iso_record(buf, 0xC000);
-	build_iso_record(buf, 0xC028);
-	buf[0xC049] = 1;
-
-	memcpy(buf + 0xC800, buf + 0xC000, 0x50);
-
-	save_file("/dev_hdd0/vsh/task.dat", (char*)buf, _128KB_);
-
+	fclose(f);
+	free(buf);*/
+	cellFsClose(f);
 	if(sysmem) sys_memory_free(sysmem);
 	return;
 }
+
 /*
 static int copy_file(char *src, char *dst)
 {
@@ -507,12 +571,13 @@ static int copy_file(char *src, char *dst)
 	return ret;
 }
 */
+/*
 static int sys_get_hw_config(u8 *ret, u8 *config)
 {
 	system_call_2(393, (u64)(u32)ret, (u64)(u32)config);
 	return (int)p1;
 }
-/*
+
 static int sys_get_version(u32 *version)
 {
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION, (u64)(u32)version);
@@ -524,7 +589,7 @@ static int sys_get_version2(u16 *version)
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION2, (u64)(u32)version);
 	return (int)p1;
 }
-*/
+
 static int sys_read_cobra_config(CobraConfig *cfg)
 {
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_READ_COBRA_CONFIG, (u64)(u32)cfg);
@@ -536,7 +601,7 @@ static int sys_write_cobra_config(CobraConfig *cfg)
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_WRITE_COBRA_CONFIG, (u64)(u32)cfg);
 	return (int)p1;
 }
-
+*/
 /*
 static char *trim(char *str)
 {
@@ -649,6 +714,7 @@ int cobra_lib_finalize(void)
 	return sys_permissions_remove_access();
 }
 */
+
 int cobra_get_disc_type(unsigned int *real_disctype, unsigned int *effective_disctype, unsigned int *iso_disctype)
 {
 	unsigned int rdt, edt;
@@ -721,7 +787,7 @@ int cobra_get_disc_type(unsigned int *real_disctype, unsigned int *effective_dis
 
 	return 0;
 }
-
+/*
 int cobra_disc_auth(void)
 {
 	unsigned int real_disctype;
@@ -736,7 +802,7 @@ int cobra_disc_auth(void)
 
 	if (real_disctype == DEVICE_TYPE_PS3_BD || real_disctype == DEVICE_TYPE_PS3_DVD)
 	{
-		static u8 buf[1024]; _memset(buf, sizeof(buf));
+		static u8 buf[1024]; memset(buf, 0, sizeof(buf));
 
 		sys_ss_disc_auth(0x5007, (u64)(u32)buf);
 	}
@@ -747,7 +813,7 @@ int cobra_disc_auth(void)
 
 	return 0;
 }
-
+*/
 static unsigned int ejected_realdisc;
 
 int cobra_send_fake_disc_eject_event(void)
@@ -798,42 +864,38 @@ int cobra_mount_bd_disc_image(char *files[], unsigned int num)
 	return sys_storage_ext_mount_bd_discfile(num, files);
 }
 
-static void init_tracks(int num_tracks, TrackDef *tracks, ScsiTrackDescriptor *scsi_tracks)
+static void init_tracks(int num_tracks, ScsiTrackDescriptor *scsi_tracks)
 {
-	_memset(scsi_tracks, num_tracks * sizeof(ScsiTrackDescriptor));
+	memset(scsi_tracks, 0, num_tracks * sizeof(ScsiTrackDescriptor));
 
 	for (int i = 0; i < num_tracks; i++)
 	{
-		scsi_tracks[i].adr_control = (tracks[i].is_audio) ? 0x10 : 0x14;
+		scsi_tracks[i].adr_control = i ? 0x10 : 0x14;
 		scsi_tracks[i].track_number = i + 1;
-		scsi_tracks[i].track_start_addr = tracks[i].lba;
+		scsi_tracks[i].track_start_addr = 0;
 	}
 }
 
-int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tracks)
+int cobra_mount_psx_disc_image(char *file)
 {
-	if (!file || !tracks) return EINVAL;
+	if (!file) return EINVAL;
 
-	num_tracks = RANGE(num_tracks, 1, MAX_TRACKS);
+	ScsiTrackDescriptor scsi_tracks[1];
+	init_tracks(1, scsi_tracks);
 
-	ScsiTrackDescriptor scsi_tracks[num_tracks];
-	init_tracks(num_tracks, tracks, scsi_tracks);
-
-	return sys_storage_ext_mount_psx_discfile(file, num_tracks, scsi_tracks);
+	return sys_storage_ext_mount_psx_discfile(file, 1, scsi_tracks);
 }
 
-int cobra_mount_ps2_disc_image(char *files[], int num, TrackDef *tracks, unsigned int num_tracks)
+int cobra_mount_ps2_disc_image(char *files[], int num)
 {
-	if (!files || !tracks) return EINVAL;
+	if (!files) return EINVAL;
 
-	num_tracks = RANGE(num_tracks, 1, MAX_TRACKS);
-
-	ScsiTrackDescriptor scsi_tracks[num_tracks];
-	init_tracks(num_tracks, tracks, scsi_tracks);
+	ScsiTrackDescriptor scsi_tracks[1];
+	init_tracks(1, scsi_tracks);
 
 	num = RANGE(num, 1, 32);
 
-	return sys_storage_ext_mount_ps2_discfile(num, files, num_tracks, scsi_tracks);
+	return sys_storage_ext_mount_ps2_discfile(num, files, 1, scsi_tracks);
 }
 
 int cobra_umount_disc_image(void)
@@ -1373,7 +1435,7 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home)
 
 	if(use_app_home)
 	{
-		map_app_home(path);
+		sys_map_path("/app_home", path);
 	}
 
 	unsigned int real_disctype;
@@ -1403,7 +1465,7 @@ int cobra_map_paths(char *paths[], char *new_paths[], unsigned int num)
 	return sys_map_paths(paths, new_paths, num);
 }
 */
-
+/*
 static void restore_bak(const char *filename)
 {
 	char bak[64];
@@ -1447,7 +1509,8 @@ int cobra_unset_psp_umd(void)
 
 	return 0;
 }
-
+*/
+/*
 int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 {
 	if (!path || !icon_save_path)
@@ -1708,7 +1771,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 
 	return EIO;
 }
-
+*/
 /*
 int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path)
 {
@@ -2360,7 +2423,7 @@ int cobra_build_netiso_params(void *param_buf, char *server, u16 port, char *rem
 	return 0;
 }
 */
-
+/*
 int cobra_get_ps2_emu_type(void)
 {
 	int ret;
@@ -2392,7 +2455,7 @@ int cobra_read_config(CobraConfig *cfg)
 {
 	if(!cfg) return EINVAL;
 
-	_memset((u8*)cfg, sizeof(CobraConfig));
+	memset((u8*)cfg, 0, sizeof(CobraConfig));
 
 	u16 cobra_version;
 	sys_get_version2(&cobra_version);
@@ -2437,3 +2500,4 @@ int cobra_unload_vsh_plugin(unsigned int slot)
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_VSH_PLUGIN, slot);
 	return (int)p1;
 }
+*/
