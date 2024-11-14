@@ -22,8 +22,6 @@ enum DiscEmu
 	EMU_GAMEI, // not a DiscEmu
 };
 
-#ifdef COBRA_ONLY
-
 enum DiscType
 {
 	DISC_TYPE_NONE, /* No disc inserted */
@@ -132,7 +130,7 @@ typedef struct
 	u8 reserved1 : 7;
 } __attribute__((packed)) DiscPhysInfo;
 */
-
+/*
 typedef struct
 {
 	u16 size;
@@ -161,7 +159,7 @@ typedef struct
 	u8 auto_earth;			// deprecated
 	u8 auto_dev_blind;		// 1 = Allow auto-mount /dev_blind   | 0 = Does not allow auto-mount /dev_blind
 } __attribute__((packed)) CobraConfig;
-
+*/
 
 /*
  * Inits the cobra library. Call this function before any other
@@ -228,7 +226,7 @@ int cobra_get_disc_type(unsigned int *real_disctype, unsigned int *effective_dis
  *
  * Remarks: call this function only when necessary, e.g. when you detect a disc change.
  */
-int cobra_disc_auth(void);
+//int cobra_disc_auth(void);
 
 
 /*
@@ -370,7 +368,7 @@ int cobra_mount_bd_disc_image(char *files[], unsigned int num);
  * See readme about how to properly mount an iso and specific details about psx.
  */
 //int cobra_mount_psx_disc_image_iso(char *file, TrackDef *tracks, unsigned int num_tracks);
-int cobra_mount_psx_disc_image(char *file);
+int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tracks);
 
 
 /*
@@ -395,7 +393,7 @@ int cobra_mount_psx_disc_image(char *file);
  *
  * See readme about how to properly mount an iso.
  */
-int cobra_mount_ps2_disc_image(char *files[], int num);
+int cobra_mount_ps2_disc_image(char *files[], int num, TrackDef *tracks, unsigned int num_tracks);
 
 
 /*
@@ -633,7 +631,7 @@ int cobra_map_game(const char *path, const char *title_id, int use_app_home);
  * Upon success, the file in icon_save_path will have the psp icon and the icon of psp launcher is mapped to it.
  * This function allocates temporally a 512 KB buffer, so at least that memory should be available
  */
-int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path);
+//int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path);
 
 /*
  * Sets the umd iso for psp emulation and sets the apropiated emulation parameters.
@@ -673,7 +671,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, char *icon_save_path);
  *
  * Additional info: the function succeeds even if there is no psp iso set.
  */
-int cobra_unset_psp_umd(void);
+//int cobra_unset_psp_umd(void);
 
 
 /*
@@ -697,7 +695,7 @@ int cobra_unset_psp_umd(void);
  * >= 0 -> the emu type, one of PS2EmuType
  * Other -> error from the kernel
  */
-int cobra_get_ps2_emu_type(void);
+//int cobra_get_ps2_emu_type(void);
 
 
 /*
@@ -711,7 +709,7 @@ int cobra_get_ps2_emu_type(void);
  * ENOSYS -> not in cobra
  */
 //int cobra_get_version(u16 *cobra_version, u16 *ps3_version);
-int sys_get_version2(u16 *version);
+//int sys_get_version2(u16 *version);
 
 /*
  * Reads the cobra configuration from RAM cache.
@@ -725,7 +723,7 @@ int sys_get_version2(u16 *version);
  *
  * Additional info: this function succeeds regardless of cobra device being present or not.
  */
-int cobra_read_config(CobraConfig *cfg);
+//int cobra_read_config(CobraConfig *cfg);
 
 
 /*
@@ -739,7 +737,7 @@ int cobra_read_config(CobraConfig *cfg);
  *
  * Additional info: currently, none of the config fields requires a ps3 reboot to be effective.
  */
-int cobra_write_config(CobraConfig *cfg);
+//int cobra_write_config(CobraConfig *cfg);
 
 
 /*
@@ -787,7 +785,7 @@ int cobra_write_config(CobraConfig *cfg);
  * EKRESOURCE -> a module is already loaded at that slot
  * Other -> error from kernel (invalid prx, etc)
  */
-int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 arg_size);
+//int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 arg_size);
 
 
 /*
@@ -801,9 +799,9 @@ int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 ar
  * EINVAL -> invalid slot
  * ENOENT -> there is no module loaded in that slot.
  */
-int cobra_unload_vsh_plugin(unsigned int slot);
+//int cobra_unload_vsh_plugin(unsigned int slot);
 
-void map_app_home(const char *path);
+//void map_app_home(const char *path);
 
 #define MAX_TRACKS	98 // game with most tracks (97) is SLUS-01208 - Sabrina the Teenage Witch: A Twitch in Time!
 
@@ -812,5 +810,3 @@ void map_app_home(const char *path);
 #endif
 
 #endif /* _COBRA_H */
-
-#endif //#ifdef COBRA_ONLY

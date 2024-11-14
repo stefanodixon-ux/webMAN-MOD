@@ -864,38 +864,42 @@ int cobra_mount_bd_disc_image(char *files[], unsigned int num)
 	return sys_storage_ext_mount_bd_discfile(num, files);
 }
 
-static void init_tracks(int num_tracks, ScsiTrackDescriptor *scsi_tracks)
+static void init_tracks(int num_tracks, TrackDef *tracks, ScsiTrackDescriptor *scsi_tracks)
 {
 	memset(scsi_tracks, 0, num_tracks * sizeof(ScsiTrackDescriptor));
 
 	for (int i = 0; i < num_tracks; i++)
 	{
-		scsi_tracks[i].adr_control = i ? 0x10 : 0x14;
+		scsi_tracks[i].adr_control = (tracks[i].is_audio) ? 0x10 : 0x14;
 		scsi_tracks[i].track_number = i + 1;
-		scsi_tracks[i].track_start_addr = 0;
+		scsi_tracks[i].track_start_addr = tracks[i].lba;
 	}
 }
 
-int cobra_mount_psx_disc_image(char *file)
+int cobra_mount_psx_disc_image(char *file, TrackDef *tracks, unsigned int num_tracks)
 {
 	if (!file) return EINVAL;
 
-	ScsiTrackDescriptor scsi_tracks[1];
-	init_tracks(1, scsi_tracks);
+	num_tracks = RANGE(num_tracks, 1, MAX_TRACKS);
 
-	return sys_storage_ext_mount_psx_discfile(file, 1, scsi_tracks);
+	ScsiTrackDescriptor scsi_tracks[num_tracks];
+	init_tracks(num_tracks, tracks, scsi_tracks);
+
+	return sys_storage_ext_mount_psx_discfile(file, num_tracks, scsi_tracks);
 }
 
-int cobra_mount_ps2_disc_image(char *files[], int num)
+int cobra_mount_ps2_disc_image(char *files[], int num, TrackDef *tracks, unsigned int num_tracks)
 {
-	if (!files) return EINVAL;
+	if (!files || !tracks) return EINVAL;
 
-	ScsiTrackDescriptor scsi_tracks[1];
-	init_tracks(1, scsi_tracks);
+	num_tracks = RANGE(num_tracks, 1, MAX_TRACKS);
+
+	ScsiTrackDescriptor scsi_tracks[num_tracks];
+	init_tracks(num_tracks, tracks, scsi_tracks);
 
 	num = RANGE(num, 1, 32);
 
-	return sys_storage_ext_mount_ps2_discfile(num, files, 1, scsi_tracks);
+	return sys_storage_ext_mount_ps2_discfile(num, files, num_tracks, scsi_tracks);
 }
 
 int cobra_umount_disc_image(void)

@@ -6,6 +6,10 @@
 #define NULL 0
 #endif
 
+#define true		1
+#define false		0
+
+typedef int8_t				bool;
 typedef int8_t				s8;
 typedef uint8_t				u8;
 typedef int16_t				s16;

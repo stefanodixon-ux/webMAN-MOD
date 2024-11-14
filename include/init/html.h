@@ -327,20 +327,21 @@ static size_t add_html(u8 id, int value, char *buffer, char *data)
 	char res_file[40];
 	sprintf(res_file, "%s/setup/setup%c.dat", WM_RES_PATH, id);
 
-	if(read_file(res_file, data, 1023, 0) > 0)
+	size_t size = read_file(res_file, data, 1023, 0);
+	if(size > 0)
 	{
 		char *pos = strstr(data, "    ");
 		if(pos)
 		{
-			if((id == 'a') || (id == 'v'))
+			if((id == dat_AUDIOREC_FMT) || (id == dat_VIDEOREC_FMT))
 				sprintf(res_file, "%04x", value);
 			else
 				sprintf(res_file, "%04i", value);
 			memcpy(pos, res_file, 4);
 		}
-		return concat(buffer, data);
+		concat(buffer, data);
 	}
-	return 0;
+	return size;
 }
 
 static size_t add_radio_button(const char *name, int value, const char *id, const char *label, const char *sufix, bool checked, char *buffer)
