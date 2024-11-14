@@ -24,8 +24,8 @@ loopback IP address 127.0.0.1 on port 80.
 If webMAN's web server is not running, the proxy tries to mount the file using Cobra commands.
 Only certain file types are supported. Other the message "webMAN not ready!" is displayed.
 
-Type file types that can be mounted directly by the proxy:
-- Games if JB folder format (GAMES and GAMEZ)
+The file types that CAN be mounted directly by the proxy before show a "webMAN not ready!"
+- GAMES and GAMEZ in JB folder format
 - PS3ISO (non-split)
 - PS2ISO (non-split)
 - PS2 Classics
@@ -34,7 +34,7 @@ Type file types that can be mounted directly by the proxy:
 - DVDISO
 - ROMS
 
-Type file types that CANNOT be mounted directly by the proxy are:
+The file types that CANNOT be mounted directly by the proxy are:
 - Remote network files (ps3netsrv)
 - External ISO stored in exFAT / NTFS /ext2/3/4
 - multi-part ISOs
@@ -42,6 +42,7 @@ Type file types that CANNOT be mounted directly by the proxy are:
 - GAMEI
 - Auto-CONFIG for PS2ISO and PS2 Classics
 - PS2 Cue/CCD and PS1 CCD cuesheets are not supported
+- webMAN MOD web commands
 
 ## Credits
 
