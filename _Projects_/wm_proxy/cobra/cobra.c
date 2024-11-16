@@ -1593,8 +1593,9 @@ int cobra_set_psp_umd(char *path, char *umd_root, const char *icon_save_path)
 		if (cellFsOpen(umd_file, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
 			u64 read;
-
 			cellFsRead(fd, header, sizeof(header), &read);
+			cellFsClose(fd);
+
 			if (read == sizeof(header))
 			{
 				if (header[0] == 0x7E505350) // "~PSP"
@@ -1627,7 +1628,6 @@ int cobra_set_psp_umd(char *path, char *umd_root, const char *icon_save_path)
 
 				return CELL_FS_SUCCEEDED;
 			}
-			cellFsClose(fd);
 		}
 	}
 
