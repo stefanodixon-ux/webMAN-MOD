@@ -26,23 +26,22 @@ Only certain file types are supported. Otherwise the message "webMAN not ready!"
 
 The file types that CAN be mounted directly by the proxy before show a "webMAN not ready!"
 - GAMES and GAMEZ in JB folder format
-- PS3ISO (non-split)
-- PS2ISO (non-split)
+- PS3ISO (including multi-part ISOs)
+- PS2ISO
 - PS2 Classics
 - PSXISO
-- BDISO
-- DVDISO
+- PSPISO
+- BDISO (including multi-part ISOs)
+- DVDISO (including multi-part ISOs)
 - ROMS
 
 The file types that CANNOT be mounted directly by the proxy are:
 - Remote network files (ps3netsrv)
 - External ISO or FakeISO stored in exFAT / NTFS /ext2/3/4
-- multi-part ISOs
-- PSPISO
 - GAMEI
 - Auto-CONFIG for PS2ISO and PS2 Classics
 - PS2 Cue/CCD and PS1 CCD cuesheets are not supported
-- webMAN MOD web commands
+- webMAN MOD web commands (except /mount.ps3, /restart.ps3 and /shutdown.ps3)
 
 ## Credits
 

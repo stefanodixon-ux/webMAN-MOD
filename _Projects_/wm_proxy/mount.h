@@ -84,8 +84,32 @@ static int mount(const char * action)
 		*t = 0;
 
 		char *path = (char*)(action + 10); int len = strlen(path);
-		char *files[1] = { path };
 		char *ext = path + (len > 4 ? len - 4 : 0);
+		char *split = path + (len > 6 ? len - 6 : 0);
+		char *files[64]; char parts[64][len + 2];
+
+		int count = 1;
+		if(!strcasecmp(split, ".iso.0") || !strcasecmp(split, ".ISO.0"))
+		{
+			struct CellFsStat s;
+
+			for(int i = 0; i < 64; i++)
+			{
+				if(i < 10)
+					split[5] = '0' + (int)(i % 10);
+				else
+				{
+					split[5] = '0' + (int)(i / 10);
+					split[6] = '0' + (int)(i % 10);
+					split[7] = 0;
+				}
+				if(cellFsStat(path, &s) != CELL_FS_SUCCEEDED) break;
+				strcpy(parts[i], path); files[i] = parts[i]; count = i + 1;
+			}
+			split[5] = '0'; split[6] = 0;
+		}
+		else
+			files[0] = path;
 
 		int cue = 0;
 
@@ -146,11 +170,11 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 		{
 			if(strstr(path, "/PS3ISO/"))
 			{
-				err = cobra_mount_ps3_disc_image(files, 1);
+				err = cobra_mount_ps3_disc_image(files, count);
 			}
 			else if(strstr(path, "/dev_hdd0/PS2ISO/"))
 			{
-				err = cobra_mount_ps2_disc_image(files, 1, tracks, num_tracks);
+				err = cobra_mount_ps2_disc_image(files, count, tracks, num_tracks);
 			}
 			else if(strstr(path, "/PSXISO/"))
 			{
@@ -165,13 +189,19 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 
 				err = cobra_mount_psx_disc_image(iso_file, tracks, num_tracks); strcpy(path, iso_file);
 			}
+			else if(strstr(path, "/PSPISO/"))
+			{
+				err = cobra_set_psp_umd(path, NULL, "/dev_hdd0/tmp/wm_icons/psp_icon.png");
+
+				if(!err) show_msg("Use PSP Launcher to play the game");
+			}
 			else if(strstr(path, "/BDISO/"))
 			{
-				err = cobra_mount_bd_disc_image(files, 1);
+				err = cobra_mount_bd_disc_image(files, count);
 			}
 			else if(strstr(path, "/DVDISO/"))
 			{
-				err = cobra_mount_dvd_disc_image(files, 1);
+				err = cobra_mount_dvd_disc_image(files, count);
 			}
 		}
 
