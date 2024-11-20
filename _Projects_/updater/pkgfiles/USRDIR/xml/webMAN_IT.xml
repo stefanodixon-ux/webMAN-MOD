@@ -88,9 +88,19 @@
 				<P key="module_name"><>webrender_plugin</></P>
 			</T>
 			<T key="remap_home" include="inc">
-				<P key="title"><>Rimappare home a USB000</></P>
+				<P key="title"><>Rimappare "home" a USB000</></P>
 				<P key="info"><>Reindirizzamento /dev_hdd0/home a /dev_usb000/home</></P>
 				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/home&to=/dev_usb000/home</></P>
+			</T>
+			<T key="remap_gamei" include="inc">
+				<P key="title"><>Rimappare "game" a USB000/GAMEI (Completo)</></P>
+				<P key="info"><>Reindirizzamento /dev_hdd0/game a USB/GAMEI</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/game&to=/dev_usb000/GAMEI</></P>
+			</T>
+			<T key="remap_game" include="inc">
+				<P key="title"><>Rimappare "game" a USB000/GAMEI (Estendere HDD)</></P>
+				<P key="info"><>Reindirizzamento /dev_hdd0/game a USB/GAMEI</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/game&to=//dev_usb000/GAMEI</></P>
 			</T>
 			<T key="remap_usb0" include="inc">
 				<P key="title"><>Rimappare USB000 a HDD</></P>
@@ -105,7 +115,7 @@
 			<T key="unmap_usb0" include="inc">
 				<P key="title"><>Ripristina la mappatura USB000</></P>
 				<P key="info"><>Ripristina il reindirizzamento per l'accesso a /dev_usb000</></P>
-				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
+				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/game;http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
 			</T>
 			<T key="unmap_all" include="inc">
 				<P key="title"><>Unmap PS3</></P>
@@ -114,6 +124,8 @@
 		</A>
 		<I>
 			<I class="type:x-xmb/module-action" key="remap_home" attr="remap_home"/>
+			<I class="type:x-xmb/module-action" key="remap_gamei" attr="remap_gamei"/>
+			<I class="type:x-xmb/module-action" key="remap_game" attr="remap_game"/>
 			<I class="type:x-xmb/module-action" key="remap_usb0" attr="remap_usb0"/>
 			<I class="type:x-xmb/module-action" key="remap_bdvd" attr="remap_bdvd"/>
 			<I class="type:x-xmb/module-action" key="unmap_usb0" attr="unmap_usb0"/>

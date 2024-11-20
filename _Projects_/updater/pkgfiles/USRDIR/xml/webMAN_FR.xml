@@ -92,6 +92,16 @@
 				<P key="info"><>Rediriger /dev_hdd0/home vers /dev_usb000/home</></P>
 				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/home&to=/dev_usb000/home</></P>
 			</T>
+			<T key="remap_gamei" include="inc">
+				<P key="title"><>Remapper game à USB000/GAMEI (Complet)</></P>
+				<P key="info"><>Rediriger /dev_hdd0/game vers USB/GAMEI</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/game&to=/dev_usb000/GAMEI</></P>
+			</T>
+			<T key="remap_game" include="inc">
+				<P key="title"><>Remapper game à USB000/GAMEI (Étendre le HDD)</></P>
+				<P key="info"><>Rediriger /dev_hdd0/game vers USB/GAMEI</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/game&to=//dev_usb000/GAMEI</></P>
+			</T>
 			<T key="remap_usb0" include="inc">
 				<P key="title"><>Remapper USB000 sur disque dur</></P>
 				<P key="info"><>Rediriger USB000 vers /dev_hdd0/packages</></P>
@@ -105,7 +115,7 @@
 			<T key="unmap_usb0" include="inc">
 				<P key="title"><>Annuler le mappage USB000</></P>
 				<P key="info"><>Restaurer l’accès de redirection à USB000</></P>
-				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
+				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/game;http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
 			</T>
 			<T key="unmap_all" include="inc">
 				<P key="title"><>Unmap PS3</></P>
@@ -114,6 +124,8 @@
 		</A>
 		<I>
 			<I class="type:x-xmb/module-action" key="remap_home" attr="remap_home"/>
+			<I class="type:x-xmb/module-action" key="remap_gamei" attr="remap_gamei"/>
+			<I class="type:x-xmb/module-action" key="remap_game" attr="remap_game"/>
 			<I class="type:x-xmb/module-action" key="remap_usb0" attr="remap_usb0"/>
 			<I class="type:x-xmb/module-action" key="remap_bdvd" attr="remap_bdvd"/>
 			<I class="type:x-xmb/module-action" key="unmap_usb0" attr="unmap_usb0"/>

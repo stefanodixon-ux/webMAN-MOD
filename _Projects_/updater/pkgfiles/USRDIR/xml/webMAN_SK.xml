@@ -91,6 +91,16 @@
 				<P key="info"><>Presmerujte /dev_hdd0/home na /dev_usb000/home</></P>
 				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/home&to=/dev_usb000/home</></P>
 			</T>
+			<T key="remap_gamei" include="inc">
+				<P key="title"><>Remap game na USB000/GAMEI (Full)</></P>
+				<P key="info"><>Presmerujte /dev_hdd0/game na USB/GAMEI</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/game&to=/dev_usb000/GAMEI</></P>
+			</T>
+			<T key="remap_game" include="inc">
+				<P key="title"><>Remap game to USB000/GAMEI (Extend HDD)</></P>
+				<P key="info"><>Presmerujte /dev_hdd0/game na USB/GAMEI</></P>
+				<P key="module_action"><>http://0/remap.ps3/dev_hdd0/game&to=//dev_usb000/GAMEI</></P>
+			</T>
 			<T key="remap_usb0" include="inc">
 				<P key="title"><>Remap USB000 na HDD</></P>
 				<P key="info"><>Presmerujte /dev_usb000 na /dev_hdd0/packages</></P>
@@ -104,7 +114,7 @@
 			<T key="unmap_usb0" include="inc">
 				<P key="title"><>Unmap USB000</></P>
 				<P key="info"><>Obnovte prístup k presmerovaniu na /dev_usb000</></P>
-				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
+				<P key="module_action"><>http://0/unmap.ps3/dev_hdd0/game;http://0/unmap.ps3/dev_hdd0/home;/unmap.ps3/dev_usb000</></P>
 			</T>
 			<T key="unmap_all" include="inc">
 				<P key="title"><>Unmap PS3</></P>
@@ -113,6 +123,8 @@
 		</A>
 		<I>
 			<I class="type:x-xmb/module-action" key="remap_home" attr="remap_home"/>
+			<I class="type:x-xmb/module-action" key="remap_gamei" attr="remap_gamei"/>
+			<I class="type:x-xmb/module-action" key="remap_game" attr="remap_game"/>
 			<I class="type:x-xmb/module-action" key="remap_usb0" attr="remap_usb0"/>
 			<I class="type:x-xmb/module-action" key="remap_bdvd" attr="remap_bdvd"/>
 			<I class="type:x-xmb/module-action" key="unmap_usb0" attr="unmap_usb0"/>

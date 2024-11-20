@@ -797,6 +797,20 @@ int main()
 			}
 			sysLv2FsCloseDir(fd);
 		}
+		if(sysLv2FsOpenDir(APP_USRDIR "/CONFIG/vm", &fd) == SUCCESS)
+		{
+			sysLv2FsMkdir("/dev_hdd0/vm", DMODE);
+			sysLv2FsMkdir("/dev_hdd0/vm/gx", DMODE);
+
+			while((sysLv2FsReadDir(fd, &dir, &read_e) == SUCCESS) && (read_e > 0))
+			{
+				sprintf(path1, APP_USRDIR "/CONFIG/%s/%s", "vm", dir.d_name);
+				sprintf(path2, "/dev_hdd0/vm/gx/%s", dir.d_name);
+				sysLv2FsUnlink(path2);
+				sysLv2FsLink(path1, path2);
+			}
+			sysLv2FsCloseDir(fd);
+		}
 	}
 
 	// webMAN LaunchPad icons
