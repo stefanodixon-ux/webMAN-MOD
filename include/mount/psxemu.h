@@ -19,7 +19,7 @@ static u32 detect_cd_sector_size(const char *buffer)
 }
 #endif
 
-#ifdef USE_INTERNAL_NTFS_PLUGIN
+#if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(USE_INTERNAL_NET_PLUGIN)
 static u32 default_cd_sector_size(size_t discsize)
 {
 	if(!(discsize % 0x930)) return 2352;

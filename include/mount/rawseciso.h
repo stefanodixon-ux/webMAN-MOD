@@ -97,6 +97,20 @@ typedef struct
 
 */
 
+#if defined(USE_INTERNAL_NTFS_PLUGIN) || defined(USE_INTERNAL_NET_PLUGIN)
+static u64 discsize = 0;
+static int is_cd2352 = 0;
+static u8 *cd_cache = 0;
+
+static u32 cached_cd_sector = 0x80000000;
+
+static int sys_storage_ext_mount_discfile_proxy(sys_event_port_t result_port, sys_event_queue_t command_queue_ntfs, int emu_type, u64 disc_size_bytes, u32 read_size, unsigned int trackscount, ScsiTrackDescriptor *tracks)
+{
+	system_call_8(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_DISCFILE_PROXY, result_port, command_queue_ntfs, emu_type, disc_size_bytes, read_size, trackscount, (u64)(u32)tracks);
+	return (int)p1;
+}
+#endif
+
 #ifdef USE_INTERNAL_NTFS_PLUGIN
 
 #ifdef RAWISO_PSX_MULTI
@@ -149,16 +163,6 @@ static sys_event_queue_t command_queue_ntfs = SYS_EVENT_QUEUE_NONE;
 
 static u32 *sections, *sections_size;
 static u32 num_sections;
-
-static u64 discsize = 0;
-static int is_cd2352 = 0;
-static u8 *cd_cache = 0;
-
-static int sys_storage_ext_mount_discfile_proxy(sys_event_port_t result_port, sys_event_queue_t command_queue_ntfs, int emu_type, u64 disc_size_bytes, u32 read_size, unsigned int trackscount, ScsiTrackDescriptor *tracks)
-{
-	system_call_8(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_MOUNT_DISCFILE_PROXY, result_port, command_queue_ntfs, emu_type, disc_size_bytes, read_size, trackscount, (u64)(u32)tracks);
-	return (int)p1;
-}
 
 static void get_next_read(u64 discoffset, u64 bufsize, u64 *offset, u64 *readsize, int *idx, u64 sec_size)
 {
@@ -596,8 +600,6 @@ static int process_read_psx_cmd_iso(u8 *buf, u64 offset, u64 size, u32 ssector)
 	return CELL_OK;
 }
 #endif
-
-static u32 cached_cd_sector = 0x80000000;
 
 static int process_read_cd_2048_cmd_iso(u8 *buf, u32 start_sector, u32 sector_count)
 {
@@ -1286,7 +1288,7 @@ exit_rawseciso:
 
 static void rawseciso_stop_thread(u64 arg)
 {
-	u64 exit_code;
+	//u64 exit_code;
 
 	do_run = ntfs_running = 0;
 

@@ -417,14 +417,15 @@ static u8 mount_unk = EMU_OFF;
 #include "include/init/process.h"
 #include "include/init/buffer_size.h"
 #include "include/init/vsh.h"
+#include "include/mount/eject_insert.h"
 
 #ifdef COBRA_ONLY
 #include "include/mount/cue_file.h"
 #include "include/mount/psxemu.h"
 #include "include/mount/netclient.h"
 #include "include/mount/netserver.h"
-#include "include/mount/netiso.h"
 #include "include/mount/rawseciso.h"
+#include "include/mount/netiso.h"
 #endif
 
 #include "include/file/file.h"
@@ -447,7 +448,6 @@ static u8 mount_unk = EMU_OFF;
 #include "include/init/singstar.h"
 #include "include/init/autopoweroff.h"
 
-#include "include/mount/eject_insert.h"
 #include "include/mount/gamedata.h"
 #include "include/feat/scsi_info.h"
 
