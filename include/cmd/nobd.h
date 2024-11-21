@@ -25,8 +25,10 @@
 
 			_concat2(&sbuffer, "noBD: ", noBD ? STR_ENABLED : STR_DISABLED);
 
+			#if defined(DEBUG_MEM) || defined(PS3MAPI)
 			sprintf(param, "/peek.lv1?712790");
 			ps3mapi_find_peek_poke_hexview(pbuffer, templn, param);
+			#endif
 		}
 		else
 			_concat2(&sbuffer, "noBD: ", STR_ERROR);

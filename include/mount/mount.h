@@ -1833,7 +1833,7 @@ finish:
 
 	#ifdef COBRA_NON_LITE
 	if(!ret)
-		patch_gameboot(0); // None
+		{patch_gameboot(0);} // None
 	#endif // #ifdef COBRA_ONLY
 
 	#ifdef VIRTUAL_PAD

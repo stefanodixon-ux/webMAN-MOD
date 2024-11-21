@@ -162,7 +162,7 @@ int main(int argc, const char* argv[])
 	sysFsChmod(path, S_IFDIR | 0777);
 
 	g_mmcm = 0;
-	g_remove_ext = !g_mmcm
+	g_remove_ext = !g_mmcm;
 
 	if(argc > 0 && argv)
 	{

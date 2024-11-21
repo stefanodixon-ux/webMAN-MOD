@@ -188,7 +188,7 @@ static void ps3mapi_mem_dump(char *buffer, char *html, char *param)
 		sprintf(html, " [" HTML_URL2 "]", "/delete.ps3", dump_file, STR_DELETE); strcat(buffer, html);
 	}
 }
-#endif
+#endif //#ifdef DEBUG_MEM
 
 #define HEXVIEW_SIZE	0x200
 
@@ -479,4 +479,4 @@ view_file:
 	add_html(dat_DEBUG_MEM_KEYS, 0, buffer, html);
 }
 
-#endif // #ifdef DEBUG_MEM
+#endif // #if defined(DEBUG_MEM) || defined(PS3MAPI)
