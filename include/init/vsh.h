@@ -356,6 +356,8 @@ static void start_xmb_player(const char* column)
 #endif
 
 #ifndef LITE_EDITION
+
+#ifdef VIRTUAL_PAD
 static void reload_by_logout(void)
 {
 	// /xmb.ps3$focus_category%20user;/pad.ps3?cross|1|cross|5|cross
@@ -391,12 +393,14 @@ static bool has_one_user_dir(void)
 }
 #endif
 
+#endif
+
 #ifdef COBRA_ONLY
 static void reload_xmb(u8 use_app)
 {
 	if(IS_ON_XMB && USER_LOGGEDIN)
 	{
-		#ifdef LITE_EDITION
+		#if defined(LITE_EDITION) || !defined(VIRTUAL_PAD)
 		if(!cobra_version)
 		#else
 		if((webman_config->reloadxmb == 2) || (!use_app && has_one_user_dir())) use_app = true;
@@ -435,13 +439,16 @@ static void reload_xmb(u8 use_app)
 
 	if(IS_ON_XMB && USER_LOGGEDIN)
 	{
+		#ifdef VIRTUAL_PAD
 		if((webman_config->reloadxmb == 2) || (!use_app && has_one_user_dir())) use_app = true;
 
 		if(!use_app)
 		{
 			reload_by_logout();
 		}
-		else if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB"))
+		else 
+		#endif
+		if(is_app_dir(_HDD0_GAME_DIR, "RELOADXMB"))
 		{
 			if(!get_explore_interface()) return;
 

@@ -69,6 +69,10 @@
  #undef PHOTO_GUI
 #endif
 
+#ifndef VIRTUAL_PAD
+ #undef PLAY_MUSIC
+#endif
+
 #ifdef COBRA_ONLY
  #ifndef LITE_EDITION
   #define COBRA_NON_LITE
