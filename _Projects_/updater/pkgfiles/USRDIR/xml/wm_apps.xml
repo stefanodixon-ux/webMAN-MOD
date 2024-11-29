@@ -513,7 +513,7 @@
 				<P key="title"><>Package Manager MOD for CFW Evilnat 4.91.2 + Stores</></P>
 			</T>
 			<T key="mod006" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA10, BETA12 or BETA13 to BETA14</></P>
+				<P key="title"><>4.91.2 Evilnat PEX BETAs 10/12/13/14 to BETA15</></P>
 			</T>
 			<T key="mod007" include="inc">
 				<P key="title"><>4.91.2 Evilnat PEX BETA9 to BETA10</></P>
@@ -839,8 +839,8 @@
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10-BETA13_to_BETA14_req_dev_blind_enabled.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10-BETA13_to_BETA14_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10-BETA14_to_BETA15_req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10-BETA14_to_BETA15_req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
