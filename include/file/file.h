@@ -268,15 +268,20 @@ static void mkdirs(char *param)
 	//cellFsMkdir("/dev_hdd0/PSXISO", DMODE); //paths[6]
 	//cellFsMkdir("/dev_hdd0/PSPISO", DMODE); //paths[8]
 	#ifdef MOUNT_ROMS
-	cellFsMkdir("/dev_hdd0/ROMS", DMODE);
+	if(webman_config->roms) cellFsMkdir("/dev_hdd0/ROMS", DMODE);
 	#endif
-		
-	sprintf(param, "/dev_hdd0");
-	for(u8 i = 0; i < 9; i++)
+
+
+	const u8 dtype[9] = {PS3, 0, PS3, BLU, DVD, PS2, PS1, 0, PSP};
+
+	for(u8 i = 0; i < sizeof(dtype); i++)
 	{
-		if(i == 1 || i == 7) continue; // skip /GAMEZ & /PSXGAMES
-		sprintf(param + 9 , "/%s", paths[i]);
-		cellFsMkdir(param, DMODE);
+		if(!dtype[i]) continue; // skip /GAMEZ & /PSXGAMES
+		concat_path(param, drives[0], paths[i]);
+		if(webman_config->cmask & dtype[i])
+			cellFsRmdir(param);
+		else
+			cellFsMkdir(param, DMODE);
 	}
 
 	param[9] = '\0'; // <- return /dev_hdd0
