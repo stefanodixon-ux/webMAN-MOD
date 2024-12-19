@@ -87,7 +87,6 @@
 
 	#define PERSIST  248
 	#define break_and_wait	{n = 0; break;}
-	#define unload_me(mode)	{wm_unload_combo = mode; wwwd_stop();}
 
 	for(n = 0; n < 10; n++)
 	{
@@ -147,23 +146,7 @@
 					if(do_custom_combo("l1_r1_triangle")) continue;
 					#endif
 
-					#ifndef LITE_EDITION
-					#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server_lite.sprx"
-					#else
-					#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server.sprx"
-					#endif
-
-					if(syscalls_removed || is_mounting || refreshing_xml || file_exists(WM_RELOAD_FILE) || not_exists(TOGGLE_PLUGIN)) {BEEP3; continue;}
-
-					if(!webman_config->nobeep) BEEP1;
-
-					create_file(WM_RELOAD_FILE); // create semaphore file
-
-					while(is_pressed(CELL_PAD_CTRL_TRIANGLE)) sys_ppu_thread_usleep(20000);
-
-					load_vsh_module(TOGGLE_PLUGIN);
-
-					unload_me(3);
+					toggle_wmm_lite(); break;
 				}
 				#endif
 				if(!(webman_config->combo2 & PLAY_DISC) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_START))

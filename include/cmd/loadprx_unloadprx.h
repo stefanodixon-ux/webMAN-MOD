@@ -1,3 +1,13 @@
+#ifdef COBRA_ONLY
+	if(islike(param, "/reloadprx.ps3"))
+	{
+		if(!cobra_version || syscalls_removed) goto exit_nocobra_error;
+
+		silent_mode = true; http_response(conn_s, header, param, CODE_HTTP_OK, param); keep_alive = is_busy = false;
+		toggle_wmm_lite();
+		goto exit_handleclient_www;
+	}
+#endif
 #ifdef LOAD_PRX
 	if(islike(param, "/loadprx.ps3") || islike(param, "/unloadprx.ps3"))
 	{

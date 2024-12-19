@@ -247,6 +247,27 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode)
 	return slot;
 }
 
+static void toggle_wmm_lite(void)
+{
+	#ifndef LITE_EDITION
+	#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server_lite.sprx"
+	#else
+	#define TOGGLE_PLUGIN	"/dev_hdd0/plugins/webftp_server.sprx"
+	#endif
+
+	if(syscalls_removed || is_mounting || refreshing_xml || file_exists(WM_RELOAD_FILE) || not_exists(TOGGLE_PLUGIN)) {BEEP3; return;}
+
+	if(!webman_config->nobeep) BEEP1;
+
+	create_file(WM_RELOAD_FILE); // create semaphore file
+
+	while(is_pressed(CELL_PAD_CTRL_TRIANGLE)) sys_ppu_thread_usleep(20000);
+
+	load_vsh_module(TOGGLE_PLUGIN);
+
+	unload_me(3);
+}
+
 static void unload_vsh_gui(void)
 {
 	if(syscalls_removed)

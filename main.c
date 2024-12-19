@@ -139,12 +139,13 @@ SYS_MODULE_EXIT(wwwd_stop);
 
 ////// PS3MAPI VSH PLUGIN MANAGEMENT //////
 static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode);
-#define get_free_slot(a)	 ps3mapi_get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, 0)
-#define unload_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 1)
-#define load_vsh_plugin(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
-#define toggle_vsh_plugin(a) ps3mapi_get_vsh_plugin_slot_by_name(a, 3)
-#define load_vsh_gui(a)      ps3mapi_get_vsh_plugin_slot_by_name(a, 4)
-#define load_vsh_module(a)   ps3mapi_get_vsh_plugin_slot_by_name(a, 5)
+#define get_free_slot(a)		ps3mapi_get_vsh_plugin_slot_by_name(PS3MAPI_FIND_FREE_SLOT, 0)
+#define unload_vsh_plugin(a)	ps3mapi_get_vsh_plugin_slot_by_name(a, 1)
+#define load_vsh_plugin(a)		ps3mapi_get_vsh_plugin_slot_by_name(a, 2)
+#define toggle_vsh_plugin(a)	ps3mapi_get_vsh_plugin_slot_by_name(a, 3)
+#define load_vsh_gui(a)			ps3mapi_get_vsh_plugin_slot_by_name(a, 4)
+#define load_vsh_module(a)		ps3mapi_get_vsh_plugin_slot_by_name(a, 5)
+#define unload_me(mode)			{wm_unload_combo = mode; wwwd_stop();}
 ///////////////////////////////////////////
 
 #else
@@ -152,6 +153,7 @@ static int ps3mapi_get_vsh_plugin_slot_by_name(const char *name, int mode);
  #define PS3MAPI_DISABLE_ACCESS_SYSCALL8
  #define PS3MAPI_REENABLE_SYSCALL8
  #define PS3MAPI_RESTORE_SC8_DISABLE_STATUS
+ #define unload_me(mode)			{wm_unload_combo = mode; wwwd_stop();}
 #endif
 
 ///////////// PS3MAPI END ////////////////

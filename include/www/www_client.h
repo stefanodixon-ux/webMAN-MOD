@@ -714,13 +714,13 @@ continue_rendering:
 #ifndef LITE_EDITION
 					#include "../cmd/ps3mapi.h"
 					#include "../cmd/install_list.h"
-					#include "../cmd/loadprx_unloadprx.h"
 					#include "../cmd/videorec.h"
 					#include "../cmd/sysbgm.h"
 					#include "../cmd/extgd.h"
 					#include "../cmd/nobd.h"
 					#include "../cmd/debug_mem.h" // /hexview.ps3, /find.lv2, /peek.lv1, etc.
 #endif
+					#include "../cmd/loadprx_unloadprx.h"
 					#include "../cmd/mount_copy.h"
 					#include "../cmd/index.h"
 
@@ -784,10 +784,9 @@ send_response:
 	goto exit_handleclient_www;
   }
 
-#ifdef COBRA_NON_LITE
-exit_nocobra_error:
-#endif
 #ifdef COBRA_ONLY
+exit_nocobra_error:
+
 	if(!mc) keep_alive = http_response(conn_s, header, param, CODE_FORBIDDEN, " Cobra payload not available.");
 #endif
 

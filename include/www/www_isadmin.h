@@ -63,6 +63,9 @@
 		||  islike(param, "/loadprx.ps3")
 		||  islike(param, "/unloadprx.ps3")
  #endif
+ #ifdef COBRA_ONLY
+		||  islike(param, "/reloadprx.ps3")
+ #endif
 		||  islike(param, "/eject.ps3")
 		||  islike(param, "/insert.ps3")) keep_alive = 0;
 	else if(islike(param, "/index.ps3")) ;
