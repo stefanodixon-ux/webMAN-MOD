@@ -1,3 +1,64 @@
+------------------------------------------------
+Patch SSL certificates in DEX vsh.self on 4.91.2
+------------------------------------------------
+Fix for the error code 80710A06 which is a SSL connect handshake error, it occurs because
+DEX VSH does not have any reference to a valid certificate authority (CA) from the file CA_LIST.cer
+
+Github and other URLs:
+* Uses DigiCert Global Root G2 in CA_LIST.cer, in this case to download PKGs from Github
+* DEX vsh.self file has no reference to this certificate (CEX does have it)
+* We need to add DigiCert Global Root G2 hardcoded in DEX vsh.self in an offset with enough space
+
+If we open DEX vsh.self (4.84) in a HEX Editor and we go to the offset 0x703A20,
+we can see info about the last CA available in CA_LIST.cer (Security Communication RootCA3) in 4.84 DEX.
+
+0x703A20:
+00 6A 8E A0 00 00 4C 57 00 00 05 24 2F 4C 84 5C
+5B CA DB 94 CF E5 04 3C 38 63 E0 BC 3D EE 8A 4F
+C9 0B C3 7D 00 00 00 00
+
+Offset 0x703A20 - Value 0x6A8EA0: Reference to /dev_flash/data/cert/CA_LIST.cer
+Offset 0x703A24 - Value 0x372B: Offset where starts the certificate in CA_LIST.cer, in this case Security Communication RootCA3 (-----BEGIN CERTIFICATE-----)
+Offset 0x703A28 - Value 0x07D0: Certificate size
+Offset 0x703A2C - Value 0xBC3436AAEB3459A7AAB55B5614467BB7E3B43AB5: SHA1 hash (Thanks to @aldostools for checking it)
+Offset 0x703A40 - Value 0x6F7454B3: Unknown​
+
+Luckily the next 0x28 bytes in offset 0x703A50 are available and there is enough space to be able to add the reference:
+
+Offset 0x703A50 - Value 0x6A8EA0: Reference to /dev_flash/data/cert/CA_LIST.cer
+Offset 0x703A54 - Value 0x4C57: Offset where starts the certificate in CA_LIST.cer, in this case Security Communication RootCA3 (-----BEGIN CERTIFICATE-----)
+Offset 0x703A58 - Value 0x0524: Certificate size
+Offset 0x703A5C - Value 0x2F4C845C5BCADB94CFE5043C3863E0BC3DEE8A4F: SHA1 hash (Thanks to @aldostools for checking it)
+Offset 0x703A70 - Value 0xC90BC37D: Unknown​
+
+0x703A50:
+00 6A 8E A0 00 00 4C 57 00 00 05 24 2F 4C 84 5C
+5B CA DB 94 CF E5 04 3C 38 63 E0 BC 3D EE 8A 4F
+C9 0B C3 7D 00 00 00 00
+
+For CEX (4.84 and 4.85)
+
+Search
+6F 74 54 B3 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 06 40 00 00 6A 0C B0
+
+Replace
+6F 74 54 B3 00 00 00 00 00 00 00 00 00 00 00 00
+00 6A 08 B0 00 00 4C 57 00 00 05 24 2F 4C 84 5C
+5B CA DB 94 CF E5 04 3C 38 63 E0 BC 3D EE 8A 4F
+C9 0B C3 7D 00 00 00 00 00 06 40 00 00 6A 0C B0
+
+---------------------------------------------------------------------------
+Patch DEX kernel to bypass ambulance beep brick (DEX kernel loaded with CEX TargetID)
+---------------------------------------------------------------------------
+To patch it, you need to decrypt 4.84 DEX lv2_kernel.self and patch the following:
+
+Offset: 0x283A7C
+Original Value: 0xE86219787C0802A6
+Replace with: 0x386000004E800020 (return 0)
+
 ---------------------------------------------------------------------------
 Patches to enable hidden trophy's title on XMB/INFO (4.90 CEX and 4.84 DEX)
 ---------------------------------------------------------------------------
