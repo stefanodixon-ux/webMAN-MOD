@@ -1691,8 +1691,13 @@ static void ps3mapi_gameplugin(char *buffer, char *html, const char *param)
 				if(get_param("prx=", prx_path, param, STD_PATH_LEN))
 				{
 					check_path_alias(prx_path);
-					if(strstr(prx_path, "/dev_flash"))
-						load_start(prx_path); // <- load system modules from flash to process
+					if(islike(prx_path, "/dev_flash"))
+					{
+						#ifdef PKG_HANDLER
+						if(!LoadPluginByName(prx_path))
+						#endif
+							load_start(prx_path); // <- load system modules from flash to process
+					}
 					else
 						{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)prx_path, NULL, 0); } // <- load custom modules to process
 				}

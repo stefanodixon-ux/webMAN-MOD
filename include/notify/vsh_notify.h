@@ -95,6 +95,10 @@ static void play_sound_id(u8 value)
 	if(value == 9) { play_rco_sound("snd_system_ng"); }
 }
 
+#ifdef PKG_HANDLER
+static int LoadPluginByName(char *plugin_name);
+#endif
+
 //------------
 /* Based on PHTNC's code to write VSH Notify notifications with icons */
 
@@ -220,6 +224,15 @@ static s32 show_msg_with_icon(u8 icon_id, const char *msg)
 		if(get_param("&rco=", rco, pos, 63))
 		{
 			rco_plugin = View_Find(rco);
+			#ifdef PKG_HANDLER
+			if(!rco_plugin)
+			{
+				LoadPluginByName(rco);
+				rco_plugin = View_Find(rco);
+			}
+			#endif
+
+			if(!rco_plugin) return vshtask_notify(msg);
 		}
 
 		LoadRCOTexture(&teximg, tex_plugin, tex); *pos = NULL;

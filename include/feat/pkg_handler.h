@@ -151,6 +151,75 @@ static int LoadPluginById(int id, void *handler)
 	return xmm0_interface->LoadPlugin3(id, handler, 0);
 }
 
+static int LoadPluginByName(char *plugin_name)
+{
+	int id = 0;
+	if(!strstr(plugin_name, "_plugin")) return 0;
+	if(strstr(plugin_name, "nas")) id = nas_plugin; else
+	if(strstr(plugin_name, "xai")) id = xai_plugin; else
+	if(strstr(plugin_name, "edy")) id = edy_plugin; else
+	if(strstr(plugin_name, "ps3")) id = ps3_savedata_plugin; else
+	if(strstr(plugin_name, "vmc")) id = vmc_savedata_plugin; else
+	if(strstr(plugin_name, "hknw")) id = hknw_plugin; else
+	if(strstr(plugin_name, "sacd")) id = sacd_plugin; else
+	if(strstr(plugin_name, "user")) id = user_plugin; else
+	if(strstr(plugin_name, "dlna")) id = dlna_plugin; else
+	if(strstr(plugin_name, "cddb")) id = eula_cddb_plugin; else
+	if(strstr(plugin_name, "premo")) id = premo_plugin; else
+	if(strstr(plugin_name, "regcam")) id = regcam_plugin; else
+	if(strstr(plugin_name, "wboard")) id = wboard_plugin; else
+	if(strstr(plugin_name, "remote")) id = remotedownload_plugin; else
+	if(strstr(plugin_name, "update")) id = software_update_plugin; else
+	if(strstr(plugin_name, "device")) id = deviceconf_plugin; else
+	if(strstr(plugin_name, "netconf")) id = netconf_plugin; else
+	if(strstr(plugin_name, "sysconf")) id = sysconf_plugin; else
+	if(strstr(plugin_name, "kensaku")) id = kensaku_plugin; else
+	if(strstr(plugin_name, "game_ext")) id = game_ext_plugin; else
+	if(strstr(plugin_name, "gamedata")) id = gamedata_plugin; else
+	if(strstr(plugin_name, "filecopy")) id = filecopy_plugin; else
+	if(strstr(plugin_name, "npsignin")) id = npsignin_plugin; else
+	if(strstr(plugin_name, "newstore")) id = newstore_plugin; else
+	if(strstr(plugin_name, "download")) id = download_plugin; else
+	if(strstr(plugin_name, "playlist")) id = playlist_plugin; else
+	if(strstr(plugin_name, "strviewer")) id = strviewer_plugin; else
+	if(strstr(plugin_name, "webrender")) id = webrender_plugin; else
+	if(strstr(plugin_name, "webbrowser")) id = webbrowser_plugin; else
+	if(strstr(plugin_name, "photoviewer")) id = photoviewer_plugin; else
+	if(strstr(plugin_name, "audioplayer")) id = audioplayer_plugin; else
+	if(strstr(plugin_name, "videoplayer")) id = videoplayer_plugin; else
+	if(strstr(plugin_name, "videodownloader")) id = videodownloader_plugin; else
+	if(strstr(plugin_name, "game")) id = game_plugin;
+
+	//system_plugin=0x00,
+	//xmb_plugin=0x01,
+	//explore_plugin=0x02,
+	//category_setting_plugin=0x03,
+	//print_plugin=0x09,
+	//bdp_plugin=0x11,
+	//bdp_disccheck_plugin=0x12,
+	//bdp_storage_plugin=0x13,
+	//friendim_plugin=0x1E,
+	//friendml_plugin=0x1F,
+	//avc_plugin=0x20,
+	//avc2_text_plugin=0x21,
+	//np_trophy_plugin=0x24,
+	//np_trophy_ingame=0x25,
+	//friendtrophy_plugin=0x26,
+	//profile_plugin=0x27,
+	//thumthum_plugin=0x2A,
+	//micon_lock_plugin=0x2B,
+	//idle_plugin=0x36,
+	//poweroff_plugin=0x39,
+	//videoeditor_plugin=0x3A,
+	//scenefolder_plugin=0x3B,
+	//eula_hcopy_plugin=0x3C,
+	//mtpinitiator_plugin=0x3E,
+	//campaign_plugin=0x3F,
+
+	if(id) {LoadPluginById(id, NULL); sys_ppu_thread_sleep(1);}
+	return id;
+}
+
 static void unloadSysPluginCallback(void)
 {
 	//Add potential callback process
