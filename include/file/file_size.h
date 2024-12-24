@@ -191,6 +191,8 @@ static int folder_count(const char *path, s8 max_items)
 
 			if(entry_name[0] == '.') continue;
 
+			if((max_items == 2) && !islike(entry_name, "0000")) continue;
+
 			if(++dir_items == max_items) break; // max_items: 1=is_dir_empty, 2=has_one_user_dir (2 or more), -1=folder count
 		}
 
