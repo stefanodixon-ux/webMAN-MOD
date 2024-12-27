@@ -11,6 +11,7 @@
  #define MOUNT_GAMEI
 #endif
 
+#define FIX_CLOCK
 #define VIEW_PARAM_SFO
 #define CHECK_PSHOME
 

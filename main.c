@@ -109,7 +109,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.47i MOD"
+#define WM_VERSION			"1.47.47j MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -319,6 +319,7 @@ static void show_status(const char *label, u8 status);
 static void sys_get_cobra_version(void);
 static void get_sys_info(char *msg, u8 op, bool nolabel);
 static void qr_code(char *templn, const char *url, const char *prefix, bool small, char *buffer);
+static void Fix_Clock(void);
 
 static bool isDir(const char* path);
 static bool file_exists(const char* path);
@@ -481,6 +482,8 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/www/www_client.h"
 #include "include/www/www_start.h"
+
+#include "include/feat/clock.h"
 
 static void wwwd_thread(u64 arg)
 {

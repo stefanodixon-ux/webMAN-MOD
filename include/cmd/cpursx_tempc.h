@@ -1,3 +1,10 @@
+	#ifdef FIX_CLOCK
+	if(islike(param, "/clock.ps3"))
+	{
+		Fix_Clock();
+		strcopy(param, "/cpursx.ps3");
+	}
+	#endif
 	if(islike(param, "/cpursx_ps3"))
 	{
 		char *cpursx = header, *buffer = param; get_cpursx(cpursx);
