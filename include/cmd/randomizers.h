@@ -18,7 +18,7 @@
 			islike(param, "/lines.ps3")     ||
 			islike(param, "/theme.ps3")     ||
 			islike(param, "/impose.ps3")    ||
-			islike(param, "/clock.ps3")     ||
+			islike(param, "/clock.ps3")  ||
 			islike(param, "/psn_icons.ps3") ||
 			islike(param, "/coldboot.ps3"))
 	{
