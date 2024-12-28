@@ -24,20 +24,19 @@ static int sys_time_get_rtc(u64 *real_time_clock)
 	return_to_user_prog(int);
 }
 
-static void Fix_Clock(void)
+static void Fix_Clock(char *newDate)
 {
 	#define DATE_2000_01_01	0x00E01D003A63A000ULL
-	#define DATE_1970_01_01	0x00DCBFFEFF2BC000ULL
-	#define DATE_2023_11_23	0x00E2CAD2ECB78000ULL
+	//#define DATE_1970_01_01	0x00DCBFFEFF2BC000ULL
+	//#define DATE_2023_11_23	0x00E2CAD2ECB78000ULL
 	#define DATE_2024_12_24	0x00E2EA0BE8548000ULL
 
 	u64 clock, diff;
 	u64 sec, nsec;
-	//u64 a1, a2;
 	u64 currentTick;
 
 	//u64 timedata = 0x00E2CABECEE02000ULL - DATE_2000_01_01;
-	u64 patchedDate = DATE_2024_12_24;
+	u64 patchedDate;
 
 	static int (*_cellRtcGetCurrentTick)(u64 *pTick) = NULL;
 	static int (*_cellRtcSetCurrentTick)(u64 *pTick) = NULL;
@@ -48,17 +47,40 @@ static void Fix_Clock(void)
 	xSettingDateGetInterface = getNIDfunc("xsetting", 0x8B69F85A, 0);
 
 	CellRtcDateTime rDate;
-	struct CellFsStat buf;
-	cellFsStat(WM_CONFIG_FILE, &buf);
-	cellRtcSetTime_t(&rDate, buf.st_mtime);
 
-	// use last wm_config date if it's later than the default patch date
-	u64 configDate = ((rDate.year * 365) + (rDate.month * 30) + rDate.day + 100) * 86400000000; if(configDate > patchedDate) patchedDate = configDate;
+	if(!newDate)
+	{
+		patchedDate = DATE_2024_12_24;
+	}
+	else if(newDate[0] == '2' && newDate[1] == '0' && (newDate[4] == '-') && (newDate[7] == '-')) // 2024-12-24
+	{
+		newDate[4] = newDate[7] = newDate[10] = '\0';
+		rDate.year = val(newDate);
+		rDate.month = val(newDate + 5);
+		rDate.day = val(newDate + 8);
+		patchedDate = ((rDate.year * 365) + (rDate.month * 30) + rDate.day + 100) * 86400000000;
+	}
+	else
+	{
+		patchedDate = convertH(newDate);
+		if(patchedDate < DATE_2000_01_01) {patchedDate = DATE_2024_12_24; newDate = NULL;}
+	}
 
-	_cellRtcGetCurrentTick(&currentTick);
+	if(!newDate)
+	{
+		struct CellFsStat buf;
+		cellFsStat(WM_CONFIG_FILE, &buf);
+		cellRtcSetTime_t(&rDate, buf.st_mtime);
+
+		// use last wm_config date if it's later than the default patch date
+		u64 configDate = ((rDate.year * 365) + (rDate.month * 30) + rDate.day + 100) * 86400000000; if(configDate > patchedDate) patchedDate = configDate;
+	}
+
+//	u64 a1, a2;
 //	{ system_call_4(0x362, 0x3002, 0, (u64)(u32)&a1, (u64)(u32)&a2); }
+	_cellRtcGetCurrentTick(&currentTick);
 
-	if(currentTick < patchedDate)
+	if(currentTick < DATE_2024_12_24 || newDate)
 	{
 		_cellRtcSetCurrentTick(&patchedDate);
 		sysGetCurrentTime(&sec, &nsec);

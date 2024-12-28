@@ -1,7 +1,9 @@
 	#ifdef FIX_CLOCK
 	if(islike(param, "/clock.ps3"))
 	{
-		Fix_Clock();
+		char *param2 = NULL;
+		if(param[10] == '?') param2 = param + 11;
+		Fix_Clock(param2);
 		strcopy(param, "/cpursx.ps3");
 	}
 	#endif

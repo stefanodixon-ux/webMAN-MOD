@@ -13,7 +13,7 @@ static void start_www(u64 conn_s_p)
 		if(conn_s_p == START_DAEMON)
 		{
 			#ifdef FIX_CLOCK
-			Fix_Clock();
+			Fix_Clock(NULL);
 			#endif
 
 			#ifndef ENGLISH_ONLY
