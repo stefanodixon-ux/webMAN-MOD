@@ -14,6 +14,11 @@
 				<P key="title"><>Custom Firmware MODs</></P>
 				<P key="child"><>segment</></P>
 			</T>
+			<T key="menu03">
+				<P key="icon_rsc"><>tex_album_icon</></P>
+				<P key="title"><>Web Apps Links</></P>
+				<P key="child"><>segment</></P>
+			</T>
 			<T key="app001" include="inc">
 				<P key="title"><>prepISO 1.33</></P>
 				<P key="info"><>0.9 MB</></P>
@@ -106,33 +111,34 @@
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="menu01" attr="menu01" src="#seg_mod_xmb"/><!-- XMD MODs -->
 			<Q class="type:x-xmb/folder-pixmap" key="menu02" attr="menu02" src="#seg_mod_cfw"/><!-- CFW MODs -->
-			<Q class="type:x-xmb/folder-pixmap" key="app001" attr="app001" src="#app001_item"/><!-- prepISO -->
-			<Q class="type:x-xmb/folder-pixmap" key="app002" attr="app002" src="#app002_item"/><!-- PS2 CONFIG Database -->
-			<Q class="type:x-xmb/folder-pixmap" key="app003" attr="app003" src="#app003_item"/><!-- PS2 Classics Launcher -->
-			<Q class="type:x-xmb/folder-pixmap" key="app004" attr="app004" src="#app004_item"/><!-- PSP Minis Launcher -->
-			<Q class="type:x-xmb/folder-pixmap" key="app005" attr="app005" src="#app005_item"/><!-- PSP Remasters Launcher -->
-			<Q class="type:x-xmb/folder-pixmap" key="app006" attr="app006" src="#app006_item"/><!-- PS3 Covers Pack -->
-			<Q class="type:x-xmb/folder-pixmap" key="app007" attr="app007" src="#app007_item"/><!-- PSX & PS2 Covers Pack -->
-			<Q class="type:x-xmb/folder-pixmap" key="app03D" attr="app03D" src="#app03D_item"/><!-- PSX & PS2 Covers Pack 3D -->
-			<Q class="type:x-xmb/folder-pixmap" key="app008" attr="app008" src="#app008_item"/><!-- RetroArch CE -->
-			<Q class="type:x-xmb/folder-pixmap" key="app009" attr="app009" src="#app009_item"/><!-- multiMAN -->
-			<Q class="type:x-xmb/folder-pixmap" key="app010" attr="app010" src="#app010_item"/><!-- IRISMAN -->
-			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_item"/><!-- Simple File Manager MOD -->
-			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_item"/><!-- Movian -->
-			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_item"/><!-- Apollo Save Tool -->
-			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_item"/><!-- Artemis GUI [Cheats] -->
-			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_item"/><!-- PKGi -->
-			<Q class="type:x-xmb/folder-pixmap" key="app016" attr="app016" src="#app016_item"/><!-- PS3 ezRemote Client -->
-			<Q class="type:x-xmb/folder-pixmap" key="app017" attr="app017" src="#app017_item"/><!-- Ultimate Toolbox v2.03 FULL 4.84-4.88-->
-			<Q class="type:x-xmb/folder-pixmap" key="app018" attr="app018" src="#app018_item"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.91-->
-			<Q class="type:x-xmb/folder-pixmap" key="appPSH" attr="appPSH" src="#appPSH_item"/><!-- PS Home Online -->
-			<Q class="type:x-xmb/folder-pixmap" key="app019" attr="app019" src="#app019_item"/><!-- Load webMAN MOD -->
-			<Q class="type:x-xmb/folder-pixmap" key="app020" attr="app020" src="#app020_item"/><!-- webMAN MOD Installer -->
+			<Q class="type:x-xmb/folder-pixmap" key="menu03" attr="menu03" src="#seg_webapps"/><!-- WebApps Links -->
+			<Q class="type:x-xmb/folder-pixmap" key="app001" attr="app001" src="#app001_link"/><!-- prepISO -->
+			<Q class="type:x-xmb/folder-pixmap" key="app002" attr="app002" src="#app002_link"/><!-- PS2 CONFIG Database -->
+			<Q class="type:x-xmb/folder-pixmap" key="app003" attr="app003" src="#app003_link"/><!-- PS2 Classics Launcher -->
+			<Q class="type:x-xmb/folder-pixmap" key="app004" attr="app004" src="#app004_link"/><!-- PSP Minis Launcher -->
+			<Q class="type:x-xmb/folder-pixmap" key="app005" attr="app005" src="#app005_link"/><!-- PSP Remasters Launcher -->
+			<Q class="type:x-xmb/folder-pixmap" key="app006" attr="app006" src="#app006_link"/><!-- PS3 Covers Pack -->
+			<Q class="type:x-xmb/folder-pixmap" key="app007" attr="app007" src="#app007_link"/><!-- PSX & PS2 Covers Pack -->
+			<Q class="type:x-xmb/folder-pixmap" key="app03D" attr="app03D" src="#app03D_link"/><!-- PSX & PS2 Covers Pack 3D -->
+			<Q class="type:x-xmb/folder-pixmap" key="app008" attr="app008" src="#app008_link"/><!-- RetroArch CE -->
+			<Q class="type:x-xmb/folder-pixmap" key="app009" attr="app009" src="#app009_link"/><!-- multiMAN -->
+			<Q class="type:x-xmb/folder-pixmap" key="app010" attr="app010" src="#app010_link"/><!-- IRISMAN -->
+			<Q class="type:x-xmb/folder-pixmap" key="app011" attr="app011" src="#app011_link"/><!-- Simple File Manager MOD -->
+			<Q class="type:x-xmb/folder-pixmap" key="app012" attr="app012" src="#app012_link"/><!-- Movian -->
+			<Q class="type:x-xmb/folder-pixmap" key="app013" attr="app013" src="#app013_link"/><!-- Apollo Save Tool -->
+			<Q class="type:x-xmb/folder-pixmap" key="app014" attr="app014" src="#app014_link"/><!-- Artemis GUI [Cheats] -->
+			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_link"/><!-- PKGi -->
+			<Q class="type:x-xmb/folder-pixmap" key="app016" attr="app016" src="#app016_link"/><!-- PS3 ezRemote Client -->
+			<Q class="type:x-xmb/folder-pixmap" key="app017" attr="app017" src="#app017_link"/><!-- Ultimate Toolbox v2.03 FULL 4.84-4.88-->
+			<Q class="type:x-xmb/folder-pixmap" key="app018" attr="app018" src="#app018_link"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.91-->
+			<Q class="type:x-xmb/folder-pixmap" key="appPSH" attr="appPSH" src="#appPSH_link"/><!-- PS Home Online -->
+			<Q class="type:x-xmb/folder-pixmap" key="app019" attr="app019" src="#app019_link"/><!-- Load webMAN MOD -->
+			<Q class="type:x-xmb/folder-pixmap" key="app020" attr="app020" src="#app020_link"/><!-- webMAN MOD Installer -->
 		</I>
 	</V>
 
 	<!-- prepISO -->
-	<V id="app001_item">
+	<V id="app001_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -147,7 +153,7 @@
 	</V>
 
 	<!-- PS2 CONFIG Database -->
-	<V id="app002_item">
+	<V id="app002_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -162,7 +168,7 @@
 	</V>
 
 	<!-- PS2 Classics Launcher -->
-	<V id="app003_item">
+	<V id="app003_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -177,7 +183,7 @@
 	</V>
 
 	<!-- PSP Minis Launcher -->
-	<V id="app004_item">
+	<V id="app004_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -192,7 +198,7 @@
 	</V>
 
 	<!-- PSP Remasters Launcher -->
-	<V id="app005_item">
+	<V id="app005_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -207,7 +213,7 @@
 	</V>
 
 	<!-- PS3 Covers Pack -->
-	<V id="app006_item">
+	<V id="app006_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -222,7 +228,7 @@
 	</V>
 
 	<!-- PSX & PS2 Covers Pack -->
-	<V id="app007_item">
+	<V id="app007_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -237,7 +243,7 @@
 	</V>
 
 	<!-- PSX & PS2 Covers Pack 3D -->
-	<V id="app03D_item">
+	<V id="app03D_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -252,7 +258,7 @@
 	</V>
 
 	<!-- RetroArch CE -->
-	<V id="app008_item">
+	<V id="app008_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -267,7 +273,7 @@
 	</V>
 
 	<!-- multiMAN -->
-	<V id="app009_item">
+	<V id="app009_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -282,7 +288,7 @@
 	</V>
 
 	<!-- IRISMAN -->
-	<V id="app010_item">
+	<V id="app010_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -297,7 +303,7 @@
 	</V>
 
 	<!-- Simple File Manager -->
-	<V id="app011_item">
+	<V id="app011_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -312,7 +318,7 @@
 	</V>
 
 	<!-- Movian -->
-	<V id="app012_item">
+	<V id="app012_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -327,7 +333,7 @@
 	</V>
 
 	<!-- Apollo Save Tool -->
-	<V id="app013_item">
+	<V id="app013_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -342,7 +348,7 @@
 	</V>
 
 	<!-- Artemis GUI [Cheats] -->
-	<V id="app014_item">
+	<V id="app014_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -357,7 +363,7 @@
 	</V>
 
 	<!-- PKGi -->
-	<V id="app015_item">
+	<V id="app015_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -372,7 +378,7 @@
 	</V>
 
 	<!-- PS3 ezRemote Client -->
-	<V id="app016_item">
+	<V id="app016_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -387,7 +393,7 @@
 	</V>
 
 	<!-- Ultimate Toolbox v2.03 FULL -->
-	<V id="app017_item">
+	<V id="app017_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -402,7 +408,7 @@
 	</V>
 
 	<!-- Ultimate Toolbox v2.03 FULL 4.89-4.91 -->
-	<V id="app018_item">
+	<V id="app018_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -417,7 +423,7 @@
 	</V>
 
 	<!-- PS3 Home Online -->
-	<V id="appPSH_item">
+	<V id="appPSH_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -432,7 +438,7 @@
 	</V>
 
 	<!-- Load webMAN MOD -->
-	<V id="app019_item">
+	<V id="app019_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -447,7 +453,7 @@
 	</V>
 	
 	<!-- webMAN MOD Installer -->
-	<V id="app020_item">
+	<V id="app020_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -513,18 +519,9 @@
 				<P key="title"><>Package Manager MOD for CFW Evilnat 4.91.2 + Stores</></P>
 			</T>
 			<T key="mod006" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETAs 10/12/13/14/15 to BETA16</></P>
-			</T>
-			<T key="mod007" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA9 to BETA10</></P>
-			</T>
-			<T key="mod008" include="inc">
-				<P key="title"><>4.91.2 Evilnat PEX BETA8 to BETA10</></P>
-			</T>
-			<T key="mod009" include="inc">
 				<P key="title"><>Extended Download + Icons</></P>
 			</T>
-			<T key="mod010" include="inc">
+			<T key="mod007" include="inc">
 				<P key="title"><>Power Options on User Column</></P>
 				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
 			</T>
@@ -557,21 +554,18 @@
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="mod00A" attr="mod00A" src="#mod00A_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod00B" attr="mod00B" src="#mod00B_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod001" attr="mod001" src="#mod001_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod002" attr="mod002" src="#mod002_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod003" attr="mod003" src="#mod003_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod004" attr="mod004" src="#mod004_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod005" attr="mod005" src="#mod005_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod006" attr="mod006" src="#mod006_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod007" attr="mod007" src="#mod007_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod008" attr="mod008" src="#mod008_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod009" attr="mod009" src="#mod009_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod010" attr="mod010" src="#mod010_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod00A" attr="mod00A" src="#mod00A_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod00B" attr="mod00B" src="#mod00B_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod001" attr="mod001" src="#mod001_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod002" attr="mod002" src="#mod002_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod003" attr="mod003" src="#mod003_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod004" attr="mod004" src="#mod004_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod005" attr="mod005" src="#mod005_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod006" attr="mod006" src="#mod006_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod007" attr="mod007" src="#mod007_link"/>
 
-			<Q class="type:x-xmb/folder-pixmap" key="mod101" attr="mod101" src="#mod101_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod102" attr="mod102" src="#mod102_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod101" attr="mod101" src="#mod101_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod102" attr="mod102" src="#mod102_link"/>
 
 			<Q class="type:x-xmb/folder-pixmap" key="menu11" attr="menu11" src="#seg_mnu_ps1netemu"/><!-- PS1 NETEMU MODs -->
 			<Q class="type:x-xmb/folder-pixmap" key="menu12" attr="menu12" src="#seg_mnu_ps2netemu"/><!-- PS2 NETEMU MODs -->
@@ -628,10 +622,10 @@
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="mod110" attr="mod110" src="#mod110_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod111" attr="mod111" src="#mod111_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod112" attr="mod112" src="#mod112_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod113" attr="mod113" src="#mod113_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod110" attr="mod110" src="#mod110_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod111" attr="mod111" src="#mod111_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod112" attr="mod112" src="#mod112_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod113" attr="mod113" src="#mod113_link"/>
 		</I>
 	</V>
 
@@ -670,15 +664,15 @@
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="mod120" attr="mod120" src="#mod120_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod121" attr="mod121" src="#mod121_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod122" attr="mod122" src="#mod122_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod123" attr="mod123" src="#mod123_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod124" attr="mod124" src="#mod124_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod125" attr="mod125" src="#mod125_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod126" attr="mod126" src="#mod126_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod127" attr="mod127" src="#mod127_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod128" attr="mod128" src="#mod128_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod120" attr="mod120" src="#mod120_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod121" attr="mod121" src="#mod121_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod122" attr="mod122" src="#mod122_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod123" attr="mod123" src="#mod123_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod124" attr="mod124" src="#mod124_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod125" attr="mod125" src="#mod125_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod126" attr="mod126" src="#mod126_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod127" attr="mod127" src="#mod127_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod128" attr="mod128" src="#mod128_link"/>
 		</I>
 	</V>
 
@@ -705,10 +699,10 @@
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="mod130" attr="mod130" src="#mod130_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod131" attr="mod131" src="#mod131_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod132" attr="mod132" src="#mod132_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod133" attr="mod133" src="#mod133_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod130" attr="mod130" src="#mod130_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod131" attr="mod131" src="#mod131_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod132" attr="mod132" src="#mod132_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod133" attr="mod133" src="#mod133_link"/>
 		</I>
 	</V>
 
@@ -731,13 +725,13 @@
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="mod140" attr="mod140" src="#mod140_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod141" attr="mod141" src="#mod141_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="mod142" attr="mod142" src="#mod142_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod140" attr="mod140" src="#mod140_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod141" attr="mod141" src="#mod141_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="mod142" attr="mod142" src="#mod142_link"/>
 		</I>
 	</V>
 
-	<V id="mod00A_item">
+	<V id="mod00A_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -751,7 +745,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod00B_item">
+	<V id="mod00B_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -765,7 +759,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod001_item">
+	<V id="mod001_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -779,7 +773,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod002_item">
+	<V id="mod002_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -793,7 +787,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod003_item">
+	<V id="mod003_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -807,7 +801,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod004_item">
+	<V id="mod004_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -821,7 +815,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod005_item">
+	<V id="mod005_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -835,49 +829,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod006_item">
-		<A>
-			<T key="pkg_link">
-				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10-BETA15_to_BETA16_req_dev_blind_enabled.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA10-BETA15_to_BETA16_req_dev_blind_enabled.pkg</></P>
-				<P key="content_name"><>msg_install</></P>
-				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
-				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
-			</T>
-		</A>
-		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
-	</V>
-
-	<V id="mod007_item">
-		<A>
-			<T key="pkg_link">
-				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA9_to_BETA10_req_dev_blind_enabled.pkg</></P>
-				<P key="content_name"><>msg_install</></P>
-				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
-				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
-			</T>
-		</A>
-		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
-	</V>
-
-	<V id="mod008_item">
-		<A>
-			<T key="pkg_link">
-				<P key="info"><>net_package_install</></P>
-				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
-				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/4.91.2_Evilnat_PEX_BETA8_to_BETA10_req_dev_blind_enabled.pkg</></P>
-				<P key="content_name"><>msg_install</></P>
-				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
-				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
-			</T>
-		</A>
-		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
-	</V>
-
-	<V id="mod009_item">
+	<V id="mod006_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -891,7 +843,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod010_item">
+	<V id="mod007_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -906,7 +858,7 @@
 	</V>
 
 	<!-- PS1 & PS2 mods by kozarovv-->
-	<V id="mod101_item">
+	<V id="mod101_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -920,7 +872,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod102_item">
+	<V id="mod102_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -934,7 +886,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod110_item">
+	<V id="mod110_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -948,7 +900,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod111_item">
+	<V id="mod111_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -962,7 +914,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod112_item">
+	<V id="mod112_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -976,7 +928,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod113_item">
+	<V id="mod113_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -990,7 +942,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod120_item">
+	<V id="mod120_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1004,7 +956,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod121_item">
+	<V id="mod121_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1018,7 +970,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod122_item">
+	<V id="mod122_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1032,7 +984,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod123_item">
+	<V id="mod123_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1046,7 +998,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod124_item">
+	<V id="mod124_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1060,7 +1012,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod125_item">
+	<V id="mod125_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1074,7 +1026,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 	
-	<V id="mod126_item">
+	<V id="mod126_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1088,7 +1040,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 	
-	<V id="mod127_item">
+	<V id="mod127_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1102,7 +1054,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 	
-	<V id="mod128_item">
+	<V id="mod128_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1116,7 +1068,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod130_item">
+	<V id="mod130_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1130,7 +1082,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod131_item">
+	<V id="mod131_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1144,7 +1096,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod132_item">
+	<V id="mod132_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1158,7 +1110,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod133_item">
+	<V id="mod133_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1172,7 +1124,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod140_item">
+	<V id="mod140_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1186,7 +1138,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod141_item">
+	<V id="mod141_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1200,7 +1152,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="mod142_item">
+	<V id="mod142_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1264,19 +1216,19 @@
 			</T>
 		</A>
 		<I>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb001" attr="xmb001" src="#xmb001_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb002" attr="xmb002" src="#xmb002_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb003" attr="xmb003" src="#xmb003_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb004" attr="xmb004" src="#xmb004_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb005" attr="xmb005" src="#xmb005_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb006" attr="xmb006" src="#xmb006_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb007" attr="xmb007" src="#xmb007_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb008" attr="xmb008" src="#xmb008_item"/>
-			<Q class="type:x-xmb/folder-pixmap" key="xmb009" attr="xmb009" src="#xmb009_item"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb001" attr="xmb001" src="#xmb001_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb002" attr="xmb002" src="#xmb002_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb003" attr="xmb003" src="#xmb003_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb004" attr="xmb004" src="#xmb004_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb005" attr="xmb005" src="#xmb005_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb006" attr="xmb006" src="#xmb006_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb007" attr="xmb007" src="#xmb007_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb008" attr="xmb008" src="#xmb008_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="xmb009" attr="xmb009" src="#xmb009_link"/>
 		</I>
 	</V>
 
-	<V id="xmb001_item">
+	<V id="xmb001_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1290,7 +1242,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="xmb002_item">
+	<V id="xmb002_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1304,7 +1256,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="xmb003_item">
+	<V id="xmb003_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1318,7 +1270,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="xmb004_item">
+	<V id="xmb004_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1332,7 +1284,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="xmb005_item">
+	<V id="xmb005_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1346,7 +1298,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 	
-	<V id="xmb006_item">
+	<V id="xmb006_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1360,7 +1312,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="xmb007_item">
+	<V id="xmb007_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1374,7 +1326,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="xmb008_item">
+	<V id="xmb008_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1388,7 +1340,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="xmb009_item">
+	<V id="xmb009_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1401,4 +1353,231 @@
 		</A>
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
+
+	<!-- WebApps Links-->
+	<V id="seg_webapps">
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="items"	src="#seg_webapps_items"/>
+		</I>
+	</V>
+
+	<V id="seg_webapps_items">
+		<A>
+			<T key="inc">
+				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+			<T key="webapp000" include="inc">
+				<P key="title"><>Reload XMB</></P>
+				<P key="info"><>Install link to Reload XMB</></P>
+			</T>
+			<T key="webapp001" include="inc">
+				<P key="title"><>PS3 Toolset</></P>
+				<P key="info"><>Install link for PS3 Toolset website</></P>
+			</T>
+			<T key="webapp002" include="inc">
+				<P key="title"><>PS3Xploit</></P>
+				<P key="info"><>Install link for PS3Xploit website</></P>
+			</T>
+			<T key="webapp003" include="inc">
+				<P key="title"><>PS3Xploit Flashwriter [Unofficial]</></P>
+				<P key="info"><>Install link for PS3Xploit Flashwriter</></P>
+			</T>
+			<T key="webapp004" include="inc">
+				<P key="title"><>Brewology</></P>
+				<P key="info"><>Install link for Brewology website</></P>
+			</T>
+			<T key="webapp005" include="inc">
+				<P key="title"><>webMAN Coverflow</></P>
+				<P key="info"><>Install link for webMAN Coverflow GUI</></P>
+			</T>
+			<T key="webapp006" include="inc">
+				<P key="title"><>webMAN Setup</></P>
+				<P key="info"><>Install link for webMAN Setup web page</></P>
+			</T>
+			<T key="webapp007" include="inc">
+				<P key="title"><>webMAN File Manager</></P>
+				<P key="info"><>Install link for webMAN File Manager web page</></P>
+			</T>
+			<T key="webapp008" include="inc">
+				<P key="title"><>Swap Buttons</></P>
+				<P key="info"><>Install link to Swap X/O Buttons</></P>
+			</T>
+			<T key="webapp009" include="inc">
+				<P key="title"><>Move Downloaded Packages</></P>
+				<P key="info"><>Install link to Move Downloaded Packages stuck at 99%</></P>
+			</T>
+			<T key="webapp010" include="inc">
+				<P key="title"><>multiMAN Themes</></P>
+				<P key="info"><>Install link to multiMAN Themes website</></P>
+			</T>
+		</A>
+		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp000" attr="webapp000" src="#webapp000_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp001" attr="webapp001" src="#webapp001_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp002" attr="webapp002" src="#webapp002_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp003" attr="webapp003" src="#webapp003_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp004" attr="webapp004" src="#webapp004_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp005" attr="webapp005" src="#webapp005_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp006" attr="webapp006" src="#webapp006_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp007" attr="webapp007" src="#webapp007_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp008" attr="webapp008" src="#webapp008_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp009" attr="webapp009" src="#webapp009_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp010" attr="webapp010" src="#webapp010_link"/>
+		</I>
+	</V>
+
+	<V id="webapp000_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02025_Reload_XMB.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02025_Reload_XMB.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK02025_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp001_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02000_PS3Toolset.com.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02000_PS3Toolset.com.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK02000_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp002_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02001_PS3Xploit.me.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02001_PS3Xploit.me.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK02001_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp003_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02005_Flashwriter.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02005_Flashwriter.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK02005_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp004_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02010_Brewology.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02010_Brewology.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK02010_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp005_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01001_webMAN_Coverflow.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01001_webMAN_Coverflow.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK01001_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp006_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01000_webMAN_Setup.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01000_webMAN_Setup.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK01000_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp007_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01002_webMAN_File_Manager.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01002_webMAN_File_Manager.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK01002_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp008_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK0SWAP_Swap_Buttons.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK0SWAP_Swap_Buttons.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>NP0001-LINK0SWAP_00-0000111122223333</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp009_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02020_Move_Downloaded_Package.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02020_Move_Downloaded_Package.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK02020_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp010_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02012_multiMAN.Themes.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK02012_multiMAN.Themes.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK02012_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
 </X>

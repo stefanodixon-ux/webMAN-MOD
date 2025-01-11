@@ -1,3 +1,25 @@
+----------------------------------------------------------------------
+Patch to force sb_iso_spu_module.self use ps2 key CEX in DEX on 4.91.2
+----------------------------------------------------------------------
+
+PS2CLASSIC games must be encrypted with the CEX keys for meta, data and vmc.
+If the DEX keys are used it will give a black screen
+
+Patch sb_iso_spu_module.self to force the use of ps2_key_cex_meta
+- Offset: 0x3B8
+- Original value: 0x32000F00
+- Patched value:  0x32000380
+
+Patch sb_iso_spu_module.self to force the use of ps2_key_cex_data
+- Offset: 0x3C8
+- Original value: 0x32001A80
+- Patched value:  0x32000F00
+
+Patch sb_iso_spu_module.self to force the use of ps2_key_cex_vmc
+- Offset: 0x4F4
+- Original value: 0x422D6047
+- Patched value:  0x422D6847
+
 ------------------------------------------------
 Patch SSL certificates in DEX vsh.self on 4.91.2
 ------------------------------------------------
