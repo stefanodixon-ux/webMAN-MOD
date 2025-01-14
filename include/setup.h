@@ -1119,7 +1119,7 @@ static void setup_form(char *buffer, char *html)
 	concat(buffer, strfmt(HTML_BLU_SEPARATOR "<u> %s:</u><br>", STR_ADDUSB));
 	add_html(dat_WAIT_USB_TIME2, webman_config->boots, buffer, html);
 
-	concat(buffer, "</div>");
+	//concat(buffer, "</div>");
 
 	concat(buffer, strfmt(HTML_RED_SEPARATOR
 							"<input class=\"bs\" type=\"submit\" accesskey=\"S\" value=\" %s \"/>"

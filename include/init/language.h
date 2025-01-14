@@ -315,6 +315,7 @@ static void language(const char *key_name, char *label, const char *default_str)
 	static size_t p = 0, lang_pos = 0, size = 0;
 	u8 c, i, key_len = strlen(key_name);
 
+	u8 check = 1;
 	u8 do_retry = 1;
 	char buffer[MAX_LINE_LEN];
 
@@ -351,7 +352,7 @@ static void language(const char *key_name, char *label, const char *default_str)
 
 		if(cellFsOpen(lang_path, CELL_FS_O_RDONLY, &fh, NULL, 0)) return;
 
-		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE;
+		cellFsLseek(fh, lang_pos, CELL_FS_SEEK_SET, NULL); p = CHUNK_SIZE; check = 1;
 	}
 
 	int fd = fh;
@@ -361,13 +362,23 @@ static void language(const char *key_name, char *label, const char *default_str)
 		{
 			{ GET_NEXT_BYTE }
 
-			if(c != key_name[i]) break; i++;
+			// check if key is found at start of line
+			if (c == '\n') {check = 1; continue;}
+
+			if (check == 0) break;
+			if (check == 1)
+			{
+				// skip line if the first letter doesn't match key_name (0: doesn't match; 2: matches)
+				if(c == key_name[0]) check = 2; else {check = 0; break;}
+			}
+
+			if(c != key_name[i]) {check = 0; break;} i++;
 
 			if(i == key_len)
 			{
 				if(buffer[p] > ' ') break;
 
-				size_t str_len = 0; u8 copy = 0;
+				size_t str_len = 0; u8 copy = 0; check = 0;
 
 				cellFsReadWithOffset(fd, lang_pos, buffer, CHUNK_SIZE, NULL); p = 0;
 

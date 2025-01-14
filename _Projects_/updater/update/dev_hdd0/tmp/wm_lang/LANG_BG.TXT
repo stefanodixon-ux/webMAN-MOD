@@ -81,17 +81,17 @@ STR_LFRG			[←/→]
 STR_SAVE			[Запази]
 STR_SETTINGSUPD		[Настройките са обновени.<br><br>Натиснете <a href="/restart.ps3">тук</a> , за да рестартирате Вашата PLAYSTATION®3 система.]
 STR_ERROR			[Грешка!]
-                	
+
 STR_MYGAMES			[Моите Игри]
 STR_LOADGAMES		[Зареди игри с webMAN]
 STR_FIXING		[Fixing]
 
 STR_WMSETUP			[webMAN Настройки]
 STR_WMSETUP2		[Настрой опциите на webMAN]
-                	
+
 STR_EJECTDISC		[Изкарай Диска]
 STR_UNMOUNTGAME		[Демонтирай настоящата игра]
-                	
+
 STR_WMSTART			[webMAN зареден!]
 STR_WMUNL			[webMAN изчистен от паметта!]
 STR_CFWSYSALRD		[CFW Syscalls са вече забранени]
@@ -100,7 +100,7 @@ STR_RSTCFWSYS	[CFW Syscalls restored!]
 STR_RSTCFWSYSF	[Failed to restore CFW Syscalls]
 STR_RMVCFWSYS		[История на файловете и CFW Syscalls изтрити OK!]
 STR_RMVCFWSYSF		[Неуспех при премахване на CFW Syscalls]
-                	
+
 STR_RMVWMCFG		[Нулиране на настройки на webMAN...]
 STR_RMVWMCFGOK		[Завършен! Рестартиране до 3 сек..]
 
@@ -119,18 +119,18 @@ STR_GAMEUM			[Играта е демонтирана.]
 
 STR_EJECTED			[Дискът е изкаран.]
 STR_LOADED			[Дискът е вкаран.]
-                	
+
 STR_GAMETOM			[Игра за монтиране]
 STR_GAMELOADED		[Играта е заредена успешно. Пуснете играта от иконката с диска<br>или от <b>/app_home</b>&nbsp;XMB вход.</a><hr/>Натиснете <a href="/mount.ps3/unmount">тук</a> , за да демонтирате играта.]
 STR_PSPLOADED		[Играта е заредена успешно. Пуснете играта чрез <b>PSP Launcher</b>.<hr/>]
 STR_PS2LOADED		[Играта е заредена успешно. Пуснете играта чрез <b>PS2 Classic Launcher</b>.<hr/>]
 STR_LOADED2			[заредена   ]
-                	
+
 STR_MOVIETOM		[Филм за монтиране]
 STR_MOVIELOADED		[Филмът е зареден успешно. Пуснете филмът от иконката с диска<br>под Видео колоната.</a><hr/>Натиснете <a href="/mount.ps3/unmount">тук</a> , за да демонтирате филма.]
-                	
+
 STR_XMLRF			[Листата с игрите е опреснена (<a href="/dev_hdd0/xmlhost/game_plugin/mygames.xml">mygames.xml</a>).<br>Натиснете <a href="/restart.ps3">тук</a> , за да рестартирате Вашата PLAYSTATION®3 система.]
-                	
+
 STR_STORAGE			[Системна памет]
 STR_MEMORY			[Свободна памет]
 STR_GBFREE			[ГБ свободни]
@@ -140,7 +140,7 @@ STR_KBFREE			[КБ свободни]
 STR_FANCTRL3		[Контрол на вентилатора:]
 STR_ENABLED			[Позволено]
 STR_DISABLED		[Забранено]
-                	
+
 STR_FANCH0			[Настройките на вент. са променени:]
 STR_FANCH1			[МАКС. ТЕМП.: ]
 STR_FANCH2			[СКОР. НА ВЕНТ.: ]

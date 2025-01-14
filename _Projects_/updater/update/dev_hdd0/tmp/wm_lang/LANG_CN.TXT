@@ -81,17 +81,17 @@ STR_LFRG			[←/→]
 STR_SAVE			[保存]
 STR_SETTINGSUPD		[设置已更新。<br><br>点击 <a href="/restart.ps3">此处</a> 重新启动 PLAYSTATION®3 系统。]
 STR_ERROR			[错误!]
-                	
+
 STR_MYGAMES			[webMAN 游戏]
 STR_LOADGAMES		[使用 webMAN 加载游戏]
 STR_FIXING		[Fixing]
 
 STR_WMSETUP			[webMAN 设置]
 STR_WMSETUP2		[设置 webMAN 选项]
-                	
+
 STR_EJECTDISC		[弹出光盘]
 STR_UNMOUNTGAME		[卸载当前游戏]
-                	
+
 STR_WMSTART			[webMAN 已载入!]
 STR_WMUNL			[webMAN 已卸载!]
 STR_CFWSYSALRD		[CFW syscalls已禁用]
@@ -100,7 +100,7 @@ STR_RSTCFWSYS	[CFW Syscalls restored!]
 STR_RSTCFWSYSF	[Failed to restore CFW Syscalls]
 STR_RMVCFWSYS		[历史文件与 CFW syscalls删除完毕！]
 STR_RMVCFWSYSF		[清除 CFW syscalls失败]
-                	
+
 STR_RMVWMCFG		[正在重置 webMAN 配置...]
 STR_RMVWMCFGOK		[完成! 将在 3 秒内重新启动]
 
@@ -119,18 +119,18 @@ STR_GAMEUM			[游戏已卸载。]
 
 STR_EJECTED			[光碟已弹出。]
 STR_LOADED			[光碟已插入。]
-                	
+
 STR_GAMETOM			[游戏加载]
 STR_GAMELOADED		[游戏加载成功。从光碟图标开始游戏<br>或者从 <b>/app_home</b>XMB 进入.</a><hr/>点击 <a href="/mount.ps3/unmount">此处</a> 卸载游戏。]
 STR_PSPLOADED		[游戏加载成功。使用 <b>PSP 启动器</b>开始游戏。<hr/>]
 STR_PS2LOADED		[游戏加载成功。使用 <b>PS2 启动器</b>开始游戏。<hr/>]
 STR_LOADED2			[已加载]
-                	
+
 STR_MOVIETOM		[影片加载]
 STR_MOVIELOADED		[影片加载成功。请从视频列下的光盘<br>图标播放影片。</a><hr/>点击 <a href="/mount.ps3/unmount">此处</a> 卸载影片。]
-                	
+
 STR_XMLRF			[游戏列表已刷新 (<a href="/dev_hdd0/xmlhost/game_plugin/mygames.xml">mygames.xml</a>)。<br>点击 <a href="/restart.ps3">此处</a> 立即重新启动 PLAYSTATION®3 系统。]
-                	
+
 STR_STORAGE			[系统存储]
 STR_MEMORY			[可用内存]
 STR_GBFREE			[GB 可用]
@@ -140,7 +140,7 @@ STR_KBFREE			[KB 可用]
 STR_FANCTRL3		[自动风扇控制:]
 STR_ENABLED			[启用]
 STR_DISABLED		[禁用]
-                	
+
 STR_FANCH0			[风扇设置改变:]
 STR_FANCH1			[目标温度: ]
 STR_FANCH2			[风扇转速: ]
