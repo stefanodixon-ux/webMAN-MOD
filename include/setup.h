@@ -1117,7 +1117,7 @@ static void setup_form(char *buffer, char *html)
 
 	//Wait additionally for each selected USB device to be ready
 	concat(buffer, strfmt(HTML_BLU_SEPARATOR "<u> %s:</u><br>", STR_ADDUSB));
-	add_html(dat_WAIT_USB_TIME1, webman_config->boots, buffer, html);
+	add_html(dat_WAIT_USB_TIME2, webman_config->boots, buffer, html);
 
 	concat(buffer, "</div>");
 
