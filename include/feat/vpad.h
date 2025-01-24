@@ -254,7 +254,8 @@ static bool is_pressed(u32 buttons)
 #ifdef COBRA_ONLY
 static u8 pad_select_netemu(const char *path, u8 value)
 {
-	if(strstr(path, "[netemu]")) value = 1;
+	if(strstr(path, "[netemu]")) value = 1; else
+	if(strstr(path, "[emu]"   )) value = 0;
 
 	// hold L2 = emu, R2 = netemu, R1 = toggle emu / netemu
 	if(is_pressed(CELL_PAD_CTRL_R2)) return 1; // net_emu

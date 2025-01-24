@@ -1,24 +1,33 @@
-----------------------------------------------------------------------
-Patch to force sb_iso_spu_module.self use ps2 key CEX in DEX on 4.91.2
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+Patch lv2_kernel.self 4.84 (DEX) to Bypass ambulance brick (DEX kernel loaded with CEX TargetID)
+------------------------------------------------------------------------------------------------
+Will bypass 'ambulance brick' while having lv2_kernel.self DEX loaded with TargetID CEX
+
+To patch it, you need to decrypt 4.84 DEX lv2_kernel.self and patch the following:
+ORIGINAL: 00283A7C | E8 62 19 78 7C 08 02 A6 F8 21 FF 81 FB E1 00 78
+PATCHED:  00283A7C | 38 60 00 00 4E 80 00 20 F8 21 FF 81 FB E1 00 78  (return 0)
+
+--------------------------------------------------------------
+Patch sb_iso_spu_module.self 4.84 (DEX) for PS2CLASSICs on DEX
+--------------------------------------------------------------
+Will allow to play PS2CLASSICs games while on DEX (These patches should work in another FW versions)
 
 PS2CLASSIC games must be encrypted with the CEX keys for meta, data and vmc.
 If the DEX keys are used it will give a black screen
 
+Forces the use of the META_KEY, DATA_KEY and VMC_KEY Retail keys
+
 Patch sb_iso_spu_module.self to force the use of ps2_key_cex_meta
-- Offset: 0x3B8
-- Original value: 0x32000F00
-- Patched value:  0x32000380
+ORIGINAL: 000003B8 | 32 00 0F 00 7C 05 84 B5 20 00 01 B5 42 2D 58 51
+PATCHED:  000003B8 | 32 00 03 80 7C 05 84 B5 20 00 01 B5 42 2D 58 51
 
 Patch sb_iso_spu_module.self to force the use of ps2_key_cex_data
-- Offset: 0x3C8
-- Original value: 0x32001A80
-- Patched value:  0x32000F00
+ORIGINAL: 000003C8 | 32 00 1A 80 7C 06 04 B6 20 00 0D 36 42 2D 90 03
+PATCHED:  000003C8 | 32 00 0F 00 7C 06 04 B6 20 00 0D 36 42 2D 90 03
 
 Patch sb_iso_spu_module.self to force the use of ps2_key_cex_vmc
-- Offset: 0x4F4
-- Original value: 0x422D6047
-- Patched value:  0x422D6847
+ORIGINAL: 000004F0 | 88 62 64 CB 42 2D 60 47 40 80 03 44 8A 31 A3 C5
+PATCHED:  000004F0 | 88 62 64 CB 42 2D 68 47 40 80 03 44 8A 31 A3 C5
 
 ------------------------------------------------
 Patch SSL certificates in DEX vsh.self on 4.91.2
@@ -71,15 +80,6 @@ Replace
 00 6A 08 B0 00 00 4C 57 00 00 05 24 2F 4C 84 5C
 5B CA DB 94 CF E5 04 3C 38 63 E0 BC 3D EE 8A 4F
 C9 0B C3 7D 00 00 00 00 00 06 40 00 00 6A 0C B0
-
----------------------------------------------------------------------------
-Patch DEX kernel to bypass ambulance beep brick (DEX kernel loaded with CEX TargetID)
----------------------------------------------------------------------------
-To patch it, you need to decrypt 4.84 DEX lv2_kernel.self and patch the following:
-
-Offset: 0x283A7C
-Original Value: 0xE86219787C0802A6
-Replace with: 0x386000004E800020 (return 0)
 
 ---------------------------------------------------------------------------
 Patches to enable hidden trophy's title on XMB/INFO (4.90 CEX and 4.84 DEX)
@@ -630,4 +630,144 @@ premo_game_plugin
 premo_plugin
  set search  "41 9e 00 4c e8 01 00 a0 38 60 00 00"
  set replace "41 9e 00 4c e8 01 00 a0 38 60 00 01"
- 
+
+------------------------------
+Patch basic_plugins.sprx 4.90+
+------------------------------
+Disable RSOD and BSOD Screen
+ORIGINAL: 00102328 | 4B FF FA 35 48 00 0A BD 3D 20 00 05 38 00 00 02
+PATCHED:  00102328 | 60 00 00 00 48 00 0A BD 3D 20 00 05 38 00 00 02
+
+Disable LIC.EDAT license check
+ORIGINAL: 000398F0 | 7C 03 07 B4 E8 01 01 20 EB 81 00 F0 EB A1 00 F8
+PATCHED:  000398F0 | 38 60 00 00 E8 01 01 20 EB 81 00 F0 EB A1 00 F8
+
+
+-------------------------------------
+Patch bdp_disccheck_plugin.sprx 4.90+
+-------------------------------------
+Bypass PAL broadcast error
+ORIGINAL: 000016B8 | 39 20 00 66 48 00 00 10 2F 80 00 02 39 20 00 65
+PATCHED:  000016B8 | 39 20 00 00 48 00 00 10 2F 80 00 02 39 20 00 00
+
+-------------------------------------
+Patch custom_render_plugin.sprx 4.90+
+-------------------------------------
+Force use gameboot_multi.ac3
+ORIGINAL: 00015A2C | 4B FE DF B9 2F 83 00 02 41 9E 0A 80 3B A1 01 24
+PATCHED:  00015A2C | 38 60 00 01 2F 83 00 02 41 9E 0A 80 3B A1 01 24
+
+Force use gameboot_stereo.ac3
+ORIGINAL: 000015A2C | 4B FE DF B9 2F 83 00 02 41 9E 0A 80 3B A1 01 24
+PATCHED:  000015A2C | 38 60 00 02 2F 83 00 02 41 9E 0A 80 3B A1 01 24
+
+Force use coldboot_multi.ac3
+ORIGINAL: 000015F3C | 4B FE DA A9 2F 83 00 02 41 9E 06 58 3D 20 00 09
+PATCHED:  000015F3C | 38 60 00 01 2F 83 00 02 41 9E 06 58 3D 20 00 09
+
+Force use coldboot_stereo.ac3
+ORIGINAL: 000015F3C | 4B FE DA A9 2F 83 00 02 41 9E 06 58 3D 20 00 09
+PATCHED:  000015F3C | 38 60 00 02 2F 83 00 02 41 9E 06 58 3D 20 00 09
+
+
+--------------------------------
+Patch game_ext_plugin.sprx 4.90+
+--------------------------------
+Disable game region block
+ORIGINAL: 000069A8 | 80 1F 02 00 2F 80 00 00 40 9E 00 1C 80 7F 02 60
+PATCHED:  000069A8 | 38 00 00 00 2F 80 00 00 40 9E 00 1C 80 7F 02 60
+
+ORIGINAL: 000069BC | 48 02 9F 5D 54 63 06 3E 2F 83 00 00 41 9E 00 10
+PATCHED:  000069BC | 38 60 00 00 54 63 06 3E 2F 83 00 00 41 9E 00 10
+
+-----------------------------
+Patch CBOMB on vsh.self 4.90+
+-----------------------------
+Bypass error 0x80010601 (Time/Date has not been set)
+
+ORIGINAL: 00242B10 | 38 00 00 00 60 63 06 01 41 9E 00 54 3C 80 00 DC
+PATCHED:  00242B10 | 38 00 00 00 38 60 00 00 41 9E 00 54 3C 80 00 DC
+
+ORIGINAL: 005C3D90 | 48 00 00 70 3D 40 80 01 61 4A 06 01 48 00 00 18
+PATCHED:  005C3D90 | 48 00 00 70 3D 40 80 01 39 40 00 00 48 00 00 18
+
+Bypass error 0x8002951E (This content is not available before the start date)
+
+ORIGINAL: 00242B60 | 60 63 95 1E 41 98 00 08 38 60 00 00 E8 01 00 A0
+PATCHED:  00242B60 | 38 60 00 00 41 98 00 08 38 60 00 00 E8 01 00 A0
+
+Replace default timestamp
+
+ORIGINAL: 005C3DB4 | 3C 00 00 E0 60 00 1D 00 78 00 07 C6 64 00 3A 63
+PATCHED:  005C3DB4 | 3C 00 00 E2 60 00 CA BE 78 00 07 C6 64 00 CE E0
+
+ORIGINAL: 005C3DC4 | 60 00 A0 00 F8 1F 00 00 48 00 00 40 3C 00 00 0F
+PATCHED:  005C3DC4 | 60 00 20 00 F8 1F 00 00 48 00 00 40 3C 00 00 0F
+
+-------------------------------
+Patch explore_plugin.sprx 4.90+
+-------------------------------
+Enable Lock and Unlock Trophies in CEX/RETAIL
+ORIGINAL: 00091F18 | 48 1A 73 C1 3D 20 00 28 2F 83 00 06 39 29 DE D0
+PATCHED:  00091F18 | 38 60 00 03 3D 20 00 28 2F 83 00 06 39 29 DE D0
+
+Enable Delete Trophy Data in CEX/RETAIL
+ORIGINAL: 00099838 | 48 19 FA A1 3D 60 00 28 2F 83 00 06 2F 03 00 02
+PATCHED:  00099838 | 38 60 00 03 3D 60 00 28 2F 83 00 06 2F 03 00 02
+
+Enable hidden trophy's title in XMB
+ORIGINAL: 00093FE0 | 40 99 00 5C 40 9E 00 9C 3B 81 00 8C 3B A1 00 70
+PATCHED:  00093FE0 | 48 00 00 5C 40 9E 00 9C 3B 81 00 8C 3B A1 00 70
+
+Enable hidden trophy's details in XMB
+ORIGINAL: 00093C4C | 81 3C 00 48 7B 83 00 20 39 29 FF FF 2B 89 00 01
+PATCHED:  00093C4C | 39 20 00 01 7B 83 00 20 39 29 FF FF 2B 89 00 01
+
+Enable real trophy's icon for hidden trophies in trophy in XMB
+ORIGINAL: 00094BAC | 80 7E 00 48 7B 40 00 20 2F 83 00 01 41 9C 01 54
+PATCHED:  00094BAC | 38 60 00 01 7B 40 00 20 2F 83 00 01 41 9C 01 54
+
+-------------------------------------
+Patch explore_category_psn.sprx 4.90+
+-------------------------------------
+Enable hidden trophy's title ingame
+ORIGINAL: 000570E0 | 40 99 00 5C 40 9E 00 9C 3B 81 00 8C 3B A1 00 70
+PATCHED:  000570E0 | 48 00 00 5C 40 9E 00 9C 3B 81 00 8C 3B A1 00 70
+
+Enable hidden trophy's details ingame
+ORIGINAL: 00056D4C | 81 3C 00 48 7B 83 00 20 39 29 FF FF 2B 89 00 01
+PATCHED:  00056D4C | 39 20 00 01 7B 83 00 20 39 29 FF FF 2B 89 00 01
+
+Enable real trophy's icon for hidden trophies in trophy in XMB
+ORIGINAL: 00057CC4 | 80 7E 00 48 7B 40 00 20 2F 83 00 01 41 9C 01 54
+PATCHED:  00000000 | 38 60 00 01 7B 40 00 20 2F 83 00 01 41 9C 01 54
+
+---------------------------------
+Patch np_trophy_plugin.sprx 4.90+
+---------------------------------
+Enable hidden trophy's title in trophy info in XMB
+ORIGINAL: 0000D968 | 40 99 00 0C 40 9E 00 3C 48 00 00 28 7F C4 F3 78
+PATCHED:  0000D968 | 48 00 00 0C 40 9E 00 3C 48 00 00 28 7F C4 F3 78
+
+Enable hidden trophy's details in trophy info in XMB
+ORIGINAL: 0000D880 | 4B FF FC 55 38 01 00 70 3C A0 00 05 78 1F 00 20
+PATCHED:  0000D880 | 38 60 00 01 38 01 00 70 3C A0 00 05 78 1F 00 20
+
+Enable real trophy's icon for hidden trophies in trophy info in XMB
+ORIGINAL: 0000DACC | 4B FF FA 09 38 63 FF FF 2B 83 00 01 41 DD 00 B0
+PATCHED:  0000DACC | 38 60 00 01 38 63 FF FF 2B 83 00 01 41 DD 00 B0
+
+---------------------------------
+Patch np_trophy_ingame.sprx 4.90+
+---------------------------------
+Enable hidden trophy's title ingame
+ORIGINAL: 00004EB0 | 40 99 00 0C 40 9E 00 3C 48 00 00 28 7F C4 F3 78
+PATCHED:  00004EB0 | 48 00 00 0C 40 9E 00 3C 48 00 00 28 7F C4 F3 78
+
+Enable hidden trophy's details in trophy info in XMB
+ORIGINAL: 00004DC8 | 4B FF FC 55 38 01 00 70 3C A0 00 00 78 1F 00 20
+PATCHED:  00004DC8 | 38 60 00 01 38 01 00 70 3C A0 00 00 78 1F 00 20
+
+Enable real trophy's icon for hidden trophies in trophy info in XMB
+ORIGINAL: 00005014 | 4B FF FA 09 38 63 FF FF 2B 83 00 01 41 DD 00 B0
+PATCHED:  00005014 | 38 60 00 01 38 63 FF FF 2B 83 00 01 41 DD 00 B0
