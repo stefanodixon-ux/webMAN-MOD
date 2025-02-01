@@ -585,7 +585,17 @@ static int add_breadcrumb_trail2(char *pbuffer, const char *label, const char *p
 static void get_sort_param(const char *param, s8 *sort_by, s8 *sort_order)
 {
 	char *sort = strstr(param, "?sort=");
-	if(sort) {*sort_by = sort[6]; if(strstr(sort, "desc")) *sort_order = -1; *sort = NULL;}
+	if(sort) {*sort_by = sort[6]; if(strstr(sort, "desc")) *sort_order = 0; *sort = NULL;}
+}
+
+static int qcompare_file_asc(const void *a, const void *b)
+{
+	return memcmp((const char*)a, (const char*)b, FILE_MGR_KEY_LEN);
+}
+
+static int qcompare_file_desc(const void *a, const void *b)
+{
+	return memcmp((const char*)b, (const char*)a, FILE_MGR_KEY_LEN);
 }
 
 static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char *param, int conn_s, char *tempstr, char *header, u8 is_ps3_http, s8 sort_by, s8 sort_order, char *file_query)
@@ -974,16 +984,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char 
 
 		if(idx)
 		{   // sort html file entries
-			u16 n, m;
-			t_line_entries swap;
-			for(n = 0; n < (idx - 1); n++)
-				for(m = (n + 1); m < idx; m++)
-					if(sort_order * strncmp(line_entry[n].path, line_entry[m].path, FILE_MGR_KEY_LEN) > 0)
-					{
-						swap = line_entry[n];
-						line_entry[n] = line_entry[m];
-						line_entry[m] = swap;
-					}
+			qsort(line_entry, idx, sizeof(t_line_entries), sort_order ? qcompare_file_asc : qcompare_file_desc);
 		}
 
 		//////////////////////

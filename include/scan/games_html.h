@@ -444,6 +444,11 @@ static void set_scan_path(u8 li, u8 f0, u8 f1, u8 is_net, u8 uprofile, char *par
 	show_progress(param, OV_SCAN);
 }
 
+static int qcompare_html(const void *a, const void *b)
+{
+	return memcmp((const char*)a, (const char*)b, HTML_KEY_LEN);
+}
+
 static bool game_listing(char *buffer, char *templn, char *param, char *tempstr, u8 mode, bool auto_mount)
 {
 	u16 retry = 0;
@@ -1021,17 +1026,9 @@ next_html_entry:
 
 		if(idx)
 		{   // sort html game items
-			u16 n, m;
-			t_line_entries swap;
-			for(n = 0; n < (idx - 1); n++)
-				for(m = (n + 1); m < idx; m++)
-					if(strncmp(line_entry[n].path, line_entry[m].path, HTML_KEY_LEN) > 0)
-					{
-						swap = line_entry[n];
-						line_entry[n] = line_entry[m];
-						line_entry[m] = swap;
-					}
+			qsort(line_entry, idx, sizeof(t_line_entries), qcompare_html);
 		}
+
 		#ifdef USE_NTFS
 		else if(retry && (filter0 == NTFS)) {prepNTFS(clear_ntfs); --retry; goto list_games;}
 		#endif

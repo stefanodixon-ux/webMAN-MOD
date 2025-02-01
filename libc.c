@@ -128,6 +128,9 @@ int strncasecmp(const char *s1, const char *s2, size_t n) {if(!s2 || !s2) return
 extern int stdc_B6D92AC3(const char *s1, const char *s2);								// strcasecmp()
 int strcasecmp(const char *s1, const char *s2) {if(!s2 || !s2) return -1; return stdc_B6D92AC3(s1, s2);}
 
+extern void stdc_A9F68EFF(void *base, size_t num, size_t size, int (*compar)(const void*, const void*));  // qsort()
+void qsort(void *base, size_t num, size_t size, int (*compar)(const void*, const void*)) {stdc_A9F68EFF(base, num, size, compar);}
+
 //extern char *stdc_E40BA755(char *str, const char *delimiters);							// strtok()
 //inline char* strtok(char *str, const char *delimiters) {return stdc_E40BA755(str, delimiters);}
 

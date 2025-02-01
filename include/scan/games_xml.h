@@ -644,6 +644,11 @@ static bool add_xmb_entry(u8 f0, u8 f1, u32 table_size, const char *table_xml, c
 	++games_found; return (true);
 }
 
+static int qcompare_xml(const void *a, const void *b)
+{
+	return memcmp((const char*)a, (const char*)b, XML_KEY_LEN);
+}
+
 static bool scan_mygames_xml(u64 conn_s_p)
 {
 	if(conn_s_p == START_DAEMON)
@@ -1292,16 +1297,7 @@ scan_roms:
 	// --- sort scanned content
 	if(key)
 	{   // sort xmb items
-		u16 m, n;
-		t_keys swap;
-		for(n = 0; n < (key - 1); n++)
-			for(m = (n + 1); m < key; m++)
-				if(strncmp(skey[n].value, skey[m].value, XML_KEY_LEN) > 0)
-				{
-					swap    = skey[n];
-					skey[n] = skey[m];
-					skey[m] = swap;
-				}
+		qsort(skey, key, sizeof(t_keys), qcompare_xml);
 	}
 
 	// --- add eject & setup/xmbm+ menu
