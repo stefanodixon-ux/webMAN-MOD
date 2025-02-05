@@ -5310,13 +5310,13 @@ function dlCONFIG(elem)
 	var cs = "padding:10px;max-width:360px;background-color:#111;display:block;z-index:999;opacity:0.9;box-shadow:5px 5px 5px #000;position:fixed;left:"+ (posx - 350) + ";top:"+ (posy-25);
 
 	fetch(url)
-	  .then((res) => res.arrayBuffer())
-	  .then((data) => {
+		.then((res) => res.arrayBuffer())
+		.then((data) => {
 		const decoder = new TextDecoder('x-user-defined');
 		const text = decoder.decode(data);
 		code.style=cs;
 		code.innerHTML = "<font color=yellow face=arial><b>" + cols[1].innerText + " " + cols[2].innerText + "<BR><font color=#FFF>" + ToHex(text);
-	  });
+		});
 }
 function dbLinks() {
 	if (!document.getElementsByTagName || !document.createTextNode) return;
@@ -5337,8 +5337,10 @@ function kd(e)
 	e=e||window.event;
 	var kc=e.keyCode;
 	if(kc==27) { // Esc
-		input.value='';
-		setTimeout(doSearch(input.value), 0);
+		if(preview.checked && code.style.display=="none") {
+			input.value='';
+			setTimeout(doSearch(input.value), 0);
+		} else code.style="display:none;";
 	}
 	if(kc==113) { // F2
 		category = (category == 'ENC') ? 'ALL' : 'ENC';
