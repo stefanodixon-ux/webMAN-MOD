@@ -1226,6 +1226,8 @@ scan_roms:
 											get_name(title, p + 1, 0);
 										else
 											sprintf(title, "[%s] %s", folder_name + 1, file_name);
+
+										if(!file_name[0]) remove_brackets(trim(title));
 									}
 								}
 							}

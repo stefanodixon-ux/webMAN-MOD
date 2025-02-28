@@ -173,11 +173,20 @@ static void replace_char(char *text, char c, char r)
 	for( ; *text; text++) if(*text == c) *text = r;
 }
 
+static char *trim(char *title)
+{
+	u32 len = strlen(title);
+	while(len > 0 && title[--len] == ' ') title[len] = '\0';
+	return title;
+}
+
 static void replace_invalid_chars(char *text)
 {
 	if(!text) return;
 
 	for(unsigned char *c = (unsigned char*)text; *c; c++) if((*c < ' ') || (*c == '"')) *c = ' ';
+
+	trim(text);
 }
 
 static char *switch_case(char *text, char a, char z)
@@ -203,7 +212,7 @@ static char *remove_brackets(char *title)
 {
 	if(*title == '[')
 	{
-		char *pos = strchr(title, ']');
+		char *pos = strrchr(title, ']');
 		if(pos && !pos[1])
 		{
 			*pos = '\0'; // remove last bracket ]
