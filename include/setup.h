@@ -239,11 +239,8 @@ static void setup_parse_settings(char *param)
 //	if( IS_MARKED("ic=0" )) webman_config->nocov = SHOW_MMCOVERS;	 // default
 	if( IS_MARKED("nc=1" )) webman_config->nocov = SHOW_ICON0;	else // (0 = Use MM covers, 1 = Use ICON0.PNG, 2 = No game icons, 3 = Online Covers)
 	if( IS_MARKED("ic=1" )) webman_config->nocov = SHOW_ICON0;	else
-	if( IS_MARKED("ic=2" )) webman_config->nocov = SHOW_DISC;
-#ifndef ENGLISH_ONLY
-	else
+	if( IS_MARKED("ic=2" )) webman_config->nocov = SHOW_DISC;	else
 	if( IS_MARKED("ic=3" )) webman_config->nocov = ONLINE_COVERS;
-#endif
 
 	webman_config->ftp_port = get_port(param, "ff=", 21);
 	webman_config->ftp_timeout = get_valuen(param, "tm=", 0, 255); //mins

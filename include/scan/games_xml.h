@@ -1224,10 +1224,10 @@ scan_roms:
 											get_name(title, entry.entry_name.d_name + 2, 0);
 										else if(islike(file_name, folder_name + 1))
 											get_name(title, p + 1, 0);
+										else if(!file_name[0])
+											strcopy(title, folder_name + 1);
 										else
 											sprintf(title, "[%s] %s", folder_name + 1, file_name);
-
-										if(!file_name[0]) remove_brackets(trim(title));
 									}
 								}
 							}
