@@ -188,7 +188,7 @@ static inline void remove_lv2_memory_protection(void)
 	else
 	if(c_firmware>=4.55f /*&& c_firmware<=LATEST_CFW*/)
 	{
-		HV_START_OFFSET = HV_START_OFFSET_455; // same for 4.55-4.91
+		HV_START_OFFSET = HV_START_OFFSET_455; // same for 4.55-4.92
 	}
 
 	if(!HV_START_OFFSET) return;

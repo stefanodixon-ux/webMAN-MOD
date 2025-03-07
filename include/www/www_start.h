@@ -119,8 +119,8 @@ static void start_www(u64 conn_s_p)
 			}
 			else
 			{
-				cobra_config->spoof_version = 0x0491;
-				cobra_config->spoof_revision = 0x00010b28; // 4.90 = 0x00010b14; //4.89 = 0x00010aad; // 4.88 = 0x000109f5; // 4.87 = 0x000109a5 // 4.86 = 0x00010938 // 4.85 = 0x0001091d
+				cobra_config->spoof_version = 0x0492;
+				cobra_config->spoof_revision = 0x00010b72; // 4.91 = 0x00010b28; // 4.90 = 0x00010b14; //4.89 = 0x00010aad; // 4.88 = 0x000109f5; // 4.87 = 0x000109a5 // 4.86 = 0x00010938 // 4.85 = 0x0001091d
 			}
 
 			if( cobra_config->ps2softemu == 0 && cobra_get_ps2_emu_type() == PS2_EMU_SW )

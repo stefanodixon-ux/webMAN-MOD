@@ -73,7 +73,7 @@ static void get_cobra_version(char *cfw_info)
 		strcopy(cfw_info, " nonCobra");
 #endif
 
-	// noBD LV1 4.75 - 4.91
+	// noBD LV1 4.75 - 4.92
 	if(isNOBD)  // ori: 0x78630020409E0018ULL
 		strcat(cfw_info, " noBD");
 #ifdef COBRA_ONLY
