@@ -161,8 +161,9 @@ typedef struct
 
 	u8 ps3mon; // 0 = none; 1 = load ps3mon.sprx on startup
 	u8 qr_code; // 0 = none; 1 = show qr code
+	u8 prodg; // 0 = remap app_home to /dev_hdd0/packages, 1 = don't remap app_home
 
-	u8 padding12[3];
+	u8 padding12[2];
 
 	u8 homeb; // 0=none, 1=show home button in original GUI
 	char home_url[255]; // url for home button, search path for files not found or path for default application in app_home

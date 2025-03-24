@@ -180,7 +180,7 @@ static int add_list_entry(char *param, int plen, char *tempstr, bool is_dir, cha
 			}
 			else if(IS(full_path, "/host_root"))
 			{
-				strcpy(full_path, "/dev_hdd0/packages"); // replace host_root with a shortcut to /dev_hdd0/packages
+				strcpy(full_path, HDD_PACKAGES_PATH); // replace host_root with a shortcut to /dev_hdd0/packages
 			}
 
 			if(*fsize) ;
@@ -725,7 +725,7 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char 
 			_concat(&sout, "<br>");
 
 		#ifdef COPY_PS3
-		if(cp_mode) {sprintf(html2, "<font size=2><a href=\"/paste.ps3%s\">&#128203;</a> ", is_net ? "/dev_hdd0/packages" : param); add_breadcrumb_trail(html2, cp_path); _concat(&sout, html2); _concat(&sout, "</font><p>"); }
+		if(cp_mode) {sprintf(html2, "<font size=2><a href=\"/paste.ps3%s\">&#128203;</a> ", is_net ? HDD_PACKAGES_PATH : param); add_breadcrumb_trail(html2, cp_path); _concat(&sout, html2); _concat(&sout, "</font><p>"); }
 
 		usb = get_default_usb_drive(0);
 		#endif

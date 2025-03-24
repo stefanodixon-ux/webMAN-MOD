@@ -109,7 +109,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.48 MOD"
+#define WM_VERSION			"1.47.48a MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -544,7 +544,7 @@ static void wwwd_thread(u64 arg)
 	sys_ppu_thread_create(&thread_id_poll, poll_thread, (u64)webman_config->poll, THREAD_PRIO_POLL, THREAD_STACK_SIZE_POLL_THREAD, SYS_PPU_THREAD_CREATE_JOINABLE, THREAD_NAME_POLL);
 
 	#ifdef COBRA_ONLY
-	set_app_home(NULL); // intialize /app_home
+	set_app_home(NULL); // initialize /app_home
 	#endif
 
 	from_reboot = file_exists(WM_NOSCAN_FILE) || file_exists(WM_RELOAD_FILE);

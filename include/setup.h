@@ -116,6 +116,7 @@ static void setup_parse_settings(char *param)
 	webman_config->nosetup = IS_MARKED("ns=1");
 	webman_config->nogrp   = IS_MARKED("ng=1");
 	webman_config->sman    = IS_MARKED("sm=1");
+	webman_config->prodg   = IS_MARKED("pg=1");
 
 #ifdef NOSINGSTAR
 	webman_config->noss = IS_MARKED("nss=1");
@@ -838,6 +839,7 @@ static void setup_form(char *buffer, char *html)
 
 #ifndef LITE_EDITION
 	add_checkbox("sm\"  accesskey=\"G", "sMAN GUI", " • ", (webman_config->sman), buffer);
+	add_checkbox("pg",                  "ProDG",    " • ", (webman_config->prodg), buffer);
 
 	// Force RELOADXMB method instead of reload XMB by logout (new default method)
 	concat(buffer, "Reload XMB: <select name=\"rx\">");

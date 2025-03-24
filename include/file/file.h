@@ -19,7 +19,7 @@
 #include "togglers.h"
 static bool isDir(const char *path)
 {
-	if(!path || *path != '/') return false;  // sanity check
+	if(!path) return false;  // sanity check
 
 #ifdef USE_NTFS
 	if(is_ntfs_path(path))
@@ -259,7 +259,7 @@ static void mkdirs(char *param)
 	cellFsMkdir(TMP_DIR, DMODE);
 	cellFsMkdir(WMTMP, DMODE);
 	cellFsMkdir("/dev_hdd0/exdata", DMODE);
-	cellFsMkdir("/dev_hdd0/packages", DMODE);
+	cellFsMkdir(HDD_PACKAGES_PATH, DMODE);
 	//cellFsMkdir("/dev_hdd0/GAMES",  DMODE); //paths[0]
 	//cellFsMkdir("/dev_hdd0/PS3ISO", DMODE); //paths[2]
 	//cellFsMkdir("/dev_hdd0/BDISO",  DMODE); //paths[3]

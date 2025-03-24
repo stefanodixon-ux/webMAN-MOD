@@ -6,7 +6,7 @@ static bool is_ntfs_path(const char *path)
 {
 	if(!path) return false;
 
-	return islike(path, DEV_NTFS) || islike(path, "ntfs");
+	return islike(path, DEV_NTFS) || islike(path, "ntfs") || islike(path, DEV_NTFS + 1);
 }
 
 static const char *ntfs_path(const char *path)

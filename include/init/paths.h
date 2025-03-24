@@ -43,6 +43,7 @@
 #define _HDD0_GAME_DIR		"/dev_hdd0//game/"
 
 #define INT_HDD_ROOT_PATH	"/dev_hdd0/"
+#define HDD_PACKAGES_PATH	"/dev_hdd0/packages"
 #define DEFAULT_PKG_PATH	"/dev_hdd0/packages/"
 #define TEMP_DOWNLOAD_PATH	"/dev_hdd0/tmp/downloader/"
 

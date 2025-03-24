@@ -468,7 +468,7 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 						if(is_copying_from_hdd)
 							concat2(target, drives[usb], "/Packages");
 						else
-							strcopy(target, "/dev_hdd0/packages");
+							strcopy(target, HDD_PACKAGES_PATH);
 
 						strcat(target, filename);
 					}
@@ -979,9 +979,9 @@ static void set_app_home(const char *game_path)
 	{
 		if(webman_config->homeb && is_app_dir(webman_config->home_url, ".")) // map /app_home/PS3_GAME to home_url, if available
 			sys_map_path(APP_HOME_DIR, webman_config->home_url);
-		else // otherwise, map /app_home to the packages dir
-			sys_map_path("/app_home", isDir("/dev_hdd0/packages") ?
-											"/dev_hdd0/packages" : NULL); // Enable install all packages on HDD when game is unmounted
+		else if(webman_config->prodg == 0) // otherwise, map /app_home to the packages dir
+			sys_map_path("/app_home", isDir(HDD_PACKAGES_PATH) ?
+											HDD_PACKAGES_PATH : NULL); // Enable install all packages on HDD when game is unmounted
 	}
 	else
 	{
