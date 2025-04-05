@@ -18,6 +18,7 @@
  #endif
 
  #ifdef PS3MAPI
+					|| islike(param, "/ps3mapi.ps3")
 					|| islike(param, "/home.ps3mapi")
 					|| islike(param, "/getmem.ps3mapi") || islike(param, "/patch.ps3")
 					|| islike(param, "/setmem.ps3mapi")

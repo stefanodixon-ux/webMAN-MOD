@@ -1,5 +1,11 @@
 #ifdef PS3MAPI
-	if(islike(param, "/home.ps3mapi"))
+	if(islike(param, "/ps3mapi.ps3"))
+	{
+		char *cmd = buffer + _4KB_; strcopy(cmd, param + 13);
+		ps3mapi_command(0, 0, 0, cmd);
+		keep_alive = http_response(conn_s, buffer, param, CODE_JSON_RESPONSE, cmd);
+	}
+	else if(islike(param, "/home.ps3mapi"))
 	{
 		ps3mapi_home(pbuffer, html);
 	}

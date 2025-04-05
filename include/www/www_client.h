@@ -17,6 +17,7 @@
 #define CODE_CLOSE_BROWSER     1223
 #define CODE_PLAIN_TEXT        1224
 #define CODE_PREVIEW_FILE      1225
+#define CODE_JSON_RESPONSE     1226
 
 ////////////////////////////////
 static bool css_exists = false;
@@ -47,7 +48,7 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 {
 	if(conn_s == (int)WM_FILE_REQUEST) return 0;
 
-	u16 slen, done = true;
+	u32 slen, done = true;
 
 	if(code == CODE_VIRTUALPAD || code == CODE_GOBACK || code == CODE_CLOSE_BROWSER)
 	{
@@ -59,6 +60,13 @@ static int http_response(int conn_s, char *header, const char *url, int code, co
 		slen = snprintf(header, HTML_RECV_SIZE, HTML_RESPONSE_FMT,
 								CODE_HTTP_OK, url, msg, "", "");
 	}
+	#ifdef PS3MAPI
+	else if(code == CODE_JSON_RESPONSE)
+	{
+		slen = sprintf(header,  HTML_RESPONSE_FMT,
+								CODE_HTTP_OK, url, msg, "", "");
+	}
+	#endif
 	#ifdef VIEW_PARAM_SFO
 	else if(code == CODE_HTTP_NOCSS)
 	{
