@@ -9,7 +9,8 @@ enum scan_operations
 	SCAN_COPYBK = 6,	// rename source to source + .bak after copy
 	SCAN_UNLOCK_SAVE = 7,
 	SCAN_LIST_SIZE = 8,
-	SCAN_TRUNCATE  = 9
+	SCAN_TRUNCATE  = 9,
+	SCAN_LIST_JSON = 10
 };
 
 static void rename_file(char *source, char *dest);
@@ -62,6 +63,7 @@ static int scan(const char *path, u8 recursive, const char *wildcard, enum scan_
 
 	int counter = 0;
 	bool is_root, prescan = (fop == SCAN_DELETE) | (fop == SCAN_MOVE) | (fop == SCAN_RENAME);
+	bool is_json = (fop == SCAN_LIST_JSON);
 
 	#ifdef USE_NTFS
 	struct stat bufn;
@@ -117,17 +119,37 @@ rescan:
 			if(use_dest) strcopy(pdest, entry_name);
 
 			if(isDir(entry))
-				{if(recursive) scan(entry, recursive, wildcard, fop, dest);}
+			{
+				if(is_json && (*dest == '/') && !wildcard)
+				{
+					sprintf(dest_entry, "\t{\"path\":\"%s\",\"size\":0},", entry);
+					save_file(dest, dest_entry, APPEND_TEXT);
+				}
+
+				if(recursive) scan(entry, recursive, wildcard, fop, dest);
+			}
 
 			else if(wildcard1 && (*wildcard1!=NULL) && ((!instr(pentry, wildcard1)) == wfound1)) continue;
 			else if(wildcard2 && (*wildcard2!=NULL) && ((!instr(pentry, wildcard2)) == wfound2)) continue;
 
-			else if(fop == SCAN_LIST || fop == SCAN_LIST_SIZE)
+			else if(fop == SCAN_LIST || fop == SCAN_LIST_SIZE || fop == SCAN_LIST_JSON)
 			{
 				if(!dest || *dest != '/') break;
 
-				// add size column if fop == SCAN_LIST_SIZE
-				if(fop) {sprintf(entry_name, "\t%'llu", file_size(entry)); strcat(pentry, entry_name);}
+				// add size column if fop == SCAN_LIST_SIZE or is_json
+				if(fop)
+				{
+					if(is_json)
+					{
+						sprintf(dest_entry, "\t{\"path\":\"%s\",\"size\":%llu},", entry, file_size(entry));
+						save_file(dest, dest_entry, APPEND_TEXT);
+						continue;
+					}
+					else
+						sprintf(entry_name, "\t%'llu", file_size(entry));
+					
+					strcat(pentry, entry_name);
+				}
 
 				save_file(dest, entry, APPEND_TEXT);
 			}

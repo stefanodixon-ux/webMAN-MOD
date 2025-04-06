@@ -1,9 +1,31 @@
 #ifdef PS3MAPI
 	if(islike(param, "/ps3mapi.ps3"))
 	{
-		char *cmd = buffer + _4KB_; strcopy(cmd, param + 13);
-		ps3mapi_command(0, 0, 0, cmd);
-		keep_alive = http_response(conn_s, buffer, param, CODE_JSON_RESPONSE, cmd);
+		char *wildcard = NULL;
+		char *cmd = buffer + _4KB_; strcopy(cmd, param + ((param[12] == '/') ? 12 : 13));
+
+		if(file_exists(cmd) && !isDir(cmd)) strcat(cmd, "*");
+
+		if(*cmd == '/')
+		{
+			if((wildcard = strchr(cmd, '*'))) {wildcard = strrchr(cmd, '/'), *wildcard++ = NULL;}
+		}
+
+		if(file_exists(cmd))
+		{
+			save_file(FILE_LIST_TXT, "{\"files\": [\r\n", SAVE_ALL);
+			scan(cmd, (strstr(cmd, "//") != NULL), wildcard, SCAN_LIST_JSON, FILE_LIST_TXT);
+			save_file(FILE_LIST_TXT, "]}\r\n", APPEND_TEXT);
+
+			strcpy(param, FILE_LIST_TXT);
+			is_busy = false, allow_retry_response = false;
+			goto html_listing;
+		}
+		else
+		{
+			ps3mapi_command(0, 0, 0, cmd);
+			keep_alive = http_response(conn_s, buffer, param, CODE_JSON_RESPONSE, cmd);
+		}
 	}
 	else if(islike(param, "/home.ps3mapi"))
 	{
