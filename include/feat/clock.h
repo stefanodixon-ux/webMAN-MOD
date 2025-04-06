@@ -48,6 +48,8 @@ static void Fix_Clock(char *newDate)
 
 	CellRtcDateTime rDate;
 
+	u8 mdays[12] = {31,28,31,30,31,30,31,31,30,31,30,31}; u16 ndays;
+
 	if(!newDate)
 	{
 		patchedDate = DATE_2024_12_24;
@@ -55,10 +57,10 @@ static void Fix_Clock(char *newDate)
 	else if(newDate[0] == '2' && newDate[1] == '0' && (newDate[4] == '-') && (newDate[7] == '-')) // 2024-12-24
 	{
 		newDate[4] = newDate[7] = newDate[10] = '\0';
-		rDate.year = val(newDate);
-		rDate.month = val(newDate + 5);
-		rDate.day = val(newDate + 8);
-		patchedDate = ((rDate.year * 365) + (rDate.month * 30) + rDate.day + 100) * 86400000000;
+		rDate.year = val(newDate); ndays = 120 + (int)((rDate.year - 2001) / 4); // leap days
+		rDate.month = val(newDate + 5); for(u8 i = 0; i < rDate.month - 1; i++) ndays +=  mdays[i]; // year days
+		rDate.day = val(newDate + 8); 
+		patchedDate = ((rDate.year * 365) + rDate.day + ndays) * 86400000000;
 	}
 	else
 	{
@@ -73,7 +75,9 @@ static void Fix_Clock(char *newDate)
 		cellRtcSetTime_t(&rDate, buf.st_mtime);
 
 		// use last wm_config date if it's later than the default patch date
-		u64 configDate = ((rDate.year * 365) + (rDate.month * 30) + rDate.day + 100) * 86400000000; if(configDate > patchedDate) patchedDate = configDate;
+		ndays = 120 + (int)((rDate.year - 2001) / 4); // leap days
+		for(u8 i = 0; i < rDate.month - 1; i++) ndays +=  mdays[i]; // year days
+		u64 configDate = ((rDate.year * 365) + rDate.day + ndays) * 86400000000; if(configDate > patchedDate) patchedDate = configDate;
 	}
 
 //	u64 a1, a2;
