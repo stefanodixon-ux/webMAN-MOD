@@ -16,6 +16,9 @@
 // PS3 GETFWMINVERSION
 // PS3 GETFWTYPE
 // PS3 GETSYSINFO <id>
+// PS3 GETBDINFO <dump-file>
+// PS3 GETNOBDINFO
+// PS3 GETCLOCKINFO
 // PS3 NOTIFY <msg>&icon=<0-50>&snd=<0-9>
 // PS3 BUZZER<0-9>
 // PS3 LED <color> <mode>
@@ -240,6 +243,55 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				get_sys_info(param2, val(param2), true);
 				ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
 			}
+			#ifdef BDINFO
+			else if(_IS(cmd, "GETBDINFO"))	// PS3 GETBDINFO <dump-file>
+			{
+				char *data = param1, *outpath = param2;
+
+				get_bdvd_info(outpath, data);
+
+				split = ps3mapi_response_str(conn_s_ps3mapi, buffer, data, true);
+			}
+			#endif
+			#ifdef NOBD_PATCH
+			else if(_IS(cmd, "GETNOBDINFO"))	// PS3 GETNOBDINFO
+			{
+				int check = ALLOW_NOBD ? isNOBD : -1;
+				split = ps3mapi_response_int(conn_s_ps3mapi, buffer, check, true);
+			}
+			#endif
+			else if(_IS(cmd, "GETHDDINFO"))	// PS3 GETHDDINFO <dev_path>
+			{
+				char *full_path = split ? param2 : drives[0];
+
+				u32 minfree = 0, optim = 0;
+				u64 sb_addr = _islike(full_path, drives[0]) ? get_ufs_sb_addr() : 0;
+
+				if(sb_addr)
+				{
+					minfree = lv2_peek_32(sb_addr + 0x3C);
+					optim   = lv2_peek_32(sb_addr + 0x80);
+				}
+
+				u64 freeSize = 0, devSize = 0;
+				#ifdef USE_NTFS
+				if(is_ntfs_path(full_path))
+					get_ntfs_disk_space(full_path + 5, &freeSize, &devSize);
+				else
+				#endif
+				if(isDir(full_path)) {system_call_3(SC_FS_DISK_FREE, (u64)(u32)(full_path), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
+
+				sprintf(param1, "200 %llu|%llu|%u|%u\r\n", (long long unsigned int)freeSize, (long long unsigned int)devSize, (unsigned int)minfree, (unsigned int)optim);
+				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param1);
+			}
+			else if(_IS(cmd, "GETCLOCKINFO"))	// PS3 GETCLOCKINFO
+			{
+				CellRtcDateTime pTime;
+				cellRtcGetCurrentClockLocalTime(&pTime);
+
+				sprintf(param2, "%04i-%02i-%02i %02i:%02i:%02i", pTime.year, pTime.month, pTime.day, pTime.hour, pTime.minute, pTime.second);
+				split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
+			}
 			else if(_IS(cmd, "NOTIFY"))	// PS3 NOTIFY <msg>&icon=<0-50>&snd=<0-9>
 			{
 				if(split)
@@ -385,15 +437,14 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			else if(_IS(cmd, "GETALLPID")) // PROCESS GETALLPID
 			{
 				u32 pid_list[MAX_PID];
-				u32 buf_len = sprintf(buffer, "200 ");
+				u32 buf_len = 0;
 				{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
 				for(int i = 0; i < MAX_PID; i++)
 				{
 					buf_len += sprintf(buffer + buf_len, (!pid_list[i] || conn_s_ps3mapi) ? "%i|" : "0x%x", pid_list[i]);
 				}
-				buf_len += sprintf(buffer + buf_len, "\r\n");
 
-				strcopy(param2, buffer);
+				sprintf(param2, "200 %s\r\n", buffer);
 				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 			}
 			else if(_IS(cmd, "GETCURRENTPID")) // PROCESS GETCURRENTPID
@@ -586,7 +637,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								char *error_msg = param2;
 								uint64_t executableMemoryAddress = StartGamePayload(attached_pid, param1, 0x7D0, 0x4000, pageTable, error_msg);
 								if(conn_s_ps3mapi)
-									sprintf(param1, "200 %llu|%s\r\n", executableMemoryAddress, error_msg);
+									sprintf(param1, "%llu|%s\r\n", executableMemoryAddress, error_msg);
 								else
 									sprintf(param1, "[\"0x%llX\",\"%s\"]", executableMemoryAddress, error_msg);
 
@@ -702,15 +753,14 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 					s32 prxid_list[128];
 					u32 pid = val(param2);
 					_memset(buffer, sizeof(buffer));
-					u32 buf_len = sprintf(buffer, "200 ");
+					u32 buf_len = 0;
 					{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_MODULE_PID, (u64)pid, (u64)(u32)prxid_list); }
 					for(u8 i = 0; i < 128; i++)
 					{
 						buf_len += sprintf(buffer + buf_len, (!prxid_list[i] || conn_s_ps3mapi) ? "%i|" : "0x%x", prxid_list[i]);
 					}
-					buf_len += sprintf(buffer + buf_len, "\r\n");
 
-					strcopy(param2, buffer);
+					sprintf(param2, "200 %s\r\n", buffer);
 					split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 				}
 			}
@@ -776,7 +826,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 					unsigned int slot = val(param2);
 					ps3mapi_get_vsh_plugin_info(slot, param1, param2);
 					if(conn_s_ps3mapi)
-						sprintf(buffer, "200 %s|%s\r\n", param1, param2);
+						sprintf(buffer, "%s|%s\r\n", param1, param2);
 					else
 						sprintf(buffer, "[\"%s\",\"%s\"]", param1, param2);
 
@@ -809,10 +859,9 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						s32 prx_id = val(param1);
 
 						_memset(buffer, sizeof(buffer));
-						u32 buf_len = sprintf(buffer, "200 ");
 						{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MODULE_SEGMENTS, (u64)pid, (u64)prx_id, (u64)(u32)&moduleInfo); }
 
-						buf_len += sprintf(buffer + buf_len, conn_s_ps3mapi ? "%s|%s|%i|%i|%i|%i|" : "\"%s\"|\"%s\"|%i|%i|%i|%i|",
+						u32 buf_len = sprintf(buffer, conn_s_ps3mapi ? "%s|%s|%i|%i|%i|%i|" : "\"%s\"|\"%s\"|%i|%i|%i|%i|",
 							moduleInfo.name, moduleInfo.filename, moduleInfo.filename_size,
 							moduleInfo.modattribute, moduleInfo.start_entry, moduleInfo.stop_entry);
 						for(u8 s = 0; s < 4; s++)
@@ -821,9 +870,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								moduleInfo.segments[s].base,  moduleInfo.segments[s].filesz, moduleInfo.segments[s].memsz,
 								moduleInfo.segments[s].index, moduleInfo.segments[s].type);
 
-						buf_len += sprintf(buffer + buf_len, "\r\n");
-						
-						strcopy(param2, buffer);
+						sprintf(param2, "200 %s\r\n", buffer);
 						ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 					}
 				}
@@ -936,7 +983,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 					calc_md5(filename, md5);
 
 					if(conn_s_ps3mapi)
-						sprintf(param1, "200 %llu|%s\r\n", sz, md5);
+						sprintf(param1, "%llu|%s\r\n", sz, md5);
 					else
 						sprintf(param1, "{\"size\":%llu,\"md5\":\"%s\"}", sz, md5);
 

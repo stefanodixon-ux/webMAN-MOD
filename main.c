@@ -453,6 +453,7 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/mount/gamedata.h"
 #include "include/feat/scsi_info.h"
+#include "include/feat/clock.h"
 
 #include "include/ftp.h"
 
@@ -482,8 +483,6 @@ static u8 mount_unk = EMU_OFF;
 
 #include "include/www/www_client.h"
 #include "include/www/www_start.h"
-
-#include "include/feat/clock.h"
 
 static void wwwd_thread(u64 arg)
 {
