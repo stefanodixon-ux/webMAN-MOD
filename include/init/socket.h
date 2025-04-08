@@ -133,3 +133,29 @@ static bool wait_for_new_socket(void)
 	}
 	return false;
 }
+
+#ifdef FIX_CLOCK
+static int get_server_data(const char *hostname, u16 port, const char *url, char *data, u32 size)
+{
+	int socket_e = connect_to_server(hostname, port);
+	if(socket_e >= 0)
+	{
+		int req_len = sprintf(data,
+					 "GET %s HTTP/1.1\r\n"
+					 "Host: %s:%i\r\n"
+					 "Connection: close\r\n"
+					 "User-Agent: " WM_APPNAME "/1.0\r\n"
+					 "\r\n",
+					 url, hostname, port);
+
+		if(send(socket_e, data, req_len, 0) == req_len)
+		{
+			recv(socket_e, data, size, MSG_WAITALL);
+			sclose(&socket_e);
+			return CELL_OK;
+		}
+		sclose(&socket_e);
+	}
+	return FAILED;
+}
+#endif

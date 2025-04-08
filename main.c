@@ -319,7 +319,7 @@ static void show_status(const char *label, u8 status);
 static void sys_get_cobra_version(void);
 static void get_sys_info(char *msg, u8 op, bool nolabel);
 static void qr_code(char *templn, const char *url, const char *prefix, bool small, char *buffer);
-static void Fix_Clock(char *newDate);
+static void fix_clock(char *newDate);
 
 static bool isDir(const char* path);
 static bool file_exists(const char* path);

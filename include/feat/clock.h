@@ -24,8 +24,7 @@ static int sys_time_get_rtc(u64 *real_time_clock)
 	return_to_user_prog(int);
 }
 
-static void update_clock(char *header);
-static void Fix_Clock(char *newDate)
+static void fix_clock(char *newDate)
 {
 	#define DATE_2000_01_01	0x00E01D003A63A000ULL
 	//#define DATE_1970_01_01	0x00DCBFFEFF2BC000ULL
@@ -126,32 +125,12 @@ static void Fix_Clock(char *newDate)
 */
 }
 
-static void update_clock(char *header)
+static void update_clock_from_server_time(char *data)
 {
-	strcopy(header, STR_ERROR);
-
-	const char *hostname = "ps3.aldostools.org";
-	const u16  port = 80;
-
-	int g_socket = connect_to_server(hostname, port);
-	if(g_socket >= 0)
+	if(get_server_data("ps3.aldostools.org", 80, "/date.php", data, 250) == CELL_OK)
 	{
-		int req_len = snprintf(header, 250,
-					 "GET /date.php HTTP/1.1\r\n"
-					 "Host: %s:%i\r\n"
-					 "Connection: close\r\n"
-					 "User-Agent: webMAN/1.0\r\n"
-					 "\r\n",
-					 hostname, port);
-
-		if(send(g_socket, header, req_len, 0) == req_len)
-		{
-			req_len = recv(g_socket, header, 250, MSG_WAITALL);
-
-			char *date = header, newdate[24];
-			char *pos = strstr(date, "\r\n\r\n");
-			if(pos) {sprintf(date, "%.20s", pos + 8); strcpy(newdate, date); Fix_Clock(newdate);}
-		}
+		char *pos = strstr(data, "\r\n\r\n");
+		if(pos) {sprintf(data, "%.20s", pos + 8); fix_clock(data);}
 	}
 }
 #endif

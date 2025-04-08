@@ -13,7 +13,7 @@ static void start_www(u64 conn_s_p)
 		if(conn_s_p == START_DAEMON)
 		{
 			#ifdef FIX_CLOCK
-			Fix_Clock(NULL);
+			fix_clock(NULL);
 			#endif
 
 			#ifndef ENGLISH_ONLY
@@ -218,7 +218,8 @@ static void start_www(u64 conn_s_p)
 				CellRtcDateTime pTime;
 				cellRtcGetCurrentClockLocalTime(&pTime);
 
-				if(pTime.year < 2025) update_clock(full_path);
+				#define date_time full_path
+				if(pTime.year < 2025) update_clock_from_server_time(date_time);
 			}
 			#endif
 		}
