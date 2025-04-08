@@ -69,8 +69,9 @@ typedef struct
 	u8 dsc;     // 0=none, 1=disable syscalls if physical disc is inserted
 	u8 noBD;    // 0=normal, 1=apply noBD patch
 	u8 music;   // 0=none, 1=play music on startup
+	u8 auto_fixclock;// 0=none, 1=auto fix clock using http://ps3.aldostools.org/date.php
 
-	u8 padding3[2];
+	u8 padding3;
 
 	// fan control settings
 

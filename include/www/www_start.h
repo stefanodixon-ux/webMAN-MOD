@@ -211,6 +211,16 @@ static void start_www(u64 conn_s_p)
 					play_rco_sound("snd_system_ng");
 			}
 			#endif
+
+			#ifdef FIX_CLOCK
+			if(webman_config->auto_fixclock)
+			{
+				CellRtcDateTime pTime;
+				cellRtcGetCurrentClockLocalTime(&pTime);
+
+				if(pTime.year < 2025) update_clock(full_path);
+			}
+			#endif
 		}
 	}
 

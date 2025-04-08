@@ -6,6 +6,13 @@
 		Fix_Clock(param2);
 		strcopy(param, "/cpursx.ps3");
 	}
+	if(islike(param, "/date.ps3"))
+	{
+		update_clock(param);
+
+		keep_alive = http_response(conn_s, header, "/date.ps3", CODE_HTTP_OK, param);
+		goto exit_handleclient_www;
+	}
 	#endif
 	if(islike(param, "/cpursx_ps3"))
 	{

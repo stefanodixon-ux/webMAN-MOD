@@ -24,6 +24,7 @@ static int sys_time_get_rtc(u64 *real_time_clock)
 	return_to_user_prog(int);
 }
 
+static void update_clock(char *header);
 static void Fix_Clock(char *newDate)
 {
 	#define DATE_2000_01_01	0x00E01D003A63A000ULL
@@ -54,20 +55,27 @@ static void Fix_Clock(char *newDate)
 	{
 		patchedDate = DATE_2024_12_24;
 	}
-	else if(newDate[0] == '2' && newDate[1] == '0' && (newDate[4] == '-') && (newDate[7] == '-')) // 2024-12-24
+	else if((newDate[0] == '2') && (newDate[1] == '0') && (newDate[4] == '-') && (newDate[7] == '-')) // 2024-12-24 hh:mm:ss
 	{
 		newDate[4] = newDate[7] = newDate[10] = '\0';
 		rDate.year = val(newDate); ndays = 120 + (int)((rDate.year - 2001) / 4); // leap days
 		rDate.month = val(newDate + 5); for(u8 i = 0; i < rDate.month - 1; i++) ndays +=  mdays[i]; // year days
 		rDate.day = val(newDate + 8); 
-		patchedDate = ((rDate.year * 365) + rDate.day + ndays) * 86400000000;
+		patchedDate = ((rDate.year * 365) + rDate.day + ndays) * 86400000000ULL;
+		if((newDate[13] == ':') && (newDate[16] == ':'))
+		{
+			newDate[13] = newDate[16] = newDate[20] = '\0';
+			rDate.hour   = val(newDate + 11); patchedDate += rDate.hour * 3600000000ULL; patchedDate -= (20) * 3600000000ULL;
+			rDate.minute = val(newDate + 14); patchedDate += rDate.minute * 60000000ULL;
+			rDate.second = val(newDate + 17); patchedDate += rDate.second *  1000000ULL;
+		}
 	}
 	else
 	{
 		patchedDate = convertH(newDate);
 		if(patchedDate < DATE_2000_01_01) {patchedDate = DATE_2024_12_24; newDate = NULL;}
 	}
-
+/*
 	if(!newDate)
 	{
 		struct CellFsStat buf;
@@ -79,12 +87,13 @@ static void Fix_Clock(char *newDate)
 		for(u8 i = 0; i < rDate.month - 1; i++) ndays +=  mdays[i]; // year days
 		u64 configDate = ((rDate.year * 365) + rDate.day + ndays) * 86400000000; if(configDate > patchedDate) patchedDate = configDate;
 	}
+*/
 
 //	u64 a1, a2;
 //	{ system_call_4(0x362, 0x3002, 0, (u64)(u32)&a1, (u64)(u32)&a2); }
 	_cellRtcGetCurrentTick(&currentTick);
 
-	if(currentTick < DATE_2024_12_24 || newDate)
+	if((currentTick < DATE_2024_12_24) || newDate)
 	{
 		_cellRtcSetCurrentTick(&patchedDate);
 		sysGetCurrentTime(&sec, &nsec);
@@ -115,5 +124,34 @@ static void Fix_Clock(char *newDate)
 		xSettingDateGetInterface()->SaveDiffTime(diff);
 	}
 */
+}
+
+static void update_clock(char *header)
+{
+	strcopy(header, STR_ERROR);
+
+	const char *hostname = "ps3.aldostools.org";
+	const u16  port = 80;
+
+	int g_socket = connect_to_server(hostname, port);
+	if(g_socket >= 0)
+	{
+		int req_len = snprintf(header, 250,
+					 "GET /date.php HTTP/1.1\r\n"
+					 "Host: %s:%i\r\n"
+					 "Connection: close\r\n"
+					 "User-Agent: webMAN/1.0\r\n"
+					 "\r\n",
+					 hostname, port);
+
+		if(send(g_socket, header, req_len, 0) == req_len)
+		{
+			req_len = recv(g_socket, header, 250, MSG_WAITALL);
+
+			char *date = header, newdate[24];
+			char *pos = strstr(date, "\r\n\r\n");
+			if(pos) {sprintf(date, "%.20s", pos + 8); strcpy(newdate, date); Fix_Clock(newdate);}
+		}
+	}
 }
 #endif

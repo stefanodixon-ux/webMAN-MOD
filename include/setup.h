@@ -95,6 +95,11 @@ static void setup_parse_settings(char *param)
 
 	// show qr code
 	webman_config->qr_code = IS_MARKED("qr=1");
+	
+#ifdef FIX_CLOCK
+	// auto fix clock
+	webman_config->auto_fixclock = IS_MARKED("ac=1");
+#endif
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
@@ -770,6 +775,9 @@ static void setup_form(char *buffer, char *html)
 #ifdef PS3MON_SPRX
 	if(file_exists(PS3MON_SPRX))
 		add_checkbox_line("pm", "PS3Mon", (webman_config->ps3mon), buffer);
+#endif
+#ifdef FIX_CLOCK	
+	add_checkbox_line("ac", "Auto Fix Clock", (webman_config->auto_fixclock), buffer);
 #endif
 	add_checkbox_line("qr", "QR", (webman_config->qr_code), buffer);
 
