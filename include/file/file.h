@@ -340,7 +340,13 @@ size_t read_file(const char *file, char *data, const size_t size, s32 offset)
 		if(cellFsReadWithOffset(fd, offset, (void *)data, size, &read_e) != CELL_FS_SUCCEEDED) read_e = 0;
 		cellFsClose(fd);
 	}
-
+#ifdef FIX_CLOCK
+	else if(islike(file, "http://") && ((int)size > (fd = strlen(file))))
+	{
+		char *url = data + fd + 1; strcpy(url, file);
+		read_e = get_server_data(url, data, size);
+	}
+#endif
 	return read_e;
 }
 

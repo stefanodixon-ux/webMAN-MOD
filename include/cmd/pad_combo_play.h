@@ -71,7 +71,7 @@
 				#ifdef WM_CUSTOM_COMBO
 				if(islike(params, WM_CUSTOM_COMBO))
 				{
-					parse_script(params);
+					parse_script(params, true);
 					memcpy(param, "/edit.ps3", 9);
 					is_popup = 1;
 				}

@@ -25,6 +25,7 @@
 // fcopy <path>=<path>
 // swap <path>=<path>
 // ren <path>=<path>
+// call <path>
 
 // wait user
 // wait xmb
@@ -64,11 +65,15 @@ static void handle_file_request(const char *wm_url)
 	}
 }
 
-static void parse_script(const char *script_file)
+static void parse_script(const char *script_file, bool check_running)
 {
-	if(script_running) return;
+	if(check_running && script_running) return;
 
+#ifdef FIX_CLOCK
+	if(file_exists(script_file) || islike(script_file, "http://"))
+#else
 	if(file_exists(script_file))
+#endif
 	{
 		u32 max_size = _64KB_;
 		sys_addr_t sysmem  = sys_mem_allocate(max_size);
@@ -146,6 +151,7 @@ static void parse_script(const char *script_file)
 					if(_islike(line, "goto "))     {mloop = NULL, snprintf(label, 24, ":%s", line + 5); goto reload_script;} else
 					if(_islike(line, "loop") || _islike(line, "continue")) goto reload_script; else
 					if(_islike(line, "break"))     {EXIT_LOOP;} else
+					if(_islike(line, "call "))     {path += 5, parse_script(path, false);} else
 					if(_islike(line, "del /"))     {path += 4; check_path_tags(path); char *wildcard = strchr(path, '*'); if(wildcard) {*wildcard++ = NULL; scan(path, true, wildcard, SCAN_DELETE, NULL);} else del(path, RECURSIVE_DELETE);} else
 					if(_islike(line, "md /"))      {path += 3; check_path_tags(path); mkdir_tree(path);} else
 					if(_islike(line, "wait xmb"))  {wait_for_xmb();} else
@@ -236,7 +242,7 @@ static void parse_script(const char *script_file)
 		}
 		sys_memory_free(sysmem);
 
-		script_running = false;
+		script_running = !check_running; // false
 		disable_progress();
 	}
 }
@@ -250,11 +256,11 @@ static void script_thread(u64 event_id)
 		{
 			char script_file[40];
 			snprintf(script_file, sizeof(script_file), "%s/%s%s", WM_INGAME_PATH, _game_TitleID, ".bat");
-			parse_script(script_file);
+			parse_script(script_file, true);
 		}
 	}
 	else
-		parse_script(script_events[event_id]);
+		parse_script(script_events[event_id], true);
 
 	sys_ppu_thread_exit(0);
 }
@@ -294,7 +300,7 @@ static bool do_custom_combo(const char *filename)
 
 	if(file_exists(combo_file))
 	{
-		parse_script(combo_file);
+		parse_script(combo_file, true);
 		sys_ppu_thread_sleep(2);
 		return true;
 	}

@@ -135,27 +135,42 @@ static bool wait_for_new_socket(void)
 }
 
 #ifdef FIX_CLOCK
-static int get_server_data(const char *hostname, u16 port, const char *url, char *data, u32 size)
+static u32 get_server_data(char *url, char *data, u32 size)
 {
+	if(!islike(url, "http://")) return 0;
+
+	strtok(url, "/"); // http://
+	const char *hostname = strtok(NULL, "/");
+	const char *path = strtok(NULL, "#");
+	int port = 80; char *sep = strchr(hostname, ':'); if(sep) port = val(sep + 1);
+
 	int socket_e = connect_to_server(hostname, port);
 	if(socket_e >= 0)
 	{
 		int req_len = sprintf(data,
-					 "GET %s HTTP/1.1\r\n"
-					 "Host: %s:%i\r\n"
+					 "GET /%s HTTP/1.1\r\n"
+					 "Host: %s\r\n"
 					 "Connection: close\r\n"
 					 "User-Agent: " WM_APPNAME "/1.0\r\n"
 					 "\r\n",
-					 url, hostname, port);
+					 path, hostname);
 
 		if(send(socket_e, data, req_len, 0) == req_len)
 		{
 			recv(socket_e, data, size, MSG_WAITALL);
 			sclose(&socket_e);
-			return CELL_OK;
+
+			char *pos = strstr(data, "\r\n\r\n");
+			if(pos)
+			{
+				pos += 4; u32 len = MIN((u32)convertH(pos), (u32)size);
+				char *pos2 = strstr(pos, "\r\n"); if(pos2) pos = pos2 + 2;
+				strncpy(data, pos, len); data[len] = 0;
+				return (len - 1);
+			}
 		}
 		sclose(&socket_e);
 	}
-	return FAILED;
+	return 0;
 }
 #endif

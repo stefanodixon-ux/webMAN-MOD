@@ -1580,7 +1580,7 @@ static void mount_thread(u64 action)
 	#ifdef WM_REQUEST
 	else if(is_ext(_path0, ".txt") || is_ext(_path0, ".bat"))
 	{
-		parse_script(_path0);
+		parse_script(_path0, true);
 		ret = true;
 		goto finish;
 	}

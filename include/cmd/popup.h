@@ -34,7 +34,19 @@
 		else if(param[10] == '?' && param[11] == '\0')
 			{show_wm_version(param);}						// show webman version
 		else
-			{is_popup = 1;}									// show message
+			#ifdef FIX_CLOCK
+			{
+				is_popup = 1; 
+				char *param2 = param + 11;
+				if(islike(param2, "http://"))
+				{
+					char *url = param2 + strlen(param2) + 1;
+					strcpy(url, param2); get_server_data(url, param2, 2036);
+				}
+			}
+			#else
+			{is_popup = 1;}
+			#endif
 
 		goto html_response;
 	}

@@ -131,8 +131,8 @@ int strcasecmp(const char *s1, const char *s2) {if(!s2 || !s2) return -1; return
 extern void stdc_A9F68EFF(void *base, size_t num, size_t size, int (*compar)(const void*, const void*));  // qsort()
 void qsort(void *base, size_t num, size_t size, int (*compar)(const void*, const void*)) {stdc_A9F68EFF(base, num, size, compar);}
 
-//extern char *stdc_E40BA755(char *str, const char *delimiters);							// strtok()
-//inline char* strtok(char *str, const char *delimiters) {return stdc_E40BA755(str, delimiters);}
+extern char *stdc_E40BA755(char *str, const char *delimiters);							// strtok()
+inline char* strtok(char *str, const char *delimiters) {return stdc_E40BA755(str, delimiters);}
 
 //extern struct tm *stdc_266311A0(const time_t *timer);									// localtime()
 //inline struct tm* localtime(const time_t *timer) {return stdc_266311A0(timer);}

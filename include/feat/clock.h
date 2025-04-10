@@ -127,10 +127,10 @@ static void fix_clock(char *newDate)
 
 static void update_clock_from_server_time(char *data)
 {
-	if(get_server_data("ps3.aldostools.org", 80, "/date.php", data, 250) == CELL_OK)
+	char url[36] = "http://ps3.aldostools.org/date.php";
+	if(get_server_data(url, data, 250))
 	{
-		char *pos = strstr(data, "\r\n\r\n");
-		if(pos) {sprintf(data, "%.20s", pos + 8); fix_clock(data);}
+		fix_clock(data);
 	}
 }
 #endif
