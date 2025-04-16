@@ -80,8 +80,10 @@ static sys_ppu_thread_t thread_id_ps3mapi = SYS_PPU_THREAD_NONE;
 
 #define RESPONSE_KEY	"{\"response\": "
 
-static void ps3mapi_response_status(int conn_s_ps3mapi, char *buffer, const char *status)
+static int ps3mapi_response_status(int conn_s_ps3mapi, char *buffer, const char *status)
 {
+	int code = (int)val(status);
+
 	if(conn_s_ps3mapi)
 	{
 		// send response status to PS3MAPI client
@@ -90,7 +92,6 @@ static void ps3mapi_response_status(int conn_s_ps3mapi, char *buffer, const char
 	else
 	{
 		// return JSON with status code & message
-		int code = (int)val(status);
 		const char *msg = (code == 200) ? "OK\r\n" : status + 4;
 		sprintf(buffer, "{\"code\": %i, \"status\": \"%s", code, msg);
 
@@ -98,6 +99,7 @@ static void ps3mapi_response_status(int conn_s_ps3mapi, char *buffer, const char
 		replace_char(buffer, '\r', '"');
 		replace_char(buffer, '\n', '}');
 	}
+	return code;
 }
 
 static int ps3mapi_response_str(int conn_s_ps3mapi, char *buffer, const char *value, bool quoted)
@@ -143,17 +145,17 @@ static int ps3mapi_response_values(int conn_s_ps3mapi, char *buffer, char *value
 	if(conn_s_ps3mapi)
 	{
 		// send values separated by pipes |
-		ssend(conn_s_ps3mapi, values);
+		sprintf(buffer, "200 %s\r\n", values);
+		ssend(conn_s_ps3mapi, buffer);
 	}
 	else
 	{
 		// return a JSON array
 		replace_char(values, '|', ',');
-		replace_char(values, '\r', '\0');
 		
-		sprintf(buffer, "%s[%s]}", RESPONSE_KEY, values + 4);
+		sprintf(buffer, "%s[%s]}", RESPONSE_KEY, values);
 	}
-	return 1;
+	return 200;
 }
 
 static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buffer)
@@ -172,6 +174,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 
 	int split = ssplit(buffer, cmd, PS3MAPI_CMD_LEN, param1, PS3MAPI_MAX_LEN);
 
+
 	if(_IS(cmd, "CORE") || _IS(cmd, "SERVER"))
 	{
 		if(split)
@@ -182,17 +185,17 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			{							// SERVER GETVERSION
 				int version = PS3MAPI_SERVER_VERSION;
 				if(is_core) { system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_CORE_VERSION); version = (int)(p1); }
-				ps3mapi_response_int(conn_s_ps3mapi, buffer, version, false);
+				split = ps3mapi_response_int(conn_s_ps3mapi, buffer, version, false);
 			}
 			else if(_IS(cmd, "GETMINVERSION"))	// CORE GETMINVERSION
 			{									// SERVER GETMINVERSION
 				int version = PS3MAPI_SERVER_MINVERSION;
 				if(is_core) { system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_CORE_MINVERSION); version = (int)(p1); }
-				ps3mapi_response_int(conn_s_ps3mapi, buffer, version, false);
+				split = ps3mapi_response_int(conn_s_ps3mapi, buffer, version, false);
 			}
-			else ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);
+			else split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);
 		}
-		else ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		else split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(_IS(cmd, "PS3"))
 	{
@@ -202,7 +205,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 
 			if(_IS(cmd, "REBOOT") || _IS(cmd, "SOFTREBOOT") || _IS(cmd, "HARDREBOOT") || _IS(cmd, "SHUTDOWN"))
 			{
-				ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+				split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 				setPluginExit();
 
 				if(_IS(cmd, "REBOOT"))     { system_call_3(SC_SYS_POWER, SYS_REBOOT, NULL, 0); }
@@ -225,7 +228,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 
 				int ret = GetApplicableVersion(data);
 				if(ret)
-					ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
+					split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
 				else
 				{
 					sprintf(param1, "%x.%02x", data[1], data[3]);
@@ -241,7 +244,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			else if(_IS(cmd, "GETSYSINFO"))	// PS3 GETSYSINFO <id>
 			{
 				get_sys_info(param2, val(param2), true);
-				ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
+				split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
 			}
 			#ifdef BDINFO
 			else if(_IS(cmd, "GETBDINFO"))	// PS3 GETBDINFO <dump-file>
@@ -281,8 +284,8 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				#endif
 				if(isDir(full_path)) {system_call_3(SC_FS_DISK_FREE, (u64)(u32)(full_path), (u64)(u32)&devSize, (u64)(u32)&freeSize);}
 
-				sprintf(param1, "200 %llu|%llu|%u|%u\r\n", (long long unsigned int)freeSize, (long long unsigned int)devSize, (unsigned int)minfree, (unsigned int)optim);
-				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param1);
+				sprintf(param2, "%llu|%llu|%u|%u", (long long unsigned int)freeSize, (long long unsigned int)devSize, (unsigned int)minfree, (unsigned int)optim);
+				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 			}
 			else if(_IS(cmd, "GETCLOCKINFO"))	// PS3 GETCLOCKINFO
 			{
@@ -297,14 +300,14 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				if(split)
 				{
 					show_msg(param2);
-					ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+					split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 				}
 			}
 			else if(islike(cmd, "BUZZER"))	// PS3 BUZZER<0-9>
 			{
 				play_sound_id(cmd[6]);
 
-				ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200); split = -200;
+				split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200); split = -200;
 			}
 			else if(_IS(cmd, "LED"))	// PS3 LED <color> <mode>
 			{
@@ -316,7 +319,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						u64 color = val(cmd);
 						u64 mode = val(param1);
 						{system_call_2(SC_SYS_CONTROL_LED, color, mode); }
-						ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+						split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 					}
 				}
 			}
@@ -326,7 +329,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				u8 rsx_temp = 0;
 				get_temperature(0, &cpu_temp);
 				get_temperature(1, &rsx_temp);
-				sprintf(param2, "200 %i|%i\r\n", cpu_temp, rsx_temp);
+				sprintf(param2, "%i|%i", cpu_temp, rsx_temp);
 				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 			}
 			else if(_IS(cmd, "DISABLESYSCALL"))	// PS3 DISABLESYSCALL <sc-num>
@@ -335,7 +338,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				{
 					int num = val(param2);
 					{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_DISABLE_SYSCALL, (u64)num); }
-					ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+					split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 				}
 			}
 			else if(_IS(cmd, "CHECKSYSCALL"))	// PS3 CHECKSYSCALL <sc-num>
@@ -354,7 +357,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				{
 					int mode = val(param2);
 					{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PDISABLE_SYSCALL8, (u64)mode); }
-					ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+					split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 				}
 			}
 			else if(_IS(cmd, "PCHECKSYSCALL8"))	// PS3 PCHECKSYSCALL8
@@ -366,12 +369,12 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			else if(islike(cmd, "DELHISTORY"))	// PS3 DELHISTORY
 			{									// PS3 DELHISTORY+F
 				delete_history(LCASE(cmd[11]) == 'f');
-				ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200); split = -200;
+				split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200); split = -200;
 			}
 			else if(_IS(cmd, "REMOVEHOOK"))	// PS3 REMOVEHOOK
 			{
 				{ system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_REMOVE_HOOK); }
-				ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);  split = -200;
+				split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);  split = -200;
 			}
 			else if(_IS(cmd, "GETIDPS"))	// PS3 GETIDPS
 			{
@@ -390,7 +393,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						u64 part1 = convertH(cmd);
 						u64 part2 = convertH(param1);
 						{ system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_IDPS, part1, part2);}
-						ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+						split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 					}
 				}
 			}
@@ -411,14 +414,14 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						u64 part1 = convertH(cmd);
 						u64 part2 = convertH(param1);
 						{ system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_SET_PSID, (u64)part1, (u64)part2);}
-						ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+						split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 					}
 				}
 			}
-			else {ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502); split = 502;}
+			else {split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);}
 		}
 
-		if(!split) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		if(!split) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(_IS(cmd, "PROCESS"))
 	{
@@ -441,26 +444,26 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				{system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_PID, (u64)(u32)pid_list); }
 				for(int i = 0; i < MAX_PID; i++)
 				{
-					buf_len += sprintf(buffer + buf_len, (!pid_list[i] || conn_s_ps3mapi) ? "%i|" : "0x%x", pid_list[i]);
+					buf_len += sprintf(param2 + buf_len, (!pid_list[i] || conn_s_ps3mapi) ? "%i|" : "0x%x", pid_list[i]);
 				}
 
-				sprintf(param2, "200 %s\r\n", buffer);
 				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 			}
 			else if(_IS(cmd, "GETCURRENTPID")) // PROCESS GETCURRENTPID
 			{
 				split = ps3mapi_response_long(conn_s_ps3mapi, buffer, (u64)get_current_pid(), false);
 			}
-			else {ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502); split = 502;}
+			else {split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);}
 		}
 
-		if(!split) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		if(!split) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(_IS(cmd, "MEMORY"))
 	{
 		if(split)
 		{
 			split = ssplit(param1, cmd, PS3MAPI_CMD_LEN, param2, PS3MAPI_MAX_LEN);
+
 			if(_IS(cmd, "GET"))	// MEMORY GET <pid> <offset> <size>
 			{
 				if(data_s < 0 && pasv_s >= 0) data_s = accept(pasv_s, NULL, NULL);
@@ -486,7 +489,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								{
 									char *buffer2 = (char *)sysmem;
 									if(conn_s_ps3mapi)
-										ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_150);
+										split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_150);
 
 									rr = 0;
 
@@ -498,18 +501,18 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 										while(leftsize)
 										{
 											if(!working) break;
+											if(sizetoread > leftsize) sizetoread = leftsize;
 											ps3mapi_get_memory(attached_pid, offset, buffer2, sizetoread);
 											if(send(data_s, buffer2, sizetoread, 0) < 0) { rr = -3; break; }
 											offset   += sizetoread;
 											leftsize -= sizetoread;
-											if(leftsize < BUFFER_SIZE_PS3MAPI) sizetoread = leftsize;
 											if(sizetoread == 0) break;
 										}
 									}
 									else
 									{
 										ps3mapi_get_memory(attached_pid, offset, buffer2, size);
-										
+
 										if(conn_s_ps3mapi)
 										{
 											if(send(data_s, buffer2, size, 0) < 0) rr = -3;
@@ -518,14 +521,14 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 										{
 											// convert buffer2 to hex data (maximum data size 16KB binary => 32KB hex)
 											char *data = buffer2 + 0x5500; u32 i;
-											for(i = 0; i < (2 * size) && i < 0xAA00 - 22; buffer2++)
+											for(i = 0; i < (2 * size) && i < (0xAA00 - 22); buffer2++)
 											{
 												data[i++] = h2a((*buffer2 & 0xF0)>>8);
 												data[i++] = h2a((*buffer2 & 0x0F));
 											}
 											data[i] = 0;
 	
-											ps3mapi_response_str(conn_s_ps3mapi, buffer, data, true);
+											split = ps3mapi_response_str(conn_s_ps3mapi, buffer, data, true);
 										}
 									}
 
@@ -533,14 +536,14 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								}
 
 								if(!conn_s_ps3mapi) ;
-								else if(rr ==  0) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_226);
-								else if(rr == -4) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_550);
-								else ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
+								else if(rr ==  0) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_226);
+								else if(rr == -4) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_550);
+								else split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
 							}
 						}
 					}
 				}
-				else {ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_425); split = 425;}
+				else {split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_425);}
 			}
 			else if(_IS(cmd, "SET"))	// MEMORY SET <pid> <offset>
 			{
@@ -565,7 +568,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								if(sysmem)
 								{
 									char *buffer2 = (char*)sysmem;
-									ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_150);
+									split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_150);
 
 									rr = 0;
 									while(working)
@@ -601,12 +604,12 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 										rr = ps3mapi_patch_process(attached_pid, offset, data, read_e, 0);
 								}
 							}
-							if(rr == 0) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_226);
-							else ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
+							if(rr == 0) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_226);
+							else split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
 						}
 					}
 				}
-				else {ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_425); split = 425;}
+				else {split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_425);}
 			}
 			else if(_IS(cmd, "PAYLOAD"))	// MEMORY PAYLOAD <pid> <payload-path>
 			{								// MEMORY PAYLOAD <pid> unload
@@ -626,10 +629,10 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								{
 									ps3mapi_process_page_free(attached_pid, 0x2F, pageTable);
 									pageTable[0] = pageTable[1] = 0;
-									ps3mapi_response_str(conn_s_ps3mapi, buffer, "Payload unloaded", true);
+									split = ps3mapi_response_str(conn_s_ps3mapi, buffer, "Payload unloaded", true);
 								}
 								else
-									ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
+									split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
 							}
 							else if(file_exists(param1))
 							{
@@ -641,14 +644,14 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								else
 									sprintf(param1, "[\"0x%llX\",\"%s\"]", executableMemoryAddress, error_msg);
 
-								ps3mapi_response_str(conn_s_ps3mapi, buffer, param1, false);
+								split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param1, false);
 							}
 							else
-								ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
+								split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_451);
 						}
 					}
 				}
-				else {ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_425); split = 425;}
+				else {split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_425); split = 425;}
 			}
 			else if (_IS(cmd, "PAGEALLOCATE"))	// MEMORY PAGEALLOCATE <pid> <size> <page_size> <flags> <is_executable>
 			{
@@ -680,7 +683,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 									else
 										sprintf(param2, "[\"%016llX\",\"0x%016llX\"]", page_table[0], page_table[1]);
 
-									ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, false);
+									split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, false);
 								}
 							}
 						}
@@ -710,16 +713,16 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								_page_table[1] = page_table_1;
 								{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_PROC_PAGE_FREE, (u64)pid, (u64)flags, (u64)(u32)_page_table); }
 
-								ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+								split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 							}
 						}
 					}
 				}
 			}
-			else {ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502); split = 502;}
+			else {split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);}
 		}
 
-		if(!split) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		if(!split) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(_IS(cmd, "MODULE"))
 	{
@@ -742,7 +745,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						else
 							{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MODULE_NAME, (u64)pid, (u64)prxid, (u64)(u32)param2); }
 
-						ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
+						split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
 					}
 				}
 			}
@@ -752,15 +755,13 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				{
 					s32 prxid_list[128];
 					u32 pid = val(param2);
-					_memset(buffer, sizeof(buffer));
 					u32 buf_len = 0;
 					{system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_ALL_PROC_MODULE_PID, (u64)pid, (u64)(u32)prxid_list); }
 					for(u8 i = 0; i < 128; i++)
 					{
-						buf_len += sprintf(buffer + buf_len, (!prxid_list[i] || conn_s_ps3mapi) ? "%i|" : "0x%x", prxid_list[i]);
+						buf_len += sprintf(param2 + buf_len, (!prxid_list[i] || conn_s_ps3mapi) ? "%i|" : "0x%x", prxid_list[i]);
 					}
 
-					sprintf(param2, "200 %s\r\n", buffer);
 					split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 				}
 			}
@@ -789,7 +790,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 								{system_call_6(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_LOAD_PROC_MODULE, (u64)pid, (u64)(u32)prx_path, NULL, 0); } // <- load custom modules to process
 						}
 
-						ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+						split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 					}
 				}
 			}
@@ -805,7 +806,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						unsigned int slot = val(cmd);
 						if(!slot ) slot = get_free_slot();
 						if( slot ) cobra_load_vsh_plugin(slot, prx_path, NULL, 0);
-						ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+						split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 					}
 				}
 			}
@@ -816,7 +817,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 					unsigned int slot = val(param2);
 					ps3mapi_check_unload(slot, param1, param2);
 					if( slot ) cobra_unload_vsh_plugin(slot);
-					ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+					split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 				}
 			}
 			else if(_IS(cmd, "GETVSHPLUGINFO"))	// MODULE GETVSHPLUGINFO <slot>
@@ -831,7 +832,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						sprintf(buffer, "[\"%s\",\"%s\"]", param1, param2);
 
 					strcopy(param2, buffer);
-					ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, false);
+					split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, false);
 				}
 			}
 			else if(_IS(cmd, "GETSEGMENTS"))	// MODULE GETSEGMENTS <pid> <prx-id>
@@ -858,27 +859,25 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 						u32 pid = val(cmd);
 						s32 prx_id = val(param1);
 
-						_memset(buffer, sizeof(buffer));
 						{system_call_5(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_PROC_MODULE_SEGMENTS, (u64)pid, (u64)prx_id, (u64)(u32)&moduleInfo); }
 
-						u32 buf_len = sprintf(buffer, conn_s_ps3mapi ? "%s|%s|%i|%i|%i|%i|" : "\"%s\"|\"%s\"|%i|%i|%i|%i|",
+						u32 buf_len = sprintf(param2, conn_s_ps3mapi ? "%s|%s|%i|%i|%i|%i|" : "\"%s\"|\"%s\"|%i|%i|%i|%i|",
 							moduleInfo.name, moduleInfo.filename, moduleInfo.filename_size,
 							moduleInfo.modattribute, moduleInfo.start_entry, moduleInfo.stop_entry);
 						for(u8 s = 0; s < 4; s++)
-							buf_len += sprintf(buffer + buf_len, conn_s_ps3mapi ? "seg%i|%016llX|%016llX|%016llX|%016llX|%016llX" :
+							buf_len += sprintf(param2 + buf_len, conn_s_ps3mapi ? "seg%i|%016llX|%016llX|%016llX|%016llX|%016llX" :
 																	"\"seg%i\"|0x%016llX|0x%016llX|0x%016llX|0x%016llX|0x%016llX", s,
 								moduleInfo.segments[s].base,  moduleInfo.segments[s].filesz, moduleInfo.segments[s].memsz,
 								moduleInfo.segments[s].index, moduleInfo.segments[s].type);
 
-						sprintf(param2, "200 %s\r\n", buffer);
-						ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
+						split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 					}
 				}
 			}
-			else {ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502); split = 502;}
+			else {split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);}
 		}
 
-		if(!split) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		if(!split) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if (_IS(cmd, "THREAD"))
 	{
@@ -935,7 +934,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 											thread_t thrd;
 											{system_call_8(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PROC_CREATE_THREAD, (u64)pid, (u64)(u32)&thrd, (u64)(u32)threadOpd, (u64)thread_arg, (u64)thread_prio, (u64)thread_stack_size, (u64)(u32)thread_name); }
 
-											ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+											split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 										}
 									}
 								}
@@ -947,7 +946,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			else split = 0;
 		}
 
-		if(!split) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		if(!split) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(_IS(cmd, "FILE"))
 	{
@@ -962,17 +961,17 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				if(_IS(cmd, "EXISTS")) // FILE EXISTS <file-path>
 				{
 					int check = file_exists(filename);
-					ps3mapi_response_int(conn_s_ps3mapi, buffer, check, true);
+					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, check, true);
 				}
 				else if(_IS(cmd, "ISDIR")) // FILE ISDIR <file-path>
 				{
 					int check = isDir(filename);
-					ps3mapi_response_int(conn_s_ps3mapi, buffer, check, true);
+					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, check, true);
 				}
 				else if(_IS(cmd, "SIZE")) // FILE SIZE <file-path>
 				{
 					u64 sz = file_size(filename);
-					ps3mapi_response_long(conn_s_ps3mapi, buffer, sz, true);
+					split = ps3mapi_response_long(conn_s_ps3mapi, buffer, sz, true);
 				}
 				#ifdef CALC_MD5
 				else if(_IS(cmd, "MD5")) // FILE MD5 <file-path>
@@ -987,7 +986,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 					else
 						sprintf(param1, "{\"size\":%llu,\"md5\":\"%s\"}", sz, md5);
 
-					ps3mapi_response_str(conn_s_ps3mapi, buffer, param1, false);
+					split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param1, false);
 				}
 				#endif
 			}
@@ -1017,13 +1016,13 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 					{
 						int value = val(buffer);
 						get_xreg_value(param1, value, buffer, false);
-						ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
+						split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 					}
 				}
 			}
 		}
 
-		if(!split) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		if(!split) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	#endif // #ifdef DEBUG_XREGISTRY
 
@@ -1035,9 +1034,9 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			bool isLV2Peek = (cmd[6] == '2');
 
 			system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, isLV2Peek ? PS3MAPI_OPCODE_LV2_PEEK : PS3MAPI_OPCODE_LV1_PEEK, val(param1));
-			ps3mapi_response_long(conn_s_ps3mapi, buffer, p1, false);
+			split = ps3mapi_response_long(conn_s_ps3mapi, buffer, p1, false);
 		}
-		else ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		else split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(_IS(cmd, "POKELV2") || (_IS(cmd, "POKELV1")))	// POKELV1 <address> <value>
 	{														// POKELV2 <address> <value>
@@ -1049,11 +1048,11 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			if(split)
 			{
 				system_call_4(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, isLV2Peek ? PS3MAPI_OPCODE_LV2_POKE : PS3MAPI_OPCODE_LV1_POKE, val(cmd), val(param2));
-				ps3mapi_response_long(conn_s_ps3mapi, buffer, p1, false);
+				split = ps3mapi_response_long(conn_s_ps3mapi, buffer, p1, false);
 			}
 		}
 
-		if(!split) ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		if(!split) split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(_IS(cmd, "SYSCALL"))	// SYSCALL <syscall-number>|0x<hex-value>|<decimal-value>|<string-value>
 	{
@@ -1065,13 +1064,13 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			u16 sc = parse_syscall(param2, sp, &n);
 			u64 ret = call_syscall(sc, sp, n);
 
-			ps3mapi_response_long(conn_s_ps3mapi, buffer, ret, false);
+			split = ps3mapi_response_long(conn_s_ps3mapi, buffer, ret, false);
 		}
-		else ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
+		else split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_501);
 	}
 	else if(!conn_s_ps3mapi && (*buffer != '{'))
 	{
-		ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);
+		split = ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);
 	}
 
 	return split;
@@ -1133,19 +1132,17 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 			}
 			#endif
 
-			if(ps3mapi_command(conn_s_ps3mapi, data_s, pasv_s, buffer)) continue;
-
 			////
 			if(_IS(buffer, "DISCONNECT"))	// DISCONNECT
 			{
 				ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_221);
 				connactive = 0;
 			}
-			else if(_IS(buffer, "TYPE"))	// TYPE <A/I>
+			else if(_islike(buffer, "TYPE"))	// TYPE <A/I>
 			{
-				if(buffer + 4)
+				if(buffer[4])
 				{
-					dataactive = !IS(buffer + 5, "I");
+					dataactive = (buffer[5] != 'I');
 					ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_OK_200);
 				}
 				else
@@ -1153,7 +1150,7 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					dataactive = 1;
 				}
 			}
-			else if(_IS(buffer, "PASV"))
+			else if(_islike(buffer, "PASV"))
 			{
 				CellRtcTick pTick; cellRtcGetCurrentTick(&pTick);
 				u8 pasv_retry = 0; u32 pasv_port = (pTick.tick & 0xfeff00) >> 8;
@@ -1196,7 +1193,8 @@ static void handleclient_ps3mapi(u64 conn_s_ps3mapi_p)
 					pasv_s = NONE;
 				}
 			}
-			else ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);
+			else if(ps3mapi_command(conn_s_ps3mapi, data_s, pasv_s, buffer) == 0)
+				ps3mapi_response_status(conn_s_ps3mapi, buffer, PS3MAPI_ERROR_502);
 
 			if(dataactive) dataactive = 0;
 			else

@@ -37,7 +37,9 @@ static u8 h2b(const char hex) // hex char to byte
 static u64 convertH(const char *val) // convert hex string to unsigned integer 64bit
 {
 	if(!val || (*val == 0)) return 0;
-	
+
+	if(islike(val, "0x")) val += 2;
+
 	char *end;
 	return _Stoll(val, &end, 16);
 /*

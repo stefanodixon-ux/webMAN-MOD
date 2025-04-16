@@ -1405,46 +1405,50 @@
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 			<T key="webapp000" include="inc">
+				<P key="title"><>Auto Fix Clock</></P>
+				<P key="info"><>Install link to Auto Fix Clock</></P>
+			</T>
+			<T key="webapp001" include="inc">
 				<P key="title"><>Reload XMB</></P>
 				<P key="info"><>Install link to Reload XMB</></P>
 			</T>
-			<T key="webapp001" include="inc">
+			<T key="webapp002" include="inc">
 				<P key="title"><>PS3 Toolset</></P>
 				<P key="info"><>Install link for PS3 Toolset website</></P>
 			</T>
-			<T key="webapp002" include="inc">
+			<T key="webapp003" include="inc">
 				<P key="title"><>PS3Xploit</></P>
 				<P key="info"><>Install link for PS3Xploit website</></P>
 			</T>
-			<T key="webapp003" include="inc">
+			<T key="webapp004" include="inc">
 				<P key="title"><>PS3Xploit Flashwriter [Unofficial]</></P>
 				<P key="info"><>Install link for PS3Xploit Flashwriter</></P>
 			</T>
-			<T key="webapp004" include="inc">
+			<T key="webapp005" include="inc">
 				<P key="title"><>Brewology</></P>
 				<P key="info"><>Install link for Brewology website</></P>
 			</T>
-			<T key="webapp005" include="inc">
+			<T key="webapp006" include="inc">
 				<P key="title"><>webMAN Coverflow</></P>
 				<P key="info"><>Install link for webMAN Coverflow GUI</></P>
 			</T>
-			<T key="webapp006" include="inc">
+			<T key="webapp007" include="inc">
 				<P key="title"><>webMAN Setup</></P>
 				<P key="info"><>Install link for webMAN Setup web page</></P>
 			</T>
-			<T key="webapp007" include="inc">
+			<T key="webapp008" include="inc">
 				<P key="title"><>webMAN File Manager</></P>
 				<P key="info"><>Install link for webMAN File Manager web page</></P>
 			</T>
-			<T key="webapp008" include="inc">
+			<T key="webapp009" include="inc">
 				<P key="title"><>Swap Buttons</></P>
 				<P key="info"><>Install link to Swap X/O Buttons</></P>
 			</T>
-			<T key="webapp009" include="inc">
+			<T key="webapp010" include="inc">
 				<P key="title"><>Move Downloaded Packages</></P>
 				<P key="info"><>Install link to Move Downloaded Packages stuck at 99%</></P>
 			</T>
-			<T key="webapp010" include="inc">
+			<T key="webapp011" include="inc">
 				<P key="title"><>multiMAN Themes</></P>
 				<P key="info"><>Install link to multiMAN Themes website</></P>
 			</T>
@@ -1461,10 +1465,25 @@
 			<Q class="type:x-xmb/folder-pixmap" key="webapp008" attr="webapp008" src="#webapp008_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webapp009" attr="webapp009" src="#webapp009_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webapp010" attr="webapp010" src="#webapp010_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp011" attr="webapp011" src="#webapp011_link"/>
 		</I>
 	</V>
 
 	<V id="webapp000_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01003_Auto_Fix_Clock.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01003_Auto_Fix_Clock.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK01003_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp001_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1478,7 +1497,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp001_link">
+	<V id="webapp002_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1492,7 +1511,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp002_link">
+	<V id="webapp003_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1506,7 +1525,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp003_link">
+	<V id="webapp004_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1520,7 +1539,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp004_link">
+	<V id="webapp005_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1534,7 +1553,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp005_link">
+	<V id="webapp006_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1548,7 +1567,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp006_link">
+	<V id="webapp007_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1562,7 +1581,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp007_link">
+	<V id="webapp008_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1576,7 +1595,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp008_link">
+	<V id="webapp009_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1590,7 +1609,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp009_link">
+	<V id="webapp010_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>
@@ -1604,7 +1623,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<V id="webapp010_link">
+	<V id="webapp011_link">
 		<A>
 			<T key="pkg_link">
 				<P key="info"><>net_package_install</></P>

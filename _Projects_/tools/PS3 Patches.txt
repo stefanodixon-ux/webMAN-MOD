@@ -1,3 +1,29 @@
+----------------------------------------------------------
+Patch PUP installer image in ps3swu.self/ps3swu2.self 4.92
+----------------------------------------------------------
+You can modify or create a new image and save it as a PNG.
+The size of the PNG can't exceed the original image size (170KB and 26,9KB)
+
+My modified images was exported as an 8-bit PNG with 99.7KB and 18,8KB
+
+Also remember to replace the current PNG data and size with the current one:
+
+ps3swu.self/ps3swu2.self 4.92
+
+OFFSET: 0xAA74B4
+ORIGINAL: 0x0002AB84
+REPLACE: Current PNG size
+
+OFFSET: 0xAA74EC
+ORIGINAL: 0x00006BBC
+REPLACE: Current PNG size
+
+PNG data location
+1920x540: 0xADD874
+640x180: 0xB083F8
+
+ps3swu2.self has the same data as ps3swu.self but it uses a different key revision (0x01 and 0x0D)
+
 ------------------------------------------------------------------------------------------------
 Patch lv2_kernel.self 4.84 (DEX) to Bypass ambulance brick (DEX kernel loaded with CEX TargetID)
 ------------------------------------------------------------------------------------------------
