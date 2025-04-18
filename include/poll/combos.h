@@ -873,11 +873,7 @@
 							}
 
 							// Show RSX Core & VRAM clock speeds
-							clock_s clock1, clock2;
-							clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU Core Clock speed
-							clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU VRAM Clock speed
-
-							sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", 50 * (int)clock1.mul, 25 * (int)clock2.mul); show_msg(msg);
+							show_rsxclock(msg);
 							sys_ppu_thread_sleep(5);
 
 							#ifdef SPOOF_CONSOLEID

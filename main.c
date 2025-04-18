@@ -325,6 +325,7 @@ static bool script_running = false;
 #define ONLINE_TAG		"[online]"
 #define OFFLINE_TAG		"[offline]"
 #define AUTOPLAY_TAG	" [auto]"
+#define OVERCLOCK_TAG	"[RSX"
 
 static char fw_version[8] = "4.xx";
 static char local_ip[16] = "127.0.0.1";

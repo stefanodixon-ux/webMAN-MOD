@@ -12,6 +12,7 @@
 // [netemu]  Mount ps2/psx game with netemu
 // [psn]     Map /dev_hdd0/game/[GAME_ID] to /dev_bdvd/PS3_GAME (if the folder does not exist)
 // [bios]    Use external ps1_bios.bin
+// [RSX<Mhz>-<Mhz>] - Auto overclock when the game is successfully mounted
 
 // hold CROSS = force Auto-Play
 // hold CIRCLE = cancel Auto-Play
@@ -1045,6 +1046,10 @@ static void do_umount(bool clean)
 		#endif
 	}
 
+	// reset overclock to XMB default
+	overclock(50 * (int)(webman_config->gpu_core), true);
+	overclock(25 * (int)(webman_config->gpu_vram), false);
+
 	#ifdef USE_NTFS
 	root_check = true;
 	#endif
@@ -1736,6 +1741,15 @@ exit_mount:
 			if(c_firmware < LATEST_CFW)
 				getTitleID(filename, title_id, SHOW_WARNING);
 			#endif
+		}
+
+		// Auto Overclock using [RSX<MHZ>-<MHZ>]
+		char *oc = strstr(_path, OVERCLOCK_TAG);
+		if(oc)
+		{
+			u16 mhz = (u16)(val(oc + 4)); overclock(mhz, true);
+			oc = strchr(oc, '-'); if(oc) {mhz = (u16)(val(oc + 1)); overclock(mhz, false);}
+			show_rsxclock(filename);
 		}
 	}
 

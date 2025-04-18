@@ -1,3 +1,12 @@
+static void show_rsxclock(char *msg)
+{
+	clock_s clock1, clock2;
+	clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU Core
+	clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU Memory
+
+	sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", 50 * (int)clock1.mul, 25 * (int)clock2.mul); show_msg(msg);
+}
+
 static void overclock(u16 mhz, bool gpu)
 {
 	if(BETWEEN(300, mhz, 1200))

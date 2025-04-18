@@ -15,13 +15,9 @@ if(islike(param, "/gpuclock.ps3") || islike(param, "/memclock.ps3"))
 		}
 	}
 
-	clock_s clock1, clock2;
-	clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU Core
-	clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU Memory
+	show_rsxclock(param);
 
-	sprintf(param, "GPU: %i Mhz | VRAM: %i Mhz", 50 * (int)clock1.mul, 25 * (int)clock2.mul);
-
-	keep_alive = http_response(conn_s, header, "/gpuclock.ps3", CODE_HTTP_OK, param); show_msg(param);
+	keep_alive = http_response(conn_s, header, "/gpuclock.ps3", CODE_HTTP_OK, param);
 
 	goto exit_handleclient_www;
 }
