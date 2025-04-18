@@ -27,6 +27,9 @@ static void poll_start_play_time(void)
 			#endif
 
 			#ifdef WM_REQUEST
+			overclock(50 * (int)(webman_config->gpu_core), true);  // xmb gpu core clock speed
+			overclock(25 * (int)(webman_config->gpu_vram), false); // xmb gpu vram clock speed
+
 			start_event(EVENT_ON_XMB);
 			#endif
 
@@ -119,6 +122,9 @@ static void poll_start_play_time(void)
 		#endif
 
 		#ifdef WM_REQUEST
+		overclock(50 * (int)(webman_config->gpu2_core), true);  // in-game gpu core clock speed
+		overclock(25 * (int)(webman_config->gpu2_vram), false); // in-game gpu vram clock speed
+
 		start_event(EVENT_INGAME);
 		wait_for_title_id();
 		start_event(EVENT_PER_GAME);

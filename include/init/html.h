@@ -103,8 +103,10 @@ static char html_base_path[HTML_RECV_SIZE]; // used as temporary buffer
 #define dat_SEL_ICON_SIZE	'c'
 #define dat_GET_ICON_SIZE	'g'
 #define dat_SFO_ADD_LINKS	't'
-#define dat_GPU_CORE_CLOCK	'm'
-#define dat_GPU_VRAM_CLOCK	'n'
+#define dat_GPU_CORE_CLOCK1	'm'
+#define dat_GPU_VRAM_CLOCK1	'n'
+#define dat_GPU_CORE_CLOCK2	'e'
+#define dat_GPU_VRAM_CLOCK2	'f'
 
 static void open_browser(const char *url, int mode)
 {

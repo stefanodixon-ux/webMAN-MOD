@@ -3,9 +3,9 @@
 <script>
 for(mhz=650;mhz<=975;mhz+=25)
 	document.write("<option value="+("0"+mhz).slice(-4)+">"+mhz+" Mhz</option>");
-for(mhz=625;mhz>=200;mhz-=25)
+for(mhz=625;mhz>=300;mhz-=25)
 	document.write("<option value="+("0"+mhz).slice(-4)+">"+mhz+" Mhz</option>");
 </script>
 </select>
 </select><script>document.getElementById("gv").value="    "</script>
-</div>
+<br>

@@ -104,6 +104,8 @@ static void setup_parse_settings(char *param)
 	u16 mhz;
 	mhz = (u16)get_valuen64(param, "&gc="); webman_config->gpu_core = (u8)(mhz / 50); overclock(mhz, true);
 	mhz = (u16)get_valuen64(param, "&gv="); webman_config->gpu_vram = (u8)(mhz / 25); overclock(mhz, false);
+	mhz = (u16)get_valuen64(param, "&g1="); webman_config->gpu2_core = (u8)(mhz / 50); overclock(mhz, true);
+	mhz = (u16)get_valuen64(param, "&g2="); webman_config->gpu2_vram = (u8)(mhz / 25); overclock(mhz, false);
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
@@ -689,8 +691,6 @@ static void setup_form(char *buffer, char *html)
 	add_checkbox("ct", "CPU/RSX/FAN Chart",  " ", (webman_config->chart), buffer);
 	if(file_exists(CPU_RSX_CHART)) {concat(buffer, strfmt(HTML_URL, CPU_RSX_CHART, "&#x1F453;"));}
 #endif
-	add_html(dat_GPU_CORE_CLOCK, 50 * (int)(webman_config->gpu_core), buffer, html);
-	add_html(dat_GPU_VRAM_CLOCK, 25 * (int)(webman_config->gpu_vram), buffer, html);
 	concat(buffer, "</table>");
 
 	//general settings
@@ -869,6 +869,13 @@ static void setup_form(char *buffer, char *html)
 	#ifdef ARTEMIS_PRX
 	add_checkbox_line("ar", "Artemis", (webman_config->artemis), buffer);
 	#endif
+
+	// overclocking settings
+	add_html(dat_GPU_CORE_CLOCK1, 50 * (int)(webman_config->gpu_core), buffer, html); // XMB GPU Core Clock speed
+	add_html(dat_GPU_VRAM_CLOCK1, 25 * (int)(webman_config->gpu_vram), buffer, html); // XMB GPU VRAM Clock speed
+
+	add_html(dat_GPU_CORE_CLOCK2, 50 * (int)(webman_config->gpu2_core), buffer, html); // in-game GPU Core Clock speed
+	add_html(dat_GPU_VRAM_CLOCK2, 25 * (int)(webman_config->gpu2_vram), buffer, html); // in-game GPU VRAM Clock speed
 
 	//general settings
 #ifdef SPOOF_CONSOLEID

@@ -1,9 +1,10 @@
-<div> &nbsp; &nbsp;GPU Core: <select name="gc" id="gc">
+<hr color="blue"/>
+<div> [ XMB ] GPU Core: <select name="gc" id="gc">
 <option value="0000">Default</option>
 <script>
 for(mhz=500;mhz<=950;mhz+=50)
 	document.write("<option value="+("0"+mhz).slice(-4)+">"+mhz+" Mhz</option>");
-for(mhz=450;mhz>=200;mhz-=50)
+for(mhz=450;mhz>=300;mhz-=50)
 	document.write("<option value="+("0"+mhz).slice(-4)+">"+mhz+" Mhz</option>");
 </script>
 </select>

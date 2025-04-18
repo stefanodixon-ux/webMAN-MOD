@@ -164,8 +164,8 @@ typedef struct
 	u8 qr_code; // 0 = none; 1 = show qr code
 	u8 prodg; // 0 = remap app_home to /dev_hdd0/packages, 1 = don't remap app_home
 
-	u8 gpu_core; // 0 = default; mhz / 50
-	u8 gpu_vram; // 0 = default; mhz / 25
+	u8 gpu_core; // xmb: 0 = default; mhz / 50
+	u8 gpu_vram; // xmb: 0 = default; mhz / 25
 
 	u8 homeb; // 0=none, 1=show home button in original GUI
 	char home_url[255]; // url for home button, search path for files not found or path for default application in app_home
@@ -173,7 +173,10 @@ typedef struct
 	u8 sman;     // 0=original GUI, 1=sman GUI
 	u8 msg_icon; // 0=VSH notify with icon, 1=vshtask_notify (info)
 
-	u8 padding11[30];
+	u8 gpu2_core; // in-game: 0 = default; mhz / 50
+	u8 gpu2_vram; // in-game: 0 = default; mhz / 25
+
+	u8 padding11[28];
 
 	// spoof console id
 

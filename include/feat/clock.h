@@ -7,9 +7,9 @@ static void overclock(u16 mhz, bool gpu)
 		clock_s clock;
 		clock.value = lv1_peek_cobra(clock_address);
 		if(gpu)
-			clock.mul = (u8)(mhz / 50);
+			clock.mul = (u8)(mhz / 50); // GPU Core Clock speed
 		else
-			clock.mul = (u8)(mhz / 25);
+			clock.mul = (u8)(mhz / 25); // GPU VRAM Clock speed
 
 		lv1_poke_cfw(clock_address, clock.value);
 	}
