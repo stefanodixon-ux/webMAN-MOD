@@ -109,7 +109,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.48e MOD"
+#define WM_VERSION			"1.47.48f MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -278,6 +278,25 @@ enum cp_mode_options
 };
 
 static CellRtcTick rTick, gTick;
+
+// Overclock GPU Core and GPU VRAM
+typedef union
+{
+	struct
+	{
+		uint32_t junk0;
+		uint8_t  junk1;
+		uint8_t  junk2;
+		uint8_t  mul;
+		uint8_t  junk3;
+	};
+
+	uint64_t value;
+} clock_s;
+
+#define GPU_CORE_CLOCK		0x28000004028
+#define GPU_VRAM_CLOCK		0x28000004010
+//
 
 #ifdef GET_KLICENSEE
 int npklic_struct_offset = 0; u8 klic_polling = 0;

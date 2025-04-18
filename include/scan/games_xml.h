@@ -794,7 +794,7 @@ static bool scan_mygames_xml(u64 conn_s_p)
 	#define ROM_PATHS	99
 	char cur_roms_path[16]; *cur_roms_path = 0;
 	const char *roms_path[ROM_PATHS] = { "2048", "CAP32", "MAME", "MAME2000", "MAME2003", "MIDWAY", "MAMEPLUS", "FBA", "FBA2012", "FBNEO", "ATARI", "ATARI2600", "STELLA", "ATARI800", "ATARI5200", "ATARI7800", "JAGUAR", "LYNX", "HANDY", "HATARI", "CANNONBALL", "NXENGINE", "COLECO", "AMIGA", "CD32", "VICE", "X64", "X64SC", "X64DTV", "XSCPU64", "X128", "XCBM2", "XCMB25X0", "XPET", "XPLUS4", "XVIC", "DOSBOX", "GME", "GW", "DOOM", "QUAKE", "JAVAME", "JUMP", "O2EM", "INTV", "MSX", "FMSX", "MSX2", "BMSX", "NEOCD", "NEO", "NEOGEO", "PCE", "PCECD", "PCFX", "SGX", "NGP", "NGPC", "NES", "FCEUMM", "NESTOPIA", "QNES", "GB", "GBC", "GAMBATTE", "TGBDUAL", "GBA", "VBA", "MGBA", "VBOY", "PALM", "PSXISO", "PS2ISO", "PS3ISO", "PSPISO", "POKEMINI", "SCUMMVM", "GENESIS", "GEN", "SEGACD", "MEGAD", "MEGADRIVE", "GG", "GEARBOY", "MASTER", "PICO", "SG1000", "FUSE", "ZX81", "SNES", "MSNES", "SNES9X", "SNES9X2005", "SNES9X2010", "SNES9X_NEXT", "THEODORE", "VECX", "WSWAM", "WSWAMC" };
-	u16 roms_count[ROM_PATHS]; u32 count_roms = 0; memset(roms_count, 0, ROM_PATHS);
+	u16 roms_count[ROM_PATHS]; u32 count_roms = 0; memset(roms_count, 0, sizeof(roms_count));
 
 	// remove paths not listed in roms_paths.txt
 	{

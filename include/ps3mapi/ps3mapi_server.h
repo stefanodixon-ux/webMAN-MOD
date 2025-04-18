@@ -30,6 +30,9 @@
 // PS3 DELHISTORY
 // PS3 DELHISTORY+F
 // PS3 REMOVEHOOK
+// PS3 GETRSXCLOCK
+// PS3 SETGPUCLOCK <mhz>
+// PS3 SETVRAMCLOCK <mhz>
 // PS3 GETIDPS
 // PS3 SETIDPS <part1> <part2>
 // PS3 GETPSID
@@ -382,6 +385,36 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				{ system_call_3(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_PS3MAPI, PS3MAPI_OPCODE_GET_IDPS, (u64)(u32)_new_idps);}
 				sprintf(param2, "%016llX%016llX", _new_idps[0], _new_idps[1]);
 				split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
+			}
+			else if(_IS(cmd, "GETRSXCLOCK"))	// PS3 GETRSXCLOCK
+			{
+				clock_s clock1, clock2;
+				clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU Core Clock speed
+				clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU VRAM Clock speed
+				sprintf(param2, "%i|%i", 50 * (int)clock1.mul, 25 * (int)clock2.mul);
+				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
+			}
+			else if(_IS(cmd, "SETGPUCLOCK"))	// PS3 SETGPUCLOCK <mhz>
+			{
+				if(split)
+				{
+					u16 mhz = (u16)val(param2); overclock(mhz, true);
+
+					clock_s clock;
+					clock.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU CORE Clock speed
+					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, 50 * (int)clock.mul, true);
+				}
+			}
+			else if(_IS(cmd, "SETVRAMCLOCK"))	// PS3 SETVRAMCLOCK <mhz>
+			{
+				if(split)
+				{
+					u16 mhz = (u16)val(param2); overclock(mhz, false);
+
+					clock_s clock;
+					clock.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU VRAM Clock speed
+					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, 25 * (int)clock.mul, true);
+				}
 			}
 			else if(_IS(cmd, "SETIDPS"))	// PS3 SETIDPS <part1> <part2>
 			{

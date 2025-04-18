@@ -1,3 +1,20 @@
+static void overclock(u16 mhz, bool gpu)
+{
+	if(BETWEEN(300, mhz, 1200))
+	{
+		u64 clock_address = (gpu ? GPU_CORE_CLOCK : GPU_VRAM_CLOCK);
+
+		clock_s clock;
+		clock.value = lv1_peek_cobra(clock_address);
+		if(gpu)
+			clock.mul = (u8)(mhz / 50);
+		else
+			clock.mul = (u8)(mhz / 25);
+
+		lv1_poke_cfw(clock_address, clock.value);
+	}
+}
+
 #ifdef FIX_CLOCK
 /*
 static int sysSetCurrentTime(u64 sec, u64 nsec)

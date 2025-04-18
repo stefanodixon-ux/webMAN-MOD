@@ -92,7 +92,7 @@
 				<P key="info"><>482 MB</></P>
 			</T>
 			<T key="app018" include="inc">
-				<P key="title"><>Ultimate Toolbox v2.03 FULL 4.89-4.91</></P>
+				<P key="title"><>Ultimate Toolbox v2.03 FULL 4.89-4.92</></P>
 				<P key="info"><>484 MB</></P>
 			</T>
 			<T key="appPSH" include="inc">
@@ -130,7 +130,7 @@
 			<Q class="type:x-xmb/folder-pixmap" key="app015" attr="app015" src="#app015_link"/><!-- PKGi -->
 			<Q class="type:x-xmb/folder-pixmap" key="app016" attr="app016" src="#app016_link"/><!-- PS3 ezRemote Client -->
 			<Q class="type:x-xmb/folder-pixmap" key="app017" attr="app017" src="#app017_link"/><!-- Ultimate Toolbox v2.03 FULL 4.84-4.88-->
-			<Q class="type:x-xmb/folder-pixmap" key="app018" attr="app018" src="#app018_link"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.91-->
+			<Q class="type:x-xmb/folder-pixmap" key="app018" attr="app018" src="#app018_link"/><!-- Ultimate Toolbox v2.03 FULL 4.89-4.92-->
 			<Q class="type:x-xmb/folder-pixmap" key="appPSH" attr="appPSH" src="#appPSH_link"/><!-- PS Home Online -->
 			<Q class="type:x-xmb/folder-pixmap" key="app019" attr="app019" src="#app019_link"/><!-- Load webMAN MOD -->
 			<Q class="type:x-xmb/folder-pixmap" key="app020" attr="app020" src="#app020_link"/><!-- webMAN MOD Installer -->
@@ -407,7 +407,7 @@
 		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
 	</V>
 
-	<!-- Ultimate Toolbox v2.03 FULL 4.89-4.91 -->
+	<!-- Ultimate Toolbox v2.03 FULL 4.89-4.92 -->
 	<V id="app018_link">
 		<A>
 			<T key="pkg_link">
@@ -430,7 +430,7 @@
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/Addons/homeologylab_pshome.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/Addons/homeologylab_pshome.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
-				<P key="content_id"><>EP9000-PSHLAB186_00-HOME000000000001</></P>
+				<P key="content_id"><>EP9000-NPIA00005_00-H0ME000000000001</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>
@@ -502,7 +502,7 @@
 				<P key="info"><>CFW or HEN. Blocks OFW updates & lets log into PSN from older FW versions</></P>
 			</T>
 			<T key="mod001" include="inc">
-				<P key="title"><>Install webMAN LaunchPad for 4.91</></P>
+				<P key="title"><>Install webMAN LaunchPad for 4.91 or later</></P>
 				<P key="info"><>CFW or HEN. Requires /dev_blind enabled</></P>
 			</T>
 			<T key="mod002" include="inc">
@@ -1408,6 +1408,14 @@
 				<P key="title"><>Auto Fix Clock</></P>
 				<P key="info"><>Install link to Auto Fix Clock</></P>
 			</T>
+			<T key="webapp00A" include="inc">
+				<P key="title"><>RSX Overclock +30%</></P>
+				<P key="info"><>Install link to overclock GPU: 650Mhz, VRAM: 850Mhz</></P>
+			</T>
+			<T key="webapp00B" include="inc">
+				<P key="title"><>RSX Default Clock</></P>
+				<P key="info"><>Install link to restore clock GPU: 500Mhz, VRAM: 650Mhz</></P>
+			</T>
 			<T key="webapp001" include="inc">
 				<P key="title"><>Reload XMB</></P>
 				<P key="info"><>Install link to Reload XMB</></P>
@@ -1455,6 +1463,8 @@
 		</A>
 		<I>
 			<Q class="type:x-xmb/folder-pixmap" key="webapp000" attr="webapp000" src="#webapp000_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp00A" attr="webapp00A" src="#webapp00A_link"/>
+			<Q class="type:x-xmb/folder-pixmap" key="webapp00B" attr="webapp00B" src="#webapp00B_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webapp001" attr="webapp001" src="#webapp001_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webapp002" attr="webapp002" src="#webapp002_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="webapp003" attr="webapp003" src="#webapp003_link"/>
@@ -1477,6 +1487,34 @@
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01003_Auto_Fix_Clock.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-LINK01003_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp00A_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01005_RSX_Overclock</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01005_RSX_Overclock</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK01005_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="webapp00B_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01004_RSX_Default_Clock.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/WebApps/LINK01004_RSX_Default_Clock.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-LINK01004_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
 		</A>

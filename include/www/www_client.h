@@ -572,6 +572,7 @@ parse_request:
 			}
 
 			#include "../cmd/pad_combo_play.h"
+			#include "../cmd/gpuclock_memclock.h"
 			#include "../cmd/cpursx_tempc.h"
 			#include "../cmd/admin.h"
 

@@ -80,7 +80,7 @@ static void check_cover_folders(char *folder_path)
 		concat2(folder_path, cpath[p], "/covers_retro/psx");
 		covers_retro_exist[p] = isDir(folder_path) && !is_empty_dir(folder_path);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
 	}
-	for(u8 p = 0; p < 6; p++)
+	for(u8 p = 0; p < 5; p++)
 	{
 		concat2(folder_path, cpath[p], "/covers");
 		covers_exist[p + 1] = isDir(folder_path) && !is_empty_dir(folder_path);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, MANAGUNZ, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
