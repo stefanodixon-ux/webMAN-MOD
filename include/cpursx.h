@@ -596,15 +596,20 @@ static void cpu_rsx_stats(char *buffer, char *html, char *param, u8 is_ps3_http)
 	else
 		sprintf(max_temp1, "<small>[FAN: %i%% %s]</small>", webman_config->man_rate, STR_MANUAL);
 
+	clock_s clock1, clock2;
+	clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK);
+	clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK);
+	sprintf(param, "GPU: %i Mhz &bull; VRAM: %i Mhz", 50 * (int)clock1.mul, 25 * (int)clock2.mul);
+
 	sprintf(html,	"<hr><font size=\"42px\">"
 					"<b><a class=\"s\" href=\"/cpursx.ps3?up\">"
 					"CPU: %i°C %s<br>"
 					"RSX: %i°C</a><hr>"
 					"<a class=\"s\" href=\"/cpursx.ps3?dn\">"
 					"CPU: %i°F %s<br>"
-					"RSX: %i°F</a><hr>",
+					"RSX: %i°F</a><br>%s<hr>",
 					t1, max_temp1, t2,
-					t1f, max_temp2, t2f); concat(buffer, html);
+					t1f, max_temp2, t2f, param); concat(buffer, html);
 
 	if(IS_ON_XMB && file_exists(WM_RES_PATH "/slaunch.sprx"))
 		strcopy(max_temp1, "/browser.ps3$slaunch");
