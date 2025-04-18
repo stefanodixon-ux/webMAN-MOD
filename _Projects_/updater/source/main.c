@@ -690,6 +690,8 @@ int main()
 	file_copy(APP_USRDIR "/setup/setupi.dat", SETUP_DIR "/setupi.dat");
 	file_copy(APP_USRDIR "/setup/setupj.dat", SETUP_DIR "/setupj.dat");
 	file_copy(APP_USRDIR "/setup/setupk.dat", SETUP_DIR "/setupk.dat");
+	file_copy(APP_USRDIR "/setup/setupm.dat", SETUP_DIR "/setupm.dat");
+	file_copy(APP_USRDIR "/setup/setupn.dat", SETUP_DIR "/setupn.dat");
 	file_copy(APP_USRDIR "/setup/setupo.dat", SETUP_DIR "/setupo.dat");
 	file_copy(APP_USRDIR "/setup/setupp.dat", SETUP_DIR "/setupp.dat");
 	file_copy(APP_USRDIR "/setup/setups.dat", SETUP_DIR "/setups.dat");

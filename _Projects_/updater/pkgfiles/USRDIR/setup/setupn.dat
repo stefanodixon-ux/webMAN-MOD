@@ -1,0 +1,11 @@
+ &bull; VRAM: <select name="gv" id="gv">
+<option value="0000">Default</option>
+<script>
+for(mhz=650;mhz<=975;mhz+=25)
+	document.write("<option value="+("0"+mhz).slice(-4)+">"+mhz+" Mhz</option>");
+for(mhz=625;mhz>=200;mhz-=25)
+	document.write("<option value="+("0"+mhz).slice(-4)+">"+mhz+" Mhz</option>");
+</script>
+</select>
+</select><script>document.getElementById("gv").value="    "</script>
+</div>

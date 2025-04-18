@@ -239,6 +239,18 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			get_bdvd_info("", msg);
 		#endif
 
+		clock_s clock;
+		if(op == 36) // GPU Core Clock speed
+		{
+			clock.value = lv1_peek_cobra(GPU_CORE_CLOCK);
+			sprintf(msg, "GPU: %i Mhz", 50 * (int)clock.mul);
+		}
+		else if(op == 37) // GPU VRAM Clock speed
+		{
+			clock.value = lv1_peek_cobra(GPU_VRAM_CLOCK);
+			sprintf(msg, "VRAM: %i Mhz", 25 * (int)clock.mul);
+		}
+
 		if(op >= 18)
 		{
 			if(nolabel)
