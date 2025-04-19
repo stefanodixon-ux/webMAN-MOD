@@ -1,10 +1,16 @@
+static int get_rsxclock(u64 clock_address) // clock_address = GPU_CORE_CLOCK or GPU_VRAM_CLOCK
+{
+	clock_s clock;
+	clock.value = lv1_peek_cobra(clock_address);
+	if(clock_address == GPU_CORE_CLOCK)
+		return 50 * (int)clock.mul;
+	else
+		return 25 * (int)clock.mul;
+}
+
 static void show_rsxclock(char *msg)
 {
-	clock_s clock1, clock2;
-	clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU Core
-	clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU Memory
-
-	sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", 50 * (int)clock1.mul, 25 * (int)clock2.mul); show_msg(msg);
+	sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); show_msg(msg);
 }
 
 static void overclock(u16 mhz, bool gpu)
@@ -22,6 +28,12 @@ static void overclock(u16 mhz, bool gpu)
 
 		lv1_poke_cfw(clock_address, clock.value);
 	}
+}
+
+static void set_rsxclocks(u8 gpu_core, u8 gpu_vram)
+{
+	overclock(50 * (int)(gpu_core), true);
+	overclock(25 * (int)(gpu_vram), false);
 }
 
 #ifdef FIX_CLOCK

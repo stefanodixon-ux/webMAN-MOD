@@ -62,7 +62,7 @@ static void saveBMP(char *path, bool notify_bmp, bool small)
 			prepend(path, drives[0], 9);
 		}
 
-		sprintf(path + strlen(path), "/screenshot_%02d_%02d_%02d_%02d_%02d_%02d.bmp", t.year, t.month, t.day, t.hour, t.minute, t.second);
+		sprintf(path + strlen(path), "/screenshot_%04d_%02d_%02d_%02d_%02d_%02d.bmp", t.year, t.month, t.day, t.hour, t.minute, t.second);
 	}
 
 	filepath_check(path);

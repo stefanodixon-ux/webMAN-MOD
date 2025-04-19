@@ -438,7 +438,7 @@ parse_request:
 						is_busy = false;
 
 						// Add GET verb
-						if(*header == '/')
+						if(*wm_url == '/')
 							buf.st_size = snprintf(header, HTML_RECV_SIZE, "GET %s", wm_url);
 						else
 							buf.st_size = strncopy(header, HTML_RECV_SIZE, wm_url);

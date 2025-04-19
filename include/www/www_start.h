@@ -74,11 +74,11 @@ static void start_www(u64 conn_s_p)
 
 				// If not found, use /dev_flash/vsh/resource/explore/user/
 				char *icon = wm_icons[i] + 32;
-				if(i == gPS3 || i == iPS3)	strcopy(icon, "user/024.png"); else // ps3
-				if(i == gPSX || i == iPSX)	strcopy(icon, "user/026.png"); else // psx
-				if(i == gPS2 || i == iPS2)	strcopy(icon, "user/025.png"); else // ps2
-				if(i == gPSP || i == iPSP)	strcopy(icon, "user/022.png"); else // psp
-				if(i == gDVD || i == iDVD)	strcopy(icon, "user/023.png"); else // dvd
+				if(i == gPS3 || i == iPS3)	sprintf(icon, "user/0%i.png", 24); else // ps3
+				if(i == gPSX || i == iPSX)	sprintf(icon, "user/0%i.png", 26); else // psx
+				if(i == gPS2 || i == iPS2)	sprintf(icon, "user/0%i.png", 25); else // ps2
+				if(i == gPSP || i == iPSP)	sprintf(icon, "user/0%i.png", 22); else // psp
+				if(i == gDVD || i == iDVD)	sprintf(icon, "user/0%i.png", 23); else // dvd
 				if(i == iROM || i == iBDVD)	strcopy(wm_icons[i], wm_icons[iPS3]); else
 											strcopy(icon + 5, "icon_home.png"); // setup / eject
 			}
@@ -180,9 +180,9 @@ static void start_www(u64 conn_s_p)
 			if(file_exists("/dev_hdd0/ps3-updatelist.txt"))
 				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
-			// overclock on startup
-			overclock(50 * (int)(webman_config->gpu_core), true);
-			overclock(25 * (int)(webman_config->gpu_vram), false);
+			// overclock on startup (hold L2 or R2 to cancel auto-overclocking on startup)
+			if(!(is_pressed(CELL_PAD_CTRL_L2) || is_pressed(CELL_PAD_CTRL_R2)))
+				set_rsxclocks(webman_config->gpu_core, webman_config->gpu_vram); // set xmb gpu clock speed
 
 			#ifdef WM_REQUEST
 			start_event(EVENT_ON_XMB);

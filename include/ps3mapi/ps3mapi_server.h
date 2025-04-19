@@ -388,10 +388,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 			}
 			else if(_IS(cmd, "GETRSXCLOCK"))	// PS3 GETRSXCLOCK
 			{
-				clock_s clock1, clock2;
-				clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU Core Clock speed
-				clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU VRAM Clock speed
-				sprintf(param2, "%i|%i", 50 * (int)clock1.mul, 25 * (int)clock2.mul);
+				sprintf(param2, "%i|%i", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK));
 				split = ps3mapi_response_values(conn_s_ps3mapi, buffer, param2);
 			}
 			else if(_IS(cmd, "SETGPUCLOCK"))	// PS3 SETGPUCLOCK <mhz>
@@ -400,9 +397,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				{
 					u16 mhz = (u16)val(param2); overclock(mhz, true);
 
-					clock_s clock;
-					clock.value = lv1_peek_cobra(GPU_CORE_CLOCK); // GPU CORE Clock speed
-					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, 50 * (int)clock.mul, true);
+					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, get_rsxclock(GPU_CORE_CLOCK), true);
 				}
 			}
 			else if(_IS(cmd, "SETVRAMCLOCK"))	// PS3 SETVRAMCLOCK <mhz>
@@ -411,9 +406,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				{
 					u16 mhz = (u16)val(param2); overclock(mhz, false);
 
-					clock_s clock;
-					clock.value = lv1_peek_cobra(GPU_VRAM_CLOCK); // GPU VRAM Clock speed
-					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, 25 * (int)clock.mul, true);
+					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, get_rsxclock(GPU_VRAM_CLOCK), true);
 				}
 			}
 			else if(_IS(cmd, "SETIDPS"))	// PS3 SETIDPS <part1> <part2>

@@ -4,13 +4,13 @@ if(islike(param, "/gpuclock.ps3") || islike(param, "/memclock.ps3"))
 
 	if(param[13] == '?')
 	{
-		u16 mhz = (u16)val(param + 14); // new clock speed (300-1200)
+		u16 mhz = (u16)val(param + 14); // new gpu clock speed (300-1200)
 		overclock(mhz, gpu);
 
 		char *pos = strchr(param, '|');
 		if(pos)
 		{
-			mhz = (u16)val(pos + 1); // new clock speed (300-1200)
+			mhz = (u16)val(pos + 1); // new gpu clock speed (300-1200)
 			overclock(mhz, !gpu);
 		}
 	}

@@ -101,11 +101,16 @@ static void setup_parse_settings(char *param)
 	webman_config->auto_fixclock = IS_MARKED("ac=1");
 #endif
 
-	u16 mhz; bool in_game = IS_INGAME;
-	mhz = (u16)get_valuen64(param, "&gc="); webman_config->gpu_core = (u8)(mhz / 50); if(!in_game) overclock(mhz, true);
-	mhz = (u16)get_valuen64(param, "&gv="); webman_config->gpu_vram = (u8)(mhz / 25); if(!in_game) overclock(mhz, false);
-	mhz = (u16)get_valuen64(param, "&g1="); webman_config->gpu2_core = (u8)(mhz / 50); if(in_game) overclock(mhz, true);
-	mhz = (u16)get_valuen64(param, "&g2="); webman_config->gpu2_vram = (u8)(mhz / 25); if(in_game) overclock(mhz, false);
+	u16 mhz;
+	mhz = (u16)get_valuen64(param, "&gc="); webman_config->gpu_core = (u8)(mhz / 50);
+	mhz = (u16)get_valuen64(param, "&gv="); webman_config->gpu_vram = (u8)(mhz / 25);
+	mhz = (u16)get_valuen64(param, "&g1="); webman_config->gpu2_core = (u8)(mhz / 50);
+	mhz = (u16)get_valuen64(param, "&g2="); webman_config->gpu2_vram = (u8)(mhz / 25);
+
+	if(IS_INGAME)
+		set_rsxclocks(webman_config->gpu2_core, webman_config->gpu2_vram);
+	else
+		set_rsxclocks(webman_config->gpu_core, webman_config->gpu_vram);
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);

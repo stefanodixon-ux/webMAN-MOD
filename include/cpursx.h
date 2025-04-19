@@ -178,77 +178,74 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 	if(op >= 10)
 	{
 		#ifndef LITE_EDITION
-		if(op == 18) // syscalls
+		if(op == 18) // syscalls (@info8)
 			concat_text(msg, "Syscalls:", syscalls_removed ? STR_DISABLED : STR_ENABLED);
-		if(op == 19) // temp
+		if(op == 19) // temp (@info9)
 			{char *p = strchr(msg, '\n'); _memset(p, len-30); return;}
-		if(op == 20) // fan mode
+		if(op == 20) // fan mode (@info10)
 			{strcopy(msg, fan_mode + 3); return;}
 		#endif
-		if(op == 21) // Startup time
+		if(op == 21) // Startup time (@info11)
 			sprintf(msg, "%s: %s%02d:%02d:%02d", "Startup", days, hh, mm, ss);
-		if(op == 22) // Play time
+		if(op == 22) // Play time (@info12)
 			sprintf(msg, "%s: %s%02d:%02d:%02d", "Play", days, hh, mm, ss);
-		if(op == 23) // Runtime
+		if(op == 23) // Runtime (@info13)
 		{
 			len = sprintf(msg, "%s: %s%02d:%02d:%02d", "Runtime", days, hh, mm, ss);
 			sprintf(msg + len, " • %'i ON • %'i OFF (%i)", power_on_ctr, power_off_ctr, power_on_ctr - power_off_ctr);
 		}
 		#ifndef LITE_EDITION
-		if(op == 24) // Time
+		if(op == 24) // Time (@info14)
 		{
 			CellRtcDateTime t;
 			cellRtcGetCurrentClockLocalTime(&t);
 			sprintf(msg, "%d/%d %02d:%02d:%02d", t.month, t.day, t.hour, t.minute, t.second);
 			return;
 		}
-		if(op == 25) // id+title
+		if(op == 25) // id+title (@info15)
 			{get_game_info(); concat_text(msg, _game_TitleID, _game_Title); return;}
 		#ifdef COBRA_ONLY
-		if(op == 26) // pid
+		if(op == 26) // pid (@info16)
 			sprintf(msg, "PID: 0x%x", get_current_pid());
 		#endif
 		#endif
 		#ifdef SPOOF_CONSOLEID
-		if(op == 27) // psid
+		if(op == 27) // psid (@info17)
 			sprintf(msg, "%s: %016llX%016llX", "PSID LV2 ", PSID[0], PSID[1]);
-		if(op == 28) // idps
+		if(op == 28) // idps (@info18)
 			sprintf(msg, "%s: %016llX%016llX", "IDPS LV2 ", IDPS[0], IDPS[1]);
-		if(op == 29) // idps eid0
+		if(op == 29) // idps eid0  (@info19)
 			sprintf(msg, "%s: %016llX%016llX", "IDPS EID0", eid0_idps[0], eid0_idps[1]);
 		#endif
-		if(op == 30) // fw
+		if(op == 30) // fw  (@info20)
 			sprintf(msg, "%s: %s %s", STR_FIRMWARE, fw_version, cfw_info);
-		if(op == 31) // mac
+		if(op == 31) // mac (@info21)
 		{
 			u8 mac_address[0x13];
 			{system_call_3(SYS_NET_EURUS_POST_COMMAND, CMD_GET_MAC_ADDRESS, (u64)(u32)mac_address, 0x13);}
 			sprintf(msg, "MAC Addr : %02X:%02X:%02X:%02X:%02X:%02X", mac_address[13], mac_address[14], mac_address[15], mac_address[16], mac_address[17], mac_address[18]);
 		}
 		#ifndef LITE_EDITION
-		if(op == 32) // ip
+		if(op == 32) // ip (@info22)
 			sprintf(msg, "%s: %s %s", "IP", ip, net_type);
-		if(op == 33) // home
+		if(op == 33) // home (@info23)
 			sprintf(msg, "%s: %s/%08i", STR_HOME, HDD0_HOME_DIR, xusers()->GetCurrentUserNumber());
 		#endif
-		if(op == 34) // wm version
+		if(op == 34) // wm version (@info24)
 			sprintf(msg, "%s MO: %.7s %s", WM_APPNAME, WM_VERSION, EDITION);
 
 		#ifdef BDINFO
-		if(op == 35) // bdinfo
+		if(op == 35) // bdinfo (@info25)
 			get_bdvd_info("", msg);
 		#endif
 
-		clock_s clock;
-		if(op == 36) // GPU Core Clock speed
+		if(op == 36) // GPU Core Clock speed (@info26)
 		{
-			clock.value = lv1_peek_cobra(GPU_CORE_CLOCK);
-			sprintf(msg, "GPU: %i Mhz", 50 * (int)clock.mul);
+			sprintf(msg, "GPU: %i Mhz", get_rsxclock(GPU_CORE_CLOCK));
 		}
-		else if(op == 37) // GPU VRAM Clock speed
+		else if(op == 37) // GPU VRAM Clock speed (@info27)
 		{
-			clock.value = lv1_peek_cobra(GPU_VRAM_CLOCK);
-			sprintf(msg, "VRAM: %i Mhz", 25 * (int)clock.mul);
+			sprintf(msg, "VRAM: %i Mhz", get_rsxclock(GPU_VRAM_CLOCK));
 		}
 
 		if(op >= 18)
@@ -291,7 +288,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 							STR_MEMORY,  mem_free, STR_KBFREE, _EDITION);
 
 		#ifndef LITE_EDITION
-		if(op >= 10 && op <= 15) // storage
+		if(op >= 10 && op <= 15) // storage (@info0 - @info5: 0=hdd0, 1=usb0, 2=usb1, 3=usb2, 4=usb3, 5=ntfs0)
 		{
 			if(nolabel)
 			{
@@ -301,14 +298,14 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			else
 				sprintf(msg, "%s: %s", drives[ndx], hdd_free);
 		}
-		if(op == 16) // mem free
+		if(op == 16) // mem free (@info6)
 		{
 			if(nolabel)
 				sprintf(msg, "%i", meminfo.avail);
 			else
 				sprintf(msg, "%s: %i %s", STR_MEMORY,  mem_free, STR_KBFREE);
 		}
-		if(op == 17) // mem_usage
+		if(op == 17) // mem_usage (@info7)
 		{
 			int mem_total = (int)(meminfo.total>>10);
 			int mem_usage = (int)((meminfo.total - meminfo.avail)>>10);
@@ -596,20 +593,17 @@ static void cpu_rsx_stats(char *buffer, char *html, char *param, u8 is_ps3_http)
 	else
 		sprintf(max_temp1, "<small>[FAN: %i%% %s]</small>", webman_config->man_rate, STR_MANUAL);
 
-	clock_s clock1, clock2;
-	clock1.value = lv1_peek_cobra(GPU_CORE_CLOCK);
-	clock2.value = lv1_peek_cobra(GPU_VRAM_CLOCK);
-	sprintf(param, "GPU: %i Mhz &bull; VRAM: %i Mhz", 50 * (int)clock1.mul, 25 * (int)clock2.mul);
-
 	sprintf(html,	"<hr><font size=\"42px\">"
 					"<b><a class=\"s\" href=\"/cpursx.ps3?up\">"
 					"CPU: %i°C %s<br>"
 					"RSX: %i°C</a><hr>"
 					"<a class=\"s\" href=\"/cpursx.ps3?dn\">"
 					"CPU: %i°F %s<br>"
-					"RSX: %i°F</a><br>%s<hr>",
+					"RSX: %i°F</a><br>"
+					"GPU: %i Mhz &bull; VRAM: %i Mhz<hr>",
 					t1, max_temp1, t2,
-					t1f, max_temp2, t2f, param); concat(buffer, html);
+					t1f, max_temp2, t2f,
+					get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); concat(buffer, html);
 
 	if(IS_ON_XMB && file_exists(WM_RES_PATH "/slaunch.sprx"))
 		strcopy(max_temp1, "/browser.ps3$slaunch");
