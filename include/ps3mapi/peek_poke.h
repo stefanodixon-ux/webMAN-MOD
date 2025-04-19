@@ -21,11 +21,13 @@ static u64 lv1_peek_cfw(u64 addr)
 	return (u64) p1;
 }
 
+/*
 static u64 lv1_peek_cobra(u64 addr)
 {
 	system_call_1(SC_PEEK_LV1_COBRA, addr);
 	return (u64) p1;
 }
+*/
 
 #ifdef COBRA_ONLY
 /*

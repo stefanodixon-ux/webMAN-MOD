@@ -398,9 +398,17 @@
 					{
 						// SELECT+UP      = increase TEMP of dynamic fan control / manual FAN SPEED +1
 						// SELECT+UP + R2 = increase TEMP of dynamic fan control / manual FAN SPEED +5
+						// SELECT+UP + L2 = increase GPU Core clock speed
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_up")) break;
 						#endif
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
+						{
+							u16 mhz = get_rsxclock(GPU_CORE_CLOCK);
+							overclock(mhz + 50, true); show_rsxclock(msg);
+							break_and_wait;
+						}
+						else
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
@@ -431,9 +439,17 @@
 					{
 						// SELECT+DOWN    = decrease TEMP of dynamic fan control / manual FAN SPEED -1
 						// SELECT+DOWN+R2 = decrease TEMP of dynamic fan control / manual FAN SPEED -5
+						// SELECT+DOWN+L2 = decrease GPU Core clock speed
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_down")) break;
 						#endif
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
+						{
+							u16 mhz = get_rsxclock(GPU_CORE_CLOCK);
+							overclock(mhz - 50, true); show_rsxclock(msg);
+							break_and_wait;
+						}
+						else
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
@@ -461,9 +477,17 @@
 					if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_LEFT))) // SELECT+LEFT decrease Minfan
 					{
 						// SELECT+LEFT = decrease Minfan
+						// SELECT+LEFT+L2 = decrease GPU VRAM clock speed
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_left")) break;
 						#endif
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
+						{
+							u16 mhz = get_rsxclock(GPU_VRAM_CLOCK);
+							overclock(mhz - 25, false); show_rsxclock(msg);
+							break_and_wait;
+						}
+						else
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
@@ -480,9 +504,17 @@
 					if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_RIGHT))) // SELECT+RIGHT increase Minfan
 					{
 						// SELECT+RIGHT = increase Minfan
+						// SELECT+RIGHT+L2 = increase GPU VRAM clock speed
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_right")) break;
 						#endif
+						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
+						{
+							u16 mhz = get_rsxclock(GPU_VRAM_CLOCK);
+							overclock(mhz + 25, false); show_rsxclock(msg);
+							break_and_wait;
+						}
+						else
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 

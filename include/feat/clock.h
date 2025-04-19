@@ -1,7 +1,7 @@
 static int get_rsxclock(u64 clock_address) // clock_address = GPU_CORE_CLOCK or GPU_VRAM_CLOCK
 {
 	clock_s clock;
-	clock.value = lv1_peek_cobra(clock_address);
+	clock.value = peek_lv1(clock_address);
 	if(clock_address == GPU_CORE_CLOCK)
 		return 50 * (int)clock.mul;
 	else
@@ -20,7 +20,7 @@ static void overclock(u16 mhz, bool gpu)
 		u64 clock_address = (gpu ? GPU_CORE_CLOCK : GPU_VRAM_CLOCK);
 
 		clock_s clock;
-		clock.value = lv1_peek_cobra(clock_address);
+		clock.value = peek_lv1(clock_address);
 		if(gpu)
 			clock.mul = (u8)(mhz / 50); // GPU Core Clock speed
 		else
