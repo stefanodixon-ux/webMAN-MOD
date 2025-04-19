@@ -13,6 +13,16 @@ static void show_rsxclock(char *msg)
 	sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); show_msg(msg);
 }
 
+
+// (C) 2025 by Chattrapat Sangmanee for the overclocking code
+// https://github.com/aomsin2526
+
+#define eieio()                \
+	{                          \
+		asm volatile("eieio"); \
+		asm volatile("sync");  \
+	}
+
 static void overclock(u16 mhz, bool gpu)
 {
 	if(BETWEEN(300, mhz, 1200))
@@ -22,11 +32,24 @@ static void overclock(u16 mhz, bool gpu)
 		clock_s clock;
 		clock.value = peek_lv1(clock_address);
 		if(gpu)
+		{
 			clock.mul = (u8)(mhz / 50); // GPU Core Clock speed
-		else
-			clock.mul = (u8)(mhz / 25); // GPU VRAM Clock speed
+			lv1_poke_cfw(clock_address, clock.value);
+			eieio();
+		}
+		else // apply vram frequency must be applied slowly in 25mhz step, wait, repeat until reach target
+ 		{
+			u8 target_mul = (u8)(mhz / 25);
+			bool up = (target_mul > clock.mul);
 
-		lv1_poke_cfw(clock_address, clock.value);
+			while (clock.mul != target_mul)
+			{
+				sys_timer_usleep(200000);
+				clock.mul += up ? 1 : -1;
+				lv1_poke_cfw(GPU_VRAM_CLOCK, clock.value);
+				eieio();
+			}
+		}
 	}
 }
 
