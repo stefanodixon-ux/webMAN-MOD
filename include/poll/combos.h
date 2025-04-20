@@ -402,13 +402,14 @@
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_up")) break;
 						#endif
+						#ifdef OVERCLOCKING
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
 						{
 							u16 mhz = get_rsxclock(GPU_CORE_CLOCK);
 							overclock(mhz + 50, true); show_rsxclock(msg);
-							break_and_wait;
 						}
 						else
+						#endif
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
@@ -430,9 +431,9 @@
 							}
 							save_settings();
 							show_msg(msg);
-
-							break_and_wait;
 						}
+
+						break_and_wait;
 					}
 					else
 					if(webman_config->fanc && !(webman_config->combo & MANUALFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_DOWN))) // SELECT+DOWN decrease TEMP/FAN
@@ -443,13 +444,14 @@
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_down")) break;
 						#endif
+						#ifdef OVERCLOCKING
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
 						{
 							u16 mhz = get_rsxclock(GPU_CORE_CLOCK);
 							overclock(mhz - 50, true); show_rsxclock(msg);
-							break_and_wait;
 						}
 						else
+						#endif
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
@@ -469,9 +471,9 @@
 							}
 							save_settings();
 							show_msg(msg);
-
-							break_and_wait;
 						}
+
+						break_and_wait;
 					}
 					else
 					if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_LEFT))) // SELECT+LEFT decrease Minfan
@@ -481,13 +483,14 @@
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_left")) break;
 						#endif
+						#ifdef OVERCLOCKING
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
 						{
 							u16 mhz = get_rsxclock(GPU_VRAM_CLOCK);
 							overclock(mhz - 25, false); show_rsxclock(msg);
-							break_and_wait;
 						}
 						else
+						#endif
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
@@ -496,9 +499,9 @@
 
 							save_settings();
 							show_msg(msg);
-
-							break_and_wait;
 						}
+
+						break_and_wait;
 					}
 					else
 					if(webman_config->minfan && !(webman_config->combo & MINDYNFAN) && (pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == (CELL_PAD_CTRL_SELECT | CELL_PAD_CTRL_RIGHT))) // SELECT+RIGHT increase Minfan
@@ -508,13 +511,14 @@
 						#ifdef WM_CUSTOM_COMBO
 						if(do_custom_combo("select_right")) break;
 						#endif
+						#ifdef OVERCLOCKING
 						if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL2] & CELL_PAD_CTRL_L2)
 						{
 							u16 mhz = get_rsxclock(GPU_VRAM_CLOCK);
 							overclock(mhz + 25, false); show_rsxclock(msg);
-							break_and_wait;
 						}
 						else
+						#endif
 						{
 							if(webman_config->fanc == DISABLED) enable_fan_control(ENABLE_SC8);
 
@@ -523,9 +527,9 @@
 
 							save_settings();
 							show_msg(msg);
-
-							break_and_wait;
 						}
+
+						break_and_wait;
 					}
 					else if(pad_data.button[CELL_PAD_BTN_OFFSET_DIGITAL1] == CELL_PAD_CTRL_SELECT)
 					{
@@ -904,9 +908,11 @@
 								sys_ppu_thread_sleep(5);
 							}
 
+							#ifdef OVERCLOCKING
 							// Show RSX Core & VRAM clock speeds
 							show_rsxclock(msg);
 							sys_ppu_thread_sleep(5);
+							#endif
 
 							#ifdef SPOOF_CONSOLEID
 							show_idps(msg);

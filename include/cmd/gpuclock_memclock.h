@@ -1,3 +1,4 @@
+#ifdef OVERCLOCKING
 if(islike(param, "/gpuclock.ps3") || islike(param, "/memclock.ps3"))
 {
 	bool gpu = (param[1] == 'g');
@@ -21,3 +22,4 @@ if(islike(param, "/gpuclock.ps3") || islike(param, "/memclock.ps3"))
 
 	goto exit_handleclient_www;
 }
+#endif

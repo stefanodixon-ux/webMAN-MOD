@@ -239,6 +239,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 			get_bdvd_info("", msg);
 		#endif
 
+		#ifdef OVERCLOCKING
 		if(op == 36) // GPU Core Clock speed (@info26)
 		{
 			sprintf(msg, "GPU: %i Mhz", get_rsxclock(GPU_CORE_CLOCK));
@@ -247,6 +248,7 @@ static void get_sys_info(char *msg, u8 op, bool nolabel)
 		{
 			sprintf(msg, "VRAM: %i Mhz", get_rsxclock(GPU_VRAM_CLOCK));
 		}
+		#endif
 
 		if(op >= 18)
 		{
@@ -593,6 +595,7 @@ static void cpu_rsx_stats(char *buffer, char *html, char *param, u8 is_ps3_http)
 	else
 		sprintf(max_temp1, "<small>[FAN: %i%% %s]</small>", webman_config->man_rate, STR_MANUAL);
 
+	#ifdef OVERCLOCKING
 	sprintf(html,	"<hr><font size=\"42px\">"
 					"<b><a class=\"s\" href=\"/cpursx.ps3?up\">"
 					"CPU: %i°C %s<br>"
@@ -604,6 +607,17 @@ static void cpu_rsx_stats(char *buffer, char *html, char *param, u8 is_ps3_http)
 					t1, max_temp1, t2,
 					t1f, max_temp2, t2f,
 					get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); concat(buffer, html);
+	#else
+	sprintf(html,	"<hr><font size=\"42px\">"
+					"<b><a class=\"s\" href=\"/cpursx.ps3?up\">"
+					"CPU: %i°C %s<br>"
+					"RSX: %i°C</a><hr>"
+					"<a class=\"s\" href=\"/cpursx.ps3?dn\">"
+					"CPU: %i°F %s<br>"
+					"RSX: %i°F</a><hr>",
+					t1, max_temp1, t2,
+					t1f, max_temp2, t2f); concat(buffer, html);
+	#endif
 
 	if(IS_ON_XMB && file_exists(WM_RES_PATH "/slaunch.sprx"))
 		strcopy(max_temp1, "/browser.ps3$slaunch");

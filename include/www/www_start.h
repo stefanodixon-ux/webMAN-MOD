@@ -180,9 +180,11 @@ static void start_www(u64 conn_s_p)
 			if(file_exists("/dev_hdd0/ps3-updatelist.txt"))
 				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
+			#ifdef OVERCLOCKING
 			// overclock on startup (hold L2 or R2 to cancel auto-overclocking on startup)
 			if(!(is_pressed(CELL_PAD_CTRL_L2) || is_pressed(CELL_PAD_CTRL_R2)))
 				set_rsxclocks(webman_config->gpu_core, webman_config->gpu_vram); // set xmb gpu clock speed
+			#endif
 
 			#ifdef WM_REQUEST
 			start_event(EVENT_ON_XMB);

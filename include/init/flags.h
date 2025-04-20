@@ -12,6 +12,7 @@
 #endif
 
 #define FIX_CLOCK
+#define OVERCLOCKING
 #define VIEW_PARAM_SFO
 #define CHECK_PSHOME
 

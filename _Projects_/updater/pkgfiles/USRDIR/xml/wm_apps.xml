@@ -634,6 +634,10 @@
 			<T key="inc">
 				<P key="icon"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
 			</T>
+			<T key="mod12A" include="inc">
+				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with Fan Control + FPS + EE overclocking</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press Left DPAD + SQUARE + L1 + R1 for 5-6 seconds for menu</></P>
+			</T>
 			<T key="mod120" include="inc">
 				<P key="title"><>[PS2 NETEMU] Install ps2_netemu with fps counter + menu combo + EE overclocking + partial antiblur + x modules</></P>
 				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press Left DPAD + SQUARE + L1 + R1 for 5-6 seconds for menu</></P>
@@ -664,6 +668,7 @@
 			</T>
 		</A>
 		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod12A" attr="mod12A" src="#mod12A_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod120" attr="mod120" src="#mod120_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod121" attr="mod121" src="#mod121_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod122" attr="mod122" src="#mod122_link"/>
@@ -944,6 +949,20 @@
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_nearset_no_dither-req_dev_blind_enabled.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps1_netemu_nearset_no_dither-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod12A_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_fan_control-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_netemu_fan_control-req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>

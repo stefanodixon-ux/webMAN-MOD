@@ -386,6 +386,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 				sprintf(param2, "%016llX%016llX", _new_idps[0], _new_idps[1]);
 				split = ps3mapi_response_str(conn_s_ps3mapi, buffer, param2, true);
 			}
+			#ifdef OVERCLOCKING
 			else if(_IS(cmd, "GETRSXCLOCK"))	// PS3 GETRSXCLOCK
 			{
 				sprintf(param2, "%i|%i", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK));
@@ -409,6 +410,7 @@ static int ps3mapi_command(int conn_s_ps3mapi, int data_s, int pasv_s, char *buf
 					split = ps3mapi_response_int(conn_s_ps3mapi, buffer, get_rsxclock(GPU_VRAM_CLOCK), true);
 				}
 			}
+			#endif
 			else if(_IS(cmd, "SETIDPS"))	// PS3 SETIDPS <part1> <part2>
 			{
 				if(split)

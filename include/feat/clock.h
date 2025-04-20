@@ -1,19 +1,4 @@
-static int get_rsxclock(u64 clock_address) // clock_address = GPU_CORE_CLOCK or GPU_VRAM_CLOCK
-{
-	clock_s clock;
-	clock.value = peek_lv1(clock_address);
-	if(clock_address == GPU_CORE_CLOCK)
-		return 50 * (int)clock.mul;
-	else
-		return 25 * (int)clock.mul;
-}
-
-static void show_rsxclock(char *msg)
-{
-	sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); show_msg(msg);
-}
-
-
+#ifdef OVERCLOCKING
 // (C) 2025 by Chattrapat Sangmanee for the overclocking code
 // https://github.com/aomsin2526
 
@@ -30,11 +15,11 @@ static void overclock(u16 mhz, bool gpu)
 		u64 clock_address = (gpu ? GPU_CORE_CLOCK : GPU_VRAM_CLOCK);
 
 		clock_s clock;
-		clock.value = peek_lv1(clock_address);
+		clock.value = lv1_peek_cobra(clock_address);
 		if(gpu)
 		{
 			clock.mul = (u8)(mhz / 50); // GPU Core Clock speed
-			lv1_poke_cfw(clock_address, clock.value);
+			lv1_poke_cfw(GPU_CORE_CLOCK, clock.value);
 			eieio();
 		}
 		else // apply vram frequency must be applied slowly in 25mhz step, wait, repeat until reach target
@@ -44,7 +29,7 @@ static void overclock(u16 mhz, bool gpu)
 
 			while (clock.mul != target_mul)
 			{
-				sys_timer_usleep(200000);
+				sys_timer_usleep(125000); // 1/8 sec = 125ms
 				clock.mul += up ? 1 : -1;
 				lv1_poke_cfw(GPU_VRAM_CLOCK, clock.value);
 				eieio();
@@ -52,6 +37,7 @@ static void overclock(u16 mhz, bool gpu)
 		}
 	}
 }
+////
 
 static void set_rsxclocks(u8 gpu_core, u8 gpu_vram)
 {
@@ -59,8 +45,23 @@ static void set_rsxclocks(u8 gpu_core, u8 gpu_vram)
 	overclock(25 * (int)(gpu_vram), false);
 }
 
+static int get_rsxclock(u64 clock_address) // clock_address = GPU_CORE_CLOCK or GPU_VRAM_CLOCK
+{
+	clock_s clock;
+	clock.value = lv1_peek_cobra(clock_address);
+	if(clock_address == GPU_CORE_CLOCK)
+		return 50 * (int)clock.mul;
+	else
+		return 25 * (int)clock.mul;
+}
+
+static void show_rsxclock(char *msg)
+{
+	sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); show_msg(msg);
+}
+#endif //#ifdef OVERCLOCKING
+
 #ifdef FIX_CLOCK
-/*
 static int sysSetCurrentTime(u64 sec, u64 nsec)
 {
 	system_call_2(146, (u32)sec, (u32)nsec);
@@ -72,7 +73,7 @@ static int sys_ss_secure_rtc(u64 time)
 	system_call_4(0x362, 0x3003, time / 1000000, 0, 0);
 	return_to_user_prog(int);
 }
-*/
+
 static int sysGetCurrentTime(u64 *sec, u64 *nsec)
 {
 	system_call_2(145,(u32)sec, (u32)nsec);
@@ -87,16 +88,16 @@ static int sys_time_get_rtc(u64 *real_time_clock)
 
 static void fix_clock(char *newDate)
 {
-	#define DATE_2000_01_01	0x00E01D003A63A000ULL
-	//#define DATE_1970_01_01	0x00DCBFFEFF2BC000ULL
+	#define DATE_2000_01_01		0x00E01D003A63A000ULL
+	#define DATE_1970_01_01		0x00DCBFFEFF2BC000ULL
 	//#define DATE_2023_11_23	0x00E2CAD2ECB78000ULL
-	#define DATE_2024_12_24	0x00E2EA0BE8548000ULL
+	//#define DATE_2024_12_24	0x00E2EA0BE8548000ULL
+	#define DATE_2025_04_20		0x00E2F3337CD7B000ULL
 
 	u64 clock, diff;
 	u64 sec, nsec;
 	u64 currentTick;
 
-	//u64 timedata = 0x00E2CABECEE02000ULL - DATE_2000_01_01;
 	u64 patchedDate;
 
 	static int (*_cellRtcGetCurrentTick)(u64 *pTick) = NULL;
@@ -113,7 +114,7 @@ static void fix_clock(char *newDate)
 
 	if(!newDate)
 	{
-		patchedDate = DATE_2024_12_24;
+		patchedDate = DATE_2025_04_20;
 	}
 	else if((newDate[0] == '2') && (newDate[1] == '0') && (newDate[4] == '-') && (newDate[7] == '-')) // 2024-12-24 hh:mm:ss
 	{
@@ -133,27 +134,15 @@ static void fix_clock(char *newDate)
 	else
 	{
 		patchedDate = convertH(newDate);
-		if(patchedDate < DATE_2000_01_01) {patchedDate = DATE_2024_12_24; newDate = NULL;}
+		if(patchedDate < DATE_2000_01_01) {patchedDate = DATE_2025_04_20; newDate = NULL;}
 	}
-/*
-	if(!newDate)
-	{
-		struct CellFsStat buf;
-		cellFsStat(WM_CONFIG_FILE, &buf);
-		cellRtcSetTime_t(&rDate, buf.st_mtime);
 
-		// use last wm_config date if it's later than the default patch date
-		ndays = 120 + (int)((rDate.year - 2001) / 4); // leap days
-		for(u8 i = 0; i < rDate.month - 1; i++) ndays +=  mdays[i]; // year days
-		u64 configDate = ((rDate.year * 365) + rDate.day + ndays) * 86400000000; if(configDate > patchedDate) patchedDate = configDate;
-	}
-*/
-
-//	u64 a1, a2;
-//	{ system_call_4(0x362, 0x3002, 0, (u64)(u32)&a1, (u64)(u32)&a2); }
+	///////////
+	u64 a1, a2;
+	{ system_call_4(0x362, 0x3002, 0, (u64)(u32)&a1, (u64)(u32)&a2); }
 	_cellRtcGetCurrentTick(&currentTick);
 
-	if((currentTick < DATE_2024_12_24) || newDate)
+	if((currentTick < DATE_2025_04_20) || newDate)
 	{
 		_cellRtcSetCurrentTick(&patchedDate);
 		sysGetCurrentTime(&sec, &nsec);
@@ -161,7 +150,10 @@ static void fix_clock(char *newDate)
 		diff = sec - clock;
 		xSettingDateGetInterface()->SaveDiffTime(diff);
 	}
-/*
+
+//	u64 timedata = 0x00E2CABECEE02000ULL - DATE_2000_01_01;
+	u64 timedata = patchedDate - DATE_2000_01_01;
+	
 	if(!a1)
 		sys_ss_secure_rtc(timedata);
 
@@ -169,7 +161,7 @@ static void fix_clock(char *newDate)
 	_cellRtcGetCurrentTick(&currentTick);
 	u64 result_time2 = (currentTick - DATE_2000_01_01);
 
-	u64 rtc_clock = a1 * 1000000 + DATE_2000_01_01;
+	u64 rtc_clock = (a1 * 1000000) + DATE_2000_01_01;
 
 	if(rtc_clock < currentTick)
 	{
@@ -183,7 +175,6 @@ static void fix_clock(char *newDate)
 		diff = sec - clock;
 		xSettingDateGetInterface()->SaveDiffTime(diff);
 	}
-*/
 }
 
 static void update_clock_from_server_time(char *data)

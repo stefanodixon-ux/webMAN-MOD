@@ -100,7 +100,7 @@ static void setup_parse_settings(char *param)
 	// auto fix clock
 	webman_config->auto_fixclock = IS_MARKED("ac=1");
 #endif
-
+#ifdef OVERCLOCKING
 	u16 mhz;
 	mhz = (u16)get_valuen64(param, "&gc="); webman_config->gpu_core = (u8)(mhz / 50);
 	mhz = (u16)get_valuen64(param, "&gv="); webman_config->gpu_vram = (u8)(mhz / 25);
@@ -111,6 +111,7 @@ static void setup_parse_settings(char *param)
 		set_rsxclocks(webman_config->gpu2_core, webman_config->gpu2_vram);
 	else
 		set_rsxclocks(webman_config->gpu_core, webman_config->gpu_vram);
+#endif
 
 	//Wait for any USB device to be ready
 	webman_config->bootd = get_valuen(param, "&b=", 0, 30);
@@ -874,13 +875,15 @@ static void setup_form(char *buffer, char *html)
 	#ifdef ARTEMIS_PRX
 	add_checkbox_line("ar", "Artemis", (webman_config->artemis), buffer);
 	#endif
-
+		
+	#ifdef OVERCLOCKING
 	// overclocking settings
 	add_html(dat_GPU_CORE_CLOCK1, 50 * (int)(webman_config->gpu_core), buffer, html); // XMB GPU Core Clock speed
 	add_html(dat_GPU_VRAM_CLOCK1, 25 * (int)(webman_config->gpu_vram), buffer, html); // XMB GPU VRAM Clock speed
 
 	add_html(dat_GPU_CORE_CLOCK2, 50 * (int)(webman_config->gpu2_core), buffer, html); // in-game GPU Core Clock speed
 	add_html(dat_GPU_VRAM_CLOCK2, 25 * (int)(webman_config->gpu2_vram), buffer, html); // in-game GPU VRAM Clock speed
+	#endif
 
 	//general settings
 #ifdef SPOOF_CONSOLEID

@@ -26,9 +26,11 @@ static void poll_start_play_time(void)
 			*param = NULL;
 			#endif
 
-			#ifdef WM_REQUEST
+			#ifdef OVERCLOCKING
 			set_rsxclocks(webman_config->gpu_core, webman_config->gpu_vram); // set xmb gpu clock speed
+			#endif
 
+			#ifdef WM_REQUEST
 			start_event(EVENT_ON_XMB);
 			#endif
 
@@ -120,9 +122,11 @@ static void poll_start_play_time(void)
 		}
 		#endif
 
-		#ifdef WM_REQUEST
+		#ifdef OVERCLOCKING
 		set_rsxclocks(webman_config->gpu2_core, webman_config->gpu2_vram); // set in-game gpu clock speed
+		#endif
 
+		#ifdef WM_REQUEST
 		start_event(EVENT_INGAME);
 		wait_for_title_id();
 		start_event(EVENT_PER_GAME);

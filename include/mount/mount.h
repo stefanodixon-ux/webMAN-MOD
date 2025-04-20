@@ -1046,8 +1046,10 @@ static void do_umount(bool clean)
 		#endif
 	}
 
+	#ifdef OVERCLOCKING
 	// reset overclock to XMB default
 	set_rsxclocks(webman_config->gpu_core, webman_config->gpu_vram);
+	#endif
 
 	#ifdef USE_NTFS
 	root_check = true;
@@ -1742,6 +1744,7 @@ exit_mount:
 			#endif
 		}
 
+		#ifdef OVERCLOCKING
 		// Auto Overclock using [RSX<MHZ>-<MHZ>]
 		char *oc = strstr(_path, OVERCLOCK_TAG);
 		if(oc)
@@ -1750,6 +1753,7 @@ exit_mount:
 			oc = strchr(oc, '-'); if(oc) {mhz = (u16)(val(oc + 1)); overclock(mhz, false);} // (optional) set gpu vram clock speed
 			show_rsxclock(filename);
 		}
+		#endif
 	}
 
 	// -----------------------------------
