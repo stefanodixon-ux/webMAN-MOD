@@ -8,7 +8,7 @@
 //   if xmb/ingame
 //   if count <value>
 //   if copying/mounting
-//   if cobra/nocobra/debug/mamba/ps3hen/dex/firmware x.xx
+//   if cobra/nocobra/debug/mamba/ps3hen/dex/firmware x.xx/overclock
 //   if titleid <titleid/pattern>
 //   abort if exist <path>
 //   abort if not exist <path>
@@ -211,6 +211,9 @@ static void parse_script(const char *script_file, bool check_running)
 						if(_islike(line, "Debug"))   {ret = isCobraDebug;} else
 						if(_islike(line, "Mamba"))   {ret = is_mamba;} else
 						if(_islike(line, "PS3HEN"))  {ret = payload_ps3hen;} else
+						#endif
+						#ifdef OVERCLOCKING
+						if(_islike(line, "Overclock")) {ret = !((get_rsxclock(GPU_CORE_CLOCK) == 500) && (get_rsxclock(GPU_VRAM_CLOCK) == 650));} else
 						#endif
 						if(_islike(line, "DEX"))     {ret = dex_mode;} else
 						{

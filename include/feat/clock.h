@@ -90,9 +90,6 @@ static void fix_clock(char *newDate)
 {
 	#define DATE_2000_01_01		0x00E01D003A63A000ULL
 	#define DATE_1970_01_01		0x00DCBFFEFF2BC000ULL
-	//#define DATE_2023_11_23	0x00E2CAD2ECB78000ULL
-	//#define DATE_2024_12_24	0x00E2EA0BE8548000ULL
-	#define DATE_2025_04_20		0x00E2F3337CD7B000ULL
 
 	u64 clock, diff;
 	u64 sec, nsec;
@@ -114,7 +111,7 @@ static void fix_clock(char *newDate)
 
 	if(!newDate)
 	{
-		patchedDate = DATE_2025_04_20;
+		patchedDate = FIX_CLOCK_DATE;
 	}
 	else if((newDate[0] == '2') && (newDate[1] == '0') && (newDate[4] == '-') && (newDate[7] == '-')) // 2024-12-24 hh:mm:ss
 	{
@@ -134,7 +131,7 @@ static void fix_clock(char *newDate)
 	else
 	{
 		patchedDate = convertH(newDate);
-		if(patchedDate < DATE_2000_01_01) {patchedDate = DATE_2025_04_20; newDate = NULL;}
+		if(patchedDate < DATE_2000_01_01) {patchedDate = FIX_CLOCK_DATE; newDate = NULL;}
 	}
 
 	///////////
@@ -142,7 +139,7 @@ static void fix_clock(char *newDate)
 	{ system_call_4(0x362, 0x3002, 0, (u64)(u32)&a1, (u64)(u32)&a2); }
 	_cellRtcGetCurrentTick(&currentTick);
 
-	if((currentTick < DATE_2025_04_20) || newDate)
+	if((currentTick < FIX_CLOCK_DATE) || newDate)
 	{
 		_cellRtcSetCurrentTick(&patchedDate);
 		sysGetCurrentTime(&sec, &nsec);
@@ -151,7 +148,6 @@ static void fix_clock(char *newDate)
 		xSettingDateGetInterface()->SaveDiffTime(diff);
 	}
 
-//	u64 timedata = 0x00E2CABECEE02000ULL - DATE_2000_01_01;
 	u64 timedata = patchedDate - DATE_2000_01_01;
 	
 	if(!a1)

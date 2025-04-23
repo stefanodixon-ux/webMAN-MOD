@@ -132,7 +132,7 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 			{
 				ps3mapi_get_memory(pid, (address + addr), mem_buf, _64KB_);
 				cellFsWrite(fd, mem_buf, _64KB_, NULL);
-				sprintf(label, "0x%x", address + addr); show_progress(label, OV_DUMP);
+				if(overlay_enabled) {sprintf(label, "0x%x", address + addr); show_progress(label, OV_DUMP);}
 			}
 			cellFsClose(fd);
 		}
@@ -195,7 +195,7 @@ static void ps3mapi_mem_dump(char *buffer, char *html, char *param)
 static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *param)
 {
 	size_t size = 0;
-	u64 address = 0, addr, byte_addr, upper_memory = LV1_UPPER_MEMORY, found_address = 0, step = 1;
+	u64 address = 0, addr, byte_addr, upper_memory = 0x8FFFFFFFFFFFFFF8ULL, found_address = 0, step = 1;
 	u8 byte = 0, p = 0, lv1 = 0, rep = 1, oper = 0; // replace value
 	bool found = false, not_found = false;
 	int flen = 0, hilite;
@@ -203,7 +203,11 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 
 	char sfind[0x60];
 	u8 data[HEXVIEW_SIZE];
+
+	bool is_find = islike(param, "/find.lv");
 	bool is_file = islike(param, "/hexview.ps3/");
+	bool check_address = strchr(param, '!')  ? 1 : 0;
+
 	if(is_file)
 	{
 		char *fname = param + 12;
@@ -281,18 +285,18 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 
 	concat(buffer, "<pre>");
 
-	address |= BASE_MEMORY;
-
 	lv1 = strstr(param,".lv1?") ? 1 : 0;
 	#ifdef COBRA_ONLY
 	if(lv1) { system_call_1(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_DISABLE_COBRA); }
 	#endif
 
-	if(islike(param, "/find.lv"))
+	if(check_address || !lv1) address |= BASE_MEMORY;
+
+	if(is_find)
 	{
 		char *pos = strstr(param, "&rep="); if(pos) {rep = (u8)val(pos + 5); *pos = NULL;}
 
-		pos = strchr(param, '#'); if(!pos) pos = strstr(param, "&align");
+		pos = strchr(param, '!'); if(!pos) pos = strstr(param, "&align");
 		if(pos) {*pos = NULL, step = 4, address &= 0x80000000FFFFFFFCULL;} // find using aligned memory address (4X faster) e.g. /find.lv2?3000=3940ffff#
 
 		pos = strstr(param, "&stop=");
@@ -301,16 +305,15 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 		else
 			{upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8;}
 	}
-	else if(strchr(param, '#'))
-		upper_memory = 0x8FFFFFFFFFFFFFF8ULL; // use # to peek/poke any memory address
-	else
+	else if(check_address)
+	{
 		upper_memory = (lv1 ? LV1_UPPER_MEMORY : LV2_UPPER_MEMORY) - 8; // safe memory adddress
-
-	if(address > upper_memory) address = upper_memory - HEXVIEW_SIZE;
+		if(address > upper_memory) address = upper_memory - HEXVIEW_SIZE;
+	}
 
 	if((v == NULL) || (address > upper_memory)) { /* ignore find/poke if value is not provided or invalid address */ }
 	else
-	if(islike(param, "/find.lv"))
+	if(is_find)
 	{
 		char tfind[33], label[20];
 		if(isHEX(v + 1))

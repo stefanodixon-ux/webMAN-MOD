@@ -84,8 +84,9 @@ typedef struct
 	u8 minfan;    // minimum fan speed (25%)
 	u8 chart;     // 0=none, 1=log to CPU/RSX/FAN Chart
 	u8 maxfan;    // maximum fan speed (80%)
+	u8 man_ingame;// in-game increment for manual fan speed
 
-	u8 padding4[7];
+	u8 padding4[6];
 
 	// combo settings
 

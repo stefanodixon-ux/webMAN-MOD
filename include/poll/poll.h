@@ -16,7 +16,7 @@ static void poll_start_play_time(void)
 	 #ifdef WM_PROXY_SPRX
 		if(gTick.tick != rTick.tick)
 		{
-			gTick = rTick;
+			gTick = rTick; if(!max_temp) reset_fan_mode();
 
 			apply_remaps(); // re-apply remaps returning to XMB
 
@@ -57,8 +57,8 @@ static void poll_start_play_time(void)
 		}
 	 #endif
 	#endif
-		// fix startup time < 20220715
-		if(rTick.tick < 63793512657000000)
+		// fix startup time < FIX_CLOCK_DATE
+		if(rTick.tick < FIX_CLOCK_DATE)
 			cellRtcGetCurrentTick(&rTick);
 		gTick = rTick;
 
@@ -80,7 +80,7 @@ static void poll_start_play_time(void)
 
 		if(!toggle_snd0 && webman_config->nosnd0) { toggle_snd0 = true; cellFsChmod("/dev_bdvd/PS3_GAME/SND0.AT3", MODE); } /* re-enable SND0.AT3 in-game */
 
-		close_ftp_sessions_idle();
+		close_ftp_sessions_idle(); if(!max_temp) reset_fan_mode();
 
 		#ifdef PS3MAPI
 		// unmap gameboot audio

@@ -181,8 +181,17 @@ static void start_www(u64 conn_s_p)
 				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
 
 			#ifdef OVERCLOCKING
-			// overclock on startup (hold L2 or R2 to cancel auto-overclocking on startup)
-			if(!(is_pressed(CELL_PAD_CTRL_L2) || is_pressed(CELL_PAD_CTRL_R2)))
+			// overclock on startup (hold L2 or R2 to disable auto-overclocking on startup)
+			if(is_pressed(CELL_PAD_CTRL_L2) || is_pressed(CELL_PAD_CTRL_R2))
+			{
+				// Reset XMB GPU Core & VRAM frequencies and notify user about canceling overclocking with 2 beeps
+				if(webman_config->gpu_core || webman_config->gpu_vram)
+				{
+					webman_config->gpu_core = webman_config->gpu_vram = 0; // prevent accidental restore of XMB GPU Core & VRAM frequencies mounting a game
+					save_settings(); show_rsxclock(msg); BEEP2;
+				}
+			}
+			else
 				set_rsxclocks(webman_config->gpu_core, webman_config->gpu_vram); // set xmb gpu clock speed
 			#endif
 
@@ -207,7 +216,7 @@ static void start_www(u64 conn_s_p)
 				bool is_video = (webman_config->music == 2);
 				sprintf(msg, "Starting %s...\n"
 							 "Press O to abort",
-							 is_video ? "video" : "music"); msg[9] -= 0x20; // Capitalize Video/Music
+							 is_video ? "Video" : "Music");
 
 				show_msg_with_icon(is_video ? ICON_VIDEO : ICON_MUSIC, msg);
 

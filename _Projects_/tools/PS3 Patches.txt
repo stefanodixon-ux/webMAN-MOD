@@ -1,3 +1,21 @@
+-------------------------------------------------------
+Patch System Manager to allow PS2 emulators Fan Control
+-------------------------------------------------------
+Patch is for LV1 file, should be 4.75+ but it's based on 4.78 LV1 file. 
+Don't try to modify your LV1 without hardware flasher!
+
+This patch enables ability to get fan readings and to set fan speed and policy.
+This patch doesn't implement fan controls from webman to work in ps2 mode, additional code needs to be patched on PS2 emulators
+side to make something useful from it.
+
+Search for (4.75+ LV1):
+E8 03 01 C8 54 00 05 EE  2F A0 00 00 41 9E 00 E4
+
+Replace to (4.75+ LV1):
+E8 03 01 C8 54 00 05 EE  2F A0 00 00 60 00 00 00
+
+The patch can be enabled in 4.92 by patching LV1 with 0x60000000 at address 0x16914C (Thanks to kozarovv and @mrjaredbeta)
+
 ----------------------------------------------------------
 Patch PUP installer image in ps3swu.self/ps3swu2.self 4.92
 ----------------------------------------------------------

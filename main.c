@@ -109,7 +109,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.48f MOD"
+#define WM_VERSION			"1.47.48g MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -201,6 +201,8 @@ static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IX
 #define START_DAEMON		(0xC0FEBABE)
 #define REFRESH_CONTENT		(0xC0FEBAB0)
 #define WM_FILE_REQUEST		(0xC0FEBEB0)
+
+#define FIX_CLOCK_DATE		0x00E2F3337CD7B000ULL // 2025_04_20
 
 static u8 profile = 0; // 0 = default, 1-4 = user profiles, 5 = all profiles
 
@@ -461,7 +463,6 @@ static u8 mount_unk = EMU_OFF;
 #include "include/unused/ingame_music.h"
 #include "include/unused/secure_file_id.h"
 
-#include "include/feat/script.h"
 #include "include/feat/rospatch.h"
 #include "include/feat/video_rec.h"
 #include "include/feat/xmb_savebmp.h"
@@ -474,6 +475,7 @@ static u8 mount_unk = EMU_OFF;
 #include "include/mount/gamedata.h"
 #include "include/feat/scsi_info.h"
 #include "include/feat/clock.h"
+#include "include/feat/script.h"
 
 #include "include/ftp.h"
 

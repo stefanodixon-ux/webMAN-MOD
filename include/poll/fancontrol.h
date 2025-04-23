@@ -11,7 +11,7 @@
 
 #define FAN_AUTO2				(2)	/* webman_config->fanc: 0 = SYSCON, 1 = DYNAMIC, 2 = FAN_AUTO2) */
 
-#define PERCENT_TO_8BIT(val)	((val * 255) / 100)
+#define PERCENT_TO_8BIT(val)	(u8)(((int)(val) * 255) / 100)
 
 /* enable_fan_control */
 #define DISABLED		(0)
@@ -27,7 +27,7 @@
 
 static u8 fan_speed = MIN_FANSPEED_8BIT; // 0x33
 static u8 old_fan   = MIN_FANSPEED_8BIT; // 0x33
-static u8 max_temp  = 0; //syscon
+static u8 max_temp  = 0; //target temperature (0 = FAN_MANUAL/syscon)
 
 #define SC_SET_FAN_POLICY		(389)
 #define SC_GET_FAN_POLICY		(409)
@@ -84,6 +84,8 @@ static void set_fan_speed(u8 new_fan_speed)
 
 		u8 min_fan_speed = PERCENT_TO_8BIT(webman_config->minfan); if(min_fan_speed < MIN_FANSPEED_8BIT) min_fan_speed = MIN_FANSPEED_8BIT; // 20%
 		u8 max_fan_speed = PERCENT_TO_8BIT(webman_config->maxfan); if(max_fan_speed < 0x66) max_fan_speed = 0xCC; // 80% (0xCC) if < 40% (0x66)
+
+		if(!max_temp && IS_INGAME) new_fan_speed += PERCENT_TO_8BIT(webman_config->man_ingame); // add in-game increment for manual fan speed
 
 		if(new_fan_speed < MIN_FANSPEED_8BIT)
 		{
@@ -159,7 +161,7 @@ static void reset_fan_mode(void)
 {
 	fan_ps2_mode = false;
 
-	webman_config->man_speed = (u8)(((float)(webman_config->man_rate + 1) * 255.f) / 100.f); // manual fan speed
+	webman_config->man_speed = PERCENT_TO_8BIT(webman_config->man_rate + 1); // manual fan speed
 	webman_config->man_speed = RANGE(webman_config->man_speed, MIN_FANSPEED_8BIT, MAX_FANSPEED_8BIT);
 	set_fan_speed(webman_config->man_speed);
 

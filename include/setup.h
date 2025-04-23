@@ -306,6 +306,7 @@ static void setup_parse_settings(char *param)
 	webman_config->dyn_temp = get_valuen(param, "step=", 40, MAX_TEMPERATURE); //°C
 	webman_config->ps2_rate = get_valuen(param, "fsp0=", MIN_FANSPEED, webman_config->maxfan); // %
 	webman_config->man_rate = get_valuen(param, "manu=", MIN_FANSPEED, webman_config->maxfan); // %
+	webman_config->man_ingame = get_valuen(param, "mt=", 0, webman_config->maxfan); // %
 
 	if(IS_MARKED("&temp=1"))
 		webman_config->man_speed = (u8)(((float)(webman_config->man_rate + 1) * 255.f)/100.f); // manual fan speed
@@ -684,9 +685,10 @@ static void setup_form(char *buffer, char *html)
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->man_speed != 0), buffer);
-	sprintf(html, HTML_NUMBER("manu", "%i", "20", "95") " %% %s "
+	sprintf(html, HTML_NUMBER("manu", "%i", "20", "95") " %% %s + " HTML_NUMBER("mt", "%i", "0", "50") " %% in-game"
 					"<td> %s : " HTML_NUMBER("fsp0", "%i", "20", "95") " %% %s </tr>",
-					(webman_config->man_rate), STR_FANSPEED, STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, html);
+					webman_config->man_rate, STR_FANSPEED, webman_config->man_ingame,
+					STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, html);
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 3, "t_3", "Auto #2", _BR_, (webman_config->fanc == FAN_AUTO2), buffer);

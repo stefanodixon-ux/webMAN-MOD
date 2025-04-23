@@ -1,6 +1,6 @@
 /*
- FAIL SAFE    : SELECT+L3+L2+R2
- RESET SAFE   : SELECT+R3+L2+R2
+ FAIL SAFE    : SELECT+L3+L2+R2 - delete boot_plugins.txt only for sys_admin on XMB
+ RESET SAFE   : SELECT+R3+L2+R2 - reset config only for sys_admin on XMB
 
  REFRESH XML  : SELECT+L3 (+R2=profile1, +L2=profile2, +R1=profile3, +L1=profile4, +L1+R1=Reload XMB, +R2+L2=FAIL SAFE)
                                                 *or* Custom Combo -> /dev_hdd0/tmp/wm_combo/wm_custom_select_l3
