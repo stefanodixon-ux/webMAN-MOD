@@ -47,9 +47,9 @@
 	}
 	#endif // #ifdef MOUNT_GAMEI
 
-	// ------------------
-	// mount NPDRM game
-	// ------------------
+	// ---------------------------------------------------------------------------------
+	// mount .self or archive (.zip, .rar, .bz2, .tgz, .tar, .7z, .gz) through PKGLAUNCH
+	// ---------------------------------------------------------------------------------
 	#ifdef PKG_LAUNCHER
 	const char *ext = get_ext(_path);
 
@@ -75,6 +75,9 @@
 	}
 	#endif // #ifdef PKG_LAUNCHER
 
+	// -----------------------
+	// mount (load) vsh plugin
+	// -----------------------
 	struct CellFsStat st;
 	if(cellFsStat(_path, &st) == CELL_FS_SUCCEEDED && !extcasecmp(_path, ".sprx", 5))
 	{
@@ -83,6 +86,9 @@
 		goto mounting_done;
 	}
 
+	// ----------------------------------------------
+	// mount NPDRM game or homebrew from /dev_hdd0/game
+	// ----------------------------------------------
 	if(islike(_path, HDD0_GAME_DIR) || islike(_path, _HDD0_GAME_DIR) )
 	{
 		ret = isDir(_path);
@@ -102,6 +108,9 @@
 			ret = isDir(_path);
 		}
 
+		char *game_icon = strfmt(_path, "/ICON0.PNG");
+		if(not_exists(game_icon))
+			file_copy(wm_icons[iPS3], game_icon);
 
 		do_umount(false);
 		set_app_home(_path);

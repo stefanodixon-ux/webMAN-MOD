@@ -415,6 +415,10 @@ copy_ps2iso_to_hdd0:
 	#endif
 		// ----
 
+		concat2(filename, _path, "/PS3_GAME/ICON0.PNG");
+		if(not_exists(filename))
+			file_copy(wm_icons[iPS3], filename);
+
 		// -- reset USB bus
 		if(!webman_config->bus)
 		{

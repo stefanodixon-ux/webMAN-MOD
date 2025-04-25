@@ -114,7 +114,7 @@ static char *ReadHexPartial(char *read, int start, int len, char *buf, int bufSi
 	int cnt = 0;
 	for (int i = str; i >= start; i--, cnt++)
 	{
-		while ((read[i] == ' ' || read[i] == '\r' || read[i] == '\n') && i >= start)
+		while (ISSPACE(read[i]) && i >= start)
 			i--;
 		if (i < start)
 			break;

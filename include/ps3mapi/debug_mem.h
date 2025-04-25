@@ -127,12 +127,18 @@ static void ps3mapi_dump_process(const char *dump_file, u32 pid, u32 address, u3
 
 		if(cellFsOpen(dump_file, CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 		{
-			char label[20];
 			for(u32 addr = 0; addr < size; addr += _64KB_)
 			{
 				ps3mapi_get_memory(pid, (address + addr), mem_buf, _64KB_);
 				cellFsWrite(fd, mem_buf, _64KB_, NULL);
-				if(overlay_enabled) {sprintf(label, "0x%x", address + addr); show_progress(label, OV_DUMP);}
+				#ifdef FPS_OVERLAY
+				if(overlay_enabled)
+				{
+					char label[20];
+					sprintf(label, "0x%x", address + addr);
+					show_progress(label, OV_DUMP);
+				}
+				#endif
 			}
 			cellFsClose(fd);
 		}

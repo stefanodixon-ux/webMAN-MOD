@@ -1,30 +1,58 @@
-		if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3") ||
+	if(islike(param, "/write.ps3") || islike(param, "/write_ps3") || islike(param, "/trunc.ps3") ||
 	   islike(param, "/dozip.ps3") || islike(param, "/unzip.ps3"))
 	{
-		// /write.ps3<path>&t=<text> use | for line break (create text file)
-		// /write_ps3<path>&t=<text> use | for line break (add text to file)
-		// /write_ps3<path>&t=<text>&line=<num> insert line(s) to text file in line position
-		// /write.ps3<path>&t=<text>&line=<num> replace line of text file in line position
-		// /write.ps3<path>&t=<hex>&pos=<offset>          (patch file)
-		// /write.ps3?f=<path>&t=<text> use | for line break (create text file)
-		// /write_ps3?f=<path>&t=<text> use | for line break (add text to file)
-		// /write_ps3?f=<path>&t=<text>&line=<num> insert line(s) to text file in line position
-		// /write.ps3?f=<path>&t=<text>&line=<num> replace line of text file in line position
-		// /write.ps3?f=<path>&t=<text>&find=<code> insert <text> before <code> if <text> is not found
-		// /write.ps3?f=<path>&t=<hex>&pos=<offset>       (patch file)
+		// /write.ps3<path>&t=<text>                   use | for line break (create text file)
+		// /write_ps3<path>&t=<text>                   use | for line break (add text to file)
+		// /write_ps3<path>&t=<text>&line=<num>        insert line(s) to text file in line position
+		// /write.ps3<path>&t=<text>&line=<num>        replace line of text file in line position
+		// /write.ps3<path>&pos=<offset>&t=<hex>       (patch file)
+		// /write.ps3?f=<path>&t=<text>                use | for line break (create text file)
+		// /write_ps3?f=<path>&t=<text>                use | for line break (add text to file)
+		// /write_ps3?f=<path>&t=<text>&line=<num>     insert line(s) to text file in line position
+		// /write.ps3?f=<path>&t=<text>&line=<num>     replace line of text file in line position
+		// /write.ps3?f=<path>&t=<text>&find=<code>    insert <text> before <code> if <text> is not found
+		// /write.ps3?f=<path>&pos=<offset>&t=<hex>    (patch file)
+		// /write.ps3?f=<path>&pos=<offset>&b=<file>   (patch file with the content of a binary file)
 
 		u64 offset = 0; u32 size = 0;
 		char *filename = param + ((param[10] == '/') ? 10 : 13);
 		char *pos = strstr(filename, "&t=");
 		char *find = header; *find = 0;
+		char *use_file = NULL;
+		sys_addr_t sysmem2 = NULL;
+
+		if(!pos)
+		{
+			use_file = pos = strstr(filename, "&b=");
+		}
 
 		if(pos)
 		{
 			*pos = NULL;
 			char *data = pos + 3;
-			filepath_check(filename);
 
-			pos = strstr(data, "&pos=");
+			if(use_file)
+			{
+				char *patch_file = data; pos = strchr(data, '&'); if(pos) {*pos = NULL, use_file = pos;}
+				u32 buffer_size = (file_size(patch_file) < _64KB_) ? _64KB_ : _128KB_;
+				sysmem2 = sys_mem_allocate(buffer_size);
+
+				if(sysmem2)
+				{
+					data = (char*)sysmem2;
+					size = read_file(patch_file, data, buffer_size, 0); // replace data with the content of the patch file
+				}
+				else
+					goto exit_handleclient_www;
+			}
+
+			pos = strstr(filename, "&pos="); // /write.ps3?f=<path>&pos=<offset>&t=<hex> (this syntax allows include "&pos=" as text)
+			if(pos)
+				*pos = NULL; // truncate file name
+			else
+				pos = strstr(data, "&pos="); // /write.ps3?f=<path>&t=<hex>&pos=<offset> (original syntax)
+
+			filepath_check(filename);
 
 			if(pos)
 			{
@@ -33,47 +61,61 @@
 				//  get data offset
 				offset = val(pos);
 
-				_memset(header, sizeof(header));
-
-				//  write binary data
-				if(isHEX(data))
-					size = Hex2Bin(data, header);
+				if(use_file)
+					write_file(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, data, offset, size, false);
 				else
-					size = strcopy(header, data);
+				{
+					_memset(header, sizeof(header));
 
-				write_file(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, header, offset, size, false);
+					//  write binary data
+					if(isHEX(data))
+						size = Hex2Bin(data, header);
+					else
+						size = strcopy(header, data);
 
-				*header = '\0';
+					write_file(filename, CELL_FS_O_CREAT | CELL_FS_O_WRONLY, header, offset, size, false);
+
+					*header = '\0';
+				}
 			}
 			else
 			{
 				bool overwrite = islike(param, "/write.ps3");
+				char *param2 = data;
 
-				// convert pipes to line breaks
-				for(pos = data; *pos; ++pos) if(!memcmp(pos, "||", 2)) memcpy(pos, "\r\n", 2);
-				for(pos = data; *pos; ++pos) if(*pos == '|') *pos = '\n';
-				for(pos = data; *pos; ++pos) if(*pos == '`') *pos = '\t';
+				if(use_file)
+				{
+					// use &b= as param2 (restore & after file path)
+					*use_file = '&', param2 = use_file;
+				}
+				else
+				{
+					// convert pipes to line breaks
+					for(pos = param2; *pos; ++pos) if(!memcmp(pos, "||", 2)) memcpy(pos, "\r\n", 2);
+					for(pos = param2; *pos; ++pos) if(*pos == '|') *pos = '\n';
+					for(pos = param2; *pos; ++pos) if(*pos == '`') *pos = '\t';
+				}
 
-				pos = strstr(data, "&line=");
+				pos = strstr(param2, "&line="); if(!pos) pos = strstr(filename, "&line=");
 
 				if(!pos)
 				{
-					pos = strstr(data, "&find=");
+					pos = strstr(param2, "&find="); if(!pos) pos = strstr(filename, "&find=");
 					if(pos) strcpy(find, pos + 6);
 				}
 
 				if(pos)
 				{
+					*pos = NULL, pos += 6;
+
 					// write or insert data at line number
 					u32 buffer_size = (file_size(filename) < _64KB_) ? _64KB_ : _128KB_;
 					sys_addr_t sysmem = sys_mem_allocate(buffer_size);
 
 					if(sysmem)
 					{
-						*pos = NULL, pos += 6;
-
 						strcat(data, "\n");
-						u16 len = strlen(data);
+						int len = size + 1; //strlen(data);
 
 						char *buffer = (char*)sysmem;
 						size = read_file(filename, buffer, buffer_size, 0);
@@ -132,6 +174,9 @@
 				else
 					save_file(filename, data, APPEND_TEXT); // write_ps3 (add line)
 			}
+
+			if(sysmem2)
+				sys_memory_free(sysmem2);
 		}
 		else if(islike(param, "/trunc.ps3"))
 		{

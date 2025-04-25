@@ -4,7 +4,7 @@
 #define RANGE(a, b, c)		((a) <= (b) ? (b) : (a) >= (c) ? (c) : (a))
 #define BETWEEN(a, b, c)	( ((a) <= (b)) && ((b) <= (c)) )
 #define ISDIGIT(a)			( ('0' <= (a)) && ((a) <= '9') )
-#define ISSPACE(a)			( ( 0  <= (a)) && ((a) <= ' ') )
+#define ISSPACE(a)			( ( 0  <  (a)) && ((a) <= ' ') )
 #define ISHEX(a)			(ISDIGIT(a) || BETWEEN('a', LCASE(a), 'f'))
 #define	INT32(a)			(*((u32*)(a)))
 
