@@ -25,7 +25,7 @@ SYS_MODULE_STOP(slaunch_stop);
 #define STR_UNLOAD		"Unload webMAN"
 #define STR_QUIT		"Quit"
 
-#define APP_VERSION		"1.17"
+#define APP_VERSION		"1.18"
 
 typedef struct {
 	uint8_t  gmode;
@@ -920,6 +920,9 @@ static void slaunch_thread(uint64_t arg)
 	}
 
 	uint8_t gpl; uint16_t pg_idx; uint8_t p;
+
+	// is JAP?
+	xsettings()->GetEnterButtonAssign(&enter_button);
 
 	while(running)
 	{

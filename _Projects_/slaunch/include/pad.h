@@ -19,6 +19,8 @@
 #define PAD_CROSS    (1<<14)
 #define PAD_SQUARE   (1<<15)
 
+#define PAD_SWAP_OX  (PAD_CROSS | PAD_CIRCLE)
+
 /*
 #define _ES32(v)((uint32_t)(((((uint32_t)v) & 0xFF000000) >> 24) | \
 							((((uint32_t)v) & 0x00FF0000) >> 8 ) | \
@@ -28,6 +30,7 @@
 static CellPadData pdata;
 static uint32_t oldpad = 0, curpad = 0;
 static int32_t pad_port = 0;
+static int enter_button = 1;
 
 /***********************************************************************
 * search and return vsh_process toc
@@ -180,6 +183,11 @@ static void pad_read(void)
 				curpad |= PAD_UP;
 			else if (pdata.button[5] > 0xf0)
 				curpad |= PAD_DOWN;
+
+			if(!enter_button && (curpad & PAD_SWAP_OX))
+			{
+				curpad ^= PAD_SWAP_OX; // jap mode
+			}
 
 			if(curpad) {pad_port = port; break;}
 		}

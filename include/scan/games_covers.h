@@ -283,23 +283,27 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 		#ifdef ENGLISH_ONLY
 		if(webman_config->nocov == ONLINE_COVERS)
 		{
-			if(*title_id == 'S')
-				sprintf(icon, "http://raw.githubusercontent.com/aldostools/resources/master/PSX/%.4s_%.3s.%.2s_COV.JPG", title_id, title_id + 4, title_id + 7);
+			if(*title_id == 'S') // PS1/PS2
+				sprintf(icon, "%s/PSX/%.4s_%.3s.%.2s_COV.JPG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id, title_id + 4, title_id + 7);
+			else if((*title_id == 'U') || (*title_id == 'N' && strchr("FGHJXZ", title_id[3]))) // PSP
+				sprintf(icon, "%s/PSP/%s.PNG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id);
 			else
-				sprintf(icon, COVERS_PATH, title_id);
+				sprintf(icon, COVERS_PATH, title_id); // PS3
 			return true;
 		}
 		#else
 		if(use_custom_icon_path && (webman_config->nocov == ONLINE_COVERS) && (COVERS_PATH[0] == 'h'))
 		{
-			if(is_online_server && (*title_id != 'B' && *title_id != 'N' && *title_id != 'S')) {*icon = NULL; return false;}
+			if(is_online_server && (*title_id != 'B' && *title_id != 'N' && *title_id != 'S')) {*icon = NULL; return false;} // PS3
 
-			if(*title_id == 'S')
-				sprintf(icon, "http://raw.githubusercontent.com/aldostools/resources/master/PSX/%.4s_%.3s.%.2s_COV.JPG", title_id, title_id + 4, title_id + 7);
+			if(*title_id == 'S') // PS1/PS2
+				sprintf(icon, "%s/PSX/%.4s_%.3s.%.2s_COV.JPG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id, title_id + 4, title_id + 7);
+			else if((*title_id == 'U') || (*title_id == 'N' && strchr("FGHJXZ", title_id[3]))) // PSP
+				sprintf(icon, "%s/PSP/%s.PNG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id);
 			else if(use_icon_region) sprintf(icon, COVERS_PATH, (title_id[2] == 'U') ? "US" :
 																(title_id[2] == 'J') ? "JA" : "EN", title_id);
 			else
-								sprintf(icon, COVERS_PATH, title_id);
+				sprintf(icon, COVERS_PATH, title_id);
 			return true;
 		}
 		#endif
@@ -754,10 +758,11 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 		{
 			char *iso_file = param_sfo;
 
-			if((f1 == id_PSPISO) && (extcasecmp(entry_name, ".iso", 4)))
+			if((f1 == id_PSPISO)  && (!extcasecmp(entry_name, ".iso", 4)))
 			{
 				concat_path(iso_file, param, entry_name);
 				read_file(iso_file, title_id, 10, 0x8373); title_id[10] = 0;
+				if(title_id[4] == '-') memcpy(title_id + 4, title_id + 5, 6);
 			}
 			else if(f1 == id_PSXISO || f1 == id_PS2ISO)
 			{
@@ -794,7 +799,7 @@ static int get_name_iso_or_sfo(char *param_sfo, char *title_id, char *icon, cons
 									buf[i + 0x25] = '-'; // replace _ with -
 									memcpy(title_id, &buf[i + 0x21], 8);     // copy SLES-123
 									memcpy(title_id + 8, &buf[i + 0x2A], 2); // copy 45
-									title_id[10] = 0;
+									title_id[10] = 0; memcpy(title_id + 4, title_id + 5, 6);
 									break;
 								}
 							}
