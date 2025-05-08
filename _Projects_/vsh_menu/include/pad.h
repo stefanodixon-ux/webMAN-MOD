@@ -20,8 +20,11 @@ void MyPadGetData(int32_t port_no, CellPadData *data);
 #define PAD_CROSS    (1<<14)
 #define PAD_SQUARE   (1<<15)
 
+#define PAD_SWAP_OX  (PAD_CROSS | PAD_CIRCLE)
+
 static CellPadData pdata;
 static uint32_t oldpad=0, curpad=0;
+static int enter_button = 1;
 
 /***********************************************************************
 * search and return vsh_process toc
@@ -156,6 +159,11 @@ static void pad_read(void)
 		curpad |= PAD_UP;
 	else if (pdata.button[5] > 0xe0)
 		curpad |= PAD_DOWN;
+
+	if(!enter_button && (curpad & PAD_SWAP_OX))
+	{
+		curpad ^= PAD_SWAP_OX; // jap mode
+	}
 
 	sys_timer_usleep(20000);
 }

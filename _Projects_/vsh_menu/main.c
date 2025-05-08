@@ -1469,6 +1469,9 @@ static void vsh_menu_thread(uint64_t arg)
 	get_firmware_version();
 	memset(payload_type, 0, 64);
 
+	// is JAP?
+	xsettings()->GetEnterButtonAssign(&enter_button);
+
 	while(running)
 	{
 		if(!menu_running)													 // VSH menu is not running, normal XMB execution
