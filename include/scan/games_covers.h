@@ -38,7 +38,9 @@ enum icon_type
 	iROM  = 13,
 };
 
-#define HAS_TITLE_ID  BETWEEN('A', *title_id, 'Z')
+#define HAS_TITLE_ID		BETWEEN('A', *title_id, 'Z')
+#define IS_PSX_TITLE_ID		(*title_id == 'S')
+#define IS_PSP_TITLE_ID		((*title_id == 'U') || (*title_id == 'N' && strchr("FGHJXZ", title_id[3])))
 
 #define NO_ICON       (!*icon)
 
@@ -80,6 +82,12 @@ static void check_cover_folders(char *folder_path)
 		concat2(folder_path, cpath[p], "/covers_retro/psx");
 		covers_retro_exist[p] = isDir(folder_path) && !is_empty_dir(folder_path);  // MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
 	}
+
+	#ifdef COBRA_ONLY
+	concat2(folder_path, MM_ROOT_STD, "/covers_retro/psp");
+	covers_retro_exist[3] = isDir(folder_path) && !is_empty_dir(folder_path);
+	#endif
+
 	for(u8 p = 0; p < 5; p++)
 	{
 		concat2(folder_path, cpath[p], "/covers");
@@ -242,7 +250,7 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 		#endif
 
 		// Search retro covers in MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL
-		if(*title_id == 'S')
+		if(IS_PSX_TITLE_ID)
 		{
 			for(u8 p = 0; p < 3; p++)
 			{
@@ -256,6 +264,17 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 				}
 			}
 		}
+
+		#ifdef COBRA_ONLY
+		if(IS_PSP_TITLE_ID) // PSP
+		{
+			if(covers_retro_exist[3])
+			{
+				flen = sprintf(icon, "%s/covers_retro/psp/%s", MM_ROOT_STD, title_id);
+				if(get_image_file2(icon, flen)) return true;
+			}
+		}
+		#endif
 
 		// Search covers in MM_ROOT_STD, MM_ROOT_STL, MM_ROOT_SSTL, "/dev_hdd0/GAMES", "/dev_hdd0/GAMEZ"
 		for(u8 p = 0; p < 6; p++)
@@ -283,9 +302,9 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 		#ifdef ENGLISH_ONLY
 		if(webman_config->nocov == ONLINE_COVERS)
 		{
-			if(*title_id == 'S') // PS1/PS2
+			if(IS_PSX_TITLE_ID) // PS1/PS2
 				sprintf(icon, "%s/PSX/%.4s_%.3s.%.2s_COV.JPG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id, title_id + 4, title_id + 7);
-			else if((*title_id == 'U') || (*title_id == 'N' && strchr("FGHJXZ", title_id[3]))) // PSP
+			else if(IS_PSP_TITLE_ID) // PSP
 				sprintf(icon, "%s/PSP/%s.PNG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id);
 			else
 				sprintf(icon, COVERS_PATH, title_id); // PS3
@@ -296,9 +315,9 @@ static bool get_cover_by_titleid(char *icon, const char *title_id)
 		{
 			if(is_online_server && (*title_id != 'B' && *title_id != 'N' && *title_id != 'S')) {*icon = NULL; return false;} // PS3
 
-			if(*title_id == 'S') // PS1/PS2
+			if(IS_PSX_TITLE_ID) // PS1/PS2
 				sprintf(icon, "%s/PSX/%.4s_%.3s.%.2s_COV.JPG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id, title_id + 4, title_id + 7);
-			else if((*title_id == 'U') || (*title_id == 'N' && strchr("FGHJXZ", title_id[3]))) // PSP
+			else if(IS_PSP_TITLE_ID) // PSP
 				sprintf(icon, "%s/PSP/%s.PNG", "http://raw.githubusercontent.com/aldostools/resources/master", title_id);
 			else if(use_icon_region) sprintf(icon, COVERS_PATH, (title_id[2] == 'U') ? "US" :
 																(title_id[2] == 'J') ? "JA" : "EN", title_id);
