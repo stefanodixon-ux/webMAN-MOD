@@ -38,7 +38,10 @@
 				if(alpha)
 					strcpy((char*)(wmconfig) + offset, pos);
 				else
+				{
 					wmconfig[offset] = (u8)val(pos);
+					if(offset == 595) profile = wmconfig[offset];
+				}
 
 				if(!sep) break; pos = sep + 1;
 			}
