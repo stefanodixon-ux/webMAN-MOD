@@ -3,7 +3,7 @@
 		// /setup.ps3?          reset webman settings
 		// /setup.ps3?<params>  save settings
 
-		if(strchr(param, '&') == NULL)
+		if(islike(param, "/setup.ps3?") && !strchr(param, '&'))
 		{
 			reset_settings();
 		}

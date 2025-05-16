@@ -1354,13 +1354,13 @@ static void read_settings(void)
 	webman_config->lang = 0; // english
 	#endif
 
-	bool save_defaults = false;
+	bool save_defaults = (read_file(WM_CONFIG_FILE, (char*)&wmconfig, sizeof(WebmanCfg), DONT_CLEAR_DATA) == 0); // false;
 
 	// read current settings
-	if(file_exists(WM_CONFIG_FILE))
-		read_file(WM_CONFIG_FILE, (char*)&wmconfig, sizeof(WebmanCfg), DONT_CLEAR_DATA);
-	else
-		save_defaults = true;
+	//if(file_exists(WM_CONFIG_FILE))
+	//	read_file(WM_CONFIG_FILE, (char*)&wmconfig, sizeof(WebmanCfg), DONT_CLEAR_DATA);
+	//else
+	//	save_defaults = true;
 
 	#ifndef COBRA_ONLY
 	webman_config->spp = 0; //disable removal of syscalls on nonCobra

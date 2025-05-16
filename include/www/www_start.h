@@ -230,11 +230,13 @@ static void start_www(u64 conn_s_p)
 			#ifdef FIX_CLOCK
 			if(webman_config->auto_fixclock)
 			{
+				while(wait_for_xmb()) ; // wait for XMB
+
 				CellRtcDateTime pTime;
 				cellRtcGetCurrentClockLocalTime(&pTime);
 
 				#define date_time full_path
-				if(pTime.year < 2025)update_clock_from_server_time(date_time);
+				if(pTime.year < 2025) update_clock_from_server_time(date_time);
 			}
 			#endif
 		}

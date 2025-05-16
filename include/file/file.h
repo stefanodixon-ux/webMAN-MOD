@@ -451,7 +451,7 @@ int wait_for(const char *path, u8 timeout)
 
 #define MAX_WAIT	30
 
-static u8 wait_for_xmb(void)
+static bool wait_for_xmb(void)
 {
 	u8 t = 0;
 	while(working && (View_Find("explore_plugin") == 0)) {if(++t > MAX_WAIT) break; sys_ppu_thread_sleep(1);}

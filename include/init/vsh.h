@@ -1,3 +1,4 @@
+
 // Explore_Plugin Commands: https://www.psdevwiki.com/ps3/Explore_plugin
 
 #define USER_LOGGEDIN		(xusers()->GetCurrentUserNumber() > 0)
