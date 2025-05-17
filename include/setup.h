@@ -880,11 +880,14 @@ static void setup_form(char *buffer, char *html)
 		
 	#ifdef OVERCLOCKING
 	// overclocking settings
-	add_html(dat_GPU_CORE_CLOCK1, 50 * (int)(webman_config->gpu_core), buffer, html); // XMB GPU Core Clock speed
-	add_html(dat_GPU_VRAM_CLOCK1, 25 * (int)(webman_config->gpu_vram), buffer, html); // XMB GPU VRAM Clock speed
+	if(get_rsxclock(GPU_CORE_CLOCK))
+	{
+		add_html(dat_GPU_CORE_CLOCK1, 50 * (int)(webman_config->gpu_core), buffer, html); // XMB GPU Core Clock speed
+		add_html(dat_GPU_VRAM_CLOCK1, 25 * (int)(webman_config->gpu_vram), buffer, html); // XMB GPU VRAM Clock speed
 
-	add_html(dat_GPU_CORE_CLOCK2, 50 * (int)(webman_config->gpu2_core), buffer, html); // in-game GPU Core Clock speed
-	add_html(dat_GPU_VRAM_CLOCK2, 25 * (int)(webman_config->gpu2_vram), buffer, html); // in-game GPU VRAM Clock speed
+		add_html(dat_GPU_CORE_CLOCK2, 50 * (int)(webman_config->gpu2_core), buffer, html); // in-game GPU Core Clock speed
+		add_html(dat_GPU_VRAM_CLOCK2, 25 * (int)(webman_config->gpu2_vram), buffer, html); // in-game GPU VRAM Clock speed
+	}
 	#endif
 
 	//general settings

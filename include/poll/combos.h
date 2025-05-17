@@ -910,8 +910,11 @@
 
 							#ifdef OVERCLOCKING
 							// Show RSX Core & VRAM clock speeds
-							show_rsxclock(msg);
-							sys_ppu_thread_sleep(5);
+							if(get_rsxclock(GPU_CORE_CLOCK))
+							{
+								show_rsxclock(msg);
+								sys_ppu_thread_sleep(5);
+							}
 							#endif
 
 							#ifdef SPOOF_CONSOLEID

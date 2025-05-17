@@ -57,7 +57,10 @@ static int get_rsxclock(u64 clock_address) // clock_address = GPU_CORE_CLOCK or 
 
 static void show_rsxclock(char *msg)
 {
-	sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); show_msg(msg);
+	if(get_rsxclock(GPU_CORE_CLOCK))
+	{
+		sprintf(msg, "GPU: %i Mhz | VRAM: %i Mhz", get_rsxclock(GPU_CORE_CLOCK), get_rsxclock(GPU_VRAM_CLOCK)); show_msg(msg);
+	}
 }
 #endif //#ifdef OVERCLOCKING
 
