@@ -172,6 +172,16 @@ static void check_path_alias(char *param)
 
 	if(islike(param, "/dev_blind")) enable_dev_blind(NULL);
 
+	if(islike(param, "/dev_usbxxx"))
+	{
+		// find first USB device mounted
+		char dev_usb[14];
+		for(u8 n = 0; n < 128; n++)
+		{
+			sprintf(dev_usb, "/dev_usb%03i", n); if(isDir(dev_usb)) {memcpy(param, dev_usb, 11); break;}
+		}
+	}
+
 	if(not_exists(param))
 	{
 		check_path_tags(param);

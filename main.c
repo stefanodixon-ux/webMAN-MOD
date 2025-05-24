@@ -204,7 +204,8 @@ static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IX
 #define REFRESH_CONTENT		(0xC0FEBAB0)
 #define WM_FILE_REQUEST		(0xC0FEBEB0)
 
-#define FIX_CLOCK_DATE		0x00E2F5F39149D000ULL // 2025_05_25
+//#define FIX_CLOCK_DATE		0x00E2F5F39149D000ULL // 2025_05_25
+#define FIX_CLOCK_DATE			0x00E2F5DF73727000ULL // 2025_05_24
 
 static u8 profile = 0; // 0 = default, 1-4 = user profiles, 5 = all profiles
 

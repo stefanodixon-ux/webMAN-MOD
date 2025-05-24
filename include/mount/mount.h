@@ -442,8 +442,11 @@ static bool game_mount(char *buffer, char *html, char *param, char *tempstr, boo
 					concat2(target, source, get_filename(cp_path));
 					strcpy(source, cp_path);
 				}
-				else
-				if(*target) {if(!isDir(source) && isDir(target)) strcat(target, filename);} // &to=<destination>
+				else if(*target)
+				{
+					if( islike(target, "/dev_usbxxx")) {check_path_alias(target);} // find first USB device mounted
+					if(!isDir(source) && isDir(target)) strcat(target, filename); // &to=<destination>
+				}
 				else
 				{
 					const char *ext = get_ext(source);
