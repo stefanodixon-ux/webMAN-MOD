@@ -41,6 +41,7 @@ typedef struct {
 
 #define IS_ON_XMB			(vshmain_EB757101() == 0)
 #define IS_INGAME			(vshmain_EB757101())
+#define TOGGLE(var)			var ^= 1
 
 #define MAX_GAMES 2000
 #define WMTMP				"/dev_hdd0/tmp/wmtmp"				// webMAN work/temp folder
@@ -122,24 +123,24 @@ static _slaunch *slaunch = NULL;
 
 // globals
 static uint16_t init_delay = 0;
-static uint16_t games = 0;
-static uint16_t cur_game=0, cur_game_=0, fav_game=0;
+static uint16_t games_count = 0;
+static uint16_t cur_game = 0, cur_game_ = 0, fav_game = 0;
 static uint8_t do_once = 1;
 
-uint32_t disp_w=0;
-uint32_t disp_h=0;
-uint32_t gpp=10;
+uint32_t disp_w = 0;
+uint32_t disp_h = 0;
+uint32_t gpp = 10;
 
-uint8_t web_page=0;
-uint8_t read_pad=1;
+uint8_t web_page = 0;
+uint8_t read_pad = 1;
 
-static uint8_t key_repeat=0, can_skip=0;
+static uint8_t key_repeat = 0, can_skip = 0;
 
-static uint8_t opt_mode=0;
-static uint8_t unload_mode=1;
+static uint8_t opt_mode = 0;
+static uint8_t unload_mode = 1;
 
-static uint64_t tick=0x80;
-static int8_t  delta=10;
+static uint64_t tick = 0x80;
+static int8_t  delta = 10;
 
 #define SYS_PPU_THREAD_NONE        (sys_ppu_thread_t)NONE
 
@@ -201,9 +202,9 @@ static void load_background(void)
 
 static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 {
-	if(game_idx>=games) game_idx=0;
+	if(game_idx >= games_count) game_idx = 0;
 
-	if(!games) return;
+	if(!games_count) return;
 
 	const int left_margin = 56;
 
@@ -228,11 +229,11 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 	draw_selection(game_idx);
 
 	// draw game icons (5x2) or (10x4)
-	j=(game_idx/gpp)*gpp;
-	p=(games-1) - ((games-1) % gpp);
+	j = (game_idx / gpp) * gpp;
+	p = (games_count-1) - ((games_count-1) % gpp);
 	for(i = j; slot < gpp; i++)
 	{
-		if(i >= games) break;
+		if(i >= games_count) break;
 
 		// abort drawing if page is changed with L1 or R1 while processing
 		if(i & 1)
@@ -258,7 +259,7 @@ static void draw_page(uint16_t game_idx, uint8_t key_repeat)
 
 		if(load_img_bitmap(++slot, slaunch[i].name + slaunch[i].icon_pos, wm_icons[slaunch[i].type])<0) break;
 
-		if(gpp==10)
+		if(gpp == 10)
 		{
 			py=((i-j)/5)*400+90+((300-ctx.img[slot].h)>>1);
 			ctx.img[slot].x=((px+((320-ctx.img[slot].w)>>1))>>1)<<1;
@@ -285,7 +286,7 @@ static void draw_selection(uint16_t game_idx)
 {
 	char one_of[32], mode[8];
 
-	if(games)
+	if(game_idx < games_count)
 	{
 		char *path = slaunch[game_idx].name + slaunch[game_idx].path_pos;
 
@@ -311,7 +312,7 @@ static void draw_selection(uint16_t game_idx)
 	if(ISHD(disp_w))	set_font(20.f, 20.f, 1.0f, 1);
 	else				set_font(32.f, 20.f, 2.0f, 1);
 	ctx.fg_color=LIGHT_TEXT;
-	sprintf(one_of, "%i / %i", game_idx+1, games);
+	sprintf(one_of, "%i / %i", game_idx + 1, games_count);
 	print_text(ctx.menu, CANVAS_W, CENTER_TEXT, 64, one_of );
 
 	// game list mode
@@ -355,41 +356,41 @@ static void draw_side_menu_option(uint8_t option)
 	ctx.fg_color=BRIGHT_TEXT;
 	set_font(28.f, 24.f, 1.f, 0); print_text(ctx.side, (CANVAS_W-SM_X), SM_TO, SM_Y, "sLaunch MOD " APP_VERSION);
 
-	ctx.fg_color=(option==1 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=1)*32, SM_Y+4*24, (cur_mode >= TYPE_FAV) ? STR_FAVORITES :
-																			cur_mode ? game_type[cur_mode] : STR_ALLGAMES);
-	ctx.fg_color=(option==2 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=2)*32, SM_Y+6*24, STR_UNMOUNT);
-	ctx.fg_color=(option==3 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=3)*32, SM_Y+8*24, STR_REFRESH);
-	ctx.fg_color=(option==4 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=4)*32, SM_Y+10*24, opt_mode ? STR_SYSCALLS : STR_GAMEDATA);
-	ctx.fg_color=(option==5 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=5)*32, SM_Y+12*24, STR_RESTART);
-	ctx.fg_color=(option==6 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=6)*32, SM_Y+14*24, STR_SHUTDOWN);
-	ctx.fg_color=(option==7 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=7)*32, SM_Y+16*24, unload_mode ? STR_UNLOAD : STR_QUIT);
-	ctx.fg_color=(option==8 ? WHITE_TEXT : GRAY_TEXT);
-	print_text(ctx.side, (CANVAS_W-SM_X), SM_TO+(option!=8)*32, SM_Y+22*24, (web_page == 1) ? STR_FILEMNGR :
+	ctx.fg_color=(option == 1 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 1)*32, SM_Y + 4 * 24, (cur_mode >= TYPE_FAV) ? STR_FAVORITES :
+																					cur_mode ? game_type[cur_mode] : STR_ALLGAMES);
+	ctx.fg_color=(option == 2 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 2)*32, SM_Y + 6 * 24, STR_UNMOUNT);
+	ctx.fg_color=(option == 3 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 3)*32, SM_Y + 8 * 24, STR_REFRESH);
+	ctx.fg_color=(option == 4 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 4)*32, SM_Y + 10 * 24, opt_mode ? STR_SYSCALLS : STR_GAMEDATA);
+	ctx.fg_color=(option == 5 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 5)*32, SM_Y + 12 * 24, STR_RESTART);
+	ctx.fg_color=(option == 6 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 6)*32, SM_Y + 14 * 24, STR_SHUTDOWN);
+	ctx.fg_color=(option == 7 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 7)*32, SM_Y + 16 * 24, unload_mode ? STR_UNLOAD : STR_QUIT);
+	ctx.fg_color=(option == 8 ? WHITE_TEXT : GRAY_TEXT);
+	print_text(ctx.side, (CANVAS_W - SM_X), SM_TO + (option != 8)*32, SM_Y + 22 * 24, (web_page == 1) ? STR_FILEMNGR :
 																			(web_page == 0) ? STR_SETUP :
 																			(gpp == 10) ? "Grid 10x4" : "Grid 5x2");
 
-	set_texture_direct(ctx.side, SM_X, 0, (CANVAS_W-SM_X), CANVAS_H);
-	set_textbox(GRAY, SM_X+SM_TO, SM_Y+40,    CANVAS_W-SM_X-SM_TO*2, 1);
-	set_textbox(GRAY, SM_X+SM_TO, SM_Y+20*24, CANVAS_W-SM_X-SM_TO*2, 1);
+	set_texture_direct(ctx.side, SM_X, 0, (CANVAS_W - SM_X), CANVAS_H);
+	set_textbox(GRAY, SM_X + SM_TO, SM_Y + 40,    CANVAS_W - SM_X - SM_TO * 2, 1);
+	set_textbox(GRAY, SM_X + SM_TO, SM_Y + 20*24, CANVAS_W - SM_X - SM_TO * 2, 1);
 }
 
 static uint8_t draw_side_menu(void)
 {
-	uint8_t option=1;
+	uint8_t option = 1;
 	play_rco_sound("snd_cursor");
 
-	dump_bg(SM_X-6, 0, (CANVAS_W-SM_X)+6, CANVAS_H);
+	dump_bg(SM_X - 6, 0, (CANVAS_W - SM_X) + 6, CANVAS_H);
 
-	set_textbox(0xffe0e0e0ffd0d0d0, SM_X-6, 0, 2, CANVAS_H);
-	set_textbox(0xffc0c0c0ffb0b0b0, SM_X-4, 0, 2, CANVAS_H);
-	set_textbox(0xffa0a0a0ff909090, SM_X-2, 0, 2, CANVAS_H);
+	set_textbox(0xffe0e0e0ffd0d0d0, SM_X - 6, 0, 2, CANVAS_H);
+	set_textbox(0xffc0c0c0ffb0b0b0, SM_X - 4, 0, 2, CANVAS_H);
+	set_textbox(0xffa0a0a0ff909090, SM_X - 2, 0, 2, CANVAS_H);
 
 
 	cur_mode =  fav_mode ? gmode : TYPE_FAV;
@@ -397,21 +398,21 @@ static uint8_t draw_side_menu(void)
 	draw_side_menu_option(option);
 
 	wait_for_button_release(PAD_TRIANGLE);
-		
+
 	while(slaunch_running)
 	{
 		pad_read();
 
 		if(curpad)
 		{
-			if(curpad==oldpad)	// key-repeat
+			if(curpad == oldpad)	// key-repeat
 			{
 				if(++init_delay <= 20) continue;
-				sys_timer_usleep(40000); key_repeat=1;
+				sys_timer_usleep(40000); key_repeat = 1;
 			}
 			else
 			{
-				init_delay=key_repeat=0;
+				init_delay = key_repeat = 0;
 			}
 
 			oldpad = curpad;
@@ -423,8 +424,8 @@ static uint8_t draw_side_menu(void)
 					if(curpad & PAD_LEFT ) do {if(cur_mode == TYPE_ALL) cur_mode = TYPE_FAV; else --cur_mode;} while(!fav_mode && (cur_mode == gmode));
 					if(curpad & PAD_RIGHT) do {if(cur_mode <  TYPE_FAV) ++cur_mode; else cur_mode = TYPE_ALL;} while(!fav_mode && (cur_mode == gmode));
 				}
-				if(option == 4) opt_mode^=1;	// opt_mode    ? STR_SYSCALLS : STR_GAMEDATA
-				if(option == 7) unload_mode^=1; // unload_mode ? STR_UNLOAD   : STR_QUIT
+				if(option == 4) TOGGLE(opt_mode);	// opt_mode    ? STR_SYSCALLS : STR_GAMEDATA
+				if(option == 7) TOGGLE(unload_mode); // unload_mode ? STR_UNLOAD   : STR_QUIT
 				if(option == 8)
 				{
 					if(curpad & PAD_LEFT ) {if(web_page <= 0) web_page = 2; else --web_page;}
@@ -435,10 +436,10 @@ static uint8_t draw_side_menu(void)
 			if(curpad & PAD_UP)		option--;
 			if(curpad & PAD_DOWN)	option++;
 
-			if(option<1) option=8;
-			if(option>8) option=1;
+			if(option < 1) option = 8;
+			if(option > 8) option = 1;
 
-			if(curpad & PAD_TRIANGLE || curpad & PAD_CIRCLE) {option=0; play_rco_sound("snd_cancel"); break;}
+			if(curpad & PAD_TRIANGLE || curpad & PAD_CIRCLE) {option = 0; play_rco_sound("snd_cancel"); break;}
 
 			if(curpad & PAD_CROSS) {play_rco_sound("snd_system_ok"); break;}
 
@@ -447,11 +448,11 @@ static uint8_t draw_side_menu(void)
 		}
 		else
 		{
-			init_delay=oldpad=0;
+			init_delay=oldpad = 0;
 		}
 	}
-	init_delay=key_repeat=0;
-	set_texture_direct(ctx.canvas, SM_X-6, 0, (CANVAS_W-SM_X)+6, CANVAS_H);
+	init_delay = key_repeat = 0;
+	set_texture_direct(ctx.canvas, SM_X - 6, 0, (CANVAS_W - SM_X) + 6, CANVAS_H);
 
 	load_background();
 
@@ -460,7 +461,7 @@ static uint8_t draw_side_menu(void)
 		// toggle grid
 		if((option == 8) && (web_page >= 2))
 		{
-			gpp^=34; draw_page(cur_game, 0);
+			gpp ^= 34; draw_page(cur_game, 0);
 			web_page = curpad = init_delay = 0;
 			return 0;
 		}
@@ -497,7 +498,7 @@ static uint8_t draw_side_menu(void)
 			//else
 			//	send_wm_request("/unloadprx.ps3?prx=sLaunch");
 
-			running=0;
+			running = 0;
 		}
 		if(option == 8)
 		{
@@ -516,7 +517,7 @@ static void show_no_content(void)
 	else
 		sprintf(no_content, "There are no %s%stitles.", game_type[gmode], gmode ? " " : "\0");
 
-	ctx.fg_color=WHITE_TEXT;
+	ctx.fg_color = WHITE_TEXT;
 	set_font(32.f, 32.f, 1.5f, 1); print_text(ctx.canvas, CANVAS_W, 0, 520, no_content);
 	flip_frame();
 
@@ -529,14 +530,10 @@ static void show_content(void)
 {
 	slaunch_running = 1;
 
-	if(games)
-	{
+	if(games_count)
 		draw_page(cur_game, 0);
-	}
-	else	// no content
-	{
+	else
 		show_no_content();
-	}
 }
 
 static void load_config(void)
@@ -585,7 +582,7 @@ static void load_data(void)
 {
 	int fd;
 
-	//if(get_vsh_plugin_slot_by_name("WWWD") >= 7) {games=fav_mode=0, gmode = TYPE_FAV; return;}
+	//if(get_vsh_plugin_slot_by_name("WWWD") >= 7) {games_count = fav_mode = 0, gmode = TYPE_FAV; return;}
 
 	char filename[64];
 	if(fav_mode) sprintf(filename, WMTMP "/" SLIST "1.bin"); else sprintf(filename, WMTMP "/" SLIST ".bin");
@@ -594,31 +591,36 @@ static void load_data(void)
 	if(fav_mode && (size == 0)) {sprintf(filename, WMTMP "/" SLIST ".bin"); size = file_len(filename); fav_mode = TYPE_ALL;} else
 	if(fav_mode) cur_game = fav_game; else cur_game = cur_game_;
 
-	games = size / sizeof(_slaunch);
+	games_count = size / sizeof(_slaunch);
 
-	if(games >= MAX_GAMES) games = MAX_GAMES-1;
-	if(cur_game >= games) cur_game = 0;
+	if(games_count >= MAX_GAMES) games_count = MAX_GAMES-1;
+	if(cur_game >= games_count) cur_game = 0;
 
 reload:
 	reset_heap(); load_background(); slaunch = NULL;
 
-	if(games && (cellFsOpen(filename, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED))
+	if(games_count && (cellFsOpen(filename, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED))
 	{
 		// load game list in MC memory
-		slaunch = (_slaunch*)mem_alloc((games+1)*sizeof(_slaunch));
+		while(games_count)
+		{
+			slaunch = (_slaunch*)mem_alloc((games_count + 1) * sizeof(_slaunch));
+			if(slaunch) break;
+			games_count--;
+		}
 
-		cellFsRead(fd, (void *)slaunch, sizeof(_slaunch)*games, NULL);
+		cellFsRead(fd, (void *)slaunch, sizeof(_slaunch) * games_count, NULL);
 		cellFsClose(fd);
 
 		//if(!fav_mode)
 		{
-			uint16_t ngames = games; char *path;
+			uint16_t ngames = games_count; char *path;
 
 			if(gmode)		// filter games by type
 			{
 				ngames = 0;
 
-				for(uint16_t n=0; n < games; n++)
+				for(uint16_t n = 0; n < games_count; n++)
 				{
 					if(slaunch[n].type == gmode) slaunch[ngames++] = slaunch[n];
 				}
@@ -630,15 +632,15 @@ reload:
 			{
 				int8_t dlen = strlen(drives[dmode-1]);
 
-				games = ngames; ngames = 0;
+				games_count = ngames; ngames = 0;
 
-				for(uint16_t n=0; n < games; n++)
+				for(uint16_t n = 0; n < games_count; n++)
 				{
 					path = slaunch[n].name + slaunch[n].path_pos;
 
-					if( ((dmode == NTFS) && (strncmp(path+10, "/dev_hdd0/tmp", 13)  ==0)) ||
-						((dmode == HDD0) && (strncmp(path+11, drives[dmode-1], dlen)==0) && (path[10+10]!='t')) ||
-						((dmode >  NTFS) && (strncmp(path+11, drives[dmode-1], dlen)==0))
+					if( ((dmode == NTFS) && (strncmp(path + 10, "/dev_hdd0/tmp", 13)   == 0)) ||
+						((dmode == HDD0) && (strncmp(path + 11, drives[dmode-1], dlen) == 0) && (path[10+10]!='t')) ||
+						((dmode >  NTFS) && (strncmp(path + 11, drives[dmode-1], dlen) == 0))
 					  )
 						slaunch[ngames++] = slaunch[n];
 				}
@@ -646,25 +648,25 @@ reload:
 				if(ngames == 0) {if(++dmode > DEVS_MAX) dmode = TYPE_ALL; goto reload;}
 			}
 
-			games = ngames; ngames = 0;
+			games_count = ngames; ngames = 0;
 
 			// filter empty entries
-			for(uint16_t n = 0; n < games; n++)
+			for(uint16_t n = 0; n < games_count; n++)
 			{
 				if(*slaunch[n].name == 0 || *(slaunch[n].name + slaunch[n].path_pos) == 0) slaunch[ngames] = slaunch[n]; else ngames++;
 			}
 
-			if(games > ngames) mem_free((games - ngames) * sizeof(_slaunch));
+			if(games_count > ngames) mem_free((games_count - ngames) * sizeof(_slaunch));
 
-			games = ngames;
+			games_count = ngames;
 
 			// sort game list
-			if(games > 1)
+			if(games_count > 1)
 			{
-				_slaunch swap; uint8_t sorted = 1; ngames = (games - 1);
-				for(uint16_t n = 0; n<ngames; n++)
+				_slaunch swap; uint8_t sorted = 1; ngames = (games_count - 1);
+				for(uint16_t n = 0; n < ngames; n++)
 				{
-					if(strcasecmp(slaunch[n].name, slaunch[n+1].name)>0)
+					if(strcasecmp(slaunch[n].name, slaunch[n+1].name) > 0)
 					{
 						sorted = 0; break;
 					}
@@ -674,7 +676,7 @@ reload:
 				{
 					for(uint16_t n = 0; n < ngames; n++)
 					{
-						for(uint16_t m = (n + 1); m < games; m++)
+						for(uint16_t m = (n + 1); m < games_count; m++)
 						{
 							if(strcasecmp(slaunch[n].name, slaunch[m].name) > 0)
 							{
@@ -688,7 +690,7 @@ reload:
 					if(!gmode && !dmode)
 					{
 						cellFsOpen(filename, CELL_FS_O_CREAT | CELL_FS_O_TRUNC | CELL_FS_O_WRONLY, &fd, NULL, 0);
-						cellFsWrite(fd, (void *)slaunch, sizeof(_slaunch)*games, NULL);
+						cellFsWrite(fd, (void *)slaunch, sizeof(_slaunch) * games_count, NULL);
 						cellFsClose(fd);
 					}
 				}
@@ -696,16 +698,16 @@ reload:
 		}
 	}
 	else
-		games = 0;
+		games_count = 0;
 }
 
 static void reload_data(uint32_t curpad)
 {
 	play_rco_sound("snd_cursor");
 
-	if(curpad & PAD_R2) gmode=dmode=TYPE_ALL;
+	if(curpad & PAD_R2) gmode = dmode = TYPE_ALL;
 
-	cur_game=0; tick=0x80, delta=10;
+	cur_game = 0, tick = 0x80, delta = 10;
 
 	load_data();
 	show_content();
@@ -746,7 +748,7 @@ static void start_VSH_Menu(void)
 	load_data();
 	show_content();
 
-	if(!games && !dmode && !gmode)
+	if(!games_count && !dmode && !gmode)
 	{
 		return_to_xmb();
 
@@ -808,7 +810,7 @@ static void add_game(void)
 
 	blink_option(BLUE, DARK_BLUE, 25000);
 
-	play_rco_sound("snd_cursor"); if(!games) return;
+	play_rco_sound("snd_cursor"); if(!games_count) return;
 
 	if(cellFsOpen(WMTMP "/" SLIST "1.bin", CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
 	{
@@ -838,30 +840,30 @@ static void remove_game(void)
 {
 	int fd;
 
-	if(games && (cellFsOpen(WMTMP "/" SLIST "1.bin", CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd, NULL, 0) == CELL_FS_SUCCEEDED))
+	if(games_count && (cellFsOpen(WMTMP "/" SLIST "1.bin", CELL_FS_O_CREAT | CELL_FS_O_WRONLY | CELL_FS_O_TRUNC, &fd, NULL, 0) == CELL_FS_SUCCEEDED))
 	{
 		play_rco_sound("snd_cancel");
 
 		uint16_t n;
 
-		for(n = 0; n < games; n++)
+		for(n = 0; n < games_count; n++)
 		{
 			if(n!=cur_game) cellFsWrite(fd, (void *)&slaunch[n], sizeof(_slaunch), NULL);
 		}
 		cellFsClose(fd);
 
-		games--;
+		games_count--;
 
 		blink_option(RED, DARK_RED, 25000);
 
-		for(n = cur_game; n < games; n++)
+		for(n = cur_game; n < games_count; n++)
 		{
 			slaunch[n] = slaunch[n+1];
 		}
 
-		memset(&slaunch[games], 0, sizeof(_slaunch)); mem_free(sizeof(_slaunch));
+		memset(&slaunch[games_count], 0, sizeof(_slaunch)); mem_free(sizeof(_slaunch));
 
-		if(cur_game>=games) cur_game--;
+		if(cur_game >= games_count) cur_game--;
 		show_content();
 	}
 	else
@@ -1012,19 +1014,19 @@ static void slaunch_thread(uint64_t arg)
 					}
 					else if(curpad & PAD_CIRCLE)	// back to XMB
 					{
-						//if(fav_mode) {fav_mode=0; reload_data(curpad);} else
+						//if(fav_mode) {fav_mode = 0; reload_data(curpad);} else
 						{
 							play_rco_sound("snd_cancel");
 							stop_VSH_Menu(); /*return_to_xmb();*/
 						}
 						break;
 					}
-					else if(curpad & PAD_R3 && games)	{gpp^=34; draw_page(cur_game, 0); sys_timer_usleep(250000); curpad = init_delay = 0;}
+					else if(curpad & PAD_R3 && games_count)	{gpp^=34; draw_page(cur_game, 0); sys_timer_usleep(250000); curpad = init_delay = 0;}
 
 					else if(curpad & PAD_L3)	{return_to_xmb(); send_wm_request("/refresh_ps3"); break;}
-					else if((curpad & PAD_SQUARE) && !fav_mode && !(curpad & PAD_L2)) {if(++gmode>=TYPE_FAV) gmode=TYPE_ALL; dmode=TYPE_ALL; reload_data(curpad); wait_for_button_release(PAD_SQUARE); continue;}
-					else if((curpad & PAD_SQUARE) && !fav_mode &&  (curpad & PAD_L2)) {if(++dmode> DEVS_MAX) dmode=TYPE_ALL; reload_data(curpad); continue;}
-					else if((curpad == PAD_START) && games)	// favorite game XMB
+					else if((curpad & PAD_SQUARE) && !fav_mode && !(curpad & PAD_L2)) {if(++gmode >= TYPE_FAV) gmode = TYPE_ALL; dmode = TYPE_ALL; reload_data(curpad); wait_for_button_release(PAD_SQUARE); continue;}
+					else if((curpad & PAD_SQUARE) && !fav_mode &&  (curpad & PAD_L2)) {if(++dmode >  DEVS_MAX) dmode = TYPE_ALL; reload_data(curpad); continue;}
+					else if((curpad == PAD_START) && games_count)	// favorite game XMB
 					{
 						if(fav_mode) remove_game(); else add_game();
 						wait_for_button_release(PAD_START);
@@ -1035,7 +1037,7 @@ static void slaunch_thread(uint64_t arg)
 						if(init_delay)
 						{
 							play_rco_sound("snd_cursor");
-							fav_mode^=1; init_delay = 0;
+							TOGGLE(fav_mode); init_delay = 0;
 							reload_data(curpad);
 							wait_for_button_release(PAD_SELECT);
 						}
@@ -1043,18 +1045,18 @@ static void slaunch_thread(uint64_t arg)
 						continue;
 					}
 
-					if(!games) continue;
+					if(!games_count) continue;
 
-					gpl = (gpp == 10) ? 5 : 10; // games per line
+					gpl = (gpp == 10) ? 5 : 10; // games_count per line
 
-						if(curpad & PAD_RIGHT)	cur_game+=1;
-					else if(curpad & PAD_LEFT)	{if(!cur_game) cur_game=games-1; else cur_game-=1;}
-					else if(curpad & PAD_UP)	{if(!cur_game) cur_game=games-1; else if(cur_game<gpl) cur_game=0; else cur_game-=gpl;}
-					else if(curpad & PAD_DOWN)	{if(cur_game==(games-1)) cur_game=0; else if((cur_game+gpl)>=games) cur_game=games-1; else cur_game+=gpl;}
-					else if(curpad & PAD_R1)	{can_skip=1; if(cur_game==(games-1)) cur_game=0; else if((cur_game+gpp)>=games) cur_game=games-1; else cur_game+=gpp;}
-					else if(curpad & PAD_L1)	{can_skip=1; if(!cur_game) cur_game=games-1; else cur_game-=gpp;}
+						if(curpad & PAD_RIGHT)	cur_game += 1;
+					else if(curpad & PAD_LEFT)	{if(!cur_game) cur_game = games_count - 1; else cur_game -= 1;}
+					else if(curpad & PAD_UP)	{if(!cur_game) cur_game = games_count - 1; else if(cur_game < gpl) cur_game = 0; else cur_game -= gpl;}
+					else if(curpad & PAD_DOWN)	{if(cur_game == (games_count - 1)) cur_game = 0; else if((cur_game + gpl) >= games_count) cur_game = games_count - 1; else cur_game += gpl;}
+					else if(curpad & PAD_R1)	{can_skip = 1; if(cur_game == (games_count - 1)) cur_game = 0; else if((cur_game+gpp)>=games_count) cur_game = games_count - 1; else cur_game += gpp;}
+					else if(curpad & PAD_L1)	{can_skip = 1; if(!cur_game) cur_game = games_count - 1; else cur_game -= gpp;}
 
-					else if(curpad & PAD_CROSS && games)	// execute action & return to XMB
+					else if(curpad & PAD_CROSS && games_count)	// execute action & return to XMB
 					{
 						bool ps1_ps2 = (slaunch[cur_game].type <= TYPE_PS2);
 
@@ -1073,14 +1075,14 @@ static void slaunch_thread(uint64_t arg)
 						break;
 					}
 
-					if((cur_game!=_cur_game) && games)		// draw backdrop
+					if((cur_game!=_cur_game) && games_count)		// draw backdrop
 					{
-						tick=0xc0, delta=10;
+						tick = 0xc0, delta = 10;
 						play_rco_sound("snd_cursor");
 						pg_idx=(1 + _cur_game % gpp);
-						if(pg_idx<=games) set_backdrop(pg_idx, 1);
-						if(cur_game>=games) cur_game=0;
-						if((cur_game/gpp)*gpp != (_cur_game/gpp)*gpp)
+						if(pg_idx <= games_count) set_backdrop(pg_idx, 1);
+						if(cur_game >= games_count) cur_game = 0;
+						if((cur_game / gpp) * gpp != (_cur_game / gpp) * gpp)
 							draw_page(cur_game, key_repeat & can_skip);
 						else
 							draw_selection(cur_game);
@@ -1088,13 +1090,13 @@ static void slaunch_thread(uint64_t arg)
 				}
 				else
 				{
-					init_delay = 0, oldpad=0, tick+=delta;	// pulsing selection frame
-					pg_idx=(1 + cur_game % gpp);
-					if(pg_idx<=games) set_frame(1 + cur_game % gpp, 0xff000000ff000000|tick<<48|tick<<16); else cur_game=0;
-					if(tick<0x80 || tick>0xF0){delta=-delta; tick&=0xff;}
+					init_delay = 0, oldpad = 0, tick+=delta;	// pulsing selection frame
+					pg_idx = (1 + cur_game % gpp);
+					if(pg_idx <= games_count) set_frame(1 + cur_game % gpp, 0xff000000ff000000|tick<<48|tick<<16); else cur_game = 0;
+					if(tick < 0x80 || tick > 0xF0){delta = -delta; tick &= 0xff;}
 
 					// update temperature
-					if(++frame > 400) {frame = 0, cpu_rsx ^= 1; draw_selection(cur_game);}
+					if(++frame > 400) {frame = 0, TOGGLE(cpu_rsx); draw_selection(cur_game);}
 				}
 			}
 		}

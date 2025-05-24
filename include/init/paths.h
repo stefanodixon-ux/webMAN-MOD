@@ -185,6 +185,34 @@ static const char *iso_ext[11] = {".bin", ".iso", ".iso.0", ".BIN", ".ISO", ".IS
 static const char *cue_ext[4]  = {".cue", ".ccd", ".CUE", ".CCD"};
 #endif
 
+#ifdef VISUALIZERS
+static const char *vsh_res_path[10] = {
+										TMP_DIR "/wallpaper", // 0
+										TMP_DIR "/earth"    , // 1
+										TMP_DIR "/canyon"   , // 2
+										TMP_DIR "/lines"    , // 3
+										TMP_DIR "/coldboot" , // 4
+										TMP_DIR "/theme",     // 5
+										TMP_DIR "/theme",     // 6 (last selected theme)
+										TMP_DIR "/impose"   , // 7
+										TMP_DIR "/psn_icons", // 8
+										TMP_DIR "/system_plugin", // 9
+									  };
+
+static const char *vsh_res_action[10] = {
+											"/wallpaper.ps3", // 0
+											"/earth.ps3"    , // 1
+											"/canyon.ps3"   , // 2
+											"/lines.ps3"    , // 3
+											"/coldboot.ps3" , // 4
+											"/theme.ps3",     // 5
+											"/theme.ps3",     // 6 (last selected theme)
+											"/impose.ps3"   , // 7
+											"/psn_icons.ps3", // 8
+											"/clock.ps3"	  // 9
+										};
+#endif
+
 #ifdef COPY_PS3
 static const char *script_events[4] = {
 										"/dev_hdd0/boot_init.txt",

@@ -67,7 +67,7 @@ static int32_t get_font_object(void)
 static void set_font_default(void)
 {
 	int32_t i;
-	bitmap = mem_alloc(sizeof(Bitmap));
+	bitmap = mem_alloc(sizeof(Bitmap)); if(!bitmap) return;
 	memset(bitmap, 0, sizeof(Bitmap));
 
 	// set font
@@ -215,7 +215,6 @@ static Glyph *get_glyph(uint32_t code)
 	int32_t i, new;
 	Glyph *glyph;
 
-
 	// search glyph into cache
 	for(i = 0; i < bitmap->count; i++)
 	{
@@ -246,76 +245,58 @@ static Glyph *get_glyph(uint32_t code)
 ***********************************************************************/
 static int32_t utf8_to_ucs4(uint8_t *utf8, uint32_t *ucs4)
 {
-	int32_t len = 0;
 	uint32_t c1 = 0, c2 = 0, c3 = 0, c4 = 0;
 
-
-	c1 = (uint32_t)*utf8;
-	utf8++;
+	c1 = (uint32_t)*utf8; utf8++;
 
 	if(c1 <= 0x7F)						// 1 byte sequence, ascii
 	{
-		len = 1;
-		*ucs4 = c1;
+		*ucs4 = c1; return 1;
 	}
 	else if((c1 & 0xE0) == 0xC0)		  // 2 byte sequence
 	{
-		len = 2;
 		c2 = (uint32_t)*utf8;
 
 		if((c2 & 0xC0) == 0x80)
-			*ucs4 = ((c1  & 0x1F) << 6) | (c2 & 0x3F);
-		else
-			len = *ucs4 = 0;
+		{
+			*ucs4 = ((c1  & 0x1F) << 6) | (c2 & 0x3F); return 2;
+		}
 	}
 	else if((c1 & 0xF0) == 0xE0)		  // 3 bytes sequence
 	{
-		len = 3;
-		c2 = (uint32_t)*utf8;
-		utf8++;
+		c2 = (uint32_t)*utf8; utf8++;
 
 		if((c2 & 0xC0) == 0x80)
 		{
 			c3 = (uint32_t)*utf8;
 
 			if((c3 & 0xC0) == 0x80)
-				*ucs4 = ((c1  & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F);
-			else
-				len = *ucs4 = 0;
+			{
+				*ucs4 = ((c1  & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F); return 3;
+			}
 		}
-		else
-			len = *ucs4 = 0;
 	}
 	else if((c1 & 0xF8) == 0xF0)		  // 4 bytes sequence
 	{
-		len = 4;
-		c2 = (uint32_t)*utf8;
-		utf8++;
+		c2 = (uint32_t)*utf8; utf8++;
 
 		if((c2 & 0xC0) == 0x80)
 		{
-			c3 = (uint32_t)*utf8;
-			utf8++;
+			c3 = (uint32_t)*utf8; utf8++;
 
 			if((c3 & 0xC0) == 0x80)
 			{
 				c4 = (uint32_t)*utf8;
 
 				if((c4 & 0xC0) == 0x80)
-				*ucs4 = ((c1  & 0x07) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) <<  6) | (c4 & 0x3F);
-				else
-				  len = *ucs4 = 0;
+				{
+					*ucs4 = ((c1  & 0x07) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) <<  6) | (c4 & 0x3F); return 4;
+				}
 			}
-			else
-			  len = *ucs4 = 0;
 		}
-		else
-		  len = *ucs4 = 0;
 	}
-	else
-		len = *ucs4 = 0;
 
-	return len;
+	*ucs4 = 0; return 0;
 }
 
 /*
@@ -323,7 +304,7 @@ void dim_img(float dim)
 {
 	uint32_t i, k, CANVAS_WW = CANVAS_W/2;
 	uint64_t *canvas = (uint64_t*)ctx.canvas;
-	uint64_t new_pixel=0;
+	uint64_t new_pixel = 0;
 	uint64_t new_pixel_R0, new_pixel_G0, new_pixel_B0, new_pixel_R1, new_pixel_G1, new_pixel_B1;
 
 	for(i = 0; i < CANVAS_H ; i++)
@@ -347,7 +328,7 @@ void dim_bg(float ds, float de)
 
 	for(i = 0; i <= CANVAS_H/2 ; i++)
 	{
-		for(m = (CANVAS_H-i-1), k = 0; k < CANVAS_W; k+=2)
+		for(m = (CANVAS_H-i-1), k = 0; k < CANVAS_W; k += 2)
 		{
 			*(uint64_t*)(OFFSET(k, i)) = 0;
 			*(uint64_t*)(OFFSET(k, m)) = 0;
@@ -365,7 +346,7 @@ void dump_bg(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 	uint64_t *bg = (uint64_t*)ctx.canvas;
 
 	for(i = 0; i < h; i++, y++)
-		for(m = i * CANVAS_WW, k = 0, kk = x; k < CANVAS_WW; k++, kk+=2)
+		for(m = i * CANVAS_WW, k = 0, kk = x; k < CANVAS_WW; k++, kk += 2)
 			bg[m++] = *(uint64_t*)(OFFSET(kk, y));
 }
 
@@ -402,6 +383,8 @@ void init_graphic()
 	//w = getDisplayWidth();				// display width
 }
 
+extern char wm_icons[7][56];
+
 /***********************************************************************
 * load an image file
 *
@@ -410,17 +393,18 @@ void init_graphic()
 ***********************************************************************/
 int32_t load_img_bitmap(int32_t idx, char *path, const char *default_img)
 {
-	if(!path || *path != '/') return FAILED;
+	if(!path) return FAILED;
+	if(*path != '/') strcpy(path, default_img);
 
 	if(idx > IMG_MAX) return FAILED;
-	uint32_t *buf=ctx.canvas;
-	if(idx) buf=ctx.imgs;
+	uint32_t *buf = ctx.canvas;
+	if(idx) buf = ctx.imgs;
 
 	if(!buf) return FAILED;
 
 	bool use_default = (*default_img == '/');
 
-	char *ext = strchr(path, '.');
+	char *ext = NULL, *dot = strchr(path, '.'); while(dot) {ext = dot++, dot = strchr(dot, '.');}
 
 	if(!ext || not_exists(path))
 	{
@@ -431,10 +415,11 @@ int32_t load_img_bitmap(int32_t idx, char *path, const char *default_img)
 	}
 
 retry:
-
-	if(strstr(ext, ".png") || strstr(ext, ".PNG"))
+	if(!ext)
+		goto blank_image;
+	if(!strcasecmp(ext, ".png"))
 		ctx.img[idx] = load_png(path, buf);
-	else if(strstr(ext, ".argb") || strstr(ext, ".ARGB"))
+	else if(!strcasecmp(ext, ".argb"))
 		ctx.img[idx] = load_argb(path, buf);
 	else
 		ctx.img[idx] = load_jpg(path, buf);
@@ -451,67 +436,67 @@ blank_image:
 
 		if(gpp == 10)
 		{
-			ctx.img[idx].w=260;
-			ctx.img[idx].h=300;
+			ctx.img[idx].w = 260;
+			ctx.img[idx].h = 300;
 		}
 		else // if(gpp == 40)
 		{
-			ctx.img[idx].w=120;
-			ctx.img[idx].h=160;
+			ctx.img[idx].w = 120;
+			ctx.img[idx].h = 160;
 		}
 		//memset(buf, 0x80, ctx.img[idx].w * ctx.img[idx].h * 4);
 		memset32(buf, 0x80808080, ctx.img[idx].w * ctx.img[idx].h);
 	}
 
-	if(disp_h<720) return 0;
+	if(disp_h < 720) return 0;
 
-	if(gpp==10 && ctx.img[idx].w<=(MAX_W/2) && ctx.img[idx].h<=(MAX_H/2))
+	if(gpp == 10 && ctx.img[idx].w <= (MAX_W / 2) && ctx.img[idx].h <= (MAX_H / 2))
 	{
 		//upscale x2
 		uint32_t w2 = ctx.img[idx].w << 1;
 		uint32_t pixel, y1, y2, x, x1, x2, ww;
 
-		for(int32_t y=ctx.img[idx].h-1; y>=0; y--)
+		for(int32_t y = ctx.img[idx].h-1; y >= 0; y--)
 		{
 			ww = y * ctx.img[idx].w;
 			x1 = y1 = y * w2 << 1, x2 = y2 = y1 + w2;
 			for(x = 0; x < ctx.img[idx].w; x++)
 			{
 				pixel = buf[x + ww];
-				buf[x1++]=pixel;
-				buf[x1++]=pixel;
-				buf[x2++]=pixel;
-				buf[x2++]=pixel;
+				buf[x1++] = pixel;
+				buf[x1++] = pixel;
+				buf[x2++] = pixel;
+				buf[x2++] = pixel;
 			}
 		}
 
-		ctx.img[idx].w<<=1;
-		ctx.img[idx].h<<=1;
+		ctx.img[idx].w <<= 1;
+		ctx.img[idx].h <<= 1;
 	}
 
-	if(gpp==40 && idx && (ctx.img[idx].w>168 || ctx.img[idx].h>168))
+	if(gpp == 40 && idx && (ctx.img[idx].w > 168 || ctx.img[idx].h > 168))
 	{
 		//downscale x2
 		uint32_t tw, ww, mm = 2;
 downscale:
 		tw = ctx.img[idx].w / mm;
 
-		if(tw>168)
+		if(tw > 168)
 		{
 			mm <<= 1;
-			ctx.img[idx].w>>=1;
-			ctx.img[idx].h>>=1;
+			ctx.img[idx].w >>= 1;
+			ctx.img[idx].h >>= 1;
 			goto downscale;
 		}
 
-		for(uint32_t y=0, yy = ww = 0; y<ctx.img[idx].h; y+=mm, yy = y/mm * tw, ww = y * ctx.img[idx].w)
-			for(uint32_t x=0, xx=0; x<ctx.img[idx].w; xx++,x+=mm)
-				buf[xx + yy]=buf[x + ww];
+		for(uint32_t y = 0, yy = ww = 0; y < ctx.img[idx].h; y += mm, yy = y / mm * tw, ww = y * ctx.img[idx].w)
+			for(uint32_t x = 0, xx = 0; x < ctx.img[idx].w; xx++, x += mm)
+				buf[xx + yy] = buf[x + ww];
 
-		ctx.img[idx].w>>=1;
-		ctx.img[idx].h>>=1;
+		ctx.img[idx].w >>= 1;
+		ctx.img[idx].h >>= 1;
 
-		if(ctx.img[idx].w>168 || ctx.img[idx].h>168) goto downscale;
+		if(ctx.img[idx].w > 168 || ctx.img[idx].h > 168) goto downscale;
 	}
 
 	return 0;
@@ -554,47 +539,50 @@ static inline uint64_t mix_color64(uint64_t bg, uint64_t fg)
 ***********************************************************************/
 void flip_frame(void)
 {
+	if(!ctx.canvas) return;
+
 	uint64_t *canvas = (uint64_t *)ctx.canvas;
 	uint32_t i, k, m, CANVAS_WW = CANVAS_W/2;
 
 	for(i = 0; i < CANVAS_H; i++)
-		for(m = i * CANVAS_WW, k = 0; k < CANVAS_W; k+=2)
-			*(uint64_t*)(OFFSET(k, i)) =
-				 canvas[m++];
+		for(m = i * CANVAS_WW, k = 0; k < CANVAS_W; k += 2)
+			*(uint64_t*)(OFFSET(k, i)) = canvas[m++];
 }
 
 void set_texture_direct(uint32_t *texture, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
+	if(!texture) return;
+
 	uint32_t i, k, m, _width = width>>1, ww = width + x;
 	uint64_t *canvas = (uint64_t*)texture;
 	for(i = 0; i < height; i++, y++)
-		for(m = i * _width, k = x; k < ww; k+=2)
-			*(uint64_t*)(OFFSET(k, y)) =
-				 canvas[m++];
+		for(m = i * _width, k = x; k < ww; k += 2)
+			*(uint64_t*)(OFFSET(k, y)) = canvas[m++];
 }
 
 void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 {
+	if(!ctx.img[idx].addr) return;
+
 	if (!(ctx.img[idx].w&3) && !ctx.img[idx].b) { // Use VMX SIMD
 		uint32_t i, k, kk, m, _width = ctx.img[idx].w>>2;
 		vec_uint4 *canvas = (vec_uint4*)ctx.img[idx].addr;
 
-		for (i = 0; i < ctx.img[idx].h; i++, y++) {
-			for (m = i * _width, k = 0, kk = x; k < _width; k++, kk+=4) {
+		for (i = 0; i < ctx.img[idx].h; i++, y++)
+			for (m = i * _width, k = 0, kk = x; k < _width; k++, kk+=4)
 				*(vec_uint4*)(OFFSET(kk, y)) = canvas[k + m];
-			}
-		}
 	} else {
 		uint32_t i, k, m, _width = ctx.img[idx].w>>1;
 		uint64_t *canvas = (uint64_t*)ctx.img[idx].addr;
 		uint32_t ww = ctx.img[idx].w + x;
+
 		if(!ctx.img[idx].b)	// jpeg - no transparency
 			for(i = 0; i < ctx.img[idx].h; i++, y++)
-				for(m = i * _width, k = x; k < ww; k+=2, m++)
+				for(m = i * _width, k = x; k < ww; k += 2, m++)
 					*(uint64_t*)(OFFSET(k, y)) = canvas[m];
 		else				// png - blend with 18% gray background
 			for(i = 0; i < ctx.img[idx].h; i++, y++)
-				for(m = i * _width, k = x; k < ww; k+=2, m++)
+				for(m = i * _width, k = x; k < ww; k += 2, m++)
 					*(uint64_t*)(OFFSET(k, y)) = mix_color64(0x80303030, canvas[m]);
 	}
 }
@@ -611,21 +599,23 @@ void set_texture(uint8_t idx, uint32_t x, uint32_t y)
 
 void set_backdrop(uint8_t idx, uint8_t restore)
 {
+	if(!ctx.canvas) return;
+	
 	uint32_t i, k, kk, m, CANVAS_WW = CANVAS_W/2;
 	uint64_t *canvas = (uint64_t*)ctx.canvas;
 	uint64_t new_pixel; uint8_t *pixel;
-	uint32_t ww = (ctx.img[idx].x+ctx.img[idx].w)/2;
-	uint32_t hh = (ctx.img[idx].y+ctx.img[idx].h);
+	uint32_t ww = (ctx.img[idx].x + ctx.img[idx].w)/2;
+	uint32_t hh = (ctx.img[idx].y + ctx.img[idx].h);
 
 	for(i = (ctx.img[idx].y+16); i < (hh+16) ; i++)
-		for(m = i * CANVAS_WW, k = ww, kk=ww<<1; k < ww + 8; k++, kk+=2)
+		for(m = i * CANVAS_WW, k = ww, kk=ww<<1; k < ww + 8; k++, kk += 2)
 		{
 			DIM_PIXEL(k + m); //75%
 			*(uint64_t*)(OFFSET(kk, i)) = new_pixel;
 		}
 
 	for(i = hh; i < (hh+16) ; i++)
-		for(m = i * CANVAS_WW, kk = (ctx.img[idx].x+16), k = kk>>1; k < ww; k++, kk+=2)
+		for(m = i * CANVAS_WW, kk = (ctx.img[idx].x+16), k = kk>>1; k < ww; k++, kk += 2)
 		{
 			DIM_PIXEL(k + m); //75%
 			*(uint64_t*)(OFFSET(kk, i)) = new_pixel;
@@ -634,19 +624,19 @@ void set_backdrop(uint8_t idx, uint8_t restore)
 	if(restore)
 	{
 		for(i = (ctx.img[idx].y-16); i < (hh+32) ; i++)
-			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x-16), k = kk>>1; k < (ctx.img[idx].x)/2; k++, kk+=2)
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x-16), k = kk>>1; k < (ctx.img[idx].x)/2; k++, kk += 2)
 				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 
 		for(i = (ctx.img[idx].y-16); i < (ctx.img[idx].y) ; i++)
-			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x), k = kk>>1; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++, kk+=2)
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x), k = kk>>1; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++, kk += 2)
 				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 
 		for(i = (ctx.img[idx].y); i < (ctx.img[idx].y+16) ; i++)
-			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x+ctx.img[idx].w), k = kk>>1; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++, kk+=2)
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x+ctx.img[idx].w), k = kk>>1; k < (ctx.img[idx].x+ctx.img[idx].w+16)/2; k++, kk += 2)
 				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 
 		for(i = hh; i < (hh+16) ; i++)
-			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x), k = kk>>1; k < (ctx.img[idx].x+16)/2; k++, kk+=2)
+			for(m = i * CANVAS_WW, kk = (ctx.img[idx].x), k = kk>>1; k < (ctx.img[idx].x+16)/2; k++, kk += 2)
 				*(uint64_t*)(OFFSET(kk, i)) = canvas[k + m];
 	}
 }
@@ -656,18 +646,18 @@ void set_textbox(uint64_t color, uint32_t x, uint32_t y, uint32_t width, uint32_
 {
 	uint32_t i, k, _width = width + x;
 	for(i = 0; i < height; i++, y++)
-		for(k = (x&0xffe); k < _width; k+=2)
+		for(k = (x&0xffe); k < _width; k += 2)
 			*(uint64_t*)(OFFSET(k, y)) = color;
 }
 
 // draw colored selection frame around the #IDX on the frame-buffer
 void set_frame(uint8_t idx, uint64_t color)
 {
-	set_textbox(color, ctx.img[idx].x-16, ctx.img[idx].y-16, ctx.img[idx].w+32, 16);
-	set_textbox(color, ctx.img[idx].x-16, ctx.img[idx].y+ctx.img[idx].h, ctx.img[idx].w+32, 16);
+	set_textbox(color, ctx.img[idx].x - 16, ctx.img[idx].y - 16, ctx.img[idx].w + 32, 16);
+	set_textbox(color, ctx.img[idx].x - 16, ctx.img[idx].y + ctx.img[idx].h, ctx.img[idx].w + 32, 16);
 
-	set_textbox(color, ctx.img[idx].x-16, ctx.img[idx].y, 16, ctx.img[idx].h);
-	set_textbox(color, ctx.img[idx].x+ctx.img[idx].w, ctx.img[idx].y, 16, ctx.img[idx].h);
+	set_textbox(color, ctx.img[idx].x - 16, ctx.img[idx].y, 16, ctx.img[idx].h);
+	set_textbox(color, ctx.img[idx].x + ctx.img[idx].w, ctx.img[idx].y, 16, ctx.img[idx].h);
 }
 
 /***********************************************************************
@@ -715,7 +705,7 @@ int32_t print_text(uint32_t *texture, uint32_t text_width, uint32_t x, uint32_t 
 	uint32_t o_x = x, o_y = y + bitmap->horizontal_layout.baseLineY; // origin x/y
 	Glyph *glyph;												   // char glyph
 	uint8_t *utf8 = (uint8_t*)str; if(!str) return x;
-	uint32_t pixel, color = (disp_w==1920 ? 0 : 0xff333333);
+	uint32_t pixel, color = (disp_w == 1920 ? 0 : 0xff333333);
 
 	memset(&glyph, 0, sizeof(Glyph));
 

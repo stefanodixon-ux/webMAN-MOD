@@ -232,11 +232,14 @@ static void start_www(u64 conn_s_p)
 			{
 				while(wait_for_xmb()) ; // wait for XMB
 
-				CellRtcDateTime pTime;
-				cellRtcGetCurrentClockLocalTime(&pTime);
+				static int (*_cellRtcGetCurrentTick)(u64 *pTick) = NULL;
+				_cellRtcGetCurrentTick = getNIDfunc("cellRtc", 0x9DAFC0D9, 0);
+
+				u64 currentTick;
+				_cellRtcGetCurrentTick(&currentTick);
 
 				#define date_time full_path
-				if(pTime.year < 2025) update_clock_from_server_time(date_time);
+				if(currentTick < FIX_CLOCK_DATE) update_clock_from_server_time(date_time);
 			}
 			#endif
 		}

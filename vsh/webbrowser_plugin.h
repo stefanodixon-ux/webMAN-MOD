@@ -16,7 +16,7 @@ typedef struct webbrowser_plugin_interface_t
 	int (*UpdatePointerDisplayPos)(int pointerX, int pointerY, int pointerMode);
 } webbrowser_plugin_interface; // Interface Id 1
 
-webbrowser_plugin_interface * webbrowser_interface;
+webbrowser_plugin_interface * webbrowser_interface = NULL;
 
 typedef struct
 {

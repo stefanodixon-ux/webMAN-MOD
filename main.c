@@ -47,6 +47,8 @@ static vu8 working = 1;
 #include "cobra/storage.h"
 #include "vsh/download_plugin.h"
 #include "vsh/explore_plugin.h"
+#include "vsh/webbrowser_plugin.h"
+#include "vsh/webrender_plugin.h"
 #include "vsh/game_ext_plugin.h"
 #include "vsh/game_plugin.h"
 #include "vsh/netctl_main.h"
@@ -109,7 +111,7 @@ SYS_MODULE_STOP(wwwd_stop);
 SYS_MODULE_EXIT(wwwd_stop);
 
 #define WM_APPNAME			"webMAN"
-#define WM_VERSION			"1.47.48i MOD"
+#define WM_VERSION			"1.47.48j MOD"
 #define WM_APP_VERSION		WM_APPNAME " " WM_VERSION
 #define WEBMAN_MOD			WM_APPNAME " MOD"
 
@@ -202,7 +204,7 @@ static const u32 NOSND = (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IX
 #define REFRESH_CONTENT		(0xC0FEBAB0)
 #define WM_FILE_REQUEST		(0xC0FEBEB0)
 
-#define FIX_CLOCK_DATE		0x00E2F3337CD7B000ULL // 2025_04_20
+#define FIX_CLOCK_DATE		0x00E2F5F39149D000ULL // 2025_05_25
 
 static u8 profile = 0; // 0 = default, 1-4 = user profiles, 5 = all profiles
 

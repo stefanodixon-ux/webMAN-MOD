@@ -5,15 +5,16 @@
 
 static u8 map_vsh_resource(u8 res_id, u8 id, char *param, u8 set)
 {
-	const char *hdd_path =  (res_id == 0) ? "/dev_hdd0/tmp/wallpaper": // 0
-							(res_id == 1) ? "/dev_hdd0/tmp/earth"    : // 1
-							(res_id == 2) ? "/dev_hdd0/tmp/canyon"   : // 2
-							(res_id == 3) ? "/dev_hdd0/tmp/lines"    : // 3
-							(res_id == 4) ? "/dev_hdd0/tmp/coldboot" : // 4
-							(res_id == 7) ? "/dev_hdd0/tmp/impose"   : // 7
-							(res_id == 8) ? "/dev_hdd0/tmp/psn_icons": // 8
-							(res_id == 9) ? "/dev_hdd0/tmp/system_plugin": // 9
-											"/dev_hdd0/tmp/theme";     // 5 & 6 (last selected theme)
+	const char *hdd_path = vsh_res_path[res_id];
+							// TMP_DIR "/wallpaper"     [0]
+							// TMP_DIR "/earth"         [1]
+							// TMP_DIR "/canyon"        [2]
+							// TMP_DIR "/lines"         [3]
+							// TMP_DIR "/coldboot"      [4]
+							// TMP_DIR "/theme"         [5] (6 = last selected theme)
+							// TMP_DIR "/impose"        [7]
+							// TMP_DIR "/psn_icons"     [8]
+							// TMP_DIR "/system_plugin" [9]
 
 	const char *res_path =  (res_id == 1) ? "qgl/earth.qrc" :
 							(res_id == 2) ? "qgl/canyon.qrc":

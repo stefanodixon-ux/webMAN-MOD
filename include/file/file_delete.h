@@ -161,7 +161,16 @@ static void uninstall(char *param)
 	del(PS2CONFIG_PATH, RECURSIVE_DELETE);
 	del(WM_GAMEBOOT_PATH, RECURSIVE_DELETE);
 	del(WM_EXTRACT_PATH, RECURSIVE_DELETE);
+
+	#ifdef VISUALIZERS
+	for(u8 res_id = 0; res_id < 10; res_id++)
+		del(vsh_res_path[res_id], RECURSIVE_DELETE);
 	#endif
+
+	#endif
+
+	cellFsUnlink(NEW_LIBAUDIO_PATH);
+	cellFsUnlink(NEW_EXPLORE_PLUGIN_PATH);
 
 	restore_fan(SYSCON_MODE);
 

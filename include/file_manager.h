@@ -701,11 +701,8 @@ static bool folder_listing(char *buffer, u32 BUFFER_SIZE_HTML, char *html, char 
 		#endif
 
 		#ifdef VISUALIZERS
-		if(islike(param, "/dev_hdd0/tmp/wallpaper")) action = "/wallpaper.ps3";
-		if(islike(param, "/dev_hdd0/tmp/earth"    )) action = "/earth.ps3";
-		if(islike(param, "/dev_hdd0/tmp/canyon"   )) action = "/canyon.ps3";
-		if(islike(param, "/dev_hdd0/tmp/lines"    )) action = "/lines.ps3";
-		if(islike(param, "/dev_hdd0/tmp/coldboot" )) action = "/coldboot.ps3";
+		for(u8 res_id = 0; res_id < 10; res_id++)
+			if(islike(param, vsh_res_path[res_id])) action = vsh_res_action[res_id];
 		#endif
 
 		#ifndef LITE_EDITION

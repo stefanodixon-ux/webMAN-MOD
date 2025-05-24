@@ -5,9 +5,11 @@
 		if(!mc) keep_alive = http_response(conn_s, header, param, CODE_PLAIN_TEXT, param);
 		goto exit_handleclient_www;
 	}
-	else if(islike(param, "/browser.ps3") || islike(param, "/xmb.ps3"))
+	else if(islike(param, "/browser.ps3") || islike(param, "/xmb.ps3") || islike(param, "/webkit.ps3") || islike(param, "/silk.ps3"))
 	{
 		// /browser.ps3?<url>                  open url on PS3 browser
+		// /webkit.ps3?<url>                   open url on PS3 browser (webkit)
+		// /silk.ps3?<url>                     open url on PS3 browser (silk)
 		// /xmb.ps3$exit                       exit to xmb
 		// /xmb.ps3$exit_to_update             exit to system update
 		// /xmb.ps3$reloadgame                 reload ps3 game
@@ -44,7 +46,7 @@
 		// /xmb.ps3$screenshot?show?fast       capture XMB screen (25% smaller)
 		// /xmb.ps3$ingame_screenshot          enable screenshot in-game on CFW without the feature (same as R2+O)
 
-		char *params = param + (islike(param, "/xmb.ps3") ? 8 : 12);
+		char *params = strstr(param, ".ps3") + 4;
 		char *url = params + 1;
 
 		#ifndef LITE_EDITION
@@ -345,6 +347,26 @@
 				}
 				*url = 0; add_breadcrumb_trail2(url, NULL, header);
 			}
+			#ifdef PKG_HANDLER
+			else if(islike(param, "/silk.ps3") || islike(param, "/webkit.ps3"))
+			{
+				unload_plugin_modules(false);
+				if(islike(param, "/silk.ps3"))
+				{
+					LoadPluginById(webbrowser_plugin, (void *)webbrowser_thread);
+					sys_ppu_thread_sleep(2);
+					if(webbrowser_interface)
+						webbrowser_interface->PluginWakeupWithUrl(url);
+				}
+				else
+				{
+					LoadPluginById(webrender_plugin, (void *)webrender_thread);
+					sys_ppu_thread_sleep(2);
+					if(webrender_interface)
+						webrender_interface->PluginWakeupWithUrl(url);
+				}
+			}
+			#endif
 			else
 			#endif
 			{
@@ -354,7 +376,6 @@
 				if(*params == '$' ) {if(get_explore_interface()) exec_xmb_command(url);} else
 				if(*params == '?' ) {do_umount(false);  open_browser(url, 0);} else
 									{					open_browser(url, 1);} // example: /browser.ps3*regcam:reg?   More examples: http://www.psdevwiki.com/ps3/Xmb_plugin#Function_23
-
 				if(*params != '$' ) if(!(webman_config->minfo & 1)) show_msg(url);
 				#endif
 			}
