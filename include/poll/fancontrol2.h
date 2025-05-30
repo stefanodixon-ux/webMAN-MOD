@@ -1,3 +1,5 @@
+if(is_ingame_first_15_seconds() == false)
+{
 	if(fan_ps2_mode || ps2_classic_mounted) /* skip dynamic fan control */; else
 
 	// dynamic fan control
@@ -77,7 +79,7 @@
 			}
 		}
 		////////////////////////// DYNAMIC FAN CONTROL ///////////////////////////
-		else
+		else if(webman_config->man_speed == FAN_AUTO)
 		{
 			if((t1 >= max_temp) || (t1 >= MAX_TEMPERATURE))
 			{
@@ -188,8 +190,9 @@
 					old_fan = fan_speed;
 					set_fan_speed(fan_speed);
 
-					if(!webman_config->nowarn) show_msg(STR_OVERHEAT2);
+					show_msg(STR_OVERHEAT2);
 				}
 			}
 		}
 	}
+}

@@ -125,14 +125,21 @@ static u64 peek(u64 addr)
 }
 
 #ifdef COBRA_ONLY
-///////////////// LV1/LV2 POKE HEN ////////////////
-static void lv2_poke_fan_hen(u64 addr, u64 value)
+
+static bool is_ingame_first_15_seconds(void)
 {
 	if(payload_ps3hen && IS_INGAME)
 	{
-		CellRtcTick pTick; cellRtcGetCurrentTick(&pTick);
-		if((pTick.tick - gTick.tick) < 15000000) return; // do not poke within the first 15 seconds ingame
+		CellRtcTick pTick; cellRtcGetCurrentTick(&pTick); if(gTick.tick == rTick.tick) gTick.tick = pTick.tick;
+		if(pTick.tick < gTick.tick + 15000000) return true; // do not poke within the first 15 seconds ingame
 	}
+	return false;
+}
+
+///////////////// LV1/LV2 POKE HEN ////////////////
+static void lv2_poke_fan_hen(u64 addr, u64 value)
+{
+	if(is_ingame_first_15_seconds()) return; // do not poke within the first 15 seconds ingame
 
 	system_call_2(SC_POKE_LV2, addr, value); //{system_call_3(SC_COBRA_SYSCALL8, 0x7003ULL, addr, value);} // advanced poke (requires restore original value)
 }

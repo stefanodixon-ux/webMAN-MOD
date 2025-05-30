@@ -16,7 +16,11 @@ static void poll_start_play_time(void)
 	 #ifdef WM_PROXY_SPRX
 		if(gTick.tick != rTick.tick)
 		{
-			gTick = rTick; if(!max_temp && webman_config->fanc) reset_fan_mode();
+			gTick = rTick;
+
+			if(payload_ps3hen) sys_ppu_thread_sleep(6);
+
+			if(!max_temp && webman_config->fanc) reset_fan_mode();
 
 			apply_remaps(); // re-apply remaps returning to XMB
 
@@ -168,7 +172,7 @@ static void poll_start_play_time(void)
 
 static void poll_thread(__attribute__((unused)) u64 arg)
 {
-	u8 sec = 0;
+	u8 sec = 0, fan_control = 0;
 
 	// fancontrol2.h
 	u8 t1 = 0, t2 = 0;
@@ -200,16 +204,20 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		}
 		#endif
 
+		// detect aprox. time when a game is launched & set network connect status
+		poll_start_play_time();
+
 		// dynamic fan control
-		#include "fancontrol2.h"
+		if(++fan_control >= 3)
+		{
+			fan_control = 0;
+			#include "fancontrol2.h"
+		}
 
 		// Poll combos for 3 seconds
 		#include "combos.h"
 
 		if(!working) break;
-
-		// detect aprox. time when a game is launched & set network connect status
-		poll_start_play_time();
 
 		#ifdef FPS_OVERLAY
 		if(overlay_info)
@@ -242,6 +250,8 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		if(webman_config->launchpad_xml) continue; // poll wm_request file only if PhotoGUI is enabled
 
 		if(_IS_IN_GAME_) continue; // slow down poll in-game
+
+		if(is_ingame_first_15_seconds()) continue; // do not poll within the first 15 seconds ingame
 
 		if(file_exists(WM_REQUEST_FILE))
 		{

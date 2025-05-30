@@ -33,8 +33,6 @@ static u8 max_temp  = 0; //target temperature (0 = FAN_MANUAL/syscon)
 #define SC_GET_FAN_POLICY		(409)
 #define SC_GET_TEMPERATURE		(383)
 
-//#define FIRST_10_SECONDS	(rTick.tick < gTick.tick + 10000000)
-
 u64 get_fan_policy_offset  = 0;
 u64 set_fan_policy_offset  = 0;
 u64 restore_set_fan_policy = 0; // set in firmware.h
@@ -50,11 +48,10 @@ static void get_temperature(u32 _dev, u8 *temp)
 
 static void sys_sm_set_fan_policy(u8 unknown , u8 fan_mode, u8 fan_speed)
 {
-	//if(payload_ps3hen && IS_INGAME && FIRST_10_SECONDS) return; // skip first 10secs in-game
+	if(is_ingame_first_15_seconds()) return; // skip fan control first 15secs in-game
 
 	// syscon mode: 0, 1, 0x0
 	// manual mode: 0, 2, fan_speed (0x33 - 0xFF)
-
 	u64 enable_set_fan_policy = 0x3860000100000000ULL | (restore_set_fan_policy & 0xffffffffULL);
 
 	lv2_poke_fan(set_fan_policy_offset, enable_set_fan_policy);
@@ -64,7 +61,7 @@ static void sys_sm_set_fan_policy(u8 unknown , u8 fan_mode, u8 fan_speed)
 
 static void sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknown)
 {
-	//if(payload_ps3hen && IS_INGAME && FIRST_10_SECONDS) return; // skip first 10secs in-game
+	if(is_ingame_first_15_seconds()) return; // skip fan control first 15secs in-game
 
 	u64 restore_get_fan_policy = peekq(get_fan_policy_offset); // sys 409 get_fan_policy
 	u64 enable_get_fan_policy = 0x3860000100000000ULL | (restore_get_fan_policy & 0xffffffffULL);
@@ -77,6 +74,8 @@ static void sys_sm_get_fan_policy(u8 id, u8 *st, u8 *mode, u8 *speed, u8 *unknow
 static void set_fan_speed(u8 new_fan_speed)
 {
 	if(fan_ps2_mode || ps2_classic_mounted) return; //do not change fan settings while PS2 game is mounted
+
+	if(is_ingame_first_15_seconds()) return;
 
 	if(get_fan_policy_offset)
 	{
