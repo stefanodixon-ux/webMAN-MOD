@@ -8,7 +8,7 @@ Overlay::Overlay()
     m_ReloadConfigTime = GetTimeNow() + 10000;
 
     // find clock speed offsets only when they are displayed
-    if (g_Config.overlay.mode[Config::DisplayMode::XMB].showClockSpeeds 
+    if (g_Config.overlay.mode[Config::DisplayMode::XMB].showClockSpeeds
         || g_Config.overlay.mode[Config::DisplayMode::GAME].showClockSpeeds)
         sys_ppu_thread_create(&LoadExternalOffsetsThreadId, LoadExternalOffsets, 0, 0xB02, 512, SYS_PPU_THREAD_CREATE_JOINABLE, "Overlay::LoadExternalOffsets()");
 
@@ -98,53 +98,53 @@ void Overlay::DrawOverlay()
 
    if (g_Config.overlay.mode[(int)m_CooperationMode].showRamInfo)
    {
-       overlayText += L"RAM: " + to_wstring(m_MemoryUsage.percent, 1) 
-           + L"% " + to_wstring(m_MemoryUsage.used, 1) 
-           + L" / " + to_wstring(m_MemoryUsage.total, 1) 
-           + L" MB" 
+       overlayText += L"RAM: " + to_wstring(m_MemoryUsage.percent, 1)
+           + L"% " + to_wstring(m_MemoryUsage.used, 1)
+           + L" / " + to_wstring(m_MemoryUsage.total, 1)
+           + L" MB"
            + L"\n";
    }
 
    if (g_Config.overlay.mode[(int)m_CooperationMode].showFanSpeed)
    {
-       overlayText += L"Fan speed: " 
-           + to_wstring(m_FanSpeed) 
+       overlayText += L"Fan speed: "
+           + to_wstring(m_FanSpeed)
            + L"%\n";
    }
 
    if (g_Config.overlay.mode[(int)m_CooperationMode].showFirmware)
    {
-		// Only build once
-		if (!m_CachedPayloadTextBuilt && m_PayloadVersion != 0 && m_FirmwareVersion > 0)
-		{
-			m_CachedPayloadVersion = m_PayloadVersion;
-			m_CachedFirmwareVersion = m_FirmwareVersion;
-			m_CachedKernelType = m_KernelType;
-		
-       std::wstring kernelName;
-			switch (m_CachedKernelType)
+       // Only build once
+       if (!m_CachedPayloadTextBuilt && m_PayloadVersion != 0 && m_FirmwareVersion > 0)
        {
-           case 1: kernelName = L"CEX"; break;
-           case 2: kernelName = L"DEX"; break;
-           case 3: kernelName = L"DEH"; break;
-           default: kernelName = L"N/A";  break;
+           m_CachedPayloadVersion = m_PayloadVersion;
+           m_CachedFirmwareVersion = m_FirmwareVersion;
+           m_CachedKernelType = m_KernelType;
+
+           std::wstring kernelName;
+           switch (m_CachedKernelType)
+           {
+               case 1: kernelName = L"CEX"; break;
+               case 2: kernelName = L"DEX"; break;
+               case 3: kernelName = L"DEH"; break;
+               default: kernelName = L"N/A";  break;
+           }
+
+           std::wstring payloadName = IsConsoleHen() ? L"PS3HEN" : IsConsoleMamba() ? L"Mamba" : L"Cobra";
+
+           std::wstring payloadVerStr = to_wstring(m_CachedPayloadVersion >> 8) + L"." +
+                                        to_wstring((m_CachedPayloadVersion & 0xF0) >> 4);
+           if (IsConsoleHen())
+                    payloadVerStr += L"." + to_wstring(m_CachedPayloadVersion & 0xF);
+
+           m_CachedPayloadText = to_wstring(m_CachedFirmwareVersion, 2) + L" " + kernelName + L" " +
+                                 payloadName + L" " + payloadVerStr + L"\n";
+
+           m_CachedPayloadTextBuilt = true;
        }
-		
-       std::wstring payloadName = IsConsoleHen() ? L"PS3HEN" : IsConsoleMamba() ? L"Mamba" : L"Cobra";
-		
-			std::wstring payloadVerStr = to_wstring(m_CachedPayloadVersion >> 8) + L"." +
-										to_wstring((m_CachedPayloadVersion & 0xF0) >> 4);
-       if (IsConsoleHen())
-				payloadVerStr += L"." + to_wstring(m_CachedPayloadVersion & 0xF);
-		
-			m_CachedPayloadText = to_wstring(m_CachedFirmwareVersion, 2) + L" " + kernelName + L" " +
-								payloadName + L" " + payloadVerStr + L"\n";
-		
-			m_CachedPayloadTextBuilt = true;
-		}
-		
-		// ✅ Always append, every frame
-		overlayText += m_CachedPayloadText;
+
+       // ✅ Always append, every frame
+       overlayText += m_CachedPayloadText;
    }
 
    if (g_Config.overlay.mode[(int)m_CooperationMode].showAppName && gamePlugin)
@@ -285,39 +285,39 @@ void Overlay::GetGameName(char outTitleId[16], char outTitleName[64])
 union clock_s
 {
 public:
-	struct
-	{
-	public:
-		uint32_t junk0;
-		uint8_t junk1;
-		uint8_t junk2;
-		uint8_t mul;
-		uint8_t junk3;
-	};
+    struct
+    {
+    public:
+        uint32_t junk0;
+        uint8_t junk1;
+        uint8_t junk2;
+        uint8_t mul;
+        uint8_t junk3;
+    };
 
-	uint64_t value;
+    uint64_t value;
 };
 
 uint32_t Overlay::GetGpuClockSpeed()
 {
-	clock_s clock;
-	clock.value = PeekLv1(0x28000004028);
+    clock_s clock;
+    clock.value = PeekLv1(0x28000004028);
 
-	if (clock.value == 0xFFFFFFFF80010003) // if cfw syscalls are disabled 
-		return 0;
+    if (clock.value == 0xFFFFFFFF80010003) // if cfw syscalls are disabled
+        return 0;
 
-	return (clock.mul * 50);
+    return (clock.mul * 50);
 }
 
 uint32_t Overlay::GetGpuGddr3RamClockSpeed()
 {
-	clock_s clock;
-	clock.value = PeekLv1(0x28000004010);
+    clock_s clock;
+    clock.value = PeekLv1(0x28000004010);
 
-	if (clock.value == 0xFFFFFFFF80010003) // if cfw syscalls are disabled 
-		return 0;
+    if (clock.value == 0xFFFFFFFF80010003) // if cfw syscalls are disabled
+        return 0;
 
-	return (clock.mul * 25);
+    return (clock.mul * 25);
 }
 
 uint32_t Overlay::GetCpuClockSpeed()
@@ -332,14 +332,14 @@ uint32_t Overlay::GetCpuClockSpeed()
 
     uint64_t frequency = PeekLv1(m_CpuClockSpeedOffsetInLv1);
 
-    if (frequency == 0xFFFFFFFF80010003) // if cfw syscalls are disabled 
+    if (frequency == 0xFFFFFFFF80010003) // if cfw syscalls are disabled
         return 0;
 
     return ((static_cast<uint32_t>(frequency >> 32) / 0xF4240) & 0x1FFF) * 8;
 
 #endif
 
-	return 3200;
+    return 3200;
 }
 
 void Overlay::Lv2LabelUpdate()
@@ -347,7 +347,7 @@ void Overlay::Lv2LabelUpdate()
     if (m_Lv2Label.empty())
         return;
 
-    /* 
+    /*
     float textWrap = paf_6941C365();
     int lineCount = GetLineCount();
     float textHeight = GetTextHeight();
@@ -376,7 +376,7 @@ void Overlay::WaitAndQueueTextInLV2()
     {
         uint64_t bytes = PeekLv2(m_NotificationOffsetInLv2 + (i * 8));
 
-        if (bytes == 0xFFFFFFFF80010003) // if cfw syscalls are disabled 
+        if (bytes == 0xFFFFFFFF80010003) // if cfw syscalls are disabled
             goto clear_text;
 
         if (bytes != 0)
@@ -399,8 +399,8 @@ void Overlay::WaitAndQueueTextInLV2()
 
 void Overlay::UpdateInfoThread(uint64_t arg)
 {
-	if (!g_Overlay.m_CachedPayloadTextBuilt)
-		g_Overlay.m_PayloadVersion = GetPayloadVersion();
+    if (!g_Overlay.m_CachedPayloadTextBuilt)
+        g_Overlay.m_PayloadVersion = GetPayloadVersion();
    g_Overlay.m_StateRunning = true;
 
    while (g_Overlay.m_StateRunning)
@@ -525,12 +525,12 @@ void Overlay::LoadExternalOffsets(uint64_t arg)
     //std::vector<uint32_t> foundOffsets;
     //foundOffsets.reserve(1); // reserve 1 offsets for our use case
 
-    //std::vector<Pattern> patterns = { 
+    //std::vector<Pattern> patterns = {
     //    { "be.0.ref_clk", "xxxxxxxxxxxx", false }
     //};
 
     //FindPatternsHypervisorInParallel(patterns, foundOffsets);
-    
+
     //g_Overlay.m_CpuClockSpeedOffsetInLv1 = foundOffsets[0] + 0x24;
 
 #ifdef OLD_CODE

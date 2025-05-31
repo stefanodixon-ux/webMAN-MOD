@@ -53,7 +53,6 @@ public:
    uint16_t m_PayloadVersion{};
    std::wstring payloadText;
    bool m_CheckedHenVersion = false;
-   //bool m_CachedPayloadText = false;
    uint16_t m_CachedPayloadVersion = 0;
    float m_CachedFirmwareVersion = 0;
    uint64_t m_CachedKernelType = 0;
