@@ -172,7 +172,7 @@ static void poll_start_play_time(void)
 
 static void poll_thread(__attribute__((unused)) u64 arg)
 {
-	u8 sec = 0, fan_control = 0;
+	u8 sec = 0;
 
 	// fancontrol2.h
 	u8 t1 = 0, t2 = 0;
@@ -208,7 +208,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		poll_start_play_time();
 
 		// dynamic fan control
-		if(++fan_control >= 3)
+		if(++fan_control >= FANCONTROL_LOOP)
 		{
 			fan_control = 0;
 			#include "fancontrol2.h"

@@ -287,6 +287,7 @@ static void downloadPKG_thread(void)
 	download_interface->DownloadURL(0, pkg_durl, pkg_dpath);
 }
 
+#ifdef FULL_EDITION
 static void webrender_thread(void)
 {
 	webrender_interface = (webrender_plugin_interface *)plugin_GetInterface(View_Find("webrender_plugin"), 1);
@@ -296,6 +297,7 @@ static void webbrowser_thread(void)
 {
 	webbrowser_interface = (webbrowser_plugin_interface *)plugin_GetInterface(View_Find("webbrowser_plugin"), 1);
 }
+#endif
 
 static int download_file(const char *param, char *msg)
 {

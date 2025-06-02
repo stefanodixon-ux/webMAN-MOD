@@ -1231,6 +1231,8 @@ static int save_settings(void)
 	root_check = true;
 	#endif
 
+	fan_control = FANCONTROL_LOOP; // force check fan control in poll.h
+
 	return save_file(WM_CONFIG_FILE, (char*)wmconfig, sizeof(WebmanCfg));
 }
 

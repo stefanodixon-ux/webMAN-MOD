@@ -124,8 +124,6 @@ static u64 peek(u64 addr)
 	return peekq(addr | BASE_MEMORY);
 }
 
-#ifdef COBRA_ONLY
-
 static bool is_ingame_first_15_seconds(void)
 {
 	if(payload_ps3hen && IS_INGAME)
@@ -135,6 +133,8 @@ static bool is_ingame_first_15_seconds(void)
 	}
 	return false;
 }
+
+#ifdef COBRA_ONLY
 
 ///////////////// LV1/LV2 POKE HEN ////////////////
 static void lv2_poke_fan_hen(u64 addr, u64 value)

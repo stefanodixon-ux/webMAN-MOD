@@ -429,6 +429,7 @@
 								set_fan_speed(webman_config->man_speed + 1);
 								sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 							}
+
 							save_settings();
 							show_msg(msg);
 						}
@@ -469,6 +470,7 @@
 								set_fan_speed(webman_config->man_speed + 1);
 								sprintf(msg, "%s\n%s %i%%", STR_FANCH0, STR_FANCH2, webman_config->man_rate);
 							}
+
 							save_settings();
 							show_msg(msg);
 						}
