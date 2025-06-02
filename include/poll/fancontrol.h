@@ -24,9 +24,7 @@
 #define SET_PS2_MODE	(0)
 #define SYSCON_MODE		(1)
 #define MANUAL_MODE		(2)
-#define FANCONTROL_LOOP	(3)
 
-static u8 fan_control = 0; // count loops to check fan control in poll.h
 static u8 fan_speed = MIN_FANSPEED_8BIT; // 0x33
 static u8 old_fan   = MIN_FANSPEED_8BIT; // 0x33
 static u8 max_temp  = 0; //target temperature (0 = FAN_MANUAL/syscon)

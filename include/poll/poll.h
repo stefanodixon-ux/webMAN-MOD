@@ -208,11 +208,7 @@ static void poll_thread(__attribute__((unused)) u64 arg)
 		poll_start_play_time();
 
 		// dynamic fan control
-		if(++fan_control >= FANCONTROL_LOOP)
-		{
-			fan_control = 0;
-			#include "fancontrol2.h"
-		}
+		#include "fancontrol2.h"
 
 		// Poll combos for 3 seconds
 		#include "combos.h"
