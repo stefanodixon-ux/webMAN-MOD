@@ -127,7 +127,8 @@ static void poll_start_play_time(void)
 		#endif
 
 		#ifdef OVERCLOCKING
-		set_rsxclocks(webman_config->gpu2_core, webman_config->gpu2_vram); // set in-game gpu clock speed
+		if(!pergame_overclocking)
+			set_rsxclocks(webman_config->gpu2_core, webman_config->gpu2_vram); // set in-game gpu clock speed
 		#endif
 
 		#ifdef WM_REQUEST

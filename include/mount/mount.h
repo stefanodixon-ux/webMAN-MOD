@@ -1754,7 +1754,7 @@ exit_mount:
 		{
 			u16 mhz = (u16)(val(oc + 4)); overclock(mhz, true); // set gpu core clock speed
 			oc = strchr(oc, '-'); if(oc) {mhz = (u16)(val(oc + 1)); overclock(mhz, false);} // (optional) set gpu vram clock speed
-			show_rsxclock(filename);
+			show_rsxclock(filename); pergame_overclocking = true;
 		}
 		#endif
 	}

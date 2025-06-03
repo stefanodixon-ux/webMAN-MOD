@@ -2,6 +2,8 @@
 // (C) 2025 by Chattrapat Sangmanee for the overclocking code
 // https://github.com/aomsin2526
 
+static bool pergame_overclocking = false;
+
 #define eieio()                \
 	{                          \
 		asm volatile("eieio"); \
@@ -43,6 +45,8 @@ static void set_rsxclocks(u8 gpu_core, u8 gpu_vram)
 {
 	overclock(50 * (int)(gpu_core), true);
 	overclock(25 * (int)(gpu_vram), false);
+
+	pergame_overclocking = false;
 }
 
 static int get_rsxclock(u64 clock_address) // clock_address = GPU_CORE_CLOCK or GPU_VRAM_CLOCK

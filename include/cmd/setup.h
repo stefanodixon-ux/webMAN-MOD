@@ -39,8 +39,13 @@
 					strcpy((char*)(wmconfig) + offset, pos);
 				else
 				{
-					wmconfig[offset] = (u8)val(pos);
+					if(*pos == '*')
+						wmconfig[offset] ^= 1;
+					else
+						wmconfig[offset] = (u8)val(pos);
+
 					if(offset == 595) profile = wmconfig[offset];
+					if(offset == 918 || offset == 919) spoof_idps_psid();
 				}
 
 				if(!sep) break; pos = sep + 1;
