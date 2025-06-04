@@ -47,172 +47,208 @@ enum menus
 ////////////////////////////////
 typedef struct
 {
-	uint16_t version;
+	uint16_t version; // [0-1] 0x1337
 
-	uint8_t padding0[13];
+	uint8_t padding0[12]; // [2-13] reserved
 
-	uint8_t wm_proxy;
-	uint8_t lang; //0=EN, 1=FR, 2=IT, 3=ES, 4=DE, 5=NL, 6=PT, 7=RU, 8=HU, 9=PL, 10=GR, 11=HR, 12=BG, 13=IN, 14=TR, 15=AR, 16=CN, 17=KR, 18=JP, 19=ZH, 20=DK, 21=CZ, 22=SK, 99=XX
+	uint8_t artemis;  // [14] 0=disabled, 1=enabled on game
+	uint8_t wm_proxy; // [15] 0=use wm_proxy, 1=use webbrowser_plugin
+	uint8_t lang;     // [16] 0=EN, 1=FR, 2=IT, 3=ES, 4=DE, 5=NL, 6=PT, 7=RU, 8=HU, 9=PL, 10=GR, 11=HR, 12=BG, 13=IN, 14=TR, 15=AR, 16=CN, 17=KR, 18=JP, 19=ZH, 20=DK, 21=CZ, 22=SK, 99=XX
 
 	// scan devices settings
 
-	uint8_t usb0;
-	uint8_t usb1;
-	uint8_t usb2;
-	uint8_t usb3;
-	uint8_t usb6;
-	uint8_t usb7;
-	uint8_t dev_sd;
-	uint8_t dev_ms;
-	uint8_t dev_cf;
-	uint8_t ntfs; // 1=enable internal prepNTFS to scan content
+	uint8_t usb0;    // [17] 0=none, 1=scan /dev_usb000
+	uint8_t usb1;    // [18] 0=none, 1=scan /dev_usb001
+	uint8_t usb2;    // [19] 0=none, 1=scan /dev_usb002
+	uint8_t usb3;    // [20] 0=none, 1=scan /dev_usb003
+	uint8_t usb6;    // [21] 0=none, 1=scan device (find first port available from /dev_usb006 to /dev_usb128)
+	uint8_t usb7;    // [22] 0=none, 1=scan device (find first port available from /dev_usb007 to /dev_usb128)
+	uint8_t dev_sd;  // [23] 0=none, 1=scan /dev_sd
+	uint8_t dev_ms;  // [24] 0=none, 1=scan /dev_ms
+	uint8_t dev_cf;  // [25] 0=none, 1=scan /dev_cf
+	uint8_t ntfs;    // [26] 0=use prepISO for NTFS, 1=enable internal prepNTFS to scan content
 
-	uint8_t padding1[5];
+	uint8_t padding1[5]; // [27-31] reserved
 
 	// scan content settings
 
-	uint8_t refr; // 1=disable content scan on startup
-	uint8_t foot; // buffer size during content scanning : 0=896KB,1=320KB,2=1280KB,3=512KB,4 to 7=1280KB
-	uint8_t cmask;
+	uint8_t refr;  // [32] 1=disable content scan on startup
+	uint8_t foot;  // [33] buffer size during content scanning : 0=896KB,1=320KB,2=1280KB,3=512KB,4 to 7=1280KB
+	uint8_t cmask; // [34] content mask
 
-	uint8_t nogrp;
-	uint8_t nocov;
-	uint8_t nosetup;
-	uint8_t rxvid;
-	uint8_t ps2l;
-	uint8_t pspl;
-	uint8_t tid;
-	uint8_t use_filename;
-	uint8_t launchpad_xml;
-	uint8_t launchpad_grp;
-	uint8_t ps3l;
-	uint8_t roms;
-	uint8_t noused; // formerly mc_app
-	uint8_t info;   // info level: 0=Path, 1=Path + ID, 2=ID, 3=None
-	uint8_t npdrm;
-	uint8_t vsh_mc; // allow allocation from vsh memory container
+	uint8_t nogrp;   // [35] 0=group content on XMB, 1=no group
+	uint8_t nocov;   // [36] 0=show covers, 1=no covers
+	uint8_t nosetup; // [37] 0=show setup, 1=no setup
+	uint8_t rxvid;   // [38] 0=none, 1=show Video sub-folder
+	uint8_t ps2l;    // [39] 0=none, 1=show PS2 Classic Launcher
+	uint8_t pspl;    // [40] 0=none, 1=show PSP Launcher
+	uint8_t tid;     // [41] 0=none, 1=show title ID in the name of the game
+	uint8_t use_filename;  // [42] 0=use title in PARAM.SFO, 1=show filename as name
+	uint8_t launchpad_xml; // [43] 0=none, 1=use launchpad / PhotoGUI
+	uint8_t launchpad_grp; // [44] 0=sort launchpad by type/name, 1=sort launchpad by name (disable grouping)
+	uint8_t gamei;  // [45] 0=none, 1=scan GAMEI folder
+	uint8_t roms;   // [46]  0=none, 1=ROMS group
+	uint8_t noused; // [47]  formerly mc_app
+	uint8_t info;   // [48]  info level: 0=Path, 1=Path + ID, 2=ID, 3=None
+	uint8_t npdrm;  // [49]  0=none, 1=show NP games in /dev_hdd0/game
+	uint8_t vsh_mc; // [50]  allow allocation from vsh memory container (0=none, 1=app, 2=debug, 3=fg, 4=bg)
+	uint8_t ignore; // [51]  0=none, 1=ignore files/title id listed in /dev_hdd0/tmp/wm_res/wm_ignore.txt
+	uint8_t root;   // [52]  0=webMAN folder, 1=root
+	uint8_t reloadxmb; // [53] 0=use logout method, 1=use logout method + focus webMAN Games, 2=use RELOADXMB app
 
-	uint8_t padding2[13];
+	uint8_t padding2[10]; // [54-63] reserved
 
 	// start up settings
 
-	uint8_t wmstart; // 1=disable start up message (webMAN Loaded!)
-	uint8_t lastp;
-	uint8_t autob;
-	char autoboot_path[256];
-	uint8_t delay;
-	uint8_t bootd;
-	uint8_t boots;
-	uint8_t nospoof;
-	uint8_t blind;
-	uint8_t spp;    //disable syscalls, offline: lock PSN, offline ingame
-	uint8_t noss;   //no singstar
-	uint8_t nosnd0; //mute snd0.at3
-	uint8_t dsc;    //disable syscalls if physical disc is inserted
+	uint8_t wmstart; // [64] 0=show start up message, 1=disable start up message (webMAN Loaded!)
+	uint8_t lastp;   // [65] 0=none, 1=load last-played game on startup
+	uint8_t autob;   // [66] 0=check for AUTOBOOT.ISO, 1=disable check for AUTOBOOT.ISO
+	char autoboot_path[256]; // [67-322] autoboot path (default: /dev_hdd0/PS3ISO/AUTOBOOT.ISO)
+	uint8_t delay;   // [323] 0=none, 1=delay loading of AUTOBOOT.ISO/last-game (Disc Auto-start)
+	uint8_t bootd;   // [324] Wait for any USB device to be ready: 0, 5, 9 or 15 seconds
+	uint8_t boots;   // [325] Wait additionally for each selected USB device to be ready: 0, 3, 5, 10, 15 seconds
+	uint8_t nospoof; // [326] 0=spoof fw version < 4.53, 1=don't spoof fw version (default)
+	uint8_t blind;   // [327] 0=none, 1=enable /dev_blind on startup
+	uint8_t spp;     // [328] 0=none, 1=disable syscalls, offline: 2=lock PSN, 4=offline ingame
+	uint8_t noss;    // [329] 0=allow singstar icon, 1=remove singstar icon
+	uint8_t nosnd0;  // [330] 0=allow SND0.AT3/ICON1.PAM, 1=mute SND0.AT3/ICON1.PAM
+	uint8_t dsc;     // [331] 0=none, 1=disable syscalls if physical disc is inserted
+	uint8_t noBD;    // [332] 0=normal, 1=apply noBD patch
+	uint8_t music;   // [333] 0=none, 1=play music on startup
+	uint8_t auto_fixclock;// [334] 0=none, 1=auto fix clock using http://ps3.aldostools.org/date.php
 
-	uint8_t padding3[4];
+	uint8_t padding3; // [335] reserved
 
 	// fan control settings
 
-	uint8_t fanc;      // 1 = enabled, 0 = disabled (syscon)
-	uint8_t man_speed; // manual fan speed (calculated using man_rate)
-	uint8_t dyn_temp;  // max temp for dynamic fan control (0 = disabled)
-	uint8_t man_rate;  // % manual fan speed (0 = dynamic fan control)
-	uint8_t ps2_rate;  // % ps2 fan speed
-	uint8_t nowarn;
-	uint8_t minfan;
-	uint8_t chart;
-	uint8_t maxfan;
+	uint8_t fanc;      // [336] 1 = enabled, 0 = disabled (syscon)
+	uint8_t man_speed; // [337] manual fan speed (calculated using man_rate)
+	uint8_t dyn_temp;  // [338] max temp for dynamic fan control (0 = disabled)
+	uint8_t man_rate;  // [339] % manual fan speed (0 = dynamic fan control)
+	uint8_t ps2_rate;  // [340] % ps2 fan speed
+	uint8_t nowarn;    // [341] 0=show warning, 1=no warning
+	uint8_t minfan;    // [342] minimum fan speed (25%)
+	uint8_t chart;     // [343] 0=none, 1=log to CPU/RSX/FAN Chart
+	uint8_t maxfan;    // [344] maximum fan speed (80%)
+	uint8_t man_ingame;// [345] in-game increment for manual fan speed
 
-	uint8_t padding4[7];
+	uint8_t padding4[6]; // [346-351] reserved
 
 	// combo settings
 
-	uint8_t  nopad;
-	uint8_t  keep_ccapi;
-	uint32_t combo;
-	uint32_t combo2;
-	uint8_t  sc8mode; // 0/4=Remove cfw syscall disables syscall8 / PS3MAPI=disabled, 1=Keep syscall8 / PS3MAPI=enabled
-	uint8_t  nobeep;
+	uint8_t  nopad;      // [352] unused
+	uint8_t  keep_ccapi; // [353] 0=disable syscalls keep CCAPI, 1=disable syscalls removes CCAPI
+	uint32_t combo;      // [354-358] combo  flags
+	uint32_t combo2;     // [359-363] combo2 flags
+	uint8_t  sc8mode;    // [364] 0/4=Remove cfw syscall disables syscall8 / PS3MAPI=disabled, 1=Keep syscall8 / PS3MAPI=enabled
+	uint8_t  nobeep;     // [365] 0=beep, 1=no beeps
 
-	uint8_t padding5[20];
+	uint8_t padding5[20]; // [366-385] reserved
 
 	// ftp server settings
 
-	uint8_t  bind;
-	uint8_t  ftpd;
-	uint16_t ftp_port;
-	uint8_t  ftp_timeout;
-	char ftp_password[20];
-	char allow_ip[16];
+	uint8_t  bind;              // [386] 0=allow remote FTP/WWW services, 1=disable remote access to FTP/WWW services
+	uint8_t  ftpd;              // [387] 0=allow ftp service, 1=disable ftp service
+	uint16_t ftp_port;          // [388-389] default: 21
+	uint8_t  ftp_timeout;       // [390] 0=20 seconds, 1-255= number of minutes
+	char ftp_password[20]; // [391-410]
+	char allow_ip[16];     // [411-426] block all remote IP addresses except this
 
-	uint8_t padding6[7];
+	uint8_t padding6[7]; // [427-433] reserved
 
 	// net server settings
 
-	uint8_t  netsrvd;
-	uint16_t netsrvp;
+	uint8_t  netsrvd;  // [434] 0=none, 1=enable local ps3netsrv
+	uint16_t netsrvp;  // [435-436] local ps3netsrv port
 
-	uint8_t padding7[13];
+	uint8_t padding7[13]; // [437-450] reserved
 
 	// net client settings
 
-	uint8_t  netd[5];
-	uint16_t netp[5];
-	char neth[5][16];
+	uint8_t   netd[5];     // [451-455] 0..4
+	uint16_t  netp[5];     // [456-465] port 0..65535
+	char neth[5][16]; // [466-546] ip 255.255.255.255
+	uint8_t nsd;           // [546] Scan remote sub-directories
 
-	uint8_t padding8[33];
+	uint8_t padding8[32];  // [547-578] reserved
 
 	// mount settings
 
-	uint8_t bus;
-	uint8_t fixgame;
-	uint8_t ps1emu;
-	uint8_t autoplay;
-	uint8_t ps2emu;
-	uint8_t ps2config;
-	uint8_t minfo;
-	uint8_t deliso;
+	uint8_t bus;       // [579] 0=enable reset USB bus, 1=disable reset USB bus
+	uint8_t fixgame;   // [580] 0=Auto, 1=Quick, 2=Forced, 3=Disable auto-fix game
+	uint8_t ps1emu;    // [581] 0=ps1emu, 1=ps1_netemu
+	uint8_t autoplay;  // [582] 0=none, 1=Auto-Play after mount
+	uint8_t ps2emu;    // [583] 0=ps2emu, 1=ps2_netemu
+	uint8_t ps2config; // [584] 0=enable auto lookup for PS2 CONFIG, 1=disable auto lookup for PS2 CONFIG
+	uint8_t minfo;     // [585] Mount info level: 0=Both messages, 1=After mount, 2=Previous to mount, 3=none
+	uint8_t deliso;    // [586] 0=none, 1=delete cached PS2ISO copied from net/ntfs
+	uint8_t auto_install_pkg; // [587] 0=auto install PKG when a .ntfs[BDFILE] is mounted, 1=no auto install PKG
+	uint8_t app_home;  // [588] 0=mount folders in app_home, 1=do not mount app_home
+	uint8_t ps1rom;    // [589] 0=ps1_rom.bin, 1=ps1_bios.bin
 
-	uint8_t padding9[8];
+	uint8_t padding9[5]; // [590-594] reserved
 
 	// profile settings
 
-	uint8_t profile;
-	char uaccount[9];
-	uint8_t admin_mode;
+	uint8_t profile;          // [595] User profile
+	char uaccount[9];    // [596-604] default  user account (not used)
+	uint8_t admin_mode;       // [605] 0=USER MODE, 1=ADMIN MODE / requires !(webman_config->combo & SYS_ADMIN)
+	uint8_t unlock_savedata;  // [606] 0=none, 1=auto unlock savedata on file operations (copy/ftp/download) // deprecated //
 
-	uint8_t padding10[5];
+	uint8_t padding10[4]; // [607-610] reserved
 
 	// misc settings
 
-	uint8_t default_restart;
-	uint8_t poll; // poll usb
+	uint8_t default_restart;  // [611] default restart mode set by /restart.ps3?<mode>$
+	uint8_t poll;             // [612] poll all usb drives every 2 minutes to keep them awake
 
-	uint32_t rec_video_format;
-	uint32_t rec_audio_format;
+	uint32_t rec_video_format; // [613-617]
+	uint32_t rec_audio_format; // [618-623]
 
-	uint8_t auto_power_off; // 0 = prevent auto power off on ftp, 1 = allow auto power off on ftp (also on install.ps3, download.ps3)
+	uint8_t auto_power_off; // [624] 0 = prevent auto power off on ftp, 1 = allow auto power off on ftp (also on install.ps3, download.ps3)
 
-	uint8_t padding12[5];
+	uint8_t ps3mon;  // [625] 0 = none; 1 = load ps3mon.sprx on startup
+	uint8_t qr_code; // [626] 0 = none; 1 = show qr code
+	uint8_t prodg;   // [627] 0 = remap app_home to /dev_hdd0/packages, 1 = don't remap app_home
 
-	uint8_t homeb;
-	char home_url[255];
+	uint8_t gpu_core; // [628] xmb: 0 = default; mhz / 50
+	uint8_t gpu_vram; // [629] xmb: 0 = default; mhz / 25
 
-	uint8_t sman;
-	uint8_t earth_id;
-	uint8_t padding11[30];
+	uint8_t homeb; // [630] 0=none, 1=show home button in original GUI
+	char home_url[255]; // [631-885] url for home button, search path for files not found or path for default application in app_home
+
+	uint8_t sman;     // [886] 0=original GUI, 1=sman GUI
+	uint8_t msg_icon; // [887] 0=VSH notify with icon, 1=vshtask_notify (info)
+
+	uint8_t gpu2_core; // [888] in-game: 0 = default; mhz / 50
+	uint8_t gpu2_vram; // [889] in-game: 0 = default; mhz / 25
+
+	uint8_t padding11[28]; // [890-917] reserved
 
 	// spoof console id
 
-	uint8_t sidps;
-	uint8_t spsid;
-	char vIDPS1[17];
-	char vIDPS2[17];
-	char vPSID1[17];
-	char vPSID2[17];
+	uint8_t sidps; // [918] 0=none, 1=spoof IDPS
+	uint8_t spsid; // [919] 0=none, 1=spoof PSID
+	char vIDPS1[17]; // [920-936]
+	char vIDPS2[17]; // [937-953]
+	char vPSID1[17]; // [954-970]
+	char vPSID2[17]; // [971-987]
 
-	uint8_t padding13[34];
+	uint8_t padding13[24]; // [988-1011] reserved
+
+	uint8_t resource_id[12];
+	//uint8_t wallpaper_id;	// [1012]  [0]: 0=random, 1-255: select specific #.png in /dev_hdd0/tmp/wallpaper on each boot
+	//uint8_t earth_id;		// [1013]  [1]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/earth on each boot
+	//uint8_t canyon_id;		// [1014]  [2]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/canyon on each boot
+	//uint8_t lines_id;		// [1015]  [3]: 0=random, 1-255: select specific #.qrc in /dev_hdd0/tmp/lines on each boot
+	//uint8_t coldboot_id;	// [1016]  [4]: 0=random, 1-255: select specific #.ac3 in /dev_hdd0/tmp/coldboot on each boot
+	//uint8_t theme_id;		// [1017]  [5]: 0=random, 1-255: select specific #.p3t in /dev_hdd0/tmp/theme on each boot
+	//uint8_t last_theme_id;	// [1018]  [6]: 0=none, 1-255: last selected theme (used to prevent install the current theme again)
+	//uint8_t impose_id;		// [1019]  [7]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/impose on each boot
+	//uint8_t psn_icons_id	// [1020]  [8]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/psn_icons on each boot
+	//uint8_t clock_id		// [1021]  [9]: 0=random, 1-255: select specific #.rco in /dev_hdd0/tmp/system_plugin on each boot
+						// [1022] [10]: reserved
+						// [1023] [11]: reserved
 } /*__attribute__((packed))*/ WebmanCfg_v2;
 
 typedef struct
@@ -420,7 +456,7 @@ static void do_main_menu_action(void)
 			if(entry_mode[line])
 			{
 				entry_mode[line]=(entry_mode[line] == 2) ? 1 : 2;
-				strcpy(entry_str[view][line], ((entry_mode[line] == 2) ? "0: Insert Disc\0" : (entry_mode[line] == 1) ? "0: Eject Disc\0" : "0: Unmount Game"));
+				strcpy(entry_str[view][line], ((entry_mode[line] == 2) ? "0: Insert Disc" : (entry_mode[line] == 1) ? "0: Eject Disc" : "0: Unmount Game"));
 			}
 			return;
 		case 1:
@@ -457,6 +493,9 @@ static void do_main_menu_action(void)
 
 			if(entry_mode[line] == 2) {send_wm_request("/cpursx.ps3?mode"); beep(3); entry_mode[line]=3; strcpy(entry_str[view][line], "2: System Info"); fan_mode = fan_mode ? 0 : 1;} else
 			if(entry_mode[line] == 3) {send_wm_request("/popup.ps3"); return_to_xmb();}
+
+			if(entry_mode[line] == 4) {send_wm_request("/gpuclock.ps3?650|850"); return_to_xmb();}
+			if(entry_mode[line] == 5) {send_wm_request("/gpuclock.ps3?500|650"); return_to_xmb();}
 
 			play_rco_sound("system_plugin", "snd_system_ok");
 			return;
@@ -565,7 +604,7 @@ static void do_rebug_menu_action(void)
 
 		case 7:
 			config->dnotify = config->dnotify ? 0 : 1;
-			strcpy(entry_str[view][line], (config->dnotify) ? "7: Startup Message : OFF\0" : "7: Startup Message : ON\0");
+			strcpy(entry_str[view][line], (config->dnotify) ? "7: Startup Message : OFF" : "7: Startup Message : ON");
 
 			// save config
 			int fd = 0;
@@ -987,7 +1026,7 @@ static void draw_background_and_title(void)
 																(view == FILE_MANAGER && !last_game_view) ? curdir + curdir_offset :
 																(view == PLUGINS_MANAGER) ? "Plugins Manager"		:
 																						    "VSH Menu for webMAN") );
-	set_font(14.f, 14.f, 1.f, 1); print_text(650, 8, "v1.21");
+	set_font(14.f, 14.f, 1.f, 1); print_text(650, 8, "v1.22");
 }
 
 static void draw_menu_options(void)
@@ -1283,7 +1322,7 @@ static void change_current_folder(uint32_t curpad)
 
 static void change_main_menu_options(uint32_t curpad)
 {
-	uint8_t last_opt = ((line==0) ? 2 : (line==1) ? 7 : (line==9) ? 4 : (line==2) ? 3 : (line==3) ? 5 : (line==6 || line==0xB) ? 1 : 0);
+	uint8_t last_opt = ((line==0) ? 2 : (line==1) ? 7 : (line==9) ? 4 : (line==2) ? 5 : (line==3) ? 5 : (line==6 || line==0xB) ? 1 : 0);
 
 	if(curpad & PAD_RIGHT) ++entry_mode[line];
 	else
@@ -1297,9 +1336,9 @@ static void change_main_menu_options(uint32_t curpad)
 
 	switch (line)
 	{
-		case 0x0: strcpy(entry_str[view][line], ((opt == 1) ? "0: Eject Disc\0"  :
-												 (opt == 2) ? "0: Insert Disc\0" :
-															  "0: Unmount Game\0"));
+		case 0x0: strcpy(entry_str[view][line], ((opt == 1) ? "0: Eject Disc"  :
+												 (opt == 2) ? "0: Insert Disc" :
+															  "0: Unmount Game"));
 		break;
 
 		case 0x1:	if(opt == 5)
@@ -1314,29 +1353,31 @@ static void change_main_menu_options(uint32_t curpad)
 						sprintf(entry_str[view][line], "1: Mount /net%i", opt);
 		break;
 
-		case 0x2: strcpy(entry_str[view][line], ((opt == 1) ? "2: Fan (-)\0"	 :
-												 (opt == 2) ? "2: Fan Mode\0"	:
-												 (opt == 3) ? "2: System Info\0" :
-															  "2: Fan (+)\0"));
+		case 0x2: strcpy(entry_str[view][line], ((opt == 1) ? "2: Fan (-)"	:
+												 (opt == 2) ? "2: Fan Mode"	:
+												 (opt == 3) ? "2: System Info" :
+												 (opt == 4) ? "2: Overclock 650/850" :
+												 (opt == 5) ? "2: Overclock 500/650" :
+															  "2: Fan (+)"));
 		break;
 
 		case 0x3: sprintf(entry_str[view][line], "3: Refresh XML"); if(opt) sprintf(entry_str[view][line] + 14, " (%i)", (opt==5) ? 0 : opt);
 
 		break;
 
-		case 0x6: strcpy(entry_str[view][line], ((opt) ? "6: Screenshot (XMB + Menu)\0"  :
-														 "6: Screenshot (XMB)\0"));
+		case 0x6: strcpy(entry_str[view][line], ((opt) ? "6: Screenshot (XMB + Menu)"  :
+														 "6: Screenshot (XMB)"));
 		break;
 
-		case 0x9: strcpy(entry_str[view][line], ((opt == 1) ? "9: Block PSN Servers\0"   :
-												 (opt == 2) ? "9: Restore PSN Servers\0" :
-												 (opt == 3) ? "9: Delete History\0"		:
-												 (opt == 4) ? "9: Restore Syscalls\0"	:
-															  "9: Disable Syscalls\0"));
+		case 0x9: strcpy(entry_str[view][line], ((opt == 1) ? "9: Block PSN Servers"   :
+												 (opt == 2) ? "9: Restore PSN Servers" :
+												 (opt == 3) ? "9: Delete History"		:
+												 (opt == 4) ? "9: Restore Syscalls"	:
+															  "9: Disable Syscalls"));
 		break;
 
-		case 0xB: strcpy(entry_str[view][line], ((opt) ? "B: Reboot PS3 (hard)\0" :
-														 "B: Reboot PS3 (soft)\0"));
+		case 0xB: strcpy(entry_str[view][line], ((opt) ? "B: Reboot PS3 (hard)" :
+														 "B: Reboot PS3 (soft)"));
 		break;
 	}
 }
@@ -1441,7 +1482,7 @@ static void vsh_menu_thread(uint64_t arg)
 		 cellFsRead(fd, (void *)vsh_menu_config, sizeof(vsh_menu_Cfg), 0);
 		 cellFsClose(fd);
 
-		 strcpy(entry_str[1][7], (config->dnotify) ? "7: Startup Message : OFF\0" : "7: Startup Message : ON\0");
+		 strcpy(entry_str[1][7], (config->dnotify) ? "7: Startup Message : OFF" : "7: Startup Message : ON");
 	}
 
 	if(!arg)

@@ -25,7 +25,7 @@ SYS_MODULE_STOP(slaunch_stop);
 #define STR_UNLOAD		"Unload webMAN"
 #define STR_QUIT		"Quit"
 
-#define APP_VERSION		"1.18"
+#define APP_VERSION		"1.19"
 
 typedef struct {
 	uint8_t  gmode;

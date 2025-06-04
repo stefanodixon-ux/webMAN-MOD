@@ -4,6 +4,7 @@
 #include "include/mem.h"
 
 #include <cell/rtc.h>
+#include <cell/cell_fs.h>
 //#include "include/network.h"	// debug
 
 
@@ -77,12 +78,74 @@ static void set_font_default(void)
 	  bitmap->glyph[i].image = (uint8_t *)ctx.font_cache + (i * 0x400);
 }
 
+static int get_theme_font(int user_id)
+{
+	int reg = -1;
+	int reg_value = -1;
+	uint16_t off_string, len_data, len_string;
+	uint64_t r;
+	char string[256];
+
+	if(cellFsOpen("/dev_flash2/etc/xRegistry.sys", CELL_FS_O_RDONLY, &reg, NULL, 0) != CELL_FS_SUCCEEDED || reg == -1)
+	{
+		return reg_value;
+	}
+
+	CellFsStat stat;
+	cellFsStat("/dev_flash2/etc/xRegistry.sys", &stat);
+	uint64_t entry_offset = 0x10000;
+
+	char key[40]; sprintf(key, "/setting/user/%08i/theme/font", user_id);
+
+	for(;;)
+	{
+	//// Data entries ////
+		//unk
+		entry_offset += 2;
+
+		//relative entry offset
+		cellFsReadWithOffset(reg, entry_offset, &off_string, 2, &r);
+		entry_offset += 4;
+
+		//data lenght
+		cellFsReadWithOffset(reg, entry_offset, &len_data, 2, &r);
+		entry_offset += 3;
+
+	//// String Entries ////
+		off_string += 0x12;
+
+		//string length
+		cellFsReadWithOffset(reg, off_string, &len_string, 2, &r);
+		off_string += 3;
+
+		//string
+		memset(string, 0, sizeof(string));
+		cellFsReadWithOffset(reg, off_string, string, len_string, &r);
+
+		//Find key
+		if(!strcmp(string, key))
+		{
+			if(len_data == 4)
+				cellFsReadWithOffset(reg, entry_offset, &reg_value, 4, &r);
+			break;
+		}
+
+		entry_offset += len_data + 1;
+
+		if(off_string == 0xCCDD || entry_offset >= stat.st_size) break;
+	}
+
+	cellFsClose(reg);
+
+	return reg_value;
+}
+
 /***********************************************************************
 * unbind and destroy renderer, close font instance
 ***********************************************************************/
 static void font_init(void)
 {
-	uint32_t user_id = 0; int val = 0;
+	uint32_t user_id = 0; int sysfont = 0;
 	CellFontRendererConfig rd_cfg;
 	CellFont *opened_font = NULL;
 
@@ -93,20 +156,20 @@ static void font_init(void)
 	if(user_id > 255) user_id = 1;
 
 	// get current font style for the current logged in user
-	xsetting_CC56EB2D()->GetRegistryValue(user_id, 0x5C, &val);
+	xsetting_CC56EB2D()->GetRegistryValue(user_id, 0x5C, &sysfont);
 
 	// fix font selection
-	int val_lang = 1;
-	xsetting_0AF1F161()->GetSystemLanguage(&val_lang);
-	if(((val_lang >= 9) && (val_lang <= 11)) || (val_lang == 16) || (val_lang == 19))
-		val = 0;
-	if(val_lang == 7)
-		val = 4;
-	if(val_lang == 8)
-		val = 9;
+	int lang_id = 1;
+	xsetting_0AF1F161()->GetSystemLanguage(&lang_id);
+	if(((lang_id >= 9) && (lang_id <= 11)) || (lang_id == 16) || (lang_id == 19)) //kor / chi-tra / chi-sim / pol
+		sysfont = 0;
+	if(lang_id == 7) // rus
+		sysfont = 4;
+	if(lang_id == 8) // jap
+		sysfont = get_theme_font(user_id);
 
 	// get sysfont
-	switch(val)
+	switch(sysfont)
 	{
 		case 0:   // original
 		  opened_font = (void*)(vsh_fonts[5]);
