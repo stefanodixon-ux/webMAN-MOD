@@ -283,7 +283,7 @@ static void ps3mapi_find_peek_poke_hexview(char *buffer, char *templn, char *par
 	v = strchr(param + 10, '=');
 	if(v)
 	{
-		oper = get_operator(v, false); // =, |=, &=, ^= (poke.lv1 / poke.lv2)
+		oper = get_operator(v, false); // =, |=, &=, ^=, @= (poke.lv1 / poke.lv2)
 		flen = strlen(v + 1);
 		for(p = 1; p <= flen; p++) if(!memcmp(v + p, " ", 1)) byte++; //ignore spaces
 		flen -= byte; byte = p = 0;

@@ -721,7 +721,7 @@ static void start_VSH_Menu(void)
 {
 	int32_t ret, mem_size;
 
-	uint64_t slist_size = file_len(WMTMP "/" SLIST ".bin"); if(slist_size>(MAX_GAMES*sizeof(_slaunch))) slist_size=MAX_GAMES*sizeof(_slaunch);
+	uint64_t slist_size = file_len(WMTMP "/" SLIST ".bin"); if(slist_size > (MAX_GAMES * sizeof(_slaunch))) slist_size = MAX_GAMES * sizeof(_slaunch);
 
 	mem_size = ((CANVAS_W * CANVAS_H * 4)   + (CANVAS_W * INFOBAR_H * 4) + (FONT_CACHE_MAX * 32 * 32) + (MAX_WH4) + (SM_M) + (slist_size + sizeof(_slaunch)) + MB(1)) / MB(1);
 

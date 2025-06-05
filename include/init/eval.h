@@ -250,27 +250,31 @@ static u8 get_operator(char *equal_pos, bool nullfy)
 	if(!equal_pos) return 0;
 
 	char *prev = (equal_pos - 1);
-	const char c = nullfy ? '\0' : *prev;
-	if(*prev == '^') {*prev = c; return'^';} // field^=value
-	if(*prev == '|') {*prev = c; return'|';} // field|=value
-	if(*prev == '&') {*prev = c; return'&';} // field&=value
-	if(*prev == '+') {*prev = c; return'+';} // field|=value
-	if(*prev == '-') {*prev = c; return'-';} // field&=value
+	char *oper = strchr("^|&+ -@", *prev);
+	if(oper) {*prev = nullfy ? '\0' : *prev; return *oper;}
+	//if(*prev == '^') {*prev = c; return '^';} // field^=value (XOR)
+	//if(*prev == '|') {*prev = c; return '|';} // field|=value (OR)
+	//if(*prev == '&') {*prev = c; return '&';} // field&=value (AND)
+	//if(*prev == '+') {*prev = c; return '+';} // field+=value (ADD)
+	//if(*prev == '-') {*prev = c; return '-';} // field-=value (SUB)
+	//if(*prev == '@') {*prev = c; return '@';} // field@=max (CYCLE) e.g. var@=5 // cycle value from 0 to 5
 	return 0;
 }
 
 static u64 update_value(u64 old_valuen, u64 new_valuen, u8 oper)
 {
 	if(oper == '|')
-		new_valuen |= old_valuen;
+		new_valuen |= old_valuen; // OR
 	if(oper == '&')
-		new_valuen &= old_valuen;
+		new_valuen &= old_valuen; // AND
 	if(oper == '^')
-		new_valuen ^= old_valuen;
-	if(oper == '+')
-		new_valuen += old_valuen;
+		new_valuen ^= old_valuen; // XOR
+	if(oper == '+' || oper == ' ')
+		new_valuen += old_valuen; // ADD
 	if(oper == '-')
-		new_valuen -= old_valuen;
+		new_valuen -= old_valuen; // SUB
+	if(oper == '@')
+		new_valuen = (old_valuen < new_valuen) ? ++old_valuen : 0; // CYCLE
 	return new_valuen;
 }
 #endif

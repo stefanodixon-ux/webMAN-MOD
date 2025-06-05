@@ -42,7 +42,7 @@
 					if(*pos == '*')
 						wmconfig[offset] ^= 1;
 					else
-						wmconfig[offset] = (u8)val(pos);
+						wmconfig[offset] = (u8)update_value(wmconfig[offset], (u8)val(pos), get_operator(pos - 1, false));
 
 					if(offset == 595) profile = wmconfig[offset];
 					if(offset == 918 || offset == 919) spoof_idps_psid();

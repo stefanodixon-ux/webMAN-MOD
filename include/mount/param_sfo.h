@@ -199,7 +199,7 @@ static void get_param_sfo(unsigned char *mem, const char *field, char *ret_value
 	if(field) new_value = strchr(field, '=');
 	if(new_value > field)
 	{
-		oper = get_operator(new_value, true); // =, |=, &=, ^=
+		oper = get_operator(new_value, true); // =, |=, &=, ^=, @=
 
 		*new_value++ = NULL; // split field & new_value
 

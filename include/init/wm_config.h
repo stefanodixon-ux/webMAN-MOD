@@ -144,7 +144,7 @@ typedef struct
 
 	// profile settings
 
-	u8 profile;          // [595] User profile
+	u8 profile;          // [595] User profile [0-5]
 	char uaccount[9];    // [596-604] default  user account (not used)
 	u8 admin_mode;       // [605] 0=USER MODE, 1=ADMIN MODE / requires !(webman_config->combo & SYS_ADMIN)
 	u8 unlock_savedata;  // [606] 0=none, 1=auto unlock savedata on file operations (copy/ftp/download) // deprecated //

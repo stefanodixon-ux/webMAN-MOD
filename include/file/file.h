@@ -461,6 +461,11 @@ int wait_for(const char *path, u8 timeout)
 
 #define MAX_WAIT	30
 
+static bool not_xmb(void)
+{
+	return working && (View_Find("explore_plugin") == 0) && (View_Find("game_plugin") == 0) && (View_Find("sysconf_plugin") == 0);
+}
+
 static bool wait_for_xmb(void)
 {
 	u8 t = 0;

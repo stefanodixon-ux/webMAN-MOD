@@ -23,7 +23,7 @@ static void start_www(u64 conn_s_p)
 
 			if(profile || !(webman_config->wmstart))
 			{
-				if(!payload_ps3hen && (View_Find("explore_plugin") == 0) && (View_Find("game_plugin") == 0)) sys_ppu_thread_sleep(9); // wait from boot
+				if(!payload_ps3hen) while(not_xmb()) sys_ppu_thread_sleep(1);
 
 				show_wm_version(msg);
 				do_sleep = false;
@@ -175,7 +175,8 @@ static void start_www(u64 conn_s_p)
 			#endif
 			#endif
 
-			wait_for_xmb();
+			// wait for xmb
+			while(not_xmb()) sys_ppu_thread_sleep(1);
 
 			if(file_exists("/dev_hdd0/ps3-updatelist.txt"))
 				vshnet_setUpdateUrl("http://127.0.0.1/dev_hdd0/ps3-updatelist.txt"); // custom update file
@@ -230,16 +231,20 @@ static void start_www(u64 conn_s_p)
 			#ifdef FIX_CLOCK
 			if(webman_config->auto_fixclock)
 			{
-				while(wait_for_xmb()) ; // wait for XMB
+				// auto accept date/time page
+				while(working && (View_Find("explore_plugin") == 0)) {press_accept_button(); sys_ppu_thread_sleep(2);}
 
-				static int (*_cellRtcGetCurrentTick)(u64 *pTick) = NULL;
-				_cellRtcGetCurrentTick = getNIDfunc("cellRtc", 0x9DAFC0D9, 0);
+				if(working)
+				{
+					static int (*_cellRtcGetCurrentTick)(u64 *pTick) = NULL;
+					_cellRtcGetCurrentTick = getNIDfunc("cellRtc", 0x9DAFC0D9, 0);
 
-				u64 currentTick;
-				_cellRtcGetCurrentTick(&currentTick);
+					u64 currentTick;
+					_cellRtcGetCurrentTick(&currentTick);
 
-				#define date_time full_path
-				if(currentTick < FIX_CLOCK_DATE) update_clock_from_server_time(date_time);
+					#define date_time full_path
+					if(currentTick < FIX_CLOCK_DATE) update_clock_from_server_time(date_time);
+				}
 			}
 			#endif
 		}

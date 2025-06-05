@@ -922,7 +922,7 @@ static void ps3mapi_getmem(char *buffer, char *html, const char *param)
 				char val_tmp[HEXDATA_SIZE + 1];
 				char *new_value = val_tmp;
 
-				u8 oper = get_operator(val_param, false); // val=, val|=, val&=, val^=, val+=, val-=
+				u8 oper = get_operator(val_param, false); // val=, val|=, val&=, val^=, val+=, val-=, val@=
 				if(!oper && get_param("oper=", addr_tmp, param, 4)) oper = (u8)val(addr_tmp);
 
 				ps3mapi_get_memory(pid, address, value, BINDATA_SIZE);
@@ -1087,7 +1087,7 @@ static void ps3mapi_setmem(char *buffer, char *html, const char *param)
 			char *val_param = strstr(param, "&val");
 			if(val_param)
 			{
-				oper = get_operator(val_param, false); // val=, val|=, val&=, val^=, val+=, val-=
+				oper = get_operator(val_param, false); // val=, val|=, val&=, val^=, val+=, val-=, val@=
 				if(!oper && get_param("oper=", addr_tmp, param, 4)) oper = (u8)val(addr_tmp);
 
 				if(get_param("=", val_tmp, val_param, HEXDATA_SIZE))
