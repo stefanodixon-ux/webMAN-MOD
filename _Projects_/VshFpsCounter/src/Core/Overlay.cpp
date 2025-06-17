@@ -59,6 +59,8 @@ void Overlay::DrawOverlay()
    if (g_Config.overlay.displayMode == Config::DisplayMode::GAME && m_CooperationMode == vsh::eCooperationMode::XMB)
        return;
 
+   if (m_CooperationMode != vsh::eCooperationMode::XMB) m_CooperationMode = vsh::eCooperationMode::Game; // fixes PSX/PSP always showing BOTH temperatureTypes instead of only CELSIUS or FAHRENHEIT
+
    vsh::paf::View* gamePlugin = vsh::paf::View::Find("game_plugin");
    std::wstring overlayText;
 

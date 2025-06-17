@@ -73,6 +73,18 @@ Patch sb_iso_spu_module.self to force the use of ps2_key_cex_vmc
 ORIGINAL: 000004F0 | 88 62 64 CB 42 2D 60 47 40 80 03 44 8A 31 A3 C5
 PATCHED:  000004F0 | 88 62 64 CB 42 2D 68 47 40 80 03 44 8A 31 A3 C5
 
+------------------------------------------------------------------------------------------------
+vsh.self - Skips checking for new firmware version when logging into PSN in CEX targetID mode
+------------------------------------------------------------------------------------------------
+
+4.90+ CEX
+ORIGINAL: 2355EC | 88 01 00 70 2B 80 00 82 40 9D 00 5C 80 7F 01 70
+PATCHED:  2355EC | 38 00 00 82 2B 80 00 82 40 9D 00 5C 80 7F 01 70
+
+4.84 DEX
+ORIGINAL: 23CE5C | 88 01 00 70 2B 80 00 82 40 9D 00 5C 80 7F 01 70
+PATCHED:  23CE5C | 38 00 00 82 2B 80 00 82 40 9D 00 5C 80 7F 01 70
+
 ------------------------------------------------
 Patch SSL certificates in DEX vsh.self on 4.91.2
 ------------------------------------------------
@@ -229,6 +241,10 @@ File: nas_plugin.sprx (4.89)
 - Patch: 0x38600000
 - Original: 0x48032A51
 
+4.90+
+Patched [Install All Packages] to work in non QA flagged PS3
+ORIGINAL: 0001F850 | 38 61 00 74 91 61 00 74 48 03 2A 51 2F 83 00 00
+PATCHED:  0001F850 | 38 61 00 74 91 61 00 74 38 60 00 00 2F 83 00 00
 
 ---------------------------------------
 disable start up sound while turning on
@@ -326,7 +342,7 @@ if not found on newer fw try:
 ------------------------
 disable epilepsy message
 ------------------------
-vsh.self (cex)
+vsh.self (cex/sex)
 - search  00 00 00 02 00 00 00 01 02 01 01 01 ff ff ff ff
 - replace 00 00 00 02 00 00 00 01 02 00 01 01 ff ff ff ff
 
@@ -516,7 +532,7 @@ Remote Play with PlayStation 3 (Windows Software)
 -------------------------------------------------
 premo_plugin.prx for 4.50
 < 0xB7E4 38 60 00 00  li r3, 0
-> 0xB7E4  38 60 00 01 li r3, 1
+> 0xB7E4 38 60 00 01  li r3, 1
 
 premo_game_plugin.prx for 4.50
 < 0xC9E4 38 60 00 00  li r3, 0
@@ -526,8 +542,8 @@ premo_game_plugin.prx for 4.50
 Make Remote Play SFO Flag obsolete
 ----------------------------------
 game_ext_plugin.prx
-original: 41 9e 00 1c 2f 83 00 03
-patched : 41 9e 00 28 2f 83 00 03
+original: 41 9E 00 1C 2F 83 00 03
+patched : 41 9E 00 28 2F 83 00 03
 
 --------------------------------------------------------
 graf chokolo patch /lv1_undocumented_function_114 (mmap)
