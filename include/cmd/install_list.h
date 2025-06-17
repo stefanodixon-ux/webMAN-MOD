@@ -17,7 +17,7 @@
 			{
 				if(cellFsGetDirectoryEntries(fd, &entry, sizeof(entry), &read_e) || !read_e) break;
 				len = entry.entry_name.d_namlen -4; if(len < 0) continue;
-				if(!strcmp(entry.entry_name.d_name + len, ".pkg") || !strcmp(entry.entry_name.d_name + len, ".p3t"))
+				if(_IS(entry.entry_name.d_name + len, ".pkg") || _IS(entry.entry_name.d_name + len, ".p3t"))
 				{
 					concat(buffer, "<option>");
 					concat(buffer, entry.entry_name.d_name);

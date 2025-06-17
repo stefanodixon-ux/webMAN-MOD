@@ -81,7 +81,7 @@
 
 		if(ret)
 			sprintf(param, "Applicable Version failed: %x\n", ret);
-		else if((data[1] >= 0x04) || (data[1] == 0x03 && data[3] > 0x56))
+		else if((data[1] >= 0x04) || (data[1] == 0x03 && data[3] > 0x56) || (BETWEEN(480, fw_ver, 492) == false))
 			sprintf(param, "CFW not supported!");
 		else if(!allow_cfw)
 			sprintf(param, "Already on CFW!");
@@ -99,7 +99,7 @@
 				doit = false;
 			else if(!doit)
 			{
-				const char *nofsm_md5[10] = {
+				const char *nofsm_md5[13] = {
 					"d8bb229d2d802acccc0345031ee01d83", // nofsm_patch_480.bin
 					"0bbb87121684b43e6727a459365f04ff", // nofsm_patch_481.bin
 					"32b8c0f25884933a00d1e924f84b2a68", // nofsm_patch_482.bin
@@ -110,8 +110,14 @@
 					"1efb54b005b09a10e436f9c76e51d870", // nofsm_patch_487.bin
 					"ea9f81a031a7b6701560b3501712df1a", // nofsm_patch_488.bin
 					"b9feb4432adb086d890472ab29b663a9", // nofsm_patch_489.bin
+					"8cf9701297129151e22eda39c1d2670f", // nofsm_patch_490.bin
+					"3c19a6855490b5ed471764962e9fcd83", // nofsm_patch_491.bin
+					"36bd44795f06b59eecbdaad6982be426", // nofsm_patch_492.bin
 				};
-				doit = IS(md5, nofsm_md5[fw_ver % 10]);
+				if(BETWEEN(480, fw_ver, 492))
+					doit = IS(md5, nofsm_md5[fw_ver - 480]);
+				else
+					doit = false;
 			}
 
 			sys_addr_t sysmem =  doit ? sys_mem_allocate(_128KB_) : NULL;

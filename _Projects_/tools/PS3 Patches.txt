@@ -1,7 +1,7 @@
 -------------------------------------------------------
 Patch System Manager to allow PS2 emulators Fan Control
 -------------------------------------------------------
-Patch is for LV1 file, should be 4.75+ but it's based on 4.78 LV1 file. 
+Patch is for LV1 file, should be 4.75+ but it's based on 4.78 LV1 file.
 Don't try to modify your LV1 without hardware flasher!
 
 This patch enables ability to get fan readings and to set fan speed and policy.
@@ -72,6 +72,24 @@ PATCHED:  000003C8 | 32 00 0F 00 7C 06 04 B6 20 00 0D 36 42 2D 90 03
 Patch sb_iso_spu_module.self to force the use of ps2_key_cex_vmc
 ORIGINAL: 000004F0 | 88 62 64 CB 42 2D 60 47 40 80 03 44 8A 31 A3 C5
 PATCHED:  000004F0 | 88 62 64 CB 42 2D 68 47 40 80 03 44 8A 31 A3 C5
+
+------------------------------------
+software_update_plugin.sprx 4.84 DEX
+------------------------------------
+Enable custom CFW update selection via internet
+
+ORIGINAL: 0000E228 | 88 09 00 20 2F 80 00 00 41 9E 00 90 91 4B 00 08
+PATCHED:  0000E228 | 38 00 00 01 2F 80 00 00 41 9E 00 90 91 4B 00 08
+
+Enable debug update options
+
+ORIGINAL: 00011748 | 90 03 00 94 4E 80 00 20 38 60 00 00 4E 80 00 20
+PATCHED:  00011748 | 90 03 00 94 4E 80 00 20 38 60 00 01 4E 80 00 20
+
+Enable Update via Internet button
+
+ORIGINAL: 00016E2C | 40 9E FF E4 38 60 00 00 E8 01 00 A0 7C 63 07 B4
+PATCHED:  00016E2C | 40 9E FF E4 38 60 00 00 E8 01 00 A0 38 60 00 01
 
 ------------------------------------------------------------------------------------------------
 vsh.self - Skips checking for new firmware version when logging into PSN in CEX targetID mode
@@ -144,7 +162,7 @@ Patches to enable hidden trophy's title on XMB/INFO (4.90 CEX and 4.84 DEX)
 - Enable hidden trophy's title in XMB/INGAME -> Search: 0x4099005C | Patch: 0x4800005C
 - Enable hidden trophy's details in XMB/INGAME -> Search: 0x813C00487B | Patch: 0x392000017B
 - Enable real trophy's icon for hidden trophies in trophy info in XMB/INGAME -> Search: 0x807E00487B | Patch: 0x386000017B
- 
+
 [Files: np_trophy_plugin.sprx / np_trophy_ingame.sprx]
 - Enable hidden trophy's title in trophy info in XMB/INGAME -> Search: 0x4099000C | Patch: 0x4800000C
 - Enable hidden trophy's details in trophy info in XMB/INGAME -> Search: 0x4BFFFC55 | Patch: 0x38600001
@@ -169,12 +187,12 @@ File: np_trophy_ingame.sprx (4.90 CEX)
 --------------------------------------------
  Patches to bypass Region Block in PS3 games
 --------------------------------------------
-File: game_ext_plugin.sprx (4.90)  
-- Offset: 0x69A8 | Patch: 0x38000000 (li %r0, 0) 
+File: game_ext_plugin.sprx (4.90)
+- Offset: 0x69A8 | Patch: 0x38000000 (li %r0, 0)
 - Offset: 0x69BC | Patch: 0x38600000 (li %r3, 0)
 
-File: game_ext_plugin.sprx (4.84 DEX)  
-- Offset: 0x6964 | Patch: 0x38000000 (li %r0, 0) 
+File: game_ext_plugin.sprx (4.84 DEX)
+- Offset: 0x6964 | Patch: 0x38000000 (li %r0, 0)
 - Offset: 0x6978 | Patch: 0x38600000 (li %r3, 0)
 
 
@@ -259,7 +277,7 @@ File: custom_render_plugin.sprx (4.83)
 Disable creation of /dev_hdd0/tmp/turnoff file
 ----------------------------------------------
 File: vsh.self (4.87)
-- Offset: 0xB86F0 
+- Offset: 0xB86F0
 - Patch: 0x4800006C
 - Original: 0x419E006C
 
@@ -333,7 +351,7 @@ Enforce gameboot animation
 --------------------------
 on higher Firmwares
 
-game_ext_plugin.sprx : 
+game_ext_plugin.sprx :
 38 80 00 00 7B E3 00 20 -> 38 80 00 00 38 60 00 02 + add gameboot_multi + gameboot_stereo
 if not found on newer fw try:
 2F 89 00 00 7B C3 00 20 -> 2F 89 00 00 38 60 00 02 + add gameboot_multi + gameboot_stereo
@@ -383,7 +401,7 @@ PS2 on non BC enabler
 game_ext_plugin
  set search  " 88 1f 00 06 3b 80 00 01"
  set replace " 88 1f 00 02 3b 80 00 01"
-    
+
 sysconf_plugin
  set search  " 88 1c 00 06 54 00 07 fe"
  set replace " 88 1c 00 02 54 00 07 fe"
@@ -473,8 +491,8 @@ allow unsigned apps on CEX MFW
    31a7dc:	99 69 00 00 	stb     r11,0(r9)
    31a7e0:	88 09 00 00 	lbz     r0,0(r9)
 
-modulespatch in COBRA7 
-{ elf1_func2 + elf1_func2_offset, NOP, &condition_true }, 
+modulespatch in COBRA7
+{ elf1_func2 + elf1_func2_offset, NOP, &condition_true },
 
 < 05ffee0: 6063 8c06 4bff fe80 f821 ff81 7c08 02a6
 > 05ffee0: 6063 8c06 4bff fe80 3860 0001 4e80 0020
@@ -489,7 +507,7 @@ modulespatch in COBRA7
    60fef4:	f8 01 00 90 	std     r0,144(r1)
    60fef8:	4b ff ff e1 	bl      0x60fed8
 
-modulespatch in COBRA7 
+modulespatch in COBRA7
 { elf1_func1 + elf1_func1_offset, LI(R3, 1), &condition_true },
 { elf1_func1 + elf1_func1_offset + 4, BLR, &condition_true },
 
@@ -511,10 +529,10 @@ Note : Commonly used in almost all 4.xx MFWs, Do NOT use this patch for DEX MFW,
 /* PL3 Patch - allow unsigned apps */
 < 005FFEE8  F8 21 FF 81 7C 08 02 A6   ø!ÿ.|..¦
 > 005FFEE8  38 60 00 01 4E 80 00 20   8`..N€.
-     
+
 < 006668B0  34 37 35 31 36   47516
 > 006668B0  35 33 36 34 32   53642
-     
+
 < 0070399B  00 00 00 00 00   .....
 > 0070399B  01 00 6B AB 28   ..k«(
 
@@ -659,13 +677,13 @@ Allow unsigned act.dat and *.rif files
 version       addr       old data          new data                   function
 3.55retail   0x30b230  4b cf 5b 45  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
 3.55retail   0x30ac90  48 31 b4 65  ->   38 60 00 00     // fixed  act.dat missing after reboot
-      
+
 3.55debug    0x312308  4b ce ea 6d  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
 3.55debug    0x311d68  48 31 b7 d5  ->   38 60 00 00     // fixed  act.dat missing after reboot
-      
+
 3.41retail   0x305dc4  4b cf af b1  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
 3.41retail   0x305824  48 31 43 ad  ->   38 60 00 00     // fixed  act.dat missing after reboot
-      
+
 3.41debug    0x30cedc  4b cf 3e 99  ->   38 60 00 00     // fixed  allow unsigned act.dat *.rif
 3.41debug    0x30c93c  48 31 47 1d  ->   38 60 00 00     // fixed  act.dat missing after reboot
 
@@ -678,7 +696,7 @@ PS2 on non BC enabler
 game_ext_plugin
  set search  "88 1f 00 06 3b 80 00 01"
  set replace "88 1f 00 02 3b 80 00 01"
-    
+
 sysconf_plugin
  set search  "88 1c 00 06 54 00 07 fe"
  set replace "88 1c 00 02 54 00 07 fe"

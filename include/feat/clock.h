@@ -4,6 +4,24 @@
 
 static bool pergame_overclocking = false;
 
+typedef union
+{
+	struct
+	{
+		uint32_t junk0;
+		uint8_t  junk1;
+		uint8_t  junk2;
+		uint8_t  mul;
+		uint8_t  junk3;
+	};
+
+	uint64_t value;
+} clock_s;
+
+#define GPU_CORE_CLOCK		0x28000004028
+#define GPU_VRAM_CLOCK		0x28000004010
+
+// Enforce In-order Execution of I/O
 #define eieio()                \
 	{                          \
 		asm volatile("eieio"); \
