@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)https://www.psdevwiki.com/ps3/PS2_Emulation/PS2_Config_Commands -->
+<html class="client-js ve-available" lang="en" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>PS2 Emulation/PS2 Config Commands - PS3 Developer wiki</title>
+<meta name="viewport" content="width=device-width, initial-scale=0.5">
+<meta name="viewport" content="width=1000">
+</head>
+<body bgcolor=black text=white><font face="arial">
+<div id="content">
+	<h1 id="firstHeading" class="firstHeading mw-first-heading"><span class="mw-page-title-main">PS2 Emulation/PS2 Config Commands</span></h1>
+	<div id="bodyContent" class="vector-body">
+		<div id="mw-content-text" class="mw-body-content mw-content-ltr" lang="en" dir="ltr"><div class="mw-parser-output"><h1><span class="mw-headline">PS2 Gxemu Commands</span></h1>
+<p>PS2 GX Emu commands are Big Endian unless noted. Every command size is 0x18, and unused data need to be filled with zeros. Commands which point to emulator memory have additional data, but command itself is still 0x18 in size. Data fields are just example values and can be changed to different value when needed.</p>
+
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x00
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x01
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">FIXME
+</td></tr></tbody></table>
+<p>Inject precompiled function on selected EE offset.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit EE offset | 32 bit align | 64bit ptr to emu memory
+0x00000000 |  0x00000000  |    0x0012345C    |  0x00000000  |   0x00000000000366C4
+</pre>
+<details style="background:#333;padding:8px;border: 2px solid #cc8;border-radius:10px;"><summary style="cursor:pointer;"><b>More info</b></summary>
+<p>Netemu sub ID to gxemu pointer:</p>
+<pre>0x00 = 0x36B40
+0x01 = 0x35FB0
+0x02 = 0x34068
+0x03 = 0x34144
+0x04 = 0x33F98
+0x05 = 0x36CF8
+0x06 = 0x34224
+0x07 = 0x37850
+0x08 = 0x33DFC
+0x09 = 0x36C04
+0x0A = 0x36EF0
+0x0B = 0x34354
+0x0C = 0x34424
+0x0D = 0x34520
+0x0E = 0x345FC
+0x0F = 0x365F0
+0x10 = 0x36510
+0x11 = 0x36430
+0x12 = 0x34DD0
+0x13 = 0x366C4
+0x14 = 0x34EDC
+0x15 = 0x3795C
+0x16 = 0x3521C
+0x17 = 0x347D0
+0x18 = 0x35300
+0x19 = 0x36E28
+0x1A = 0x37614
+0x1B = 0x35434
+0x1C = 0x354F8
+0x1D = 0x355BC
+0x1E = 0x35680
+0x1F = 0x35744
+0x20 = 0x35808
+0x21 = 0x358CC
+0x22 = 0x35990
+0x23 = 0x35A54
+0x24 = 0x35B18
+0x25 = 0x35BDC
+0x26 = 0x35CA0
+0x27 = 0x35D64
+0x28 = 0x35E28
+0x29 = 0x35EEC
+0x2A = 0x35158
+0x2B = 0x34994
+0x2C = 0x36FC8
+0x2D = 0x3607C
+0x2F = 0x34A70
+0x30 = 0x34B48
+0x31 = 0x34C20
+0x32 = 0x34CF8
+0x33 = 0x37714
+ID &gt;= 0x34 unsupported
+</pre>
+<p>Offsets for 4.75+ gx emulator</p>
+</details><p>
+</div>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x01
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x02
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Used in function that handle D6 CHCR writes (SIF1), seems to be some kind of timing command for EE --&gt; IOP DMA.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x00000001 |  0x00000000  | 0x00000BB8  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x02
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x03
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Skip r5900 CACHE IXIN/IHIN (Index/Hit invalidate) opcodes.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000002 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x03
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x04
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Patch SPE 4 program (eedma) by searching for ila r4, xxxxx, starting at 0x178A0 and replacing them with (0x42000004 | ((value &lt;&lt; 7) &amp; 0x1FFFF80) 0x42000004 is ila r4 opcode. Due to opcode encoding example result of that patch with value 0x08 will be 0x42000404 (ila r4, 0x08). There is little bit more than that, but main purpose is just to patch SPE program behavior.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x00000003 |  0x00000000  | 0x00000008  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x04
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">Not available
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Patch spe 4 program to use alternative VIF1 Direct/DirectHL command handler.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000004 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x05
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x06
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Patch spe 4 program to use alternative VIF1 Offset command handler.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000005 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x06
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x07
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Delay XGKICK by x cycles.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x00000006 |  0x00000000  | 0x00000008  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x07
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x08
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Patch 2 x 32 bit opcodes of VU1 microprogram (lower and upper opcode). Config allow to specify bitmask for both read and write.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 64bit ptr to emu memory | 32 bit align | 32 bit align
+0x00000007 |  0x00000000  |   0x0000000000341190    |  0x00000000  |  0x00000000
+</pre>
+<pre>Additional example data at 0x341190 looks like this:
+ 64 bit read mask  | 64 bit read value  | 64 bit write mask  | 64 bit write value
+0x80000000FFFFFFFF | 0x0000000040000001 | 0x00000000FFFFFFFF | 0x000000008000033C
+</pre>
+<pre>Which translates to C:
+if readVu1Code(i) &amp; 0x80000000FFFFFFFF == 0x0000000040000001
+    writeVu1Code(i, 0x000000008000033C &amp; 0x00000000FFFFFFFF)
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x08
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x09
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Patch 2 x 32 bit opcodes of EE executable code.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 64bit ptr to emu memory | 32 bit count | 32 bit align
+0x00000008 |  0x00000000  |   0x0000000000341190    |  0x00000002  |  0x00000000
+</pre>
+<pre>Additional example data at 0x341190 looks like this:
+ 32 bit EE offset  | 32 bit align | 32 bit original opcode | 32 bit original opcode | 32 bit replace opcode | 32 bit replace opcode 
+    0x00418750     |  0x00000000  |       0x1062FFFA       |       0x00000000       |       0x00000000      |      0x00000000
+
+due to patch count == 2 in this example, there is next set of data right after first one:
+ 32 bit EE offset  | 32 bit align | 32 bit original opcode | 32 bit original opcode | 32 bit replace opcode | 32 bit replace opcode 
+    0x00418808     |  0x00000000  |       0x1062FFFA       |       0x00000000       |       0x00000000      |      0x00000000
+</pre>
+<details style="background:#333;padding:8px;border: 2px solid #cc8;border-radius:10px;"><summary style="cursor:pointer;"><b>More info</b></summary>
+<p>This command read and write opcodes as a 64 bit value. This can be really confusing when creating custom config.</p><p>Lets assume that EE offset 0x100000 holds value (in raw hex) 00 11 22 33 44 55 66 77 and we want to change it to 88 99 AA BB CC DD EE FF</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 64bit ptr to emu memory | 32 bit count | 32 bit align
+0x00000008 |  0x00000000  |   0x0000000000341190    |  0x00000001  |  0x00000000
+
+Additional example data at 0x341190 looks like this:
+ 32 bit EE offset  | 32 bit align | 32 bit original opcode | 32 bit original opcode | 32 bit replace opcode | 32 bit replace opcode 
+    0x00100000     |  0x00000000  |       0x77665544       |       0x33221100       |       0xFFEEDDCC      |      0xBBAA9988
+                   |              |value read from 0x100004|value read from 0x100000|value write to 0x100004|value write to 0x100000
+
+</pre>
+<p>This happen because emulator read 64 bit value from 0x100000 and reverse it from little to big endian as whole 64 bits. Exactly the same happen for values that emulator write to memory.
+This little code snippet can help little bit with conversion.</p>
+<pre># Value to convert, copied from hex editor or disassembler.
+x = "00 11 22 33 44 55 66 77"
+
+x = x.replace(" ", "")
+x = int(x, 16)
+
+x = (x &amp; 0x00000000FFFFFFFF) &lt;&lt; 32 | (x &amp; 0xFFFFFFFF00000000) &gt;&gt; 32
+x = (x &amp; 0x0000FFFF0000FFFF) &lt;&lt; 16 | (x &amp; 0xFFFF0000FFFF0000) &gt;&gt; 16
+x = (x &amp; 0x00FF00FF00FF00FF) &lt;&lt; 8  | (x &amp; 0xFF00FF00FF00FF00) &gt;&gt; 8
+a = x &gt;&gt; 56
+b = (x &gt;&gt; 48) &amp; 0xFF
+c = (x &gt;&gt; 40) &amp; 0xFF
+d = (x &gt;&gt; 32) &amp; 0xFF
+e = (x &gt;&gt; 24) &amp; 0xFF
+f = (x &gt;&gt; 16) &amp; 0xFF
+g = (x &gt;&gt; 8) &amp; 0xFF
+h = x &amp; 0xFF
+print("{:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}".format(a,b,c,d,e,f,g,h))
+</pre>
+<p>Beside own python installation, code can be used on site like <a target="_blank" rel="nofollow noreferrer noopener" class="external free" href="https://www.w3schools.com/python/trypython.asp?filename=demo_compiler">https://www.w3schools.com/python/trypython.asp?filename=demo_compiler</a></p>
+</details><p>
+</div>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x09
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x0B
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Patch disc data during read operation. </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 64bit ptr to emu memory | 32 bit count | 32 bit align
+0x00000009 |  0x00000000  |   0x0000000000341190    |  0x00000001  |  0x00000000
+</pre>
+<pre>Additional example data at 0x341190 looks like this:
+ 32 bit lba | 32 bit offset in lba | 64 bit ptr to replace data | 64 bit ptr to original data | 32 bit data size in bytes | 32 bit align
+ 0x00000471 |      0x00000280      |     0x00000000003411B0     |     0x00000000003411B4      |         0x00000004        |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0A
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x0C
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">2x uint16
+</td></tr></tbody></table>
+<p>First param can be 0, 1, or 2. Second param in range of 0 and 0xFFFF. Second param is used only if first param == 1. Default values are (1, 0x1000) for PS2DVD, and (1, 0x400) for PS2CD and PS2CDDA.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 16 bit data | 16 bit data | 32 bit align | 32 bit align | 32 bit align
+0x0000000A |  0x00000000  |    0x0001   |    0x0400   |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0B
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x0D
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Command take bool value and default is 1. When set to 0: Skip some IOP related code responsible for check value from IOP SPE (and skip panic if value is 0 or -1).<br>
+Also skip write of value 0x80000000 to SPU Signal Notification 1 Register of IOP SPE.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x0000000B |  0x00000000  | 0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0C
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x0E
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Use PS2 accurate add/sub math for selected opcode/offset. Command is valid for every FPU and COP2 opcode that do add/sub (also for opcodes like VMSUBA, MADD, etc). </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit EE memory offset | 32 bit align | 32 bit align | 32 bit align
+0x0000000C |  0x00000000  |       0x001264D4        |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0D
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x0F
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">2x int32
+</td></tr></tbody></table>
+<p>Use PS2 accurate add/sub math for selected opcode/offsets range. Command is valid for every FPU and COP2 opcode that do add/sub (also for opcodes like VMSUBA, MADD, etc). </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit EE start memory offset | 32bit EE end memory offset | 32 bit align | 32 bit align
+0x0000000D |  0x00000000  |          0x0012A3D4           |         0x0012A468         |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0E
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x10
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">2x int32
+</td></tr></tbody></table>
+<p>Use PS2 accurate mul/div math for selected opcode/offsets range. Command is valid for every FPU opcode that do mul/div (also for opcodes like MADD, MSUBA etc). Command does not work for COP2 opcodes. </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit EE start memory offset | 32bit EE end memory offset | 32 bit align | 32 bit align
+0x0000000E |  0x00000000  |          0x005719D8           |         0x00571C2C         |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0F
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x11
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Use PS2 accurate add/sub math for selected opcode/offset in VU0 microprogram. Command is valid for every VU0 opcode that do add/sub (also for opcodes like MSUBAQ, MADDAx, etc).<br>
+Valid VU0 memory offset is in range (0x000 to 0xFFF) &amp; 0xFF8, which mean that last nibble needs to be either 0 or 8. </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit VU0 memory offset | 32 bit align | 32 bit align | 32 bit align
+0x0000000F |  0x00000000  |        0x00000208        |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x10
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x12
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int64, 1x int32
+</td></tr></tbody></table>
+<p>Multi-purpose VU0/COP2 command. Data size vary depending on sub commands, but at least 2 x 32 bit is required to make command valid. </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 64 bit ptr to emu memory with data | Data size / 4 | 32 bit align
+0x00000010 |  0x00000000  |         0x0000000000323288         |  0x0000000D   |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x11
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x13
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int64
+</td></tr></tbody></table>
+<p>Delay memory card related operations by x cycles.</p>
+<pre>Format:
+32 bit ID  | 32 bit align |    64 bit data     | 32 bit align | 32 bit align
+0x00000011 |  0x00000000  | 0x000000000000F960 |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x12
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x14
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Use alternative code path during ADD/SUB VU1 recompilation. Config seems to be very specific hack, most likely not usable outside of THPS 4+ engine games.<br>
+Note: This setting affects only VU1, and only ADD/SUB. All other opcodes like ADDi,ADDq, MSUB, ADDbc, are not affected.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000012 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x13
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x15
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Patch SPE 0 (IOP) program in local memory. Command search for absolute branches in LS 0x3A9C0 - 0x3ADC0 and patch first found absolute branch to "bi r127".<br>
+This command takes partially unused value. Value 0,1 do nothing, values 2 and above run command. Doesn't matter is 2,4, or 10. Nothing will change in command behavior.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x00000013 |  0x00000000  | 0x00000002  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x14
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">Not available
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int8
+</td></tr></tbody></table>
+<p>Gsgif related command. Unused in latest emu, also seems to be unreachable even if set.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 8 bit data | 24 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000014 |  0x00000000  |    0x01    |   0x000000   |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x15
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x17
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int8
+</td></tr></tbody></table>
+<p>Value is bool, default 0. When set to true, MTC0/MFC0 operation of COP0 Count ($9) register uses ppc timebase register as a base for calculation, when disabled decrementer register is used as a base for calculations.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 8 bit data | 24 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000015 |  0x00000000  |    0x01    |   0x000000   |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x16
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">Not available
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Perform additional check during GS CSR write and if there is SIGNAL clear bit active and other dependencies are fulfilled, do some additional operations with GS.</p>
+<pre>Format:
+32 bit ID   | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x000000016 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x17
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x1A
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>IPU BCLR command hack </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000017 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x18
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x1B
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>IPU IDEC command hack </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000018 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x19
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">Not available
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Disable DEV9. Disables net/ps2hdd capabilities including Network Adapter detection.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000019 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<details style="background:#333;padding:8px;border: 2px solid #cc8;border-radius:10px;"><summary style="cursor:pointer;"><b>More info</b></summary>
+<p>Command disable reads/writes to selected IOP HW registers. Disabled regs are:</p>
+<ul><li>0x10000000 - 0x10003FFF (DEV9/SPEED/ATA/SMAP)</li>
+<li>0x1F801460 - 0x1F80147F (Unknown)</li></ul>
+<p>Command is auto applied to titles listed here (duplicates are really there in emu too):</p>
+<pre>    Hash           ID                 Name
+0x0CD1298155  SLES_540.13  World Snooker Championship 2007
+0x12C93199A5  SLES_518.40  NHL Hitz Pro
+0x15C93199AD  SLES_549.13  Pro Evolution Soccer 2008
+0x24D92589A5  SLUS_211.86  NBA Ballers - Phenom
+0x2CD12D8125  SLUS_212.35  MLB 2K6
+0x34C9359935  SLUS_211.38  X-Men Legends II - Rise of Apocalypse
+0x34C93599E5  SLUS_211.28  Blitz - The League
+0x34C93599E5  SLUS_211.28  Blitz - The League
+0x449961C9E5  SLES_542.10  NBA 2K7
+0x4C9169C1CD  SLES_542.46  FIFA '07
+0x4C9169C1D5  SLES_542.45  NHL '07
+0x4C9169C1DD  SLES_542.44  FIFA '07
+0x4C9169C1E5  SLES_542.43  FIFA '07
+0x4C9169C1F5  SLES_542.41  FIFA '07
+0x4C9169C1FD  SLES_542.40  FIFA '07
+0x4CB14DE12D  SLUS_213.74  Marvel - Ultimate Alliance
+0x54A955F915  SLUS_212.74  Outrun 2006 - Coast 2 Coas
+0x5CA15DF165  SLUS_213.01  World Series of Poker
+0x5CA15DF1FD  SLUS_212.86  WWE SmackDown! vs RAW 2006
+0x5CA15DF1FD  SLUS_212.86  WWE SmackDown! vs RAW 2006
+0x649965C94D  SLUS_214.63  Tom Clancy's Ghost Recon 2
+0x649965C955  SLUS_214.60  NBA Live '07
+0x649965C95D  SLUS_214.61  NASCAR '07
+0x649965C965  SLUS_214.58  NHL '07
+0x649965C96D  SLUS_214.59  NCAA Football '07
+0x6BB149E15D  SLES_531.04  Tom Clancy's Rainbow Six - Lockdown
+0x6C916DC165  SLUS_214.91  World Series of Poker - Tournament of Champions
+0x6C916DC1A5  SLUS_214.83  Tiger Woods PGA Tour '07
+0x6C916DC1AD  SLUS_214.82  NFL Street 3
+0x6C916DC1B5  SLUS_214.81  NCAA March Madness '07
+0x6C916DC1D5  SLUS_214.77  Madden NFL '07 [Hall of Fame Edition]
+0x6C916DC1DD  SLUS_214.76  Madden NFL '07
+0x748975D9DD  SLUS_213.83  Fight Night - Round 3
+0x7C817DD125  SLUS_214.33  FIFA Soccer '07
+0x7C817DD165  SLUS_214.25  NHL 2K7
+0x7C817DD16D  SLUS_214.24  NBA 2K7
+0x7C817DD175  SLUS_214.27  WWE SmackDown! vs RAW 2007
+0x7C817DD1CD  SLUS_214.12  World Championship Poker featuring Howard Lederer - All-In
+0x84798529BD  SLUS_205.65  Champions of Norrath
+0x8559A109AD  uuunnnnnkkk  
+0x8579852915  SLUS_215.68  Arena Football - Road to Glory
+0x8579852965  SLUS_215.82  MVP '07 - NCAA Baseball
+0x8D51A90145  SLES_545.11  UEFA Champions League
+0x8D51A901B5  SLES_545.13  UEFA Champions League
+0x8D51A901BD  SLES_545.12  UEFA Champions League
+0x8D718D21BD  SLUS_216.20  NCAA Football '08
+0x9C619D31E5  SLUS_205.41  NBA Ballers
+0x9D41B911AD  SLES_544.48  World Series of Poker - Tournament of Champions
+0x9D619D31C5  SLUS_215.61  Major League Baseball 2K7
+0x9F29357805  SCUS_975.44  NBA '07 featuring The Life Vol.2
+0x9F293578E5  SCUS_975.56  MLB '07 - The Show
+0xB549B51915  SLUS_216.38  Madden NFL '0
+0xB549B51925  SLUS_216.32  NHL 2K8
+0xB549B5195D  SLUS_216.47  NHL '08
+0xB549B519A5  SLUS_216.48  FIFA Soccer '08
+0xB549B519AD  SLUS_216.49  NBA Live '08
+0xBC61793025  SCES_532.85  Ratchet - Gladiator
+0xBD41BD1105  SLUS_216.69  NBA 2K8
+0xC439C569F5  SLUS_208.20  Tom Clancy's Ghost Recon - Jungle Storm
+0xC7716D20D5  SCUS_974.01  Hot Shots Golf FORE!
+0xC7716D20D5  SCUS_974.01  Hot Shots Golf FORE!
+0xCA11E941F5  SLES_516.97  SSX 3
+0xCF7965285D  SCUS_973.53  Ratchet and Clank - Up Your Arsenal
+0xCF7965285D  SCUS_973.53  Ratchet and Clank - Up Your Arsenal
+0xD20911582D  SCES_515.93  Hardware Online Arena [Beta, Promo &amp; Full Release]
+0xD7617D308D  SCUS_973.28  Gran Turismo 4
+0xE339C1695D  SLES_525.45  Star Wars Battlefront
+0xE794CCB06D  PCPX_980.42  Minna no Tennis
+0xEA3129608D  SCES_515.78  Network Access Disc [Original, v4.02 &amp; v4.03]
+0xEC11ED4115  SLUS_209.73  Champions - Return to Arms
+0xEF594508D5  SCUS_975.00  MLB '06 - The Show
+0xF409F559AD  SLUS_208.89  MLB Slugfest - Loaded
+0xF7415D10E5  SCUS_974.65  Ratchet - Deadlocked
+0xF7415D10E5  SCUS_974.65  Ratchet - Deadlocked
+</pre>
+<p>As a result config disable HDD/NET capabilities.</p>
+</details><p>
+</div>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1A
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x1D
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int8
+</td></tr></tbody></table>
+<p>Sets multitap to specific controller ports and adjusts the order of ports to which controllers are synced. Default 3</p>
+<ul><li>0 = no multitap set (only when needed). Controller sync order: 1/1-A, 2/2-A, 1-B, 2-B...</li>
+<li>1 = sets multitap in controller port 1 at all times. Controller sync order: 1/1-A, 1-B, 1-C, 1-D...</li>
+<li>2 = sets multitap in controller port 2 at all times. Controller sync order: 1/1-A, 2/2-A, 2-B, 2-C...</li>
+<li>3 = sets multitaps in both controller ports at all times. Controller sync order: same as 0</li></ul>
+<pre>Format:
+32 bit ID  | 32 bit align | 8 bit data | 24 bit align | 32 bit align | 32 bit align | 32 bit align
+0x0000001A |  0x00000000  |    0x01    |   0x000000   |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1B
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x1E
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int8
+</td></tr></tbody></table>
+<p>Unknown. Probably mtap related. Command is a 2 bit bitfield. Default value 0</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 8 bit data | 24 bit align | 32 bit align | 32 bit align | 32 bit align
+0x0000001B |  0x00000000  |    0x01    |   0x000000   |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1C
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x1F
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Make VIF0 commands MSCAL/MSCALF/MSCNT/MPG/FLUSHE non instant.<br>By default every VIF0 command take 1 cycle, so it's instant.
+This config give vif0 some timing sense. Value is cycle count before first event check related to VIF0.<br>
+When delta from config passed and vif0 is still running, add 500 cycles and go on until next event test.<br>
+This can also be used to ensure that next vif0 command after MSCAL/MSCALF/MSCNT/MPG/FLUSHE won't run until delta from config passed.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x0000001C |  0x00000000  | 0x000003F8  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1D
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x20
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int64
+</td></tr></tbody></table>
+<p>Vblank timing related, still partially unknown.</p>
+<pre>Format:
+32 bit ID  | 32 bit align |    64 bit data     | 32 bit align | 32 bit align
+0x0000001D |  0x00000000  | 0x00000000000000C8 |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1E
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x21
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Option one default value = 1, when set to 0: r5900 CACHE opcode IXLTG store 0 in COP0 TagLo register. More than that recompiler skip function responsible for analyze and emitting costly iCache checks.<br>
+This drastically reduce emitted code size, and practically disable iCache emulation. Additionally CACHE IXIN/IHIN opcodes use different very long code path (this can be skipped with cmd 0x03).<br>
+Option two default value = 0, when set to 1: Emit some kind of check for current r5900 PC with possible trap opcode at the end. 1 is valid only when option one is 0.</p>
+<ul><li>0 = sets an option one to 0 and option two to 0</li>
+<li>1 = sets an option one to 0 and option two to 1</li>
+<li>2 = sets an option one to 1 and option two to 0 (default)</li></ul>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x0000001E |  0x00000000  | 0x00000002  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1F
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x23
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Patch spe 4 program with new custom VIF1 STCYCL alike command 08h handler.
+This command is useful only with additional 0x00 hooks. Said hooks inject 08h VIF1 command into game code when other conditions are met.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x0000001F |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x20
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x24
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int64
+</td></tr></tbody></table>
+<p>SIO2 timing related, still partially unknown.</p>
+<pre>Format:
+32 bit ID  | 32 bit align |    64 bit data     | 32 bit align | 32 bit align
+0x00000020 |  0x00000000  | 0x0000000000002EE0 |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x21
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">Not available
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Unknown, GSGIF SPE related. </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x00000021 |  0x00000000  | 0x00000009  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x22
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x26
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">2x int32
+</td></tr></tbody></table>
+<p>Improves FPU accuracy for selected memory range. Efective only on: ADD.s, SUB.s, ADDA.s, SUBA.s, MADD.s, MSUB.s, MADDA.s, MSUBA.s. </p><p>For M(UL) opcodes, command is active only on ADD/SUB stage.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit EE start memory offset | 32bit EE end memory offset | 32 bit align | 32 bit align
+0x00000022 |  0x00000000  |          0x0012A3D4           |         0x0012A468         |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x23
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x27
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">2x int32
+</td></tr></tbody></table>
+<p>Improves COP2 operations accuracy for selected memory range. Effective only for opcodes:</p>
+<pre>VSUBAxyzw, VSUBAq, VSUBAi, VSUBA, VSUBxyzw, VSUBq, VSUBi, VSUB, VMSUBAxyzw,
+VMSUBAq, VMSUBAi, VMSUBA, VMSUBxyzw, VMSUBq, VMSUBi, VMSUB, VMADDAxyzw,
+VMADDAq, VMADDAi, VMADDA, VMADDxyzw, VMADDq, VMADDi, VMADD, VADDAxyzw,
+VADDAq, VADDAi, VADDA, VADDxyzw, VADDq, VADDi, VADD
+</pre>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit EE start memory offset | 32bit EE end memory offset | 32 bit align | 32 bit align
+0x00000023 |  0x00000000  |          0x0012A3D4           |         0x0012A468         |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x24
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x28
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>CDVD seek related. Only accept values 0/1/2/3, and values 1/2/3 works exactly the same way (and default is 1). Value 0 makes cdvd seek instant.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x00000024 |  0x00000000  | 0x00000001  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x25
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x29
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">2x int32
+</td></tr></tbody></table>
+<p>Seek time modifier. Values set how much time seek takes per <b>single sector</b>. Values are microseconds. Command is ignored when command 0x24 with value 0 is used (instant seek).</p>
+<pre>* 1                    = 0,000001s
+* 0x3E8   (1000dec)    = 0,001s
+* 0xF4240 (1000000dec) = 1s
+</pre>
+<p>First param affect fast seek time, second param affect full seek time.
+Default value is 0x1F40, 0xBB80 (8000, 48000). Config affect only CDVD N Command Seek, read command that "SeekToSector" is not affected.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit data | 32 bit align | 32 bit align
+0x00000025 |  0x00000000  | 0x00001F40  |  0x0000BB80 |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x26
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x2A
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Unknown, used only in All-Star Baseball 2004</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000026 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x27
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x2B
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>When enabled emulated register 0x1F40200F (disc type) is set to 0x13 (PS2CDDA) when media type detected by emu is 0x12 (PS2CD). Required for multi-track PS2 games like Dance Factory. </p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000027 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x28
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x2C
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Store (value | value &lt;&lt; 32 | value &lt;&lt; 64 | value &lt;&lt; 96) in SPE 0 (IOP) LS.</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x00000028 |  0x00000000  | 0x00000001  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x29
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">Not available
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">None
+</td></tr></tbody></table>
+<p>Skip one of functions in r5900 event test. Said function interact with GSGIF SPE and GS hardware, but in some conditions can also write to BGCOLOR GS register (why?).</p><p>Used in Final Fantasy X</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit align | 32 bit align | 32 bit align | 32 bit align
+0x00000029 |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2A
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x2E
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Delay CDVD reads, and get_toc commands completion. Delay is applied on last stage of command after read is completely done. Value is additional timebase ticks. 0x4C1A6C0 ticks == 1 second</p>
+<ul><li>Valid values found: 0x172</li></ul>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x0000002A |  0x00000000  | 0x00000172  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2B
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x2F
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">1x int32
+</td></tr></tbody></table>
+<p>Store value in SPE 1 (PS2 SPU2) LS. Used values are 1, and 2 (after andi, so 3 trigger both configs).</p><p>Indigo Prophecy/Fahrenheit uses 0x1, Kengo 3 uses 0x2</p>
+<pre>Format:
+32 bit ID  | 32 bit align | 32 bit data | 32 bit align | 32 bit align | 32 bit align
+0x0000002B |  0x00000000  | 0x00000001  |  0x00000000  |  0x00000000  |  0x00000000
+</pre>
+<table  style="width:100%; background:#666; line-height:110%">
+<tbody><tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:orange; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2C
+</td>
+<td style="width:180px; border-style:solid hidden hidden">Equivalent Netemu ID:
+</td>
+<td style="border-style:solid solid hidden; font-weight:bold">0x0A
+</td></tr>
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+</td>
+<td style="font-style:italic">Varies
+</td></tr></tbody></table>
+<p>Patch 32 bit opcodes of EE executable code. <b>Warning! This is a custom command and it is not available in an unpatched emulator!</b></p>
+<pre>Format:
+32 bit ID  | 32 bit align | 64bit ptr to emu memory | 32 bit count | 32 bit align
+0x0000002C |  0x00000000  |   0x0000000000341190    |  0x00000002  |  0x00000000
+</pre>
+<pre>Additional example data at 0x341190 looks like this:
+ 32 bit EE offset  | 32 bit align | 32 bit original opcode | 32 bit align | 32 bit replace opcode | 32 bit align  
+    0x00122780     |  0x00000000  |       0x27BDFE10       |  0x00000000  |       0x27BDFD00      |  0x00000000
+
+due to patch count == 2 in this example, there is next set of data right after first one:
+ 32 bit EE offset  | 32 bit align | 32 bit original opcode | 32 bit align | 32 bit replace opcode | 32 bit align  
+    0x00122AE8     |  0x00000000  |       0x27BD01F0       |  0x00000000  |       0x27BD0300      |  0x00000000
+</pre>
+<details style="background:#333;padding:8px;border: 2px solid #cc8;border-radius:10px;"><summary style="cursor:pointer;"><b>More info</b></summary>
+<p>This command read and write opcodes as a 32 bit value. Command implementation helps with netemu 0x0A ports.
+Example ps2_netemu 0x0A config translation. 
+<br>Original config.</p>
+<pre>3D 00 00 00 57 44 00 00 &lt;-- not relevant.
+0A 00 00 00 02 00 00 00 &lt;-- CMD 0x0A, count 0x02
+80 27 12 00 10 FE BD 27 00 FD BD 27 &lt;-- addr, org opcode, replace opcode
+E8 2A 12 00 F0 01 BD 27 00 03 BD 27 &lt;-- addr, org opcode, replace opcode
+</pre>
+<p>Gx config.</p>
+<pre>00 00 00 84 79 85 29 05 00 34 11 78 00 00 00 01 &lt;-- single command in this example, count is elsewhere
+00 00 00 2C 00 00 00 00 00 00 00 00 00 34 11 90 00 00 00 02 00 00 00 00 &lt;-- CMD 0x2C, ptr to command data, count 0x02. 
+00 12 27 80 00 00 00 00 27 BD FE 10 00 00 00 00 27 BD FD 00 00 00 00 00 &lt;-- addr, org opcode, replace opcode
+00 12 2A E8 00 00 00 00 27 BD 01 F0 00 00 00 00 27 BD 03 00 00 00 00 00 &lt;-- addr, org opcode, replace opcode
+</pre>
+<p>Single line explanation, gx command is big endian, netemu is little endian:</p>
+<pre>   00 12 27 80    | 00 00 00 00 |   27 BD FE 10   | 00 00 00 00 |   27 BD FD 00  | 00 00 00 00
+ee addr from 0x0A |    align    | original opcode |    align    | replace opcode |    align
+</pre>
+</details><p>
+</div>
+</body></html>

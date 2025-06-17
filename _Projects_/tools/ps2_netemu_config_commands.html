@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)https://www.psdevwiki.com/ps3/PS2_Emulation/PS2_Config_Commands -->
+<html class="client-js ve-available" lang="en" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>PS2 Emulation/PS2 Config Commands - PS3 Developer wiki</title>
+<meta name="viewport" content="width=device-width, initial-scale=0.5">
+<meta name="viewport" content="width=1000">
+</head>
+<body bgcolor=black text=white><font face="arial">
+<div id="content">
+	<h1 id="firstHeading" class="firstHeading mw-first-heading"><span class="mw-page-title-main">PS2 Emulation/PS2 Config Commands</span></h1>
+	<div id="bodyContent" class="vector-body">
+		<div id="mw-content-text" class="mw-body-content mw-content-ltr" lang="en" dir="ltr"><div class="mw-parser-output"><h1><span class="mw-headline">PS2 Netemu Commands</span></h1>
+<pre>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x00
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Title ID Enforce / Multidisc config
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x String in format: ABCD-12345
+<p></table>
+Restricts the CONFIG to be used only by a specific <a href="https://www.psdevwiki.com/ps3/Template:TITLE_ID_for_Physical_Media" title="Template:TITLE ID for Physical Media">Title ID</a>
+The presence of this command in the CONFIG is optional. If present it needs to be located always at the last position in the CONFIG. When bytes are present after Title ID, emulator read them to setup multidisc info.
+<pre>Multidisc info bytes:
+First byte:  Unknown, seems to be unused. 00 in known configs (Grandia 3).
+Second byte: Discs count (0-9), when 0 or 1 emulator don't enable multidisc mode.
+Third byte:  Which disc in set is this one (0-8 for discs 1-9)
+Fourth byte: That one is optional, but very important. When set to 1,
+             disc swap menu will be in "Reset game" menu and disc change will trigger reset (default behavior).
+             But when this byte is set to 0, new option in main emu menu called "Switch Discs" will appear. Emulator change disc without reset. 
+             Keep in mind we don't know how accurate swap emulation is here, games are picky for some details. 
+             Every iso bin enc in set need to have proper data in separate config. 
+             Disc 1: ISO.BIN.ENC --&gt; CONFIG --&gt; 00 02 00 00,
+              00000000  3D 00 00 00 A8 3E 00 00 00 00 00 00 53 4C 55 53  =...¨&gt;......SLUS
+              00000010  2D 32 31 33 33 34 00 02 00                       -21334...
+             Disc 2: ISO.BIN.ENC2--&gt; CONFIG2--&gt; 00 02 01 00, etc.
+              00000000  3D 00 00 00 A8 3E 00 00 00 00 00 00 53 4C 55 53  =...¨&gt;......SLUS
+              00000010  2D 32 31 33 34 35 00 02 01                       -21345...
+<pre>             Grandia 3 DISC.IDX, content:
+              00000000  00 00                                            ..
+<br>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x01
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">EE_ADD_HOOK
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">2x uint32_t Params (addr, func_id 0-0x3B)
+<p></table>
+Most of the hooks availables in netemu command 0x01 are fixes for a specific game, or a game engine<br>
+The Maximum Amount of times netemu command 0x01 can be used consecutivelly in the same config is 255. This is actually limit for EE hooks at all, 0x01 don't have own limit.
+<div style="overflow-x:auto">
+<table  style="width:100%; font-size:0.9em; line-height:90%">
+<tr>
+<th>Function ID</th>
+<th>Notes
+</th>
+<tr><td>0x00
+<td>FIFA 2000 use it as hook for EE kernel at 0x800017E8 (DMAC related). Command backup value from r5900 s0 register.
+<tr><td>0x01
+<td>FIFA 2000 use it as hook for EE kernel at 0x80001858 (DMAC related). Command restore previously backed up value to r5900 s0 register.
+<tr><td>0x02
+<td>
+Max Payne
+<pre>Write 0 to D_ENABLEW in SPE 3 (EEDMA). D_ENABLER is NOT updated on PPE side.
+<tr><td>0x03
+<td>
+Max Payne
+<pre>Write 0xFFFFFFFF (0x10000, other bits are ignored anyway) to D_ENABLEW in SPE 3 (EEDMA). D_ENABLER is NOT updated on PPE side.
+<tr><td>0x04
+<td>Castle Shikigami II
+<pre>Skip r5900 CACHE IXIN/IHIN (Index/Hit invalidate) opcodes. Same as 0x03 command, but applied of selected ee offset.
+This is probably command from times when 0x03 was non existing, and while it apply on selected ee offset, command never recover default IXIN/IHIN handling.
+Note: There is leftover in emulator from command that reenable default behavior, but is unused now, and is not accessible by current config commands.
+<tr><td>0x05
+<td>Force events test if D2_CHCR &amp; 0x100 is true (if GIF dma is running). For more info check _cpuEventTest_Shared from pcsx2. Star Wars games developed by Pandemic Studios (freeze fix), Worms 3D and NBA 08.
+<tr><td>0x06
+<td>Force events test if D1_CHCR &amp; 0x100 is true (if VIF1 dma is running). For more info check _cpuEventTest_Shared from pcsx2.
+<tr><td>0x07
+<td>
+<tr><td>0x08
+<td>Backup current unmodified COP0 status register state. Then disable EI bit, and notify emu that cmd 0x09 could be run. Harry Potter - Quidditch World Cup US use it at offset 0x2BD45C (EE)
+<tr><td>0x09
+<td>Restore COP0 status register state from previously created backup. Harry Potter - Quidditch World Cup US use it at offset 0x2BD620 (EE)
+<tr><td>0x0A
+<td>Fix for TriAce executable unpack function.
+<pre>Games unpack data using VU0 microruntime (not COP2). Because unpack involve floating points operations result can be inaccurate. And it is,
+exactly by 1 byte. Config add 1 to result of unpacked data. This can be confirmed also on pcsx2 with turned off TriAce hack, example for Radiata Stories US release.
+Set breakpoint on 0x124D90, and then when it's hit, add 1 to lower 64 bits of vf03 reg (in vu0f tab) and hit run.
+Game now work as it should. On PS3 this probably can be fixed also by 0x11 command, but since they had hook already done before 0x11 was a thing, it stayed as is.
+<tr><td>0x0B
+<td>Set lower 64 bits of mips $at register to 0
+<tr><td>0x0C
+<td>Piglet's Big Game
+<pre>Sleep EE thread for 10 milliseconds, after that remove hook.
+<tr><td>0x0D<td><pre>Sleep EE thread for 0.1 millisecond (100μs).
+<tr><td>0x0E
+<td>Used 3 times in Need for Speed - Carbon [Collector's Edition] US.
+<pre>Force EE JIT LUT reset. Used in place where game load code overlays, and in place where game self-modify code. 
+Command could be potentially useful for games that like to change own code. Eg. Load "bin" files with code (HSG/HST), or modify own code by direct writes to memory (NFS Carbon CE...)
+<tr><td>0x0F
+<td>
+Grand Theft Auto 3 (SLUS-20062)
+<pre>using 0x348B40, 0x18E1F0, 0x348EC8 ( + 200000000 base )
+0x348B40 = start CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+0x18E1F0 = start CCollision::ProcessColModels((CMatrix const &amp;, CColModel &amp;, CMatrix const &amp;, CColModel &amp;, CColPoint *, CColPoint *, float *))
+0x348EC8 = Almost end (only loading values preserved on stack) of CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+<tr><td>0x10
+<td>
+Grand Theft Auto 3 (SLES-50330)
+<pre>using 0x349790, 0x18E1F0, 0x349B18 ( + 200000000 base ) 
+0x349790 = start CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+0x18E1F0 = start CCollision::ProcessColModels((CMatrix const &amp;, CColModel &amp;, CMatrix const &amp;, CColModel &amp;, CColPoint *, CColPoint *, float *))
+0x349B18 = Almost end (only loading values preserved on stack) of CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+<tr><td>0x11
+<td>
+Grand Theft Auto 3 (SLES-50793)
+<pre>using 0x3495C0, 0x18E1F0, 0x349948 ( + 200000000 base )
+0x3495C0 = start CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+0x18E1F0 = start CCollision::ProcessColModels((CMatrix const &amp;, CColModel &amp;, CMatrix const &amp;, CColModel &amp;, CColPoint *, CColPoint *, float *))
+0x349948 = Almost end (only loading values preserved on stack) of CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+<tr><td>0x12
+<td>Disney/Pixar Finding Nemo (fixes the pause menu freeze)
+<pre>if COP0 status EI and EXL bits are 0, and other condition related to DMAC is met...
+store 0 in [ 0x204FC500 + 200000000 base] 0x4FC500 EE memory, and set lower 64 bits of mips $s0 register to 0.
+<tr><td>0x13
+<td>Snowblind Engine specific fix. Applies to the beginning of function called initLump. Config is responsible for grabbing data from one of registers for use in 0x14/0x15 hooks. Mentioned data is EE memory offset, if data from 0x13 is 0, 0x14/0x15 don't apply.
+<tr><td>0x14
+<td>Snowblind Engine specific fix. Applies to the end of function called initLump. Used in the older version of Snowblind Engine (Dark Alliance duology, The Bard's Tale, Fallout).
+<tr><td>0x15
+<td>Snowblind Engine specific fix. Applies to the end of function called initLump. Used in the newer version of Snowblind Engine (Champions duology, Justice League Heroes, Combat Elite).
+<tr><td>0x16
+<td>Champions of Norrath (SLUS-20565)
+<pre>store 0x01114BA8 in [ 0x208EAB4C + 200000000 base]
+store 0x010C9E40 in [ 0x208EAB6C + 200000000 base]
+<tr><td>0x17
+<td>NFS HP2 fpu rounding fix.
+<pre>Check if a0 == 0x8000 (32768), apply config if true. Config is little bit more complicated than it should, emu flush all fpu regs to memory just to modify one field in altivec vector register.
+When condition is met ps2 cop1 f08 register is modified from 0x40490FDB to 0x40490FDA, this result in next operations to end up as negative 0.0 (0x80000000) instead of just 0.0 (0x00000000).
+Seems to trigger when loading of stage or loading of attract mode is close to finish or done.
+<tr><td>0x18
+<td>Okami PAL specific hook.
+<pre>Check if opcode at 0x183F04 of EE memory is jal 0x183CB0 (0x0C060F2C). This is used to run additional hook patcher only 1 time.
+Later it will be nop here. so it means that new hooks are already applied. So function will just return early.
+if opcode at 0x183F04 is still jal 0x183CB0 (0x0C060F2C),
+then patch addresses 0x183F04 (jal 0x183CB0), 0x183F34 (jal 0x183CB0), 0x183F3C (jal 0x183D18) to nop.
+Finally adds 3 additional EE hooks. Emu addresses for ps2_netemu 4.70+
+EE address | EMU address 
+0x183F0C   | sub_46334
+0x183F3C   | sub_45DA4
+0x183D74   | sub_47B50
+First hook is responsible for grabbing EE addresses from one of EE gpr register. Second hook perform few checks from data in EE gpr registers, and 
+eventually store data from EE gpr registers on previously grabbed addresses. Hook 3 store one of previosly grabbed EE address on unknown part of memory.
+Whole thing looks like HLE version of noped functions.
+<tr><td>0x19
+<td>Burnout 2
+<pre>Copy lower 64 bits of $v0 r5900 register to lower 64 bits of $a1 r5900 register.
+All that to make next opcode (hook address + 4) "beq $a1, $v0, addr" always true. Because $a1 and $v0 now have the same value.
+This in turn skip CTimer::GetTimeSeconds((void)) in function CReplay::NextFrame((CDrivingControls *)). Worth to note that CReplay::NextFrame seems to be not related to replay per se, but to car physics.
+<tr><td>0x1A<td><pre>store 0 in [ 0x209FD560 + 200000000 base]
+store 0 in [ 0x209F9550 + 200000000 base]
+store 0 in [ 0x20A01570 + 200000000 base]
+store 0 in [ 0x209F9540 + 200000000 base]
+store 0 in [ 0x209F5540 + 200000000 base]
+store 0 in [ 0x209F1530 + 200000000 base]
+<tr><td>0x1B<td>store 0 in [ 0x20552168 + 200000000 base]
+<tr><td>0x1C<td>store 1 in [ 0x20552168 + 200000000 base]
+<tr><td>0x1D<td>store 0 in [ 0x20556C08 + 200000000 base]
+<tr><td>0x1E<td>store 1 in [ 0x20556C08 + 200000000 base]
+<tr><td>0x1F<td>store 0 in [ 0x205243D8 + 200000000 base]
+<tr><td>0x20<td>store 1 in [ 0x205243D8 + 200000000 base]
+<tr><td>0x21<td>store 0 in [ 0x20524F88 + 200000000 base]
+<tr><td>0x22<td>store 1 in [ 0x20524F88 + 200000000 base]
+<tr><td>0x23<td>store 0 in [ 0x2047E7F8 + 200000000 base]
+<tr><td>0x24<td>store 1 in [ 0x2047E7F8 + 200000000 base]
+<tr><td>0x25<td>store 0 in [ 0x204802B8 + 200000000 base]
+<tr><td>0x26<td>store 1 in [ 0x204802B8 + 200000000 base]
+<tr><td>0x27<td>store 0 in [ 0x20586348 + 200000000 base]
+<tr><td>0x28<td>store 1 in [ 0x20586348 + 200000000 base]
+<tr><td>0x29<td>store 0 in [ 0x205868A8 + 200000000 base]
+<tr><td>0x2A<td>store 1 in [ 0x205868A8 + 200000000 base]
+<tr><td>0x2B<td>if ($a1 &amp; 0xF0000000&nbsp;!= 0) a1 = 0 
+<tr><td>0x2C
+<td>Shin Onimusha - Dawn of Dreams Fix IPU DMA JPN((PlayStation 2 the Best)/US release.
+<tr><td>0x2D
+<td>Shin Onimusha - Dawn of Dreams Fix IPU DMA PAL release.
+<tr><td>0x2E
+<td>Shin Onimusha - Dawn of Dreams Fix IPU DMA Unk release. Code from emu match SLPM-66275 release. Why it is unused? Hook address will be 0x3BB4EC.
+<tr><td>0x2F<td><pre>if value at EE Mem 0x37B0C4 == 0, set mips pc register (program counter) to 0x100B98
+Config is supposed to repeat chunk of code if EE mem 0x37BB0C == 0. 
+<tr><td>0x30<td><pre>if value at EE Mem 0x37B704 == 0, set mips pc register (program counter) to 0x100B98
+Config is supposed to repeat chunk of code if EE mem 0x37BB0C == 0.
+<tr><td>0x31<td><pre>if value at EE Mem 0x37630C == 0, set mips pc register (program counter) to 0x100BA8 
+Config is supposed to repeat chunk of code if EE mem 0x37BB0C == 0.
+<tr><td>0x32<td><pre>if value at EE Mem 0x37BB0C == 0, set mips pc register (program counter) to 0x100BA8.
+Config is supposed to repeat chunk of code if EE mem 0x37BB0C == 0.
+<tr><td>0x33
+<td>
+<tr><td>0x34
+<td>not filled
+<tr><td>0x35
+<td>Used in Ninkyouden: Toseinin Ichidaiki
+<pre>Test if *0x40200300 and *0x40200310 values are the same. Both values are GIF related.
+When values are different sleep EE thread for 4096 cycles and try again.
+This is running in a loop until values are the same. 
+<tr><td>0x36
+<td>
+<tr><td>0x37
+<td>
+<tr><td>0x38
+<td>
+<tr><td>0x39
+<td>Used silently in command 0x4B with first param from 0x4B as hook address. Hook seems to be unusable without 0x4B command, because there is no way to setup redirect mode and ID without 0x4B.
+<tr><td>0x3A
+<td>Used silently in command 0x4C with first param from 0x4C as hook address. Hook seems to be unusable without 0x4C command, because there is no way to setup mode and ID without 0x4C.
+<tr><td>0x3B
+<td>Grand Theft Auto 3 (SLPM-55293 "Rockstar Classics")
+<pre>using 0x351210, 0x18F590, 0x351568 ( + 200000000 base )
+0x351210 = start CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+0x18F590 = start CCollision::ProcessColModels((CMatrix const &amp;, CColModel &amp;, CMatrix const &amp;, CColModel &amp;, CColPoint *, CColPoint *, float *))
+0x351568 = Almost end (only loading values preserved on stack) of CTheScripts::ClearSpaceForMissionEntity((CVector const &amp;, CEntity *)) 
+<p></table>
+</div>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x02
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x int32
+<p></table>
+Used in function that handle D6 CHCR writes (SIF1), seems to be some kind of timing command for EE --&gt; IOP DMA.
+<ul><li>Valid values found:
+<ul><li>1000d
+<li>3000d
+<li>6000d</ul></ul>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x03
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Skip r5900 CACHE IXIN/IHIN (Index/Hit invalidate) opcodes.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x04
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t index (i*0x80, special 0x12345: 0x91a280?)
+<p></table>
+Patch SPE 3 program (eedma) by searching for ila r4, xxxxx, starting at 0x178A0 and replacing them with (0x42000004 | ((value &lt;&lt; 7) &amp; 0x1FFFF80)
+0x42000004 is ila r4 opcode. Due to opcode encoding example result of that patch with value 0x08 will be 0x42000404 (ila r4, 0x08). There is little bit more than that, but main purpose is just to patch SPE program behavior.
+<ul><li>Valid values found:
+<ul><li>0x08
+<li>0x10</ul></ul>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x05
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x06
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Change VIF1 command 02h OFFSET behavior by patching pointer to function which process it to different previously unused function.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x07
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Delay VU xgkick by X cycles
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Default 1
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x08
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Patch VU memory by mask
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">8x uint32_t (read mask,read mask, original opcode, original opcode, write mask, write mask, replace opcode, replace opcode)
+<p></table>
+Maximum Amount of Usage: 3 times
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x09
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">EE_INSN_REPLACE64
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">uint32_t count, &lt;list&gt; (offset, original opcode, original opcode, replace opcode, replace opcode)
+<p></table>
+Maximum List Count: 32
+<ul><li>Valid values found
+<ul><li>1 [Dark Cloud] and [Dead Or Alive 2 Hardcore]</ul></ul>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0A
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">EE_INSN_REPLACE32
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">uint32_t count, &lt;List&gt; (mode | offset, original opcode, replace opcode)
+<p></table>
+Command present only in the ps2_netemu. Maximum List Count: 32. Mode is first 4 bits of address field (Xyyyyyyy), can be either 0, 1, or 2. All known examples use this command in 0 mode, and modes 1 and 2 are here just for documentation purposes. 
+<ul><li>mode 0 - Replace 32 bit of EE memory. Params are EE offset, original opcode, replace opcode.
+<li>mode 1 - Write jr ra, li v0, xxxx to selected memory range. Params are EE memory start address, original opcode, u16 counter, u16 value for li, v0 xxxx
+<li>mode 2 - NOP memory at selected range. Params: start address, end address, unused (can be anything, but is required to align config).</ul>
+Problem: Original opcode validity check is performed before testing config for special cases. Thus making mode 2 almost inaccessible.<br>
+Solution: We can patch that one line of code by the same 0x0A config. So if we want to nop region from 0x100000 to 0x100080, first we need to patch 0x100000 to 0x100080 opcode. So check will pass, "simple" as that.
+<table style="width:100%; background:#666; line-height:60%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0B
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">MECHA_SET_PATCH
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t count, &lt;List&gt; {sector id, offset, sizeof present opcodes, replace opcodes, original opcodes)
+<p></table>
+Offset on the disc = sector id * sector size + offset + correction [see below]<br>
+Offset correction is based on selected read mode (not on media type):<br><br>
+CDRead requested block size (CD disc):
+<ul><li>2048 = Offset + 0x18 (skip 12 sync bytes, 4 of header, and 8 of subheader)
+<li>2328 = Offset + 0x18 (skip 12 sync bytes, 4 of header, and 8 of subheader)
+<li>2340 = Offset + 0x0C (skip only 12 bytes of sync data)</ul>
+DVDRead requested block size (DVD Disc):
+<ul><li>2064 = Offset match, but only until the 349th sector. Otherwise is offset - 0x0C because that read mode see data as ID DATA (4) + ID DATA EDC (2) + Reserved bytes (6) + 2048 data + EDC (4).</ul>
+"Offset + XX" for CD assume that you use Isobuster RAW mode. "Offset - XX" for DVD assume that you use Isobuster NON RAW mode<br>
+Special case is DVD read on very low sector, here you need to use exact offset without substrating 0x0C. Highest confirmed sector that don't use correction for now is 349.
+<pre> [Dead Or Alive 2 Hardcore] uses 7
+ [Gradius V] uses 1
+ [Grand Theft Auto III] uses 1
+ [Katamari Damacy] uses 1
+ [Manhunt] uses 1
+ [Odin Sphere] uses 2
+ [Primal] uses 1
+ [Psychonauts] uses 1
+ [Syphon Filter The Omega Strain] uses 1
+Maximum List Count: 47
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0C
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x (uint16_t, uint16_t)
+<p></table>
+First param can be 0, 1, or 2. Second param in range of 0 and 0xFFFF. Second param is used only if first param == 1. Default values are (1, 0x1000) for PS2DVD, and (1, 0x400) for PS2CD and PS2CDDA.<br>
+Other valid values for the second param (found in oficial configs&nbsp;?): 0x180, 0x800
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0D
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x int32
+<p></table>
+True/false. Default = 1
+<pre>0 = Skip some IOP related code responsible for check value from IOP SPE LS 0x2C0C0 (and skip panic if value is 0 or -1).
+Also skip write of value 0x80000000 to SPU Signal Notification 1 Register of IOP SPE.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0E
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Improves ADD/SUB accuracy
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x int32
+<p></table>
+1 Param offset --- Improves ADD/SUB FPU/COP2 accuracy for selected offset. Work with opcodes from commands 0x26/0x27. Basically command like 0x0F just per offset, no per range.
+<pre> [Rygar] only has 0x147DA8 sub.s   $f12, $f20, $f12
+Used in official configs: SCUS97501=0x3C458C, SCES53642=0x3C4854, SLUS21026=0x386864, SLUS20916=0x121F64, SLUS20437=0x11EDF0
+Maximum Amount of Usage: 32 times
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x0F
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">More accurate ADD/SUB memory range
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">List &lt;uint32_t Param, uint32_t Param&gt;
+<p></table>
+More accurate memory range. This command is combined 0x26, and 0x27 command.
+<pre> [Dark Cloud] uses 0x239334, 0x1FFFFFF
+ [Grand Theft Auto SA] uses 0x1E46DC, 0x1E4AE8
+Maximum Amount of Usage: 32 (if there is no additional 0x26/0x27 command)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x10
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">MULDIV Accurate range
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">List &lt;uint32_t Param, uint32_t Param&gt;
+<p></table>
+More accurate MUL/DIV handling on selected memory range for selected FPU opcodes. Effectively work only with: 
+<pre>MUL.s, DIV.s, MULA.s, MADD.s, MSUB.s, MADDA.s, MSUBA.s. 
+For ADD/SUB opcodes, command is active only on Multiply stage.
+Maximum List Count: 32 
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x11
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">VU0 Accurate ADD/SUB
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t Param
+<p></table>
+Param is VU0 (MICROPROGRAM) memory offset, correct param is in range of 0x000 to 0xFF8.
+<pre>Lower pipeline fetch opcode from address, Upper from address + 4. So correct address for config needs to be 8 bytes aligned.
+Used in official configs: SLUS21172=0x208, SLUS20878=0x140,0x368,0x570
+Maximum Amount of Usage: 32 times
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x12
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">&lt;List&gt; (uint32_t count,
+<p></table>
+VU0/COP2 multicommand.<br>
+First 8 bytes of that command are special flags.<br>
+First 4 bytes are used to enable flags mentioned below.<br>
+Second 4 bytes are used to disable them (they aren't all 0's by default).<br>
+Valid 0x12 command is required to have those 8 bytes, they can be all 0's, but are mandatory. Flags:
+<table >
+<tr>
+<th>Value</th>
+<th>Description
+</th>
+<tr><td>0x1000
+<td>Run additional MAC flag related code after every FMAC operation, VU0 only, COP2 do this by default.
+<tr><td>0x2000
+<td>Additionally update status flag on every FMAC opcode, this config flag requires 0x1000 to be enabled. VU0 only.
+<tr><td>0x100000
+<td>When enabled opcodes like MSUB, MADDA, etc, do proper multiply first, then add/sub. When disabled (default) single opcode is used (vmaddfp / vmmsubfp).  VU0 only.
+Note: When this command is disabled, then "Accurate MUL" is skipped for MADDxx/MSUBxx regardless that 0x30000000 is set or not.
+Because there is no way to do correct MUL separately when altivec madd/msub is used.
+<tr><td>0x200000
+<td>Run some additional code in VU0 load/store opcodes (ILW, LQI, ISWR, etc.) VU0 only.
+<tr><td>0x400000
+<td>Skip emu syscall_3(3). Skip cached programs lookup and go directly to long and short hash checks, every time when VU0 starts.
+<tr><td>0x800000
+<td>Skip emu syscall_3(4). Skip both long and short hash checks and forcibly recompile program. This command combined with 0x400000, practically force new recompilation every time VU0 run program.
+<tr><td>0x4000000
+<td>Enable type 3/4 subcommand.
+<tr><td>0x8000000
+<td>Accurate VU0 DIV opcode, VU0 only.
+<tr><td>0x10000000
+<td>Full Accurate VU0 MUL. Use runtime from CMD 0x10, but for every matching VU0 opcode, including opcodes like MSUB for mul part.
+Opcodes like MSUB/MADD additionally require 0x100000 to be enabled, otherwise command skip them.
+<tr><td>0x20000000
+<td>Fast Accurate VU0 MUL. Opcodes like MSUB/MADD additionally require 0x100000 to be enabled, otherwise command skip them. Not used in COP2 mode.
+Selecting both 0x10000000 and 0x20000000 (0x30000000) work the same way as 0x20000000.
+<p></table>
+Next section of 0x12 cmd is dedicated to subcommands. There are 4 types of subcommands available, and types 2/3/4 are tied to themselfs to make correct use of them, either 2/3 or 2/4 need to be active to create valid action. Type 1 is separate subcommand that works on its own.Subcommand:<b>type 1</b>Fix for for internal emulator hash collision. For every recompilled micropragram, emulator calculates hash. This ensures that emulator do not recompile same code more than once, and speed up comparing process, as only hash need to be compared, not whole program.<br>
+Due to very low-quality hashing method used, it is possible that 2 different programs ends up having the same hash. Hash is calculated from first 128 bits of VU0 program start, and from its start address, that's not enough to make it unique.<br>
+Due to that bug, emulator can use wrong VU0 micro program, running totally different code than it should.Config data itself points emulator to place where wrong hash is stored, and force emulator to use alternative VU0 offset to recaltulate new hash.<br>
+Data is split into 2 parts. Hash Offset, and (VU0 address &gt;&gt; 3) latter is used as new VU0 adrress for hash recalculation.<br>
+XXXXX000 are used for hash address, and 00000XXX is where VU address is.
+<div class="mw-collapsible mw-collapsed mw-made-collapsible" data-expandtext="Show" data-collapsetext="Hide"><span class="mw-collapsible-toggle mw-collapsible-toggle-default mw-collapsible-toggle-collapsed" role="button" tabindex="0" aria-expanded="false"><a class="mw-collapsible-text">Show</a></span><b>Additional info</b>
+<div class="mw-collapsible-content" style="text-align: left; display: none;">
+<pre>Dawn of Mana example, chosen that one because it use only 1 count,
+and because hash used here is from addr 0x000 of vu0 micromem.
+Title&nbsp;: Dawn of Mana
+Game ID&nbsp;: SLUS_215.74
+[Net] Command ID&nbsp;: 0x12
+Data Number&nbsp;: 00000004
+    Param 1&nbsp;: 00000000 ON  flags, unused here
+    Param 2&nbsp;: 00000000 OFF flags, unused here
+    Param 3&nbsp;: 00010001 type 1, count 1
+    Param 4&nbsp;: 0DDF000C Type 1 command data (Big endian here)
+VU0 address from config is now left shifted by 3 and masked with 0x7FFF8
+This VU0 address is used for new hash calculation.
+Hash Offset is obtained by right shifting data by 12 and mask with 0xFFFF0, in this example:
+(0x0DDF000C &gt;&gt; 12) &amp; 0xFFFF0 = 0x0DDF0
+This finally end up as full address in vu0 jit data memory, 0x1C00DDF0 + 4 (4 is always added while processing)
+Ok, but how that "Hash Offset" is calculated? From Previous hash.&lt;br&gt;
+Here is code that calculates hash and offset:
+#First 64 bits of current microprogram start (Big endian)
+a = 0x000002FF4000000B
+#Second 64 bits of current microprogram start (Big endian)
+b = 0x000002FF8000033C
+#Microprogram start address (full, not right shifted by 3)
+c = 0x000
+a = a + b + c
+a &amp;= 0xFFFFFFFFFFFFFFFF
+b = (a &gt;&gt; 32) &amp; 0xFFFFFFFF | (a &lt;&lt; 32) &amp; 0xFFFFFFFF00000000
+a = a^b
+b = (a &lt;&lt; 5) &amp; 0xFFFFFFFFFFFFFFE0 | (a &gt;&gt; 59) &amp; 0x1F
+a = a + b
+b = (a &lt;&lt; 51) &amp; 0xFFF8000000000000 | (a &gt;&gt; 13) &amp; 0x7FFFFFFFFFFFF
+a = a + b
+a = a &amp; 0xFFFFFFFF
+b = a &amp; 0x1FFF0
+print("Hash: {:08X}".format(a))
+print("Addr: {:05X}".format(b))
+#Hash: AF8EDDF7
+#Addr: 0DDF0  &lt;-- our Hash Offset part from config
+Bugs: 
+* Bad mask used. Hash Offset and VU0 Address while read from cfg are not masked properly, allowing to patch data above 0x1C01FFF0.
+</div>
+</div>
+<b>type 2</b>Fix for interlocking/synchronization EE with VU0 in micro mode. Usually used for games that are M bit sensitive or loop endlessly on VU0 due to fact that emulator tries to run whole VU0 program at once. Single entry have at least 3 * 4 bytes values, but there is possibility for additional values here.
+<ul><li>First value is VU0 microprogram start address, left shift by 3 to get correct offset in VU0 micro memory.
+<li>Second value is a hash, calculated from first 128 bits of VU0 program start, and from its start address. 1st and 2nd values are used only in comparison that ensures that config will apply to correct microprogram.
+<li>Third value is combined from 2 values. It's (VU0 address &gt;&gt; 3) &amp; 0x1FF, and (subtype &lt;&lt; 9), accepted subtypes are 1/2/3.
+<li>Fourth and next values, if available are next phases with the same structure as third value. Up to 8 values is accepted for single entry.</ul>
+VU0 address from 3rd+ values points to VU0 code where branch occurs, branch that is usually dealing with problematic value that is just wrong because of lack of communication with EE during microprogram run.
+This is address where execution of VU0 will be halted, and chunk of EE code will be run to ensure that correct values are transfered to VU0, and that VU0 is aware of changes made by EE in mean time (real hardware run VU0 micro and EE mips core simultaneously).It is very important to remember that delay slot instructions are executed before we get back to EE code.Subtypes:
+<ul><li>1 = unknown, not used by known configs
+<li>2 = After VU0 halt, when execution from EE back to VU0. Assume that branch on which VU0 halted was taken, and start execution on branch target.
+<li>3 = After VU0 halt, when execution from EE back to VU0. Assume that branch on which VU0 halted was not taken, start execution after delay slot.</ul>
+This subcommand is always used in conjunction with subcommand type 3, or 4.
+<div class="mw-collapsible mw-collapsed mw-made-collapsible" data-expandtext="Show" data-collapsetext="Hide"><span class="mw-collapsible-toggle mw-collapsible-toggle-default mw-collapsible-toggle-collapsed" role="button" tabindex="0" aria-expanded="false"><a class="mw-collapsible-text">Show</a></span><b>Additional info</b>
+<div class="mw-collapsible-content" style="text-align: left; display: none;">
+<pre>Primal - Civilization Is Only Skin Deep
+Data Number&nbsp;: 0000000D
+	Param 1&nbsp;: 04000000 ON  flags, enable subcmd 3/4
+	Param 2&nbsp;: 00000000 OFF flags, unused here
+	Param 3&nbsp;: 00030002 count 3, type 2
+	Param 4&nbsp;: 0000015F VU0 program start address &gt;&gt; 3
+	Param 5&nbsp;: 2C6FBD8D VU0 program hash
+	Param 6&nbsp;: 00000367 (subtype &lt;&lt; 9) + (VU0 pause addr &gt;&gt; 3)
+	Param 7&nbsp;: 00030002 count 3, type 2
+	Param 8&nbsp;: 0000016B VU0 program start address &gt;&gt; 3
+	Param 9&nbsp;: E9703531 VU0 program hash
+	Param 10: 00000372 (subtype &lt;&lt; 9) + (VU0 pause addr &gt;&gt; 3)
+	Param 11: 00020003 count 2, type 3
+	Param 12: 10399B60
+	Param 13: 10399C18
+Hash needs to be calculated from VU code part that we want to use config on.
+Python script to generate hash (second value). 
+#Using Rayman 3 as an example, because addr = 0, so is easier to compare.
+#First 64 bits of current microprogram start (Big endian)
+a = 0x000002FF4000001F
+#Second 64 bits of current microprogram start (Big endian)
+b = 0x000002FF80000070
+#Microprogram start address (full, not right shifted by 3)
+c = 0x000
+a = a + b + c
+a &amp;= 0xFFFFFFFFFFFFFFFF
+b = (a &gt;&gt; 32) &amp; 0xFFFFFFFF | (a &lt;&lt; 32) &amp; 0xFFFFFFFF00000000
+a = a^b
+b = (a &lt;&lt; 5) &amp; 0xFFFFFFFFFFFFFFE0 | (a &gt;&gt; 59) &amp; 0x1F
+a = a + b
+b = (a &lt;&lt; 51) &amp; 0xFFF8000000000000 | (a &gt;&gt; 13) &amp; 0x7FFFFFFFFFFFF
+a = a + b
+a = a &amp; 0xFFFFFFFF
+print("Hash: {:08X}".format(a))
+</div>
+</div>
+<b>type 3</b>todo<b>type 4</b>todo
+<pre> [Primal] uses 0xD of type 2/3 subcommand (minus 0x2 for flags)
+ [Rayman Arena] uses 0x11 of type 2/3 subcommand (minus 0x2 for flags)
+ [Syphon Filter: The Omega Strain] uses 0x5 of type 1 subcommand (minus 0x2 for flags)
+Maximum List Count: 63 
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x13
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Memory card timing related delay
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint64_t Param
+<p></table>
+<pre>0x9bdc  (39900)  - Used by "Phantasy Star Universe" (official config for SLPM-66031), "WRC II Extreme", and "Burnout Dominator"
+0xf960  (63840)  - Used by "Jak X: Combat Racing" (official config for SCUS-97429), and "Netsu Chu! Pro Yakyuu 2004"
+0x1d394 (119700) - Used by "Jissen Pachi-Slot Hisshouhou! Kemono-Oh" (official config for SLPS-20131)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x14
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">VU1 transform ADD/SUB
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+When enabled ADD/SUB VU1 opcodes are processed differently on recompiling/translation stage. Seems to be very specific hack, most likely not usable outside of THPS 4+ engine games. <br>
+Note: This setting affects only VU1, and only ADD/SUB. All other opcodes like ADDi,ADDq, MSUB, ADDbc, are not affected.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x15
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1 Param ( &lt;1, &gt;1 )
+<p></table>
+Patch SPE 0 (IOP) program in local memory. Command search for absolute branches in LS 0x3A2C0 - 0x3A6C0 and patch first branch that match to "bi r127". That weird approach was probably used because spe program differ little bit between emu versions, so they don't need to update command on every new emu revision. Currently (4.75+) this command patch branch at address 0x3A3A4 (bra sub_2E600). This command takes partially unused value. Value 0,1 do nothing, values 2 and above run command. Doesn't matter is 2,4, or 10. Nothing will change in command behavior.
+<pre>[Aeon Flux] uses 2 (gxemu config)
+[Bloodrayne 2] uses 4
+[GRIMgRiMoiRe] uses 4
+[Mana Khemia 2] uses 4
+[Odin Sphere] uses 4
+[SMT Persona 3 FES] uses 4
+[Parappa the Rapper 2] uses 0x14 (softemu config) or 0x4 (gxemu config)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x16
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x17
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">COP0 configure MTC0/MFC0
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x int32&nbsp;?
+<p></table>
+True/false. Default 0.
+<br>Command change behavior of MTC0/MFC0 operation of COP0 Count ($9) register. When enabled time base register is used as a base for calculation, when disabled decrementer register is used as a base for calculations (using emu syscall 12). 
+<pre>[Bully] uses 1
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x18
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x19
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Force analog controller mode
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Skips check for analog/digital controller mode and returns forced analog mode
+<pre>[Grand Theft Auto III]
+[Grandia II]
+[Red Faction 2]
+[Siren]
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1A
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+IPU hack to end fromIPU DMA transfer on BCLR command (store 0 on D3_QWC and D3_CHCR.STR). Not stopping that transfer is actually correct behavior..
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1B
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+When IDEC command don't finish, probably due to bad timings. Hack clear D3_CHCR.STR bit when there is still QW left in D3_QWC reg , and IDEC finished already. 
+<pre>[Mana Khemia 2]
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1C
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Emulate Multitap
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">read uint32_t (use uint8_t)
+<p></table>
+Enables/disables Multitap emulation. Default 3
+<pre>0 = disable multitap emulation
+1 = enable multitap in controller port 1 (when needed)
+2 = enable multitap in controller port 2 (when needed)
+3 = enable multitaps in both controller ports (when needed)
+ [Medal of Honor: European Assault] uses 1
+ [Twisted Metal: Black] uses 1
+<br>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1D
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Set Multitap
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">read uint32_t (use uint8_t)
+<p></table>
+Sets multitap to specific controller ports and adjusts the order of ports to which controllers are synced. Default 0?
+<pre>0 = no multitap set (only when needed)
+    Controller sync order: 1/1-A, 2/2-A, 1-B, 2-B...
+1 = sets multitap in controller port 1 at all times
+    Controller sync order: 1/1-A, 1-B, 1-C, 1-D...
+2 = sets multitap in controller port 2 at all times
+    Controller sync order: 1/1-A, 2/2-A, 2-B, 2-C...
+3 = sets multitaps in both controller ports at all times
+    Controller sync order: same as 0
+ [Medal of Honor: European Assault] uses 1
+ [Twisted Metal: Black] uses 1
+ [Mystic Heroes] uses 2 (game does not detect multitap in controller port 1)
+ [Sonic Riders] uses 2 (GX config, game may not detect multitap in controller port 1)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1E
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Multitap related
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">read uint32_t (use uint8_t)
+<p></table>
+<pre>[FIFA 2001] uses 3 (settings for both multitaps?)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x1F
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Default 1
+<pre>Make VIF0 commands MSCAL/MSCALF/MSCNT/MPG/FLUSHE non instant. By default every VIF0 command take 1 cycle, so it's instant.
+This config give vif0 some timing sense.
+When delta from config passed and vpustat vu0 bits are non 0 (so practically if vif0 is still running),
+add 500 cycles and go on until next event test before doing anything on vif0.
+This can also be used to ensure that next vif0 command won't run until delta from config passed.
+Value from config is added to current r5900 cycles and vif0 will do nothing unless current cycles match new value.
+*Valid values found: 200d, 1000d
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x20
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint64_t
+<p></table>
+Default 0x3C
+<pre>Config value is used as multiplier for value:
+if (mode == NTSC) multiplicand = 2535;
+if (mode == PAL)  multiplicand = 5107;
+if (mode == 1080) multiplicand = 2364;
+At default config value of 0x3C results are:
+NTSC = 152100
+PAL  = 306420
+1080 = 141840
+Result is compared against decrementer ticks.
+This result value determines how frequently emulator events test checks GS related things.
+This include raising GS irq if VSINT/SIGNAL/FINISH occurred, updating display parameters, etc. 
+<ul><li>Valid values found: 10d, 60d, 100d, 120d, 200d, 240d</ul>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x21
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+<pre>Option one default value = 1, when set to 0: r5900 CACHE opcode IXLTG store 0 in COP0 TagLo register. More than that recompiler skip function responsible for analyze and emitting costly iCache checks.
+This drastically reduce emitted code size, and practically disable iCache emulation. Additionally CACHE IXIN/IHIN opcodes use different very long code path (this can be skipped with cmd 0x03).
+Option two default value = 0, when set to 1: Emit some kind of check for current r5900 PC with possible trap (tw opcode) at the end. 1 is valid only when option one is 0.
+0 = sets an option one to 0 and option two to 0
+1 = sets an option one to 0 and option two to 1
+2 = sets an option one to 1 and option two to 0 (default)
+ [Fatal Frame II] uses 0
+ [Grand Theft Auto Vice City] uses 1
+ [Grand Theft Auto III (EU)] uses 1
+ [SMT Persona 3 FES] uses 0
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x22
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Sets something 1
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x23
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Copy VIF1 command 01h STCYCL handler struct into unused 08h slot (slots are 100 bytes per command, include pointer to function that handle command, and other data). Then patch slot 08h function pointers to function at 0x14E00. 08h is normally unused, and handled as a NOP. This command is useful only with additional 0x01 (0x13-0x15) hooks, which inject 08h VIF1 command into game code when other conditions are met.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x24
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint64_t
+<p></table>
+SIO2 related
+<ul><li>Valid values found: 12000d, 48000d</ul>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x25
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x26
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">FPU Accurate ADD/SUB range
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">List &lt;uint32_t Param,uint32_t Param&gt;
+<p></table>
+Improves FPU accuracy for selected memory range. Efective only on:
+<pre>ADD.s, SUB.s, ADDA.s, SUBA.s, MADD.s, MSUB.s, MADDA.s, MSUBA.s
+For M(UL) opcodes, command is active only on ADD/SUB stage.
+ [Bloodrayne 2] uses 0x340000, 0x350000
+ [Gradius V] uses 0x3046E0, 0x0x305E44
+Maximum Amount of Usage: 32 (if there is no additional 0x0F command)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x27
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">VU0 macromode accurate range
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">List &lt;uint32_t Param,uint32_t Param&gt;
+<p></table>
+Improves COP2 operations accuracy for selected memory range. Effective only for opcodes:
+<pre>VSUBAxyzw, VSUBAq, VSUBAi, VSUBA, VSUBxyzw, VSUBq, VSUBi, VSUB, VMSUBAxyzw,
+VMSUBAq, VMSUBAi, VMSUBA, VMSUBxyzw, VMSUBq, VMSUBi, VMSUB, VMADDAxyzw,
+VMADDAq, VMADDAi, VMADDA, VMADDxyzw, VMADDq, VMADDi, VMADD, VADDAxyzw,
+VADDAq, VADDAi, VADDA, VADDxyzw, VADDq, VADDi, VADD
+Maximum Amount of Usage: 32 (if there is no additional 0x0F command)
+Seems to affect only ADD/SUB part of opcode. 
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x28
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+CDVD seek related. Only accept values 0/1/2/3, and values 1/2/3 works exactly the same way (and default is 1). Value 0 makes cdvd seek instant.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x29
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">2x uint32_t
+<p></table>
+Seek time modifier. Values set how much time seek takes per <b>single sector</b>. Values are microseconds. Command is ignored when command 0x28 with value 0 is used (instant seek).
+<pre>* 1                    = 0,000001s
+* 0x3E8   (1000dec)    = 0,001s
+* 0xF4240 (1000000dec) = 1s
+First param affect fast seek time, second param affect full seek time.Default value is 0x1F40, 0xBB80 (8000, 48000). Config affect only CDVD N Command Seek, read command that "SeekToSector" is not affected.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2A
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Sets something 1. 
+<pre>All-Star Baseball 2004
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2B
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+When enabled emulated register 0x1F40200F (disc type) is set to 0x13 (PS2CDDA) when media type detected by emu is 0x12 (PS2CD), confirmed in emu code/assembly. Ps2_emu do same thing in "Setting mecha HACK to show GODZCD as GODZCDDA", but due to real media support this is done in little bit different way (but still, 1F40200F is set to 0x13). During testing Dance Factory game, still no tracks are detected regardless of the command. Could be a netemu or Cobra issue (single, mixed mode .bin/.cue loaded).
+<pre>Dance Factory
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2C
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Store (value | value &lt;&lt; 32 | value &lt;&lt; 64 | value &lt;&lt; 96) on 0x2B4F0 of SPE 0 (IOP) LS.
+In summoner config it will be 0x00000001000000010000000100000001 stored at 0x2B4F0.
+Value is later used in clgt compare as rb register. Default seems to be 0x00000020000000200000002000000020.
+<pre>Summoner uses 0x1
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2D
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2E
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Delay CDVD reads, and get_toc commands completion. Delay is applied on last stage of command after read is completely done. Value is additional timebase ticks. 0x4C1A6C0 ticks == 1 second
+<ul><li>Valid values found: 0x172</ul>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x2F
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Store value on 0x2E784 in SPE 1 (PS2 SPU2) LS. Used values are 1, and 2 (after andi, so 3 trigger both configs).
+<ul><li>Infamous Final Fantasy confirmation sound issue (in fact it does affect every sound effect using the reverb and only in the ps2_netemu) is fixed by 0x2 value.</ul>
+<pre>Indigo Prophecy/Fahrenheit uses 0x1
+Kengo 3 uses 0x2
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x30
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x31
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x32
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x33
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x34
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x35
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Enable Force Flip Field
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Described in emu setting as "<i>Fix for [Hang] for soft-lock</i>"
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x36
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x37
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x38
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x39
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x3A
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x3B
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x3C
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">N/A
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command not available in ps2_netemu.self
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x3D
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Config revision
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Used by debug menu to print config revision. While every official and unofficial config use it, command is not mandatory. Debug menu will just print <b>None</b> as a config revision if command is missing. Official configs use this as a kind of debugging info to know minimal required emu revision.
+<table  style="font-size:1em; line-height:1em">
+<caption>Config commands supported by emulator revision
+</caption>
+<tr>
+<th>Supported Commands</th>
+<th>ps2_netemu Revision</th>
+<th>PS3 Firmware
+</th>
+<tr><td>Up to 0x41
+<td>15686
+<td>3.70 or newer
+<tr><td>Unknown
+<td>16040
+<td>Unknown
+<tr><td>Up to 0x43
+<td>16604
+<td>4.20 or newer
+<tr><td>Up to 0x45
+<td>16808
+<td>4.30 or newer
+<tr><td>Up to 0x46
+<td>16916
+<td>4.40 or newer
+<tr><td>Up to 0x48
+<td>17041
+<td>4.45 or newer
+<tr><td>Up to 0x4A
+<td>17179
+<td>4.50 or newer
+<tr><td>Up to 0x4D
+<td>17277
+<td>4.55 or newer
+<tr><td>Up to 0x50
+<td>17495
+<td>4.78 or newer
+<p></table>
+See: <a href="https://www.psdevwiki.com/ps3/PS2_Emulation#PS2_Emulator_Types_and_Revisions" title="PS2 Emulation">PS2 Emulator Types and Revisions</a>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x3E
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Similar to 0x0D with param 0. Affect the same IOP related code path, but skips more code. <br>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x3F
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Store value on 0x2B700 of SPE 0 (IOP) LS. SIF1 DMA related.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x40
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Command change GIF behavior by setting value to 1 at address 0x2F0 LS in SPU4.
+<pre>Grand Theft Auto SA
+Silent Hill Origins - unofficial fix
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x41
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+When enabled ignore D_ENABLEW (1000F590) writes from EE on SPE3 (EEDMA). D_ENABLER is updated regardless of cmd on PPE side. Enabling that command nullify 0x01 hooks for Max Payne!
+<pre>Dragon Force
+God Hand
+Gradius V
+Katamari Damacy
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x42
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">EE Overlay patch
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">2 main Params + patch data: uint32_t address, uint32_t count, opcode,opcode,opcode...
+<p></table>
+Applied on game start (more precisely while executing ps2 bios syscall 7 ExecPS2), if game overwrite selected part of memory, it will wipe 0x42 patch. See <a href="https://www.psdevwiki.com/ps3/Special:Diff/67828/67858" title="Special:Diff/67828/67858">Special:Diff/67828/67858</a>
+<pre>Start address can be (in theory) anywhere, but Sony used the 0xFF000 - 0xFFFFC range for this purpose.
+Count is size of patch in 4 bytes opcodes. So 5 opcode patch = count 5.
+Opcodes will be placed on selected address, we use only patch code, no need for original opcode.
+Next opcode addresses are auto calculated (+4..) so we need to specify only patch start address.
+Remember we need to jump to our new code, best way is command 0x0A with j (jump) opcode.
+Also is important to add return jump if required. That one need to be added in our 0x42 patch.
+Maximum opcodes count seems to be 0x3FF (1023 opcodes).
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x43
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x int32
+<p></table>
+Equal to command 0x40, but with Parameter:
+<pre>Command change GIF behavior by setting value at address 0x2F0 LS in SPU4, correct values are:
+0 = Default
+1 = More agressive changes (like 0x40)
+anything other = less agressive changes
+Code on SPU side check for non zero value, and in few places explicitly for 1 (ceqi rxx,rxx,1) without mask. 
+Config have weird behavior. When there is no param, and config end (no more bytes after 43 00 00 00), then param 0xFFFFFFFF is set automatically.  
+Shin Sangoku Musou uses 0xFFFFFFFF
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x44
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Disables Smoothing and Smoothing option
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x45
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Sets something 1
+<pre>Prevent  display_mode 2 (CELL_GCM_DISPLAY_576_unk)         [640x576]
+and      display_mode 0 (CELL_GCM_DISPLAY_480_unk) (60Hz?) [640x480]
+from beign set.
+Allow   display_mode 1 (CELL_GCM_DISPLAY_480_unk2) (59Hz?) [640x480]
+and     display_mode 5 (CELL_GCM_DISPLAY_720P_59)          [1280x720]
+depending on sys_info.video_mode &amp; 0x200 is 0 or not.
+Both 480 modes can be either I or P, so is something else, probably 59/60Hz.
+This config possibly affect only in-emu UI, but this require testing.
+Phantasy Star Complete Collection
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x46
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Enable L2H Improvement
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Performance related setting for titles using L2H (Local to Host, so called GS download (from GS to  EE))
+<pre>SMT Digital Devil Saga 1 - Crazy amount of GS downloads used to draw characters in-game
+SMT Nocturne
+Fatal Frame II
+Other games affected (not in official config)
+<pre>Soul Calibur 2 - When looking at the sun
+GT4 - When looking at the sun
+Valkyrie Profile 2 - Similar situation to SMT DDS1, in Solde game literally do thousands of 30QWC downloads all the time.
+Tak and the Power of JuJu - Fix freeze during loading of the Burial Ground level in the NTSC version. This probably getting lucky with VIF1/GIF timing, normally command is not supposed to fix hang issues.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x47
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Enables XOR CSR
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Graphics related setting.<br>
+XOR  bit 13 of GS CSR register (CSR.FIELD). Should fix fullscreen line corruption, maybe some interlacing issues. Long shot, but can possibly affect SCANMSK games.
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x48
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">VSYNC Delay
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">2x uint32_t
+<p></table>
+<ul><li>First param possible value are 1 = No IPU, 2 = IPU, 3 = Anytime.
+<li>Second param is delay (in ms?), and can be also negative value.
+<ul><li>Emu has standard presets for second param.
+<ul><li>Agressive = 0x3D090 (250000 decimal),
+<li>Normal = 0x186A0 (100000 decimal),
+<li>Conservative = 0x4E20 (20000 decimal),
+<li>But other values can be used.</ul></ul></ul>
+<pre>[SMT Digital Devil Saga 1] uses 1, 0x3D090
+[Fatal Frame II] uses 0x2, 0xFFFFE69C (-6500 decimal)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x49
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Skip part of code which use GS XYOFFSET_1 register, possibly ignore it at all.  
+<pre>Trapt
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x4A
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+Change VIF1 command 14h MSCAL behavior to use 15h MSCALF (VIF1) instead. MSCALF behavior is the same as MSCAL, but also waits for PATH1 and PATH2 to not be active before starting a microprogram. This is hack, and MSCAL should be fixed instead to wait in queue instead of triggering early.
+<pre>Applies to the Snowblind Engine games. Fixes the rest of flickering textures.
+Meant to be used in conjunction with the GX/SOFT Snowblind Engine's specific commands (double 0x01 and 0x23 combo).
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x4B
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Redirect SAVEDATA by ID
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">2x uint32_t + ID: offset, int, char[]
+<p></table>
+<pre>For proper config we need at least 2 (can be more if needed) 0x4B commands, one to enable redirect, one to disable.
+First param is EE memory offset that when is hit enable/disable redirection.
+Second param is used to select which card will be redirected:
+  0x00 do nothing
+  0x01 for SCEVMC0.VME
+  0x02 for SCEVMC1.VME
+  0x03 for SCEVMC0.VME and SCEVMC1.VME
+  0xFFFFFFFF to disable redirection, and use original VMEs.
+Third param is ID of SAVEDATA we want to use padded with 00 to match 12 bytes, or all 00 in disable redirect config.
+Important note here is that config have own 00 00 00 00 terminator at the end. 
+So after 12 bytes of ID we need to add 4 bytes of 00. That apply also to disable redirect version.
+Under the hood config also setup 0x01 hook commands with 0x39 subcommand on selected addresses. 
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x4C
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">2x uint32_t + ID: offset, int, char[]
+<p></table>
+<pre>Used to redirect to different ISO without game reset. First param is EE offset to hook, second param is some kind of mode selector, depending on that 
+emulator later set mecha switch disc state:
+  mode 0x01 = set disc switch state to 1 (on next mecha main loop it will emulate opening the tray).
+  mode 0x02 = set disc switch state to 3.
+  mode 0x03 = set disc switch state to 3. This state repeats because it work different way depending that emulated tray is closed or no.
+  mode 0x04 = set disc switch state to 2.
+  mode anything else = do nothing.
+Third value is ID in big endian hex ascii (eg. NPJD12345), additionally 0x4C expect own 00 00 00 00 terminator. To eventually end redirection use 
+another 0x4C but with (offset, 0xFFFFFFFF, 4 * 0x00000000 . This config have very similar usage to 0x4B, just redirect to different iso, instead to 
+different MC. Currently is unknown that cobra patched emulators support that config properly, and swap disc thru 0x00 command seems to be easier.
+This config don't work if 0x00 multidisc config is detected. Config under the hood setup 0x01 hooks with subcommand 0x3A
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x4D
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">1x uint32_t
+<p></table>
+Param is floating point value. Default value 0.
+<pre>if Q in GS RGBAQ write is 0.0 or -0.0 then
+    Q = Q | value from config
+else
+    Q = Q
+ 
+Wild Arms: The Fifth Vanguard uses 0x3F800000 (1.0)
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x4E
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">Unknown
+<p></table>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x4F
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Unknown
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">Unknown
+<p></table>
+<table  style="width:100%; background:#666; line-height:80%">
+<tr>
+<td rowspan="2" style="width:25px; padding:2px; background:black; color:lime; font-weight:bold; font-size:120%; cursor:help" title="Command ID">0x50
+<td style="width:110px; border-style:solid hidden hidden">Command Name:
+<td style="border-style:solid solid hidden; font-weight:bold">Enable pressure sensitive controls
+<tr>
+<td style="width:110px; border-style:hidden hidden solid">Command Data:
+<td style="font-style:italic">N/A
+<p></table>
+</div>
+</body><!-- Cached 20250513083322 --></html>

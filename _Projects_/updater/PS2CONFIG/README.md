@@ -24,6 +24,8 @@ Anything 0x35 and above is netemu only, so you will not see them in gx configs:
 ```
 More detailed information and examples can be found in these links:
 
+https://www.psdevwiki.com/ps3/PS2_Emulation/PS2_Config_Commands
+
 https://www.psdevwiki.com/ps3/PS2_Emulation#Config_Commands
 
 https://www.psdevwiki.com/ps3/PS2_Official_Configs
