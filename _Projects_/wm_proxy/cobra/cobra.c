@@ -2350,6 +2350,7 @@ int sys_get_version2(u16 *version)
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_GET_VERSION2, (u64)(u32)version);
 	return (int)p1;
 }
+*/
 
 int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 arg_size)
 {
@@ -2362,4 +2363,3 @@ int cobra_unload_vsh_plugin(unsigned int slot)
 	system_call_2(SC_COBRA_SYSCALL8, SYSCALL8_OPCODE_UNLOAD_VSH_PLUGIN, slot);
 	return (int)p1;
 }
-*/

@@ -1,6 +1,7 @@
 #include <cell/cell_fs.h>
 #include <sys/timer.h>
 #include <sys/syscall.h>
+#include <sys/memory.h>
 
 #define LCASE(a)	(a | 0x20)
 #define BETWEEN(a, b, c)	( ((a) <= (b)) && ((b) <= (c)) )
@@ -15,17 +16,37 @@
 #define SYS_REBOOT						0x8201 /*load LPAR id 1*/
 #define SYS_SHUTDOWN					0x1100
 
+#define IS								!strcasecmp
+
 extern int stdc_B6D92AC3(const char *s1, const char *s2);								// strcasecmp()
 int strcasecmp(const char *s1, const char *s2) {if(!s2 || !s2) return -1; return stdc_B6D92AC3(s1, s2);}
 int sys_map_path(const char *oldpath, const char *newpath);
 
 #include "cobra/cobra.h"
+#include "cobra/scsi.h"
 #include "cue_file.h"
 #include "explore_plugin.h"
+
+typedef struct
+{
+	char server[0x40];
+	char path[0x420];
+	u32 emu_mode;
+	u32 num_tracks;
+	u16 port;
+	u8 pad[6];
+	ScsiTrackDescriptor tracks[MAX_TRACKS];
+} __attribute__((packed)) _netiso_args;
 
 static int sysLv2FsLink(const char *oldpath, const char *newpath)
 {
 	system_call_2(SC_FS_LINK, (u64)(u32)oldpath, (u64)(u32)newpath);
+	return_to_user_prog(int);
+}
+
+static int mount_dev_blind(void)
+{
+	system_call_8(837, (u64)(char*)"CELL_FS_IOS:BUILTIN_FLSH1", (u64)(char*)"CELL_FS_FAT", (u64)(char*)"/dev_blind", 0, 0, 0, 0, 0);
 	return_to_user_prog(int);
 }
 
@@ -70,6 +91,7 @@ static int mount(const char * action)
 	{
 		cobra_umount_disc_image();
 		cobra_send_fake_disc_eject_event();
+		cobra_unload_vsh_plugin(0); // unload external rawseciso / netiso plugins
 
 		char *t = (char*)action;
 		for(char *c = t; *c; c++, t++)
@@ -89,14 +111,14 @@ static int mount(const char * action)
 		char *files[64]; char parts[64][len + 2];
 
 		int count = 1;
-		if(!strcasecmp(split, ".iso.0") || !strcasecmp(split, ".ISO.0"))
+		if(IS(split, ".iso.0") || IS(split, ".ISO.0"))
 		{
 			struct CellFsStat s;
 
 			for(int i = 0; i < 64; i++)
 			{
 				if(i < 10)
-					split[5] = '0' + (int)(i % 10);
+					split[5] = '0' + i;
 				else
 				{
 					split[5] = '0' + (int)(i / 10);
@@ -119,7 +141,7 @@ static int mount(const char * action)
 		tracks[0].lba = 0;
 		tracks[0].is_audio = 0;
 
-		if(!strcasecmp(ext, ".cue"))
+		if(IS(ext, ".cue"))
 		{
 retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 		}
@@ -128,6 +150,69 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 
 		if(strstr(path, "/net"))
 		{
+			u8 netid = (path[4] - '0'); if(netid > 4) return err;
+
+			int fd;
+			if(cellFsOpen("/dev_hdd0/tmp/wm_config.bin", CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+			{
+				_netiso_args netiso_args;
+				memset((void*)&netiso_args, 0, sizeof(_netiso_args));
+				netiso_args.num_tracks = 1;
+
+				cellFsReadWithOffset(fd, 456 + (0x10 * netid), &netiso_args.port, 0x2, NULL);
+				cellFsReadWithOffset(fd, 466 + (0x10 * netid), (void*)netiso_args.server, 0x10, NULL);
+				cellFsClose(fd);
+
+				const char *netpath = path + 5;
+				strcpy(netiso_args.path, netpath);
+
+				if(strstr(netpath, "/GAME") == netpath)
+				{
+					netiso_args.emu_mode = EMU_PS3;
+					strcpy(netiso_args.path, "/***PS3***");
+					strcpy(netiso_args.path + 10, netpath);
+				}
+				else if(strstr(netpath, "/PS3ISO") == netpath) 
+				{
+					netiso_args.emu_mode = EMU_PS3;
+				}
+				else if(strstr(netpath, "/PSXISO") == netpath) 
+				{
+					netiso_args.emu_mode = EMU_PSX;
+				}
+				else if(strstr(netpath, "/PS2ISO") == netpath || strstr(netpath, "/PSPISO") == netpath) 
+				{
+					return err;
+				}
+				else // if(strstr(netpath, "/BDISO") == netpath)
+				{
+					netiso_args.emu_mode = strstr(netpath, "/DVDISO") ? EMU_DVD : EMU_BD;
+					strcpy(netiso_args.path, "/***DVD***");
+					strcpy(netiso_args.path + 10, netpath);
+				}
+
+				err = cobra_load_vsh_plugin(0, (char*)(char*)"/dev_hdd0/tmp/wm_res/netiso.sprx", &netiso_args, sizeof(_netiso_args));
+			}
+		}
+		else if(strstr(path, ".ntfs["))
+		{
+			sys_addr_t sysmem = NULL; u64 size = 0x10000;
+			sys_memory_allocate(size, SYS_MEMORY_PAGE_SIZE_64K, &sysmem);
+			if(sysmem)
+			{
+				int fd;
+				if(cellFsOpen(path, CELL_FS_O_RDONLY, &fd, NULL, 0) == CELL_FS_SUCCEEDED)
+				{
+					char *data = (char*)sysmem;
+					cellFsRead(fd, data, size, &size);
+					cellFsClose(fd);
+
+					err = cobra_load_vsh_plugin(0, (char*)"/dev_hdd0/tmp/wm_res/raw_iso.sprx", data, size);
+					sys_timer_sleep(1);
+				}
+
+				sys_memory_free(sysmem);
+			}
 		}
 		else if(strstr(path, "/GAMES/") || strstr(path, "/GAMEZ/"))
 		{
@@ -153,7 +238,7 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 				}
 			}
 		}
-		else if (!strcasecmp(ext, ".enc") && strstr(path, "/PS2ISO/"))
+		else if (IS(ext, ".enc") && strstr(path, "/PS2ISO/"))
 		{
 			cellFsUnlink(PS2_CLASSIC_ISO_PATH);
 			sysLv2FsLink(path, PS2_CLASSIC_ISO_PATH);
@@ -166,7 +251,7 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 
 			err = 0; show_msg("Use PS2 Launcher to play the game");
 		}
-		else if (!strcasecmp(ext, ".iso") || !strcasecmp(ext, ".bin") || !strcasecmp(ext, ".img") || !strcasecmp(ext, ".mdf"))
+		else if ((count > 1) || IS(ext, ".iso") || IS(ext, ".bin") || IS(ext, ".img") || IS(ext, ".mdf"))
 		{
 			if(strstr(path, "/PS3ISO/"))
 			{
@@ -192,7 +277,6 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 			else if(strstr(path, "/PSPISO/"))
 			{
 				err = cobra_set_psp_umd(path, NULL, "/dev_hdd0/tmp/wm_icons/psp_icon.png");
-
 				if(!err) show_msg("Use PSP Launcher to play the game");
 			}
 			else if(strstr(path, "/BDISO/"))
@@ -204,6 +288,10 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 				err = cobra_mount_dvd_disc_image(files, count);
 			}
 		}
+		else if(IS(path, "/unmount"))
+		{
+			err = 0;
+		}
 
 		if(!err)
 		{
@@ -213,14 +301,22 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 		}
 		else if(cue == 1) goto retry;
 	}
-	else if(strstr(action, "/restart.ps3") == action)
+	else if(IS(action, "/restart.ps3"))
 	{
 		system_call_3(SC_SYS_POWER, SYS_SOFT_REBOOT, NULL, 0);
 	}
-	else if(strstr(action, "/shutdown.ps3") == action)
+	else if(IS(action, "/shutdown.ps3"))
 	{
 		system_call_4(SC_SYS_POWER, SYS_SHUTDOWN, 0, 0, 0);
 	}
-	
+	else if(IS(action, "/xmb.ps3$close_all_list"))
+	{
+		exec_xmb_command("close_all_list"); err = 0;
+	}
+	else if(strstr(action, "/dev_blind"))
+	{
+		err = mount_dev_blind(); if(err == CELL_FS_SUCCEEDED) show_msg("/dev_blind enabled");
+	}
+
 	return err;
 }

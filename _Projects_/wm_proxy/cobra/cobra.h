@@ -785,7 +785,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, const char *icon_save_path);
  * EKRESOURCE -> a module is already loaded at that slot
  * Other -> error from kernel (invalid prx, etc)
  */
-//int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 arg_size);
+int cobra_load_vsh_plugin(unsigned int slot, const char *path, void *arg, u32 arg_size);
 
 
 /*
@@ -799,7 +799,7 @@ int cobra_set_psp_umd(char *path, char *umd_root, const char *icon_save_path);
  * EINVAL -> invalid slot
  * ENOENT -> there is no module loaded in that slot.
  */
-//int cobra_unload_vsh_plugin(unsigned int slot);
+int cobra_unload_vsh_plugin(unsigned int slot);
 
 //void map_app_home(const char *path);
 

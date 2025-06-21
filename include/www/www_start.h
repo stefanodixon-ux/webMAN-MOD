@@ -231,8 +231,10 @@ static void start_www(u64 conn_s_p)
 			#ifdef FIX_CLOCK
 			if(webman_config->auto_fixclock)
 			{
+				#ifdef VIRTUAL_PAD
 				// auto accept date/time page
 				while(working && (View_Find("explore_plugin") == 0)) {press_accept_button(); sys_ppu_thread_sleep(2);}
+				#endif
 
 				if(working)
 				{
