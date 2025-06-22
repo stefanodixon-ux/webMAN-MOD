@@ -89,9 +89,12 @@ static int mount(const char * action)
 
 	if(strstr(action, "/mount.ps3") == action || strstr(action, "/mount_ps3") == action)
 	{
-		cobra_umount_disc_image();
 		cobra_send_fake_disc_eject_event();
+		cobra_umount_disc_image();
 		cobra_unload_vsh_plugin(0); // unload external rawseciso / netiso plugins
+
+		sys_map_path("/dev_bdvd", NULL);
+		sys_map_path("/app_home", NULL);
 
 		char *t = (char*)action;
 		for(char *c = t; *c; c++, t++)
@@ -316,6 +319,19 @@ retry:		strcpy(ext, (++cue == 1) ? ".bin" : ".BIN");
 	else if(strstr(action, "/dev_blind"))
 	{
 		err = mount_dev_blind(); if(err == CELL_FS_SUCCEEDED) show_msg("/dev_blind enabled");
+	}
+	else if(strstr(action, "/remap.ps3") == action)
+	{
+		char *path = (char*)action + 10;
+		char *dest = strstr(path, "&to=");
+		if(dest)
+		{
+			*dest = 0; sys_map_path(path, dest + 4);
+		}
+		else
+			sys_map_path(path, NULL);
+
+		err = 0;
 	}
 
 	return err;
