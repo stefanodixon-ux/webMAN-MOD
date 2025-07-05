@@ -710,8 +710,14 @@
 				<P key="title"><>[PS2 GXEMU] Install ps2_gxemu v1 with custom configs</></P>
 				<P key="info"><>CFW Only. Requires /dev_blind enabled</></P>
 			</T>
+			<T key="mod136" include="inc">
+				<P key="title"><>[PS2 GXEMU] Install ps2_gxemu v4 with Fan Control + fps_counter + temperature display + x modules + custom configs + extended config table</></P>
+				<P key="info"><>CFW Only. Requires /dev_blind enabled. Press SQUARE + SELECT for current fan mode.
+SQUARE + START toggle fan mode</></P>
+			</T>
 		</A>
 		<I>
+			<Q class="type:x-xmb/folder-pixmap" key="mod136" attr="mod136" src="#mod136_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod130" attr="mod130" src="#mod130_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod131" attr="mod131" src="#mod131_link"/>
 			<Q class="type:x-xmb/folder-pixmap" key="mod132" attr="mod132" src="#mod132_link"/>
@@ -1173,6 +1179,20 @@
 				<P key="info"><>net_package_install</></P>
 				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_custom_configs-req_dev_blind_enabled.pkg</></P>
 				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_v1_custom_configs-req_dev_blind_enabled.pkg</></P>
+				<P key="content_name"><>msg_install</></P>
+				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
+				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>
+			</T>
+		</A>
+		<I><Item class="type:x-xmb/xmlnpsignup" key="pkg_link" attr="pkg_link"/></I>
+	</V>
+
+	<V id="mod136_link">
+		<A>
+			<T key="pkg_link">
+				<P key="info"><>net_package_install</></P>
+				<P key="pkg_src"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_fan_control-req_dev_blind_enabled.pkg</></P>
+				<P key="pkg_src_qa"><>https://github.com/aldostools/Resources/releases/download/MODS/install_ps2_gxemu_fan_control-req_dev_blind_enabled.pkg</></P>
 				<P key="content_name"><>msg_install</></P>
 				<P key="content_id"><>CUSTOM-INSTALLER_00-0000000000000000</></P>
 				<P key="prod_pict_path"><>/dev_hdd0//game/XMBMANPLS/USRDIR/IMAGES/package.png</></P>

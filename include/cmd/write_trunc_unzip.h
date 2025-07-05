@@ -114,8 +114,8 @@
 
 					if(sysmem)
 					{
-						strcat(data, "\n");
-						int len = size + 1; //strlen(data);
+						strcat(data, "\r\n");
+						int len = strlen(data);
 
 						char *buffer = (char*)sysmem;
 						size = read_file(filename, buffer, buffer_size, 0);
