@@ -685,7 +685,7 @@ static void setup_form(char *buffer, char *html)
 
 	concat(buffer, "<tr><td>");
 	add_radio_button("temp\" onchange=\"fc.checked=1;", 1, "t_1", STR_MANUAL , " : ", (webman_config->man_speed != 0), buffer);
-	sprintf(html, HTML_NUMBER("manu", "%i", "20", "95") " %% %s + " HTML_NUMBER("mt", "%i", "0", "50") " %% in-game"
+	sprintf(html, HTML_NUMBER("manu", "%i", "20", "95") " %% %s + " HTML_NUMBER("mt", "%i", "0", "50") " %% in-game&nbsp;"
 					"<td> %s : " HTML_NUMBER("fsp0", "%i", "20", "95") " %% %s </tr>",
 					webman_config->man_rate, STR_FANSPEED, webman_config->man_ingame,
 					STR_PS2EMU, webman_config->ps2_rate, STR_FANSPEED); concat(buffer, html);

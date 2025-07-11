@@ -140,9 +140,20 @@ if(BETWEEN('0', netid, '4'))
 		//netiso_args.emu_mode = EMU_BD;
 		mount_unk = EMU_ROMS;
 
-		concat2(netiso_args.path, "/***DVD***", "/ROMS");
+		char *slash2 = strchr(netpath + 6 , '/');
 
-		concat2(full_path, "/dev_bdvd/", netpath + 6);
+		if(slash2)
+		{
+			*slash2 = 0;
+			concat2(netiso_args.path, "/***DVD***", netpath); // mount subdirectory e.g. /ROMS/MAME
+			concat2(full_path, "/dev_bdvd/", slash2 + 1); // /dev_bdvd/GAME.ZIP
+		}
+		else
+		{
+			concat2(netiso_args.path, "/***DVD***", "/ROMS"); // mount subdirectory e.g. /ROMS
+			concat2(full_path, "/dev_bdvd/", netpath + 6);  // /dev_bdvd/MAME/GAME.ZIP
+		}
+
 		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", full_path, SAVE_ALL);
 		copy_rom_media(full_path);
 	}
