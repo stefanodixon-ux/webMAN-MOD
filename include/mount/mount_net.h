@@ -140,22 +140,32 @@ if(BETWEEN('0', netid, '4'))
 		//netiso_args.emu_mode = EMU_BD;
 		mount_unk = EMU_ROMS;
 
-		char *slash2 = strchr(netpath + 6 , '/');
-
-		if(slash2)
+		char *filename = NULL;
+		if(netpath[5] == '/')
 		{
-			*slash2 = 0;
-			concat2(netiso_args.path, "/***DVD***", netpath); // mount subdirectory e.g. /ROMS/MAME
-			concat2(full_path, "/dev_bdvd/", slash2 + 1); // /dev_bdvd/GAME.ZIP
+			// mount net/ROMS/MAME/path => /dev_bdvd/game.zip
+			filename = strrchr(netpath + 5 , '/');
 		}
-		else
+		else 
 		{
-			concat2(netiso_args.path, "/***DVD***", "/ROMS"); // mount subdirectory e.g. /ROMS
-			concat2(full_path, "/dev_bdvd/", netpath + 6);  // /dev_bdvd/MAME/GAME.ZIP
+			// mount net/ROMS_2/MAME => /dev_bdvd/path/game.zip
+			filename = strchr(netpath + 5 , '/');
+			if(filename)
+			{
+				// mount 2nd subfolder
+				char *slash = strchr(filename + 1, '/'); if(slash) filename = slash;
+			}
 		}
 
-		save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", full_path, SAVE_ALL);
-		copy_rom_media(full_path);
+		if(filename)
+		{
+			*filename++ = 0;
+			concat2(full_path, "/dev_bdvd/", filename); // /dev_bdvd/GAME.ZIP
+
+			save_file(PKGLAUNCH_DIR "/USRDIR/launch.txt", full_path, SAVE_ALL);
+			copy_rom_media(full_path);
+		}
+		concat2(netiso_args.path, "/***DVD***", netpath); // mount subdirectory e.g. /ROMS/PATH
 	}
 	else
 	{

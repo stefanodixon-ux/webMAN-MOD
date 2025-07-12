@@ -585,6 +585,18 @@ static int patch_file(const char *file, const char *data, u64 offset, int size);
 
 static void copy_rom_media(const char *src_path)
 {
+	char dst_path[64];
+	const char *PS3_GAME[2] = { "/PS3_GAME/", "/" };
+	if(file_exists(WM_ICONS_PATH "/ICON0.PNG"))
+	{
+		for(u8 p = 0; p < 2; p++)
+		{
+			// copy rom icon to ICON0.PNG
+			concat3(dst_path, PKGLAUNCH_DIR, PS3_GAME[p], "ICON0.PNG");
+			cellFsUnlink(dst_path); sysLv2FsLink(WM_ICONS_PATH "/ICON0.PNG", dst_path);
+		}
+	}
+
 	// get rom name & file extension
 	char *name = get_filename(src_path);
 	if(!name) return;
@@ -598,11 +610,8 @@ static void copy_rom_media(const char *src_path)
 	if(ex && *ex == '.') *ex = 0;
 
 	// patch title name in PARAM.SFO of PKGLAUNCH
-	char dst_path[64];
 	concat2(dst_path, PKGLAUNCH_DIR, "/PS3_GAME/PARAM.SFO");
 	patch_file(dst_path, title, 0x378, 0x80);
-
-	const char *PS3_GAME[2] = { "/PS3_GAME/", "/" };
 
 	char *ext  = strrchr(++name, '.');
 	if(ext)

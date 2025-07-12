@@ -621,6 +621,9 @@ int main()
 	file_copy(APP_USRDIR "/icons/time.png",              ICONS_DIR "/time.png");
 	file_copy(APP_USRDIR "/icons/find.png",              ICONS_DIR "/find.png");
 
+	// default PKGLAUNCH icon
+	file_copy(APP_USRDIR "/icons/ICON0.PNG",             ICONS_DIR "/ICON0.PNG");
+
 	if((sysLv2FsStat(APP_USRDIR "/multiman.png", &stat) == SUCCESS) && (stat.st_size == 9894))
 		file_copy(APP_USRDIR "/icons/icon_wm_root.png" , ICONS_DIR "/icon_wm_root.png");
 	else
