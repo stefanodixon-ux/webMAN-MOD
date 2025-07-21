@@ -80,7 +80,7 @@ static void parse_script(const char *script_file, bool check_running)
 		if(!sysmem) return;
 
 		char *buffer, *sep, *pos, *mloop = NULL, *dest = NULL, label[24]; u16 l, count = 0;
-		u8 exec_mode = true, enable_db = true, do_else = true; size_t buffer_size;
+		u8 do_else = 0, enable_db = true; size_t buffer_size;
 		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE); *label = NULL;
 
 	reload_script:
@@ -111,7 +111,7 @@ static void parse_script(const char *script_file, bool check_running)
 				*pos = NULL; //EOL
 				replace_char(line, '\r', 0); // crlf
 
-				if(exec_mode)
+				//if(exec_mode)
 				{
 					if(IS_WEB_COMMAND(line))
 						dest = NULL;
@@ -123,7 +123,7 @@ static void parse_script(const char *script_file, bool check_running)
 					}
 					if(enable_db && (strstr(line, "/dev_blind"))) {enable_dev_blind(NO_MSG); enable_db = false;}
 				}
-				parse_cmd:
+
 				if(dest)
 				{
 					*dest++ = NULL; while(*dest == ' ') dest++; //split parameters
@@ -143,9 +143,41 @@ static void parse_script(const char *script_file, bool check_running)
 					if(_islike(line, "cpbk /")) {path += 5; check_path_tags(path); if(wildcard) {*wildcard++ = NULL;} scan(path, true, wildcard, SCAN_COPYBK, dest);}
 				}
 				else if(*line == '#' || *line == ':' || *line == ';' || *line == '*') ; // remark
-				else if(_islike(line, "else") && do_else) {if(exec_mode) do_else = false; exec_mode ^= 1; line += 4; while(*line == ' ') line++; if(exec_mode && *line) goto parse_cmd;}
-				else if(_islike(line, "end")) {exec_mode = do_else = true;}
-				else if(exec_mode)
+
+				else if(do_else && _islike(line, "else"))
+				{
+					--do_else;
+					// jump to 'else if'
+					char  *i = strstr(line, "if ");
+					if(i && *(--i) <= ' ')
+					{
+						buffer = i + 1, dest = NULL; continue;
+					}
+
+					// exit 'if' (true condition)
+					buffer = pos + 1;
+					for(char *n;;)
+					{
+						n = strcasestr(buffer, "end");
+						i = strcasestr(buffer, "if ");
+						
+						// jump to 'end if'
+						if(n && (*(--n) <= ' '))
+						{
+							// skip 'end if' for nested if's (find next 'end if')
+							if(i && (*(--i) <= ' ') && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
+
+							// go to end of line for 'end if'
+							pos = strchr(++n, '\n'); if(!pos) pos = n + 3;
+						}
+						break;
+					}
+				}
+				else if(do_else && _islike(line, "end"))
+				{
+					--do_else;
+				}
+				else //if(exec_mode)
 				{
 					if(*line == '/')               {if(islike(line, "/dev_blind?0")) disable_dev_blind(); else if(IS_WEB_COMMAND(line)) handle_file_request(line);} else
 					if(_islike(line, "goto "))     {mloop = NULL, snprintf(label, 24, ":%s", line + 5); goto reload_script;} else
@@ -188,10 +220,11 @@ static void parse_script(const char *script_file, bool check_running)
 						if(_islike(line, "while ")) {ifmode = DO_WHILE, mloop = line;} else ifmode = _islike(line, "if ") ? 3 : ABORT_IF; 
 						line += ifmode;
 
-						bool ret = false; do_else = true;
+						bool ret = false, isnot = false;
+
+						if(_islike(line, "not ")) {isnot = true, line += 4;}
 
 						if(_islike(line, "exist /"))     {path +=  6; check_path_tags(path); ret = file_exists(path);} else
-						if(_islike(line, "not exist /")) {path += 10; check_path_tags(path); ret = not_exists(path);} else
 						if(_islike(line, "Firmware")) {line += 9; ret = IS(fw_version, line);} else
 						if(_islike(line, "noCobra")) {ret = !cobra_version;} else
 						if(_islike(line, "xmb"))	{ret = IS_ON_XMB;} else
@@ -222,18 +255,51 @@ static void parse_script(const char *script_file, bool check_running)
 							if(_islike(line, "R1")) ret = is_pressed(CELL_PAD_CTRL_R1);
 						}
 
+						if(isnot) ret = !ret;
+
 						if(ifmode == ABORT_IF)
 						{
 							if(ret) break; // about script if true
 						}
-						else if(!ret) // if condition is false
+						else if(ret) // if condition is true
+						{
+							++do_else;
+						}
+						else // if condition is false
 						{
 							if(ifmode == DO_WHILE)
 							{
 								EXIT_LOOP;
 							}
 							else
-								exec_mode = false; // do else or go to end
+							{
+								buffer = pos + 1;
+								for(char *e, *i, *n;;)
+								{
+									i = strcasestr(buffer, "if ");
+									e = strcasestr(buffer, "else");
+									n = strcasestr(buffer, "end");
+									// jump to 'else'
+									if(e && (*(--e) <= ' '))
+									{
+										// skip 'else' for nested if's (find next 'else')
+										if(i && n && BETWEEN(i, e, n)) {pos = strchr(n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
+
+										// go to end of line for 'else'
+										pos = strchr(++e, '\n'); if(!pos) pos = e + 4; break;
+									}
+									// jump to 'end if'
+									if(n && (*(--n) <= ' '))
+									{
+										// skip 'end if' for nested if's (find next 'end if')
+										if(i && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
+
+										// go to end of line for 'end if'
+										pos = strchr(++n, '\n'); if(!pos) pos = n + 3;
+									}
+									break;
+								}
+							}
 						}
 					}
 				}
