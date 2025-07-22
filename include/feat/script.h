@@ -1,5 +1,5 @@
 // # remmark
-// if/elseif/else/end
+// if/elseif/else/end if
 //   if exist <path>
 //   if not exist <path>
 //   if L1
@@ -80,7 +80,7 @@ static void parse_script(const char *script_file, bool check_running)
 		if(!sysmem) return;
 
 		char *buffer, *sep, *pos, *mloop = NULL, *dest = NULL, label[24]; u16 l, count = 0;
-		u8 do_else = 0, enable_db = true; size_t buffer_size;
+		u8 do_else = 0, enable_db = true, sc_debug = false; size_t buffer_size;
 		char log_file[STD_PATH_LEN]; strcpy(log_file, SC_LOG_FILE); *label = NULL;
 
 	reload_script:
@@ -110,6 +110,8 @@ static void parse_script(const char *script_file, bool check_running)
 			{
 				*pos = NULL; //EOL
 				replace_char(line, '\r', 0); // crlf
+
+				if(sc_debug) save_file(log_file, line, APPEND_TEXT);
 
 				//if(exec_mode)
 				{
@@ -158,22 +160,23 @@ static void parse_script(const char *script_file, bool check_running)
 					for(char *n;;)
 					{
 						buffer = pos + 1;
-						n = strcasestr(buffer, "end");
+						n = strcasestr(buffer, "end if"); if(!n) break;
 						i = strcasestr(buffer, "if ");
 						
 						// jump to 'end if'
-						if(n && (*(--n) <= ' '))
+						if((n[3] <= ' ') &&  (*(--n) <= ' '))
 						{
 							// skip 'end if' for nested if's (find next 'end if')
 							if(i && (*(--i) <= ' ') && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; continue;}
 
 							// go to end of line for 'end if'
-							pos = strchr(++n, '\n'); if(!pos) pos = n + 3;
+							pos = strchr(++n, '\n'); if(!pos) pos = n + 3; if(sc_debug) save_file(log_file, "end if", APPEND_TEXT); break;
 						}
-						break;
+						else
+							pos = n + 3;
 					}
 				}
-				else if(do_else && _islike(line, "end"))
+				else if(do_else && _islike(line, "end if"))
 				{
 					--do_else;
 				}
@@ -197,7 +200,7 @@ static void parse_script(const char *script_file, bool check_running)
 					if(_islike(line, "beep"))      {if(line[4] == '3') {BEEP3;} else if(line[4] == '2') {BEEP2;} else {BEEP1;}} else
 					#endif
 					if(_islike(line, "popup "))    {line += 6; parse_tags(line); show_msg(line);} else
-					if(_islike(line, "log "))      {line += 4; parse_tags(line); save_file(log_file, line, APPEND_TEXT);} else
+					if(_islike(line, "log "))      {line += 4; parse_tags(line); save_file(log_file, line, APPEND_TEXT); sc_debug = _IS(line, "Debug");} else
 					if(_islike(line, "logfile /")) {path += 8; check_path_tags(path); strcpy(log_file, path);} else
 	#ifdef UNLOCK_SAVEDATA
 					if(_islike(line, "unlock /"))  {path += 7; scan(path, true, "/PARAM.SFO", SCAN_UNLOCK_SAVE, NULL);} else
@@ -269,35 +272,36 @@ static void parse_script(const char *script_file, bool check_running)
 						{
 							if(ifmode == DO_WHILE)
 							{
-								EXIT_LOOP;
+								EXIT_LOOP; if(sc_debug) save_file(log_file, "end while", APPEND_TEXT);
 							}
 							else
 							{
-								buffer = pos + 1;
 								for(char *e, *i, *n;;)
 								{
+									buffer = pos + 1;
+									n = strcasestr(buffer, "end if"); if(!n) break;
 									i = strcasestr(buffer, "if ");
 									e = strcasestr(buffer, "else");
-									n = strcasestr(buffer, "end");
 									// jump to 'else'
-									if(e && (*(--e) <= ' '))
+									if(e && (e[4] <= ' ') && (*(--e) <= ' '))
 									{
 										// skip 'else' for nested if's (find next 'else')
-										if(i && n && BETWEEN(i, e, n)) {pos = strchr(n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
+										if(i && BETWEEN(i, e, n)) {pos = strchr(n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
 
 										// go to end of line for 'else'
-										if(e < n) {pos = strchr(++e, '\n'); if(!pos) pos = e + 4; break;}
+										if(e < n) {pos = strchr(++e, '\n'); if(!pos) pos = e + 4; if(sc_debug) save_file(log_file, "else", APPEND_TEXT); break;}
 									}
 									// jump to 'end if'
-									if(n && (*(--n) <= ' '))
+									if((n[3] <= ' ') && (*(--n) <= ' '))
 									{
 										// skip 'end if' for nested if's (find next 'end if')
 										if(i && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
 
 										// go to end of line for 'end if'
-										pos = strchr(++n, '\n'); if(!pos) pos = n + 3;
+										pos = strchr(++n, '\n'); if(!pos) pos = n + 3; if(sc_debug) save_file(log_file, "end if", APPEND_TEXT); break;
 									}
-									break;
+									else
+										pos = n + 3;
 								}
 							}
 						}
