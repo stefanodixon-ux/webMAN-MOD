@@ -155,9 +155,9 @@ static void parse_script(const char *script_file, bool check_running)
 					}
 
 					// exit 'if' (true condition)
-					buffer = pos + 1;
 					for(char *n;;)
 					{
+						buffer = pos + 1;
 						n = strcasestr(buffer, "end");
 						i = strcasestr(buffer, "if ");
 						
@@ -165,7 +165,7 @@ static void parse_script(const char *script_file, bool check_running)
 						if(n && (*(--n) <= ' '))
 						{
 							// skip 'end if' for nested if's (find next 'end if')
-							if(i && (*(--i) <= ' ') && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
+							if(i && (*(--i) <= ' ') && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; continue;}
 
 							// go to end of line for 'end if'
 							pos = strchr(++n, '\n'); if(!pos) pos = n + 3;
@@ -286,7 +286,7 @@ static void parse_script(const char *script_file, bool check_running)
 										if(i && n && BETWEEN(i, e, n)) {pos = strchr(n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
 
 										// go to end of line for 'else'
-										pos = strchr(++e, '\n'); if(!pos) pos = e + 4; break;
+										if(e < n) {pos = strchr(++e, '\n'); if(!pos) pos = e + 4; break;}
 									}
 									// jump to 'end if'
 									if(n && (*(--n) <= ' '))
