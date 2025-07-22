@@ -1,5 +1,5 @@
 // # remmark
-// if/elseif/else/end if
+// if/else if/else/end if
 //   if exist <path>
 //   if not exist <path>
 //   if L1
@@ -34,6 +34,7 @@
 // lwait <path> (timeout 30 seconds)
 
 // logfile <pah>
+// log debug
 // log <text>
 // popup <text>
 // beep1 / beep2 / beep3 / ... beep9
@@ -55,7 +56,7 @@
 #define path	buffer	/* "line", "path" and "buffer" are synonyms */
 #define IS_WEB_COMMAND(line)	(islike(line, "/mount") || strstr(line, ".ps3") || strstr(line, "_ps3") || strstr(line, ".lv1?") || strstr(line, ".lv2?"))
 #define EXIT_LOOP	{mloop = NULL, count = 0; pos = strcasestr(pos + 1, "loop"); if(!pos) break;} // exit loop
-
+#define log_cmd(line)	if(sc_debug) save_file(log_file, line, APPEND_TEXT)
 
 static void handle_file_request(const char *wm_url)
 {
@@ -111,7 +112,7 @@ static void parse_script(const char *script_file, bool check_running)
 				*pos = NULL; //EOL
 				replace_char(line, '\r', 0); // crlf
 
-				if(sc_debug) save_file(log_file, line, APPEND_TEXT);
+				log_cmd(line);
 
 				//if(exec_mode)
 				{
@@ -164,16 +165,16 @@ static void parse_script(const char *script_file, bool check_running)
 						i = strcasestr(buffer, "if ");
 						
 						// jump to 'end if'
-						if((n[3] <= ' ') &&  (*(--n) <= ' '))
+						if((n[6] <= ' ') &&  (*(--n) <= ' '))
 						{
 							// skip 'end if' for nested if's (find next 'end if')
-							if(i && (*(--i) <= ' ') && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; continue;}
+							if(i && (*(--i) <= ' ') && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 6; continue;}
 
 							// go to end of line for 'end if'
-							pos = strchr(++n, '\n'); if(!pos) pos = n + 3; if(sc_debug) save_file(log_file, "end if", APPEND_TEXT); break;
+							log_cmd("end if"); pos = strchr(++n, '\n'); if(!pos) pos = n + 6; break;
 						}
 						else
-							pos = n + 3;
+							pos = n + 6;
 					}
 				}
 				else if(do_else && _islike(line, "end if"))
@@ -272,7 +273,7 @@ static void parse_script(const char *script_file, bool check_running)
 						{
 							if(ifmode == DO_WHILE)
 							{
-								EXIT_LOOP; if(sc_debug) save_file(log_file, "end while", APPEND_TEXT);
+								EXIT_LOOP; log_cmd("end while");
 							}
 							else
 							{
@@ -286,22 +287,22 @@ static void parse_script(const char *script_file, bool check_running)
 									if(e && (e[4] <= ' ') && (*(--e) <= ' '))
 									{
 										// skip 'else' for nested if's (find next 'else')
-										if(i && BETWEEN(i, e, n)) {pos = strchr(n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
+										if(i && BETWEEN(i, e, n)) {pos = strchr(n, '\n'); if(!pos) pos = n + 6; buffer = pos; continue;}
 
 										// go to end of line for 'else'
-										if(e < n) {pos = strchr(++e, '\n'); if(!pos) pos = e + 4; if(sc_debug) save_file(log_file, "else", APPEND_TEXT); break;}
+										if(e < n) {log_cmd("else"); pos = strchr(++e, '\n'); if(!pos) pos = e + 4; break;}
 									}
 									// jump to 'end if'
-									if((n[3] <= ' ') && (*(--n) <= ' '))
+									if((n[6] <= ' ') && (*(--n) <= ' '))
 									{
 										// skip 'end if' for nested if's (find next 'end if')
-										if(i && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 3; buffer = pos; continue;}
+										if(i && (i < n)) {pos = strchr(++n, '\n'); if(!pos) pos = n + 6; buffer = pos; continue;}
 
 										// go to end of line for 'end if'
-										pos = strchr(++n, '\n'); if(!pos) pos = n + 3; if(sc_debug) save_file(log_file, "end if", APPEND_TEXT); break;
+										log_cmd("end if"); pos = strchr(++n, '\n'); if(!pos) pos = n + 6; break;
 									}
 									else
-										pos = n + 3;
+										pos = n + 6;
 								}
 							}
 						}
