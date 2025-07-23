@@ -150,15 +150,9 @@ static void parse_script(const char *script_file, bool check_running)
 				else if(do_else && _islike(line, "else"))
 				{
 					--do_else;
-					// jump to 'else if'
-					char  *i = strstr(line, "if ");
-					if(i && *(--i) <= ' ')
-					{
-						buffer = i + 1, dest = NULL; continue;
-					}
 
 					// exit 'if' (true condition)
-					for(char *n;;)
+					for(char *i, *n;;)
 					{
 						buffer = pos + 1;
 						n = strcasestr(buffer, "end if"); if(!n) break;
@@ -289,8 +283,10 @@ static void parse_script(const char *script_file, bool check_running)
 										// skip 'else' for nested if's (find next 'else')
 										if(i && BETWEEN(i, e, n)) {pos = strchr(n, '\n'); if(!pos) pos = n + 6; buffer = pos; continue;}
 
+										if(_islike(++e, "else if")) {log_cmd("else if"); pos = e + 4; break;}
+
 										// go to end of line for 'else'
-										if(e < n) {log_cmd("else"); pos = strchr(++e, '\n'); if(!pos) pos = e + 4; break;}
+										if(e < n) {log_cmd("else"); pos = strchr(e, '\n'); if(!pos) pos = e + 4; break;}
 									}
 									// jump to 'end if'
 									if((n[6] <= ' ') && (*(--n) <= ' '))
