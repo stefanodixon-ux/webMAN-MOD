@@ -581,6 +581,9 @@ int main()
 	file_copy(APP_USRDIR "/html/temp.js",      XMLHOST_DIR "/temp.js");
 	file_copy(APP_USRDIR "/html/tempc.html",   XMLHOST_DIR "/tempc.html");
 	file_copy(APP_USRDIR "/html/tempf.html",   XMLHOST_DIR "/tempf.html");
+	
+	// overclocking panel
+	file_copy(APP_USRDIR "/html/oc.html",      XMLHOST_DIR "/oc.html");
 
 	// fb.xml
 	if(is_ps3hen() == 0x1337)

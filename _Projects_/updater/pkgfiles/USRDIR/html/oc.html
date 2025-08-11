@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>webMAN MOD</title>
+</head>
+<body bgcolor="#003" onload="initScriptedGauges();">
+
+<script>
+var ocgpu, ocmem;
+</script>
+
+<center>
+<style>button{font-family:verdana;font-size:20px;border-radius:12px;padding:5px 15px 5px 15px;}button:hover{color:blue;}
+input[type="range"] {
+  -webkit-appearance: none; /* For WebKit browsers (Chrome, Safari) */
+  appearance: none; /* Standard property */
+  background: transparent; /* Remove default background */
+  cursor: pointer; /* Indicate interactivity */
+  width: 100%; /* Or desired width */
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  background: #ddd; /* Light gray track */
+  background-image: linear-gradient(to right, blue, green , yellow, orange);
+	height: 16px;
+}
+input[type="range"]::-moz-range-track {
+  background: #ddd;
+  height: 16px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: #007bff; /* Blue thumb */
+  height: 32px;
+  width: 32px;
+  border-radius: 45%; /* Circular thumb */
+  margin-top: -8px; /* Adjust vertical position relative to track */
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: #007bff;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+</style>
+<button onclick="updateClock(500,650);">Default</button> &nbsp;
+<button onclick="updateClock(650,850);"><font color=blue>Overclock 30%</font></button> &nbsp;
+<button onclick="updateClock(0,0);"><font color=purple>Exit to XMB</font></button> &nbsp;
+<button onclick="self.location='/restart.ps3';">Restart</button> &nbsp;
+<button onclick="self.location='/shutdown.ps3';">Shutdown</button> &nbsp;
+<hr>
+<table cellpadding=15>
+<tr>
+<td align=center>
+<a href="/gpuclock.ps3"><canvas id="ocgpu"></canvas></a><p><input name="oc1" id="oc1" type="range" min=400 max=1000 step=50 value="500" oninput="ocgpu.value=this.value;" onchange="updateClock(this.value,0);">
+<td align=center>
+<a href="/memclock.ps3"><canvas id="ocmem"></canvas></a><p><input name="oc2" id="oc2" type="range" min=500 max=1100 step=25 value="650" oninput="ocmem.value=this.value;" onchange="updateClock(0,this.value);">
+</tr>
+</table>
+
+<script>
+function $(id) {return document.getElementById(id);}
+
+function updateClock(gval, mval)
+{
+	if(gval) $('oc1').value=ocgpu.value=gval;
+	if(mval) $('oc2').value=ocmem.value=mval;
+
+	if( (gval < 300) && (mval < 300) )
+		$('oc').src="/xmb.ps3$exit";
+	else if( (ocgpu.value >= 300) && (ocmem.value >= 300) )
+		$('oc').src="/gpuclock.ps3?"+ocgpu.value.toString()+"|"+ocmem.value.toString();
+}
+
+function initScriptedGauges() {
+
+  ocgpu = new RadialGauge({
+		renderTo: 'ocgpu',
+		width: 400,
+		height: 400,
+		units: 'Mhz',
+		title: 'GPU Clock',
+		value: 500,
+		minValue: 300,
+		maxValue: 1200,
+		majorTicks: [
+			'300','400','500','600','700','800','900','1000','1100','1200'
+		],
+		minorTicks: 2,
+		strokeTicks: false,
+		highlights: [
+			{ from: 0, to: 300, color: 'gray' },
+			{ from: 300, to: 500, color: 'navy' },
+			{ from: 500, to: 700, color: 'green' },
+			{ from: 700, to: 900, color: 'yellow' },
+			{ from: 900, to: 1000, color: 'orange' },
+			{ from: 1000, to: 1200, color: 'red' },
+		],
+		colorPlate: '#204',
+		colorMajorTicks: '#f5f5f5',
+		colorMinorTicks: '#ddd',
+		colorTitle: '#fff',
+		colorUnits: 'cyan',
+		colorNumbers: '#eee',
+		colorNeedle: 'rgba(240, 128, 128, 1)',
+		colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+		valueBox: true,
+		animationRule: 'bounce',
+		animationDuration: 500
+	}).draw();
+
+  ocmem = new RadialGauge({
+		renderTo: 'ocmem',
+		width: 400,
+		height: 400,
+		units: 'Mhz',
+		title: 'MEM Clock',
+		value: 650,
+		minValue: 300,
+		maxValue: 1200,
+		majorTicks: [
+			'300','400','500','600','700','800','900','1000','1100','1200'
+		],
+		minorTicks: 4,
+		strokeTicks: false,
+		highlights: [
+			{ from: 0, to: 400, color: 'gray' },
+			{ from: 400, to: 650, color: 'blue' },
+			{ from: 650, to: 900, color: 'green' },
+			{ from: 900, to: 1000, color: 'yellow' },
+			{ from: 1000, to: 1100, color: 'orange' },
+			{ from: 1100, to: 1200, color: 'red' },
+		],
+		colorPlate: '#024',
+		colorMajorTicks: '#f5f5f5',
+		colorMinorTicks: '#ddd',
+		colorTitle: '#fff',
+		colorUnits: 'cyan',
+		colorNumbers: '#eee',
+		colorNeedle: 'rgba(240, 128, 128, 1)',
+		colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+		valueBox: true,
+		animationRule: 'bounce',
+		animationDuration: 500
+	}).draw();
+
+	fetch("/ps3mapi.ps3?PS3+GETRSXCLOCK")
+		.then((res) => res.text())
+		.then((jsonResponseString) => {
+			const data = JSON.parse(jsonResponseString);
+			const numericValues = data.response;
+			var gpu, mem;
+			[gpu, mem] = numericValues;
+			ocgpu.value=gpu;
+			ocmem.value=mem;
+		});
+}
+</script>
+<script src="gauge.min.js"></script>
+<iframe id="oc" src="about:blank" style="display:none"></iframe>
+</body>
+</html>
