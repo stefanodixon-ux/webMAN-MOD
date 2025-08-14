@@ -3,11 +3,16 @@ name: build-webman-mod (PSL1GHT)
 on:
   workflow_dispatch: {}
 
+# 👇 allow pulling images from ghcr.io
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ps3dev/ps3dev:latest  # has PSL1GHT toolchain + libs preinstalled
+      image: ghcr.io/ps3dev/ps3dev:latest   # PSL1GHT toolchain preinstalled
 
     steps:
       - name: Checkout
@@ -15,7 +20,6 @@ jobs:
 
       - name: Ensure sLaunch cap is 4000
         run: |
-          # bump MAX_SLAUNCH_ITEMS from 2000 -> 4000 wherever defined
           set -eux
           git ls-files | xargs sed -i -E 's/(#\s*define\s+MAX_SLAUNCH_ITEMS\s+)2000/\14000/'
 
@@ -31,8 +35,7 @@ jobs:
           fi
 
       - name: Build
-        run: |
-          make -j"$(nproc)"
+        run: make -j"$(nproc)"
 
       - name: Collect artifacts
         run: |
