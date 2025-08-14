@@ -1,10 +1,10 @@
 #ifdef SLAUNCH_FILE
 
-#define MAX_SLAUNCH_ITEMS	2000
+#define MAX_SLAUNCH_ITEMS	4000
 
 static bool custom_icon = false; // override default cover mode using index.ps3?cover=<cover type> (icon0, mm, disc, online)
 
-typedef struct // 1MB for 2000+1 titles
+typedef struct // 2MB for 4000+1 titles
 {
 	u8  type;
 	char id[10];
