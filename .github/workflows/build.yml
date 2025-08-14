@@ -1,0 +1,51 @@
+name: build-webman-mod (PSL1GHT)
+
+on:
+  workflow_dispatch: {}
+
+# 👇 allow pulling images from ghcr.io
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ps3dev/ps3dev:latest   # PSL1GHT toolchain preinstalled
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure sLaunch cap is 4000
+        run: |
+          set -eux
+          git ls-files | xargs sed -i -E 's/(#\s*define\s+MAX_SLAUNCH_ITEMS\s+)2000/\14000/'
+
+      - name: Patch makefile to use PSL1GHT instead of Sony SDK
+        run: |
+          set -eux
+          if [ -f makefile ]; then
+            cp makefile makefile.bak
+            awk 'NR==1{print "PS3DEV ?= /usr/local/ps3dev"; print "PSL1GHT ?= $(PS3DEV)"; print "include $(PSL1GHT)/ppu_rules"; skip=1} skip && NR<=2 { next } !skip || NR>2 { print }' makefile > makefile.new
+            mv makefile.new makefile
+            sed -i 's/ppu-lv2-gcc/ppu-gcc/g' makefile || true
+            sed -i 's/^CRT_HEAD/# CRT_HEAD/g; s/^CRT_TAIL/# CRT_TAIL/g' makefile || true
+          fi
+
+      - name: Build
+        run: make -j"$(nproc)"
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p out
+          find . -maxdepth 2 -type f -name 'webftp_server*.sprx' -exec cp -v {} out/ \; || true
+          ls -l out
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: webMAN-MOD-sprx
+          path: out
+          if-no-files-found: error
