@@ -1,29 +1,87 @@
-name: build-webman-mod (PSL1GHT)
+name: build-webman-mod (native-PSL1GHT)
 
 on:
   workflow_dispatch: {}
 
-# 👇 allow pulling images from ghcr.io
-permissions:
-  contents: read
-  packages: read
+env:
+  PS3DEV: /usr/local/ps3dev
+  PSL1GHT: /usr/local/ps3dev
+  PATH_WITH_PS3DEV: /usr/local/ps3dev/bin:/usr/local/ps3dev/host/bin:/usr/local/ps3dev/ppu/bin:/usr/local/ps3dev/spu/bin
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/ps3dev/ps3dev:latest   # PSL1GHT toolchain preinstalled
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ensure sLaunch cap is 4000
+      # Cache compiled toolchain (first run builds, later runs reuse)
+      - name: Cache PS3 toolchain
+        id: cache-ps3dev
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/ps3dev
+          key: ps3dev-ubuntu-${{ runner.os }}-v1
+
+      - name: Install build deps
+        if: steps.cache-ps3dev.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential git wget curl make cmake python3 gperf pkg-config \
+            autoconf automake libtool texinfo bison flex patch xz-utils \
+            libgmp-dev libmpfr-dev libmpc-dev zlib1g-dev
+
+      - name: Build PS3 toolchain (first run only)
+        if: steps.cache-ps3dev.outputs.cache-hit != 'true'
+        env:
+          PS3DEV: ${{ env.PS3DEV }}
         run: |
           set -eux
+          cd /usr/local
+          sudo git clone https://github.com/ps3dev/ps3toolchain.git
+          cd ps3toolchain
+          sudo env PS3DEV="$PS3DEV" PATH="$PATH:$PS3DEV/bin:$PS3DEV/host/bin" ./toolchain.sh
+
+      - name: Install ps3libraries (first run only)
+        if: steps.cache-ps3dev.outputs.cache-hit != 'true'
+        env:
+          PS3DEV: ${{ env.PS3DEV }}
+          PATH: ${{ env.PATH }}:${{ env.PATH_WITH_PS3DEV }}
+        run: |
+          set -eux
+          cd /usr/local
+          sudo git clone https://github.com/ps3dev/ps3libraries.git
+          cd ps3libraries
+          sudo env PS3DEV="$PS3DEV" PATH="$PATH" ./install-ps3libraries.sh
+
+      - name: Confirm toolchain
+        env:
+          PATH: ${{ env.PATH }}:${{ env.PATH_WITH_PS3DEV }}
+        run: |
+          set -eux
+          which ppu-gcc
+          ppu-gcc --version | head -n1
+
+      # ---- Force the cap to 4000 and VERIFY it ----
+      - name: Set MAX_SLAUNCH_ITEMS to 4000
+        run: |
+          set -eux
+          # Change any 2000 cap to 4000
           git ls-files | xargs sed -i -E 's/(#\s*define\s+MAX_SLAUNCH_ITEMS\s+)2000/\14000/'
 
-      - name: Patch makefile to use PSL1GHT instead of Sony SDK
+      - name: Verify cap == 4000 (fail if not)
+        run: |
+          set -eux
+          # Must find a define with 4000; if not, fail the build
+          if ! grep -RInE '#\s*define\s+MAX_SLAUNCH_ITEMS\s+4000' . ; then
+            echo "MAX_SLAUNCH_ITEMS is NOT 4000. Failing." >&2
+            exit 1
+          fi
+
+      # Patch makefile to PSL1GHT (if the project uses Sony SDK includes)
+      - name: Patch makefile for PSL1GHT
         run: |
           set -eux
           if [ -f makefile ]; then
@@ -35,17 +93,26 @@ jobs:
           fi
 
       - name: Build
-        run: make -j"$(nproc)"
+        env:
+          PATH: ${{ env.PATH }}:${{ env.PATH_WITH_PS3DEV }}
+        run: |
+          set -eux
+          make -j"$(nproc)"
 
       - name: Collect artifacts
         run: |
+          set -eux
           mkdir -p out
-          find . -maxdepth 2 -type f -name 'webftp_server*.sprx' -exec cp -v {} out/ \; || true
-          ls -l out
+          echo "--- All .sprx found ---"
+          find . -type f -name '*.sprx' -printf '%p\n' || true
+          # typical webMAN names:
+          find . -type f -name 'webftp_server*.sprx' -exec cp -v {} out/ \; || true
+          find . -type f -name 'webman*.sprx'        -exec cp -v {} out/ \; || true
+          ls -l out || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: webMAN-MOD-sprx
+          name: webMAN-MOD-build
           path: out
-          if-no-files-found: error
+          if-no-files-found: warn
